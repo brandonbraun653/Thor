@@ -12,6 +12,7 @@
 #endif
 
 
+#include "thor_peripherals.hpp"
 #include "thor_definitions.h"
 #include "mem.h"
 #include "exceptions.h"

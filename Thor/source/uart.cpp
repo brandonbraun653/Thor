@@ -9,6 +9,33 @@ using namespace Interrupt;
 /*					  Local Object Instantiations                       */
 /************************************************************************/
 
+#ifdef ENABLE_UART1
+UARTClass_sPtr uart1 = boost::make_shared<UARTClass>(1);
+
+void USART1_IRQHandler(void)
+{
+	uart1->UART_IRQHandler();
+}
+#endif
+
+#ifdef ENABLE_UART2
+UARTClass_sPtr uart2 = boost::make_shared<UARTClass>(2);
+
+void USART2_IRQHandler(void)
+{
+	//uart2->UART_IRQHandler(); //TODO: Need to separate USART and UART handlers!
+}
+#endif
+
+#ifdef ENABLE_UART3
+UARTClass_sPtr uart3 = boost::make_shared<UARTClass>(3);
+
+void USART3_IRQHandler(void)
+{
+	uart3->UART_IRQHandler();
+}
+#endif
+
 #ifdef ENABLE_UART4
 UARTClass_sPtr uart4 = boost::make_shared<UARTClass>(4);
 
@@ -246,6 +273,8 @@ void UARTClass::UART_IRQHandler(void)
 	* Only run the normal IRQHandler if an explicit RX packet request
 	* was generated or if TX-ing some data.
 	*------------------------------------*/
+
+	//TODO: Better fix this later to support usart handler in uart mode
 	if (!RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX)
 		HAL_UART_IRQHandler(&uart_handle);
 	#endif
@@ -643,6 +672,21 @@ void UARTClass::UART_DeInit()
 
 void UARTClass::UART_EnableClock()
 {
+	#ifdef ENABLE_UART1
+	if (uart_channel == 1)
+		__USART1_CLK_ENABLE();
+	#endif
+
+	#ifdef ENABLE_UART2
+	if (uart_channel == 2)
+		__USART2_CLK_ENABLE();
+	#endif
+
+	#ifdef ENABLE_UART3
+	if (uart_channel == 3)
+		__USART3_CLK_ENABLE();
+	#endif
+
 	#ifdef ENABLE_UART4
 	if (uart_channel == 4)
 		__UART4_CLK_ENABLE();
@@ -666,6 +710,21 @@ void UARTClass::UART_EnableClock()
 
 void UARTClass::UART_DisableClock()
 {
+	#ifdef ENABLE_UART1
+	if (uart_channel == 1)
+		__USART1_CLK_DISABLE();
+	#endif
+
+	#ifdef ENABLE_UART2
+	if (uart_channel == 2)
+		__USART2_CLK_DISABLE();
+	#endif
+
+	#ifdef ENABLE_UART3
+	if (uart_channel == 3)
+		__USART3_CLK_DISABLE();
+	#endif
+
 	#ifdef ENABLE_UART4
 	if (uart_channel == 4)
 		__UART4_CLK_DISABLE();
@@ -860,6 +919,21 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 	UARTClass_sPtr uart;
 
 	/* Filter through the possible calling peripherals */
+	#ifdef ENABLE_UART1
+	if (UartHandle->Instance == USART1)
+		uart = uart1;
+	#endif
+
+	#ifdef ENABLE_UART2
+	if (UartHandle->Instance == USART2)
+		uart = uart2;
+	#endif
+
+	#ifdef ENABLE_UART3
+	if (UartHandle->Instance == USART3)
+		uart = uart3;
+	#endif
+
 	#ifdef ENABLE_UART4
 	if (UartHandle->Instance == UART4)
 		uart = uart4;
@@ -911,6 +985,30 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	volatile uint32_t uart_channel = 0;
 
 	/* Filter through the possible calling peripherals */
+	#ifdef ENABLE_UART1
+	if (UartHandle->Instance == USART1)
+	{
+		uart = uart1;
+		uart_channel = 1;
+	}
+	#endif
+
+	#ifdef ENABLE_UART2
+	if (UartHandle->Instance == USART2)
+	{
+		uart = uart2;
+		uart_channel = 2;
+	}
+	#endif
+
+	#ifdef ENABLE_UART3
+	if (UartHandle->Instance == USART3)
+	{
+		uart = uart3;
+		uart_channel = 3;
+	}
+	#endif
+
 	#ifdef ENABLE_UART4
 	if (UartHandle->Instance == UART4)
 	{

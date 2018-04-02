@@ -13,6 +13,7 @@
 #include <stm32f4xx_hal.h>
 #endif
 
+#include "thor_peripherals.hpp"
 #include "thor_definitions.h"
 #include "types.h"
 

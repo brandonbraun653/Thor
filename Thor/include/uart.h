@@ -9,10 +9,10 @@
 #include <stdint.h>
 #include <string>
 
-#include "../libraries/Boost/boost/bind.hpp"
-#include "../libraries/Boost/boost/shared_ptr.hpp"
-#include "../libraries/Boost/boost/make_shared.hpp"
-#include "../libraries/Boost/boost/circular_buffer.hpp"
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+#include <boost/circular_buffer.hpp>
 
 #include "thor_config.h"
 #if defined(STM32F7)
@@ -21,6 +21,7 @@
 #include <stm32f4xx_hal.h>
 #endif
 
+#include "thor_peripherals.hpp"
 #include "thor_definitions.h"
 #include "exceptions.h"
 #include "defaults.h"
@@ -191,18 +192,24 @@ private:
 /************************************************************************/
 /*						    Exported Classes                            */
 /************************************************************************/
+#ifdef ENABLE_UART1
+extern UARTClass_sPtr uart1;
+#endif
+#ifdef ENABLE_UART2
+extern UARTClass_sPtr uart2;
+#endif
+#ifdef ENABLE_UART3
+extern UARTClass_sPtr uart3;
+#endif
 #ifdef ENABLE_UART4
 extern UARTClass_sPtr uart4;
 #endif
-
 #ifdef ENABLE_UART5
 extern UARTClass_sPtr uart5;
 #endif
-
 #ifdef ENABLE_UART7
 extern UARTClass_sPtr uart7;
 #endif
-
 #ifdef ENABLE_UART8
 extern UARTClass_sPtr uart8;
 #endif
@@ -211,6 +218,18 @@ extern UARTClass_sPtr uart8;
 #ifdef __cplusplus
 extern "C" {
 #endif
+	#ifdef ENABLE_UART1
+	void UART1_IRQHandler();
+	#endif
+
+	#ifdef ENABLE_UART2
+	void UART2_IRQHandler();
+	#endif
+
+	#ifdef ENABLE_UART3
+	void UART3_IRQHandler();
+	#endif
+
 	#ifdef ENABLE_UART4
 	void UART4_IRQHandler();
 	#endif

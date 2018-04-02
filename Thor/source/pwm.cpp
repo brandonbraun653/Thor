@@ -28,16 +28,16 @@ PWMClass::PWMClass(int timerNumber, GPIOClass_sPtr outputPin)
 	
 	/*  Get timer clock source frequency */
 	#if defined(STM32F446xx) || defined(STM32F767xx)
-	uint32_t periphBaseMask = 0xFFFF0000;
-	
-	LL_RCC_ClocksTypeDef currentClockConfig;
-	LL_RCC_GetSystemClocksFreq(&currentClockConfig);
-	
-	if ((periphBaseMask & timerBaseAddresses[timerNumber]) == APB1PERIPH_BASE) 
-		timerClockFrequency = 2*currentClockConfig.PCLK1_Frequency;
-	
-	if ((periphBaseMask & timerBaseAddresses[timerNumber]) == APB2PERIPH_BASE)
-		timerClockFrequency = 2*currentClockConfig.PCLK2_Frequency;
+// 	uint32_t periphBaseMask = 0xFFFF0000;
+// 	
+// 	LL_RCC_ClocksTypeDef currentClockConfig;
+// 	LL_RCC_GetSystemClocksFreq(&currentClockConfig);
+// 	
+// 	if ((periphBaseMask & timerBaseAddresses[timerNumber]) == APB1PERIPH_BASE) 
+// 		timerClockFrequency = 2*currentClockConfig.PCLK1_Frequency;
+// 	
+// 	if ((periphBaseMask & timerBaseAddresses[timerNumber]) == APB2PERIPH_BASE)
+// 		timerClockFrequency = 2*currentClockConfig.PCLK2_Frequency;
 	#endif
  }
 

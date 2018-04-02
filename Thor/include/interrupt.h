@@ -11,6 +11,7 @@
 #endif
 
 #include "thor_config.h"
+#include "thor_peripherals.hpp"
 #include "thor_definitions.h"
 #include "types.h"
 
@@ -32,6 +33,15 @@ namespace Interrupt
 	{
 		/* UART SOURCES */
 		SRC_UART,
+		SRC_UART1,
+		SRC_UART1_TX,
+		SRC_UART1_RX,
+		SRC_UART2,
+		SRC_UART2_TX,
+		SRC_UART2_RX,
+		SRC_UART3,
+		SRC_UART3_TX,
+		SRC_UART3_RX,
 		SRC_UART4,
 		SRC_UART4_TX,
 		SRC_UART4_RX,

@@ -76,7 +76,7 @@ namespace Defaults
 
 		/* SERIAL 2: */
 		{
-			#if defined(ENABLE_USART2)
+			#if defined(ENABLE_USART2) && !defined(ENABLE_UART2)
 				#if defined(STM32F767xx) || defined(STM32F446xx)
 				//TX pin
 				{ GPIOD, PIN_5, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
@@ -105,11 +105,40 @@ namespace Defaults
 
 			/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
 			#endif
+
+			#if defined(ENABLE_UART2) && !defined(ENABLE_USART2)
+				#if defined(STM32F446xx)
+				//TX pin
+				{ GPIOA, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
+
+				//RX Pin
+				{ GPIOA, PIN_3, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
+
+				//Instance Ptr
+				USART2,
+
+				//IT_HW
+				{ USART2_IRQn, NVIC_PRIORITYGROUP_4, 6u, 0u },
+
+				//DMA_IT_TX
+				{},
+
+				//DMA_IT_RX
+				{},
+
+				//DMA TX settings
+				{},
+
+				//DMA RX settings
+				{}
+				#endif
+
+			#endif
 		},
 
 		/* SERIAL 3: */
 		{
-			#if defined(ENABLE_USART3)
+			#if defined(ENABLE_USART3) 
 				#if defined(STM32F767xx) || defined(STM32F446xx)
 				//TX Pin
 				{ GPIOB, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART3 },

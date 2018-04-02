@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "../libraries/Boost/boost/function.hpp"
+#include <boost/function.hpp>
 
 #include "thor_definitions.h"
 #include "gpio.h"

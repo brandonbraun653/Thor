@@ -19,7 +19,7 @@
 #endif
 #include "thor_definitions.h"
 
-#include "../libraries/Boost/boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
 /************************************************************************/
 /*								Defines                                 */
 /************************************************************************/

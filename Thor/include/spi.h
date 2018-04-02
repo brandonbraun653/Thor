@@ -20,6 +20,7 @@
 
 /* Thor Includes */
 #include "thor_config.h"
+#include "thor_peripherals.hpp"
 #include "thor_definitions.h"
 #include "interrupt.h"
 #include "defaults.h"

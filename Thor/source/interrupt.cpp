@@ -192,6 +192,36 @@ namespace Interrupt
 		{
 			switch (pConfig.peripheral_instance)
 			{
+			#ifdef ENABLE_UART1
+			case Interrupt::SRC_UART1:
+				if (pConfig.direction == ThorDef::DMA::MEM_TO_PERIPH)
+					executeCallbackFunction_TXDMA(1);
+
+				else if (pConfig.direction == ThorDef::DMA::PERIPH_TO_MEM)
+					executeCallbackFunction_RXDMA(1);
+				break;
+			#endif
+
+			#ifdef ENABLE_UART2
+			case Interrupt::SRC_UART2:
+				if (pConfig.direction == ThorDef::DMA::MEM_TO_PERIPH)
+					executeCallbackFunction_TXDMA(2);
+
+				else if (pConfig.direction == ThorDef::DMA::PERIPH_TO_MEM)
+					executeCallbackFunction_RXDMA(2);
+				break;
+			#endif
+
+			#ifdef ENABLE_UART3
+			case Interrupt::SRC_UART3:
+				if (pConfig.direction == ThorDef::DMA::MEM_TO_PERIPH)
+					executeCallbackFunction_TXDMA(3);
+
+				else if (pConfig.direction == ThorDef::DMA::PERIPH_TO_MEM)
+					executeCallbackFunction_RXDMA(3);
+				break;
+			#endif
+
 			#ifdef ENABLE_UART4
 			case Interrupt::SRC_UART4:
 				if (pConfig.direction == ThorDef::DMA::MEM_TO_PERIPH)

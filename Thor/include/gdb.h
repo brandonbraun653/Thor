@@ -6,8 +6,8 @@
 #include <string>
 
 /* Eigen Dependencies */
-#include "../libraries/Eigen/Eigen/Eigen"
-#include "../libraries/Eigen/Eigen/StdVector"
+#include <Eigen/Eigen>
+#include <Eigen/StdVector>
 
 template <typename T>
 	void prettyPrint(T matrix, std::string name)
