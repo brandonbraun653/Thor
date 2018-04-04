@@ -1,6 +1,7 @@
 #include "../include/usart.h"
 
-using namespace Defaults::Serial;
+using namespace Thor::Defaults::Serial;
+using namespace Thor::Peripheral::GPIO;
 
 /************************************************************************/
 /*							  Constructors                              */

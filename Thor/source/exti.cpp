@@ -1,5 +1,5 @@
-#include "../include/exti.h"
-#include "../include/thor_definitions.h"
+#include <Thor/include/exti.h>
+#include <Thor/include/definitions.h>
 
 /*-------------------------------------------------------------
  * Take over EXTI0 to use for passing messages from high
@@ -30,8 +30,8 @@ TaskTrigger::TaskTrigger()
 	pendingTask.set_capacity(taskBufferSize);
 
 	/* Normal resize works fine here */
-	vecUART_USART_Semaphores.resize(Libraries::Serial::MAX_SERIAL_CHANNELS);
-	vecSPI_Semaphores.resize(ThorDef::SPI::MAX_SPI_CHANNELS);
+	vecUART_USART_Semaphores.resize(Thor::Libraries::Serial::MAX_SERIAL_CHANNELS);
+	vecSPI_Semaphores.resize(Thor::Definitions::SPI::MAX_SPI_CHANNELS);
 
 	/* Create the locking mechanisms */
 	pendingTask_lock = false;
@@ -48,7 +48,7 @@ TaskTrigger::~TaskTrigger()
  * lock through simple flags. If a lock cannot be obtained, it returns false.
  * In practice this is not likely due to the short duration where lock==true
  *----------------------------------------------------------------------------------*/
-bool TaskTrigger::logEventGenerator(Interrupt::TriggerSource source, uint32_t instance)
+bool TaskTrigger::logEventGenerator(Thor::Interrupt::TriggerSource source, uint32_t instance)
 {
 	if (pendingTask_lock)
 		return false;
@@ -67,14 +67,14 @@ bool TaskTrigger::logEventGenerator(Interrupt::TriggerSource source, uint32_t in
  * Attaches a semaphore to a specific interrupt source. Currently only supports
  * one semaphore per source, but may expand to multiple in the future.
  *----------------------------------------------------------------------------------*/
-bool TaskTrigger::logEventConsumer(Interrupt::TriggerSource source, uint32_t instance, SemaphoreHandle_t* sem)
+bool TaskTrigger::logEventConsumer(Thor::Interrupt::TriggerSource source, uint32_t instance, SemaphoreHandle_t* sem)
 {
 	/* Instance is correlated to the physical hardware peripherals, starting at index 1.*/
 	switch (source)
 	{
-	case Interrupt::SRC_UART:
-	case Interrupt::SRC_USART:
-		if ((instance > 0) && (instance <= Libraries::Serial::MAX_SERIAL_CHANNELS))
+	case Thor::Interrupt::SRC_UART:
+	case Thor::Interrupt::SRC_USART:
+		if ((instance > 0) && (instance <= Thor::Libraries::Serial::MAX_SERIAL_CHANNELS))
 		{
 			vecUART_USART_Semaphores[instance - 1] = sem;
 			return true;
@@ -83,8 +83,8 @@ bool TaskTrigger::logEventConsumer(Interrupt::TriggerSource source, uint32_t ins
 			return false;
 		break;
 
-	case Interrupt::SRC_SPI:
-		if ((instance > 0) && (instance <= ThorDef::SPI::MAX_SPI_CHANNELS))
+	case Thor::Interrupt::SRC_SPI:
+		if ((instance > 0) && (instance <= Thor::Definitions::SPI::MAX_SPI_CHANNELS))
 		{
 			vecSPI_Semaphores[instance - 1] = sem;
 			return true;
@@ -114,14 +114,14 @@ SemaphoreHandle_t* TaskTrigger::getNextEvent()
 		 * to check accessor bounds due to constraints in logEventConsumerTask() */
 		switch (nextTask.periph_src)
 		{
-		case Interrupt::SRC_UART:
-		case Interrupt::SRC_USART:
+		case Thor::Interrupt::SRC_UART:
+		case Thor::Interrupt::SRC_USART:
 			xSemaphoreTakeFromISR(USARTSemaphore_Mutex, NULL);
 			tempSem = vecUART_USART_Semaphores[nextTask.periph_instance - 1];
 			xSemaphoreGiveFromISR(USARTSemaphore_Mutex, NULL);
 			break;
 
-		case Interrupt::SRC_SPI:
+		case Thor::Interrupt::SRC_SPI:
 			xSemaphoreTakeFromISR(SPISemaphore_Mutex, NULL);
 			tempSem = vecSPI_Semaphores[nextTask.periph_instance - 1];
 			xSemaphoreGiveFromISR(SPISemaphore_Mutex, NULL);

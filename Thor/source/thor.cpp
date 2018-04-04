@@ -1,5 +1,5 @@
-#include "../include/thor.h"
-#include "../include/exti.h"
+#include <Thor/include/thor.h>
+#include <Thor/include/exti.h>
 
 void ThorInit()
 {

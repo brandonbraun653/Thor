@@ -1,7 +1,5 @@
-#include "../include/core.h"
+#include <Thor/include/core.h>
 
-#include "../include/thor_config.h"
-#include "stm32f4xx_ll_rcc.h"
 
 #if !defined(USING_FREERTOS)
 void SysTick_Handler(void)
@@ -80,6 +78,7 @@ void ThorSystemClockConfig()
 
 /* Sets the clock to 180 MHz and maxes out the peripheral clocks */
 #if defined(STM32F446xx)
+#include "stm32f4xx_ll_rcc.h"
 void ThorSystemClockConfig()
 {
 	RCC_OscInitTypeDef RCC_OscInitStruct;

@@ -1,27 +1,21 @@
 #ifndef THOR_H_
 #define THOR_H_
 
-#include "thor_config.h"
-
-#ifdef TARGET_STM32F7
-#include <stm32f7xx_hal.h>
-#endif
-
-#ifdef TARGET_STM32F4
-#include <stm32f4xx_hal.h>
-#endif
+//TODO: Prune this header file.
 
 
-#include "thor_peripherals.hpp"
-#include "thor_definitions.h"
-#include "mem.h"
-#include "exceptions.h"
-#include "defaults.h"
-#include "core.h"
-#include "serial.h"
-#include "gpio.h"
-#include "interrupt.h"
-#include "print.h"
+#include <Thor/include/config.h>
+#include <Thor/include/core.h>
+
+//#include <Thor/include/definitions.h>
+//#include <Thor/include/mem.h>
+//#include <Thor/include/exceptions.h>
+//#include <Thor/include/defaults.h>
+//#include <Thor/include/core.h>
+//#include <Thor/include/serial.h>
+//#include <Thor/include/gpio.h>
+//#include <Thor/include/interrupt.h>
+//#include <Thor/include/print.h>
 
 
 extern void ThorInit();

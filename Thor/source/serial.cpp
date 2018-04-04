@@ -1,2 +1,2 @@
-#include "../include/serial.h"
+#include <Thor/include/serial.h>
 

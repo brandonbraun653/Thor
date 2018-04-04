@@ -2,50 +2,25 @@
 #ifndef USART_H_
 #define USART_H_
 
-
-/************************************************************************/
-/*							   Includes                                 */
-/************************************************************************/
-#include "thor_config.h"
+/* C/C++ Includes */
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#ifdef TARGET_STM32F7
-#include <stm32f7xx_hal.h>
-#endif
 
-#ifdef TARGET_STM32F4
-#include <stm32f4xx_hal.h>
-#endif
-#include "thor_definitions.h"
-#include "defaults.h"
-#include "gpio.h"
-#include "ringbuffer.h"
+/* Thor Includes */
+#include <Thor/include/config.h>
+#include <Thor/include/definitions.h>
+#include <Thor/include/defaults.h>
+#include <Thor/include/gpio.h>
+#include <Thor/include/ringbuffer.h>
 
-/************************************************************************/
-/*								Defines                                 */
-/************************************************************************/
+
 #ifndef MAX_SERIAL_CHANNELS
 #define MAX_SERIAL_CHANNELS 8
 #endif // !MAX_SERIAL_CHANNELS
 
 #define USART_BUFFER_SIZE 16
 
-/************************************************************************/
-/*								 Types                                  */
-/************************************************************************/
-
-/************************************************************************/
-/*							Exported Variables                          */
-/************************************************************************/
-
-/************************************************************************/
-/*							Exported Functions                          */
-/************************************************************************/
-
-/************************************************************************/
-/*								Classes                                 */
-/************************************************************************/
 class USARTClass : public RingBufferClass
 {
 public:
@@ -63,7 +38,7 @@ public:
 	* Constructors
 	*------------------------------*/
 	USARTClass();
-	USARTClass(uint32_t channel, GPIOClass *txPin, GPIOClass *rxPin);
+	USARTClass(uint32_t channel, Thor::Peripheral::GPIO::GPIOClass *txPin, Thor::Peripheral::GPIO::GPIOClass *rxPin);
 	
 private:
 	int usart_channel;
@@ -79,8 +54,8 @@ private:
 	/*-------------------------------
 	* Object Pointers
 	*------------------------------*/
-	GPIOClass  *tx_pin;
-	GPIOClass  *rx_pin;
+	Thor::Peripheral::GPIO::GPIOClass  *tx_pin;
+	Thor::Peripheral::GPIO::GPIOClass  *rx_pin;
 	
 	/*-------------------------------
 	* Testing Functions: TEMPORARY

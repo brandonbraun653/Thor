@@ -1,23 +1,18 @@
 #ifndef TYPES_H_
 #define TYPES_H_
 
-#include "thor_config.h"
-
-#ifdef TARGET_STM32F7
-#include <stm32f7xx_hal.h>
-#endif
-
-#ifdef TARGET_STM32F4
-#include <stm32f4xx_hal.h>
-#endif
-
+/* C/C++ Includes */
 #include <stdlib.h>
 #include <stdint.h>
 
+/* Boost Includes */
 #include <boost/function.hpp>
 
-#include "thor_definitions.h"
-#include "gpio.h"
+/* Thor Includes */
+#include <Thor/include/config.h>
+#include <Thor/include/definitions.h>
+#include <Thor/include/gpio.h>
+
 
 typedef boost::function<void()> func_void;
 
@@ -28,10 +23,10 @@ typedef void(*func_ptr_uart_t)(UART_HandleTypeDef *UartHandle);
 struct GPIO_Initializer
 {
 	GPIO_TypeDef*			GPIOx;
-	GPIO_PinNum_TypeDef		PinNum;
-	GPIO_Mode_TypeDef		Mode;
-	GPIO_Speed_TypeDef		Speed;
-	GPIO_Pull_TypeDef		Pull;
+	Thor::Peripheral::GPIO::GPIO_PinNum_TypeDef		PinNum;
+	Thor::Peripheral::GPIO::GPIO_Mode_TypeDef		Mode;
+	Thor::Peripheral::GPIO::GPIO_Speed_TypeDef		Speed;
+	Thor::Peripheral::GPIO::GPIO_Pull_TypeDef		Pull;
 	uint8_t					Alternate;
 };
 

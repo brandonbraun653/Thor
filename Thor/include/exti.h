@@ -2,7 +2,14 @@
 #ifndef EXTI_H_
 #define EXTI_H_
 
-#include "thor_config.h"
+/* Boost Includes */
+#include <boost/circular_buffer.hpp>
+#include <boost/container/vector.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+
+#include <Thor/include/config.h>
+#include <Thor/include/interrupt.h>
 
 #if defined(TARGET_STM32F4)
 #include "stm32f4xx_ll_exti.h"
@@ -14,12 +21,9 @@
 #if defined(USING_FREERTOS)
 #include "FreeRTOS.h"
 #include "semphr.h"
-#include "interrupt.h"
 
-#include <boost/circular_buffer.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
+
+
 
 /*--------------------------------------------------------------------------
  * Ensures that the EXTI0 interrupt will always be able to preempt most other 
@@ -31,8 +35,8 @@ extern void setupEXTI0_Interrupt();
 class TaskTrigger
 {
 public:
-	bool logEventGenerator(Interrupt::TriggerSource source, uint32_t instance);
-	bool logEventConsumer(Interrupt::TriggerSource source, uint32_t instance, SemaphoreHandle_t* sem);
+	bool logEventGenerator(Thor::Interrupt::TriggerSource source, uint32_t instance);
+	bool logEventConsumer(Thor::Interrupt::TriggerSource source, uint32_t instance, SemaphoreHandle_t* sem);
 	SemaphoreHandle_t* getNextEvent();
 
 	TaskTrigger();
@@ -40,7 +44,7 @@ public:
 private:
 	struct EventSource
 	{
-		Interrupt::TriggerSource periph_src;
+		Thor::Interrupt::TriggerSource periph_src;
 		uint32_t periph_instance;
 	};
 	
