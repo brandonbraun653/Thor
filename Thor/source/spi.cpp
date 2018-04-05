@@ -79,7 +79,9 @@ namespace Thor
 			Chimera::SPI::Status SPIClass::init(int channel, const Chimera::SPI::Setup& setupStruct)
 			{
 				/* Inform the SPI shared_ptrs of what they actually point to. Requires that a
-				 * reference to an existing shared_ptr<SPIClass> instance, created by Chimera::SPI::SPIClass(int)*/
+				 * reference to a shared_ptr<SPIClass> instance exists. This is created by 
+				 * Chimera::SPI::SPIClass(int). 
+				 */
 
 				#ifdef ENABLE_SPI1
 				if (channel == 1)
@@ -95,7 +97,36 @@ namespace Thor
 				}
 				#endif 
 
-				#error fill out the rest here!
+				#ifdef ENABLE_SPI3
+				if (channel == 3)
+				{
+					spi3 = getSharedPtrRef();
+				}
+				#endif 
+
+				#ifdef ENABLE_SPI4
+				if (channel == 4)
+				{
+					spi4 = getSharedPtrRef();
+				}
+				#endif 
+
+				#ifdef ENABLE_SPI5
+				if (channel == 5)
+				{
+					spi5 = getSharedPtrRef();
+				}
+				#endif 
+
+				#ifdef ENABLE_SPI6
+				if (channel == 6)
+				{
+					spi6 = getSharedPtrRef();
+				}
+				#endif 
+
+
+
 
 				return Chimera::SPI::Status::SPI_OK;
 			}
