@@ -9,9 +9,6 @@ using namespace Thor::Interrupt;
 using namespace Thor::Peripheral::SPI;
 using namespace Thor::Peripheral::GPIO;
 
-/************************************************************************/
-/*					  Local Object Instantiations                       */
-/************************************************************************/
 #ifdef ENABLE_SPI1
 SPIClass_sPtr spi1 = boost::make_shared<SPIClass>(1);
 
@@ -21,11 +18,18 @@ void SPI1_IRQHandler()
 }
 #endif
 #ifdef ENABLE_SPI2
-SPIClass_sPtr spi2 = boost::make_shared<SPIClass>(2);
+	#ifdef USING_CHIMERA
+	SPIClass_sPtr spi2;
+	#else
+	SPIClass_sPtr spi2 = boost::make_shared<SPIClass>(2);
+	#endif 
 
 void SPI2_IRQHandler()
 {
-	spi2->SPI_IRQHandler();
+	if (spi2)
+	{
+		spi2->SPI_IRQHandler();
+	}
 }
 #endif
 
@@ -71,6 +75,57 @@ namespace Thor
 	{
 		namespace SPI
 		{
+			#ifdef USING_CHIMERA
+			Chimera::SPI::Status SPIClass::init(int channel, const Chimera::SPI::Setup& setupStruct)
+			{
+				/* Inform the SPI shared_ptrs of what they actually point to. Requires that a
+				 * reference to an existing shared_ptr<SPIClass> instance, created by Chimera::SPI::SPIClass(int)*/
+
+				#ifdef ENABLE_SPI1
+				if (channel == 1)
+				{
+					spi1 = getSharedPtrRef();
+				}
+				#endif 
+
+				#ifdef ENABLE_SPI2
+				if (channel == 2)
+				{
+					spi2 = getSharedPtrRef();
+				}
+				#endif 
+
+				#error fill out the rest here!
+
+				return Chimera::SPI::Status::SPI_OK;
+			}
+
+			Chimera::SPI::Status SPIClass::write(uint8_t* in, size_t length)
+			{
+				return Chimera::SPI::Status::SPI_OK;
+			}
+
+			Chimera::SPI::Status SPIClass::write(uint8_t* in, uint8_t* out, size_t length)
+			{
+				return Chimera::SPI::Status::SPI_OK;
+			}
+
+			Chimera::SPI::Status SPIClass::setTxMode(Chimera::SPI::TXRXMode mode)
+			{
+				return Chimera::SPI::Status::SPI_OK;
+			}
+
+			Chimera::SPI::Status SPIClass::setRxMode(Chimera::SPI::TXRXMode mode)
+			{
+				return Chimera::SPI::Status::SPI_OK;
+			}
+
+			#endif
+
+
+			using Status = Thor::Definitions::SPI::Status;
+			using Options = Thor::Definitions::SPI::Options;
+
 			void SPIClass::SPI_IRQHandler()
 			{
 				HAL_SPI_IRQHandler(&spi_handle);
@@ -165,20 +220,16 @@ namespace Thor
 
 				rxBufferedPackets = new SmartBuffer::RingBuffer<uint16_t>(_rxbuffpckt, Thor::Definitions::SPI::SPI_BUFFER_SIZE);
 				rxBufferedPacketLengths = new SmartBuffer::RingBuffer<size_t>(_rxbuffpcktlen, Thor::Definitions::SPI::SPI_BUFFER_SIZE);
-
-
-				/* SUPER HACKY QUICK FIX FOR DRONE SD LOGGER BUG */
-				internalTXBuffer = new uint8_t(512u);
 			}
 
-			SPIClass::~SPIClass()
+			boost::shared_ptr<SPIClass> SPIClass::getSharedPtrRef()
 			{
+				/* If failing here, there must already be a shared_ptr in
+				* existence to an object of this class */
+				return shared_from_this();
 			}
 
-			/************************************************************************/
-			/*						     Public Functions                           */
-			/************************************************************************/
-			void SPIClass::begin(SPIOptions options)
+			void SPIClass::begin(Options options)
 			{
 				if (options != NO_OPTIONS)
 				{
@@ -213,7 +264,7 @@ namespace Thor
 				SLAVE_SELECT_MODE = INTERNAL_SLAVE_SELECT;
 			}
 
-			void SPIClass::setSSMode(Thor::Definitions::SPI::SPIOptions ss_mode)
+			void SPIClass::setSSMode(Thor::Definitions::SPI::Options ss_mode)
 			{
 				if (ss_mode == SS_MANUAL_CONTROL)
 					SlaveSelectControl = SS_MANUAL_CONTROL;
@@ -238,7 +289,7 @@ namespace Thor
 				SPI_Init();
 			}
 
-			SPIStatus SPIClass::write(uint8_t* val, size_t length, SPIOptions options)
+			Status SPIClass::write(uint8_t* val, size_t length, Options options)
 			{
 				if (!SPI_PeriphState.gpio_enabled || !SPI_PeriphState.spi_enabled)
 					return SPI_NOT_INITIALIZED;
@@ -345,7 +396,7 @@ namespace Thor
 				}
 			}
 
-			SPIStatus SPIClass::write(uint8_t* val_in, uint8_t* val_out, size_t length, SPIOptions options)
+			Status SPIClass::write(uint8_t* val_in, uint8_t* val_out, size_t length, Options options)
 			{
 				if (!SPI_PeriphState.gpio_enabled || !SPI_PeriphState.spi_enabled)
 					return SPI_NOT_INITIALIZED;

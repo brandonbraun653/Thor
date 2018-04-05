@@ -12,7 +12,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/circular_buffer.hpp>
-
+#include <boost/enable_shared_from_this.hpp>
 
 /* Thor Includes */
 #include <Thor/include/config.h>
@@ -40,24 +40,30 @@ namespace Thor
 	{
 		namespace SPI
 		{
-			class SPIClass
+
+			class SPIClass : public boost::enable_shared_from_this<SPIClass>
 			{
 			public:
 				#ifdef USING_CHIMERA
+				Chimera::SPI::Status init(int channel, const Chimera::SPI::Setup& setupStruct);
+				Chimera::SPI::Status write(uint8_t* in, size_t length);
+				Chimera::SPI::Status write(uint8_t* in, uint8_t* out, size_t length);
 
-				Chimera::SPI::Status init(uint8_t channel, const Chimera::SPI::Setup& setupStruct);
+				Chimera::SPI::Status setTxMode(Chimera::SPI::TXRXMode mode);
+				Chimera::SPI::Status setRxMode(Chimera::SPI::TXRXMode mode);
 
 
+				
 				#endif
 
+				boost::shared_ptr<SPIClass> getSharedPtrRef();
+				
 
 
+				void begin(Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::NO_OPTIONS);
 
-
-				void begin(Thor::Definitions::SPI::SPIOptions options = Thor::Definitions::SPI::NO_OPTIONS);
-
-				Thor::Definitions::SPI::SPIStatus write(uint8_t* val, size_t length = 0, Thor::Definitions::SPI::SPIOptions options = Thor::Definitions::SPI::SS_INACTIVE_AFTER_TX);
-				Thor::Definitions::SPI::SPIStatus write(uint8_t* val_in, uint8_t* val_out, size_t length = 0, Thor::Definitions::SPI::SPIOptions options = Thor::Definitions::SPI::SS_INACTIVE_AFTER_TX);
+				Thor::Definitions::SPI::Status write(uint8_t* val, size_t length = 0, Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::SS_INACTIVE_AFTER_TX);
+				Thor::Definitions::SPI::Status write(uint8_t* val_in, uint8_t* val_out, size_t length = 0, Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::SS_INACTIVE_AFTER_TX);
 
 
 				void end();
@@ -65,7 +71,7 @@ namespace Thor
 				void attachPin(boost::shared_ptr<Thor::Peripheral::GPIO::GPIOClass> slave_select);
 				void detachPin();
 
-				void setSSMode(Thor::Definitions::SPI::SPIOptions ss_mode);
+				void setSSMode(Thor::Definitions::SPI::Options ss_mode);
 				void attachSettings(SPI_InitTypeDef& settings);
 				SPI_InitTypeDef getSettings();
 				void reInitialize();
@@ -101,7 +107,7 @@ namespace Thor
 
 				uint32_t txMode;
 				uint32_t rxMode;
-				Thor::Definitions::SPI::SPIOptions SS_ActionAfterTX, SlaveSelectControl;
+				Thor::Definitions::SPI::Options SS_ActionAfterTX, SlaveSelectControl;
 
 				/*-------------------------------
 				* Buffers
@@ -111,7 +117,7 @@ namespace Thor
 					size_t length;
 					uint8_t *data_tx;
 					uint8_t *data_rx;
-					Thor::Definitions::SPI::SPIOptions options;
+					Thor::Definitions::SPI::Options options;
 				} TX_tempPacket;
 				boost::circular_buffer<SPIPacket> TXPacketBuffer;
 
@@ -124,7 +130,8 @@ namespace Thor
 				SmartBuffer::RingBuffer<size_t>* rxBufferedPacketLengths;
 
 				SPIClass(int channel);
-				~SPIClass();
+				SPIClass() = default;
+				~SPIClass() = default;
 
 			private:
 				/*-------------------------------
@@ -145,19 +152,15 @@ namespace Thor
 				SPI_HandleTypeDef spi_handle;
 				DMA_HandleTypeDef hdma_spi_tx;
 				DMA_HandleTypeDef hdma_spi_rx;
-				Thor::Definitions::SPI::SPIOptions InterfaceMode, SlaveSelectType;
+				Thor::Definitions::SPI::Options InterfaceMode, SlaveSelectType;
 
 				IT_Initializer ITSettingsHW, ITSettings_DMA_TX, ITSettings_DMA_RX;
 
 				bool EXT_NSS_ATTACHED;
 				boost::shared_ptr<Thor::Peripheral::GPIO::GPIOClass> EXT_NSS;
-				Thor::Definitions::SPI::SPIOptions SLAVE_SELECT_MODE;
+				Thor::Definitions::SPI::Options SLAVE_SELECT_MODE;
 
 				Thor::Peripheral::GPIO::GPIOClass_sPtr MOSI, MISO, SCK, NSS;
-
-
-				/* SUPER HACKY QUICK FIX FOR DRONE SD LOGGER BUG */
-				uint8_t* internalTXBuffer;
 
 				void SPI_Init();
 				void SPI_DeInit();
@@ -180,6 +183,9 @@ namespace Thor
 				void SPI_DMA_DisableInterrupts_RX();
 			};
 			typedef boost::shared_ptr<SPIClass> SPIClass_sPtr;
+
+
+			extern void attachSPI(int channel, SPIClass* spi_class);
 		}
 	}
 }

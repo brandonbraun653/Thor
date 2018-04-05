@@ -195,7 +195,7 @@ namespace Thor
 			const unsigned int MAX_SPI_CHANNELS = 6;
 			const unsigned int SPI_BUFFER_SIZE = 32;
 		
-			enum SPICommunicationModes
+			enum TxRxModes
 			{
 				TX_MODE_NONE,
 				TX_MODE_BLOCKING,
@@ -210,7 +210,7 @@ namespace Thor
 				TXRX_MODE_DMA
 			};
 		
-			enum SPIOptions
+			enum Options
 			{
 				NO_OPTIONS            = 0u,
 				MASTER                = (1u << 0),
@@ -224,7 +224,7 @@ namespace Thor
 				SS_AUTOMATIC_CONTROL  = (1u << 8)
 			};
 
-			enum SPIStatus
+			enum Status
 			{
 				SPI_NOT_INITIALIZED = -3,
 				SPI_ERROR           = -2,
