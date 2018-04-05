@@ -54,8 +54,9 @@
 
 /* FreeRTOS Files */
 #if __has_include("FreeRTOS.h")
+	/* Different than the VisualGDB Profiler Preprocessor 'USE_FREERTOS' */
 	#ifndef USING_FREERTOS
-	#error Please define USING_FREERTOS in the project properties preprocessor tab.
+	#error Please define USE_FREERTOS in the project properties preprocessor tab.
 	#endif
 #endif
 
