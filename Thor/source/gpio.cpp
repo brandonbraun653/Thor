@@ -9,201 +9,137 @@ namespace Thor
 		{
 			using namespace Thor::Definitions::GPIO;
 
-			/*----------------------------------
-			* Constructors
-			*---------------------------------*/
-			GPIOClass::GPIOClass() {}
-
-			GPIOClass::GPIOClass(GPIO_TypeDef *GPIOx, 
-				GPIO_PinNum_TypeDef PIN_x, 
-				GPIO_Speed_TypeDef SPEED,
-				uint32_t ALTERNATE)
+			GPIOClass::GPIOClass(PinPort GPIOx, PinNum PIN_x, PinSpeed SPEED, uint32_t ALTERNATE)
 			{
-				/*--------------------------------------
-				* Store Thor style config defaults
-				*-------------------------------------*/
 				pinConfig.GPIOx		= GPIOx;
 				pinConfig.pinNum	= PIN_x;
 				pinConfig.speed		= SPEED;
 				pinConfig.alternate = ALTERNATE;
-	
-				/*--------------------------------------
-				* Initialize the pin
-				*-------------------------------------*/
-				InitStruct.Pin			= (uint32_t)pinConfig.pinNum;
-				InitStruct.Speed		= (uint32_t)pinConfig.speed;
-				InitStruct.Mode			= GPIO_MODE_INPUT;
-				InitStruct.Pull			= GPIO_NOPULL;
-				InitStruct.Alternate	= ALTERNATE;
 			}
 
-
-			/*----------------------------------
-			* Basic User Functions
-			*---------------------------------*/
-			void GPIOClass::mode(GPIO_Mode_TypeDef Mode, GPIO_Pull_TypeDef Pull)
+			void GPIOClass::mode(PinMode Mode, PinPull Pull)
 			{
-				// TODO: Pullup/pulldown doesn't actually work in PP mode
 				pinConfig.mode = Mode;
 				pinConfig.pull = Pull;
-	
-				InitStruct.Mode = (uint32_t)Mode;
-				InitStruct.Pull = (uint32_t)Pull;
-				GPIO_Init(pinConfig.GPIOx, &InitStruct);
+				
+				auto cfg = pinConfig.getHALInit();
+				GPIO_Init(pinConfig.GPIOx, &cfg);
 			}
 
-			void GPIOClass::write(LogicLevel state)
+			void GPIOClass::write(const LogicLevel& state)
 			{
-				switch (state)
-				{
-				case LOW:
-				case OFF:
-				case ZERO:
-					HAL_GPIO_WritePin(pinConfig.GPIOx,
-						(uint16_t)pinConfig.pinNum,
-						GPIO_PIN_RESET);
-					break;
-	
-				case HIGH:
-				case ON:
-				case ONE:
-					HAL_GPIO_WritePin(pinConfig.GPIOx,
-						(uint16_t)pinConfig.pinNum,
-						GPIO_PIN_SET);
-					break;
-				}
+				HAL_GPIO_WritePin(pinConfig.GPIOx, pinConfig.pinNum, static_cast<GPIO_PinState>(state));
 			}
 
-			void GPIOClass::read(bool *state)
+			bool GPIOClass::read()
 			{
-				switch (HAL_GPIO_ReadPin(pinConfig.GPIOx, (uint16_t)pinConfig.pinNum))
-				{
-				case GPIO_PIN_SET:
-					*state = true;
-					break;
-	
-				case GPIO_PIN_RESET:
-					*state = false;
-					break;
-				}
-			}
-
-			void GPIOClass::analogRead(int *data)
-			{
-	
+				return HAL_GPIO_ReadPin(pinConfig.GPIOx, pinConfig.pinNum);
 			}
 
 			void GPIOClass::toggle()
 			{
-				HAL_GPIO_TogglePin(pinConfig.GPIOx, (uint16_t)pinConfig.pinNum);
+				HAL_GPIO_TogglePin(pinConfig.GPIOx, pinConfig.pinNum);
 			}
 
-
-			/*----------------------------------
-			* Advanced User Functions
-			*---------------------------------*/
-			void GPIOClass::fast_write(LogicLevel state)
+			void GPIOClass::reconfigure(PinPort GPIOx, PinNum PIN_x, PinSpeed SPEED, uint32_t ALTERNATE)
 			{
-	
-			}
-
-			void GPIOClass::fast_toggle()
-			{
-	
-			}
-
-
-			void GPIOClass::attachIT(void(*)(void))
-			{
-	
-			}
-
-			void GPIOClass::reconfigure(GPIO_TypeDef *GPIOx, 
-				GPIO_PinNum_TypeDef PIN_x, 
-				GPIO_Speed_TypeDef SPEED,
-				uint32_t ALTERNATE)
-			{
-				/*--------------------------------------
-				* Store Thor style config defaults
-				*-------------------------------------*/
+				/* Update local copy of config  */
 				pinConfig.GPIOx		= GPIOx;
 				pinConfig.pinNum	= PIN_x;
 				pinConfig.speed		= SPEED;
 				pinConfig.alternate = ALTERNATE;
-	
-	
-				/*--------------------------------------
-				* Initialize the pin
-				*-------------------------------------*/
-				InitStruct.Pin			= (uint32_t)pinConfig.pinNum;
-				InitStruct.Speed		= (uint32_t)pinConfig.speed;
-				InitStruct.Mode			= GPIO_MODE_INPUT;
-				InitStruct.Pull			= GPIO_NOPULL;
-				InitStruct.Alternate	= ALTERNATE;
-	
-	
-				GPIO_Init(pinConfig.GPIOx, &InitStruct);
+
+				auto cfg = pinConfig.getHALInit();
+				GPIO_Init(pinConfig.GPIOx, &cfg);
 			}
 			
-			/************************************************************************/
-			/* EXPORTED FUNCTIONS                                                   */
-			/************************************************************************/
-
-			/** \brief Initializes a GPIO port to a desired config
-
-			*/
-			void GPIO_Init(GPIO_TypeDef *GPIOx, GPIO_InitTypeDef *InitStruct)
+			void GPIOClass::GPIO_Init(PinPort GPIOx, GPIO_InitTypeDef *InitStruct)
 			{	
-				//Start the clock if it hasn't been already
 				GPIO_ClockEnable(GPIOx);
-	
-				//Apply the configuration
 				HAL_GPIO_Init(GPIOx, InitStruct);
 			}
 
-			/** \brief Initializes a GPIO port clock
-
-			*/
-			void GPIO_ClockEnable(GPIO_TypeDef *GPIOx)
+			void GPIOClass::GPIO_ClockEnable(PinPort GPIOx)
 			{
-				#if defined (STM32F767xx) || defined(STM32F446xx)
-				if (GPIOx == GPIOA)
-					__GPIOA_CLK_ENABLE();
-	
-				if (GPIOx == GPIOB)
-					__GPIOB_CLK_ENABLE();
-	
-				if (GPIOx == GPIOC)
-					__GPIOC_CLK_ENABLE();
-	
-				if (GPIOx == GPIOD)
-					__GPIOD_CLK_ENABLE();
-	
-				if (GPIOx == GPIOE)
-					__GPIOE_CLK_ENABLE();
-	
-				if (GPIOx == GPIOF)
-					__GPIOF_CLK_ENABLE();
-	
-				if (GPIOx == GPIOG)
-					__GPIOG_CLK_ENABLE();
-	
-				if (GPIOx == GPIOH)
-					__GPIOH_CLK_ENABLE();
-				#endif
-	
-				#if defined (STM32F767xx)
-				if (GPIOx == GPIOI)
-					__GPIOI_CLK_ENABLE();
-	
-				if (GPIOx == GPIOJ)
-					__GPIOJ_CLK_ENABLE();
-	
-				if (GPIOx == GPIOK)
-					__GPIOK_CLK_ENABLE();
-				#endif
+				#if defined(TARGET_STM32F7) || defined(TARGET_STM32F4)
+				SET_BIT(RCC->AHB1ENR, rcc_gpio_mask[GPIOx]);
+				#endif 
 			}
 			
+			void GPIOClass::GPIO_ClockDisable(PinPort GPIOx)
+			{
+				#if defined(TARGET_STM32F7) || defined(TARGET_STM32F4)
+				CLEAR_BIT(RCC->AHB1ENR, rcc_gpio_mask[GPIOx]);
+				#endif 
+			}
+			
+
+			#ifdef USING_CHIMERA
+			Chimera::GPIO::Status GPIOClass::init(Chimera::GPIO::Port port, uint8_t pin)
+			{
+				/* Validate the input pin */
+				if (!(pin < MAX_PINS))
+					return Chimera::GPIO::Status::GPIO_ERROR_INVALID_PIN;
+				else
+					pinConfig.pinNum = static_cast<PinNum>(1u << pin);
+
+				/* Grab the port from the rcc_gpio_mask map by a reverse lookup */
+				PinPort portKey;
+				uint32_t mask = (1u << port);
+
+				if (!Thor::Util::findKeyFromVal(portKey, rcc_gpio_mask, mask))
+					return Chimera::GPIO::Status::GPIO_ERROR_INVALID_PORT;
+				else
+					pinConfig.GPIOx = portKey;
+
+				chimera_settings_recorded = true;
+				return Chimera::GPIO::Status::GPIO_OK;
+			}
+
+			Chimera::GPIO::Status GPIOClass::mode(Chimera::GPIO::Mode pin_mode, bool pullup = false)
+			{
+				if (chimera_settings_recorded)
+				{
+					PinMode _mode;
+					PinPull _pull;
+
+					
+					switch (pin_mode)
+					{
+					case Chimera::GPIO::Mode::OUTPUT:
+						_mode = OUTPUT_PP;
+						break;
+					
+					case Chimera::GPIO::Mode::INPUT:
+						_mode = INPUT;
+						break;
+
+					//TODO: Going to need to do alt_pp at some point
+
+					default:
+						_mode = INPUT;
+						break;
+					}
+
+					_pull = (pullup) ? PULLUP : NOPULL;
+
+					this->mode(_mode, _pull);
+				}
+				else
+					return Chimera::GPIO::Status::GPIO_ERROR_UNINITIALIZED;
+			}
+
+			Chimera::GPIO::Status GPIOClass::write(Chimera::GPIO::State state)
+			{
+				if (chimera_settings_recorded)
+				{
+					HAL_GPIO_WritePin(pinConfig.GPIOx, pinConfig.pinNum, static_cast<GPIO_PinState>(state));
+					return Chimera::GPIO::Status::GPIO_OK;
+				}
+				else
+					return Chimera::GPIO::Status::GPIO_ERROR_UNINITIALIZED;
+			}
+			#endif
 		}
 	}
 }

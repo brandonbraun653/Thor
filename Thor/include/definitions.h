@@ -4,31 +4,30 @@
 
 #include <Thor/include/config.h>
 
+#include <boost/container/flat_map.hpp>
+
 namespace Thor
 {
 	namespace Definitions
 	{
 		namespace GPIO
 		{
-			typedef enum
+			enum LogicLevel : bool
 			{
-				LOW,
-				OFF,
-				ZERO,
-				HIGH,
-				ON,
-				ONE,
-				ENABLED,
-				DISABLED
-			} LogicLevel;
+				LOW = false,
+				OFF = false,
+				ZERO = false,
+				DISABLED = false,
+				HIGH = true,
+				ON = true,
+				ONE = true,
+				ENABLED = true
+			};
 
-			#ifdef TARGET_STM32F7
 
-			#endif /* TARGET_STM32F7*/
+			extern boost::container::flat_map<GPIO_TypeDef*, uint32_t> rcc_gpio_mask;
 
-			#ifdef TARGET_STM32F4
-
-			#endif /* TARGET_STM32F4 */
+			
 		}
 		
 

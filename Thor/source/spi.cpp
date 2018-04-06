@@ -153,6 +153,7 @@ namespace Thor
 
 			#endif
 
+			using namespace Thor::Definitions::GPIO;
 
 			using Status = Thor::Definitions::SPI::Status;
 			using Options = Thor::Definitions::SPI::Options;
@@ -336,11 +337,11 @@ namespace Thor
 
 						if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
 						{
-							writeSS(LOW);
+							writeSS(LogicLevel::LOW);
 							errorCode = HAL_SPI_Transmit(&spi_handle, val, length, HAL_MAX_DELAY);
 
 							if ((options & SS_INACTIVE_AFTER_TX) == SS_INACTIVE_AFTER_TX)
-								writeSS(HIGH);
+								writeSS(LogicLevel::HIGH);
 						}
 						else
 							HAL_SPI_Transmit(&spi_handle, val, length, HAL_MAX_DELAY);
@@ -368,7 +369,7 @@ namespace Thor
 							TXPacketBuffer.push_back(TX_tempPacket);
 
 							if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
-								writeSS(LOW);
+								writeSS(LogicLevel::LOW);
 
 							errorCode = HAL_SPI_Transmit_IT(&spi_handle, val, length);
 							return SPI_TX_BUSY;
@@ -403,7 +404,7 @@ namespace Thor
 							TXPacketBuffer.push_back(TX_tempPacket);
 
 							if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
-								writeSS(LOW);
+								writeSS(LogicLevel::LOW);
 
 							errorCode = HAL_SPI_Transmit_DMA(&spi_handle, val, length);
 							return SPI_TX_BUSY;
@@ -446,13 +447,13 @@ namespace Thor
 						tx_complete = false;
 						if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
 						{
-							writeSS(LOW);
+							writeSS(LogicLevel::LOW);
 
 							error = HAL_SPI_TransmitReceive(&spi_handle, val_in, val_out, length, HAL_MAX_DELAY);
 							//error = HAL_SPI_TransmitReceive(&spi_handle, internalTXBuffer, val_out, length, HAL_MAX_DELAY);
 
 							if ((options & SS_INACTIVE_AFTER_TX) == SS_INACTIVE_AFTER_TX)
-								writeSS(HIGH);
+								writeSS(LogicLevel::HIGH);
 						}
 						else
 							//error = HAL_SPI_TransmitReceive(&spi_handle, internalTXBuffer, val_out, length, HAL_MAX_DELAY);
@@ -483,7 +484,7 @@ namespace Thor
 							TXPacketBuffer.push_back(TX_tempPacket);
 
 							if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
-								writeSS(LOW);
+								writeSS(LogicLevel::LOW);
 
 							HAL_SPI_TransmitReceive_IT(&spi_handle, val_in, val_out, length);
 							return SPI_TX_BUSY;
@@ -517,7 +518,7 @@ namespace Thor
 							TXPacketBuffer.push_back(TX_tempPacket);
 
 							if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
-								writeSS(LOW);
+								writeSS(LogicLevel::LOW);
 
 							HAL_SPI_TransmitReceive_DMA(&spi_handle, val_in, val_out, length);
 							return SPI_TX_BUSY;
@@ -761,7 +762,7 @@ namespace Thor
 					if (EXT_NSS_ATTACHED && (EXT_NSS != nullptr) && (SlaveSelectType == EXTERNAL_SLAVE_SELECT))
 					{
 						EXT_NSS->mode(OUTPUT_PP, NOPULL);
-						EXT_NSS->write(HIGH);
+						EXT_NSS->write(LogicLevel::HIGH);
 					}
 					else
 						NSS->mode(spi_cfg[spi_channel].NSS.Mode, spi_cfg[spi_channel].NSS.Pull);
@@ -947,7 +948,7 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 
 			if ((packet.options & SS_INACTIVE_AFTER_TX) == SS_INACTIVE_AFTER_TX &&
 				(spi->SlaveSelectControl == SS_AUTOMATIC_CONTROL))
-				spi->writeSS(HIGH);
+				spi->writeSS(LogicLevel::HIGH);
 
 			spi->TXPacketBuffer.pop_front();
 
@@ -1046,7 +1047,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 
 			if ((packet.options & SS_INACTIVE_AFTER_TX) == SS_INACTIVE_AFTER_TX &&
 				(spi->SlaveSelectControl == SS_AUTOMATIC_CONTROL))
-				spi->writeSS(HIGH);
+				spi->writeSS(LogicLevel::HIGH);
 
 			spi->TXPacketBuffer.pop_front();
 

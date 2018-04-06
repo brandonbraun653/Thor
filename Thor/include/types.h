@@ -23,10 +23,10 @@ typedef void(*func_ptr_uart_t)(UART_HandleTypeDef *UartHandle);
 struct GPIO_Initializer
 {
 	GPIO_TypeDef*			GPIOx;
-	Thor::Peripheral::GPIO::GPIO_PinNum_TypeDef		PinNum;
-	Thor::Peripheral::GPIO::GPIO_Mode_TypeDef		Mode;
-	Thor::Peripheral::GPIO::GPIO_Speed_TypeDef		Speed;
-	Thor::Peripheral::GPIO::GPIO_Pull_TypeDef		Pull;
+	Thor::Peripheral::GPIO::PinNum		PinNum;
+	Thor::Peripheral::GPIO::PinMode		Mode;
+	Thor::Peripheral::GPIO::PinSpeed		Speed;
+	Thor::Peripheral::GPIO::PinPull		Pull;
 	uint8_t					Alternate;
 };
 

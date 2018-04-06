@@ -44,17 +44,7 @@ namespace Thor
 			class SPIClass : public boost::enable_shared_from_this<SPIClass>
 			{
 			public:
-				#ifdef USING_CHIMERA
-				Chimera::SPI::Status init(int channel, const Chimera::SPI::Setup& setupStruct);
-				Chimera::SPI::Status write(uint8_t* in, size_t length);
-				Chimera::SPI::Status write(uint8_t* in, uint8_t* out, size_t length);
-
-				Chimera::SPI::Status setTxMode(Chimera::SPI::TXRXMode mode);
-				Chimera::SPI::Status setRxMode(Chimera::SPI::TXRXMode mode);
-
-
 				
-				#endif
 
 				boost::shared_ptr<SPIClass> getSharedPtrRef();
 				
@@ -132,6 +122,15 @@ namespace Thor
 				SPIClass(int channel);
 				SPIClass() = default;
 				~SPIClass() = default;
+
+				#ifdef USING_CHIMERA
+				Chimera::SPI::Status init(int channel, const Chimera::SPI::Setup& setupStruct);
+				Chimera::SPI::Status write(uint8_t* in, size_t length);
+				Chimera::SPI::Status write(uint8_t* in, uint8_t* out, size_t length);
+
+				Chimera::SPI::Status setTxMode(Chimera::SPI::TXRXMode mode);
+				Chimera::SPI::Status setRxMode(Chimera::SPI::TXRXMode mode);
+				#endif
 
 			private:
 				/*-------------------------------

@@ -11,6 +11,10 @@ namespace Thor
 {
 	namespace Defaults
 	{
+		namespace GPIO
+		{
+			
+		}
 		namespace Serial
 		{
 			struct SerialConfig

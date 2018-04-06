@@ -1,6 +1,6 @@
-
-#ifndef GPIO_H_
-#define GPIO_H_
+#pragma once
+#ifndef THOR_GPIO_H_
+#define THOR_GPIO_H_
 
 /* C/C++ Includes */
 #include <stdlib.h>
@@ -13,6 +13,7 @@
 /* Thor Includes */
 #include <Thor/include/config.h>
 #include <Thor/include/definitions.h>
+#include <Thor/include/utilities.hpp>
 
 
 namespace Thor
@@ -21,13 +22,13 @@ namespace Thor
 	{
 		namespace GPIO
 		{
+			using PinPort = GPIO_TypeDef*;
 			using namespace Thor::Definitions::GPIO;
 			
-			const int NOALTERNATE = (0x08000CC8);	//Discovered from debug mode
+			const int NOALTERNATE = (0x08000CC8);	//Default value for the alternate configuration var
 
-			typedef enum
+			enum PinNum : uint32_t
 			{
-				NOPIN   = -1,
 				PIN_0   = GPIO_PIN_0,
 				PIN_1   = GPIO_PIN_1,
 				PIN_2   = GPIO_PIN_2,
@@ -44,13 +45,12 @@ namespace Thor
 				PIN_13  = GPIO_PIN_13,
 				PIN_14  = GPIO_PIN_14,
 				PIN_15  = GPIO_PIN_15,
-				PIN_ALL = GPIO_PIN_All
-			} GPIO_PinNum_TypeDef;
+				PIN_ALL = GPIO_PIN_All,
+				MAX_PINS = 16
+			};
 
-
-			typedef enum
+			enum PinMode : uint32_t
 			{
-				NOMODE             = -1,
 				INPUT              = GPIO_MODE_INPUT,
 				OUTPUT_PP          = GPIO_MODE_OUTPUT_PP,
 				OUTPUT_OD          = GPIO_MODE_OUTPUT_OD,
@@ -63,79 +63,80 @@ namespace Thor
 				EVT_RISING         = GPIO_MODE_EVT_RISING,
 				EVT_FALLING        = GPIO_MODE_EVT_FALLING,
 				EVT_RISING_FALLING = GPIO_MODE_EVT_RISING_FALLING
-			} GPIO_Mode_TypeDef;
+			};
 
-
-			typedef enum
+			enum PinSpeed : uint32_t
 			{
-				NOSPD      = -1,
 				LOW_SPD    = GPIO_SPEED_FREQ_LOW,
 				MEDIUM_SPD = GPIO_SPEED_FREQ_MEDIUM,
 				HIGH_SPD   = GPIO_SPEED_FREQ_HIGH,
 				ULTRA_SPD  = GPIO_SPEED_FREQ_VERY_HIGH
-			} GPIO_Speed_TypeDef;
+			};
 
-
-			typedef enum
+			enum PinPull : uint32_t
 			{	
 				NOPULL = GPIO_NOPULL,
 				PULLUP = GPIO_PULLUP,
 				PULLDN = GPIO_PULLDOWN
-			} GPIO_Pull_TypeDef;
+			};
 
-
-			typedef struct
+			struct PinConfig
 			{
-				GPIO_TypeDef		*GPIOx		= GPIOA;
-				GPIO_Speed_TypeDef	speed		= HIGH_SPD;
-				GPIO_Mode_TypeDef	mode		= INPUT;
-				GPIO_PinNum_TypeDef	pinNum		= PIN_0;
-				GPIO_Pull_TypeDef   pull		= NOPULL;
-				uint32_t			alternate	= NOALTERNATE;
-			} GPIO_PinConfig_TypeDef;
+				PinPort		GPIOx		= GPIOA;
+				PinSpeed	speed		= HIGH_SPD;
+				PinMode		mode		= INPUT;
+				PinNum		pinNum		= PIN_0;
+				PinPull     pull		= NOPULL;
+				uint32_t	alternate	= NOALTERNATE;
 
+				GPIO_InitTypeDef getHALInit()
+				{
+					GPIO_InitTypeDef InitStruct;
 
-			extern void GPIO_Init(GPIO_TypeDef *GPIOx, GPIO_InitTypeDef *InitStruct);
-			extern void GPIO_ClockEnable(GPIO_TypeDef *GPIOx);
+					InitStruct.Pin = pinNum;
+					InitStruct.Speed = speed;
+					InitStruct.Mode = mode;
+					InitStruct.Pull = pull;
+					InitStruct.Alternate = alternate;
 
-
-			class GPIOClass;
-			typedef boost::shared_ptr<GPIOClass> GPIOClass_sPtr;
+					return InitStruct;
+				}
+			};
 
 			class GPIOClass
 			{
 			public:
-				/*----------------------------------
-				* Basic User Functions
-				*---------------------------------*/
-				void mode(GPIO_Mode_TypeDef Mode, GPIO_Pull_TypeDef Pull = NOPULL);
-				void write(LogicLevel state);
-				void read(bool *state);
-				void analogRead(int *data);
+				void mode(PinMode Mode, PinPull Pull = NOPULL);
+				void write(const LogicLevel& state);
 				void toggle();
+				bool read();
+
+				void reconfigure(PinPort GPIOx, PinNum PIN_x, PinSpeed SPEED = HIGH_SPD, uint32_t ALTERNATE = NOALTERNATE);
 	
-				/*----------------------------------
-				* Advanced User Functions
-				*---------------------------------*/
-				void fast_write(LogicLevel state);
-				void fast_toggle();
-				void attachIT(void(*)(void));
-				void reconfigure(GPIO_TypeDef *GPIOx, GPIO_PinNum_TypeDef PIN_x, GPIO_Speed_TypeDef SPEED, uint32_t ALTERNATE);
-	
-				/*----------------------------------
-				* Constructors
-				*---------------------------------*/
-				GPIOClass(void);
-				GPIOClass(GPIO_TypeDef *GPIOx,
-					GPIO_PinNum_TypeDef PIN_x,
-					GPIO_Speed_TypeDef SPEED,
-					uint32_t ALTERNATE);
+				GPIOClass() = default;
+				~GPIOClass() = default;
+				GPIOClass(PinPort GPIOx, PinNum PIN_x, PinSpeed SPEED = HIGH_SPD, uint32_t ALTERNATE = NOALTERNATE);
+
+
+				#ifdef USING_CHIMERA
+				Chimera::GPIO::Status init(Chimera::GPIO::Port port, uint8_t pin);
+				Chimera::GPIO::Status mode(Chimera::GPIO::Mode pin_mode, bool pullup);
+				Chimera::GPIO::Status write(Chimera::GPIO::State state);
+				//Eventually add more as needed
+				#endif 
 	
 			private:
-				GPIO_InitTypeDef InitStruct;
-				GPIO_PinConfig_TypeDef pinConfig;
-			};
+				PinConfig pinConfig;
 
+				#ifdef USING_CHIMERA
+				bool chimera_settings_recorded = false;
+				#endif
+
+				void GPIO_Init(PinPort GPIOx, GPIO_InitTypeDef *InitStruct);
+				void GPIO_ClockEnable(PinPort GPIOx);
+				void GPIO_ClockDisable(PinPort GPIOx);
+			};
+			typedef boost::shared_ptr<GPIOClass> GPIOClass_sPtr;
 		}
 	}
 }
