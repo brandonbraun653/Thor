@@ -9,6 +9,7 @@
 
 /* Boost Includes */
 #include <boost/shared_ptr.hpp>
+#include <boost/move/unique_ptr.hpp>
 
 /* Thor Includes */
 #include <Thor/include/config.h>
@@ -137,6 +138,7 @@ namespace Thor
 				void GPIO_ClockDisable(PinPort GPIOx);
 			};
 			typedef boost::shared_ptr<GPIOClass> GPIOClass_sPtr;
+			typedef boost::movelib::unique_ptr<GPIOClass> GPIOClass_uPtr;
 		}
 	}
 }

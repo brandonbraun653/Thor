@@ -167,7 +167,7 @@ extern Thor::Interrupt::SPI::SPI_DMAHandlerManager spi_dma_manager;
 
 #ifdef __cplusplus
 extern "C" {
-	#endif
+#endif
 	#ifdef DMA1
 	void DMA1_Stream0_IRQHandler();
 	void DMA1_Stream1_IRQHandler();
@@ -189,7 +189,42 @@ extern "C" {
 	void DMA2_Stream6_IRQHandler();
 	void DMA2_Stream7_IRQHandler();
 	#endif
-	#ifdef __cplusplus
+	
+	//TODO: Will need to enforce one over the other eventually
+	#if defined(ENABLE_UART1) || defined(ENABLE_USART1)
+	void USART1_IRQHandler();
+	#endif
+
+	#if defined(ENABLE_UART2) || defined(ENABLE_USART2)
+	void USART2_IRQHandler();
+	#endif
+
+	#if defined(ENABLE_UART3) || defined(ENABLE_USART3)
+	void USART3_IRQHandler();
+	#endif
+
+	#if defined(ENABLE_UART4)
+	void UART4_IRQHandler();
+	#endif
+
+	#if defined(ENABLE_UART5)
+	void UART5_IRQHandler();
+	#endif
+
+	#if defined(ENABLE_UART6) || defined(ENABLE_USART6)
+	void USART6_IRQHandler();
+	#endif
+
+	#if defined(ENABLE_UART7)
+	void UART7_IRQHandler();
+	#endif
+
+	#if defined(ENABLE_UART8)
+	void UART8_IRQHandler();
+	#endif
+	
+	
+#ifdef __cplusplus
 }
 #endif
 

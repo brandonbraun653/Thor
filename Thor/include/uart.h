@@ -12,6 +12,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/circular_buffer.hpp>
+#include <boost/container/flat_map.hpp>
 
 /* Thor Includes */
 #include <Thor/include/config.h>
@@ -85,9 +86,9 @@ namespace Thor
 				/*-------------------------------
 				* Interrupt Handlers
 				*------------------------------*/
-				void UART_IRQHandler();
-				void UART_IRQHandler_TXDMA();
-				void UART_IRQHandler_RXDMA();
+				void IRQHandler();
+				void IRQHandler_TXDMA();
+				void IRQHandler_RXDMA();
 
 				/*-------------------------------
 				* Class Constructors/Deconstructor
@@ -121,10 +122,10 @@ namespace Thor
 
 				//TODO: ADD MUTEX TO PROTECT READ ACCESS DURING ISR ROUTINES
 				/* Asynchronous RX buffer for many packets */
-				uint8_t packetQueue[Thor::Definitions::UART::UART_PACKET_QUEUE_SIZE][Thor::Definitions::UART::UART_BUFFER_SIZE];
-				uint8_t currentQueuePacket;
-				uint32_t rxAsyncPacketSize;
-				int totalWaitingPackets;
+				uint8_t packetQueue[Thor::Definitions::Serial::UART_PACKET_QUEUE_SIZE][Thor::Definitions::Serial::UART_BUFFER_SIZE];
+				uint8_t currentQueuePacket = 0;
+				uint32_t rxAsyncPacketSize = 0;
+				int totalWaitingPackets = 0;
 
 				/*-------------------------------
 				* Threaded Support
@@ -138,13 +139,13 @@ namespace Thor
 				int uart_channel;
 				struct UARTClassStatus
 				{
-					bool gpio_enabled;
-					bool uart_enabled;
-					bool uart_interrupts_enabled;
-					bool dma_enabled_tx;
-					bool dma_enabled_rx;
-					bool dma_interrupts_enabled_tx;
-					bool dma_interrupts_enabled_rx;
+					bool gpio_enabled = false;
+					bool uart_enabled = false;
+					bool dma_enabled_tx = false;
+					bool dma_enabled_rx = false;
+					bool uart_interrupts_enabled = false;
+					bool dma_interrupts_enabled_tx = false;
+					bool dma_interrupts_enabled_rx = false;
 				} UART_PeriphState;
 
 				/*-------------------------------
@@ -155,6 +156,7 @@ namespace Thor
 				DMA_HandleTypeDef hdma_uart_rx;
 				Thor::Peripheral::GPIO::GPIOClass_sPtr tx_pin;
 				Thor::Peripheral::GPIO::GPIOClass_sPtr rx_pin;
+
 
 				/* Local copy of interrupt settings */
 				IT_Initializer ITSettings_HW, ITSettings_DMA_TX, ITSettings_DMA_RX;
@@ -185,68 +187,42 @@ namespace Thor
 			typedef boost::shared_ptr<UARTClass> UARTClass_sPtr;
 		}
 	}
+
+	namespace Definitions
+	{
+		namespace Serial
+		{
+			extern boost::container::flat_map<USART_TypeDef*, Thor::Peripheral::UART::UARTClass_sPtr> uart_periph_to_class;
+			//extern boost::container::flat_map<USART_TypeDef*, Thor::Peripheral::UART::USARTClass_sPtr> usart_periph_to_class;
+		}
+	}
 }
 
 
-
-/************************************************************************/
-/*						    Exported Classes                            */
-/************************************************************************/
-#ifdef ENABLE_UART1
+#if defined(ENABLE_UART1)
 extern Thor::Peripheral::UART::UARTClass_sPtr uart1;
 #endif
-#ifdef ENABLE_UART2
+#if defined(ENABLE_UART2)
 extern Thor::Peripheral::UART::UARTClass_sPtr uart2;
 #endif
-#ifdef ENABLE_UART3
+#if defined(ENABLE_UART3)
 extern Thor::Peripheral::UART::UARTClass_sPtr uart3;
 #endif
-#ifdef ENABLE_UART4
+#if defined(ENABLE_UART4)
 extern Thor::Peripheral::UART::UARTClass_sPtr uart4;
 #endif
-#ifdef ENABLE_UART5
+#if defined(ENABLE_UART5)
 extern Thor::Peripheral::UART::UARTClass_sPtr uart5;
 #endif
-#ifdef ENABLE_UART7
+#if defined(ENABLE_UART6)
+extern Thor::Peripheral::UART::UARTClass_sPtr uart6;
+#endif 
+#if defined(ENABLE_UART7)
 extern Thor::Peripheral::UART::UARTClass_sPtr uart7;
 #endif
-#ifdef ENABLE_UART8
+#if defined(ENABLE_UART8)
 extern Thor::Peripheral::UART::UARTClass_sPtr uart8;
 #endif
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-	#ifdef ENABLE_UART1
-	void UART1_IRQHandler();
-	#endif
-
-	#ifdef ENABLE_UART2
-	void UART2_IRQHandler();
-	#endif
-
-	#ifdef ENABLE_UART3
-	void UART3_IRQHandler();
-	#endif
-
-	#ifdef ENABLE_UART4
-	void UART4_IRQHandler();
-	#endif
-
-	#ifdef ENABLE_UART5
-	void UART5_IRQHandler();
-	#endif
-
-	#ifdef ENABLE_UART7
-	void UART7_IRQHandler();
-	#endif
-
-	#ifdef ENABLE_UART8
-	void UART8_IRQHandler();
-	#endif
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* !UART_H_ */

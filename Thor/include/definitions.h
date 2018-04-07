@@ -30,7 +30,6 @@ namespace Thor
 			
 		}
 		
-
 		namespace TIMER
 		{
 			#ifdef TARGET_STM32F7
@@ -165,30 +164,7 @@ namespace Thor
 				OC_NRESET
 			};
 		}
-		
-	
-		namespace UART
-		{
-			const unsigned int MAX_UART_CHANNELS = 4;
-			const unsigned int UART_BUFFER_SIZE = 32;
-			const unsigned int UART_PACKET_QUEUE_SIZE = 10;
-		
-			enum UARTCommunicationModes
-			{
-				TX_MODE_NONE,
-				TX_MODE_BLOCKING,
-				TX_MODE_INTERRUPT,
-				TX_MODE_DMA,
-				RX_MODE_NONE,
-				RX_MODE_BLOCKING,
-				RX_MODE_INTERRUPT,
-				RX_MODE_DMA,
 			
-			};
-		
-		}
-		
-	
 		namespace SPI
 		{
 			const unsigned int MAX_SPI_CHANNELS = 6;
@@ -234,7 +210,6 @@ namespace Thor
 			};
 		}
 		
-	
 		namespace DMA
 		{
 			/* Useful Macros for Generating DMA Register Addresses*/
@@ -372,6 +347,46 @@ namespace Thor
 		
 	
 		}
+
+		namespace Serial
+		{
+			const unsigned int MAX_SERIAL_CHANNELS = 8;
+			const unsigned int MAX_UART_CHANNELS = 4;
+			const unsigned int UART_BUFFER_SIZE = 32;
+			const unsigned int UART_PACKET_QUEUE_SIZE = 10;
+
+			enum UARTCommunicationModes
+			{
+				TX_MODE_NONE,
+				TX_MODE_BLOCKING,
+				TX_MODE_INTERRUPT,
+				TX_MODE_DMA,
+				RX_MODE_NONE,
+				RX_MODE_BLOCKING,
+				RX_MODE_INTERRUPT,
+				RX_MODE_DMA,
+
+			};
+
+			typedef enum
+			{
+				SERIAL_BAUD_110 = 100u,
+				SERIAL_BAUD_150 = 150u,
+				SERIAL_BAUD_300 = 300u,
+				SERIAL_BAUD_1200 = 1200u,
+				SERIAL_BAUD_2400 = 2400u,
+				SERIAL_BAUD_4800 = 4800u,
+				SERIAL_BAUD_9600 = 9600u,
+				SERIAL_BAUD_19200 = 19200u,
+				SERIAL_BAUD_38400 = 38400u,
+				SERIAL_BAUD_57600 = 57600u,
+				SERIAL_BAUD_115200 = 115200u,
+				SERIAL_BAUD_230400 = 230400u,
+				SERIAL_BAUD_460800 = 460800u,
+				SERIAL_BAUD_921600 = 921600u
+			} BaudRate;
+
+		}
 	}
 	
 	//TODO: Deprecate this!
@@ -483,30 +498,7 @@ namespace Thor
 		}
 		
 		
-		//TODO: Deprecate this!
-		namespace Serial
-		{
-			const unsigned int MAX_SERIAL_CHANNELS = 8;
-
-			typedef enum
-			{
-				SERIAL_BAUD_110    = 100u,
-				SERIAL_BAUD_150    = 150u,
-				SERIAL_BAUD_300    = 300u,
-				SERIAL_BAUD_1200   = 1200u,
-				SERIAL_BAUD_2400   = 2400u,
-				SERIAL_BAUD_4800   = 4800u,
-				SERIAL_BAUD_9600   = 9600u,
-				SERIAL_BAUD_19200  = 19200u,
-				SERIAL_BAUD_38400  = 38400u,
-				SERIAL_BAUD_57600  = 57600u,
-				SERIAL_BAUD_115200 = 115200u,
-				SERIAL_BAUD_230400 = 230400u,
-				SERIAL_BAUD_460800 = 460800u,
-				SERIAL_BAUD_921600 = 921600u
-			} BaudRate;
-
-		}
+		
 	}
 	
 

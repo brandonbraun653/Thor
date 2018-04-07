@@ -30,7 +30,7 @@ TaskTrigger::TaskTrigger()
 	pendingTask.set_capacity(taskBufferSize);
 
 	/* Normal resize works fine here */
-	vecUART_USART_Semaphores.resize(Thor::Libraries::Serial::MAX_SERIAL_CHANNELS);
+	vecUART_USART_Semaphores.resize(Thor::Definitions::Serial::MAX_SERIAL_CHANNELS);
 	vecSPI_Semaphores.resize(Thor::Definitions::SPI::MAX_SPI_CHANNELS);
 
 	/* Create the locking mechanisms */
@@ -74,7 +74,7 @@ bool TaskTrigger::logEventConsumer(Thor::Interrupt::TriggerSource source, uint32
 	{
 	case Thor::Interrupt::SRC_UART:
 	case Thor::Interrupt::SRC_USART:
-		if ((instance > 0) && (instance <= Thor::Libraries::Serial::MAX_SERIAL_CHANNELS))
+		if ((instance > 0) && (instance <= Thor::Definitions::Serial::MAX_SERIAL_CHANNELS))
 		{
 			vecUART_USART_Semaphores[instance - 1] = sem;
 			return true;

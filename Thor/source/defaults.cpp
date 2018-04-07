@@ -4,9 +4,7 @@ using namespace Thor::Definitions::DMA;
 using namespace Thor::Definitions::GPIO;
 using namespace Thor::Definitions::SPI;
 using namespace Thor::Definitions::TIMER;
-using namespace Thor::Definitions::UART;
-
-using namespace Thor::Libraries::Serial;	//TODO: Deprecate in future
+using namespace Thor::Definitions::Serial;	
 
 using namespace Thor::Peripheral::GPIO;
 
@@ -143,7 +141,7 @@ namespace Thor
 
 				/* SERIAL 3: */
 		{
-			#if defined(ENABLE_USART3) 
+			#if defined(ENABLE_USART3) || defined(ENABLE_UART3)
 			#if defined(STM32F767xx) || defined(STM32F446xx)
 			//TX Pin
 			{ GPIOB, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART3 },
@@ -170,7 +168,7 @@ namespace Thor
 			{}
 			#endif
 			/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
-				#endif
+			#endif
 		},
 
 				/* SERIAL 4: */
@@ -184,10 +182,10 @@ namespace Thor
 																		 //RX Pin
 			{ GPIOA, PIN_1, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART4 }, //Normally C11, changed for VFCS
 
-																		 //Instance Ptr
-																		 UART4,
+			//Instance Ptr
+			UART4,
 
-																		 //IT_HW
+			//IT_HW
 			{ UART4_IRQn, NVIC_PRIORITYGROUP_4, 6u, 0u },
 
 			//DMA_IT_TX
