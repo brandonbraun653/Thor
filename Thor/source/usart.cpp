@@ -1,81 +1,88 @@
 #include "../include/usart.h"
 
-using namespace Thor::Defaults::Serial;
-using namespace Thor::Peripheral::GPIO;
-
-/************************************************************************/
-/*							  Constructors                              */
-/************************************************************************/
-USARTClass::USARTClass()
-{
-	//Nothing here. This constructor is used for instantiations to 
-	//class pointers.
-}
-
-USARTClass::USARTClass(uint32_t channel, GPIOClass *txPin, GPIOClass *rxPin)
-{
-	usart_channel = channel;
-	tx_pin = txPin;
-	rx_pin = rxPin;
-}
-
-/************************************************************************/
-/*						    Interrupt Handlers                           */
-/************************************************************************/
-void USARTClass::IrqHandler(void)
-{
-	
-}
-
-/************************************************************************/
-/*						     Public Functions                           */
-/************************************************************************/
-void USARTClass::begin()
-{
-// 	/*-------------------------------
-// 	* Configure Pin Init
-// 	*------------------------------*/
-// 	tx_pin->reconfigure(srl_cfg[usart_channel].ioConfig.txPinGPIOx,
-// 		srl_cfg[usart_channel].ioConfig.txPinNum,
-// 		srl_cfg[usart_channel].ioConfig.txPinSpeed,
-// 		srl_cfg[usart_channel].ioConfig.txPinAlternate);
-// 	
-// 	rx_pin->reconfigure(srl_cfg[usart_channel].ioConfig.rxPinGPIOx,
-// 		srl_cfg[usart_channel].ioConfig.rxPinNum,
-// 		srl_cfg[usart_channel].ioConfig.rxPinSpeed,
-// 		srl_cfg[usart_channel].ioConfig.rxPinAlternate);
-// 	
-// 	/*-------------------------------
-// 	* Configure Pin Mode
-// 	*------------------------------*/
-// 	tx_pin->mode(srl_cfg[usart_channel].ioConfig.txPinMode,
-// 		srl_cfg[usart_channel].ioConfig.txPinPull);
-// 	
-// 	rx_pin->mode(srl_cfg[usart_channel].ioConfig.rxPinMode,
-// 		srl_cfg[usart_channel].ioConfig.txPinPull);
-}
 
 
-void USARTClass::write(uint32_t val, uint32_t length)
-{
-	
-}
-
-void USARTClass::read(uint32_t lenght)
-{
-	
-}
-
-void USARTClass::flush()
-{
-	
-}
 
 
-/************************************************************************/
-/*						    Private Functions                           */
-/************************************************************************/
-void USARTClass::USART_Init()
-{
-	
-}
+
+
+
+
+
+// #if defined(ENABLE_UART1)
+// 				{ USART1, uart1 },
+// 					#endif
+// 					#if defined(ENABLE_UART2)
+// 				{ USART2, uart2 },
+// 					#endif
+// 					#if defined(ENABLE_UART3)
+// 				{ USART3, uart3 },
+// 					#endif
+
+
+
+// #if defined(ENABLE_UART1) || defined(ENABLE_USART1)
+// #ifdef USING_CHIMERA
+// UARTClass_sPtr uart1;
+// #else
+// UARTClass_sPtr uart1 = boost::make_shared<UARTClass>(1);
+// #endif
+// 
+// void USART1_IRQHandler(void)
+// {
+// 	if (uart1)
+// 	{
+// 		uart1->IRQHandler();
+// 	}
+// }
+// #endif
+// 
+// #if defined(ENABLE_UART2) || defined(ENABLE_USART2)
+// #ifdef USING_CHIMERA
+// UARTClass_sPtr uart2;
+// #else
+// UARTClass_sPtr uart2 = boost::make_shared<UARTClass>(2);
+// #endif
+// 
+// void USART2_IRQHandler(void)
+// {
+// 	if (uart2)
+// 	{
+// 		uart2->IRQHandler();
+// 	}
+// }
+// #endif
+// 
+// 
+// 
+// #if defined(ENABLE_UART3) || defined(ENABLE_USART3)
+// #ifdef USING_CHIMERA
+// UARTClass_sPtr uart3;
+// #else
+// UARTClass_sPtr uart3 = boost::make_shared<UARTClass>(3);
+// #endif
+// 
+// void USART3_IRQHandler(void)
+// {
+// 	if (uart3)
+// 	{
+// 		uart3->IRQHandler();
+// 	}
+// }
+// #endif
+// 
+// #if defined(ENABLE_UART6) || defined(ENABLE_USART6)
+// #ifdef USING_CHIMERA
+// UARTClass_sPtr uart6;
+// #else
+// UARTClass_sPtr uart6 = boost::make_shared<UARTClass>(6);
+// #endif
+// 
+// void USART6_IRQHandler(void)
+// {
+// 	if (uart6)
+// 	{
+// 		uart6->IRQHandler();
+// 	}
+// }
+// #endif

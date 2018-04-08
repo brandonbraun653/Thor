@@ -15,53 +15,24 @@
 #include <Thor/include/ringbuffer.h>
 
 
-#ifndef MAX_SERIAL_CHANNELS
-#define MAX_SERIAL_CHANNELS 8
-#endif // !MAX_SERIAL_CHANNELS
 
-#define USART_BUFFER_SIZE 16
 
-class USARTClass : public RingBufferClass
-{
-public:
-	
-	void	begin();
-	void	write(uint32_t val, uint32_t length);
-	void	read(uint32_t length);
-	void	flush();
-	
-	
-	
-	void IrqHandler(void);
-	
-	/*-------------------------------
-	* Constructors
-	*------------------------------*/
-	USARTClass();
-	USARTClass(uint32_t channel, Thor::Peripheral::GPIO::GPIOClass *txPin, Thor::Peripheral::GPIO::GPIOClass *rxPin);
-	
-private:
-	int usart_channel;
-	
-	/*-------------------------------
-	* Data Buffers
-	*------------------------------*/
-	int _txBuff[USART_BUFFER_SIZE];
-	int _rxBuff[USART_BUFFER_SIZE];
-	RingBufferClass tx_buffer = RingBufferClass(_txBuff, USART_BUFFER_SIZE);
-	RingBufferClass rx_buffer = RingBufferClass(_rxBuff, USART_BUFFER_SIZE);
-	
-	/*-------------------------------
-	* Object Pointers
-	*------------------------------*/
-	Thor::Peripheral::GPIO::GPIOClass  *tx_pin;
-	Thor::Peripheral::GPIO::GPIOClass  *rx_pin;
-	
-	/*-------------------------------
-	* Testing Functions: TEMPORARY
-	*------------------------------*/
-	void USART_Init();
-	
-	
-};
+
+
+
+
+// #if defined(ENABLE_UART1)
+// extern Thor::Peripheral::UART::UARTClass_sPtr uart1;
+// #endif
+// #if defined(ENABLE_UART2)
+// extern Thor::Peripheral::UART::UARTClass_sPtr uart2;
+// #endif
+// #if defined(ENABLE_UART3)
+// extern Thor::Peripheral::UART::UARTClass_sPtr uart3;
+// #endif
+// 
+// #if defined(ENABLE_UART6)
+// extern Thor::Peripheral::UART::UARTClass_sPtr uart6;
+// #endif 
+
 #endif // !USART_H_

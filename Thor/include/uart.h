@@ -8,7 +8,6 @@
 #include <string>
 
 /* Boost Includes */
-#include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/circular_buffer.hpp>
@@ -17,16 +16,15 @@
 /* Thor Includes */
 #include <Thor/include/config.h>
 #include <Thor/include/definitions.h>
-#include <Thor/include/exceptions.h>
 #include <Thor/include/defaults.h>
 #include <Thor/include/gpio.h>
 #include <Thor/include/ringbuffer.h>
-#include <Thor/include/interrupt.h>
+
 
 #if defined(USING_FREERTOS)
 #include "FreeRTOS.h"
 #include "semphr.h"
-#include "exti.h"
+#include <Thor/include/exti.h>
 #endif
 
 namespace Thor
@@ -35,64 +33,55 @@ namespace Thor
 	{
 		namespace UART
 		{
-			typedef enum
+			enum UART_Status : int
 			{
+				#if defined(USING_FREERTOS)
+				UART_LOCKED = -4,
+				#endif
 				UART_NOT_INITIALIZED = -3,
 				UART_ERROR = -2,
 				UART_NOT_READY = -1,
-				UART_READY = 0,
+				UART_OK = 0,
 				UART_TX_IN_PROGRESS,
-				UART_RX_OK
-			} UART_Status;
+				UART_RX_OK,
+				UART_PACKET_TOO_LARGE_FOR_BUFFER
+			};
+
+			enum class UARTPeriph : bool
+			{
+				RX = false,
+				TX = true
+			};
 
 			class UARTClass
 			{
 			public:
-				/*-------------------------------
-				* Initialization
-				*------------------------------*/
+
 				UART_Status begin();
 				UART_Status begin(uint32_t baud);
 				UART_Status begin(uint32_t baud, uint32_t tx_mode, uint32_t rx_mode);
-				void end();
-
-				/*-------------------------------
-				* Generic IO and Processing
-				*------------------------------*/
+			
 				UART_Status write(uint8_t* val, size_t length);
 				UART_Status write(char* string, size_t length);
 				UART_Status write(const char* string);
 				UART_Status write(std::string string);
+				UART_Status readPacket(uint8_t* buff, size_t buff_length);
 
 				int availablePackets();
-				int nextPacketSize();
-				int readPacket(uint8_t* buff, size_t buff_length);
+				size_t nextPacketSize();
 				void flush();
+				void end();
 
-
-				/*-------------------------------
-				* Dynamic Reconfiguring
-				*------------------------------*/
 				void attachSettings(UART_InitTypeDef config);
 
-				void setTxModeBlock();
-				void setTxModeIT();
-				void setTxModeDMA();
+				void setBlockMode(const UARTPeriph& periph);
+				void setITMode(const UARTPeriph& periph);
+				void setDMAMode(const UARTPeriph& periph);
 
-				void setRxModeBlock();
-				void setRxModeIT();
-				void setRxModeDMA();
-
-				/*-------------------------------
-				* Interrupt Handlers
-				*------------------------------*/
 				void IRQHandler();
 				void IRQHandler_TXDMA();
 				void IRQHandler_RXDMA();
 
-				/*-------------------------------
-				* Class Constructors/Deconstructor
-				*------------------------------*/
 				UARTClass(int channel);
 				~UARTClass();
 
@@ -120,23 +109,18 @@ namespace Thor
 				UARTPacket TX_tempPacket, RX_tempPacket;
 				boost::circular_buffer<UARTPacket> TXPacketBuffer, RXPacketBuffer;
 
-				//TODO: ADD MUTEX TO PROTECT READ ACCESS DURING ISR ROUTINES
+				
 				/* Asynchronous RX buffer for many packets */
 				uint8_t packetQueue[Thor::Definitions::Serial::UART_PACKET_QUEUE_SIZE][Thor::Definitions::Serial::UART_BUFFER_SIZE];
 				uint8_t currentQueuePacket = 0;
 				uint32_t rxAsyncPacketSize = 0;
 				int totalWaitingPackets = 0;
 
-				/*-------------------------------
-				* Threaded Support
-				*------------------------------*/
+				int uart_channel;
 
+			
 
 			private:
-				/*-------------------------------
-				* Class Variables / Flags
-				*------------------------------*/
-				int uart_channel;
 				struct UARTClassStatus
 				{
 					bool gpio_enabled = false;
@@ -157,7 +141,6 @@ namespace Thor
 				Thor::Peripheral::GPIO::GPIOClass_sPtr tx_pin;
 				Thor::Peripheral::GPIO::GPIOClass_sPtr rx_pin;
 
-
 				/* Local copy of interrupt settings */
 				IT_Initializer ITSettings_HW, ITSettings_DMA_TX, ITSettings_DMA_RX;
 
@@ -171,18 +154,21 @@ namespace Thor
 				void UART_DeInit();
 				void UART_EnableClock();
 				void UART_DisableClock();
+				void UART_DMA_EnableClock();
 				void UART_EnableInterrupts();
 				void UART_DisableInterrupts();
 
-				void UART_DMA_Init_RX();
-				void UART_DMA_Init_TX();
-				void UART_DMA_DeInit_TX();
-				void UART_DMA_DeInit_RX();
-				void UART_DMA_EnableClock();
-				void UART_DMA_EnableInterrupts_TX();
-				void UART_DMA_EnableInterrupts_RX();
-				void UART_DMA_DisableInterrupts_TX();
-				void UART_DMA_DisableInterrupts_RX();
+				void UART_DMA_Init(const UARTPeriph& periph);
+				void UART_DMA_DeInit(const UARTPeriph& periph);
+				void UART_DMA_EnableIT(const UARTPeriph& periph);
+				void UART_DMA_DisableIT(const UARTPeriph& periph);
+
+				/*-------------------------------
+				* Threaded Support
+				*------------------------------*/
+				#if defined(USING_FREERTOS)
+				SemaphoreHandle_t uart_semphr;
+				#endif 
 			};
 			typedef boost::shared_ptr<UARTClass> UARTClass_sPtr;
 		}
@@ -192,31 +178,21 @@ namespace Thor
 	{
 		namespace Serial
 		{
-			extern boost::container::flat_map<USART_TypeDef*, Thor::Peripheral::UART::UARTClass_sPtr> uart_periph_to_class;
-			//extern boost::container::flat_map<USART_TypeDef*, Thor::Peripheral::UART::USARTClass_sPtr> usart_periph_to_class;
+			/* Maps an instance of UART into a hopefully valid UART class ptr */
+			extern boost::container::flat_map<USART_TypeDef*, Thor::Peripheral::UART::UARTClass_sPtr> uart_instance_to_class;
+			extern boost::container::flat_map<USART_TypeDef*, uint32_t> uart_clock_mask;
 		}
 	}
 }
 
 
-#if defined(ENABLE_UART1)
-extern Thor::Peripheral::UART::UARTClass_sPtr uart1;
-#endif
-#if defined(ENABLE_UART2)
-extern Thor::Peripheral::UART::UARTClass_sPtr uart2;
-#endif
-#if defined(ENABLE_UART3)
-extern Thor::Peripheral::UART::UARTClass_sPtr uart3;
-#endif
+
 #if defined(ENABLE_UART4)
 extern Thor::Peripheral::UART::UARTClass_sPtr uart4;
 #endif
 #if defined(ENABLE_UART5)
 extern Thor::Peripheral::UART::UARTClass_sPtr uart5;
 #endif
-#if defined(ENABLE_UART6)
-extern Thor::Peripheral::UART::UARTClass_sPtr uart6;
-#endif 
 #if defined(ENABLE_UART7)
 extern Thor::Peripheral::UART::UARTClass_sPtr uart7;
 #endif

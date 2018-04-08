@@ -190,7 +190,7 @@ extern "C" {
 	void DMA2_Stream7_IRQHandler();
 	#endif
 	
-	//TODO: Will need to enforce one over the other eventually
+	//TODO: This is hard coded to device family...Will need to add specific support later
 	#if defined(ENABLE_UART1) || defined(ENABLE_USART1)
 	void USART1_IRQHandler();
 	#endif
