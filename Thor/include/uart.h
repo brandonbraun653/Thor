@@ -5,7 +5,6 @@
 /* C/C++ Includes */
 #include <stdlib.h>
 #include <stdint.h>
-#include <string>
 
 /* Boost Includes */
 #include <boost/shared_ptr.hpp>
@@ -64,7 +63,7 @@ namespace Thor
 				UART_Status write(uint8_t* val, size_t length);
 				UART_Status write(char* string, size_t length);
 				UART_Status write(const char* string);
-				UART_Status write(std::string string);
+				UART_Status write(const char* string, size_t length);
 				UART_Status readPacket(uint8_t* buff, size_t buff_length);
 
 				int availablePackets();
@@ -118,7 +117,12 @@ namespace Thor
 
 				int uart_channel;
 
-			
+				/*-------------------------------
+				* Threaded Support
+				*------------------------------*/
+				#if defined(USING_FREERTOS)
+				SemaphoreHandle_t uart_semphr;
+				#endif 
 
 			private:
 				struct UARTClassStatus
@@ -163,12 +167,7 @@ namespace Thor
 				void UART_DMA_EnableIT(const UARTPeriph& periph);
 				void UART_DMA_DisableIT(const UARTPeriph& periph);
 
-				/*-------------------------------
-				* Threaded Support
-				*------------------------------*/
-				#if defined(USING_FREERTOS)
-				SemaphoreHandle_t uart_semphr;
-				#endif 
+				
 			};
 			typedef boost::shared_ptr<UARTClass> UARTClass_sPtr;
 		}

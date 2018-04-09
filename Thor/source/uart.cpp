@@ -9,8 +9,72 @@
 using namespace Thor::Definitions::Serial;
 using namespace Thor::Defaults::Serial;
 using namespace Thor::Peripheral::UART;
+using namespace Thor::Peripheral::GPIO;
 
+#if defined(ENABLE_UART4)
+// #ifdef USING_CHIMERA
+// UARTClass_sPtr uart4;
+// #else
+// UARTClass_sPtr uart4 = boost::make_shared<UARTClass>(4);
+// #endif
 
+UARTClass_sPtr uart4 = boost::make_shared<UARTClass>(4);
+void UART4_IRQHandler(void)
+{
+	if (uart4)
+	{
+		uart4->IRQHandler();
+	}
+}
+#endif
+
+#if defined(ENABLE_UART5)
+#ifdef USING_CHIMERA
+UARTClass_sPtr uart5;
+#else
+UARTClass_sPtr uart5 = boost::make_shared<UARTClass>(5);
+#endif
+
+void UART5_IRQHandler(void)
+{
+	if (uart5)
+	{
+		uart5->IRQHandler();
+	}
+}
+#endif
+
+#if defined(ENABLE_UART7)
+#ifdef USING_CHIMERA
+UARTClass_sPtr uart7;
+#else
+UARTClass_sPtr uart7 = boost::make_shared<UARTClass>(7);
+#endif
+
+void UART7_IRQHandler(void)
+{
+	if (uart7)
+	{
+		uart7->IRQHandler();
+	}
+}
+#endif
+
+#if defined(ENABLE_UART8)
+#ifdef USING_CHIMERA
+UARTClass_sPtr uart8;
+#else
+UARTClass_sPtr uart8 = boost::make_shared<UARTClass>(8);
+#endif
+
+void UART8_IRQHandler(void)
+{
+	if (uart8)
+	{
+		uart8->IRQHandler();
+	}
+}
+#endif
 
 
 namespace Thor
@@ -196,9 +260,9 @@ namespace Thor
 				return UART_OK;
 			}
 
-			UART_Status UARTClass::write(std::string string)
+			UART_Status UARTClass::write(char* string, size_t length)
 			{
-				return write((uint8_t*)string.data(), string.size());
+				return write((uint8_t*)string, length);
 			}
 
 			UART_Status UARTClass::write(const char* string)
@@ -206,32 +270,15 @@ namespace Thor
 				return write((uint8_t*)string, strlen(string));
 			}
 
-			UART_Status UARTClass::write(char* string, size_t length)
+			UART_Status UARTClass::write(const char* string, size_t length)
 			{
 				return write((uint8_t*)string, length);
 			}
 
 			UART_Status UARTClass::write(uint8_t* val, size_t length)
 			{
-				/*------------------------------------
-				* NOTE:
-				* This method does no real time checking of the TX length compared
-				* to the length of data that is passed in. This is because the data
-				* (val) decays to a pointer upon entry to the function and all information
-				* regarding length is lost. As such, it is up to the programmer to ensure
-				* that the length of the input data is not exceeded during TX or undefined
-				* behavior will occur.
-				*------------------------------------*/
 				if (!UART_PeriphState.gpio_enabled || !UART_PeriphState.uart_enabled)
 					return UART_NOT_INITIALIZED;
-
-				#if defined(USING_FREERTOS)
-				/* Requires the ISR version b/c it can be called from the 
-				 * Interrupt or DMA handlers to send out queued packets. */
-				if (xSemaphoreTakeFromISR(uart_semphr, NULL) != pdPASS)
-					return UART_LOCKED;
-				#endif
-
 
 				switch (txMode)
 				{
@@ -257,6 +304,11 @@ namespace Thor
 						}
 						else
 						{
+							#if defined(USING_FREERTOS)
+							if (xSemaphoreTakeFromISR(uart_semphr, NULL) != pdPASS)
+								return UART_LOCKED;
+							#endif
+
 							/* A previous IT transmission is still going. Queue the data packet. */
 							TX_tempPacket.data = 0;
 							TX_tempPacket.data_ptr = val;
@@ -282,6 +334,11 @@ namespace Thor
 						}
 						else
 						{
+							#if defined(USING_FREERTOS)
+							if (xSemaphoreTakeFromISR(uart_semphr, NULL) != pdPASS)
+								return UART_LOCKED;
+							#endif
+
 							/* A previous DMA transmission is still going. Queue the data packet. */
 							TX_tempPacket.data = 0;
 							TX_tempPacket.data_ptr = val;
@@ -503,10 +560,10 @@ namespace Thor
 			void UARTClass::UART_GPIO_Init()
 			{
 				/* These should be configured as ALT_PP with PULLUPs */
-				if (tx_pin != NULL)
+				if (tx_pin)
 					tx_pin->mode(srl_cfg[uart_channel].txPin.Mode, srl_cfg[uart_channel].rxPin.Pull);
 
-				if (rx_pin != NULL)
+				if (rx_pin)
 					rx_pin->mode(srl_cfg[uart_channel].rxPin.Mode, srl_cfg[uart_channel].rxPin.Pull);
 
 				UART_PeriphState.gpio_enabled = true;
@@ -723,16 +780,7 @@ namespace Thor
 				if (!RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX)
 				{
 					HAL_UART_IRQHandler(&uart_handle);
-
-					//Trace to make sure this gets hit after buffered TXs
-					#if defined(USING_FREERTOS)
-					if (tx_complete)
-					{
-						xSemaphoreGiveFromISR(uart_semphr, NULL);
-					}
-					#endif 
 				}
-					
 				#endif 
 
 
@@ -871,15 +919,18 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 	if (uart && uart->isInitialized)
 	{
 		uart->tx_complete = true;
-
+		
 		/* Check if we have more data to send out */
 		if (!uart->TXPacketBuffer.empty())
 		{
 			auto packet = uart->TXPacketBuffer.front();
-
 			uart->write(packet.data_ptr, packet.length);
 
+			/* Release the resource used for buffering */
 			uart->TXPacketBuffer.pop_front();
+			#if defined(USING_FREERTOS)
+			xSemaphoreGiveFromISR(uart->uart_semphr, NULL);
+			#endif 
 		}
 	}
 }
@@ -936,70 +987,3 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *UartHandle)
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle)
 {
 }
-
-
-
-#if defined(ENABLE_UART4)
-// #ifdef USING_CHIMERA
-// UARTClass_sPtr uart4;
-// #else
-// UARTClass_sPtr uart4 = boost::make_shared<UARTClass>(4);
-// #endif
-
-UARTClass_sPtr uart4 = boost::make_shared<UARTClass>(4);
-void UART4_IRQHandler(void)
-{
-	if (uart4)
-	{
-		uart4->IRQHandler();
-	}
-}
-#endif
-
-#if defined(ENABLE_UART5)
-#ifdef USING_CHIMERA
-UARTClass_sPtr uart5;
-#else
-UARTClass_sPtr uart5 = boost::make_shared<UARTClass>(5);
-#endif
-
-void UART5_IRQHandler(void)
-{
-	if (uart5)
-	{
-		uart5->IRQHandler();
-	}
-}
-#endif
-
-#if defined(ENABLE_UART7)
-#ifdef USING_CHIMERA
-UARTClass_sPtr uart7;
-#else
-UARTClass_sPtr uart7 = boost::make_shared<UARTClass>(7);
-#endif
-
-void UART7_IRQHandler(void)
-{
-	if (uart7)
-	{
-		uart7->IRQHandler();
-	}
-}
-#endif
-
-#if defined(ENABLE_UART8)
-#ifdef USING_CHIMERA
-UARTClass_sPtr uart8;
-#else
-UARTClass_sPtr uart8 = boost::make_shared<UARTClass>(8);
-#endif
-
-void UART8_IRQHandler(void)
-{
-	if (uart8)
-	{
-		uart8->IRQHandler();
-	}
-}
-#endif
