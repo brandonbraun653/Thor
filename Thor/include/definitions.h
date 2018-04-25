@@ -6,10 +6,13 @@
 
 #include <boost/container/flat_map.hpp>
 
+/** @namespace Thor */
 namespace Thor
 {
+	/** @namespace Thor::Definitions */
 	namespace Definitions
 	{
+		/** @namespace Thor::Definitions::GPIO */
 		namespace GPIO
 		{
 			enum LogicLevel : bool
@@ -30,6 +33,7 @@ namespace Thor
 			
 		}
 		
+		/** @namespace Thor::Definitions::TIMER */
 		namespace TIMER
 		{
 			#ifdef TARGET_STM32F7
@@ -165,6 +169,7 @@ namespace Thor
 			};
 		}
 			
+		/** @namespace Thor::Definitions::SPI */
 		namespace SPI
 		{
 			const unsigned int MAX_SPI_CHANNELS = 6;
@@ -210,6 +215,7 @@ namespace Thor
 			};
 		}
 		
+		/** @namespace Thor::Definitions::DMA */
 		namespace DMA
 		{
 			/* Useful Macros for Generating DMA Register Addresses*/
@@ -347,15 +353,20 @@ namespace Thor
 		
 	
 		}
-
+		
+		/** @namespace Thor::Definitions::Serial */
 		namespace Serial
 		{
-			const unsigned int MAX_SERIAL_CHANNELS = 8;			/* Defines total number of possible channels for UART or USART for any MCU */
-			const unsigned int MAX_UART_CHANNELS = 4;
-			const unsigned int UART_BUFFER_SIZE = 32;
-			const unsigned int UART_PACKET_QUEUE_SIZE = 10;
+			const unsigned int MAX_SERIAL_CHANNELS = 8;			/**< Total possible UART or USART channels for any supported STM32 chip. */
+			const unsigned int MAX_UART_CHANNELS = 4;			/**< Total possible UART specific channels for any supported STM32 chip. */
+			const unsigned int MAX_USART_CHANNELS = 4;			/**< Total possible USART specific channels for any supported STM32 chip. */
+			const unsigned int UART_BUFFER_SIZE = 32;			/**< Defines a fixed number of bytes for a single buffer */
+			const unsigned int UART_PACKET_QUEUE_SIZE = 10;		/**< Defines the max number of buffers to hold TX/RX packets */
 
-			enum UARTCommunicationModes
+			/** @enum Modes 
+			 *	Common peripheral transmit and receive communication modes 
+			 */
+			enum Modes : uint8_t
 			{
 				TX_MODE_NONE,
 				TX_MODE_BLOCKING,
@@ -367,8 +378,11 @@ namespace Thor
 				RX_MODE_DMA,
 
 			};
-
-			typedef enum
+			
+			/** @enum BaudRate
+			 *	Supported communication baudrates
+			 */
+			enum BaudRate : uint32_t
 			{
 				SERIAL_BAUD_110 = 100u,
 				SERIAL_BAUD_150 = 150u,
@@ -384,7 +398,7 @@ namespace Thor
 				SERIAL_BAUD_230400 = 230400u,
 				SERIAL_BAUD_460800 = 460800u,
 				SERIAL_BAUD_921600 = 921600u
-			} BaudRate;
+			};
 
 		}
 	}
@@ -502,5 +516,6 @@ namespace Thor
 	}
 	
 
+	
 }
 #endif /* THOR_DEFINITIONS_H_ */

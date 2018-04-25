@@ -6,17 +6,22 @@
 #include <Thor/include/definitions.h>
 #include <Thor/include/types.h>
 
-
+/** @namespace Thor */
 namespace Thor
 {
+	/** @namespace Thor::Defaults */
 	namespace Defaults
 	{
+		/** @namespace Thor::Defaults::GPIO */
 		namespace GPIO
 		{
 			
 		}
+		
+		/** @namespace Thor::Defaults::Serial */
 		namespace Serial
 		{
+			/** @struct Serial Config */
 			struct SerialConfig
 			{
 				/* IO Config: */
@@ -49,11 +54,13 @@ namespace Thor
 			#endif
 		}
 	
+		/** @namespace Thor::Defaults::Timer */
 		namespace Timer
 		{
 	
 		}
 	
+		/** @namespace Thor::Defaults::SPI */
 		namespace SPI
 		{
 			struct SPIConfig

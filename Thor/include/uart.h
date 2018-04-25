@@ -25,12 +25,19 @@
 #include <Thor/include/exti.h>
 #endif
 
+/** @namespace Thor */
 namespace Thor
 {
+	/** @namespace Thor::Peripheral */
 	namespace Peripheral
 	{
+		/** @namespace Thor::Peripheral::UART */
 		namespace UART
 		{
+			/** @enum UART_Status
+			 *	Indicates various possible states of the uart. This includes general 
+			 *	messages as well as error codes.
+			 **/
 			enum UART_Status : int
 			{
 				#if defined(USING_FREERTOS)
@@ -44,20 +51,51 @@ namespace Thor
 				UART_RX_OK,
 				UART_PACKET_TOO_LARGE_FOR_BUFFER
 			};
-
+			
+			/** @enum UARTPeriph
+			 *	Explicitly defines a uart peripheral type
+			 **/
 			enum class UARTPeriph : bool
 			{
 				RX = false,
 				TX = true
 			};
 
+			/** @class UARTClass
+			 * A higher level uart interface built ontop of the STM32 HAL that abstracts away most 
+			 * of the details associated with setup and general usage.
+			 * 
+			 * @note If using FreeRTOS, the class is threadsafe and allows multiple sources to write and
+			 * read on a class object up to an internal buffer limit defined by Thor::Definitions::Serial::UART_BUFFER_SIZE
+			 **/
 			class UARTClass
 			{
 			public:
-
+				
+				/** Initializes UART with default parameters. 
+				 *	Baud rate is set to 115200 and both TX and RX modes are set to blocking. 
+				 *	
+				 *	@return Status code indicating UART state. Will read 'UART_OK' if everything is fine.
+				 **/
 				UART_Status begin();
-				UART_Status begin(uint32_t baud);
-				UART_Status begin(uint32_t baud, uint32_t tx_mode, uint32_t rx_mode);
+				
+				/** Initializes UART with a given baud rate. 
+				 *	Both TX and RX modes are set to blocking.
+				 *
+				 *  @param[in] baud Desired baud rate. Accepts standard rates from 110-921600.
+				 *  @return Status code indicating UART state. Will read 'UART_OK' if everything is fine.
+				 **/
+				UART_Status begin(Thor::Definitions::Serial::BaudRate baud);
+				
+				/** Initializes UART with a given baud rate and TX/RX modes.
+				 *	@param[in] baud		Desired baud rate. Accepts standard rates are Thor::Definitions::Serial::Modes
+				 *	@param[in] tx_mode	Sets the TX mode to Blocking, Interrupt, or DMA
+				 *	@param[in] rx_mode	Sets the RX mode to Blocking, Interrupt, or DMA
+				 *	@return	Status code indicating UART state. Will read 'UART_OK' if everything is fine.
+				 **/
+				UART_Status begin(Thor::Definitions::Serial::BaudRate baud, 
+									Thor::Definitions::Serial::Modes tx_mode, 
+									Thor::Definitions::Serial::Modes rx_mode);
 
 				UART_Status write(uint8_t* val, size_t length);
 				UART_Status write(char* string, size_t length);
@@ -84,6 +122,15 @@ namespace Thor
 				UARTClass(int channel);
 
 			public:
+				/** A factory method to create a new UARTClass object.
+				 *
+				 *	This method intentionally replaces the typical constructor due to the need to register\n
+				 *	the shared_ptr with a static_vector that allows runtime deduction of which class to call\n
+				 *	inside of an ISR. This is done for simplicity.
+				 *	
+				 *	@param[in] channel Hardware peripheral channel number (i.e. 1 for UART1, 4 for UART4, etc)
+				 *	@return Shared pointer to the new object
+				 **/
 				static boost::shared_ptr<UARTClass> create(int channel);
 				~UARTClass();
 
@@ -172,6 +219,6 @@ namespace Thor
 			};
 			typedef boost::shared_ptr<UARTClass> UARTClass_sPtr;
 		}
-	}
+	}	
 }
 #endif /* !UART_H_ */

@@ -47,6 +47,7 @@ static boost::container::flat_map<USART_TypeDef*, uint32_t> uartObjectIndex =
 	#endif
 };
 
+
 static boost::container::flat_map<USART_TypeDef*, uint32_t> uartClockMask =
 {
 	#if defined(STM32F446xx) || defined(STM32F767xx)
@@ -64,6 +65,7 @@ static boost::container::flat_map<USART_TypeDef*, uint32_t> uartClockMask =
 	#endif
 #endif
 };
+
 
 namespace Thor
 {
@@ -130,15 +132,15 @@ namespace Thor
 
 			UART_Status UARTClass::begin()
 			{
-				return begin(115200, TX_MODE_BLOCKING, RX_MODE_BLOCKING);
+				return begin(SERIAL_BAUD_115200, TX_MODE_BLOCKING, RX_MODE_BLOCKING);
 			}
 
-			UART_Status UARTClass::begin(uint32_t baud)
+			UART_Status UARTClass::begin(BaudRate baud)
 			{
 				return begin(baud, TX_MODE_BLOCKING, RX_MODE_BLOCKING);
 			}
 
-			UART_Status UARTClass::begin(uint32_t baud, uint32_t tx_mode, uint32_t rx_mode)
+			UART_Status UARTClass::begin(BaudRate baud, Modes tx_mode, Modes rx_mode)
 			{
 				UART_GPIO_Init();
 
