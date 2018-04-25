@@ -354,7 +354,7 @@ namespace Thor
 					txMode = TX_MODE_BLOCKING;
 
 					/* Make sure RX side isn't using interrupts before disabling */
-					if (rxMode = RX_MODE_BLOCKING)
+					if (rxMode == RX_MODE_BLOCKING)
 						UART_DisableInterrupts();
 
 					UART_DMA_DeInit(periph);
@@ -364,7 +364,7 @@ namespace Thor
 					rxMode = RX_MODE_BLOCKING;
 
 					/* Make sure TX side isn't using interrupts before disabling */
-					if (txMode = TX_MODE_BLOCKING)
+					if (txMode == TX_MODE_BLOCKING)
 						UART_DisableInterrupts();
 
 					UART_DMA_DeInit(periph);
