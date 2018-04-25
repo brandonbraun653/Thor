@@ -74,6 +74,9 @@ namespace Thor
 			UARTClass::UARTClass(int channel)
 			{
 				uart_channel = channel;
+				txMode = TX_MODE_NONE;
+				rxMode = RX_MODE_NONE;
+				RX_ASYNC = true;
 
 				/* Default handle settings for this instance */
 				uart_handle.Init = Defaults::Serial::dflt_UART_Init;

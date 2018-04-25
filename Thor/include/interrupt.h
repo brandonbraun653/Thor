@@ -190,38 +190,22 @@ extern "C" {
 	void DMA2_Stream7_IRQHandler();
 	#endif
 	
-	//TODO: This is hard coded to device family...Will need to add specific support later
-	#if defined(ENABLE_UART1) || defined(ENABLE_USART1)
+
+	/* Possible USART Handlers: Note that not all of these will actually exist in hardware */
 	void USART1_IRQHandler();
-	#endif
-
-	#if defined(ENABLE_UART2) || defined(ENABLE_USART2)
 	void USART2_IRQHandler();
-	#endif
-
-	#if defined(ENABLE_UART3) || defined(ENABLE_USART3)
 	void USART3_IRQHandler();
-	#endif
-
-	#if defined(ENABLE_UART4)
-	void UART4_IRQHandler();
-	#endif
-
-	#if defined(ENABLE_UART5)
-	void UART5_IRQHandler();
-	#endif
-
-	#if defined(ENABLE_UART6) || defined(ENABLE_USART6)
 	void USART6_IRQHandler();
-	#endif
-
-	#if defined(ENABLE_UART7)
+	
+	/* Possible UART Handlers: Note that not all of these will actually exist in hardware */
+	void UART1_IRQHandler();
+	void UART2_IRQHandler();
+	void UART3_IRQHandler();
+	void UART4_IRQHandler();
+	void UART5_IRQHandler();
+	void UART6_IRQHandler();
 	void UART7_IRQHandler();
-	#endif
-
-	#if defined(ENABLE_UART8)
 	void UART8_IRQHandler();
-	#endif
 	
 	
 #ifdef __cplusplus

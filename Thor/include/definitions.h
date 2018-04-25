@@ -350,7 +350,7 @@ namespace Thor
 
 		namespace Serial
 		{
-			const unsigned int MAX_SERIAL_CHANNELS = 8;
+			const unsigned int MAX_SERIAL_CHANNELS = 8;			/* Defines total number of possible channels for UART or USART for any MCU */
 			const unsigned int MAX_UART_CHANNELS = 4;
 			const unsigned int UART_BUFFER_SIZE = 32;
 			const unsigned int UART_PACKET_QUEUE_SIZE = 10;
