@@ -99,6 +99,8 @@ $(document).ready(function(){initNavTree('class_thor_1_1_peripheral_1_1_u_a_r_t_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_class_status.html">UARTClassStatus</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html">UARTPacket</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -110,93 +112,30 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a58f5ee671d898cae983af7e86dbccf28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0a6eed413911a651d43bc45a7e6d035"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">UART_Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#aa0a6eed413911a651d43bc45a7e6d035">begin</a> (<a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#acbcf65573f1e9b38343b93c74df6516e">Thor::Definitions::Serial::BaudRate</a> baud, <a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#aeb46e286ac4da2f34a54a4081f1539ef">Thor::Definitions::Serial::Modes</a> tx_mode, <a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#aeb46e286ac4da2f34a54a4081f1539ef">Thor::Definitions::Serial::Modes</a> rx_mode)</td></tr>
 <tr class="separator:aa0a6eed413911a651d43bc45a7e6d035"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f1309abd231d232e7895416ba1175b7"><td class="memItemLeft" align="right" valign="top"><a id="a5f1309abd231d232e7895416ba1175b7"></a>
-<a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">UART_Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (uint8_t *val, size_t length)</td></tr>
-<tr class="separator:a5f1309abd231d232e7895416ba1175b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f7cd1fcf314d1472b8e75e91a355c63"><td class="memItemLeft" align="right" valign="top"><a id="a8f7cd1fcf314d1472b8e75e91a355c63"></a>
-<a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">UART_Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (char *string, size_t length)</td></tr>
-<tr class="separator:a8f7cd1fcf314d1472b8e75e91a355c63"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7dd414f3b2c69a6fa1e24ab0fb240a98"><td class="memItemLeft" align="right" valign="top"><a id="a7dd414f3b2c69a6fa1e24ab0fb240a98"></a>
-<a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">UART_Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (const char *string)</td></tr>
-<tr class="separator:a7dd414f3b2c69a6fa1e24ab0fb240a98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c8ad54cef17fc486f8721e6880d8ab4"><td class="memItemLeft" align="right" valign="top"><a id="a6c8ad54cef17fc486f8721e6880d8ab4"></a>
-<a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">UART_Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (const char *string, size_t length)</td></tr>
-<tr class="separator:a6c8ad54cef17fc486f8721e6880d8ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c9256e4b566ff05747c3c2afb6c7dae"><td class="memItemLeft" align="right" valign="top"><a id="a3c9256e4b566ff05747c3c2afb6c7dae"></a>
-<a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">UART_Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>readPacket</b> (uint8_t *buff, size_t buff_length)</td></tr>
+<tr class="memitem:a3c9256e4b566ff05747c3c2afb6c7dae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">UART_Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a3c9256e4b566ff05747c3c2afb6c7dae">readPacket</a> (uint8_t *buff, size_t buff_length)</td></tr>
 <tr class="separator:a3c9256e4b566ff05747c3c2afb6c7dae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebb29e7e2f1004a0e8ff8f0dafa5053b"><td class="memItemLeft" align="right" valign="top"><a id="aebb29e7e2f1004a0e8ff8f0dafa5053b"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>availablePackets</b> ()</td></tr>
+<tr class="memitem:aebb29e7e2f1004a0e8ff8f0dafa5053b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#aebb29e7e2f1004a0e8ff8f0dafa5053b">availablePackets</a> ()</td></tr>
 <tr class="separator:aebb29e7e2f1004a0e8ff8f0dafa5053b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0131795a9d05984d1673a9140a65403d"><td class="memItemLeft" align="right" valign="top"><a id="a0131795a9d05984d1673a9140a65403d"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>nextPacketSize</b> ()</td></tr>
+<tr class="memitem:a0131795a9d05984d1673a9140a65403d"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a0131795a9d05984d1673a9140a65403d">nextPacketSize</a> ()</td></tr>
 <tr class="separator:a0131795a9d05984d1673a9140a65403d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fb22a3fb64c0f08cb0f80c8ab702ee4"><td class="memItemLeft" align="right" valign="top"><a id="a5fb22a3fb64c0f08cb0f80c8ab702ee4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>flush</b> ()</td></tr>
+<tr class="memitem:a5fb22a3fb64c0f08cb0f80c8ab702ee4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a5fb22a3fb64c0f08cb0f80c8ab702ee4">flush</a> ()</td></tr>
 <tr class="separator:a5fb22a3fb64c0f08cb0f80c8ab702ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b01199cca2948dbdbdc8c1fb4f02d21"><td class="memItemLeft" align="right" valign="top"><a id="a1b01199cca2948dbdbdc8c1fb4f02d21"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> ()</td></tr>
+<tr class="memitem:a1b01199cca2948dbdbdc8c1fb4f02d21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a1b01199cca2948dbdbdc8c1fb4f02d21">end</a> ()</td></tr>
 <tr class="separator:a1b01199cca2948dbdbdc8c1fb4f02d21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9038df0656f11d307889e148f45890d5"><td class="memItemLeft" align="right" valign="top"><a id="a9038df0656f11d307889e148f45890d5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>attachSettings</b> (UART_InitTypeDef config)</td></tr>
+<tr class="memitem:a9038df0656f11d307889e148f45890d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a9038df0656f11d307889e148f45890d5">attachSettings</a> (UART_InitTypeDef config)</td></tr>
 <tr class="separator:a9038df0656f11d307889e148f45890d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9877a798d68036d8016a267ef1eac7c2"><td class="memItemLeft" align="right" valign="top"><a id="a9877a798d68036d8016a267ef1eac7c2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setBlockMode</b> (const <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">UARTPeriph</a> &amp;periph)</td></tr>
+<tr class="memitem:a9877a798d68036d8016a267ef1eac7c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a9877a798d68036d8016a267ef1eac7c2">setBlockMode</a> (const <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">UARTPeriph</a> &amp;periph)</td></tr>
 <tr class="separator:a9877a798d68036d8016a267ef1eac7c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6af74b273aa34574db9e3687c53ebd4"><td class="memItemLeft" align="right" valign="top"><a id="aa6af74b273aa34574db9e3687c53ebd4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setITMode</b> (const <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">UARTPeriph</a> &amp;periph)</td></tr>
+<tr class="memitem:aa6af74b273aa34574db9e3687c53ebd4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#aa6af74b273aa34574db9e3687c53ebd4">setITMode</a> (const <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">UARTPeriph</a> &amp;periph)</td></tr>
 <tr class="separator:aa6af74b273aa34574db9e3687c53ebd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a18d118cbfb0d8dd7da9f231a73dac6"><td class="memItemLeft" align="right" valign="top"><a id="a5a18d118cbfb0d8dd7da9f231a73dac6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setDMAMode</b> (const <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">UARTPeriph</a> &amp;periph)</td></tr>
+<tr class="memitem:a5a18d118cbfb0d8dd7da9f231a73dac6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a5a18d118cbfb0d8dd7da9f231a73dac6">setDMAMode</a> (const <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">UARTPeriph</a> &amp;periph)</td></tr>
 <tr class="separator:a5a18d118cbfb0d8dd7da9f231a73dac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ea0ce3d2908c1cf0927ebd418834a39"><td class="memItemLeft" align="right" valign="top"><a id="a1ea0ce3d2908c1cf0927ebd418834a39"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>IRQHandler</b> ()</td></tr>
+<tr class="memitem:a1ea0ce3d2908c1cf0927ebd418834a39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a1ea0ce3d2908c1cf0927ebd418834a39">IRQHandler</a> ()</td></tr>
 <tr class="separator:a1ea0ce3d2908c1cf0927ebd418834a39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8702f75ba28ab2a244904e6b5730250e"><td class="memItemLeft" align="right" valign="top"><a id="a8702f75ba28ab2a244904e6b5730250e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>IRQHandler_TXDMA</b> ()</td></tr>
+<tr class="memitem:a8702f75ba28ab2a244904e6b5730250e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a8702f75ba28ab2a244904e6b5730250e">IRQHandler_TXDMA</a> ()</td></tr>
 <tr class="separator:a8702f75ba28ab2a244904e6b5730250e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a135048b23f4dc5d40d7f8faf14401a15"><td class="memItemLeft" align="right" valign="top"><a id="a135048b23f4dc5d40d7f8faf14401a15"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>IRQHandler_RXDMA</b> ()</td></tr>
+<tr class="memitem:a135048b23f4dc5d40d7f8faf14401a15"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a135048b23f4dc5d40d7f8faf14401a15">IRQHandler_RXDMA</a> ()</td></tr>
 <tr class="separator:a135048b23f4dc5d40d7f8faf14401a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b41cd36f1c1242a7a70f967eb09eb80"><td class="memItemLeft" align="right" valign="top"><a id="a0b41cd36f1c1242a7a70f967eb09eb80"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>_getChannel</b> ()</td></tr>
-<tr class="separator:a0b41cd36f1c1242a7a70f967eb09eb80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9afacd1f3b4f5605cbc61ab3887bfd0a"><td class="memItemLeft" align="right" valign="top"><a id="a9afacd1f3b4f5605cbc61ab3887bfd0a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>_setTxComplete</b> ()</td></tr>
-<tr class="separator:a9afacd1f3b4f5605cbc61ab3887bfd0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7aedb2f23dee07de8a6f1f4c6498ee91"><td class="memItemLeft" align="right" valign="top"><a id="a7aedb2f23dee07de8a6f1f4c6498ee91"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>_setRxComplete</b> ()</td></tr>
-<tr class="separator:a7aedb2f23dee07de8a6f1f4c6498ee91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a285b595373cb2ce1d2639e7b295d9e8f"><td class="memItemLeft" align="right" valign="top"><a id="a285b595373cb2ce1d2639e7b295d9e8f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>_getRxComplete</b> ()</td></tr>
-<tr class="separator:a285b595373cb2ce1d2639e7b295d9e8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a896620ec5541de90c907f8b83b7c0a7e"><td class="memItemLeft" align="right" valign="top"><a id="a896620ec5541de90c907f8b83b7c0a7e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>_setRxAsync</b> ()</td></tr>
-<tr class="separator:a896620ec5541de90c907f8b83b7c0a7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57337ad03f9066d67d290d245b541621"><td class="memItemLeft" align="right" valign="top"><a id="a57337ad03f9066d67d290d245b541621"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>_getInitStatus</b> ()</td></tr>
-<tr class="separator:a57337ad03f9066d67d290d245b541621"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d4598dfba6eeae18d623ffe0ebd8655"><td class="memItemLeft" align="right" valign="top"><a id="a7d4598dfba6eeae18d623ffe0ebd8655"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>_getTxMode</b> ()</td></tr>
-<tr class="separator:a7d4598dfba6eeae18d623ffe0ebd8655"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25e082965e2b8a7d06292f23990b92e6"><td class="memItemLeft" align="right" valign="top"><a id="a25e082965e2b8a7d06292f23990b92e6"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>_getRxMode</b> ()</td></tr>
-<tr class="separator:a25e082965e2b8a7d06292f23990b92e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6950bbbcceb30194e1d932d505b2de6a"><td class="memItemLeft" align="right" valign="top"><a id="a6950bbbcceb30194e1d932d505b2de6a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>_txBufferEmpty</b> ()</td></tr>
-<tr class="separator:a6950bbbcceb30194e1d932d505b2de6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a792ee52c2604c19c861a61031f5d6ead"><td class="memItemLeft" align="right" valign="top"><a id="a792ee52c2604c19c861a61031f5d6ead"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>_txBufferRemoveFrontPacket</b> ()</td></tr>
-<tr class="separator:a792ee52c2604c19c861a61031f5d6ead"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e532bbc879c2ce64e0ee78f85f2f214"><td class="memItemLeft" align="right" valign="top"><a id="a7e532bbc879c2ce64e0ee78f85f2f214"></a>
-const <a class="el" href="struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html">UARTPacket</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>_txBufferNextPacket</b> ()</td></tr>
-<tr class="separator:a7e532bbc879c2ce64e0ee78f85f2f214"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adfe5f6e41fed2b26d2273160f49e021d"><td class="memItemLeft" align="right" valign="top"><a id="adfe5f6e41fed2b26d2273160f49e021d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>_rxBufferPushBack</b> (const <a class="el" href="struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html">UARTPacket</a> &amp;newPkt)</td></tr>
-<tr class="separator:adfe5f6e41fed2b26d2273160f49e021d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39b04100e10d903418ec7038fc420851"><td class="memItemLeft" align="right" valign="top"><a id="a39b04100e10d903418ec7038fc420851"></a>
-uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>_rxCurrentQueuePacketRef</b> ()</td></tr>
-<tr class="separator:a39b04100e10d903418ec7038fc420851"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -204,9 +143,52 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:aee5a91f1599ce23a5982a4d78034db6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A higher level uart interface built ontop of the STM32 HAL that abstracts away most of the details associated with setup and general usage.</p>
-<dl class="section note"><dt>Note</dt><dd>If using FreeRTOS, the class is threadsafe and allows multiple sources to write and read on a class object up to an internal buffer limit defined by <a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#afbe71397bb0b6b0a0899886f776bcf31">Thor::Definitions::Serial::UART_BUFFER_SIZE</a> </dd></dl>
+<div class="textblock"><p>A higher level uart interface built ontop of the STM32 HAL that abstracts away most of the details associated with setup and general usage. It supports both transmission<br />
+and reception in 3 modes [blocking, interrupt, dma] and does not require that TX and RX share the same mode for proper operation.</p>
+<dl class="section note"><dt>Note</dt><dd>If using FreeRTOS, the class is threadsafe and allows multiple sources to write and read on a class object up to an internal buffer limit defined by Thor::Definitions::Serial::UART_BUFFER_SIZE </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a9038df0656f11d307889e148f45890d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9038df0656f11d307889e148f45890d5">&#9670;&nbsp;</a></span>attachSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Thor::Peripheral::UART::UARTClass::attachSettings </td>
+          <td>(</td>
+          <td class="paramtype">UART_InitTypeDef&#160;</td>
+          <td class="paramname"><em>config</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Provides a convenient way for the user to specifiy advanced configuration settings. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">config</td><td>Configuration settings customized from the STM32 <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html">UART</a> HAL struct defintion </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aebb29e7e2f1004a0e8ff8f0dafa5053b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebb29e7e2f1004a0e8ff8f0dafa5053b">&#9670;&nbsp;</a></span>availablePackets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Thor::Peripheral::UART::UARTClass::availablePackets </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns how many unread received packets are available </p><dl class="section return"><dt>Returns</dt><dd>number of available packets </dd></dl>
+
+</div>
+</div>
 <a id="a8014059c90166557a283637bc943538a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8014059c90166557a283637bc943538a">&#9670;&nbsp;</a></span>begin() <span class="overload">[1/3]</span></h2>
 
@@ -221,8 +203,8 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initializes <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html">UART</a> with default parameters. Baud rate is set to 115200 and both TX and RX modes are set to blocking.</p>
-<dl class="section return"><dt>Returns</dt><dd>Status code indicating <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html">UART</a> state. Will read 'UART_OK' if everything is fine. </dd></dl>
+<p>Initializes with default parameters. Baudrate is set to 115200 and both TX and RX modes are set to blocking.</p>
+<dl class="section return"><dt>Returns</dt><dd>Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it will return a code from <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">Thor::Peripheral::UART::UART_Status</a> </dd></dl>
 
 </div>
 </div>
@@ -241,14 +223,14 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initializes <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html">UART</a> with a given baud rate. Both TX and RX modes are set to blocking.</p>
+<p>Initializes with a given baud rate. Both TX and RX modes are set to blocking.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">baud</td><td>Desired baud rate. Accepts standard rates from 110-921600. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">baud</td><td>Desired baud rate. Accepts standard rates from <a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#aeb46e286ac4da2f34a54a4081f1539ef">Thor::Definitions::Serial::Modes</a> </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Status code indicating <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html">UART</a> state. Will read 'UART_OK' if everything is fine. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it will return a code from <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">Thor::Peripheral::UART::UART_Status</a> </dd></dl>
 
 </div>
 </div>
@@ -283,15 +265,15 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initializes <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html">UART</a> with a given baud rate and TX/RX modes. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Initializes with a given baud rate and TX/RX modes. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">baud</td><td>Desired baud rate. Accepts standard rates are <a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#aeb46e286ac4da2f34a54a4081f1539ef">Thor::Definitions::Serial::Modes</a> </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">tx_mode</td><td>Sets the TX mode to Blocking, Interrupt, or DMA </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">rx_mode</td><td>Sets the RX mode to Blocking, Interrupt, or DMA </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">baud</td><td>Desired baud rate. Accepts standard rates from <a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#acbcf65573f1e9b38343b93c74df6516e">Thor::Definitions::Serial::BaudRate</a> </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tx_mode</td><td>Sets the TX mode to Blocking, Interrupt, or DMA from <a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#aeb46e286ac4da2f34a54a4081f1539ef">Thor::Definitions::Serial::Modes</a> </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rx_mode</td><td>Sets the RX mode to Blocking, Interrupt, or DMA from <a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#aeb46e286ac4da2f34a54a4081f1539ef">Thor::Definitions::Serial::Modes</a> </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Status code indicating <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html">UART</a> state. Will read 'UART_OK' if everything is fine. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it will return a code from <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">Thor::Peripheral::UART::UART_Status</a> </dd></dl>
 
 </div>
 </div>
@@ -329,6 +311,222 @@ inside of an ISR. This is done for simplicity.</p>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Shared pointer to the new object </dd></dl>
+
+</div>
+</div>
+<a id="a1b01199cca2948dbdbdc8c1fb4f02d21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b01199cca2948dbdbdc8c1fb4f02d21">&#9670;&nbsp;</a></span>end()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Thor::Peripheral::UART::UARTClass::end </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Deinitializes and cleans up the peripheral </p>
+
+</div>
+</div>
+<a id="a5fb22a3fb64c0f08cb0f80c8ab702ee4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fb22a3fb64c0f08cb0f80c8ab702ee4">&#9670;&nbsp;</a></span>flush()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Thor::Peripheral::UART::UARTClass::flush </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Clears the receive buffer entirely and waits for all buffered transmissions to complete </p>
+
+</div>
+</div>
+<a id="a1ea0ce3d2908c1cf0927ebd418834a39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ea0ce3d2908c1cf0927ebd418834a39">&#9670;&nbsp;</a></span>IRQHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Thor::Peripheral::UART::UARTClass::IRQHandler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Primary handler for interrupt mode in TX or RX. Additionally, will be called in DMA mode after <a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a8702f75ba28ab2a244904e6b5730250e">UARTClass::IRQHandler_TXDMA</a> or <a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a135048b23f4dc5d40d7f8faf14401a15">UARTClass::IRQHandler_RXDMA</a> </p>
+
+</div>
+</div>
+<a id="a135048b23f4dc5d40d7f8faf14401a15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a135048b23f4dc5d40d7f8faf14401a15">&#9670;&nbsp;</a></span>IRQHandler_RXDMA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Thor::Peripheral::UART::UARTClass::IRQHandler_RXDMA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>DMA Handler for RX. It is a simple wrapper that calls the correct STM32 HAL DMA Handler. </p>
+
+</div>
+</div>
+<a id="a8702f75ba28ab2a244904e6b5730250e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8702f75ba28ab2a244904e6b5730250e">&#9670;&nbsp;</a></span>IRQHandler_TXDMA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Thor::Peripheral::UART::UARTClass::IRQHandler_TXDMA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>DMA Handler for TX. It is a simple wrapper that calls the correct STM32 HAL DMA Handler. </p>
+
+</div>
+</div>
+<a id="a0131795a9d05984d1673a9140a65403d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0131795a9d05984d1673a9140a65403d">&#9670;&nbsp;</a></span>nextPacketSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Thor::Peripheral::UART::UARTClass::nextPacketSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Gets the size of the next received packet in the buffer </p><dl class="section return"><dt>Returns</dt><dd>next packet size </dd></dl>
+
+</div>
+</div>
+<a id="a3c9256e4b566ff05747c3c2afb6c7dae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c9256e4b566ff05747c3c2afb6c7dae">&#9670;&nbsp;</a></span>readPacket()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">UART_Status</a> Thor::Peripheral::UART::UARTClass::readPacket </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>buff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>buff_length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Reads the next packet received into a buffer </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">buff</td><td>Address of an external buffer to read data into </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">buff_length</td><td>The size of the external buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it will return a code from <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">Thor::Peripheral::UART::UART_Status</a> </dd></dl>
+
+</div>
+</div>
+<a id="a9877a798d68036d8016a267ef1eac7c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9877a798d68036d8016a267ef1eac7c2">&#9670;&nbsp;</a></span>setBlockMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Thor::Peripheral::UART::UARTClass::setBlockMode </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">UARTPeriph</a> &amp;&#160;</td>
+          <td class="paramname"><em>periph</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sets the specified peripheral to blocking mode. It also takes into account any settings changes that might be necessary. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">periph</td><td>Explicitly states which peripheral subsystem (RX or TX) to set from <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">Thor::Peripheral::UART::UARTPeriph</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5a18d118cbfb0d8dd7da9f231a73dac6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a18d118cbfb0d8dd7da9f231a73dac6">&#9670;&nbsp;</a></span>setDMAMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Thor::Peripheral::UART::UARTClass::setDMAMode </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">UARTPeriph</a> &amp;&#160;</td>
+          <td class="paramname"><em>periph</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sets the specified peripheral to dma mode. It also takes into account any settings changes that might be necessary. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">periph</td><td>Explicitly states which peripheral subsystem (RX or TX) to set from <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">Thor::Peripheral::UART::UARTPeriph</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa6af74b273aa34574db9e3687c53ebd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6af74b273aa34574db9e3687c53ebd4">&#9670;&nbsp;</a></span>setITMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Thor::Peripheral::UART::UARTClass::setITMode </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">UARTPeriph</a> &amp;&#160;</td>
+          <td class="paramname"><em>periph</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sets the specified peripheral to interrupt mode. It also takes into account any settings changes that might be necessary. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">periph</td><td>Explicitly states which peripheral subsystem (RX or TX) to set from <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">Thor::Peripheral::UART::UARTPeriph</a> </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

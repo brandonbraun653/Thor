@@ -1,21 +1,14 @@
 var searchData=
 [
-  ['vcoroutineschedule',['vCoRoutineSchedule',['../group__v_co_routine_schedule.html',1,'']]],
-  ['vqueuedelete',['vQueueDelete',['../group__v_queue_delete.html',1,'']]],
-  ['vsemaphorecreatebinary',['vSemaphoreCreateBinary',['../group__v_semaphore_create_binary.html',1,'']]],
-  ['vsemaphoredelete',['vSemaphoreDelete',['../group__v_semaphore_delete.html',1,'']]],
-  ['vstreambufferdelete',['vStreamBufferDelete',['../group__v_stream_buffer_delete.html',1,'']]],
-  ['vtaskdelay',['vTaskDelay',['../group__v_task_delay.html',1,'']]],
-  ['vtaskdelayuntil',['vTaskDelayUntil',['../group__v_task_delay_until.html',1,'']]],
-  ['vtaskdelete',['vTaskDelete',['../group__v_task_delete.html',1,'']]],
-  ['vtaskendscheduler',['vTaskEndScheduler',['../group__v_task_end_scheduler.html',1,'']]],
-  ['vtaskgetinfo',['vTaskGetInfo',['../group__v_task_get_info.html',1,'']]],
-  ['vtaskgetruntimestats',['vTaskGetRunTimeStats',['../group__v_task_get_run_time_stats.html',1,'']]],
-  ['vtasklist',['vTaskList',['../group__v_task_list.html',1,'']]],
-  ['vtaskpriorityset',['vTaskPrioritySet',['../group__v_task_priority_set.html',1,'']]],
-  ['vtaskresume',['vTaskResume',['../group__v_task_resume.html',1,'']]],
-  ['vtaskresumefromisr',['vTaskResumeFromISR',['../group__v_task_resume_from_i_s_r.html',1,'']]],
-  ['vtaskstartscheduler',['vTaskStartScheduler',['../group__v_task_start_scheduler.html',1,'']]],
-  ['vtasksuspend',['vTaskSuspend',['../group__v_task_suspend.html',1,'']]],
-  ['vtasksuspendall',['vTaskSuspendAll',['../group__v_task_suspend_all.html',1,'']]]
+  ['defaults',['Defaults',['../namespace_thor_1_1_defaults.html',1,'Thor']]],
+  ['definitions',['Definitions',['../namespace_thor_1_1_definitions.html',1,'Thor']]],
+  ['dma',['DMA',['../namespace_thor_1_1_definitions_1_1_d_m_a.html',1,'Thor::Definitions']]],
+  ['gpio',['GPIO',['../namespace_thor_1_1_defaults_1_1_g_p_i_o.html',1,'Thor::Defaults::GPIO'],['../namespace_thor_1_1_definitions_1_1_g_p_i_o.html',1,'Thor::Definitions::GPIO']]],
+  ['peripheral',['Peripheral',['../namespace_thor_1_1_peripheral.html',1,'Thor']]],
+  ['serial',['Serial',['../namespace_thor_1_1_defaults_1_1_serial.html',1,'Thor::Defaults::Serial'],['../namespace_thor_1_1_definitions_1_1_serial.html',1,'Thor::Definitions::Serial']]],
+  ['spi',['SPI',['../namespace_thor_1_1_defaults_1_1_s_p_i.html',1,'Thor::Defaults::SPI'],['../namespace_thor_1_1_definitions_1_1_s_p_i.html',1,'Thor::Definitions::SPI']]],
+  ['thor',['Thor',['../namespace_thor.html',1,'']]],
+  ['timer',['Timer',['../namespace_thor_1_1_defaults_1_1_timer.html',1,'Thor::Defaults::Timer'],['../namespace_thor_1_1_definitions_1_1_t_i_m_e_r.html',1,'Thor::Definitions::TIMER']]],
+  ['timerflags',['TimerFlags',['../struct_timer_flags.html',1,'']]],
+  ['uart',['UART',['../namespace_thor_1_1_peripheral_1_1_u_a_r_t.html',1,'Thor::Peripheral']]]
 ];

@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['cardblocksize',['CardBlockSize',['../struct_thor_1_1_libraries_1_1_s_d_1_1_s_d___card_info.html#ad89878ce5485bfb96836749055a81da9',1,'Thor::Libraries::SD::SD_CardInfo']]],
-  ['cardcapacity',['CardCapacity',['../struct_thor_1_1_libraries_1_1_s_d_1_1_s_d___card_info.html#a96893ccf5acbba0ac493a34c12c164bc',1,'Thor::Libraries::SD::SD_CardInfo']]],
-  ['create',['create',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#aee5a91f1599ce23a5982a4d78034db6e',1,'Thor::Peripheral::UART::UARTClass']]],
-  ['csd_5fversion',['csd_version',['../union_thor_1_1_libraries_1_1_s_d_1_1_s_d___c_s_d_1_1csd__version.html',1,'Thor::Libraries::SD::SD_CSD']]]
+  ['baudrate',['BaudRate',['../namespace_thor_1_1_definitions_1_1_serial.html#acbcf65573f1e9b38343b93c74df6516e',1,'Thor::Definitions::Serial']]],
+  ['begin',['begin',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a8014059c90166557a283637bc943538a',1,'Thor::Peripheral::UART::UARTClass::begin()'],['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a58f5ee671d898cae983af7e86dbccf28',1,'Thor::Peripheral::UART::UARTClass::begin(Thor::Definitions::Serial::BaudRate baud)'],['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#aa0a6eed413911a651d43bc45a7e6d035',1,'Thor::Peripheral::UART::UARTClass::begin(Thor::Definitions::Serial::BaudRate baud, Thor::Definitions::Serial::Modes tx_mode, Thor::Definitions::Serial::Modes rx_mode)']]]
 ];

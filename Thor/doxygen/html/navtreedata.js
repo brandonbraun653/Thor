@@ -29,6 +29,7 @@ var NAVTREE =
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", null ],
         [ "Variables", "namespacemembers_vars.html", null ],
+        [ "Typedefs", "namespacemembers_type.html", null ],
         [ "Enumerations", "namespacemembers_enum.html", null ]
       ] ]
     ] ],
@@ -44,14 +45,14 @@ var NAVTREE =
     ] ],
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ]
-    ] ]
+    ] ],
+    [ "Examples", "examples.html", "examples" ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
-".html",
-"struct_thor_1_1_libraries_1_1_s_d_1_1_s_d___c_i_d.html#a8bd1b9f112edeb8f6756bc2361f926e0"
+".html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

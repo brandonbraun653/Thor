@@ -104,11 +104,11 @@ namespace Thor
 					srl_cfg[uart_channel].rxPin.Alternate);
 
 				/* Initialize the buffer memory */
-				TXPacketBuffer.set_capacity(UART_BUFFER_SIZE);
-				RXPacketBuffer.set_capacity(UART_BUFFER_SIZE);
+				TXPacketBuffer.set_capacity(UART_PACKET_BUFFER_SIZE);
+				RXPacketBuffer.set_capacity(UART_PACKET_BUFFER_SIZE);
 
 				#if defined(USING_FREERTOS)
-				uart_semphrs[uart_channel] = xSemaphoreCreateCounting(UART_BUFFER_SIZE, UART_BUFFER_SIZE);
+				uart_semphrs[uart_channel] = xSemaphoreCreateCounting(UART_PACKET_BUFFER_SIZE, UART_PACKET_BUFFER_SIZE);
 				#endif
 			}
 
@@ -242,7 +242,6 @@ namespace Thor
 							#endif
 
 							/* A previous IT transmission is still going. Queue the data packet. */
-							TX_tempPacket.data = 0;
 							TX_tempPacket.data_ptr = val;
 							TX_tempPacket.length = length;
 
@@ -272,7 +271,6 @@ namespace Thor
 							#endif
 
 							/* A previous DMA transmission is still going. Queue the data packet. */
-							TX_tempPacket.data = 0;
 							TX_tempPacket.data_ptr = val;
 							TX_tempPacket.length = length;
 
@@ -397,7 +395,7 @@ namespace Thor
 
 					/* Instruct the DMA hardware to start listening for packets.
 					* Set the idle line bit for triggering the end of packet interrupt. */
-					HAL_UART_Receive_DMA(&uart_handle, packetQueue[currentQueuePacket], Thor::Definitions::Serial::UART_BUFFER_SIZE);
+					HAL_UART_Receive_DMA(&uart_handle, packetQueue[currentQueuePacket], Thor::Definitions::Serial::UART_PACKET_BUFFER_SIZE);
 					__HAL_UART_ENABLE_IT(&uart_handle, UART_IT_IDLE);
 
 					#if defined(STM32F7)
@@ -640,12 +638,12 @@ namespace Thor
 						* IDLE interrupt bit to detect end of frame. */
 						if (rxAsyncPacketSize == 0)
 						{
-							memset(packetQueue[currentQueuePacket], 0, Thor::Definitions::Serial::UART_BUFFER_SIZE);
+							memset(packetQueue[currentQueuePacket], 0, Thor::Definitions::Serial::UART_PACKET_BUFFER_SIZE);
 							__HAL_UART_ENABLE_IT(&uart_handle, UART_IT_IDLE);
 						}
 
 						/* Buffer the new data */
-						if (rxMode == RX_MODE_INTERRUPT && (rxAsyncPacketSize < Thor::Definitions::Serial::UART_BUFFER_SIZE))
+						if (rxMode == RX_MODE_INTERRUPT && (rxAsyncPacketSize < Thor::Definitions::Serial::UART_PACKET_BUFFER_SIZE))
 						{
 							packetQueue[currentQueuePacket][rxAsyncPacketSize] = (uint8_t)(uart_handle.Instance->RDR & (uint8_t)0xFF);
 							rxAsyncPacketSize += 1u;
@@ -678,7 +676,6 @@ namespace Thor
 					if (rxMode == RX_MODE_INTERRUPT)
 					{
 						/* Store the address of the new data packet */
-						RX_tempPacket.data		= 0;
 						RX_tempPacket.data_ptr	= packetQueue[currentQueuePacket];
 						RX_tempPacket.length	= rxAsyncPacketSize;
 						RXPacketBuffer.push_back(RX_tempPacket);
@@ -876,7 +873,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 
 		/* Construct the received packet and push into the receive queue */
 		Thor::Peripheral::UART::UARTClass::UARTPacket tempPacket;
-		tempPacket.data		= 0;
 		tempPacket.data_ptr = uart->_rxCurrentQueuePacketRef();
 		tempPacket.length	= num_received;
 		uart->_rxBufferPushBack(tempPacket);
@@ -886,7 +882,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 
 		//TODO: I think this might be a bug...I just told it to overwrite the buffer I just received into...
 		//check the ISR handler in the class for how it manipulates the current queue packet variable.
-		HAL_UART_Receive_DMA(UartHandle, uart->_rxCurrentQueuePacketRef(), Thor::Definitions::Serial::UART_BUFFER_SIZE);
+		HAL_UART_Receive_DMA(UartHandle, uart->_rxCurrentQueuePacketRef(), Thor::Definitions::Serial::UART_PACKET_BUFFER_SIZE);
 
 		/* Signal Waiting Threads */
 		#if defined(USING_FREERTOS)

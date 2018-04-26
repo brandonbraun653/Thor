@@ -17,5 +17,12 @@ var class_ring_buffer_class =
     [ "uint8_t_read", "class_ring_buffer_class.html#a3687433b5a567703bb966a3c9f13f77a", null ],
     [ "uint8_t_write", "class_ring_buffer_class.html#aec71948b969d91cf4ea3bb81dc5ee9d1", null ],
     [ "uint8_t_write", "class_ring_buffer_class.html#a14d23e98d0ae959fec3a3e5f68691177", null ],
-    [ "bufferType", "class_ring_buffer_class.html#a197e5a4fafda7099fad49113729a52e5", null ]
+    [ "bufferedData", "class_ring_buffer_class.html#acda183eef02af6d9ecaff2caaef7a912", null ],
+    [ "bufferSize", "class_ring_buffer_class.html#a8c490e0a682826853deb9fe797e2e018", null ],
+    [ "bufferType", "class_ring_buffer_class.html#a197e5a4fafda7099fad49113729a52e5", null ],
+    [ "intBuffer", "class_ring_buffer_class.html#ac0bfb6b887c8614d6d3f9bcd3b2e4de7", null ],
+    [ "readLocation", "class_ring_buffer_class.html#acf0b426300c873baddb3364cd799ef39", null ],
+    [ "stringBuffer", "class_ring_buffer_class.html#a0ecf7929a7fd7fda68f84b967ec079ee", null ],
+    [ "uint8_tBuffer", "class_ring_buffer_class.html#a64ff18f781c78ff0a75fa6211feda27b", null ],
+    [ "writeLocation", "class_ring_buffer_class.html#a38a5d18e032a6f3adbccff6c5ce27a5f", null ]
 ];

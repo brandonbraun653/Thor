@@ -1,3 +1,6 @@
+/** @example uart_basic_example.cpp
+ *	This demonstrates a simple way to get an instance of Thor::Peripheral::UART::UARTClass up and running quickly. */
+
 #pragma once
 #ifndef UART_H_
 #define UART_H_
@@ -62,60 +65,101 @@ namespace Thor
 			};
 
 			/** @class UARTClass
-			 * A higher level uart interface built ontop of the STM32 HAL that abstracts away most 
-			 * of the details associated with setup and general usage.
+			 *	A higher level uart interface built ontop of the STM32 HAL that abstracts away most 
+			 *	of the details associated with setup and general usage. It supports both transmission\n
+			 *	and reception in 3 modes [blocking, interrupt, dma] and does not require that TX and RX
+			 *	share the same mode for proper operation.
 			 * 
-			 * @note If using FreeRTOS, the class is threadsafe and allows multiple sources to write and
-			 * read on a class object up to an internal buffer limit defined by Thor::Definitions::Serial::UART_BUFFER_SIZE
+			 *	@note If using FreeRTOS, the class is threadsafe and allows multiple sources to write and
+			 *		  read on a class object up to an internal buffer limit defined by Thor::Definitions::Serial::UART_BUFFER_SIZE
 			 **/
 			class UARTClass
 			{
 			public:
 				
-				/** Initializes UART with default parameters. 
-				 *	Baud rate is set to 115200 and both TX and RX modes are set to blocking. 
+				/** Initializes with default parameters.
+				 *	Baudrate is set to 115200 and both TX and RX modes are set to blocking. 
 				 *	
-				 *	@return Status code indicating UART state. Will read 'UART_OK' if everything is fine.
+				 *	@return Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it 
+				 *			will return a code from Thor::Peripheral::UART::UART_Status
 				 **/
 				UART_Status begin();
 				
-				/** Initializes UART with a given baud rate. 
+				/** Initializes with a given baud rate. 
 				 *	Both TX and RX modes are set to blocking.
 				 *
-				 *  @param[in] baud Desired baud rate. Accepts standard rates from 110-921600.
-				 *  @return Status code indicating UART state. Will read 'UART_OK' if everything is fine.
+				 *  @param[in] baud Desired baud rate. Accepts standard rates from Thor::Definitions::Serial::Modes
+				 *  @return Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it 
+				 *			will return a code from Thor::Peripheral::UART::UART_Status
 				 **/
 				UART_Status begin(Thor::Definitions::Serial::BaudRate baud);
 				
-				/** Initializes UART with a given baud rate and TX/RX modes.
-				 *	@param[in] baud		Desired baud rate. Accepts standard rates are Thor::Definitions::Serial::Modes
-				 *	@param[in] tx_mode	Sets the TX mode to Blocking, Interrupt, or DMA
-				 *	@param[in] rx_mode	Sets the RX mode to Blocking, Interrupt, or DMA
-				 *	@return	Status code indicating UART state. Will read 'UART_OK' if everything is fine.
+				/** Initializes with a given baud rate and TX/RX modes.
+				 *	@param[in] baud		Desired baud rate. Accepts standard rates from Thor::Definitions::Serial::BaudRate
+				 *	@param[in] tx_mode	Sets the TX mode to Blocking, Interrupt, or DMA from Thor::Definitions::Serial::Modes
+				 *	@param[in] rx_mode	Sets the RX mode to Blocking, Interrupt, or DMA from Thor::Definitions::Serial::Modes
+				 *	@return	Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it 
+				 *			will return a code from Thor::Peripheral::UART::UART_Status
 				 **/
 				UART_Status begin(Thor::Definitions::Serial::BaudRate baud, 
 									Thor::Definitions::Serial::Modes tx_mode, 
 									Thor::Definitions::Serial::Modes rx_mode);
-
+				
 				UART_Status write(uint8_t* val, size_t length);
 				UART_Status write(char* string, size_t length);
 				UART_Status write(const char* string);
 				UART_Status write(const char* string, size_t length);
+				
+				/** Reads the next packet received into a buffer 
+				 *	@param[out] buff		Address of an external buffer to read data into
+				 *	@param[in]	buff_length	The size of the external buffer
+				 *	@return Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it 
+				 *			will return a code from Thor::Peripheral::UART::UART_Status
+				 **/
 				UART_Status readPacket(uint8_t* buff, size_t buff_length);
-
+				
+				/** Returns how many unread received packets are available 
+				 *	@return number of available packets*/
 				int availablePackets();
+				
+				/** Gets the size of the next received packet in the buffer 
+				 *	@return next packet size */
 				size_t nextPacketSize();
+				
+				/** Clears the receive buffer entirely and waits for all buffered transmissions to complete */
 				void flush();
+				
+				/** Deinitializes and cleans up the peripheral */
 				void end();
-
+			
+				/** Provides a convenient way for the user to specifiy advanced configuration settings.
+				 *	@param[in] config Configuration settings customized from the STM32 UART HAL struct defintion */
 				void attachSettings(UART_InitTypeDef config);
-
+				
+				/** Sets the specified peripheral to blocking mode. It also takes into account any settings changes that might
+				 *	be necessary.
+				 *	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph */
 				void setBlockMode(const UARTPeriph& periph);
+				
+				/** Sets the specified peripheral to interrupt mode. It also takes into account any settings changes that might
+				 *	be necessary.
+				 *	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph */
 				void setITMode(const UARTPeriph& periph);
+				
+				/** Sets the specified peripheral to dma mode. It also takes into account any settings changes that might
+				 *	be necessary.
+				 *	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph */
 				void setDMAMode(const UARTPeriph& periph);
-
+				
+				/** Primary handler for interrupt mode in TX or RX.
+				 *	Additionally, will be called in DMA mode after UARTClass::IRQHandler_TXDMA or UARTClass::IRQHandler_RXDMA
+				 **/
 				void IRQHandler();
+				
+				/** DMA Handler for TX. It is a simple wrapper that calls the correct STM32 HAL DMA Handler. */
 				void IRQHandler_TXDMA();
+				
+				/** DMA Handler for RX. It is a simple wrapper that calls the correct STM32 HAL DMA Handler. */
 				void IRQHandler_RXDMA();
 
 			private:
@@ -133,12 +177,14 @@ namespace Thor
 				 **/
 				static boost::shared_ptr<UARTClass> create(int channel);
 				~UARTClass();
-
+				
+				
+				/** @struct UARTPacket
+				 *	Easily contains references to buffered data for TX or RX */
 				struct UARTPacket
 				{
-					uint8_t *data_ptr;
-					uint8_t data;
-					size_t length;
+					uint8_t* data_ptr;	/**< Contains the buffer address where data is stored */
+					size_t length;		/**< Number of bytes contained in data_ptr */
 				};
 
 				/*-------------------------------
@@ -170,7 +216,7 @@ namespace Thor
 				boost::circular_buffer<UARTPacket> TXPacketBuffer, RXPacketBuffer;
 
 				/* Asynchronous RX buffer for many packets */
-				uint8_t packetQueue[Thor::Definitions::Serial::UART_PACKET_QUEUE_SIZE][Thor::Definitions::Serial::UART_BUFFER_SIZE];
+				uint8_t packetQueue[Thor::Definitions::Serial::UART_PACKET_QUEUE_SIZE][Thor::Definitions::Serial::UART_PACKET_BUFFER_SIZE];
 				uint8_t currentQueuePacket = 0;
 				uint32_t rxAsyncPacketSize = 0;
 				int totalWaitingPackets = 0;
@@ -217,7 +263,12 @@ namespace Thor
 				void UART_DMA_EnableIT(const UARTPeriph& periph);
 				void UART_DMA_DisableIT(const UARTPeriph& periph);
 			};
+			
+			/** The most common way of referencing an instance of UARTClass. It is intended that future
+			 *	libraries will want to pass around copies of a class and a shared_ptr was chosen for ease\n
+			 *	of use and safe destruction. */
 			typedef boost::shared_ptr<UARTClass> UARTClass_sPtr;
+			
 		}
 	}	
 }

@@ -1,20 +1,7 @@
 var class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class =
 [
+    [ "UARTClassStatus", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_class_status.html", null ],
     [ "UARTPacket", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet" ],
-    [ "~UARTClass", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a17462b5c45e4766fc516f66e96cbaac3", null ],
-    [ "_getChannel", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a0b41cd36f1c1242a7a70f967eb09eb80", null ],
-    [ "_getInitStatus", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a57337ad03f9066d67d290d245b541621", null ],
-    [ "_getRxComplete", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a285b595373cb2ce1d2639e7b295d9e8f", null ],
-    [ "_getRxMode", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a25e082965e2b8a7d06292f23990b92e6", null ],
-    [ "_getTxMode", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a7d4598dfba6eeae18d623ffe0ebd8655", null ],
-    [ "_rxBufferPushBack", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#adfe5f6e41fed2b26d2273160f49e021d", null ],
-    [ "_rxCurrentQueuePacketRef", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a39b04100e10d903418ec7038fc420851", null ],
-    [ "_setRxAsync", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a896620ec5541de90c907f8b83b7c0a7e", null ],
-    [ "_setRxComplete", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a7aedb2f23dee07de8a6f1f4c6498ee91", null ],
-    [ "_setTxComplete", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a9afacd1f3b4f5605cbc61ab3887bfd0a", null ],
-    [ "_txBufferEmpty", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a6950bbbcceb30194e1d932d505b2de6a", null ],
-    [ "_txBufferNextPacket", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a7e532bbc879c2ce64e0ee78f85f2f214", null ],
-    [ "_txBufferRemoveFrontPacket", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a792ee52c2604c19c861a61031f5d6ead", null ],
     [ "attachSettings", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a9038df0656f11d307889e148f45890d5", null ],
     [ "availablePackets", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#aebb29e7e2f1004a0e8ff8f0dafa5053b", null ],
     [ "begin", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a8014059c90166557a283637bc943538a", null ],
@@ -29,9 +16,5 @@ var class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class =
     [ "readPacket", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a3c9256e4b566ff05747c3c2afb6c7dae", null ],
     [ "setBlockMode", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a9877a798d68036d8016a267ef1eac7c2", null ],
     [ "setDMAMode", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a5a18d118cbfb0d8dd7da9f231a73dac6", null ],
-    [ "setITMode", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#aa6af74b273aa34574db9e3687c53ebd4", null ],
-    [ "write", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a5f1309abd231d232e7895416ba1175b7", null ],
-    [ "write", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a8f7cd1fcf314d1472b8e75e91a355c63", null ],
-    [ "write", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a7dd414f3b2c69a6fa1e24ab0fb240a98", null ],
-    [ "write", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a6c8ad54cef17fc486f8721e6880d8ab4", null ]
+    [ "setITMode", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#aa6af74b273aa34574db9e3687c53ebd4", null ]
 ];

@@ -360,8 +360,10 @@ namespace Thor
 			const unsigned int MAX_SERIAL_CHANNELS = 8;			/**< Total possible UART or USART channels for any supported STM32 chip. */
 			const unsigned int MAX_UART_CHANNELS = 4;			/**< Total possible UART specific channels for any supported STM32 chip. */
 			const unsigned int MAX_USART_CHANNELS = 4;			/**< Total possible USART specific channels for any supported STM32 chip. */
-			const unsigned int UART_BUFFER_SIZE = 32;			/**< Defines a fixed number of bytes for a single buffer */
-			const unsigned int UART_PACKET_QUEUE_SIZE = 10;		/**< Defines the max number of buffers to hold TX/RX packets */
+			const unsigned int UART_PACKET_BUFFER_SIZE = 32;	/**< Defines the max number of TX/RX packets that can be held from Thor::Peripheral::UART::UARTClass::UARTPacket */
+			
+			//TODO: Need to go back through and understand how this one works...
+			const unsigned int UART_PACKET_QUEUE_SIZE = 10;		/**< Defines the max number of buffers to hold RX packets */
 
 			/** @enum Modes 
 			 *	Common peripheral transmit and receive communication modes 

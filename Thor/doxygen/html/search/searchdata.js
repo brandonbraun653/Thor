@@ -1,11 +1,12 @@
 var indexSectionsWithContent =
 {
-  0: "bcdgilmprstu",
+  0: "abcdefgilmnprstu",
   1: "cdgiprstu",
   2: "t",
-  3: "bc",
-  4: "clmu",
-  5: "bmu"
+  3: "abcefinrs",
+  4: "cdlmu",
+  5: "u",
+  6: "bmu"
 };
 
 var indexSectionNames =
@@ -15,7 +16,8 @@ var indexSectionNames =
   2: "namespaces",
   3: "functions",
   4: "variables",
-  5: "enums"
+  5: "typedefs",
+  6: "enums"
 };
 
 var indexSectionLabels =
@@ -25,6 +27,7 @@ var indexSectionLabels =
   2: "Namespaces",
   3: "Functions",
   4: "Variables",
-  5: "Enumerations"
+  5: "Typedefs",
+  6: "Enumerations"
 };
 
