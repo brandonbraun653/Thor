@@ -130,17 +130,17 @@ namespace Thor
 				return newClass;
 			}
 
-			UART_Status UARTClass::begin()
+			Status UARTClass::begin()
 			{
 				return begin(SERIAL_BAUD_115200, TX_MODE_BLOCKING, RX_MODE_BLOCKING);
 			}
 
-			UART_Status UARTClass::begin(BaudRate baud)
+			Status UARTClass::begin(BaudRate baud)
 			{
 				return begin(baud, TX_MODE_BLOCKING, RX_MODE_BLOCKING);
 			}
 
-			UART_Status UARTClass::begin(BaudRate baud, Modes tx_mode, Modes rx_mode)
+			Status UARTClass::begin(BaudRate baud, Modes tx_mode, Modes rx_mode)
 			{
 				UART_GPIO_Init();
 
@@ -151,20 +151,20 @@ namespace Thor
 				switch (tx_mode)
 				{
 				case TX_MODE_BLOCKING:
-					setBlockMode(UARTPeriph::TX);
+					setBlockMode(SubPeripheral::TX);
 					break;
 
 				case TX_MODE_INTERRUPT:
-					setITMode(UARTPeriph::TX);
+					setITMode(SubPeripheral::TX);
 					break;
 
 				case TX_MODE_DMA:
-					setDMAMode(UARTPeriph::TX);
+					setDMAMode(SubPeripheral::TX);
 					break;
 
 				default:
 					txMode = TX_MODE_BLOCKING;
-					setBlockMode(UARTPeriph::TX);
+					setBlockMode(SubPeripheral::TX);
 					break;
 				}
 
@@ -172,42 +172,42 @@ namespace Thor
 				switch (rx_mode)
 				{
 				case RX_MODE_BLOCKING:
-					setBlockMode(UARTPeriph::RX);
+					setBlockMode(SubPeripheral::RX);
 					break;
 
 				case RX_MODE_INTERRUPT:
-					setITMode(UARTPeriph::RX);
+					setITMode(SubPeripheral::RX);
 					break;
 
 				case RX_MODE_DMA:
-					setDMAMode(UARTPeriph::RX);
+					setDMAMode(SubPeripheral::RX);
 					break;
 
 				default:
 					rxMode = RX_MODE_BLOCKING;
-					setBlockMode(UARTPeriph::RX);
+					setBlockMode(SubPeripheral::RX);
 					break;
 				}
 
 				return UART_OK;
 			}
 
-			UART_Status UARTClass::write(char* string, size_t length)
+			Status UARTClass::write(char* string, size_t length)
 			{
 				return write((uint8_t*)string, length);
 			}
 
-			UART_Status UARTClass::write(const char* string)
+			Status UARTClass::write(const char* string)
 			{
 				return write((uint8_t*)string, strlen(string));
 			}
 
-			UART_Status UARTClass::write(const char* string, size_t length)
+			Status UARTClass::write(const char* string, size_t length)
 			{
 				return write((uint8_t*)string, length);
 			}
 
-			UART_Status UARTClass::write(uint8_t* val, size_t length)
+			Status UARTClass::write(uint8_t* val, size_t length)
 			{
 				if (!UART_PeriphState.gpio_enabled || !UART_PeriphState.uart_enabled)
 					return UART_NOT_INITIALIZED;
@@ -286,12 +286,12 @@ namespace Thor
 				}
 			}
 
-			UART_Status UARTClass::readPacket(uint8_t* buff, size_t buff_length)
+			Status UARTClass::readPacket(uint8_t* buff, size_t buff_length)
 			{
 				UARTPacket packet = RXPacketBuffer.front();
 
 				size_t packetLength = packet.length;
-				UART_Status error = UART_OK;
+				Status error = UART_OK;
 
 				/* Check if the received packet is too large for the buffer */
 				if (packetLength > buff_length)
@@ -330,8 +330,8 @@ namespace Thor
 				UART_DeInit();
 				UART_GPIO_DeInit();
 				UART_DisableInterrupts();
-				UART_DMA_DeInit(UARTPeriph::TX);
-				UART_DMA_DeInit(UARTPeriph::RX);
+				UART_DMA_DeInit(SubPeripheral::TX);
+				UART_DMA_DeInit(SubPeripheral::RX);
 
 				txMode = TX_MODE_NONE;
 				rxMode = RX_MODE_NONE;
@@ -347,9 +347,9 @@ namespace Thor
 				UART_Init();
 			}
 
-			void UARTClass::setBlockMode(const UARTPeriph& periph)
+			void UARTClass::setBlockMode(const SubPeripheral& periph)
 			{
-				if (periph == UARTPeriph::TX)
+				if (periph == SubPeripheral::TX)
 				{
 					txMode = TX_MODE_BLOCKING;
 
@@ -371,23 +371,23 @@ namespace Thor
 				}
 			}
 
-			void UARTClass::setITMode(const UARTPeriph& periph)
+			void UARTClass::setITMode(const SubPeripheral& periph)
 			{
 				UART_EnableInterrupts();
 				UART_DMA_DeInit(periph);
 
-				if (periph == UARTPeriph::TX)
+				if (periph == SubPeripheral::TX)
 					txMode = TX_MODE_INTERRUPT;
 				else
 					rxMode = RX_MODE_INTERRUPT;
 			}
 
-			void UARTClass::setDMAMode(const UARTPeriph& periph)
+			void UARTClass::setDMAMode(const SubPeripheral& periph)
 			{
 				UART_EnableInterrupts();
 				UART_DMA_Init(periph);
 
-				if (periph == UARTPeriph::TX)
+				if (periph == SubPeripheral::TX)
 					txMode = TX_MODE_DMA;
 				else
 				{
@@ -415,8 +415,8 @@ namespace Thor
 				if (HAL_UART_Init(&uart_handle) != HAL_OK)
 					BasicErrorHandler(logError("Failed UART Init. Check settings."));
 
-				setBlockMode(UARTPeriph::TX);
-				setBlockMode(UARTPeriph::RX);
+				setBlockMode(SubPeripheral::TX);
+				setBlockMode(SubPeripheral::RX);
 
 				UART_PeriphState.uart_enabled = true;
 			}
@@ -499,9 +499,9 @@ namespace Thor
 				//TODO: Implement GPIO DeInit
 			}
 
-			void UARTClass::UART_DMA_Init(const UARTPeriph& periph)
+			void UARTClass::UART_DMA_Init(const SubPeripheral& periph)
 			{
-				if (periph == UARTPeriph::TX)
+				if (periph == SubPeripheral::TX)
 				{
 					UART_DMA_EnableClock();
 					hdma_uart_tx.Instance = srl_cfg[uart_channel].dmaTX.Instance;
@@ -547,9 +547,9 @@ namespace Thor
 				}
 			}
 
-			void UARTClass::UART_DMA_DeInit(const UARTPeriph& periph)
+			void UARTClass::UART_DMA_DeInit(const SubPeripheral& periph)
 			{
-				if (periph == UARTPeriph::TX)
+				if (periph == SubPeripheral::TX)
 				{
 					if (!UART_PeriphState.dma_enabled_tx)
 						return;
@@ -575,9 +575,9 @@ namespace Thor
 				}
 			}
 
-			void UARTClass::UART_DMA_EnableIT(const UARTPeriph& periph)
+			void UARTClass::UART_DMA_EnableIT(const SubPeripheral& periph)
 			{
-				if (periph == UARTPeriph::TX)
+				if (periph == SubPeripheral::TX)
 				{
 					HAL_NVIC_DisableIRQ(ITSettings_DMA_TX.IRQn);
 					HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_TX.IRQn);
@@ -599,9 +599,9 @@ namespace Thor
 				}
 			}
 
-			void UARTClass::UART_DMA_DisableIT(const UARTPeriph& periph)
+			void UARTClass::UART_DMA_DisableIT(const SubPeripheral& periph)
 			{
-				if (periph == UARTPeriph::TX)
+				if (periph == SubPeripheral::TX)
 				{
 					HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_TX.IRQn);
 					HAL_NVIC_DisableIRQ(ITSettings_DMA_TX.IRQn);

@@ -106,10 +106,10 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a13f34dde5a21b291d097d0db147babd6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">UART_Status</a> : int </td></tr>
-<tr class="separator:a13f34dde5a21b291d097d0db147babd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a088bda97f6bd0d447e64505e6006a74d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">UARTPeriph</a> : bool </td></tr>
-<tr class="separator:a088bda97f6bd0d447e64505e6006a74d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acefa493bcfec8bfaf9f01298c3638419"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#acefa493bcfec8bfaf9f01298c3638419">Status</a> : int </td></tr>
+<tr class="separator:acefa493bcfec8bfaf9f01298c3638419"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf919a190fb30f10ee725bfb4de82941"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#acf919a190fb30f10ee725bfb4de82941">SubPeripheral</a> : bool </td></tr>
+<tr class="separator:acf919a190fb30f10ee725bfb4de82941"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"></div><h2 class="groupheader">Typedef Documentation</h2>
@@ -130,23 +130,23 @@ of use and safe destruction. </p>
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="a13f34dde5a21b291d097d0db147babd6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a13f34dde5a21b291d097d0db147babd6">&#9670;&nbsp;</a></span>UART_Status</h2>
+<a id="acefa493bcfec8bfaf9f01298c3638419"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acefa493bcfec8bfaf9f01298c3638419">&#9670;&nbsp;</a></span>Status</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a13f34dde5a21b291d097d0db147babd6">Thor::Peripheral::UART::UART_Status</a> : int</td>
+          <td class="memname">enum <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#acefa493bcfec8bfaf9f01298c3638419">Thor::Peripheral::UART::Status</a> : int</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Indicates various possible states of the uart. This includes general messages as well as error codes. </p>
+<p>Indicates various possible states of the uart peripheral. This includes general messages as well as error codes. </p>
 
 </div>
 </div>
-<a id="a088bda97f6bd0d447e64505e6006a74d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a088bda97f6bd0d447e64505e6006a74d">&#9670;&nbsp;</a></span>UARTPeriph</h2>
+<a id="acf919a190fb30f10ee725bfb4de82941"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf919a190fb30f10ee725bfb4de82941">&#9670;&nbsp;</a></span>SubPeripheral</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -155,7 +155,7 @@ of use and safe destruction. </p>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#a088bda97f6bd0d447e64505e6006a74d">Thor::Peripheral::UART::UARTPeriph</a> : bool</td>
+          <td class="memname">enum <a class="el" href="namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#acf919a190fb30f10ee725bfb4de82941">Thor::Peripheral::UART::SubPeripheral</a> : bool</td>
         </tr>
       </table>
   </td>
@@ -164,7 +164,8 @@ of use and safe destruction. </p>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Explicitly defines a uart peripheral type </p>
+<p>Explicitly defines a uart peripheral type for different member functions of <a class="el" href="class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html">UARTClass</a>. Use of an enum class forces the<br />
+code to be more clear in intent. </p>
 
 </div>
 </div>

@@ -203,7 +203,8 @@ namespace Thor
 				SS_MANUAL_CONTROL     = (1u << 7),
 				SS_AUTOMATIC_CONTROL  = (1u << 8)
 			};
-
+			
+			/** Returns state of the spi hardware */
 			enum Status
 			{
 				SPI_NOT_INITIALIZED = -3,
