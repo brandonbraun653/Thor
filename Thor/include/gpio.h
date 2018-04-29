@@ -123,7 +123,6 @@ namespace Thor
 				Chimera::GPIO::Status init(Chimera::GPIO::Port port, uint8_t pin);
 				Chimera::GPIO::Status mode(Chimera::GPIO::Mode pin_mode, bool pullup);
 				Chimera::GPIO::Status write(Chimera::GPIO::State state);
-				//Eventually add more as needed
 				#endif 
 	
 			private:

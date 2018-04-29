@@ -4,8 +4,6 @@
 
 #include <Thor/include/config.h>
 
-#include <boost/container/flat_map.hpp>
-
 /** @namespace Thor */
 namespace Thor
 {
@@ -15,6 +13,7 @@ namespace Thor
 		/** @namespace Thor::Definitions::GPIO */
 		namespace GPIO
 		{
+			/** Different possible phrasings of instructing a pin to turn on/off */
 			enum LogicLevel : bool
 			{
 				LOW = false,
@@ -26,11 +25,6 @@ namespace Thor
 				ONE = true,
 				ENABLED = true
 			};
-
-
-			extern boost::container::flat_map<GPIO_TypeDef*, uint32_t> rcc_gpio_mask;
-
-			
 		}
 		
 		/** @namespace Thor::Definitions::TIMER */
@@ -288,7 +282,7 @@ namespace Thor
 			#define DMA1_S6FCR	(*(uint32_t*)(DMA1_BASE + DMA_OFFSET_SxFCR(6)))
 			#define DMA1_S7FCR	(*(uint32_t*)(DMA1_BASE + DMA_OFFSET_SxFCR(7)))
 	
-			/* Register Definitions for DMA1 */
+			/* Register Definitions for DMA2 */
 			#define DMA2_LISR	(*(uint32_t*)(DMA2_BASE + DMA_OFFSET_LISR))
 			#define DMA2_HISR	(*(uint32_t*)(DMA2_BASE + DMA_OFFSET_HISR))
 			#define DMA2_LIFCR  (*(uint32_t*)(DMA2_BASE + DMA_OFFSET_LIFCR))
@@ -348,27 +342,33 @@ namespace Thor
 				MEM_TO_PERIPH,
 				MEM_TO_MEM,
 				TRANSFER_DIRECTION_UNDEFINED
-			}
-			;
-	
+			};
+		}
 		
-	
+		/** @namespace Thor::Defintions::UART */
+		namespace UART
+		{
+			const unsigned int MAX_UART_CHANNELS = 4;			/**< Total possible UART specific channels for any supported STM32 chip. */
+			const unsigned int UART_PACKET_BUFFER_SIZE = 32;	/**< Defines the max number of TX/RX packets that can be held from Thor::Peripheral::UART::UARTClass::UARTPacket */
+			
+			//TODO: Need to go back through and understand how this one works...
+			const unsigned int UART_PACKET_QUEUE_SIZE = 10;		/**< Defines the max number of buffers to hold RX packets */
+		}
+		
+		/** @namespace Thor::Definitions::USART */
+		namespace USART
+		{
+			const unsigned int MAX_USART_CHANNELS = 4;			/**< Total possible USART specific channels for any supported STM32 chip. */
+			
 		}
 		
 		/** @namespace Thor::Definitions::Serial */
 		namespace Serial
 		{
-			const unsigned int MAX_SERIAL_CHANNELS = 8;			/**< Total possible UART or USART channels for any supported STM32 chip. */
-			const unsigned int MAX_UART_CHANNELS = 4;			/**< Total possible UART specific channels for any supported STM32 chip. */
-			const unsigned int MAX_USART_CHANNELS = 4;			/**< Total possible USART specific channels for any supported STM32 chip. */
-			const unsigned int UART_PACKET_BUFFER_SIZE = 32;	/**< Defines the max number of TX/RX packets that can be held from Thor::Peripheral::UART::UARTClass::UARTPacket */
-			
-			//TODO: Need to go back through and understand how this one works...
-			const unsigned int UART_PACKET_QUEUE_SIZE = 10;		/**< Defines the max number of buffers to hold RX packets */
+			const unsigned int MAX_SERIAL_CHANNELS = Thor::Definitions::UART::MAX_UART_CHANNELS + Thor::Definitions::USART::MAX_USART_CHANNELS;			/**< Total possible UART or USART channels for any supported STM32 chip. */
+		
 
-			/** @enum Modes 
-			 *	Common peripheral transmit and receive communication modes 
-			 */
+			/** Common peripheral transmit and receive communication modes */
 			enum Modes : uint8_t
 			{
 				TX_MODE_NONE,
@@ -382,9 +382,7 @@ namespace Thor
 
 			};
 			
-			/** @enum BaudRate
-			 *	Supported communication baudrates
-			 */
+			/** Supported communication baudrates */
 			enum BaudRate : uint32_t
 			{
 				SERIAL_BAUD_110 = 100u,
@@ -402,9 +400,38 @@ namespace Thor
 				SERIAL_BAUD_460800 = 460800u,
 				SERIAL_BAUD_921600 = 921600u
 			};
+			
+			/** Indicates various possible states of the serial peripheral. This includes general messages as well as error codes. */
+			enum Status : int
+			{
+				#if defined(USING_FREERTOS)
+				PERIPH_LOCKED                      = -4,
+				#endif
+				PERIPH_NOT_INITIALIZED             = -3,
+				PERIPH_ERROR                       = -2,
+				PERIPH_NOT_READY                   = -1,
+				PERIPH_OK                          = 0,
+				TX_IN_PROGRESS,
+				RX_OK,
+				PACKET_TOO_LARGE_FOR_BUFFER
+			};
+			
+			/** Explicitly defines a peripheral type for different member functions of SerialClass, UARTClass, or USARTClass. */
+			enum SubPeripheral : bool
+			{
+				RX = false,
+				TX = true
+			};
+			
+			/** Allows mapping of either a USART or UART peripheral to the serial class. This is intended to be internal use only. */
+			struct HardwareClassMapping
+			{
+				bool ON_UART;
+				uint8_t peripheral_number;
+			};
 
-		}
 	}
+}
 	
 	//TODO: Deprecate this!
 	namespace Libraries

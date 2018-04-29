@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['ringbuffer',['RingBuffer',['../class_smart_buffer_1_1_ring_buffer.html',1,'SmartBuffer']]],
-  ['ringbuffer_3c_20size_5ft_20_3e',['RingBuffer&lt; size_t &gt;',['../class_smart_buffer_1_1_ring_buffer.html',1,'SmartBuffer']]],
-  ['ringbuffer_3c_20uint16_5ft_20_3e',['RingBuffer&lt; uint16_t &gt;',['../class_smart_buffer_1_1_ring_buffer.html',1,'SmartBuffer']]],
-  ['ringbufferclass',['RingBufferClass',['../class_ring_buffer_class.html',1,'']]]
+  ['periphconfig',['PeriphConfig',['../struct_thor_1_1_interrupt_1_1_d_m_a_1_1_periph_config.html',1,'Thor::Interrupt::DMA']]],
+  ['pinconfig',['PinConfig',['../struct_thor_1_1_peripheral_1_1_g_p_i_o_1_1_pin_config.html',1,'Thor::Peripheral::GPIO']]]
 ];

@@ -1,14 +1,22 @@
 var searchData=
 [
-  ['defaults',['Defaults',['../namespace_thor_1_1_defaults.html',1,'Thor']]],
-  ['definitions',['Definitions',['../namespace_thor_1_1_definitions.html',1,'Thor']]],
-  ['dma',['DMA',['../namespace_thor_1_1_definitions_1_1_d_m_a.html',1,'Thor::Definitions']]],
-  ['gpio',['GPIO',['../namespace_thor_1_1_defaults_1_1_g_p_i_o.html',1,'Thor::Defaults::GPIO'],['../namespace_thor_1_1_definitions_1_1_g_p_i_o.html',1,'Thor::Definitions::GPIO']]],
-  ['peripheral',['Peripheral',['../namespace_thor_1_1_peripheral.html',1,'Thor']]],
-  ['serial',['Serial',['../namespace_thor_1_1_defaults_1_1_serial.html',1,'Thor::Defaults::Serial'],['../namespace_thor_1_1_definitions_1_1_serial.html',1,'Thor::Definitions::Serial']]],
-  ['spi',['SPI',['../namespace_thor_1_1_defaults_1_1_s_p_i.html',1,'Thor::Defaults::SPI'],['../namespace_thor_1_1_definitions_1_1_s_p_i.html',1,'Thor::Definitions::SPI']]],
-  ['thor',['Thor',['../namespace_thor.html',1,'']]],
-  ['timer',['Timer',['../namespace_thor_1_1_defaults_1_1_timer.html',1,'Thor::Defaults::Timer'],['../namespace_thor_1_1_definitions_1_1_t_i_m_e_r.html',1,'Thor::Definitions::TIMER']]],
-  ['timerflags',['TimerFlags',['../struct_timer_flags.html',1,'']]],
-  ['uart',['UART',['../namespace_thor_1_1_peripheral_1_1_u_a_r_t.html',1,'Thor::Peripheral']]]
+  ['sd_5fcardinfo',['SD_CardInfo',['../struct_thor_1_1_libraries_1_1_s_d_1_1_s_d___card_info.html',1,'Thor::Libraries::SD']]],
+  ['sd_5fcid',['SD_CID',['../struct_thor_1_1_libraries_1_1_s_d_1_1_s_d___c_i_d.html',1,'Thor::Libraries::SD']]],
+  ['sd_5fcsd',['SD_CSD',['../struct_thor_1_1_libraries_1_1_s_d_1_1_s_d___c_s_d.html',1,'Thor::Libraries::SD']]],
+  ['serial',['Serial',['../struct_serial.html',1,'']]],
+  ['serialclass',['SerialClass',['../class_thor_1_1_peripheral_1_1_serial_1_1_serial_class.html',1,'Thor::Peripheral::Serial']]],
+  ['serialconfig',['SerialConfig',['../struct_thor_1_1_defaults_1_1_serial_1_1_serial_config.html',1,'Thor::Defaults::Serial']]],
+  ['setblockmode',['setBlockMode',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a646fb6c95771654d8379ce5a02d18198',1,'Thor::Peripheral::UART::UARTClass']]],
+  ['setdmamode',['setDMAMode',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a7c563efd2602a26a48c186ca32d6310a',1,'Thor::Peripheral::UART::UARTClass']]],
+  ['setitmode',['setITMode',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#ac100abae7835acc171446c2c38d9e7be',1,'Thor::Peripheral::UART::UARTClass']]],
+  ['spi_5fdmahandlermanager',['SPI_DMAHandlerManager',['../class_thor_1_1_interrupt_1_1_s_p_i_1_1_s_p_i___d_m_a_handler_manager.html',1,'Thor::Interrupt::SPI']]],
+  ['spi_5finitializer',['SPI_Initializer',['../struct_s_p_i___initializer.html',1,'']]],
+  ['spiclass',['SPIClass',['../class_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class.html',1,'Thor::Peripheral::SPI']]],
+  ['spiclassstatus',['SPIClassStatus',['../struct_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class_1_1_s_p_i_class_status.html',1,'Thor::Peripheral::SPI::SPIClass']]],
+  ['spiconfig',['SPIConfig',['../struct_thor_1_1_defaults_1_1_s_p_i_1_1_s_p_i_config.html',1,'Thor::Defaults::SPI']]],
+  ['spipacket',['SPIPacket',['../struct_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class_1_1_s_p_i_packet.html',1,'Thor::Peripheral::SPI::SPIClass']]],
+  ['status',['Status',['../namespace_thor_1_1_definitions_1_1_s_p_i.html#a9b667c06f7b761cc1e6006794bddbf10',1,'Thor::Definitions::SPI::Status()'],['../namespace_thor_1_1_definitions_1_1_serial.html#a7d66fc813a50388efcc16107c864f948',1,'Thor::Definitions::Serial::Status()']]],
+  ['struct_5fv1',['struct_v1',['../struct_thor_1_1_libraries_1_1_s_d_1_1struct__v1.html',1,'Thor::Libraries::SD']]],
+  ['struct_5fv2',['struct_v2',['../struct_thor_1_1_libraries_1_1_s_d_1_1struct__v2.html',1,'Thor::Libraries::SD']]],
+  ['subperipheral',['SubPeripheral',['../namespace_thor_1_1_definitions_1_1_serial.html#a1a3716aad8b1534002639eaec645a2e7',1,'Thor::Definitions::Serial']]]
 ];

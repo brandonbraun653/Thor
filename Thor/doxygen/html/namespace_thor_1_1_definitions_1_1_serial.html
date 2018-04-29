@@ -86,6 +86,7 @@ $(document).ready(function(){initNavTree('namespace_thor_1_1_definitions_1_1_ser
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
@@ -93,25 +94,26 @@ $(document).ready(function(){initNavTree('namespace_thor_1_1_definitions_1_1_ser
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_thor_1_1_definitions_1_1_serial_1_1_hardware_class_mapping.html">HardwareClassMapping</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:aeb46e286ac4da2f34a54a4081f1539ef"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#aeb46e286ac4da2f34a54a4081f1539ef">Modes</a> : uint8_t </td></tr>
 <tr class="separator:aeb46e286ac4da2f34a54a4081f1539ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbcf65573f1e9b38343b93c74df6516e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#acbcf65573f1e9b38343b93c74df6516e">BaudRate</a> : uint32_t </td></tr>
 <tr class="separator:acbcf65573f1e9b38343b93c74df6516e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d66fc813a50388efcc16107c864f948"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#a7d66fc813a50388efcc16107c864f948">Status</a> : int </td></tr>
+<tr class="separator:a7d66fc813a50388efcc16107c864f948"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a3716aad8b1534002639eaec645a2e7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#a1a3716aad8b1534002639eaec645a2e7">SubPeripheral</a> : bool </td></tr>
+<tr class="separator:a1a3716aad8b1534002639eaec645a2e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:aa5400ef1b08a82859bffd1f3269486c3"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#aa5400ef1b08a82859bffd1f3269486c3">MAX_SERIAL_CHANNELS</a> = 8</td></tr>
+<tr class="memitem:aa5400ef1b08a82859bffd1f3269486c3"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#aa5400ef1b08a82859bffd1f3269486c3">MAX_SERIAL_CHANNELS</a> = Thor::Definitions::UART::MAX_UART_CHANNELS + <a class="el" href="namespace_thor_1_1_definitions_1_1_u_s_a_r_t.html#a7dd2ba9e4fe318ad90468e56a71452f6">Thor::Definitions::USART::MAX_USART_CHANNELS</a></td></tr>
 <tr class="separator:aa5400ef1b08a82859bffd1f3269486c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a850da420394474b63be6879773a26002"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#a850da420394474b63be6879773a26002">MAX_UART_CHANNELS</a> = 4</td></tr>
-<tr class="separator:a850da420394474b63be6879773a26002"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8603842b2b9b499e84951e42128db263"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#a8603842b2b9b499e84951e42128db263">MAX_USART_CHANNELS</a> = 4</td></tr>
-<tr class="separator:a8603842b2b9b499e84951e42128db263"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c69843e32d84eab9993a056b2a37b10"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#a7c69843e32d84eab9993a056b2a37b10">UART_PACKET_BUFFER_SIZE</a> = 32</td></tr>
-<tr class="separator:a7c69843e32d84eab9993a056b2a37b10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb958662def18d9a50baf0da68e6f83f"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#adb958662def18d9a50baf0da68e6f83f">UART_PACKET_QUEUE_SIZE</a> = 10</td></tr>
-<tr class="separator:adb958662def18d9a50baf0da68e6f83f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"></div><h2 class="groupheader">Enumeration Type Documentation</h2>
@@ -145,6 +147,36 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="a7d66fc813a50388efcc16107c864f948"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d66fc813a50388efcc16107c864f948">&#9670;&nbsp;</a></span>Status</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#a7d66fc813a50388efcc16107c864f948">Thor::Definitions::Serial::Status</a> : int</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Indicates various possible states of the serial peripheral. This includes general messages as well as error codes. </p>
+
+</div>
+</div>
+<a id="a1a3716aad8b1534002639eaec645a2e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a3716aad8b1534002639eaec645a2e7">&#9670;&nbsp;</a></span>SubPeripheral</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespace_thor_1_1_definitions_1_1_serial.html#a1a3716aad8b1534002639eaec645a2e7">Thor::Definitions::Serial::SubPeripheral</a> : bool</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Explicitly defines a peripheral type for different member functions of SerialClass, UARTClass, or USARTClass. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="aa5400ef1b08a82859bffd1f3269486c3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa5400ef1b08a82859bffd1f3269486c3">&#9670;&nbsp;</a></span>MAX_SERIAL_CHANNELS</h2>
@@ -153,71 +185,11 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const unsigned int Thor::Definitions::Serial::MAX_SERIAL_CHANNELS = 8</td>
+          <td class="memname">const unsigned int Thor::Definitions::Serial::MAX_SERIAL_CHANNELS = Thor::Definitions::UART::MAX_UART_CHANNELS + <a class="el" href="namespace_thor_1_1_definitions_1_1_u_s_a_r_t.html#a7dd2ba9e4fe318ad90468e56a71452f6">Thor::Definitions::USART::MAX_USART_CHANNELS</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Total possible UART or USART channels for any supported STM32 chip. </p>
-
-</div>
-</div>
-<a id="a850da420394474b63be6879773a26002"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a850da420394474b63be6879773a26002">&#9670;&nbsp;</a></span>MAX_UART_CHANNELS</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const unsigned int Thor::Definitions::Serial::MAX_UART_CHANNELS = 4</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Total possible UART specific channels for any supported STM32 chip. </p>
-
-</div>
-</div>
-<a id="a8603842b2b9b499e84951e42128db263"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8603842b2b9b499e84951e42128db263">&#9670;&nbsp;</a></span>MAX_USART_CHANNELS</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const unsigned int Thor::Definitions::Serial::MAX_USART_CHANNELS = 4</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Total possible USART specific channels for any supported STM32 chip. </p>
-
-</div>
-</div>
-<a id="a7c69843e32d84eab9993a056b2a37b10"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c69843e32d84eab9993a056b2a37b10">&#9670;&nbsp;</a></span>UART_PACKET_BUFFER_SIZE</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const unsigned int Thor::Definitions::Serial::UART_PACKET_BUFFER_SIZE = 32</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Defines the max number of TX/RX packets that can be held from <a class="el" href="struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html">Thor::Peripheral::UART::UARTClass::UARTPacket</a> </p>
-
-</div>
-</div>
-<a id="adb958662def18d9a50baf0da68e6f83f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb958662def18d9a50baf0da68e6f83f">&#9670;&nbsp;</a></span>UART_PACKET_QUEUE_SIZE</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const unsigned int Thor::Definitions::Serial::UART_PACKET_QUEUE_SIZE = 10</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Defines the max number of buffers to hold RX packets </p>
+<p>Total possible UART or <a class="el" href="namespace_thor_1_1_definitions_1_1_u_s_a_r_t.html">USART</a> channels for any supported STM32 chip. </p>
 
 </div>
 </div>

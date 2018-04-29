@@ -37,31 +37,9 @@ namespace Thor
 		/** @namespace Thor::Peripheral::UART */
 		namespace UART
 		{
-			/** Indicates various possible states of the uart peripheral. This includes general 
-			 *	messages as well as error codes.
-			 **/
-			enum Status : int
-			{
-				#if defined(USING_FREERTOS)
-				UART_LOCKED                      = -4,
-				#endif
-				UART_NOT_INITIALIZED             = -3,
-				UART_ERROR                       = -2,
-				UART_NOT_READY                   = -1,
-				UART_OK                          = 0,
-				UART_TX_IN_PROGRESS,
-				UART_RX_OK,
-				UART_PACKET_TOO_LARGE_FOR_BUFFER
-			};
+			using namespace Thor::Definitions::Serial;
+			using namespace Thor::Definitions::UART;
 			
-			/** Explicitly defines a uart peripheral type for different member functions of UARTClass. Use of an enum class forces the\n
-			 * 	code to be more clear in intent.
-			 **/
-			enum class SubPeripheral : bool
-			{
-				RX = false,
-				TX = true
-			};
 
 			/** A higher level uart interface built ontop of the STM32 HAL that abstracts away most 
 			 *	of the details associated with setup and general usage. It supports both transmission\n
@@ -74,12 +52,11 @@ namespace Thor
 			class UARTClass
 			{
 			public:
-				
 				/** Initializes with default parameters.
 				 *	Baudrate is set to 115200 and both TX and RX modes are set to blocking. 
 				 *	
-				 *	@return Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it 
-				 *			will return a code from Thor::Peripheral::UART::UART_Status
+				 *	@return Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it 
+				 *			will return a code from Thor::Peripheral::Serial::Status
 				 **/
 				Status begin();
 				
@@ -87,21 +64,19 @@ namespace Thor
 				 *	Both TX and RX modes are set to blocking.
 				 *
 				 *  @param[in] baud Desired baud rate. Accepts standard rates from Thor::Definitions::Serial::Modes
-				 *  @return Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it 
-				 *			will return a code from Thor::Peripheral::UART::UART_Status
+				 *  @return Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it 
+				 *			will return a code from Thor::Peripheral::Serial::Status
 				 **/
-				Status begin(Thor::Definitions::Serial::BaudRate baud);
+				Status begin(const BaudRate& baud);
 				
 				/** Initializes with a given baud rate and TX/RX modes.
 				 *	@param[in] baud		Desired baud rate. Accepts standard rates from Thor::Definitions::Serial::BaudRate
 				 *	@param[in] tx_mode	Sets the TX mode to Blocking, Interrupt, or DMA from Thor::Definitions::Serial::Modes
 				 *	@param[in] rx_mode	Sets the RX mode to Blocking, Interrupt, or DMA from Thor::Definitions::Serial::Modes
-				 *	@return	Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it 
-				 *			will return a code from Thor::Peripheral::UART::UART_Status
+				 *	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it 
+				 *			will return a code from Thor::Peripheral::Serial::Status
 				 **/
-				Status begin(Thor::Definitions::Serial::BaudRate baud, 
-									Thor::Definitions::Serial::Modes tx_mode, 
-									Thor::Definitions::Serial::Modes rx_mode);
+				Status begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode);
 				
 				Status write(uint8_t* val, size_t length);
 				Status write(char* string, size_t length);
@@ -161,7 +136,7 @@ namespace Thor
 				void IRQHandler_RXDMA();
 
 			private:
-				UARTClass(int channel);
+				UARTClass(const int& channel);
 
 			public:
 				/** A factory method to create a new UARTClass object.
@@ -173,7 +148,7 @@ namespace Thor
 				 *	@param[in] channel Hardware peripheral channel number (i.e. 1 for UART1, 4 for UART4, etc)
 				 *	@return Shared pointer to the new object
 				 **/
-				static boost::shared_ptr<UARTClass> create(int channel);
+				static boost::shared_ptr<UARTClass> create(const int channel);
 				~UARTClass();
 				
 				
@@ -213,7 +188,7 @@ namespace Thor
 				boost::circular_buffer<UARTPacket> TXPacketBuffer, RXPacketBuffer;
 
 				/* Asynchronous RX buffer for many packets */
-				uint8_t packetQueue[Thor::Definitions::Serial::UART_PACKET_QUEUE_SIZE][Thor::Definitions::Serial::UART_PACKET_BUFFER_SIZE];
+				uint8_t packetQueue[UART_PACKET_QUEUE_SIZE][UART_PACKET_BUFFER_SIZE];
 				uint8_t currentQueuePacket = 0;
 				uint32_t rxAsyncPacketSize = 0;
 				int totalWaitingPackets = 0;

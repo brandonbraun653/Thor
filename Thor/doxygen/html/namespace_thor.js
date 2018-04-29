@@ -1,7 +1,8 @@
 var namespace_thor =
 [
     [ "Defaults", "namespace_thor_1_1_defaults.html", "namespace_thor_1_1_defaults" ],
-    [ "Definitions", "namespace_thor_1_1_definitions.html", null ],
+    [ "Definitions", "namespace_thor_1_1_definitions.html", "namespace_thor_1_1_definitions" ],
+    [ "Defintions", null, null ],
     [ "Interrupt", null, [
       [ "DMA", null, [
         [ "DMAHandler", "class_thor_1_1_interrupt_1_1_d_m_a_1_1_d_m_a_handler.html", null ],
