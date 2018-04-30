@@ -108,6 +108,51 @@ namespace Thor
 				return PERIPH_OK;
 			}
 
+			Status USARTClass::readPacket(uint8_t* buff, size_t buff_length)
+			{
+				return PERIPH_OK;
+			}
+			
+			int USARTClass::availablePackets()
+			{
+				return 0;
+			}
+			
+			size_t USARTClass::nextPacketSize()
+			{
+				return (size_t)0;
+			}
+			
+			void USARTClass::flush()
+			{
+				
+			}
+			
+			void USARTClass::end()
+			{
+				
+			}
+			
+			void USARTClass::setBlockMode(const SubPeripheral& periph)
+			{
+				
+			}
+			
+			void USARTClass::setITMode(const SubPeripheral& periph)
+			{
+				
+			}
+			
+			void USARTClass::setDMAMode(const SubPeripheral& periph)
+			{
+				
+			}
+			
+
+
+
+
+
 
 			USARTClass::USARTClass(const int& channel)
 			{

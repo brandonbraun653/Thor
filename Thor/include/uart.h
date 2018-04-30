@@ -78,9 +78,35 @@ namespace Thor
 				 **/
 				Status begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode);
 				
+				/** Writes data to the serial output gpio
+				*	@param[in] val		Pointer to an array of data to be sent out
+				*	@param[in] length	The length of data to be sent out
+				*	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
+				*			will return a code from Thor::Peripheral::Serial::Status
+				**/
 				Status write(uint8_t* val, size_t length);
+
+				/** Writes data to the serial output gpio
+				*	@param[in] string	Pointer to a mutable character array
+				*	@param[in] length	The length of data to be sent out
+				*	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
+				*			will return a code from Thor::Peripheral::Serial::Status
+				**/
 				Status write(char* string, size_t length);
+
+				/** Writes data to the serial output gpio
+				*	@param[in] string	Pointer to a immutable character array. The length is internally calculated with strlen()
+				*	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
+				*			will return a code from Thor::Peripheral::Serial::Status
+				**/
 				Status write(const char* string);
+
+				/** Writes data to the serial output gpio
+				*	@param[in] string	Pointer to an immutable character array
+				*	@param[in] length	The length of data to be sent out
+				*	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
+				*			will return a code from Thor::Peripheral::Serial::Status
+				**/
 				Status write(const char* string, size_t length);
 				
 				/** Reads the next packet received into a buffer 
@@ -92,11 +118,13 @@ namespace Thor
 				Status readPacket(uint8_t* buff, size_t buff_length);
 				
 				/** Returns how many unread received packets are available 
-				 *	@return number of available packets*/
+				 *	@return number of available packets
+				 **/
 				int availablePackets();
 				
 				/** Gets the size of the next received packet in the buffer 
-				 *	@return next packet size */
+				 *	@return next packet size 
+				 **/
 				size_t nextPacketSize();
 				
 				/** Clears the receive buffer entirely and waits for all buffered transmissions to complete */
@@ -106,22 +134,26 @@ namespace Thor
 				void end();
 			
 				/** Provides a convenient way for the user to specifiy advanced configuration settings.
-				 *	@param[in] config Configuration settings customized from the STM32 UART HAL struct defintion */
+				 *	@param[in] config Configuration settings customized from the STM32 UART HAL struct defintion 
+				 **/
 				void attachSettings(UART_InitTypeDef config);
 				
 				/** Sets the specified peripheral to blocking mode. It also takes into account any settings changes that might
 				 *	be necessary.
-				 *	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph */
+				 *	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph 
+				 **/
 				void setBlockMode(const SubPeripheral& periph);
 				
 				/** Sets the specified peripheral to interrupt mode. It also takes into account any settings changes that might
 				 *	be necessary.
-				 *	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph */
+				 *	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph 
+				 **/
 				void setITMode(const SubPeripheral& periph);
 				
 				/** Sets the specified peripheral to dma mode. It also takes into account any settings changes that might
 				 *	be necessary.
-				 *	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph */
+				 *	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph 
+				 **/
 				void setDMAMode(const SubPeripheral& periph);
 				
 				/** Primary handler for interrupt mode in TX or RX.

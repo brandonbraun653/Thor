@@ -378,8 +378,7 @@ namespace Thor
 				RX_MODE_NONE,
 				RX_MODE_BLOCKING,
 				RX_MODE_INTERRUPT,
-				RX_MODE_DMA,
-
+				RX_MODE_DMA
 			};
 			
 			/** Supported communication baudrates */
@@ -404,9 +403,7 @@ namespace Thor
 			/** Indicates various possible states of the serial peripheral. This includes general messages as well as error codes. */
 			enum Status : int
 			{
-				#if defined(USING_FREERTOS)
 				PERIPH_LOCKED                      = -4,
-				#endif
 				PERIPH_NOT_INITIALIZED             = -3,
 				PERIPH_ERROR                       = -2,
 				PERIPH_NOT_READY                   = -1,
