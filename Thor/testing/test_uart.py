@@ -1,7 +1,9 @@
 import unittest
-
+from pystlink import PyStlink
 # import some definitions that explain what different kind of commands are available for the user
 
+
+# Note: If PyStlink can't find the usb it's probably due to a driver issue. See: https://goo.gl/tDXv54
 
 class TestUART(unittest.TestCase):
     @classmethod
@@ -10,7 +12,9 @@ class TestUART(unittest.TestCase):
         Check for device existence, can connect, gives ack, etc.
         :return:
         """
-        pass
+        cls.stlink = PyStlink()
+        cls.stlink.start()
+
 
     @classmethod
     def tearDownClass(cls):
@@ -35,22 +39,22 @@ class TestUART(unittest.TestCase):
         pass
 
     def test_BlockingTX(self):
-        raise NotImplementedError
+        pass
 
     def test_BlockingRX(self):
-        raise NotImplementedError
+        pass
 
     def test_InterruptTX(self):
-        raise NotImplementedError
+        pass
 
     def test_InterruptRX(self):
-        raise NotImplementedError
+        pass
 
     def test_DmaTX(self):
-        raise NotImplementedError
+        pass
 
     def test_DmaRX(self):
-        raise NotImplementedError
+        pass
 
     def set_mode(self, peripheral, mode):
         pass
@@ -67,6 +71,7 @@ class TestUART(unittest.TestCase):
         :return:
         """
         pass
+
 
 if __name__ == '__main__':
     unittest.main()
