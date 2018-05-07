@@ -4,7 +4,7 @@
  * Globally overload the new/delete operators to use the FreeRTOS
  * mem management functions. Without this, all hell will break loose.
  *---------------------------------------------------------------*/
-#if	defined(USING_FREERTOS) && defined __cplusplus
+#if	defined(USING_FREERTOS) && !defined(USING_ERPC) && defined __cplusplus
 #include "FreeRTOS.h"
 #include "new"
 

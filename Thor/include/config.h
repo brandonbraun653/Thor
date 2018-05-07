@@ -18,10 +18,10 @@
 * Check for existence of various files
 *-------------------------------------------*/
 /* Thor Files */
-#if !(__has_include("thor_peripherals.hpp"))
-#error FATAL ERROR: Please create a "thor_peripherals.hpp" file to define which peripherals are used in the build
-#else#include "thor_peripherals.hpp"
-#endif
+//#if !(__has_include("thor_peripherals.hpp"))
+//#error FATAL ERROR: Please create a "thor_peripherals.hpp" file to define which peripherals are used in the build
+//#else//#include "thor_peripherals.hpp"
+//#endif
 
 /* Chimera Files */
 #if __has_include("Chimera/chimera.hpp")
@@ -53,12 +53,14 @@
 #endif
 
 /* FreeRTOS Files */
-#if __has_include("FreeRTOS.h")
+#if __has_include("FreeRTOS.h") && !defined(USING_FREERTOS)
 	/* Different than the VisualGDB Profiler Preprocessor 'USE_FREERTOS' */
-	#ifndef USING_FREERTOS
-	#error Please define USE_FREERTOS in the project properties preprocessor tab.
-	#endif
+	#warning FreeRTOS detected but not enabled. To enable, add USE_FREERTOS in the project properties preprocessor tab.
 #endif
+
+#if __has_include("erpc_config.h")
+	#define USING_ERPC
+#endif 
 
 /*-------------------------------------------
 * Check for needed preprocessor definitions 

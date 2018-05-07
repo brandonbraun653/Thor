@@ -22,312 +22,312 @@ namespace Thor
 					{},
 
 					//RX pin
-			{},
+					{},
 
-			//UART/USART Instance Ptr
-			nullptr,
+					//UART/USART Instance Ptr
+					nullptr,
 
-			//IT_HW
-			{},
+					//IT_HW
+					{},
 
-			//DMA_IT_TX
-			{},
+					//DMA_IT_TX
+					{},
 
-			//DMA_IT_RX
-			{},
+					//DMA_IT_RX
+					{},
 
-			//DMA TX settings
-			{},
+					//DMA TX settings
+					{},
 
-			//DMA RX settings
-			{}
+					//DMA RX settings
+					{}
 				},
 
 				/* SERIAL 1: */
-		{
-			#if defined(ENABLE_USART1)
-			#if defined(STM32F767xx) || defined(STM32F446xx)
-			//TX pin
-			{ GPIOB, PIN_6, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART1 },
+				{
+				#if defined(USART1)
+					#if defined(STM32F767xx) || defined(STM32F446xx)
+					//TX pin
+					{ GPIOB, PIN_6, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART1 },
 
-			//RX Pin
-			{ GPIOB, PIN_7, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART1 },
+					//RX Pin
+					{ GPIOB, PIN_7, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART1 },
 
-			//Instance Ptr
-			USART1,
+					//Instance Ptr
+					USART1,
 
-			//IT_HW
-			{},
+					//IT_HW
+					{},
 
-			//DMA_IT_TX
-			{},
+					//DMA_IT_TX
+					{},
 
-			//DMA_IT_RX
-			{},
+					//DMA_IT_RX
+					{},
 
-			//DMA TX settings
-			{},
+					//DMA TX settings
+					{},
 
-			//DMA RX settings
-			{}
-			#endif
+					//DMA RX settings
+					{}
+					#endif
 
-			/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
+					/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
 
 				#endif
-		},
+				},
 
 				/* SERIAL 2: */
-		{
-			#if defined(ENABLE_USART2) && !defined(ENABLE_UART2)
-			#if defined(STM32F767xx) || defined(STM32F446xx)
-			//TX pin
-			{ GPIOD, PIN_5, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
+				{
+				#if defined(USART2) && !defined(UART2)
+					#if defined(STM32F767xx) || defined(STM32F446xx)
+					//TX pin
+					{ GPIOD, PIN_5, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
 
-			//RX Pin
-			{ GPIOD, PIN_6, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
+					//RX Pin
+					{ GPIOD, PIN_6, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
 
-			//Instance Ptr
-			USART2,
+					//Instance Ptr
+					USART2,
 
-			//IT_HW
-			{},
+					//IT_HW
+					{},
 
-			//DMA_IT_TX
-			{},
+					//DMA_IT_TX
+					{},
 
-			//DMA_IT_RX
-			{},
+					//DMA_IT_RX
+					{},
 
-			//DMA TX settings
-			{},
+					//DMA TX settings
+					{},
 
-			//DMA RX settings
-			{}
-			#endif
+					//DMA RX settings
+					{}
+					#endif
 
-			/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
+					/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
 				#endif
 
-				#if defined(ENABLE_UART2) && !defined(ENABLE_USART2)
-				#if defined(STM32F446xx)
-			//TX pin
-			{ GPIOA, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
+				#if defined(UART2) && !defined(USART2)
+					#if defined(STM32F446xx)
+					//TX pin
+					{ GPIOA, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
 
-				//RX Pin
-			{ GPIOA, PIN_3, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
+						//RX Pin
+					{ GPIOA, PIN_3, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
 
-				//Instance Ptr
-				USART2,
+						//Instance Ptr
+						USART2,
 
-				//IT_HW
-			{ USART2_IRQn, NVIC_PRIORITYGROUP_4, 6u, 0u },
+						//IT_HW
+					{ USART2_IRQn, NVIC_PRIORITYGROUP_4, 6u, 0u },
 
-				//DMA_IT_TX
-			{},
+						//DMA_IT_TX
+					{},
 
-				//DMA_IT_RX
-			{},
+						//DMA_IT_RX
+					{},
 
-				//DMA TX settings
-			{},
+						//DMA TX settings
+					{},
 
-				//DMA RX settings
-			{}
+						//DMA RX settings
+					{}
+						#endif
+
 				#endif
-
-				#endif
-		},
+				},
 
 				/* SERIAL 3: */
-		{
-			#if defined(ENABLE_USART3) || defined(ENABLE_UART3)
-			#if defined(STM32F767xx) || defined(STM32F446xx)
-			//TX Pin
-			{ GPIOB, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART3 },
+				{
+				#if defined(USART3) || defined(UART3)
+					#if defined(STM32F767xx) || defined(STM32F446xx)
+					//TX Pin
+					{ GPIOB, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART3 },
 
-			//RX Pin
-			{ GPIOB, PIN_11, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART3 },
+					//RX Pin
+					{ GPIOB, PIN_11, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART3 },
 
-			//Instance Ptr
-			USART3,
+					//Instance Ptr
+					USART3,
 
-			//IT_HW
-			{},
+					//IT_HW
+					{},
 
-			//DMA_IT_TX
-			{},
+					//DMA_IT_TX
+					{},
 
-			//DMA_IT_RX
-			{},
+					//DMA_IT_RX
+					{},
 
-			//DMA TX settings
-			{},
+					//DMA TX settings
+					{},
 
-			//DMA RX settings
-			{}
-			#endif
-			/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
-			#endif
-		},
+					//DMA RX settings
+					{}
+					#endif
+					/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
+				#endif
+				},
 
 				/* SERIAL 4: */
-		{
-			#if defined(ENABLE_UART4)
-			#if defined(STM32F767xx) || defined(STM32F446xx)
+				{
+				#if defined(UART4)
+					#if defined(STM32F767xx) || defined(STM32F446xx)
 
-			//TX Pin
-			{ GPIOA, PIN_0, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART4 }, //Normally C10, changed for VFCS
+					//TX Pin
+					{ GPIOA, PIN_0, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART4 }, //Normally C10, changed for VFCS
 
-																		 //RX Pin
-			{ GPIOA, PIN_1, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART4 }, //Normally C11, changed for VFCS
+																				 //RX Pin
+					{ GPIOA, PIN_1, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART4 }, //Normally C11, changed for VFCS
 
-			//Instance Ptr
-			UART4,
+					//Instance Ptr
+					UART4,
 
-			//IT_HW
-			{ UART4_IRQn, NVIC_PRIORITYGROUP_4, 6u, 0u },
+					//IT_HW
+					{ UART4_IRQn, NVIC_PRIORITYGROUP_4, 6u, 0u },
 
-			//DMA_IT_TX
-			{ DMA1_Stream4_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_TX
+					{ DMA1_Stream4_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
 
-			//DMA_IT_RX
-			{ DMA1_Stream2_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_RX
+					{ DMA1_Stream2_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
 
-			//DMA TX settings
-			{ DMA1_Stream4, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
+					//DMA TX settings
+					{ DMA1_Stream4, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
 
-			//DMA RX settings
-			{ DMA1_Stream2, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY }
-			#endif
-			#endif
-		},
+					//DMA RX settings
+					{ DMA1_Stream2, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY }
+					#endif
+				#endif
+				},
 
 				/* SERIAL 5: */
-		{
-			#if defined(ENABLE_UART5)
-			#if defined(STM32F767xx) || defined(STM32F446xx)
+				{
+				#if defined(UART5)
+					#if defined(STM32F767xx) || defined(STM32F446xx)
 
-			//TX Pin
-			{ GPIOC, PIN_12, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART5 },
+					//TX Pin
+					{ GPIOC, PIN_12, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART5 },
 
-			//RX Pin
-			{ GPIOD, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART5 },
+					//RX Pin
+					{ GPIOD, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART5 },
 
-			//Instance Ptr
-			UART5,
+					//Instance Ptr
+					UART5,
 
-			//IT_HW
-			{ UART5_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//IT_HW
+					{ UART5_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
 
-			//DMA_IT_TX
-			{ DMA1_Stream7_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_TX
+					{ DMA1_Stream7_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
 
-			//DMA_IT_RX
-			{ DMA1_Stream0_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_RX
+					{ DMA1_Stream0_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
 
-			//DMA TX settings
-			{ DMA1_Stream7, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
+					//DMA TX settings
+					{ DMA1_Stream7, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
 
-			//DMA RX settings
-			{ DMA1_Stream0, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY }
-			#endif
-			#endif
-		},
+					//DMA RX settings
+					{ DMA1_Stream0, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY }
+					#endif
+				#endif
+				},
 
 				/* SERIAL 6: */
-		{
-			#if defined(ENABLE_USART6)
-			#if defined(STM32F767xx) || defined(STM32F446xx)
-			//TX Pin
-			{ GPIOG, PIN_14, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_USART6 },
+				{
+				#if defined(USART6)
+					#if defined(STM32F767xx) || defined(STM32F446xx)
+					//TX Pin
+					{ GPIOG, PIN_14, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_USART6 },
 
-			//RX Pin
-			{ GPIOG, PIN_9, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_USART6 },
+					//RX Pin
+					{ GPIOG, PIN_9, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_USART6 },
 
-			//Instance Ptr
-			USART6,
+					//Instance Ptr
+					USART6,
 
-			//IT_HW
-			{},
+					//IT_HW
+					{},
 
-			//DMA_IT_TX
-			{},
+					//DMA_IT_TX
+					{},
 
-			//DMA_IT_RX
-			{},
+					//DMA_IT_RX
+					{},
 
-			//DMA TX settings
-			{},
+					//DMA TX settings
+					{},
 
-			//DMA RX settings
-			{}
-			#endif
-			/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
+					//DMA RX settings
+					{}
+					#endif
+					/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
 				#endif
-		},
+				},
 
 				/* SERIAL 7: */
-		{
-			#if defined(ENABLE_UART7)
-			#if defined(STM32F767xx)
-			//TX Pin
-			{ GPIOE, PIN_8, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART7 },
+				{
+				#if defined(UART7)
+					#if defined(STM32F767xx)
+					//TX Pin
+					{ GPIOE, PIN_8, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART7 },
 
-			//RX pin
-			{ GPIOE, PIN_7, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART7 },
+					//RX pin
+					{ GPIOE, PIN_7, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART7 },
 
-			//IT_HW
-			{ UART7_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//Instance Ptr
+					UART7,
+						
+					//IT_HW
+					{ UART7_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
 
-			//Instance Ptr
-			UART7,
+					//DMA_IT_TX
+					{ DMA1_Stream1_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
 
-			//DMA_IT_TX
-			{ DMA1_Stream1_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_RX
+					{ DMA1_Stream3_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
 
-			//DMA_IT_RX
-			{ DMA1_Stream3_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA TX settings
+					{ DMA1_Stream1, DMA_CHANNEL_5, DMA_MEMORY_TO_PERIPH },
 
-			//DMA TX settings
-			{ DMA1_Stream1, DMA_CHANNEL_5, DMA_MEMORY_TO_PERIPH },
-
-			//DMA RX settings
-			{ DMA1_Stream3, DMA_CHANNEL_5, DMA_PERIPH_TO_MEMORY }
-			#endif
-			#endif
-		},
+					//DMA RX settings
+					{ DMA1_Stream3, DMA_CHANNEL_5, DMA_PERIPH_TO_MEMORY }
+					#endif
+				#endif
+				},
 
 				/* SERIAL 8: */
-		{
-			#if defined(ENABLE_UART8)
-			#if defined(STM32F767xx)
-			//TX Pin
-			{ GPIOE, PIN_1, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART8 },
+				{
+				#if defined(UART8)
+					#if defined(STM32F767xx)
+					//TX Pin
+					{ GPIOE, PIN_1, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART8 },
 
-			//RX pin
-			{ GPIOE, PIN_0, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART8 },
+					//RX pin
+					{ GPIOE, PIN_0, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART8 },
 
-			//Instance Ptr
-			UART8,
+					//Instance Ptr
+					UART8,
 
-			//IT_HW
-			{ UART8_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//IT_HW
+					{ UART8_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
 
-			//DMA_IT_TX
-			{ DMA1_Stream0_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_TX
+					{ DMA1_Stream0_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
 
-			//DMA_IT_RX
-			{ DMA1_Stream6_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_RX
+					{ DMA1_Stream6_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
 
-			//DMA TX settings
-			{ DMA1_Stream0, DMA_CHANNEL_5, DMA_MEMORY_TO_PERIPH },
+					//DMA TX settings
+					{ DMA1_Stream0, DMA_CHANNEL_5, DMA_MEMORY_TO_PERIPH },
 
-			//DMA RX settings
-			{ DMA1_Stream6, DMA_CHANNEL_5, DMA_PERIPH_TO_MEMORY }
-			#endif
-			#endif
-		}
+					//DMA RX settings
+					{ DMA1_Stream6, DMA_CHANNEL_5, DMA_PERIPH_TO_MEMORY }
+					#endif
+				#endif
+				}
 			};
 
 			#if defined(STM32F7) || defined(STM32F4)
