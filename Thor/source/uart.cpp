@@ -130,16 +130,6 @@ namespace Thor
 				return newClass;
 			}
 
-			Status UARTClass::begin()
-			{
-				return begin(SERIAL_BAUD_115200, TX_MODE_BLOCKING, RX_MODE_BLOCKING);
-			}
-
-			Status UARTClass::begin(const BaudRate& baud)
-			{
-				return begin(baud, TX_MODE_BLOCKING, RX_MODE_BLOCKING);
-			}
-
 			Status UARTClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
 			{
 				UART_GPIO_Init();
@@ -147,49 +137,94 @@ namespace Thor
 				uart_handle.Init.BaudRate = baud;
 				UART_Init();
 
-				/* Configure the transmission mode */
-				switch (tx_mode)
-				{
-				case TX_MODE_BLOCKING:
-					setBlockMode(SubPeripheral::TX);
-					break;
-
-				case TX_MODE_INTERRUPT:
-					setITMode(SubPeripheral::TX);
-					break;
-
-				case TX_MODE_DMA:
-					setDMAMode(SubPeripheral::TX);
-					break;
-
-				default:
-					txMode = TX_MODE_BLOCKING;
-					setBlockMode(SubPeripheral::TX);
-					break;
-				}
-
-				/* Configure the reception mode */
-				switch (rx_mode)
-				{
-				case RX_MODE_BLOCKING:
-					setBlockMode(SubPeripheral::RX);
-					break;
-
-				case RX_MODE_INTERRUPT:
-					setITMode(SubPeripheral::RX);
-					break;
-
-				case RX_MODE_DMA:
-					setDMAMode(SubPeripheral::RX);
-					break;
-
-				default:
-					rxMode = RX_MODE_BLOCKING;
-					setBlockMode(SubPeripheral::RX);
-					break;
-				}
+				setMode(TX, tx_mode);
+				setMode(RX, rx_mode);
 
 				return PERIPH_OK;
+			}
+			
+			Status UARTClass::setMode(const SubPeripheral& periph, const Modes& mode)
+			{
+				if (periph == TX)
+				{
+					switch (mode)
+					{
+					case BLOCKING:
+						/* Make sure RX side isn't using interrupts before disabling */
+						if (rxMode == BLOCKING)
+							UART_DisableInterrupts();
+						
+						UART_DMA_DeInit(periph);
+						txMode = mode;
+						break;
+						
+					case INTERRUPT:
+						UART_EnableInterrupts();
+						UART_DMA_DeInit(periph);
+						txMode = mode;
+						break;
+						
+					case DMA:
+						UART_EnableInterrupts();
+						UART_DMA_Init(periph);
+						txMode = mode;
+						break;
+						
+					default: 
+						txMode = MODE_UNDEFINED;
+						return PERIPH_ERROR;
+						break;
+					}
+					
+					
+					return PERIPH_OK;
+				}
+				else
+				{
+					switch (mode)
+					{
+					case BLOCKING:
+						/* Make sure TX side isn't using interrupts before disabling */
+						if (txMode == BLOCKING)
+							UART_DisableInterrupts();
+
+						UART_DMA_DeInit(periph);
+						rxMode = mode;
+						break;
+						
+					case INTERRUPT:
+						UART_EnableInterrupts();
+						UART_DMA_DeInit(periph);
+						rxMode = mode;
+						break; 
+						
+					case DMA:
+						UART_EnableInterrupts();
+						UART_DMA_Init(periph);
+						
+						/* Instruct the DMA hardware to start listening for packets */
+						HAL_UART_Receive_DMA(&uart_handle, packetQueue[currentQueuePacket], UART_PACKET_BUFFER_SIZE);
+						__HAL_UART_ENABLE_IT(&uart_handle, UART_IT_IDLE);
+						
+						/* Set the idle line bit for triggering the end of packet interrupt */
+						#if defined(STM32F7)
+						__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_IDLEF);
+						#endif
+
+						#if defined(STM32F4)
+						__HAL_UART_CLEAR_FLAG(&uart_handle, UART_FLAG_IDLE);
+						#endif
+						
+						break;
+						
+					default: 
+						rxMode = MODE_UNDEFINED;
+						return PERIPH_ERROR;
+						break;
+					}
+					
+					return PERIPH_OK;
+				}
 			}
 
 			Status UARTClass::write(char* string, size_t length)
@@ -214,7 +249,7 @@ namespace Thor
 
 				switch (txMode)
 				{
-				case TX_MODE_BLOCKING:
+				case BLOCKING:
 					if (tx_complete)
 					{
 						tx_complete = false;
@@ -224,7 +259,7 @@ namespace Thor
 					return PERIPH_OK;
 					break;
 
-				case TX_MODE_INTERRUPT:
+				case INTERRUPT:
 					if (UART_PeriphState.uart_interrupts_enabled)
 					{
 						if (tx_complete)
@@ -253,7 +288,7 @@ namespace Thor
 						return PERIPH_ERROR;
 					break;
 
-				case TX_MODE_DMA:
+				case DMA:
 					if (UART_PeriphState.dma_enabled_tx && UART_PeriphState.uart_interrupts_enabled)
 					{
 						if (tx_complete)
@@ -286,6 +321,11 @@ namespace Thor
 				}
 			}
 
+			Status UARTClass::read(uint8_t* buff, size_t length)
+			{
+				//Todo
+			}
+			
 			Status UARTClass::readPacket(uint8_t* buff, size_t buff_length)
 			{
 				UARTPacket packet = RXPacketBuffer.front();
@@ -323,6 +363,7 @@ namespace Thor
 
 			void UARTClass::flush()
 			{
+				//Todo
 			}
 
 			void UARTClass::end()
@@ -333,8 +374,8 @@ namespace Thor
 				UART_DMA_DeInit(SubPeripheral::TX);
 				UART_DMA_DeInit(SubPeripheral::RX);
 
-				txMode = TX_MODE_NONE;
-				rxMode = RX_MODE_NONE;
+				txMode = MODE_UNDEFINED;
+				rxMode = MODE_UNDEFINED;
 			}
 
 			void UARTClass::attachSettings(UART_InitTypeDef config)
@@ -347,67 +388,215 @@ namespace Thor
 				UART_Init();
 			}
 
-			void UARTClass::setBlockMode(const SubPeripheral& periph)
+			void UARTClass::IRQHandler()
 			{
-				if (periph == SubPeripheral::TX)
+				#if defined(STM32F7)
+				bool RX_DATA_READY = __HAL_UART_GET_FLAG(&uart_handle, UART_FLAG_RXNE);
+				bool RX_LINE_IDLE = __HAL_UART_GET_FLAG(&uart_handle, UART_FLAG_IDLE);
+
+				/*------------------------------------
+				* Handle Asynchronous RX (Interrupt and DMA Mode)
+				*------------------------------------*/
+				/* RX In Progress */
+				if (RX_ASYNC && RX_DATA_READY && uart_handle.gState != HAL_UART_STATE_BUSY_TX)
 				{
-					txMode = TX_MODE_BLOCKING;
+					uint32_t isrflags = READ_REG(uart_handle.Instance->ISR);
+					uint32_t errorflags = (isrflags & (uint32_t)(USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE));
 
-					/* Make sure RX side isn't using interrupts before disabling */
-					if (rxMode == RX_MODE_BLOCKING)
-						UART_DisableInterrupts();
+					if (errorflags == RESET)
+					{
+						/* Detected start of a new frame of unknown size. Enable the
+						* IDLE interrupt bit to detect end of frame. */
+						if (rxAsyncPacketSize == 0)
+						{
+							memset(packetQueue[currentQueuePacket], 0, UART_PACKET_BUFFER_SIZE);
+							__HAL_UART_ENABLE_IT(&uart_handle, UART_IT_IDLE);
+						}
 
-					UART_DMA_DeInit(periph);
+						/* Buffer the new data */
+						if (rxMode == INTERRUPT && (rxAsyncPacketSize < UART_PACKET_BUFFER_SIZE))
+						{
+							packetQueue[currentQueuePacket][rxAsyncPacketSize] = (uint8_t)(uart_handle.Instance->RDR & (uint8_t)0xFF);
+							rxAsyncPacketSize += 1u;
+						}
+						else
+						{
+							/* Forced to read data without being able to store it.
+							* Really need to put some kind of error thing here...*/
+							uart_handle.Instance->RDR;
+						}
+					}
+					else
+					{
+						//Do something more useful later
+						__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_PEF);
+						__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_FEF);
+						__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_NEF);
+						__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_OREF);
+					}
 				}
-				else
+
+				/* RX Complete */
+				if (RX_ASYNC && RX_LINE_IDLE)
 				{
-					rxMode = RX_MODE_BLOCKING;
-
-					/* Make sure TX side isn't using interrupts before disabling */
-					if (txMode == TX_MODE_BLOCKING)
-						UART_DisableInterrupts();
-
-					UART_DMA_DeInit(periph);
-				}
-			}
-
-			void UARTClass::setITMode(const SubPeripheral& periph)
-			{
-				UART_EnableInterrupts();
-				UART_DMA_DeInit(periph);
-
-				if (periph == SubPeripheral::TX)
-					txMode = TX_MODE_INTERRUPT;
-				else
-					rxMode = RX_MODE_INTERRUPT;
-			}
-
-			void UARTClass::setDMAMode(const SubPeripheral& periph)
-			{
-				UART_EnableInterrupts();
-				UART_DMA_Init(periph);
-
-				if (periph == SubPeripheral::TX)
-					txMode = TX_MODE_DMA;
-				else
-				{
-					rxMode = RX_MODE_DMA;
-
-					/* Instruct the DMA hardware to start listening for packets.
-					* Set the idle line bit for triggering the end of packet interrupt. */
-					HAL_UART_Receive_DMA(&uart_handle, packetQueue[currentQueuePacket], UART_PACKET_BUFFER_SIZE);
-					__HAL_UART_ENABLE_IT(&uart_handle, UART_IT_IDLE);
-
-					#if defined(STM32F7)
+					/* Disable Idle Line Interrupt */
+					__HAL_UART_DISABLE_IT(&uart_handle, UART_IT_IDLE);
 					__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_IDLEF);
-					#endif
 
-					#if defined(STM32F4)
-					__HAL_UART_CLEAR_FLAG(&uart_handle, UART_FLAG_IDLE);
-					#endif
+					/* Copy packets received to the internal buffer */
+					if (rxMode == INTERRUPT)
+					{
+						/* Store the address of the new data packet */
+						RX_tempPacket.data_ptr	= packetQueue[currentQueuePacket];
+						RX_tempPacket.length	= rxAsyncPacketSize;
+						RXPacketBuffer.push_back(RX_tempPacket);
+
+						rxAsyncPacketSize = 0; /* Reset the internal packet counter so we know when a new frame starts */
+						currentQueuePacket++; /* Go to the next buffer location */
+
+						if (currentQueuePacket == UART_PACKET_QUEUE_SIZE)
+							currentQueuePacket = 0;
+					}
+					else if (rxMode == DMA)
+					{
+						/* Force a hard reset of the DMA to trigger the DMA RX Complete handler */
+						if (uart_handle.hdmarx->Instance->NDTR != 0)
+							__HAL_DMA_DISABLE(uart_handle.hdmarx);
+					}
+
+					rx_complete = true;
+					totalWaitingPackets++;
 				}
+
+				/*------------------------------------
+				* Handle Synchronous TX-RX (Interrupt)
+				*------------------------------------*/
+				if (!RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX)
+				{
+					HAL_UART_IRQHandler(&uart_handle);
+				}
+				#endif
+
+				#if defined(STM32F4)
+				/* Reading these two in the order of SR then DR ends up
+				* clearing all flags, so it's best to store the returned
+				* contents for further processing. */
+				volatile uint32_t isrflags = READ_REG(uart_handle.Instance->SR);
+				volatile uint32_t data_reg = READ_REG(uart_handle.Instance->DR);
+
+				/*------------------------------------
+				* Handle Async RX of unknown length(Interrupt and DMA Mode)
+				*------------------------------------*/
+				if (RX_ASYNC)
+				{
+					volatile uint32_t cr1 = READ_REG(uart_handle.Instance->CR1);
+
+					bool RX_DATA_READY = ((isrflags & UART_FLAG_RXNE) == UART_FLAG_RXNE);
+					bool RX_DATA_READY_IE = ((cr1 & USART_CR1_RXNEIE) == USART_CR1_RXNEIE);
+					bool RX_LINE_IDLE = ((isrflags & UART_FLAG_IDLE) == UART_FLAG_IDLE);
+					bool RX_LINE_IDLE_IE = ((cr1 & USART_CR1_IDLEIE) == USART_CR1_IDLEIE);
+
+					if (RX_DATA_READY && RX_DATA_READY_IE)
+					{
+						uint32_t errorflags = (isrflags & (uint32_t)(USART_SR_PE | USART_SR_FE | USART_SR_ORE | USART_SR_NE));
+
+						/* No Errors Found */
+						if (errorflags == 0u)
+						{
+							/* Detected start of a new frame of unknown size. Enable the
+							* IDLE interrupt bit to detect end of frame. */
+							if (rxAsyncPacketSize == 0)
+							{
+								memset(packetQueue[currentQueuePacket], 0, Thor::Definitions::Serial::UART_BUFFER_SIZE);
+								__HAL_UART_ENABLE_IT(&uart_handle, UART_IT_IDLE);
+							}
+
+							/* Buffer the new data and increase packet size count */
+							if (rxMode == RX_MODE_INTERRUPT && (rxAsyncPacketSize < Thor::Definitions::Serial::UART_BUFFER_SIZE))
+							{
+								packetQueue[currentQueuePacket][rxAsyncPacketSize] = (uint8_t)(data_reg & (uint8_t)0xFF);
+								rxAsyncPacketSize += 1u;
+							}
+							else
+							{
+								/* Somehow inform the user that data is being tossed out */
+							}
+						}
+
+						/* Error Handling */
+						else
+						{
+							// TODO
+						}
+					}
+
+					/* RX Complete */
+					if (RX_LINE_IDLE && RX_LINE_IDLE_IE)
+					{
+						/* Disable Idle Line Interrupt */
+						__HAL_UART_DISABLE_IT(&uart_handle, UART_IT_IDLE);
+
+						/* Copy packets received to the internal buffer */
+						if (rxMode == RX_MODE_INTERRUPT)
+						{
+							/* Store the address of the the new data packet */
+							RX_tempPacket.data = 0;
+							RX_tempPacket.data_ptr = packetQueue[currentQueuePacket];
+							RX_tempPacket.length = rxAsyncPacketSize;
+							RXPacketBuffer.push_back(RX_tempPacket);
+
+							rxAsyncPacketSize = 0; /* Reset the internal packet counter so we know when a new frame starts */
+							currentQueuePacket++; /* Go to the next buffer location */
+
+							if (currentQueuePacket == Thor::Definitions::Serial::UART_PACKET_QUEUE_SIZE)
+								currentQueuePacket = 0;
+
+							/*------------------------------------
+							* Signal Waiting Threads
+							*------------------------------------*/
+							#if defined(USING_FREERTOS)
+
+							/* Inform the semaphore task manager that a particular event has occured
+							* on the given source and periph instance. If a semaphore is tied to this,
+							* 1 semaphore will be given in the EXTI0 interrupt. */
+							EXTI0_TaskMGR->logEventGenerator(SRC_UART, uart_channel);
+							#endif
+						}
+
+						else if (rxMode == RX_MODE_DMA)
+						{
+							/* Force a hard reset of the DMA to trigger the DMA RX Complete handler */
+							if (uart_handle.hdmarx->Instance->NDTR != 0)
+								__HAL_DMA_DISABLE(uart_handle.hdmarx);
+						}
+
+						rx_complete = true;
+						totalWaitingPackets++;
+					}
+				}
+
+				/*------------------------------------
+				* Handle Explicit User Requests:
+				* Only run the normal IRQHandler if an explicit RX packet request
+				* was generated or if TX-ing some data.
+				*------------------------------------*/
+
+				//TODO: Better fix this later to support usart handler in uart mode
+				if(!RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX)
+					HAL_UART_IRQHandler(&uart_handle);
+				#endif
 			}
 
+			void UARTClass::IRQHandler_TXDMA()
+			{
+				HAL_DMA_IRQHandler(uart_handle.hdmatx);
+			}
+
+			void UARTClass::IRQHandler_RXDMA()
+			{
+				HAL_DMA_IRQHandler(uart_handle.hdmarx);
+			}
+			
 			void UARTClass::UART_Init()
 			{
 				UART_EnableClock();
@@ -415,8 +604,8 @@ namespace Thor
 				if (HAL_UART_Init(&uart_handle) != HAL_OK)
 					BasicErrorHandler(logError("Failed UART Init. Check settings."));
 
-				setBlockMode(SubPeripheral::TX);
-				setBlockMode(SubPeripheral::RX);
+				setMode(TX, BLOCKING);
+				setMode(RX, BLOCKING);
 
 				UART_PeriphState.uart_enabled = true;
 			}
@@ -465,7 +654,7 @@ namespace Thor
 				HAL_NVIC_ClearPendingIRQ(ITSettings_HW.IRQn);
 
 				/* Specific interrupts to enable */
-				if (rxMode == RX_MODE_INTERRUPT)
+				if (rxMode == INTERRUPT)
 					__HAL_UART_ENABLE_IT(&uart_handle, UART_IT_RXNE); 	//RX Data Register not Empty
 
 				UART_PeriphState.uart_interrupts_enabled = true;
@@ -616,215 +805,6 @@ namespace Thor
 					UART_PeriphState.dma_interrupts_enabled_rx = false;
 				}
 			}
-
-			void UARTClass::IRQHandler()
-			{
-				#if defined(STM32F7)
-				bool RX_DATA_READY = __HAL_UART_GET_FLAG(&uart_handle, UART_FLAG_RXNE);
-				bool RX_LINE_IDLE = __HAL_UART_GET_FLAG(&uart_handle, UART_FLAG_IDLE);
-
-				/*------------------------------------
-				* Handle Asynchronous RX (Interrupt and DMA Mode)
-				*------------------------------------*/
-				/* RX In Progress */
-				if (RX_ASYNC && RX_DATA_READY && uart_handle.gState != HAL_UART_STATE_BUSY_TX)
-				{
-					uint32_t isrflags = READ_REG(uart_handle.Instance->ISR);
-					uint32_t errorflags = (isrflags & (uint32_t)(USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE));
-
-					if (errorflags == RESET)
-					{
-						/* Detected start of a new frame of unknown size. Enable the
-						* IDLE interrupt bit to detect end of frame. */
-						if (rxAsyncPacketSize == 0)
-						{
-							memset(packetQueue[currentQueuePacket], 0, UART_PACKET_BUFFER_SIZE);
-							__HAL_UART_ENABLE_IT(&uart_handle, UART_IT_IDLE);
-						}
-
-						/* Buffer the new data */
-						if (rxMode == RX_MODE_INTERRUPT && (rxAsyncPacketSize < UART_PACKET_BUFFER_SIZE))
-						{
-							packetQueue[currentQueuePacket][rxAsyncPacketSize] = (uint8_t)(uart_handle.Instance->RDR & (uint8_t)0xFF);
-							rxAsyncPacketSize += 1u;
-						}
-						else
-						{
-							/* Forced to read data without being able to store it.
-							* Really need to put some kind of error thing here...*/
-							uart_handle.Instance->RDR;
-						}
-					}
-					else
-					{
-						//Do something more useful later
-						__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_PEF);
-						__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_FEF);
-						__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_NEF);
-						__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_OREF);
-					}
-				}
-
-				/* RX Complete */
-				if (RX_ASYNC && RX_LINE_IDLE)
-				{
-					/* Disable Idle Line Interrupt */
-					__HAL_UART_DISABLE_IT(&uart_handle, UART_IT_IDLE);
-					__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_IDLEF);
-
-					/* Copy packets received to the internal buffer */
-					if (rxMode == RX_MODE_INTERRUPT)
-					{
-						/* Store the address of the new data packet */
-						RX_tempPacket.data_ptr	= packetQueue[currentQueuePacket];
-						RX_tempPacket.length	= rxAsyncPacketSize;
-						RXPacketBuffer.push_back(RX_tempPacket);
-
-						rxAsyncPacketSize = 0; /* Reset the internal packet counter so we know when a new frame starts */
-						currentQueuePacket++; /* Go to the next buffer location */
-
-						if (currentQueuePacket == UART_PACKET_QUEUE_SIZE)
-							currentQueuePacket = 0;
-					}
-					else if (rxMode == RX_MODE_DMA)
-					{
-						/* Force a hard reset of the DMA to trigger the DMA RX Complete handler */
-						if (uart_handle.hdmarx->Instance->NDTR != 0)
-							__HAL_DMA_DISABLE(uart_handle.hdmarx);
-					}
-
-					rx_complete = true;
-					totalWaitingPackets++;
-				}
-
-				/*------------------------------------
-				* Handle Synchronous TX-RX (Interrupt)
-				*------------------------------------*/
-				if (!RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX)
-				{
-					HAL_UART_IRQHandler(&uart_handle);
-				}
-				#endif
-
-				#if defined(STM32F4)
-				/* Reading these two in the order of SR then DR ends up
-				* clearing all flags, so it's best to store the returned
-				* contents for further processing. */
-				volatile uint32_t isrflags = READ_REG(uart_handle.Instance->SR);
-				volatile uint32_t data_reg = READ_REG(uart_handle.Instance->DR);
-
-				/*------------------------------------
-				* Handle Async RX of unknown length(Interrupt and DMA Mode)
-				*------------------------------------*/
-				if (RX_ASYNC)
-				{
-					volatile uint32_t cr1 = READ_REG(uart_handle.Instance->CR1);
-
-					bool RX_DATA_READY = ((isrflags & UART_FLAG_RXNE) == UART_FLAG_RXNE);
-					bool RX_DATA_READY_IE = ((cr1 & USART_CR1_RXNEIE) == USART_CR1_RXNEIE);
-					bool RX_LINE_IDLE = ((isrflags & UART_FLAG_IDLE) == UART_FLAG_IDLE);
-					bool RX_LINE_IDLE_IE = ((cr1 & USART_CR1_IDLEIE) == USART_CR1_IDLEIE);
-
-					if (RX_DATA_READY && RX_DATA_READY_IE)
-					{
-						uint32_t errorflags = (isrflags & (uint32_t)(USART_SR_PE | USART_SR_FE | USART_SR_ORE | USART_SR_NE));
-
-						/* No Errors Found */
-						if (errorflags == 0u)
-						{
-							/* Detected start of a new frame of unknown size. Enable the
-							* IDLE interrupt bit to detect end of frame. */
-							if (rxAsyncPacketSize == 0)
-							{
-								memset(packetQueue[currentQueuePacket], 0, Thor::Definitions::Serial::UART_BUFFER_SIZE);
-								__HAL_UART_ENABLE_IT(&uart_handle, UART_IT_IDLE);
-							}
-
-							/* Buffer the new data and increase packet size count */
-							if (rxMode == RX_MODE_INTERRUPT && (rxAsyncPacketSize < Thor::Definitions::Serial::UART_BUFFER_SIZE))
-							{
-								packetQueue[currentQueuePacket][rxAsyncPacketSize] = (uint8_t)(data_reg & (uint8_t)0xFF);
-								rxAsyncPacketSize += 1u;
-							}
-							else
-							{
-								/* Somehow inform the user that data is being tossed out */
-							}
-						}
-
-						/* Error Handling */
-						else
-						{
-							// TODO
-						}
-					}
-
-					/* RX Complete */
-					if (RX_LINE_IDLE && RX_LINE_IDLE_IE)
-					{
-						/* Disable Idle Line Interrupt */
-						__HAL_UART_DISABLE_IT(&uart_handle, UART_IT_IDLE);
-
-						/* Copy packets received to the internal buffer */
-						if (rxMode == RX_MODE_INTERRUPT)
-						{
-							/* Store the address of the the new data packet */
-							RX_tempPacket.data = 0;
-							RX_tempPacket.data_ptr = packetQueue[currentQueuePacket];
-							RX_tempPacket.length = rxAsyncPacketSize;
-							RXPacketBuffer.push_back(RX_tempPacket);
-
-							rxAsyncPacketSize = 0; /* Reset the internal packet counter so we know when a new frame starts */
-							currentQueuePacket++; /* Go to the next buffer location */
-
-							if (currentQueuePacket == Thor::Definitions::Serial::UART_PACKET_QUEUE_SIZE)
-								currentQueuePacket = 0;
-
-							/*------------------------------------
-							* Signal Waiting Threads
-							*------------------------------------*/
-							#if defined(USING_FREERTOS)
-
-							/* Inform the semaphore task manager that a particular event has occured
-							* on the given source and periph instance. If a semaphore is tied to this,
-							* 1 semaphore will be given in the EXTI0 interrupt. */
-							EXTI0_TaskMGR->logEventGenerator(SRC_UART, uart_channel);
-							#endif
-						}
-
-						else if (rxMode == RX_MODE_DMA)
-						{
-							/* Force a hard reset of the DMA to trigger the DMA RX Complete handler */
-							if (uart_handle.hdmarx->Instance->NDTR != 0)
-								__HAL_DMA_DISABLE(uart_handle.hdmarx);
-						}
-
-						rx_complete = true;
-						totalWaitingPackets++;
-					}
-				}
-
-				/*------------------------------------
-				* Handle Explicit User Requests:
-				* Only run the normal IRQHandler if an explicit RX packet request
-				* was generated or if TX-ing some data.
-				*------------------------------------*/
-
-				//TODO: Better fix this later to support usart handler in uart mode
-				if(!RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX)
-					HAL_UART_IRQHandler(&uart_handle);
-				#endif
-			}
-
-			void UARTClass::IRQHandler_TXDMA()
-			{
-				HAL_DMA_IRQHandler(uart_handle.hdmatx);
-			}
-
-			void UARTClass::IRQHandler_RXDMA()
-			{
-				HAL_DMA_IRQHandler(uart_handle.hdmarx);
-			}
 		}
 	}
 }
@@ -860,7 +840,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	uint32_t uartIdx = uartObjectIndex[UartHandle->Instance];
 	auto uart = uartObjects[uartIdx];
 
-	if (uart->_getRxMode() == RX_MODE_DMA)
+	if (uart->_getRxMode() == DMA)
 	{
 		uart->_setRxComplete();
 
@@ -892,7 +872,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	{
 		uart->_setRxComplete();
 
-		if (uart->_getRxMode() == RX_MODE_INTERRUPT)
+		if (uart->_getRxMode() == INTERRUPT)
 			uart->_setRxAsync();
 	}
 }

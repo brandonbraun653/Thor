@@ -204,41 +204,41 @@ namespace Thor
 				}
 			}
 			
-			void SerialClass::setBlockMode(const SubPeripheral& periph)
-			{
-				if (uart)
-				{
-					uart->setBlockMode(periph);
-				}
-				else
-				{
-					usart->setBlockMode(periph);
-				}
-			}
-			
-			void SerialClass::setITMode(const SubPeripheral& periph)
-			{
-				if (uart)
-				{
-					uart->setITMode(periph);
-				}
-				else
-				{
-					usart->setITMode(periph);
-				}
-			}
-			
-			void SerialClass::setDMAMode(const SubPeripheral& periph)
-			{
-				if (uart)
-				{
-					uart->setDMAMode(periph);
-				}
-				else
-				{
-					usart->setDMAMode(periph);
-				}
-			}
+//			void SerialClass::setBlockMode(const SubPeripheral& periph)
+//			{
+//				if (uart)
+//				{
+//					uart->setBlockMode(periph);
+//				}
+//				else
+//				{
+//					usart->setBlockMode(periph);
+//				}
+//			}
+//			
+//			void SerialClass::setITMode(const SubPeripheral& periph)
+//			{
+//				if (uart)
+//				{
+//					uart->setITMode(periph);
+//				}
+//				else
+//				{
+//					usart->setITMode(periph);
+//				}
+//			}
+//			
+//			void SerialClass::setDMAMode(const SubPeripheral& periph)
+//			{
+//				if (uart)
+//				{
+//					uart->setDMAMode(periph);
+//				}
+//				else
+//				{
+//					usart->setDMAMode(periph);
+//				}
+//			}
 			
 
 			#if defined(USING_CHIMERA)

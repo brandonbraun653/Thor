@@ -371,14 +371,10 @@ namespace Thor
 			/** Common peripheral transmit and receive communication modes */
 			enum Modes : uint8_t
 			{
-				TX_MODE_NONE,
-				TX_MODE_BLOCKING,
-				TX_MODE_INTERRUPT,
-				TX_MODE_DMA,
-				RX_MODE_NONE,
-				RX_MODE_BLOCKING,
-				RX_MODE_INTERRUPT,
-				RX_MODE_DMA
+				MODE_UNDEFINED,
+				BLOCKING,
+				INTERRUPT,
+				DMA
 			};
 			
 			/** Supported communication baudrates */
@@ -408,6 +404,7 @@ namespace Thor
 				PERIPH_ERROR                       = -2,
 				PERIPH_NOT_READY                   = -1,
 				PERIPH_OK                          = 0,
+				PERIPH_INVALID_PARAM,
 				TX_IN_PROGRESS,
 				RX_OK,
 				PACKET_TOO_LARGE_FOR_BUFFER
