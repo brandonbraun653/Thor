@@ -1,8 +1,0 @@
-[
-  "test_uart.py::TestUART::test_BlockingRX",
-  "test_uart.py::TestUART::test_BlockingTX",
-  "test_uart.py::TestUART::test_DmaRX",
-  "test_uart.py::TestUART::test_DmaTX",
-  "test_uart.py::TestUART::test_InterruptRX",
-  "test_uart.py::TestUART::test_InterruptTX"
-]
