@@ -197,17 +197,14 @@ namespace Thor
 
 				/* Copy over interrupt info */
 				ITSettingsHW.IRQn = spi_cfg[spi_channel].IT_HW.IRQn;
-				ITSettingsHW.groupPriority = spi_cfg[spi_channel].IT_HW.groupPriority;
 				ITSettingsHW.preemptPriority = spi_cfg[spi_channel].IT_HW.preemptPriority;
 				ITSettingsHW.subPriority = spi_cfg[spi_channel].IT_HW.subPriority;
 
 				ITSettings_DMA_TX.IRQn = spi_cfg[spi_channel].dmaIT_TX.IRQn;
-				ITSettings_DMA_TX.groupPriority = spi_cfg[spi_channel].dmaIT_TX.groupPriority;
 				ITSettings_DMA_TX.preemptPriority = spi_cfg[spi_channel].dmaIT_TX.preemptPriority;
 				ITSettings_DMA_TX.subPriority = spi_cfg[spi_channel].dmaIT_TX.subPriority;
 
 				ITSettings_DMA_RX.IRQn = spi_cfg[spi_channel].dmaIT_RX.IRQn;
-				ITSettings_DMA_RX.groupPriority = spi_cfg[spi_channel].dmaIT_RX.groupPriority;
 				ITSettings_DMA_RX.preemptPriority = spi_cfg[spi_channel].dmaIT_RX.preemptPriority;
 				ITSettings_DMA_RX.subPriority = spi_cfg[spi_channel].dmaIT_RX.subPriority;
 
@@ -728,7 +725,6 @@ namespace Thor
 			void SPIClass::SPI_EnableInterrupts()
 			{
 				HAL_NVIC_DisableIRQ(ITSettingsHW.IRQn);
-				HAL_NVIC_SetPriorityGrouping(ITSettingsHW.groupPriority);
 				HAL_NVIC_SetPriority(ITSettingsHW.IRQn, ITSettingsHW.preemptPriority, ITSettingsHW.subPriority);
 				HAL_NVIC_EnableIRQ(ITSettingsHW.IRQn);
 
@@ -851,7 +847,6 @@ namespace Thor
 			{
 				HAL_NVIC_DisableIRQ(ITSettings_DMA_TX.IRQn);
 				HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_TX.IRQn);
-				HAL_NVIC_SetPriorityGrouping(ITSettings_DMA_TX.groupPriority);
 				HAL_NVIC_SetPriority(ITSettings_DMA_TX.IRQn, ITSettings_DMA_TX.preemptPriority, ITSettings_DMA_TX.subPriority);
 				HAL_NVIC_EnableIRQ(ITSettings_DMA_TX.IRQn);
 
@@ -862,7 +857,6 @@ namespace Thor
 			{
 				HAL_NVIC_DisableIRQ(ITSettings_DMA_RX.IRQn);
 				HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_RX.IRQn);
-				HAL_NVIC_SetPriorityGrouping(ITSettings_DMA_RX.groupPriority);
 				HAL_NVIC_SetPriority(ITSettings_DMA_RX.IRQn, ITSettings_DMA_RX.preemptPriority, ITSettings_DMA_RX.subPriority);
 				HAL_NVIC_EnableIRQ(ITSettings_DMA_RX.IRQn);
 

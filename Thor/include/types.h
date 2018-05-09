@@ -38,7 +38,6 @@ struct SPI_Initializer
 struct IT_Initializer
 {
 	IRQn_Type IRQn;
-	uint32_t groupPriority;
 	uint32_t preemptPriority;
 	uint32_t subPriority;
 };

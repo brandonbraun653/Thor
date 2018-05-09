@@ -1,6 +1,5 @@
 #include <Thor/include/core.h>
 
-
 #if !defined(USING_FREERTOS)
 void SysTick_Handler(void)
 {
@@ -10,7 +9,10 @@ void SysTick_Handler(void)
 #endif
 
 #if defined(USING_FREERTOS)
-
+void vApplicationTickHook(void)
+{
+	HAL_IncTick();
+}
 #endif
 
 /* Sets the clock to 216 MHz and maxes out the peripheral clocks */
@@ -90,18 +92,16 @@ void ThorSystemClockConfig()
 
 	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-
-	
 	/**Initializes the CPU, AHB and APB busses clocks
 	*/
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;		/* Internal 16MHz clock */
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI; /* Internal 16MHz clock */
 	RCC_OscInitStruct.HSIState = RCC_HSI_ON;
 	RCC_OscInitStruct.HSICalibrationValue = 16;
-	
-	RCC_OscInitStruct.HSEState = RCC_HSE_OFF;						/* External high speed osc off */
-	RCC_OscInitStruct.LSIState = RCC_LSI_OFF;						/* Internal low speed osc off */
-	RCC_OscInitStruct.LSEState = RCC_LSE_ON;						/* Using external RC clock oscillator*/
-	
+
+	RCC_OscInitStruct.HSEState = RCC_HSE_OFF; /* External high speed osc off */
+	RCC_OscInitStruct.LSIState = RCC_LSI_OFF; /* Internal low speed osc off */
+	RCC_OscInitStruct.LSEState = RCC_LSE_ON; /* Using external RC clock oscillator*/
+
 	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
 	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
 	RCC_OscInitStruct.PLL.PLLM = 8;
@@ -109,22 +109,22 @@ void ThorSystemClockConfig()
 	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
 	RCC_OscInitStruct.PLL.PLLQ = 2;
 	RCC_OscInitStruct.PLL.PLLR = 2;
-	
+
 	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
 	{
 		BasicErrorHandler(logError("Failed oscillator config."));
 	}
 
-//	/**Activate the Over-Drive mode
-//	*/
-//	if (HAL_PWREx_EnableOverDrive() != HAL_OK)
-//	{
-//		BasicErrorHandler(logError("Failed clock overdrive config."));
-//	}
+	//	/**Activate the Over-Drive mode
+	//	*/
+	//	if (HAL_PWREx_EnableOverDrive() != HAL_OK)
+	//	{
+	//		BasicErrorHandler(logError("Failed clock overdrive config."));
+	//	}
 
-	/**Initializes the CPU, AHB and APB busses clocks
-	*/
-	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+		/**Initializes the CPU, AHB and APB busses clocks
+		*/
+		RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
 	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
 	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
 	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
@@ -147,6 +147,3 @@ void ThorSystemClockConfig()
 	HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 #endif
-
-
-

@@ -16,17 +16,17 @@ namespace Thor
 			/** Different possible phrasings of instructing a pin to turn on/off */
 			enum LogicLevel : bool
 			{
-				LOW = false,
-				OFF = false,
-				ZERO = false,
+				LOW      = false,
+				OFF      = false,
+				ZERO     = false,
 				DISABLED = false,
-				HIGH = true,
-				ON = true,
-				ONE = true,
-				ENABLED = true
+				HIGH     = true,
+				ON       = true,
+				ONE      = true,
+				ENABLED  = true
 			};
 		}
-		
+
 		/** @namespace Thor::Definitions::TIMER */
 		namespace TIMER
 		{
@@ -37,12 +37,12 @@ namespace Thor
 			const unsigned int MAX_SUB_CHANNELS = 6;
 			const unsigned int MAX_ALT_PORTS = 4;
 			const unsigned int MAX_ALT_PINS = 4;
-		
+
 			/*--------------------------
 			* Hardware Descriptors
 			*--------------------------*/
-			const uint32_t timerBaseAddresses[] = 
-			{ 
+			const uint32_t timerBaseAddresses[] =
+			{
 				#if defined(STM32F446xx) || defined(STM32F767xx)
 				0,
 				/* Indexing offset since no TIM0 */
@@ -62,7 +62,7 @@ namespace Thor
 				TIM14_BASE
 				#endif
 			};
-		
+
 			enum TimerCategory
 			{
 				TIMER_BASIC,
@@ -118,7 +118,7 @@ namespace Thor
 				ON_APB1,
 				ON_APB2
 			};
-		
+
 			/*--------------------------
 			* Functionality Descriptors
 			*--------------------------*/
@@ -162,13 +162,13 @@ namespace Thor
 				OC_NRESET
 			};
 		}
-			
+
 		/** @namespace Thor::Definitions::SPI */
 		namespace SPI
 		{
 			const unsigned int MAX_SPI_CHANNELS = 6;
 			const unsigned int SPI_BUFFER_SIZE = 32;
-		
+
 			enum TxRxModes
 			{
 				TX_MODE_NONE,
@@ -183,7 +183,7 @@ namespace Thor
 				TXRX_MODE_INTERRUPT,
 				TXRX_MODE_DMA
 			};
-		
+
 			enum Options
 			{
 				NO_OPTIONS            = 0u,
@@ -197,7 +197,7 @@ namespace Thor
 				SS_MANUAL_CONTROL     = (1u << 7),
 				SS_AUTOMATIC_CONTROL  = (1u << 8)
 			};
-			
+
 			/** Returns state of the spi hardware */
 			enum Status
 			{
@@ -209,7 +209,7 @@ namespace Thor
 				SPI_RX_OK
 			};
 		}
-		
+
 		/** @namespace Thor::Definitions::DMA */
 		namespace DMA
 		{
@@ -223,11 +223,11 @@ namespace Thor
 			#define DMA_OFFSET_SxPAR(STREAM_NUMBER)		(0x18U + 0x18U*(uint32_t)STREAM_NUMBER)
 			#define DMA_OFFSET_SxM0AR(STREAM_NUMBER)	(0x1CU + 0x18U*(uint32_t)STREAM_NUMBER)
 			#define DMA_OFFSET_SxM1AR(STREAM_NUMBER)	(0x20U + 0x18U*(uint32_t)STREAM_NUMBER)
-	
+
 			//The data sheet has conflicting address definitions for this register. The register map
 			//does not match manual calculations using the equation below...unsure which is right
 			#define DMA_OFFSET_SxFCR(STREAM_NUMBER)		(0x24U + 0x24U*(uint32_t)STREAM_NUMBER)
-	
+
 			/* Register Definitions for DMA1 */
 			#define DMA1_LISR	(*(uint32_t*)(DMA1_BASE + DMA_OFFSET_LISR))
 			#define DMA1_HISR	(*(uint32_t*)(DMA1_BASE + DMA_OFFSET_HISR))
@@ -281,7 +281,7 @@ namespace Thor
 			#define DMA1_S5FCR	(*(uint32_t*)(DMA1_BASE + DMA_OFFSET_SxFCR(5)))
 			#define DMA1_S6FCR	(*(uint32_t*)(DMA1_BASE + DMA_OFFSET_SxFCR(6)))
 			#define DMA1_S7FCR	(*(uint32_t*)(DMA1_BASE + DMA_OFFSET_SxFCR(7)))
-	
+
 			/* Register Definitions for DMA2 */
 			#define DMA2_LISR	(*(uint32_t*)(DMA2_BASE + DMA_OFFSET_LISR))
 			#define DMA2_HISR	(*(uint32_t*)(DMA2_BASE + DMA_OFFSET_HISR))
@@ -342,31 +342,31 @@ namespace Thor
 				MEM_TO_PERIPH,
 				MEM_TO_MEM,
 				TRANSFER_DIRECTION_UNDEFINED
-			};
+			}
+			;
 		}
-		
+
 		/** @namespace Thor::Defintions::UART */
 		namespace UART
 		{
-			const unsigned int MAX_UART_CHANNELS = 4;			/**< Total possible UART specific channels for any supported STM32 chip. */
-			const unsigned int UART_PACKET_BUFFER_SIZE = 32;	/**< Defines the max number of TX/RX packets that can be held from Thor::Peripheral::UART::UARTClass::UARTPacket */
-			
+			const unsigned int MAX_UART_CHANNELS = 4; /**< Total possible UART specific channels for any supported STM32 chip. */
+			const unsigned int UART_PACKET_BUFFER_SIZE = 32; /**< Defines the max number of TX/RX packets that can be held from Thor::Peripheral::UART::UARTClass::UARTPacket */
+
 			//TODO: Need to go back through and understand how this one works...
-			const unsigned int UART_PACKET_QUEUE_SIZE = 10;		/**< Defines the max number of buffers to hold RX packets */
+			const unsigned int UART_PACKET_QUEUE_SIZE = 10; /**< Defines the max number of buffers to hold RX packets */
 		}
-		
+
 		/** @namespace Thor::Definitions::USART */
 		namespace USART
 		{
-			const unsigned int MAX_USART_CHANNELS = 4;			/**< Total possible USART specific channels for any supported STM32 chip. */
-			
+			const unsigned int MAX_USART_CHANNELS = 4; /**< Total possible USART specific channels for any supported STM32 chip. */
 		}
-		
+
 		/** @namespace Thor::Definitions::Serial */
 		namespace Serial
 		{
-			const unsigned int MAX_SERIAL_CHANNELS = Thor::Definitions::UART::MAX_UART_CHANNELS + Thor::Definitions::USART::MAX_USART_CHANNELS;			/**< Total possible UART or USART channels for any supported STM32 chip. */
-		
+			const unsigned int MAX_SERIAL_CHANNELS = Thor::Definitions::UART::MAX_UART_CHANNELS + Thor::Definitions::USART::MAX_USART_CHANNELS; /**< Total possible UART or USART channels for any supported STM32 chip. */
+			const uint32_t BLOCKING_TIMEOUT_MS = 5000;
 
 			/** Common peripheral transmit and receive communication modes */
 			enum Modes : uint8_t
@@ -376,29 +376,30 @@ namespace Thor
 				INTERRUPT,
 				DMA
 			};
-			
+
 			/** Supported communication baudrates */
 			enum BaudRate : uint32_t
 			{
-				SERIAL_BAUD_110 = 100u,
-				SERIAL_BAUD_150 = 150u,
-				SERIAL_BAUD_300 = 300u,
-				SERIAL_BAUD_1200 = 1200u,
-				SERIAL_BAUD_2400 = 2400u,
-				SERIAL_BAUD_4800 = 4800u,
-				SERIAL_BAUD_9600 = 9600u,
-				SERIAL_BAUD_19200 = 19200u,
-				SERIAL_BAUD_38400 = 38400u,
-				SERIAL_BAUD_57600 = 57600u,
+				SERIAL_BAUD_110    = 100u,
+				SERIAL_BAUD_150    = 150u,
+				SERIAL_BAUD_300    = 300u,
+				SERIAL_BAUD_1200   = 1200u,
+				SERIAL_BAUD_2400   = 2400u,
+				SERIAL_BAUD_4800   = 4800u,
+				SERIAL_BAUD_9600   = 9600u,
+				SERIAL_BAUD_19200  = 19200u,
+				SERIAL_BAUD_38400  = 38400u,
+				SERIAL_BAUD_57600  = 57600u,
 				SERIAL_BAUD_115200 = 115200u,
 				SERIAL_BAUD_230400 = 230400u,
 				SERIAL_BAUD_460800 = 460800u,
 				SERIAL_BAUD_921600 = 921600u
 			};
-			
+
 			/** Indicates various possible states of the serial peripheral. This includes general messages as well as error codes. */
 			enum Status : int
 			{
+				PERIPH_TIMEOUT                     = -5,
 				PERIPH_LOCKED                      = -4,
 				PERIPH_NOT_INITIALIZED             = -3,
 				PERIPH_ERROR                       = -2,
@@ -409,24 +410,23 @@ namespace Thor
 				PERIPH_RX_IN_PROGRESS,
 				PERIPH_PACKET_TOO_LARGE_FOR_BUFFER
 			};
-			
+
 			/** Explicitly defines a peripheral type for different member functions of SerialClass, UARTClass, or USARTClass. */
 			enum SubPeripheral : bool
 			{
 				RX = false,
 				TX = true
 			};
-			
+
 			/** Allows mapping of either a USART or UART peripheral to the serial class. This is intended to be internal use only. */
 			struct HardwareClassMapping
 			{
 				bool ON_UART;
 				uint8_t peripheral_number;
 			};
-
+		}
 	}
-}
-	
+
 	//TODO: Deprecate this!
 	namespace Libraries
 	{
@@ -501,9 +501,8 @@ namespace Thor
 				uint8_t  Reserved4 : 2; /* Reserved */
 				uint8_t  crc : 7; /* Reserved */
 				uint8_t  Reserved5 : 1; /* always 1*/
-
 			} SD_CSD;
-		
+
 			typedef struct
 			{
 				/* Card Identification Data: CID Register */
@@ -534,12 +533,6 @@ namespace Thor
 			const unsigned int SD_NOT_PRESENT	= 0x00;
 			const unsigned int SD_DATATIMEOUT	= 100000000;
 		}
-		
-		
-		
 	}
-	
-
-	
 }
 #endif /* THOR_DEFINITIONS_H_ */

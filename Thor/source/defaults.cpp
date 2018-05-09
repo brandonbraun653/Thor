@@ -8,6 +8,8 @@ using namespace Thor::Definitions::Serial;
 
 using namespace Thor::Peripheral::GPIO;
 
+using namespace Thor::Defaults::Interrupt;
+
 namespace Thor
 {
 	namespace Defaults
@@ -186,13 +188,13 @@ namespace Thor
 					UART4,
 
 					//IT_HW
-					{ UART4_IRQn, NVIC_PRIORITYGROUP_4, 6u, 0u },
+					{ UART4_IRQn, UART_IT_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_TX
-					{ DMA1_Stream4_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					{ DMA1_Stream4_IRQn, UART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_RX
-					{ DMA1_Stream2_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					{ DMA1_Stream2_IRQn, UART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA TX settings
 					{ DMA1_Stream4, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
@@ -218,13 +220,13 @@ namespace Thor
 					UART5,
 
 					//IT_HW
-					{ UART5_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					{ UART5_IRQn, UART_IT_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_TX
-					{ DMA1_Stream7_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					{ DMA1_Stream7_IRQn, UART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_RX
-					{ DMA1_Stream0_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					{ DMA1_Stream0_IRQn, UART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA TX settings
 					{ DMA1_Stream7, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
@@ -281,13 +283,13 @@ namespace Thor
 					UART7,
 						
 					//IT_HW
-					{ UART7_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					{ UART7_IRQn, UART_IT_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_TX
-					{ DMA1_Stream1_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					{ DMA1_Stream1_IRQn, UART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_RX
-					{ DMA1_Stream3_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					{ DMA1_Stream3_IRQn, UART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA TX settings
 					{ DMA1_Stream1, DMA_CHANNEL_5, DMA_MEMORY_TO_PERIPH },
@@ -312,13 +314,13 @@ namespace Thor
 					UART8,
 
 					//IT_HW
-					{ UART8_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					{ UART8_IRQn, UART_IT_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_TX
-					{ DMA1_Stream0_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					{ DMA1_Stream0_IRQn, UART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_RX
-					{ DMA1_Stream6_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					{ DMA1_Stream6_IRQn, UART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA TX settings
 					{ DMA1_Stream0, DMA_CHANNEL_5, DMA_MEMORY_TO_PERIPH },

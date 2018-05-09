@@ -15,17 +15,16 @@ UartTransport::UartTransport(int channel)
 
 UartTransport::~UartTransport()
 {
-	
 }
 
 erpc_status_t UartTransport::init()
 {
 	uart = UARTClass::create(uart_channel);
 	uart->begin(SERIAL_BAUD_115200);
-//	uart->setDMAMode(SubPeripheral::TX);	//Transmit to PC	
-//	uart->setDMAMode(SubPeripheral::RX);	//Receive transmissions from PC
-	
-	return kErpcStatus_Success;
+	//	uart->setDMAMode(SubPeripheral::TX);	//Transmit to PC
+	//	uart->setDMAMode(SubPeripheral::RX);	//Receive transmissions from PC
+
+		return kErpcStatus_Success;
 }
 
 erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)

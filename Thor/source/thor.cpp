@@ -1,11 +1,16 @@
 #include <Thor/include/thor.h>
+#include <Thor/include/defaults.h>
 #include <Thor/include/exti.h>
+
 
 void ThorInit()
 {
 	/* Set the clock and peripheral settings to max performance */
 	ThorSystemClockConfig();
-
+	
+	/* Enforce the system interrupt priority structure */
+	HAL_NVIC_SetPriorityGrouping(Thor::Defaults::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING);
+	
 	/* Set up the EXTI handler for passing messages from
 	 * from high priority to low priority interrupts. */
 	#ifdef USING_FREERTOS

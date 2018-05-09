@@ -16,15 +16,17 @@
 extern "C" {
 #endif
 	void SysTick_Handler();
+	
+	#if defined(USING_FREERTOS)
+	void vApplicationTickHook(void);
+	#endif 
 #ifdef __cplusplus
 }
 #endif
 
 extern void ThorSystemClockConfig();
 
-#if defined(USING_FREERTOS)
 
-#endif
 
 
 

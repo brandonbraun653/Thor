@@ -53,9 +53,16 @@
 #endif
 
 /* FreeRTOS Files */
-#if __has_include("FreeRTOS.h") && !defined(USING_FREERTOS)
-	/* Different than the VisualGDB Profiler Preprocessor 'USE_FREERTOS' */
-	#warning FreeRTOS detected but not enabled. To enable, add USE_FREERTOS in the project properties preprocessor tab.
+#if __has_include("FreeRTOS.h")
+	#if !defined(USING_FREERTOS)
+	#warning FreeRTOS detected but not enabled in Thor libraries. To enable, add USE_FREERTOS in the project properties preprocessor tab.
+	#endif
+
+	#include "FreeRTOS.h"
+	#include "FreeRTOSConfig.h"
+	#if configUSE_TICK_HOOK != 1
+		#warning Please set "configUSE_TICK_HOOK" in FreeRTOSConfig.h or some HAL Libs will break.
+	#endif 
 #endif
 
 #if __has_include("erpc_config.h")
