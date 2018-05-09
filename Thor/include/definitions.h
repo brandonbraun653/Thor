@@ -405,9 +405,9 @@ namespace Thor
 				PERIPH_NOT_READY                   = -1,
 				PERIPH_OK                          = 0,
 				PERIPH_INVALID_PARAM,
-				TX_IN_PROGRESS,
-				RX_OK,
-				PACKET_TOO_LARGE_FOR_BUFFER
+				PERIPH_TX_IN_PROGRESS,
+				PERIPH_RX_IN_PROGRESS,
+				PERIPH_PACKET_TOO_LARGE_FOR_BUFFER
 			};
 			
 			/** Explicitly defines a peripheral type for different member functions of SerialClass, UARTClass, or USARTClass. */

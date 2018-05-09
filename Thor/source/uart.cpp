@@ -250,71 +250,56 @@ namespace Thor
 				switch (txMode)
 				{
 				case BLOCKING:
-					if (tx_complete)
-					{
-						tx_complete = false;
-						HAL_UART_Transmit(&uart_handle, val, length, HAL_MAX_DELAY);
-						tx_complete = true;
-					}
+					HAL_UART_Transmit(&uart_handle, val, length, HAL_MAX_DELAY);
 					return PERIPH_OK;
 					break;
 
 				case INTERRUPT:
-					if (UART_PeriphState.uart_interrupts_enabled)
+					if (tx_complete)
 					{
-						if (tx_complete)
-						{
-							/* Starting a brand new IT transmission */
-							tx_complete = false;
-							HAL_UART_Transmit_IT(&uart_handle, val, length);
-							return TX_IN_PROGRESS;
-						}
-						else
-						{
-							#if defined(USING_FREERTOS)
-							if (xSemaphoreTakeFromISR(uart_semphrs[uart_channel], NULL) != pdPASS)
-								return PERIPH_LOCKED;
-							#endif
-
-							/* A previous IT transmission is still going. Queue the data packet. */
-							TX_tempPacket.data_ptr = val;
-							TX_tempPacket.length = length;
-
-							TXPacketBuffer.push_back(TX_tempPacket);
-							return PERIPH_NOT_READY;
-						}
+						/* Starting a brand new IT transmission */
+						tx_complete = false;
+						HAL_UART_Transmit_IT(&uart_handle, val, length);
+						return PERIPH_TX_IN_PROGRESS;
 					}
 					else
-						return PERIPH_ERROR;
+					{
+						#if defined(USING_FREERTOS)
+						if (xSemaphoreTakeFromISR(uart_semphrs[uart_channel], NULL) != pdPASS)
+							return PERIPH_LOCKED;
+						#endif
+
+						/* A previous IT transmission is still going. Queue the data packet. */
+						TX_tempPacket.data_ptr = val;
+						TX_tempPacket.length = length;
+
+						TXPacketBuffer.push_back(TX_tempPacket);
+						return PERIPH_NOT_READY;
+					}
 					break;
 
 				case DMA:
-					if (UART_PeriphState.dma_enabled_tx && UART_PeriphState.uart_interrupts_enabled)
+					if (tx_complete)
 					{
-						if (tx_complete)
-						{
-							/* Starting a brand new DMA transmission */
-							tx_complete = false;
-							HAL_UART_Transmit_DMA(&uart_handle, val, length);
-							return TX_IN_PROGRESS;
-						}
-						else
-						{
-							#if defined(USING_FREERTOS)
-							if (xSemaphoreTakeFromISR(uart_semphrs[uart_channel], NULL) != pdPASS)
-								return PERIPH_LOCKED;
-							#endif
-
-							/* A previous DMA transmission is still going. Queue the data packet. */
-							TX_tempPacket.data_ptr = val;
-							TX_tempPacket.length = length;
-
-							TXPacketBuffer.push_back(TX_tempPacket);
-							return PERIPH_NOT_READY;
-						}
+						/* Starting a brand new DMA transmission */
+						tx_complete = false;
+						HAL_UART_Transmit_DMA(&uart_handle, val, length);
+						return PERIPH_TX_IN_PROGRESS;
 					}
 					else
-						return PERIPH_ERROR;
+					{
+						#if defined(USING_FREERTOS)
+						if (xSemaphoreTakeFromISR(uart_semphrs[uart_channel], NULL) != pdPASS)
+							return PERIPH_LOCKED;
+						#endif
+
+						/* A previous DMA transmission is still going. Queue the data packet. */
+						TX_tempPacket.data_ptr = val;
+						TX_tempPacket.length = length;
+
+						TXPacketBuffer.push_back(TX_tempPacket);
+						return PERIPH_NOT_READY;
+					}
 					break;
 
 				default: return PERIPH_ERROR;
@@ -323,7 +308,31 @@ namespace Thor
 
 			Status UARTClass::read(uint8_t* buff, size_t length)
 			{
-				//Todo
+				if (!UART_PeriphState.gpio_enabled || !UART_PeriphState.uart_enabled)
+					return PERIPH_NOT_INITIALIZED;
+				
+				auto statusCode = PERIPH_ERROR;
+				switch (rxMode)
+				{
+				case BLOCKING:
+					if (HAL_UART_Receive(&uart_handle, buff, length, HAL_MAX_DELAY) == HAL_OK)
+						statusCode = PERIPH_OK;
+					break;
+					
+				case INTERRUPT:
+					if (HAL_UART_Receive_IT(&uart_handle, buff, length) == HAL_OK)
+						statusCode = PERIPH_RX_IN_PROGRESS;
+					break;
+					
+				case DMA:
+					if (HAL_UART_Receive_DMA(&uart_handle, buff, length) == HAL_OK)
+						statusCode = PERIPH_RX_IN_PROGRESS;
+					break;
+					
+				default: break;
+				}
+				
+				return statusCode;
 			}
 			
 			Status UARTClass::readPacket(uint8_t* buff, size_t buff_length)
@@ -337,7 +346,7 @@ namespace Thor
 				if (packetLength > buff_length)
 				{
 					packetLength = buff_length;
-					error = PACKET_TOO_LARGE_FOR_BUFFER;
+					error = PERIPH_PACKET_TOO_LARGE_FOR_BUFFER;
 				}
 
 				memcpy(buff, packet.data_ptr, packetLength);
