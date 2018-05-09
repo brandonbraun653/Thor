@@ -1,0 +1,7 @@
+Software Dependencies
+1. STM32 HAL Libraries
+    -F7: https://goo.gl/3rpW5g 
+    -F4: https://goo.gl/7r9J4R
+
+2. GNU ARM Embedded Toolchain
+    -gcc-arm-none-eabi: https://goo.gl/yCgikX 
