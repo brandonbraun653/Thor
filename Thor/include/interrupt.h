@@ -168,7 +168,7 @@ extern Thor::Interrupt::SPI::SPI_DMAHandlerManager spi_dma_manager;
 #ifdef __cplusplus
 extern "C" {
 #endif
-	#ifdef DMA1
+	#if defined(DMA1)
 	void DMA1_Stream0_IRQHandler();
 	void DMA1_Stream1_IRQHandler();
 	void DMA1_Stream2_IRQHandler();
@@ -179,7 +179,7 @@ extern "C" {
 	void DMA1_Stream7_IRQHandler();
 	#endif
 
-	#ifdef DMA2
+	#if defined(DMA2)
 	void DMA2_Stream0_IRQHandler();
 	void DMA2_Stream1_IRQHandler();
 	void DMA2_Stream2_IRQHandler();
