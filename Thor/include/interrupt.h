@@ -24,9 +24,9 @@ namespace Thor
 {
 	namespace Interrupt
 	{
+		//DO NOT MOVE THIS. DMA handlers currently depend on it...
 		enum TriggerSource
 		{
-			/* UART SOURCES */
 			SRC_UART,
 			SRC_UART1,
 			SRC_UART1_TX,
@@ -49,8 +49,6 @@ namespace Thor
 			SRC_UART8,
 			SRC_UART8_TX,
 			SRC_UART8_RX,
-
-			/* USART SOURCES */
 			SRC_USART,
 			SRC_USART1,
 			SRC_USART1_TX,
@@ -64,8 +62,7 @@ namespace Thor
 			SRC_USART6,
 			SRC_USART6_TX,
 			SRC_USART6_RX,
-
-			/* SPI SOURCES */
+				
 			SRC_SPI,
 			SRC_SPI1,
 			SRC_SPI2,
@@ -73,12 +70,7 @@ namespace Thor
 			SRC_SPI4,
 			SRC_SPI5,
 			SRC_SPI6,
-
-			/* I2C SOURCES */
-			SRC_I2C,
-
-			/* MEMORY SOURCES ? */
-			SRC_MEM
+				
 		};
 
 		namespace DMA

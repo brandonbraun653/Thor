@@ -10,12 +10,17 @@
 
 using namespace Thor::Definitions::Serial;
 using namespace Thor::Definitions::UART;
+using namespace Thor::Definitions::Interrupt;
 using namespace Thor::Peripheral::UART;
 using namespace Thor::Peripheral::GPIO;
 using namespace Thor::Defaults::Serial;
 
+
 #if defined(USING_FREERTOS)
 static boost::container::static_vector<SemaphoreHandle_t, MAX_SERIAL_CHANNELS + 1> uart_semphrs(MAX_SERIAL_CHANNELS + 1);
+
+TaskTrigger uartTaskTrigger;
+
 #endif
 
 static boost::container::static_vector<UARTClass_sPtr, MAX_SERIAL_CHANNELS + 1> uartObjects(MAX_SERIAL_CHANNELS + 1);
@@ -531,11 +536,6 @@ namespace Thor
 						asyncRXDataSize = 0;	
 						totalWaitingPackets++;
 						_rxIncrQueueIdx();
-						
-						/* Signal any waiting threads  */
-						#if defined(USING_FREERTOS)
-						EXTI0_TaskMGR->logEventGenerator(Thor::Interrupt::SRC_UART, uart_channel);
-						#endif
 					}
 					else if (rxMode == DMA)
 					{
@@ -688,6 +688,19 @@ namespace Thor
 				HAL_DMA_IRQHandler(uart_handle.hdmarx);
 			}
 
+			#if defined(USING_FREERTOS)
+			void UARTClass::attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr)
+			{
+				uartTaskTrigger.attachEventConsumer(trig, semphr);
+			}
+			
+			void UARTClass::removeThreadTrigger(Trigger trig)
+			{
+				uartTaskTrigger.removeEventConsumer(trig);
+			}
+			
+			#endif 
+			
 			void UARTClass::UART_Init()
 			{
 				UART_EnableClock();
@@ -944,6 +957,11 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 			#endif
 		}
 	}
+	
+	/* Signal any waiting threads  */
+	#if defined(USING_FREERTOS)
+	uartTaskTrigger.logEvent(TX_COMPLETE, &uartTaskTrigger);
+	#endif
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
@@ -969,15 +987,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		/* Increment the queue address pointer so we don't overwrite data */
 		uart->_rxIncrQueueIdx();
 		
-
 		/* Start the listening process again for a new packet */
 		UART_EnableIT_IDLE(UartHandle);
 		HAL_UART_Receive_DMA(UartHandle, uart->_rxCurrentQueueAddr(), UART_QUEUE_BUFFER_SIZE);
-
-		/* Signal Waiting Threads */
-		#if defined(USING_FREERTOS)
-		EXTI0_TaskMGR->logEventGenerator(Thor::Interrupt::SRC_UART, uart->_getChannel());
-		#endif
 	}
 
 	/* Only runs if the user explicitly requests RX in blocking or interrupt mode */
@@ -988,6 +1000,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		if (uart->_getRxMode() == INTERRUPT)
 			uart->_setRxAsync();
 	}
+	
+	/* Signal any waiting threads  */
+	#if defined(USING_FREERTOS)
+	uartTaskTrigger.logEvent(RX_COMPLETE, &uartTaskTrigger);
+	#endif
 }
 
 void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *UartHandle)

@@ -155,6 +155,12 @@ namespace Thor
 
 				/** DMA Handler for RX. It is a simple wrapper that calls the correct STM32 HAL DMA Handler. */
 				void IRQHandler_RXDMA();
+				
+				#if defined(USING_FREERTOS)
+				void attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr);
+				void removeThreadTrigger(Trigger trig);
+				#endif 
+				
 
 			private:
 				/** The real constructor used by UARTClass::create */
