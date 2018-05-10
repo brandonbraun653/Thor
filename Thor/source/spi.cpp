@@ -1066,7 +1066,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 		
 		/* Inform the semaphore task manager that RX is complete and data is 
 		 * ready to be read out of the buffer. */
-		EXTI0_TaskMGR->logEventGenerator(SRC_SPI, spi_channel);
+		//EXTI0_TaskMGR->logEventGenerator(SRC_SPI, spi_channel);
 		#endif 
 	}
 }

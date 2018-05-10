@@ -423,6 +423,28 @@ namespace Thor
 				uint8_t peripheral_number;
 			};
 		}
+		
+		/** @namespace Thor::Definitions::Interrupt */
+		namespace Interrupt
+		{
+			const uint32_t MAX_ATTACHED_SEMPHRS_PER_PERIPH = 20;	/**< */
+			const uint32_t MAX_PENDING_TASK_TRIGGERS = 10;			/**< The largest number of queued events at any given time */
+		
+			enum class Source : uint8_t
+			{
+				Serial,
+				SPI,
+				I2C
+			};
+			
+			enum Trigger : unsigned int 
+			{
+				RX_COMPLETE,
+				TX_COMPLETE,
+				MAX_SOURCES
+			};
+			
+		}
 	}
 
 	//TODO: Deprecate this!
