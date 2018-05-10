@@ -349,9 +349,9 @@ namespace Thor
 		/** @namespace Thor::Defintions::UART */
 		namespace UART
 		{
-			const unsigned int MAX_UART_CHANNELS = 4;					/**< Total possible UART specific channels for any supported STM32 chip. */
-			const unsigned int UART_PACKET_QUEUE_SIZE = 10;				/**< The max number of independent transmissions that can be stored internally. */
-			const unsigned int UART_PACKET_QUEUE_BUFFER_SIZE = 32;		/**< The max number of bytes that can be stored from a single continuous transmission. */
+			const unsigned int MAX_UART_CHANNELS = 4;			/**< Total possible UART specific channels for any supported STM32 chip. */
+			const unsigned int UART_QUEUE_SIZE = 5;				/**< The max number of independent transmissions that can be stored internally. */
+			const unsigned int UART_QUEUE_BUFFER_SIZE = 32;		/**< The max number of bytes that can be stored from a single continuous transmission. */
 		}
 
 		/** @namespace Thor::Definitions::USART */
@@ -364,7 +364,7 @@ namespace Thor
 		namespace Serial
 		{
 			const unsigned int MAX_SERIAL_CHANNELS = Thor::Definitions::UART::MAX_UART_CHANNELS + Thor::Definitions::USART::MAX_USART_CHANNELS; /**< Total possible UART or USART channels for any supported STM32 chip. */
-			const uint32_t BLOCKING_TIMEOUT_MS = 5000;
+			const uint32_t BLOCKING_TIMEOUT_MS = 10;	/**< Time in mS before a TX or RX in blocking mode will timeout */
 
 			/** Common peripheral transmit and receive communication modes */
 			enum Modes : uint8_t

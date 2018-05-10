@@ -182,14 +182,7 @@ namespace Thor
 			
 			void SerialClass::flush()
 			{
-				if (uart)
-				{
-					uart->flush();
-				}
-				else
-				{
-					usart->flush();
-				}
+
 			}
 			
 			void SerialClass::end()

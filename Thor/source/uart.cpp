@@ -128,11 +128,11 @@ namespace Thor
 					srl_cfg[uart_channel].rxPin.Alternate);
 
 				/* Initialize the buffer memory */
-				TXPacketBuffer.set_capacity(UART_PACKET_QUEUE_SIZE);
-				RXPacketBuffer.set_capacity(UART_PACKET_QUEUE_SIZE);
+				TXPacketBuffer.set_capacity(UART_QUEUE_SIZE);
+				RXPacketBuffer.set_capacity(UART_QUEUE_SIZE);
 
 				#if defined(USING_FREERTOS)
-				uart_semphrs[uart_channel] = xSemaphoreCreateCounting(UART_PACKET_QUEUE_SIZE, UART_PACKET_QUEUE_SIZE);
+				uart_semphrs[uart_channel] = xSemaphoreCreateCounting(UART_QUEUE_SIZE, UART_QUEUE_SIZE);
 				#endif
 			}
 
@@ -237,7 +237,7 @@ namespace Thor
 						UART_EnableIT_IDLE(&uart_handle);
 						
 						/* Instruct the DMA hardware to start listening for transmissions */
-						HAL_UART_Receive_DMA(&uart_handle, packetQueue[currentQueuePacket], UART_PACKET_QUEUE_BUFFER_SIZE);
+						HAL_UART_Receive_DMA(&uart_handle, RX_Queue[RXQueueIdx], UART_QUEUE_BUFFER_SIZE);
 						break;
 
 					default:
@@ -293,11 +293,13 @@ namespace Thor
 					{
 						/* Starting a brand new IT transmission */
 						tx_complete = false;
-						HAL_UART_Transmit_IT(&uart_handle, val, length);
+						HAL_UART_Transmit_IT(&uart_handle, assignTXBuffer(val, length), length);
 						statusCode = PERIPH_TX_IN_PROGRESS;
 					}
 					else
 					{
+						statusCode = PERIPH_NOT_READY;
+						
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(uart_semphrs[uart_channel], NULL) != pdPASS)
 						{
@@ -306,12 +308,10 @@ namespace Thor
 						}
 						#endif
 
-						/* A previous IT transmission is still going. Queue the data packet. */
-						TX_tempPacket.data_ptr = val;
+						/* A previous IT transmission is still going. Queue the data */
+						TX_tempPacket.data_ptr = assignTXBuffer(val, length);
 						TX_tempPacket.length = length;
-
 						TXPacketBuffer.push_back(TX_tempPacket);
-						statusCode = PERIPH_NOT_READY;
 					}
 					break;
 
@@ -320,11 +320,13 @@ namespace Thor
 					{
 						/* Starting a brand new DMA transmission */
 						tx_complete = false;
-						HAL_UART_Transmit_DMA(&uart_handle, val, length);
+						HAL_UART_Transmit_DMA(&uart_handle, assignTXBuffer(val, length), length);
 						statusCode = PERIPH_TX_IN_PROGRESS;
 					}
 					else
 					{
+						statusCode = PERIPH_NOT_READY;
+						
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(uart_semphrs[uart_channel], NULL) != pdPASS)
 						{
@@ -333,12 +335,11 @@ namespace Thor
 						}
 						#endif
 
-						/* A previous DMA transmission is still going. Queue the data packet. */
-						TX_tempPacket.data_ptr = val;
+						/* A previous DMA transmission is still going. Queue the data */
+						TX_tempPacket.data_ptr = assignTXBuffer(val, length);
 						TX_tempPacket.length = length;
 
 						TXPacketBuffer.push_back(TX_tempPacket);
-						statusCode = PERIPH_NOT_READY;
 					}
 					break;
 
@@ -349,7 +350,7 @@ namespace Thor
 				return statusCode;
 			}
 
-			Status UARTClass::read(uint8_t* buff, size_t length)
+			Status UARTClass::readSync(uint8_t* buff, size_t length)
 			{
 				if (!UART_PeriphState.gpio_enabled || !UART_PeriphState.uart_enabled)
 					return PERIPH_NOT_INITIALIZED;
@@ -432,11 +433,6 @@ namespace Thor
 				return totalWaitingPackets;
 			}
 
-			void UARTClass::flush()
-			{
-				//Todo
-			}
-
 			void UARTClass::end()
 			{
 				UART_DeInit();
@@ -484,9 +480,9 @@ namespace Thor
 					if (errorflags == RESET)
 					{
 						/* Detected new RX of unknown size */
-						if (rxAsyncPacketSize == 0)
+						if (asyncRXDataSize == 0)
 						{
-							memset(packetQueue[currentQueuePacket], 0, UART_PACKET_QUEUE_BUFFER_SIZE);
+							memset(RX_Queue[RXQueueIdx], 0, UART_QUEUE_BUFFER_SIZE);
 							
 							/* Enable UART_IT_IDLE to detect transmission end.
 							 * Sometimes IDLEF is set before interrupt enable, which will immediately trigger this ISR,
@@ -496,10 +492,10 @@ namespace Thor
 						}
 
 						/* Buffer the new data */
-						if (rxMode == INTERRUPT && (rxAsyncPacketSize < UART_PACKET_QUEUE_BUFFER_SIZE))
+						if (rxMode == INTERRUPT && (asyncRXDataSize < UART_QUEUE_BUFFER_SIZE))
 						{
-							packetQueue[currentQueuePacket][rxAsyncPacketSize] = (uint8_t)(uart_handle.Instance->RDR & (uint8_t)0xFF);
-							rxAsyncPacketSize += 1u;
+							RX_Queue[RXQueueIdx][asyncRXDataSize] = (uint8_t)(uart_handle.Instance->RDR & (uint8_t)0xFF);
+							asyncRXDataSize += 1u;
 						}
 						else
 						{
@@ -526,15 +522,15 @@ namespace Thor
 						UART_DisableIT_IDLE(&uart_handle);
 						
 						/* Copy data received to the internal buffer */
-						RX_tempPacket.data_ptr  = packetQueue[currentQueuePacket];
-						RX_tempPacket.length	= rxAsyncPacketSize;
+						RX_tempPacket.data_ptr  = RX_Queue[RXQueueIdx];
+						RX_tempPacket.length	= asyncRXDataSize;
 						RXPacketBuffer.push_back(RX_tempPacket);
 						
 						/* Clean up the class variables to prepare for a new reception */
 						rx_complete = true;
-						rxAsyncPacketSize = 0;	
+						asyncRXDataSize = 0;	
 						totalWaitingPackets++;
-						_rxIncrCurrentQueuePacket();
+						_rxIncrQueueIdx();
 						
 						/* Signal any waiting threads  */
 						#if defined(USING_FREERTOS)
@@ -564,7 +560,7 @@ namespace Thor
 				}
 
 				/*------------------------------------
-				* Handle Synchronous TX-RX (Interrupt)
+				* Handle Synchronous RX or Asynchronous TX (Interrupt Mode)
 				*------------------------------------*/
 				if (!RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX)
 				{
@@ -910,7 +906,17 @@ namespace Thor
 				#endif 
 			}
 			
-			
+			uint8_t* UARTClass::assignTXBuffer(const uint8_t* data, const size_t length)
+			{
+				/* Move to the next array */
+				txIncrQueueIdx();
+				
+				/* Overwrite the old data */
+				//memset(_txCurrentQueueAddr(), 0, UART_QUEUE_BUFFER_SIZE); //Likely not needed 
+				memcpy(txCurrentQueueAddr(), data, length);
+				
+				return txCurrentQueueAddr();
+			}
 		}
 	}
 }
@@ -956,17 +962,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 
 		/* Construct the received packet and push into the receive queue */
 		Thor::Peripheral::UART::UARTClass::UARTPacket tempPacket;
-		tempPacket.data_ptr = uart->_rxCurrentQueuePacketRef();
+		tempPacket.data_ptr = uart->_rxCurrentQueueAddr();
 		tempPacket.length	= num_received;
 		uart->_rxBufferPushBack(tempPacket);
 		
 		/* Increment the queue address pointer so we don't overwrite data */
-		uart->_rxIncrCurrentQueuePacket();
+		uart->_rxIncrQueueIdx();
 		
 
 		/* Start the listening process again for a new packet */
 		UART_EnableIT_IDLE(UartHandle);
-		HAL_UART_Receive_DMA(UartHandle, uart->_rxCurrentQueuePacketRef(), UART_PACKET_QUEUE_BUFFER_SIZE);
+		HAL_UART_Receive_DMA(UartHandle, uart->_rxCurrentQueueAddr(), UART_QUEUE_BUFFER_SIZE);
 
 		/* Signal Waiting Threads */
 		#if defined(USING_FREERTOS)

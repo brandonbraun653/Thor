@@ -43,7 +43,9 @@ namespace Thor
 			/** A higher level uart interface built ontop of the STM32 HAL that abstracts away most
 			 *	of the details associated with setup and general usage. It supports both transmission\n
 			 *	and reception in 3 modes [blocking, interrupt, dma] and does not require that TX and RX
-			 *	share the same mode for proper operation.
+			 *	share the same mode for proper operation. In addition, data is copied to an internal buffer\n
+			 *	for all non-blocking transmissions (IT/DMA) so that the user doesn't have to worry about 
+			 *	destroyed or mutable data.
 			 *
 			 *	@note If using FreeRTOS, the class is threadsafe and allows multiple sources to write and
 			 *		  read on a class object up to an internal buffer limit defined by Thor::Definitions::Serial::UART_BUFFER_SIZE
@@ -69,6 +71,8 @@ namespace Thor
 				 *	@param[in] mode		The corresponding mode for the peripheral to enter, from Thor::Peripheral::Serial::Modes
 				 *	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				 *			will return a code from Thor::Peripheral::Serial::Status
+				 *			
+				 *	@note When setting the RX peripheral to IT or DMA mode, it automatically enables asynchronous data reception
 				 **/
 				Status setMode(const SubPeripheral& periph, const Modes& mode);
 
@@ -103,14 +107,14 @@ namespace Thor
 				**/
 				Status write(const char* string, size_t length);
 
-				/** Reads a single transmission of known length into the provided buffer.
+				/** Commands the RX peripheral to read a single transmission of known length into the provided buffer.
 				 *	@param[out] buff	An external buffer to write the received data to
 				 *	@param[in]  length	The number of bytes to be received
 				 *
 				 *	@note Only use this for receptions that have a fixed, known length. For transmissions that last longer than
 				 *		  the given 'length' value, it will simply be ignored and lost forever. Poor data.
 				 **/
-				Status read(uint8_t* buff, size_t length);
+				Status readSync(uint8_t* buff, size_t length);
 
 				/** Reads the next packet received into a buffer 
 				 *	@param[out] buff		Address of an external buffer to read data into
@@ -118,8 +122,8 @@ namespace Thor
 				 *	@return Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it
 				 *			will return a code from Thor::Peripheral::UART::UART_Status
 				 *
-				 *  @note This is for asynchronous data reception of unknown length in Interrupt or DMA mode only. If the length
-				 *		  is known and only one transmission is to be received, use the provided read function instead.
+				 *  @note This grabs data from an asynchronous data reception of unknown length in Interrupt or DMA mode only. If the length
+				 *		  is known and only one transmission is to be received, use the provided readSync function instead.
 				 **/
 				Status readPacket(uint8_t* buff, size_t buff_length);
 
@@ -128,13 +132,10 @@ namespace Thor
 				 **/
 				int availablePackets();
 
-				/** Gets the size of the next received packet in the buffer
+				/** Gets the size of the next asynchronously received packet in the buffer
 				 *	@return next packet size
 				 **/
 				size_t nextPacketSize();
-
-				/** Clears the receive buffer entirely and waits for all buffered transmissions to complete */
-				void flush();
 
 				/** Deinitializes and cleans up the peripheral */
 				void end();
@@ -156,13 +157,14 @@ namespace Thor
 				void IRQHandler_RXDMA();
 
 			private:
+				/** The real constructor used by UARTClass::create */
 				UARTClass(const int& channel);
 
 			public:
 				/** A factory method to create a new UARTClass object.
 				 *
-				 *	This method intentionally replaces the typical constructor due to the need to register\n
-				 *	the shared_ptr with a static_vector that allows runtime deduction of which class to call\n
+				 *	This method intentionally replaces the typical constructor due to the need to register
+				 *	the shared_ptr with a static_vector that allows runtime deduction of which class to call
 				 *	inside of an ISR. This is done for simplicity.
 				 *
 				 *	@param[in] channel Hardware peripheral channel number (i.e. 1 for UART1, 4 for UART4, etc)
@@ -171,59 +173,66 @@ namespace Thor
 				static boost::shared_ptr<UARTClass> create(const int channel);
 				~UARTClass();
 
-				/** Easily contains references to buffered data for TX or RX */
+				/** Easily references buffered data for TX or RX */
 				struct UARTPacket
 				{
-					uint8_t* data_ptr; /**< Contains the buffer address where data is stored */
-					size_t length; /**< Number of bytes contained in data_ptr */
+					uint8_t* data_ptr;	/**< Contains the buffer address where data is stored */
+					size_t length;		/**< Number of bytes contained in data_ptr */
 				};
 
 				/*-------------------------------
-				* ISR Stubs (To protect private variables while still allowing access)
+				* ISR Stubs 
 				*------------------------------*/
 				int _getChannel(){ return uart_channel; }
-				void _setTxComplete(){ tx_complete = true; }
-				void _setRxComplete(){ rx_complete = true; }
-				bool _getRxComplete(){ return rx_complete; }
-				void _setRxAsync(){ RX_ASYNC = true; }
-				bool _getInitStatus(){ return UART_PeriphState.uart_enabled; }
-				uint32_t _getTxMode(){ return txMode; }
-				uint32_t _getRxMode(){ return rxMode; }
-				bool _txBufferEmpty(){ return TXPacketBuffer.empty(); }
-				void _txBufferRemoveFrontPacket(){ TXPacketBuffer.pop_front(); }
-				const UARTPacket& _txBufferNextPacket(){ return TXPacketBuffer.front(); }
-				void _rxBufferPushBack(const UARTPacket& newPkt){ RXPacketBuffer.push_back(newPkt); }
-				uint8_t* _rxCurrentQueuePacketRef(){ return packetQueue[currentQueuePacket]; }
-				void _rxIncrCurrentQueuePacket()
-				{
-					currentQueuePacket++;
-
-					if (currentQueuePacket == UART_PACKET_QUEUE_SIZE)
-						currentQueuePacket = 0;
-				}
 				
+				void _setTxComplete(){ tx_complete = true; }
+				
+				void _setRxComplete(){ rx_complete = true; }
+				
+				bool _getRxComplete(){ return rx_complete; }
+				
+				void _setRxAsync(){ RX_ASYNC = true; }
+				
+				bool _getInitStatus(){ return UART_PeriphState.uart_enabled; }
+				
+				uint32_t _getTxMode(){ return txMode; }
+				
+				uint32_t _getRxMode(){ return rxMode; }
+				
+				bool _txBufferEmpty(){ return TXPacketBuffer.empty(); }
+				
+				void _txBufferRemoveFrontPacket(){ TXPacketBuffer.pop_front(); }
+				
+				const UARTPacket& _txBufferNextPacket(){ return TXPacketBuffer.front(); }
+				
+				void _rxBufferPushBack(const UARTPacket& newPkt){ RXPacketBuffer.push_back(newPkt); }
+				
+				uint8_t* _rxCurrentQueueAddr(){ return RX_Queue[RXQueueIdx]; }
+				
+				void _rxIncrQueueIdx()
+				{
+					RXQueueIdx++;
+
+					if (RXQueueIdx == UART_QUEUE_SIZE)
+						RXQueueIdx = 0;
+				}
 
 			private:
-				int uart_channel;
-				bool tx_complete = true;
-				bool rx_complete = true;
-				bool RX_ASYNC = true;
-				uint32_t txMode = Thor::Definitions::Serial::MODE_UNDEFINED;
-				uint32_t rxMode = Thor::Definitions::Serial::MODE_UNDEFINED;
+				int uart_channel;																/**< Numerical representation of the UART instance, zero is invalid */
+				bool tx_complete = true;														/**< Indicates if a transmission has been completed */
+				bool rx_complete = true;														/**< Indicates if a reception has been completed */
+				bool RX_ASYNC = true;															/**< Enables/Disables asynchronous reception of data */
+				uint32_t txMode = Thor::Definitions::Serial::MODE_UNDEFINED;					/**< Logs which mode the TX peripheral is currently in */
+				uint32_t rxMode = Thor::Definitions::Serial::MODE_UNDEFINED;					/**< Logs which mode the RX peripheral is currently in */
 
-				UARTPacket TX_tempPacket, RX_tempPacket;
-				boost::circular_buffer<UARTPacket> TXPacketBuffer, RXPacketBuffer;
-
-				/* Raw buffer for incoming RX data. There are a total of UART_PACKET_QUEUE_SIZE containers with
-				 * a length of UART_PACKET_QUEUE_BUFFER_SIZE bytes. */
-				//boost::circular_buffer<uint8_t*> packetQueue;
-				
-				uint8_t packetQueue[UART_PACKET_QUEUE_SIZE][UART_PACKET_QUEUE_BUFFER_SIZE];
-				
-				
-				uint8_t currentQueuePacket = 0;
-				uint32_t rxAsyncPacketSize = 0;
-				int totalWaitingPackets = 0;
+				UARTPacket TX_tempPacket, RX_tempPacket;										/**< Used in ISR routines to prevent creation/deletion on the stack and help cleanup code a bit */
+				boost::circular_buffer<UARTPacket> TXPacketBuffer, RXPacketBuffer;				/**< User level buffers for queuing data to transmit or holding data that was received */
+				uint8_t RX_Queue[UART_QUEUE_SIZE][UART_QUEUE_BUFFER_SIZE];						/**< The raw data buffer that stores all receptions. RXPacketBuffer references this for the user. */
+				uint8_t TX_Queue[UART_QUEUE_SIZE][UART_QUEUE_BUFFER_SIZE];						/**< The raw data buffer that stores all transmissions. TXPacketBuffer references this. */
+				uint8_t RXQueueIdx = 0;															/**< Indicates which array in RX_Queue[x] is currently selected to hold the next RX data */
+				uint8_t TXQueueIdx = 0;															/**< Indicates which array in TX_Queue[x] is currently selected to hold the next RX data */
+				uint8_t asyncRXDataSize = 0;													/**< Temporarily holds how large (in bytes) an RX data reception is */
+				int totalWaitingPackets = 0;													/**< Counter to inform the user how many unread packets are waiting */
 
 				struct UARTClassStatus
 				{
@@ -234,7 +243,7 @@ namespace Thor
 					bool uart_interrupts_enabled = false;
 					bool dma_interrupts_enabled_tx = false;
 					bool dma_interrupts_enabled_rx = false;
-				} UART_PeriphState;
+				} UART_PeriphState;															/**< Flags that allow more precise configuring of the low level hardware during init/de-init */
 
 				/*-------------------------------
 				* Object Pointers / Handles
@@ -247,6 +256,28 @@ namespace Thor
 
 				/* Local copy of interrupt settings */
 				IT_Initializer ITSettings_HW, ITSettings_DMA_TX, ITSettings_DMA_RX;
+				
+				/*-------------------------------
+				* Misc Functions 
+				*------------------------------*/
+				/** Copies data to the internal TX buffer. This allows for successive IT or DMA transmissions from the same external array
+				 *	without having to worry about the user changing the data in runtime.
+				 *	
+				 *	@param[in] data		Address of the data to be copied 
+				 *	@param[in] length	Length of data
+				 *	@return TX_Queue address that the data was copied to 
+				 **/
+				uint8_t* assignTXBuffer(const uint8_t* data, const size_t length);
+				
+				uint8_t* txCurrentQueueAddr(){ return TX_Queue[TXQueueIdx]; }
+				
+				void txIncrQueueIdx()
+				{
+					TXQueueIdx++;
+					
+					if (TXQueueIdx == UART_QUEUE_SIZE)
+						TXQueueIdx = 0;
+				}
 
 				/*-------------------------------
 				* Low Level Setup/Teardown Functions
