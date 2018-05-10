@@ -207,7 +207,11 @@ namespace Thor
 				boost::circular_buffer<UARTPacket> TXPacketBuffer, RXPacketBuffer;
 
 				/* Asynchronous RX buffer for many packets */
+				boost::circular_buffer<uint8_t*> temp;
+				
 				uint8_t packetQueue[UART_PACKET_QUEUE_SIZE][UART_PACKET_BUFFER_SIZE];
+				
+				
 				uint8_t currentQueuePacket = 0;
 				uint32_t rxAsyncPacketSize = 0;
 				int totalWaitingPackets = 0;
