@@ -76,12 +76,14 @@ namespace Thor
 				* Get the Peripheral Type/Instance
 				*-------------------------------*/
 				/* All of the peripherals are derived off a base address with some offset. Checking
-				* the base address with a few STMicro provided macros shortens the time required to
+				* the base address with a few ST provided macros shortens the time required to
 				* reverse search for the exact peripheral used.
 				*
 				* Because it is not certain whether all peripheral addressing follows the same
 				* structure, each peripheral is handled on a case by case basis.
 				* */
+				
+				//TODO: This looks like a great candidate for that map lookup system...
 
 				void* uart_candidate = (void*)(REG_DMA_SxPAR & 0xFFFFFF00);
 				void* spi_candidate = (void*)(REG_DMA_SxPAR & 0xFFFFFF00);
@@ -94,21 +96,21 @@ namespace Thor
 					{
 						output.peripheral_type = Thor::Interrupt::SRC_USART;
 
-						#ifdef ENABLE_USART1
+						#if defined(USART1)
 						if (uart_candidate == USART1)
 							output.peripheral_instance = Thor::Interrupt::SRC_USART1;
 						#endif
 
-						#ifdef ENABLE_USART2
+						#if defined(USART2)
 						if (uart_candidate == USART2)
 							output.peripheral_instance = Thor::Interrupt::SRC_USART2;
 						#endif
 
-						#ifdef ENABLE_USART3
+						#if defined(USART3)
 						if (uart_candidate == USART3)
 							output.peripheral_instance = Thor::Interrupt::SRC_USART3;
 						#endif
-						#ifdef ENABLE_USART6
+						#if defined(USART6)
 						if (uart_candidate == USART6)
 							output.peripheral_instance = Thor::Interrupt::SRC_USART6;
 						#endif
@@ -117,19 +119,19 @@ namespace Thor
 					{
 						output.peripheral_type = Thor::Interrupt::SRC_UART;
 
-						#ifdef ENABLE_UART4
+						#if defined(UART4)
 						if (uart_candidate == UART4)
 							output.peripheral_instance = Thor::Interrupt::SRC_UART4;
 						#endif
-						#ifdef ENABLE_UART5
+						#if defined(UART5)
 						if (uart_candidate == UART5)
 							output.peripheral_instance = Thor::Interrupt::SRC_UART5;
 						#endif
-						#ifdef ENABLE_UART7
+						#if defined(UART7)
 						if (uart_candidate == UART7)
 							output.peripheral_instance = Thor::Interrupt::SRC_UART7;
 						#endif
-						#ifdef ENABLE_UART8
+						#if defined(UART8)
 						if (uart_candidate == UART8)
 							output.peripheral_instance = Thor::Interrupt::SRC_UART8;
 						#endif
@@ -141,31 +143,31 @@ namespace Thor
 				{
 					output.peripheral_type = Thor::Interrupt::SRC_SPI;
 
-					#ifdef ENABLE_SPI1
+					#if defined(SPI1)
 					if (uart_candidate == SPI1)
 						output.peripheral_instance = Thor::Interrupt::SRC_SPI1;
 					#endif
 
-					#ifdef ENABLE_SPI2
+					#if defined(SPI2)
 					if (uart_candidate == SPI2)
 						output.peripheral_instance = Thor::Interrupt::SRC_SPI2;
 					#endif
-					#ifdef ENABLE_SPI3
+					#if defined(SPI3)
 					if (uart_candidate == SPI3)
 						output.peripheral_instance = Thor::Interrupt::SRC_SPI3;
 					#endif
-					#ifdef ENABLE_SPI4
+					#if defined(SPI4)
 					if (uart_candidate == SPI4)
 						output.peripheral_instance = Thor::Interrupt::SRC_SPI4;
 					#endif
-					#ifdef ENABLE_SPI5
+					#if defined(SPI5)
 					if (uart_candidate == SPI5)
 						output.peripheral_instance = Thor::Interrupt::SRC_SPI5;
 					#endif
-					#ifdef ENABLE_SPI6
+					#if defined(SPI6)
 					if (uart_candidate == SPI6)
 						output.peripheral_instance = Thor::Interrupt::SRC_SPI6;
-					#endif
+					#endif
 				}
 
 				else
@@ -193,7 +195,7 @@ namespace Thor
 			{
 				switch (pConfig.peripheral_instance)
 				{
-					#ifdef ENABLE_UART1
+					#if defined(UART1)
 				case Thor::Interrupt::SRC_UART1:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(1);
@@ -203,7 +205,7 @@ namespace Thor
 					break;
 					#endif
 
-					#ifdef ENABLE_UART2
+					#if defined(UART2)
 				case Thor::Interrupt::SRC_UART2:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(2);
@@ -213,7 +215,7 @@ namespace Thor
 					break;
 					#endif
 
-					#ifdef ENABLE_UART3
+					#if defined(UART3)
 				case Thor::Interrupt::SRC_UART3:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(3);
@@ -223,7 +225,7 @@ namespace Thor
 					break;
 					#endif
 
-					#ifdef ENABLE_UART4
+					#if defined(UART4)
 				case Thor::Interrupt::SRC_UART4:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(4);
@@ -233,7 +235,7 @@ namespace Thor
 					break;
 					#endif
 
-					#ifdef ENABLE_UART5
+					#if defined(UART5)
 				case Thor::Interrupt::SRC_UART5:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(5);
@@ -243,7 +245,7 @@ namespace Thor
 					break;
 					#endif
 
-					#ifdef ENABLE_UART7
+					#if defined(UART7)
 				case Thor::Interrupt::SRC_UART7:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(7);
@@ -253,7 +255,7 @@ namespace Thor
 					break;
 					#endif
 
-					#ifdef ENABLE_UART8
+					#if defined(UART8)
 				case Thor::Interrupt::SRC_UART8:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(8);
@@ -316,7 +318,7 @@ namespace Thor
 			{
 				switch (pConfig.peripheral_instance)
 				{
-					#ifdef ENABLE_SPI1
+					#if defined(SPI1)
 				case Thor::Interrupt::SRC_SPI1:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(1);
@@ -326,7 +328,7 @@ namespace Thor
 					break;
 					#endif
 
-					#ifdef ENABLE_SPI2
+					#if defined(SPI2)
 				case Thor::Interrupt::SRC_SPI2:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(2);
@@ -336,7 +338,7 @@ namespace Thor
 					break;
 					#endif
 
-					#ifdef ENABLE_SPI3
+					#if defined(SPI3)
 				case Thor::Interrupt::SRC_SPI3:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(3);
@@ -347,7 +349,7 @@ namespace Thor
 					break;
 					#endif
 
-					#ifdef ENABLE_SPI4
+					#if defined(SPI4)
 				case Thor::Interrupt::SRC_SPI4:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(4);
@@ -357,7 +359,7 @@ namespace Thor
 					break;
 					#endif
 
-					#ifdef ENABLE_SPI5
+					#if defined(SPI5)
 				case Thor::Interrupt::SRC_SPI5:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(5);
@@ -367,7 +369,7 @@ namespace Thor
 					break;
 					#endif
 
-					#ifdef ENABLE_SPI6
+					#if defined(SPI6)
 				case Thor::Interrupt::SRC_SPI6:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(6);
@@ -420,7 +422,7 @@ Thor::Interrupt::DMA::DMAHandler dma_handler;
 Thor::Interrupt::UART::UART_DMAHandlerManager uart_dma_manager;
 Thor::Interrupt::SPI::SPI_DMAHandlerManager spi_dma_manager;
 
-#ifdef DMA1
+#if defined(DMA1)
 void DMA1_Stream0_IRQHandler(void)
 {
 	dma_handler.updateDMASource(1u, 0u);
@@ -614,7 +616,7 @@ void DMA1_Stream7_IRQHandler(void)
 }
 #endif /* DMA1 */
 
-#ifdef DMA2
+#if defined(DMA2)
 void DMA2_Stream0_IRQHandler(void)
 {
 	/* Inform the DMAHandler of a few pieces of information */

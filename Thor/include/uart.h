@@ -112,7 +112,7 @@ namespace Thor
 				 **/
 				Status read(uint8_t* buff, size_t length);
 
-				/** Reads the next packet received into a buffer
+				/** Reads the next packet received into a buffer 
 				 *	@param[out] buff		Address of an external buffer to read data into
 				 *	@param[in]	buff_length	The size of the external buffer
 				 *	@return Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it
@@ -194,6 +194,14 @@ namespace Thor
 				const UARTPacket& _txBufferNextPacket(){ return TXPacketBuffer.front(); }
 				void _rxBufferPushBack(const UARTPacket& newPkt){ RXPacketBuffer.push_back(newPkt); }
 				uint8_t* _rxCurrentQueuePacketRef(){ return packetQueue[currentQueuePacket]; }
+				void _rxIncrCurrentQueuePacket()
+				{
+					currentQueuePacket++;
+
+					if (currentQueuePacket == UART_PACKET_QUEUE_SIZE)
+						currentQueuePacket = 0;
+				}
+				
 
 			private:
 				int uart_channel;
@@ -206,10 +214,11 @@ namespace Thor
 				UARTPacket TX_tempPacket, RX_tempPacket;
 				boost::circular_buffer<UARTPacket> TXPacketBuffer, RXPacketBuffer;
 
-				/* Asynchronous RX buffer for many packets */
-				boost::circular_buffer<uint8_t*> temp;
+				/* Raw buffer for incoming RX data. There are a total of UART_PACKET_QUEUE_SIZE containers with
+				 * a length of UART_PACKET_QUEUE_BUFFER_SIZE bytes. */
+				//boost::circular_buffer<uint8_t*> packetQueue;
 				
-				uint8_t packetQueue[UART_PACKET_QUEUE_SIZE][UART_PACKET_BUFFER_SIZE];
+				uint8_t packetQueue[UART_PACKET_QUEUE_SIZE][UART_PACKET_QUEUE_BUFFER_SIZE];
 				
 				
 				uint8_t currentQueuePacket = 0;
@@ -269,6 +278,14 @@ namespace Thor
 			 *	of use and safe destruction. */
 			typedef boost::shared_ptr<UARTClass> UARTClass_sPtr;
 		}
+		
+		
+		/*-------------------------------
+		* Utility functions
+		*------------------------------*/
+		extern void UART_EnableIT_IDLE(UART_HandleTypeDef *UartHandle);
+		extern void UART_DisableIT_IDLE(UART_HandleTypeDef *UartHandle);
+		extern void UART_ClearIT_IDLE(UART_HandleTypeDef *UartHandle);
 	}
 }
 #endif /* !UART_H_ */
