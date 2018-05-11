@@ -20,7 +20,6 @@
 #include <Thor/include/definitions.h>
 #include <Thor/include/defaults.h>
 #include <Thor/include/gpio.h>
-#include <Thor/include/ringbuffer.h>
 
 #if defined(USING_FREERTOS)
 #include "FreeRTOS.h"
@@ -38,6 +37,7 @@ namespace Thor
 		namespace UART
 		{
 			using namespace Thor::Definitions::Serial;
+			using namespace Thor::Definitions::Interrupt;
 			using namespace Thor::Definitions::UART;
 
 			/** A higher level uart interface built ontop of the STM32 HAL that abstracts away most
@@ -50,7 +50,7 @@ namespace Thor
 			 *	@note If using FreeRTOS, the class is threadsafe and allows multiple sources to write and
 			 *		  read on a class object up to an internal buffer limit defined by Thor::Definitions::Serial::UART_BUFFER_SIZE
 			 **/
-			class UARTClass
+			class UARTClass : public SerialBase
 			{
 			public:
 				/** Initializes with a given baud rate and TX/RX modes. If no parameters are given it will default to a
@@ -64,7 +64,7 @@ namespace Thor
 				 **/
 				Status begin(const BaudRate& baud = SERIAL_BAUD_115200,
 					const Modes& tx_mode = BLOCKING,
-					const Modes& rx_mode = BLOCKING);
+					const Modes& rx_mode = BLOCKING) override;
 
 				/** Places the specified peripheral into a given mode
 				 *	@param[in] periph	Explicitly states which peripheral subsystem (TX or RX) to set from Thor::Peripheral::Serial::SubPeripheral
@@ -74,7 +74,7 @@ namespace Thor
 				 *			
 				 *	@note When setting the RX peripheral to IT or DMA mode, it automatically enables asynchronous data reception
 				 **/
-				Status setMode(const SubPeripheral& periph, const Modes& mode);
+				Status setMode(const SubPeripheral& periph, const Modes& mode) override;
 
 				/** Writes data to the serial output
 				*	@param[in] val		Pointer to a mutable array
@@ -82,7 +82,7 @@ namespace Thor
 				*	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				*			will return a code from Thor::Peripheral::Serial::Status
 				**/
-				Status write(uint8_t* val, size_t length);
+				Status write(uint8_t* val, size_t length) override;
 
 				/** Writes data to the serial output
 				*	@param[in] string	Pointer to a mutable character array
@@ -90,14 +90,14 @@ namespace Thor
 				*	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				*			will return a code from Thor::Peripheral::Serial::Status
 				**/
-				Status write(char* string, size_t length);
+				Status write(char* string, size_t length) override;
 
 				/** Writes data to the serial output
 				*	@param[in] string	Pointer to an immutable character array. The length is internally calculated with strlen()
 				*	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				*			will return a code from Thor::Peripheral::Serial::Status
 				**/
-				Status write(const char* string);
+				Status write(const char* string) override;
 
 				/** Writes data to the serial output
 				*	@param[in] string	Pointer to an immutable character array
@@ -105,7 +105,7 @@ namespace Thor
 				*	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				*			will return a code from Thor::Peripheral::Serial::Status
 				**/
-				Status write(const char* string, size_t length);
+				Status write(const char* string, size_t length) override;
 
 				/** Commands the RX peripheral to read a single transmission of known length into the provided buffer.
 				 *	@param[out] buff	An external buffer to write the received data to
@@ -114,7 +114,7 @@ namespace Thor
 				 *	@note Only use this for receptions that have a fixed, known length. For transmissions that last longer than
 				 *		  the given 'length' value, it will simply be ignored and lost forever. Poor data.
 				 **/
-				Status readSync(uint8_t* buff, size_t length);
+				Status readSync(uint8_t* buff, size_t length) override;
 
 				/** Reads the next packet received into a buffer 
 				 *	@param[out] buff		Address of an external buffer to read data into
@@ -125,20 +125,20 @@ namespace Thor
 				 *  @note This grabs data from an asynchronous data reception of unknown length in Interrupt or DMA mode only. If the length
 				 *		  is known and only one transmission is to be received, use the provided readSync function instead.
 				 **/
-				Status readPacket(uint8_t* buff, size_t buff_length);
+				Status readPacket(uint8_t* buff, size_t buff_length) override;
 
 				/** How many unread asynchronously received packets are available
 				 *	@return number of available packets
 				 **/
-				int availablePackets();
+				int availablePackets() override;
 
 				/** Gets the size of the next asynchronously received packet in the buffer
 				 *	@return next packet size
 				 **/
-				size_t nextPacketSize();
+				size_t nextPacketSize() override;
 
 				/** Deinitializes and cleans up the peripheral */
-				void end();
+				void end() override;
 
 				/** Provides a convenient way for the user to specifiy advanced configuration settings.
 				 *	@param[in] config Configuration settings customized from the STM32 UART HAL struct defintion
@@ -157,8 +157,17 @@ namespace Thor
 				void IRQHandler_RXDMA();
 				
 				#if defined(USING_FREERTOS)
-				void attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr);
-				void removeThreadTrigger(Trigger trig);
+				/** Attaches a semaphore to a specific trigger source. When an event is triggered on that source,
+				 *	the semaphore will be 'given' to and any task waiting on that semaphore will become unblocked.
+				 *	@param[in] trig		The source to be triggered on, of type Thor::Definitions::Interrupt::Trigger
+				 *	@param[in] semphr	The address of the semaphore that will be 'given' to upon triggering 
+				 **/
+				void attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr) override;
+				
+				/** Removes a trigger source 
+				 *	@param[in] trig	The source to be removed, of type Thor::Definitions::Interrupt::Trigger
+				 **/
+				void removeThreadTrigger(Trigger trig) override;
 				#endif 
 				
 

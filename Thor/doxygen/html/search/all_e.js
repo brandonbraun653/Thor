@@ -6,17 +6,18 @@ var searchData=
   ['serial',['Serial',['../struct_serial.html',1,'']]],
   ['serialclass',['SerialClass',['../class_thor_1_1_peripheral_1_1_serial_1_1_serial_class.html',1,'Thor::Peripheral::Serial']]],
   ['serialconfig',['SerialConfig',['../struct_thor_1_1_defaults_1_1_serial_1_1_serial_config.html',1,'Thor::Defaults::Serial']]],
-  ['setblockmode',['setBlockMode',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a646fb6c95771654d8379ce5a02d18198',1,'Thor::Peripheral::UART::UARTClass']]],
-  ['setdmamode',['setDMAMode',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a7c563efd2602a26a48c186ca32d6310a',1,'Thor::Peripheral::UART::UARTClass']]],
-  ['setitmode',['setITMode',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#ac100abae7835acc171446c2c38d9e7be',1,'Thor::Peripheral::UART::UARTClass']]],
+  ['setblockmode',['setBlockMode',['../class_thor_1_1_peripheral_1_1_serial_1_1_serial_class.html#a3d50982e5ab46b17e187ac48d6dff633',1,'Thor::Peripheral::Serial::SerialClass::setBlockMode()'],['../class_thor_1_1_peripheral_1_1_u_s_a_r_t_1_1_u_s_a_r_t_class.html#a5c62af3d7ee9f0c1aa5cf134006029de',1,'Thor::Peripheral::USART::USARTClass::setBlockMode()']]],
+  ['setdmamode',['setDMAMode',['../class_thor_1_1_peripheral_1_1_serial_1_1_serial_class.html#a7c043f35e300da8794baa2699903be5d',1,'Thor::Peripheral::Serial::SerialClass::setDMAMode()'],['../class_thor_1_1_peripheral_1_1_u_s_a_r_t_1_1_u_s_a_r_t_class.html#a03584c3681d7fed4354d8261d5414eab',1,'Thor::Peripheral::USART::USARTClass::setDMAMode()']]],
+  ['setitmode',['setITMode',['../class_thor_1_1_peripheral_1_1_serial_1_1_serial_class.html#a26d03fc0e6782feeedb640655dc95ea8',1,'Thor::Peripheral::Serial::SerialClass::setITMode()'],['../class_thor_1_1_peripheral_1_1_u_s_a_r_t_1_1_u_s_a_r_t_class.html#ace8613800a50bfa0587590e2c28ca1c6',1,'Thor::Peripheral::USART::USARTClass::setITMode()']]],
+  ['setmode',['setMode',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a44a38ed548cbd40a25de7fa2df88d0c0',1,'Thor::Peripheral::UART::UARTClass']]],
   ['spi_5fdmahandlermanager',['SPI_DMAHandlerManager',['../class_thor_1_1_interrupt_1_1_s_p_i_1_1_s_p_i___d_m_a_handler_manager.html',1,'Thor::Interrupt::SPI']]],
   ['spi_5finitializer',['SPI_Initializer',['../struct_s_p_i___initializer.html',1,'']]],
   ['spiclass',['SPIClass',['../class_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class.html',1,'Thor::Peripheral::SPI']]],
-  ['spiclassstatus',['SPIClassStatus',['../struct_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class_1_1_s_p_i_class_status.html',1,'Thor::Peripheral::SPI::SPIClass']]],
   ['spiconfig',['SPIConfig',['../struct_thor_1_1_defaults_1_1_s_p_i_1_1_s_p_i_config.html',1,'Thor::Defaults::SPI']]],
   ['spipacket',['SPIPacket',['../struct_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class_1_1_s_p_i_packet.html',1,'Thor::Peripheral::SPI::SPIClass']]],
   ['status',['Status',['../namespace_thor_1_1_definitions_1_1_s_p_i.html#a9b667c06f7b761cc1e6006794bddbf10',1,'Thor::Definitions::SPI::Status()'],['../namespace_thor_1_1_definitions_1_1_serial.html#a7d66fc813a50388efcc16107c864f948',1,'Thor::Definitions::Serial::Status()']]],
   ['struct_5fv1',['struct_v1',['../struct_thor_1_1_libraries_1_1_s_d_1_1struct__v1.html',1,'Thor::Libraries::SD']]],
   ['struct_5fv2',['struct_v2',['../struct_thor_1_1_libraries_1_1_s_d_1_1struct__v2.html',1,'Thor::Libraries::SD']]],
-  ['subperipheral',['SubPeripheral',['../namespace_thor_1_1_definitions_1_1_serial.html#a1a3716aad8b1534002639eaec645a2e7',1,'Thor::Definitions::Serial']]]
+  ['subperipheral',['SubPeripheral',['../namespace_thor_1_1_definitions_1_1_serial.html#a1a3716aad8b1534002639eaec645a2e7',1,'Thor::Definitions::Serial']]],
+  ['system_5fnvic_5fpriority_5fgrouping',['SYSTEM_NVIC_PRIORITY_GROUPING',['../namespace_thor_1_1_defaults_1_1_interrupt.html#aa89e32a75a231208b03e10f37919d02f',1,'Thor::Defaults::Interrupt']]]
 ];

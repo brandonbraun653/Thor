@@ -24,7 +24,6 @@ var hierarchy =
     [ "Thor::Defaults::Serial::SerialConfig", "struct_thor_1_1_defaults_1_1_serial_1_1_serial_config.html", null ],
     [ "Thor::Interrupt::SPI::SPI_DMAHandlerManager", "class_thor_1_1_interrupt_1_1_s_p_i_1_1_s_p_i___d_m_a_handler_manager.html", null ],
     [ "SPI_Initializer", "struct_s_p_i___initializer.html", null ],
-    [ "Thor::Peripheral::SPI::SPIClass::SPIClassStatus", "struct_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class_1_1_s_p_i_class_status.html", null ],
     [ "Thor::Defaults::SPI::SPIConfig", "struct_thor_1_1_defaults_1_1_s_p_i_1_1_s_p_i_config.html", null ],
     [ "Thor::Peripheral::SPI::SPIClass::SPIPacket", "struct_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class_1_1_s_p_i_packet.html", null ],
     [ "Thor::Libraries::SD::struct_v1", "struct_thor_1_1_libraries_1_1_s_d_1_1struct__v1.html", null ],
@@ -32,7 +31,6 @@ var hierarchy =
     [ "TimerFlags", "struct_timer_flags.html", null ],
     [ "Thor::Interrupt::UART::UART_DMAHandlerManager", "class_thor_1_1_interrupt_1_1_u_a_r_t_1_1_u_a_r_t___d_m_a_handler_manager.html", null ],
     [ "Thor::Peripheral::UART::UARTClass", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html", null ],
-    [ "Thor::Peripheral::UART::UARTClass::UARTClassStatus", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_class_status.html", null ],
     [ "Thor::Peripheral::UART::UARTClass::UARTPacket", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html", null ],
     [ "Thor::Peripheral::USART::USARTClass", "class_thor_1_1_peripheral_1_1_u_s_a_r_t_1_1_u_s_a_r_t_class.html", null ]
 ];

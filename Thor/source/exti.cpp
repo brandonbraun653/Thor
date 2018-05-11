@@ -6,11 +6,12 @@ using namespace Thor::Definitions::SPI;
 using namespace Thor::Definitions::Interrupt;
 using namespace Thor::Interrupt;
 
-boost::circular_buffer<TaskTrigger*>TriggerBuffer;
 
 #if defined(USING_FREERTOS)
 TaskTrigger* trigger_obj = nullptr;
 SemaphoreHandle_t* trigger_semphr = nullptr; 
+
+boost::circular_buffer<TaskTrigger*>TriggerBuffer;
 
 void setupEXTI0_Interrupt()
 {
@@ -25,7 +26,10 @@ void setupEXTI0_Interrupt()
 
 	LL_EXTI_Init(&exti_init);
 
-	NVIC_SetPriority(EXTI0_IRQn, EXTI0_IRQn_Priority);
+	/** Ensures that the EXTI0 interrupt will always be able to preempt most other 
+	 *	threads running on the kernel. This is important for quick response times. 
+	 **/
+	NVIC_SetPriority(EXTI0_IRQn, EXTI0_MAX_IRQn_PRIORITY);
 	NVIC_EnableIRQ(EXTI0_IRQn);
 }
 

@@ -15,14 +15,8 @@
 
 
 /*-------------------------------------------
-* Check for existence of various files
+* Check for existence of various files from the General Includes tab in project properties
 *-------------------------------------------*/
-/* Thor Files */
-//#if !(__has_include("thor_peripherals.hpp"))
-//#error FATAL ERROR: Please create a "thor_peripherals.hpp" file to define which peripherals are used in the build
-//#else//#include "thor_peripherals.hpp"
-//#endif
-
 /* Chimera Files */
 #if __has_include("Chimera/chimera.hpp")
 #define USING_CHIMERA
@@ -91,6 +85,7 @@
 	#error Please define DEBUG_DEFAULT_INTERRUPT_HANDLERS in the project properties preprocessor tab for the DEBUG build configuration.
 	#endif 
 #else
+	/* Speeds up Eigen calculations by not checking matrix dimensions */
 	#ifndef EIGEN_NO_DEBUG
 	#error Please define EIGEN_NO_DEBUG in the project properties preprocessor tab for the RELEASE build configuration.
 	#endif 

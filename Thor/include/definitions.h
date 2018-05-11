@@ -4,12 +4,34 @@
 
 #include <Thor/include/config.h>
 
+#if defined(USING_FREERTOS)
+#include "FreeRTOS.h"
+#include "semphr.h"
+#endif 
+
 /** @namespace Thor */
 namespace Thor
 {
 	/** @namespace Thor::Definitions */
 	namespace Definitions
 	{
+		/** @namespace Thor::Definitions::Interrupt */
+		namespace Interrupt
+		{
+			#if defined(USING_FREERTOS)
+			const uint32_t EXTI0_MAX_IRQn_PRIORITY = configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY;
+			const uint32_t MAX_PENDING_TASK_TRIGGERS = 10;			/**< The largest number of queued events at any given time */
+			
+			/** The various types of triggers that can be used to unlock a FreeRTOS thread */
+			enum Trigger : uint8_t
+			{
+				RX_COMPLETE,
+				TX_COMPLETE,
+				MAX_SOURCES
+			};
+			#endif
+		}
+		
 		/** @namespace Thor::Definitions::GPIO */
 		namespace GPIO
 		{
@@ -422,29 +444,32 @@ namespace Thor
 				bool ON_UART;
 				uint8_t peripheral_number;
 			};
+			
+			class SerialBase
+			{
+			public:
+				virtual Status begin(const BaudRate&, const Modes&, const Modes&) = 0;
+				virtual Status setMode(const SubPeripheral&, const Modes&) = 0;
+				virtual Status write(uint8_t*, size_t) = 0;
+				virtual Status write(char*, size_t) = 0;
+				virtual Status write(const char*) = 0;
+				virtual Status write(const char*, size_t) = 0;
+				virtual Status readSync(uint8_t*, size_t) = 0;
+				virtual Status readPacket(uint8_t*, size_t) = 0;
+				virtual int availablePackets() = 0;
+				virtual size_t nextPacketSize() = 0;
+				virtual void end() = 0;
+				
+				#if defined(USING_FREERTOS)
+				virtual void attachThreadTrigger(Thor::Definitions::Interrupt::Trigger, SemaphoreHandle_t*) = 0;
+				virtual void removeThreadTrigger(Thor::Definitions::Interrupt::Trigger) = 0;
+				#endif 
+				
+			private:	
+			};
 		}
 		
-		/** @namespace Thor::Definitions::Interrupt */
-		namespace Interrupt
-		{
-			const uint32_t MAX_ATTACHED_SEMPHRS_PER_PERIPH = 20;	/**< */
-			const uint32_t MAX_PENDING_TASK_TRIGGERS = 10;			/**< The largest number of queued events at any given time */
 		
-			enum class Source : uint8_t
-			{
-				Serial,
-				SPI,
-				I2C
-			};
-			
-			enum Trigger : unsigned int 
-			{
-				RX_COMPLETE,
-				TX_COMPLETE,
-				MAX_SOURCES
-			};
-			
-		}
 	}
 
 	//TODO: Deprecate this!

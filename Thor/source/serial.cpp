@@ -1,5 +1,6 @@
 /* Boost Includes */
 #include <boost/container/static_vector.hpp>
+#include <boost/make_shared.hpp>
 
 /* Project Includes */
 #include <Thor/include/serial.h>
@@ -11,13 +12,13 @@ using namespace Thor::Peripheral::USART;
 using ThorStatus = Thor::Definitions::Serial::Status;
 using ThorBaud = Thor::Definitions::Serial::BaudRate;
 using ThorMode = Thor::Definitions::Serial::Modes;
-using ThorSPer = Thor::Definitions::Serial::SubPeripheral;
+using ThorSubPeriph = Thor::Definitions::Serial::SubPeripheral;
 
 #if defined(USING_CHIMERA)
 using ChimStatus = Chimera::Serial::Status;
 using ChimBaud = Chimera::Serial::BaudRate;
 using ChimMode = Chimera::Serial::Modes;
-using ChimSPer = Chimera::Serial::SubPeripheral;
+using ChimSubPeriph = Chimera::Serial::SubPeripheral;
 #endif 
 
 namespace Thor
@@ -45,197 +46,91 @@ namespace Thor
 				#endif 
 			};
 			
-
 			SerialClass::SerialClass(const int& channel)
 			{
 				//TODO: Add an assert here for checking the channel boundary...exceptions?
 				this->serial_channel = channel;
 				if (serialPeripheralMap[channel].ON_UART)
 				{
-					uart = UARTClass::create(serialPeripheralMap[channel].peripheral_number);
+					auto tmp = UARTClass::create(serialPeripheralMap[channel].peripheral_number);
+					serial = boost::dynamic_pointer_cast<SerialBase, UARTClass>(tmp);
 				}
 				else
 				{
-					usart = USARTClass::create(serialPeripheralMap[channel].peripheral_number);
+					auto tmp = USARTClass::create(serialPeripheralMap[channel].peripheral_number);
+					serial = boost::dynamic_pointer_cast<SerialBase, USARTClass>(tmp);
 				}
 			}
 
-			Status SerialClass::begin()
+			ThorStatus SerialClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
 			{
-				if (uart)
-				{
-					return uart->begin();
-				}
-				else
-				{
-					return usart->begin();
-				}
-			}
-
-			Status SerialClass::begin(const BaudRate& baud)
-			{
-				if (uart)
-				{
-					return uart->begin(baud);
-				}
-				else
-				{
-					return usart->begin(baud);
-				}
+				return serial->begin(baud, tx_mode, rx_mode);
 			}
 			
-			Status SerialClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
+			Status SerialClass::setMode(const SubPeripheral& periph, const Modes& mode)
 			{
-				if (uart)
-				{
-					return uart->begin(baud, tx_mode, rx_mode);
-				}
-				else
-				{
-					return usart->begin(baud, tx_mode, rx_mode);
-				}
+				return serial->setMode(periph, mode);
 			}
 			
 			Status SerialClass::write(uint8_t* val, size_t length)
 			{
-				if (uart)
-				{
-					return uart->write(val, length);
-				}
-				else
-				{
-					return usart->write(val, length);
-				}
+				return serial->write(val, length);
 			}
 			
 			Status SerialClass::write(char* string, size_t length)
 			{
-				if (uart)
-				{
-					return uart->write(string, length);
-				}
-				else
-				{
-					return usart->write(string, length);
-				}
+				return serial->write(string, length);
 			}
 			
 			Status SerialClass::write(const char* string)
 			{
-				if (uart)
-				{
-					return uart->write(string);
-				}
-				else
-				{
-					return usart->write(string);
-				}
+				return serial->write(string);
 			}
 			
 			Status SerialClass::write(const char* string, size_t length)
 			{
-				if (uart)
-				{
-					return uart->write(string, length);
-				}
-				else
-				{
-					return usart->write(string, length);
-				}
+				return serial->write(string, length);
+			}
+			
+			Status SerialClass::readSync(uint8_t* buff, size_t length)
+			{
+				return serial->readSync(buff, length);
 			}
 			
 			Status SerialClass::readPacket(uint8_t* buff, size_t buff_length)
 			{
-				if (uart)
-				{
-					return uart->readPacket(buff, buff_length);
-				}
-				else
-				{
-					return usart->readPacket(buff, buff_length);
-				}
+				return serial->readPacket(buff, buff_length);
 			}
 	
 			int SerialClass::availablePackets()
 			{
-				if (uart)
-				{
-					return uart->availablePackets();
-				}
-				else
-				{
-					return usart->availablePackets();
-				}
+				return serial->availablePackets();
 			}
 			
 			size_t SerialClass::nextPacketSize()
 			{
-				if (uart)
-				{
-					return uart->nextPacketSize();
-				}
-				else
-				{
-					return usart->nextPacketSize();
-				}
-			}
-			
-			void SerialClass::flush()
-			{
-
+				return serial->nextPacketSize();
 			}
 			
 			void SerialClass::end()
 			{
-				if (uart)
-				{
-					uart->end();
-				}
-				else
-				{
-					usart->end();
-				}
+				serial->end();
 			}
 			
-//			void SerialClass::setBlockMode(const SubPeripheral& periph)
-//			{
-//				if (uart)
-//				{
-//					uart->setBlockMode(periph);
-//				}
-//				else
-//				{
-//					usart->setBlockMode(periph);
-//				}
-//			}
-//			
-//			void SerialClass::setITMode(const SubPeripheral& periph)
-//			{
-//				if (uart)
-//				{
-//					uart->setITMode(periph);
-//				}
-//				else
-//				{
-//					usart->setITMode(periph);
-//				}
-//			}
-//			
-//			void SerialClass::setDMAMode(const SubPeripheral& periph)
-//			{
-//				if (uart)
-//				{
-//					uart->setDMAMode(periph);
-//				}
-//				else
-//				{
-//					usart->setDMAMode(periph);
-//				}
-//			}
+			#if defined(USING_FREERTOS)
+			void SerialClass::attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr)
+			{
+				serial->attachThreadTrigger(trig, semphr);
+			}
 			
+			void SerialClass::removeThreadTrigger(Trigger trig)
+			{
+				serial->removeThreadTrigger(trig);
+			}
+			#endif 
 
 			#if defined(USING_CHIMERA)
-			ChimStatus SerialClass::begin(ChimBaud baud, ChimMode tx_mode, ChimMode rx_mode)
+			ChimStatus SerialClass::cbegin(ChimBaud baud, ChimMode tx_mode, ChimMode rx_mode)
 			{
 				auto chimera_error = ChimStatus::SERIAL_OK;
 				auto thor_error = begin(static_cast<ThorBaud>(baud), static_cast<ThorMode>(tx_mode), static_cast<ThorMode>(rx_mode));
@@ -248,29 +143,47 @@ namespace Thor
 				return chimera_error;
 			}
 
-			ChimStatus SerialClass::setMode(ChimSPer sp, ChimMode mode)
-			{	
-				switch (mode)
+			ChimStatus SerialClass::csetMode(ChimSubPeriph periph, ChimMode mode)
+			{					
+				if (periph == ChimSubPeriph::TX)
 				{
-				case ChimMode::TX_MODE_BLOCKING:
-				case ChimMode::RX_MODE_BLOCKING:
-					setBlockMode(static_cast<ThorSPer>(sp));
-					break;
-
-				case ChimMode::TX_MODE_INTERRUPT:
-				case ChimMode::RX_MODE_INTERRUPT:
-					setITMode(static_cast<ThorSPer>(sp));
-					break;
-
-				case ChimMode::TX_MODE_DMA:
-				case ChimMode::RX_MODE_DMA:
-					setDMAMode(static_cast<ThorSPer>(sp));
-					break;
-
-				default: break;
+					switch (mode)
+					{
+					case Chimera::Serial::Modes::BLOCKING:
+						serial->setMode(TX, BLOCKING);
+						break;
+						
+					case Chimera::Serial::Modes::INTERRUPT:
+						serial->setMode(TX, INTERRUPT);
+						break;
+					
+					case Chimera::Serial::Modes::DMA:
+						serial->setMode(TX, DMA);
+						break;
+						
+					default: break;
+					}
 				}
-
-
+				else if (periph == ChimSubPeriph::RX)
+				{
+					switch (mode)
+					{
+					case Chimera::Serial::Modes::BLOCKING:
+						serial->setMode(RX, BLOCKING);
+						break;
+						
+					case Chimera::Serial::Modes::INTERRUPT:
+						serial->setMode(RX, INTERRUPT);
+						break;
+					
+					case Chimera::Serial::Modes::DMA:
+						serial->setMode(RX, DMA);
+						break;
+						
+					default: break;
+					}
+				}
+					
 				return ChimStatus::SERIAL_OK;
 			}
 
@@ -363,12 +276,20 @@ namespace Thor
 					return ChimStatus::SERIAL_NOT_READY;
 					break;
 
-				case TX_IN_PROGRESS:
+				case PERIPH_TX_IN_PROGRESS:
 					return ChimStatus::SERIAL_TX_IN_PROGRESS;
 					break;
+				
+				case PERIPH_RX_IN_PROGRESS:
+					return ChimStatus::SERIAL_RX_IN_PROGRESS;
+					break;
 
-				case PACKET_TOO_LARGE_FOR_BUFFER:
+				case PERIPH_PACKET_TOO_LARGE_FOR_BUFFER:
 					return ChimStatus::SERIAL_PACKET_TOO_LARGE_FOR_BUFFER;
+					break;
+					
+				case PERIPH_TIMEOUT:
+					return ChimStatus::SERIAL_TIMEOUT;
 					break;
 
 				default: return ChimStatus::SERIAL_UNKNOWN_ERROR;

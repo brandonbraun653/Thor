@@ -14,6 +14,8 @@ using namespace Thor::Peripheral::USART;
 using namespace Thor::Peripheral::GPIO;
 using namespace Thor::Defaults::Serial;
 
+
+
 #if defined(USING_FREERTOS)
 static boost::container::static_vector<SemaphoreHandle_t, MAX_SERIAL_CHANNELS + 1> usart_semphrs(MAX_SERIAL_CHANNELS + 1);
 #endif
@@ -72,18 +74,12 @@ namespace Thor
 	{
 		namespace USART
 		{
-			
-			Status USARTClass::begin()
-			{
-				return PERIPH_OK;
-			}
-
-			Status USARTClass::begin(const BaudRate& baud)
-			{
-				return PERIPH_OK;
-			}
-
 			Status USARTClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
+			{
+				return PERIPH_OK;
+			}
+			
+			Status USARTClass::setMode(const SubPeripheral& periph, const Modes& mode)
 			{
 				return PERIPH_OK;
 			}
@@ -113,6 +109,11 @@ namespace Thor
 				return PERIPH_OK;
 			}
 			
+			Status USARTClass::readSync(uint8_t* buff, size_t length)
+			{
+				return PERIPH_OK;
+			}
+			
 			int USARTClass::availablePackets()
 			{
 				return 0;
@@ -123,42 +124,28 @@ namespace Thor
 				return (size_t)0;
 			}
 			
-			void USARTClass::flush()
-			{
-				
-			}
-			
 			void USARTClass::end()
 			{
 				
 			}
 			
-			void USARTClass::setBlockMode(const SubPeripheral& periph)
+			#if defined(USING_FREERTOS)
+			void USARTClass::attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr)
 			{
-				
+				//uartTaskTrigger.attachEventConsumer(trig, semphr);
 			}
 			
-			void USARTClass::setITMode(const SubPeripheral& periph)
+			void USARTClass::removeThreadTrigger(Trigger trig)
 			{
-				
+				//uartTaskTrigger.removeEventConsumer(trig);
 			}
 			
-			void USARTClass::setDMAMode(const SubPeripheral& periph)
-			{
-				
-			}
-			
-
-
-
-
-
+			#endif 
 
 			USARTClass::USARTClass(const int& channel)
 			{
 
 			}
-
 
 			boost::shared_ptr<USARTClass> USARTClass::create(const int channel)
 			{
@@ -177,6 +164,7 @@ namespace Thor
 			{
 
 			}
+			
 		}
 	}
 }

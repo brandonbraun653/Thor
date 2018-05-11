@@ -27,7 +27,7 @@ namespace Thor
 			using namespace Thor::Definitions::Serial;
 
 
-			/** A high level basic serial interface for rapid prototyping. This is essentially a wrapper over the existing 
+			/** A high level, basic serial interface for rapid prototyping. This is essentially a wrapper over the existing 
 			 *	Thor::Peripheral::UART::UARTClass and Thor::Peripheral::USART::USARTClass interfaces and implements much of
 			 *	the same features found there. The goal of this class is to abstract away from the specific UART and USART 
 			 *	peripherals so that the user only has to call 'SerialClass(1)' or 'SerialClass(x)' to generate a serial object 
@@ -38,31 +38,28 @@ namespace Thor
 			class SerialClass
 			{
 			public:
-				/** Initializes with default parameters.
-				*	Baudrate is set to 115200 and both TX and RX modes are set to blocking.
-				*
-				*	@return Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
-				*			will return a code from Thor::Peripheral::Serial::Status
-				**/
-				Status begin();
-
-				/** Initializes with a given baud rate.
-				*	Both TX and RX modes are set to blocking.
-				*
-				*  @param[in] baud Desired baud rate. Accepts standard rates from Thor::Definitions::Serial::Modes
-				*  @return Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
-				*		   will return a code from Thor::Peripheral::Serial::Status
-				**/
-				Status begin(const BaudRate& baud);
-
-				/** Initializes with a given baud rate and TX/RX modes.
-				*	@param[in] baud		Desired baud rate. Accepts standard rates from Thor::Definitions::Serial::BaudRate
-				*	@param[in] tx_mode	Sets the TX mode to Blocking, Interrupt, or DMA from Thor::Definitions::Serial::Modes
-				*	@param[in] rx_mode	Sets the RX mode to Blocking, Interrupt, or DMA from Thor::Definitions::Serial::Modes
-				*	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
-				*			will return a code from Thor::Peripheral::Serial::Status
-				**/
-				Status begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode);
+				/** Initializes with a given baud rate and TX/RX modes. If no parameters are given it will default to a
+				 *	baudrate of 115200 and set both TX and RX modes to blocking.
+				 *
+				 *	@param[in] baud		Desired baud rate. Accepts standard rates from Thor::Definitions::Serial::BaudRate
+				 *	@param[in] tx_mode	Sets the TX mode to Blocking, Interrupt, or DMA from Thor::Definitions::Serial::Modes
+				 *	@param[in] rx_mode	Sets the RX mode to Blocking, Interrupt, or DMA from Thor::Definitions::Serial::Modes
+				 *	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
+				 *			will return a code from Thor::Peripheral::Serial::Status
+				 **/
+				Status begin(const BaudRate& baud = SERIAL_BAUD_115200,
+					const Modes& tx_mode = BLOCKING,
+					const Modes& rx_mode = BLOCKING);
+				
+				/** Places the specified peripheral into a given mode
+				 *	@param[in] periph	Explicitly states which peripheral subsystem (TX or RX) to set from Thor::Peripheral::Serial::SubPeripheral
+				 *	@param[in] mode		The corresponding mode for the peripheral to enter, from Thor::Peripheral::Serial::Modes
+				 *	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
+				 *			will return a code from Thor::Peripheral::Serial::Status
+				 *			
+				 *	@note When setting the RX peripheral to IT or DMA mode, it automatically enables asynchronous data reception
+				 **/
+				Status setMode(const SubPeripheral& periph, const Modes& mode);
 
 				/** Writes data to the serial output gpio
 				 *	@param[in] val		Pointer to an array of data to be sent out
@@ -94,6 +91,15 @@ namespace Thor
 				*			will return a code from Thor::Peripheral::Serial::Status
 				**/
 				Status write(const char* string, size_t length);
+				
+				/** Commands the RX peripheral to read a single transmission of known length into the provided buffer.
+				 *	@param[out] buff	An external buffer to write the received data to
+				 *	@param[in]  length	The number of bytes to be received
+				 *
+				 *	@note Only use this for receptions that have a fixed, known length. For transmissions that last longer than
+				 *		  the given 'length' value, it will simply be ignored and lost forever. Poor data.
+				 **/
+				Status readSync(uint8_t* buff, size_t length);
 
 				/** Reads the next packet received into a buffer
 				*	@param[out] buff		Address of an external buffer to read data into
@@ -113,30 +119,22 @@ namespace Thor
 				**/
 				size_t nextPacketSize();
 
-				/** Clears the receive buffer entirely and waits for all buffered transmissions to complete */
-				void flush();
-
 				/** Deinitializes and cleans up the peripheral */
 				void end();
+
+				#if defined(USING_FREERTOS)
+				/** Attaches a semaphore to a specific trigger source. When an event is triggered on that source,
+				 *	the semaphore will be 'given' to and any task waiting on that semaphore will become unblocked.
+				 *	@param[in] trig		The source to be triggered on, of type Thor::Definitions::Interrupt::Trigger
+				 *	@param[in] semphr	The address of the semaphore that will be 'given' to upon triggering 
+				 **/
+				void attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr);
 				
-				/** Sets the specified peripheral to blocking mode. It also takes into account any settings changes that might
-				*	be necessary.
-				*	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph
-				**/
-				void setBlockMode(const SubPeripheral& periph);
-
-				/** Sets the specified peripheral to interrupt mode. It also takes into account any settings changes that might
-				*	be necessary.
-				*	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph
-				**/
-				void setITMode(const SubPeripheral& periph);
-
-				/** Sets the specified peripheral to dma mode. It also takes into account any settings changes that might
-				*	be necessary.
-				*	@param[in] periph Explicitly states which peripheral subsystem (RX or TX) to set from Thor::Peripheral::UART::UARTPeriph
-				**/
-				void setDMAMode(const SubPeripheral& periph);
-
+				/** Removes a trigger source 
+				 *	@param[in] trig	The source to be removed, of type Thor::Definitions::Interrupt::Trigger
+				 **/
+				void removeThreadTrigger(Trigger trig);
+				#endif 
 				
 				SerialClass(const int& channel);
 				~SerialClass() = default;
@@ -144,11 +142,11 @@ namespace Thor
 
 				/* Specialized functions used only when interfacing with the Chimera HAL and are not intended be called by the user. */
 				#if defined(USING_CHIMERA)
-				Chimera::Serial::Status begin(Chimera::Serial::BaudRate baud = Chimera::Serial::BaudRate::SERIAL_BAUD_115200,
-												Chimera::Serial::Modes tx_mode = Chimera::Serial::Modes::TX_MODE_BLOCKING,
-												Chimera::Serial::Modes rx_mode = Chimera::Serial::Modes::RX_MODE_BLOCKING);
+				Chimera::Serial::Status cbegin(Chimera::Serial::BaudRate baud = Chimera::Serial::BaudRate::SERIAL_BAUD_115200,
+												Chimera::Serial::Modes tx_mode = Chimera::Serial::Modes::BLOCKING,
+												Chimera::Serial::Modes rx_mode = Chimera::Serial::Modes::BLOCKING);
 
-				Chimera::Serial::Status setMode(Chimera::Serial::SubPeripheral sp, Chimera::Serial::Modes mode);
+				Chimera::Serial::Status csetMode(Chimera::Serial::SubPeripheral periph, Chimera::Serial::Modes mode);
 
 				Chimera::Serial::Status cwrite(uint8_t* val, size_t length);
 
@@ -163,13 +161,11 @@ namespace Thor
 				Chimera::Serial::Status convertStatus(Thor::Definitions::Serial::Status status);
 				#endif 
 
-			private:
+			private:			
 				int serial_channel = 0;
-				Thor::Peripheral::UART::UARTClass_sPtr uart;
-				Thor::Peripheral::USART::USARTClass_sPtr usart;
+				boost::shared_ptr<SerialBase> serial;
 			};
-			
-			typedef boost::shared_ptr<SerialClass> Serial_sPtr;
+			typedef boost::shared_ptr<SerialClass> SerialClass_sPtr;
 		}
 	}
 }

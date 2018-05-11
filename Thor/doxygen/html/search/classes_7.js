@@ -9,7 +9,6 @@ var searchData=
   ['spi_5fdmahandlermanager',['SPI_DMAHandlerManager',['../class_thor_1_1_interrupt_1_1_s_p_i_1_1_s_p_i___d_m_a_handler_manager.html',1,'Thor::Interrupt::SPI']]],
   ['spi_5finitializer',['SPI_Initializer',['../struct_s_p_i___initializer.html',1,'']]],
   ['spiclass',['SPIClass',['../class_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class.html',1,'Thor::Peripheral::SPI']]],
-  ['spiclassstatus',['SPIClassStatus',['../struct_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class_1_1_s_p_i_class_status.html',1,'Thor::Peripheral::SPI::SPIClass']]],
   ['spiconfig',['SPIConfig',['../struct_thor_1_1_defaults_1_1_s_p_i_1_1_s_p_i_config.html',1,'Thor::Defaults::SPI']]],
   ['spipacket',['SPIPacket',['../struct_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class_1_1_s_p_i_packet.html',1,'Thor::Peripheral::SPI::SPIClass']]],
   ['struct_5fv1',['struct_v1',['../struct_thor_1_1_libraries_1_1_s_d_1_1struct__v1.html',1,'Thor::Libraries::SD']]],
