@@ -133,8 +133,22 @@ namespace Thor
 					srl_cfg[uart_channel].rxPin.Alternate);
 
 				/* Initialize the buffer memory */
-				TXPacketBuffer.set_capacity(UART_QUEUE_SIZE);
-				RXPacketBuffer.set_capacity(UART_QUEUE_SIZE);
+				TXPacketBuffer.set_capacity(UART_QUEUE_SIZE);	TXPacketBuffer.clear();
+				RXPacketBuffer.set_capacity(UART_QUEUE_SIZE);	RXPacketBuffer.clear();
+				
+				
+				//Sometimes the buffer initializes with random data, which is bad...
+				//TODO: Check what causes this error ^^^
+				UARTPacket tmp;
+				tmp.data_ptr = nullptr;
+				tmp.length = 0;
+				tmp.bytesRead = 0;
+				
+				for (int i = 0; i < RXPacketBuffer.capacity(); i++)
+					RXPacketBuffer.push_back(tmp);
+				
+				//Should reset the begin/end pointers? 
+				RXPacketBuffer.clear();
 
 				#if defined(USING_FREERTOS)
 				uart_semphrs[uart_channel] = xSemaphoreCreateCounting(UART_QUEUE_SIZE, UART_QUEUE_SIZE);
@@ -403,25 +417,52 @@ namespace Thor
 				return statusCode;
 			}
 
-			Status UARTClass::readPacket(uint8_t* buff, size_t buff_length)
+			Status UARTClass::readPacket(uint8_t* buff, size_t length)
 			{
-				UARTPacket packet = RXPacketBuffer.front();
-
-				size_t packetLength = packet.length;
 				Status error = PERIPH_OK;
-
-				/* Check if the received packet is too large for the buffer */
-				if (packetLength > buff_length)
+				UARTPacket packet = RXPacketBuffer.front();
+				
+				/* First make sure we have a valid address */
+				if (packet.data_ptr)
 				{
-					packetLength = buff_length;
-					error = PERIPH_PACKET_TOO_LARGE_FOR_BUFFER;
+					size_t readLength = packet.length;
+					if (readLength > length)
+					{
+						readLength = length;
+						//error = PERIPH_PACKET_TOO_LARGE_FOR_BUFFER;
+					}
+					
+					if (packet.bytesRead == 0)
+					{
+						memcpy(buff, packet.data_ptr, readLength);
+					}
+					else
+					{
+						memcpy(buff, packet.data_ptr + packet.bytesRead, readLength);
+					}
+					
+					/* Check if this read operation will completely empty the 
+					 * stored packet data. If so, we are free to pop it off the buffer */
+					if (length + packet.bytesRead >= packet.length)
+					{
+						RXPacketBuffer.pop_front();
+						totalWaitingPackets--;
+					}
+					else /* Reinsert the modified packet since we aren't done yet */
+					{
+						packet.bytesRead += length;
+						RXPacketBuffer.insert(RXPacketBuffer.begin(), packet);
+						
+						auto tmp = RXPacketBuffer.front();
+						auto newLen = tmp.bytesRead;
+					}
+					
 				}
-
-				memcpy(buff, packet.data_ptr, packetLength);
-
-				RXPacketBuffer.pop_front();
-
-				totalWaitingPackets--;
+				else
+				{
+					error = PERIPH_ERROR; //TODO: More meaningful message here
+				}
+				
 				return error;
 			}
 

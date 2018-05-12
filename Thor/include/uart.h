@@ -125,7 +125,11 @@ namespace Thor
 				 *  @note This grabs data from an asynchronous data reception of unknown length in Interrupt or DMA mode only. If the length
 				 *		  is known and only one transmission is to be received, use the provided readSync function instead.
 				 **/
-				Status readPacket(uint8_t* buff, size_t buff_length) override;
+				Status readPacket(uint8_t* buff, size_t length) override;
+				
+				
+				//Status readBytes(uint8_t* buff, size_t numBytes) override;
+				
 
 				/** How many unread asynchronously received packets are available
 				 *	@return number of available packets
@@ -191,8 +195,9 @@ namespace Thor
 				/** Easily references buffered data for TX or RX */
 				struct UARTPacket
 				{
-					uint8_t* data_ptr;	/**< Contains the buffer address where data is stored */
-					size_t length;		/**< Number of bytes contained in data_ptr */
+					uint8_t* data_ptr = nullptr;	/**< Contains the buffer address where data is stored */
+					uint16_t bytesRead = 0;			/**< Number of bytes already read from the packet (currently used in eRPC calls) */
+					size_t length = 0;				/**< Number of bytes contained in data_ptr */
 				};
 
 				/*-------------------------------
@@ -248,7 +253,9 @@ namespace Thor
 				uint8_t TXQueueIdx = 0;															/**< Indicates which array in TX_Queue[x] is currently selected to hold the next RX data */
 				uint8_t asyncRXDataSize = 0;													/**< Temporarily holds how large (in bytes) an RX data reception is */
 				int totalWaitingPackets = 0;													/**< Counter to inform the user how many unread packets are waiting */
-
+				
+				boost::circular_buffer<uint8_t> runningTally;
+				
 				struct UARTClassStatus
 				{
 					bool gpio_enabled = false;

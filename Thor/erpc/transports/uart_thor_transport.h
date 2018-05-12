@@ -8,7 +8,14 @@
 
 /* Thor Includes */
 #include <Thor/include/thor.h>
-#include <Thor/include/uart.h>
+#include <Thor/include/serial.h>
+
+/* FreeRTOS Includes */
+#include "FreeRTOS.h"
+#include "semphr.h"
+
+
+extern SemaphoreHandle_t serverWakeup;
 
 namespace erpc
 {
@@ -49,8 +56,8 @@ namespace erpc
 		 */
 		virtual erpc_status_t underlyingSend(const uint8_t *data, uint32_t size);
 		
-		int uart_channel;
-		Thor::Peripheral::UART::UARTClass_sPtr uart;
+		int serial_channel;
+		Thor::Peripheral::Serial::SerialClass_sPtr serial;
 	};
 }
 
