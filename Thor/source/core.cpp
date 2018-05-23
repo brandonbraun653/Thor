@@ -1,4 +1,4 @@
-#include <Thor/include/core.h>
+#include <Thor/include/core.hpp>
 
 #if !defined(USING_FREERTOS)
 void SysTick_Handler(void)

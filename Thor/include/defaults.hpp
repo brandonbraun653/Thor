@@ -2,9 +2,9 @@
 #ifndef DEFAULTS_H_
 #define DEFAULTS_H_
 
-#include <Thor/include/config.h>
-#include <Thor/include/definitions.h>
-#include <Thor/include/types.h>
+#include <Thor/include/config.hpp>
+#include <Thor/include/definitions.hpp>
+#include <Thor/include/types.hpp>
 
 #if defined(USING_FREERTOS)
 #include "FreeRTOSConfig.h"

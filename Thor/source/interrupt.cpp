@@ -1,4 +1,4 @@
-#include "../include/interrupt.h"
+#include <Thor/include/interrupt.hpp>
 
 /* This macro becomes a problem if a chip doesn't have some of these SPI channels.... */
 #if defined(STM32F767xx)

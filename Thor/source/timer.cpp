@@ -1,4 +1,4 @@
-#include "../include/timer.h"
+#include <Thor/include/timer.hpp>
 
 
 

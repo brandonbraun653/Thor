@@ -1,4 +1,4 @@
-#include "../include/defaults.h"
+#include <Thor/include/defaults.hpp>
 
 using namespace Thor::Definitions::DMA;
 using namespace Thor::Definitions::GPIO;

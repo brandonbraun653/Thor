@@ -4,8 +4,8 @@
 //TODO: Prune this header file.
 
 
-#include <Thor/include/config.h>
-#include <Thor/include/core.h>
+#include <Thor/include/config.hpp>
+#include <Thor/include/core.hpp>
 
 extern void ThorInit();
 

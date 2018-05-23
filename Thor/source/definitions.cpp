@@ -1,4 +1,4 @@
-#include <Thor/include/definitions.h>
+#include <Thor/include/definitions.hpp>
 
 
 namespace Thor

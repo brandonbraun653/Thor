@@ -2,9 +2,9 @@
 #ifndef PWM_H_
 #define PWM_H_
 
-#include <Thor/include/config.h>
-#include <Thor/include/definitions.h>
-#include <Thor/include/gpio.h>
+#include <Thor/include/config.hpp>
+#include <Thor/include/definitions.hpp>
+#include <Thor/include/gpio.hpp>
 
 #ifdef TARGET_STM32F7
 

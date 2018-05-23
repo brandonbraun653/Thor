@@ -9,9 +9,9 @@
 #include <boost/make_shared.hpp>
 
 /* Thor Includes */
-#include <Thor/include/config.h>
-#include <Thor/include/definitions.h>
-#include <Thor/include/interrupt.h>
+#include <Thor/include/config.hpp>
+#include <Thor/include/definitions.hpp>
+#include <Thor/include/interrupt.hpp>
 
 /* Additional includes not provided in Thor config */
 #if defined(TARGET_STM32F4)

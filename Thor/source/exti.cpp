@@ -1,5 +1,5 @@
-#include <Thor/include/exti.h>
-#include <Thor/include/definitions.h>
+#include <Thor/include/exti.hpp>
+#include <Thor/include/definitions.hpp>
 
 using namespace Thor::Definitions::Serial;
 using namespace Thor::Definitions::SPI;

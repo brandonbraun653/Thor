@@ -1,4 +1,4 @@
-#include <Thor/include/pwm.h>
+#include <Thor/include/pwm.hpp>
 
 // uint32_t timerBaseAddresses[] = 
 // { 

@@ -4,8 +4,8 @@
 
 
 /* Thor Includes */
-#include <Thor/include/config.h>
-#include <Thor/include/definitions.h>
+#include <Thor/include/config.hpp>
+#include <Thor/include/definitions.hpp>
 
 
 extern void TIMER_EnableClock(int timerNumber);

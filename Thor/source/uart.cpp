@@ -4,9 +4,9 @@
 #include <boost/container/static_vector.hpp>
 
 /* Project Includes */
-#include <Thor/include/uart.h>
-#include <Thor/include/exceptions.h>
-#include <Thor/include/interrupt.h>
+#include <Thor/include/uart.hpp>
+#include <Thor/include/exceptions.hpp>
+#include <Thor/include/interrupt.hpp>
 
 using namespace Thor::Definitions::Serial;
 using namespace Thor::Definitions::UART;

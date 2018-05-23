@@ -1,4 +1,4 @@
-#include "../include/mem.h"
+#include <Thor/include/mem.hpp>
 
 /*----------------------------------------------------------------
  * Globally overload the new/delete operators to use the FreeRTOS

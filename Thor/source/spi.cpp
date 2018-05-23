@@ -1,5 +1,5 @@
-#include <Thor/include/spi.h>
-#include <Thor/include/exti.h>
+#include <Thor/include/spi.hpp>
+#include <Thor/include/exti.hpp>
 
 using namespace Thor::Definitions::SPI;
 using namespace Thor::Definitions::GPIO;

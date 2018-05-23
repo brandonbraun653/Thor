@@ -1,6 +1,6 @@
-#include <Thor/include/thor.h>
-#include <Thor/include/defaults.h>
-#include <Thor/include/exti.h>
+#include <Thor/include/thor.hpp>
+#include <Thor/include/defaults.hpp>
+#include <Thor/include/exti.hpp>
 
 
 void ThorInit()

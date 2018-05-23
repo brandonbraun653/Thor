@@ -1,1 +1,1 @@
-#include "../include/gdb.h"
+#include <Thor/include/gdb.hpp>

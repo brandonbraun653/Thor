@@ -1,4 +1,4 @@
-#include "../include/print.h"
+#include <Thor/include/print.hpp>
 
 
 /* VERY basic float->string with 4 decimal places of precision */

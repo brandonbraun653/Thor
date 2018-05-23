@@ -5,7 +5,7 @@
  *  Author: Brandon
  */ 
 
-#include "../include/ringbuffer.h"
+#include <Thor/include/ringbuffer.hpp>
 
 
 

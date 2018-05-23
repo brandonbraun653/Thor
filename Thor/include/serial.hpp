@@ -10,10 +10,10 @@
 #include <boost/shared_ptr.hpp>
 
 /* Thor Includes */
-#include <Thor/include/config.h>
-#include <Thor/include/definitions.h>
-#include <Thor/include/uart.h>
-#include <Thor/include/usart.h>
+#include <Thor/include/config.hpp>
+#include <Thor/include/definitions.hpp>
+#include <Thor/include/uart.hpp>
+#include <Thor/include/usart.hpp>
 
 /** @namespace Thor */
 namespace Thor

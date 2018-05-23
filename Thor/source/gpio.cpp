@@ -2,7 +2,7 @@
 #include <boost/container/flat_map.hpp>
 
 /* Project Includes */
-#include <Thor/include/gpio.h>
+#include <Thor/include/gpio.hpp>
 
 namespace Thor
 {

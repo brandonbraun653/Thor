@@ -1,8 +1,8 @@
 #ifndef CORE_H_
 #define CORE_H_
 
-#include <Thor/include/config.h>
-#include <Thor/include/exceptions.h>
+#include <Thor/include/config.hpp>
+#include <Thor/include/exceptions.hpp>
 
 #ifdef TARGET_STM32F7
 #include <stm32f7xx_hal.h>

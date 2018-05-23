@@ -15,13 +15,13 @@
 #include <boost/enable_shared_from_this.hpp>
 
 /* Thor Includes */
-#include <Thor/include/config.h>
-#include <Thor/include/definitions.h>
-#include <Thor/include/defaults.h>
-#include <Thor/include/interrupt.h>
-#include <Thor/include/gpio.h>
-#include <Thor/include/ringbuffer.h>
-#include <Thor/include/exceptions.h>
+#include <Thor/include/config.hpp>
+#include <Thor/include/definitions.hpp>
+#include <Thor/include/defaults.hpp>
+#include <Thor/include/interrupt.hpp>
+#include <Thor/include/gpio.hpp>
+#include <Thor/include/ringbuffer.hpp>
+#include <Thor/include/exceptions.hpp>
 
 #ifdef TARGET_STM32F7
 #include <stm32f7xx_hal_dma.h>

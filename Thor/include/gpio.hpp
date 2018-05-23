@@ -12,8 +12,8 @@
 #include <boost/move/unique_ptr.hpp>
 
 /* Thor Includes */
-#include <Thor/include/config.h>
-#include <Thor/include/definitions.h>
+#include <Thor/include/config.hpp>
+#include <Thor/include/definitions.hpp>
 #include <Thor/include/utilities.hpp>
 
 

@@ -9,9 +9,9 @@
 #include <boost/function.hpp>
 
 /* Thor Includes */
-#include <Thor/include/config.h>
-#include <Thor/include/definitions.h>
-#include <Thor/include/gpio.h>
+#include <Thor/include/config.hpp>
+#include <Thor/include/definitions.hpp>
+#include <Thor/include/gpio.hpp>
 
 
 typedef boost::function<void()> func_void;

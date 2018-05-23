@@ -16,15 +16,15 @@
 #include <boost/container/static_vector.hpp>
 
 /* Thor Includes */
-#include <Thor/include/config.h>
-#include <Thor/include/definitions.h>
-#include <Thor/include/defaults.h>
-#include <Thor/include/gpio.h>
+#include <Thor/include/config.hpp>
+#include <Thor/include/definitions.hpp>
+#include <Thor/include/defaults.hpp>
+#include <Thor/include/gpio.hpp>
 
 #if defined(USING_FREERTOS)
 #include "FreeRTOS.h"
 #include "semphr.h"
-#include <Thor/include/exti.h>
+#include <Thor/include/exti.hpp>
 #endif
 
 /** @namespace Thor */

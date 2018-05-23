@@ -3,7 +3,7 @@
 #include <boost/make_shared.hpp>
 
 /* Project Includes */
-#include <Thor/include/serial.h>
+#include <Thor/include/serial.hpp>
 
 using namespace Thor::Definitions::Serial;
 using namespace Thor::Peripheral::UART;
