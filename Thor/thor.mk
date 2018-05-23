@@ -1,11 +1,9 @@
-THOR_ROOT := $(dir $(filter %thor.mk, $(MAKEFILE_LIST)))
-THOR_PARENT := $(subst $(THOR_ROOT)thor.mk,,$(shell realpath $(THOR_ROOT)thor.mk))
 
 # GNU Make Standard Library: https://gmsl.sourceforge.io/ 
 include /usr/bin/gmsl
 include /usr/bin/colors
-include $(addprefix $(THOR_ROOT), stm32hal.mk)
-include $(addprefix $(THOR_ROOT), FreeRTOS/freertos.mk)
+include $(addprefix $(THOR_ROOT), /Thor/stm32hal.mk)
+include $(addprefix $(THOR_ROOT), /Thor/FreeRTOS/freertos.mk)
 
 # Make sure that the necessary dependencies exist!
 ifndef PROJECT_BUILD_ROOT
@@ -42,7 +40,7 @@ $(shell mkdir -p $(THOR_RLS_DIR))
 
 EIGEN_DIR      = $(addprefix $(EIGEN_ROOT), /Eigen/)
 BOOST_DIR      = $(addprefix $(BOOST_ROOT), /boost/)
-THOR_INC_DIRS := $(THOR_PARENT) $(STM32_INC_DIRS) $(EIGEN_ROOT) $(BOOST_ROOT)
+THOR_INC_DIRS := $(THOR_ROOT) $(STM32_INC_DIRS) $(EIGEN_ROOT) $(BOOST_ROOT)
 
 # These includes come from freertos.mk
 ifeq ($(USE_FREERTOS), TRUE)
@@ -56,9 +54,9 @@ EIGEN_HEADERS := $(shell find $(EIGEN_DIR) -type f -name '*.h')
 BOOST_HEADERS := $(shell find $(BOOST_DIR) -type f -name '*.h' -o -name '*.hpp')
 
 # TODO: Rename the Thor headers to only use .hpp
-THOR_INC_FILES  = $(wildcard $(THOR_ROOT)include/*.h)
-THOR_INC_FILES += $(wildcard $(THOR_ROOT)include/*.hpp)
-THOR_SRC_FILES := $(wildcard $(THOR_ROOT)source/*.cpp)
+THOR_INC_FILES  = $(wildcard $(THOR_ROOT)/Thor/include/*.h)
+THOR_INC_FILES += $(wildcard $(THOR_ROOT)/Thor/include/*.hpp)
+THOR_SRC_FILES := $(wildcard $(THOR_ROOT)/Thor/source/*.cpp)
 THOR_OBJ_FILES := $(patsubst %.cpp, %.o, $(THOR_SRC_FILES))
 
 # Let Make know where all the .cpp files are
@@ -118,7 +116,7 @@ thor_clean: $(THOR_CLEAN_DEPS)
 	$(call colorecho, $(GREEN), Thor Build Files Cleaned)
 
 thor_test:
-	@echo $(THOR_CXXDEFS)
+	@echo $(sort $(notdir $(THOR_INC_FILES)))
 
 #------------------------------------------
 # Primary build recipes, triggered off of $(THOR_OBJECTS_xxx)

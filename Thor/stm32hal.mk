@@ -36,13 +36,13 @@ $(error Did you specify the correct HAL directory? Could not find "$(STM32_HAL_R
 endif 
 
 # Configuration files for what peripherals are to be enabled 
-STM32_DEVICE_CONF_DIR := $(addprefix $(THOR_ROOT), device/conf/)
+STM32_DEVICE_CONF_DIR := $(addprefix $(THOR_ROOT), /Thor/device/conf/)
 
 # Chip register and data structure definitions for multiple device families
-STM32_DEVICE_SYS_DIR  := $(addprefix $(THOR_ROOT), device/sys/)
+STM32_DEVICE_SYS_DIR  := $(addprefix $(THOR_ROOT), /Thor/device/sys/)
 
 # Startup initialization settings
-STM32_DEVICE_STARTUP_DIR := $(addprefix $(THOR_ROOT), device/startup/)
+STM32_DEVICE_STARTUP_DIR := $(addprefix $(THOR_ROOT), /Thor/device/startup/)
 
 HAL_DIR      := $(filter %xx_HAL_Driver, $(wildcard $(STM32_HAL_ROOT)/Drivers/*))
 HAL_INC_DIRS := $(HAL_DIR)/Inc/ $(HAL_DIR)/Inc/Legacy/ $(STM32_DEVICE_CONF_DIR)
@@ -117,6 +117,8 @@ hal_clean:
 	@rm -f $(STM32_HAL_RLS_DIR)*
 	$(call colorecho, $(GREEN), STM32 HAL Build Files Cleaned)
 
+hal_test:
+	@echo $(STM32_DEVICE_INC_FILES)
 
 #------------------------------------------
 # Primary build recipes, triggered off of $(STM32_OBJECTS_xxx)
