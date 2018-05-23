@@ -50,12 +50,10 @@ endif
 ###########################################################
 # Files
 ###########################################################
-EIGEN_HEADERS := $(shell find $(EIGEN_DIR) -type f -name '*.h')
+EIGEN_HEADERS := $(shell find $(EIGEN_DIR) -type f -name '*.h' -o -name '*.hpp')
 BOOST_HEADERS := $(shell find $(BOOST_DIR) -type f -name '*.h' -o -name '*.hpp')
 
-# TODO: Rename the Thor headers to only use .hpp
-THOR_INC_FILES  = $(wildcard $(THOR_ROOT)/Thor/include/*.h)
-THOR_INC_FILES += $(wildcard $(THOR_ROOT)/Thor/include/*.hpp)
+THOR_INC_FILES := $(wildcard $(THOR_ROOT)/Thor/include/*.hpp)
 THOR_SRC_FILES := $(wildcard $(THOR_ROOT)/Thor/source/*.cpp)
 THOR_OBJ_FILES := $(patsubst %.cpp, %.o, $(THOR_SRC_FILES))
 
