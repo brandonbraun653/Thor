@@ -372,8 +372,8 @@ namespace Thor
 		namespace UART
 		{
 			const unsigned int MAX_UART_CHANNELS = 4;			/**< Total possible UART specific channels for any supported STM32 chip. */
-			const unsigned int UART_QUEUE_SIZE = 2;				/**< The max number of independent transmissions that can be stored internally. */
-			const unsigned int UART_QUEUE_BUFFER_SIZE = 100;		/**< The max number of bytes that can be stored from a single continuous transmission. */
+			const unsigned int UART_QUEUE_SIZE = 10;				/**< The max number of independent transmissions that can be stored internally. */
+			const unsigned int UART_QUEUE_BUFFER_SIZE = 32;		/**< The max number of bytes that can be stored from a single continuous transmission. */
 		}
 
 		/** @namespace Thor::Definitions::USART */
@@ -458,7 +458,7 @@ namespace Thor
 				virtual Status readSync(uint8_t*, size_t) = 0;
 				virtual Status readPacket(uint8_t*, size_t) = 0;
 				//virtual Status readBytes(uint8_t*, size_t) = 0;
-				virtual int availablePackets() = 0;
+				virtual uint32_t availablePackets() = 0;
 				virtual size_t nextPacketSize() = 0;
 				virtual void end() = 0;
 				

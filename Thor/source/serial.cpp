@@ -102,7 +102,7 @@ namespace Thor
 				return serial->readPacket(buff, buff_length);
 			}
 	
-			int SerialClass::availablePackets()
+			uint32_t SerialClass::availablePackets()
 			{
 				return serial->availablePackets();
 			}

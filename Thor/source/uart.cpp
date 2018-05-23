@@ -446,12 +446,14 @@ namespace Thor
 					if (length + packet.bytesRead >= packet.length)
 					{
 						RXPacketBuffer.pop_front();
-						totalWaitingPackets--;
+						totalUnreadPackets--;
 					}
 					else /* Reinsert the modified packet since we aren't done yet */
 					{
 						packet.bytesRead += length;
-						RXPacketBuffer.insert(RXPacketBuffer.begin(), packet);
+						RXPacketBuffer.pop_front();
+						RXPacketBuffer.push_front(packet);
+						//RXPacketBuffer.insert(RXPacketBuffer.begin(), packet);
 						
 						auto tmp = RXPacketBuffer.front();
 						auto newLen = tmp.bytesRead;
@@ -474,9 +476,9 @@ namespace Thor
 					return RXPacketBuffer.front().length;
 			}
 
-			int UARTClass::availablePackets()
+			uint32_t UARTClass::availablePackets()
 			{
-				return totalWaitingPackets;
+				return totalUnreadPackets;
 			}
 
 			void UARTClass::end()
@@ -575,8 +577,12 @@ namespace Thor
 						/* Clean up the class variables to prepare for a new reception */
 						rx_complete = true;
 						asyncRXDataSize = 0;	
-						totalWaitingPackets++;
+						totalUnreadPackets++;
 						_rxIncrQueueIdx();
+						
+						/* Finally, call this here because the normal HAL_UART_IRQHandler does not get called
+						 * due to the asynchronous nature of operation. */
+						HAL_UART_RxCpltCallback(&uart_handle);
 					}
 					else if (rxMode == DMA)
 					{
@@ -586,7 +592,7 @@ namespace Thor
 						{
 							UART_DisableIT_IDLE(&uart_handle);
 							rx_complete = true;
-							totalWaitingPackets++;
+							totalUnreadPackets++;
 						
 							/* Force DMA hard reset to trigger the DMA RX Complete handler */
 							__HAL_DMA_DISABLE(uart_handle.hdmarx);

@@ -101,7 +101,7 @@ namespace Thor
 				/** Returns how many unread received packets are available
 				*	@return number of available packets
 				**/
-				int availablePackets() override;
+				uint32_t availablePackets() override;
 
 				/** Gets the size of the next received packet in the buffer
 				*	@return next packet size

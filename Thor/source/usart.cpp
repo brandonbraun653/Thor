@@ -114,7 +114,7 @@ namespace Thor
 				return PERIPH_OK;
 			}
 			
-			int USARTClass::availablePackets()
+			uint32_t USARTClass::availablePackets()
 			{
 				return 0;
 			}

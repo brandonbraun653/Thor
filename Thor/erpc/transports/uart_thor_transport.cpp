@@ -25,7 +25,7 @@ erpc_status_t UartTransport::init()
 	
 	serial->begin(SERIAL_BAUD_115200);
 	serial->setMode(TX, BLOCKING);		//Transmit to PC
-	serial->setMode(RX, DMA);			//Receive transmissions from PC
+	serial->setMode(RX, INTERRUPT);			//Receive transmissions from PC
 	
 	serial->attachThreadTrigger(RX_COMPLETE, &serverWakeup);
 
@@ -36,10 +36,17 @@ erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 {
 	erpc_status_t errorCode = kErpcStatus_Success;
 	
-	if (serial->readPacket(data, (size_t)size) != PERIPH_OK)
+	if (serial->availablePackets())
 	{
-		errorCode = kErpcStatus_ReceiveFailed;
+		if (serial->readPacket(data, (size_t)size) != PERIPH_OK)
+		{
+			errorCode = kErpcStatus_ReceiveFailed;
+		}
 	}
+	else
+		errorCode = kErpcStatus_ReceiveFailed;
+	
+
 	
 	return errorCode;
 }

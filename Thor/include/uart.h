@@ -134,7 +134,7 @@ namespace Thor
 				/** How many unread asynchronously received packets are available
 				 *	@return number of available packets
 				 **/
-				int availablePackets() override;
+				uint32_t availablePackets() override;
 
 				/** Gets the size of the next asynchronously received packet in the buffer
 				 *	@return next packet size
@@ -252,7 +252,7 @@ namespace Thor
 				uint8_t RXQueueIdx = 0;															/**< Indicates which array in RX_Queue[x] is currently selected to hold the next RX data */
 				uint8_t TXQueueIdx = 0;															/**< Indicates which array in TX_Queue[x] is currently selected to hold the next RX data */
 				uint8_t asyncRXDataSize = 0;													/**< Temporarily holds how large (in bytes) an RX data reception is */
-				int totalWaitingPackets = 0;													/**< Counter to inform the user how many unread packets are waiting */
+				uint32_t totalUnreadPackets = 0;													/**< Counter to inform the user how many unread packets are waiting */
 				
 				boost::circular_buffer<uint8_t> runningTally;
 				
