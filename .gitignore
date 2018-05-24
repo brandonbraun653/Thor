@@ -3,3 +3,5 @@ Thor/testing/.idea/
 **/.idea
 **/.pytest_cache
 **/.cache
+**/build
+**/build/*
