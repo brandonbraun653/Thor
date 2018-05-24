@@ -49,7 +49,7 @@
 /* FreeRTOS Files */
 #if __has_include("FreeRTOS.h")
 	#if !defined(USING_FREERTOS)
-	#warning FreeRTOS detected but not enabled in Thor libraries. To enable, add USE_FREERTOS in the project properties preprocessor tab.
+	#warning FreeRTOS detected but not enabled in Thor libraries. To enable, add USING_FREERTOS in the project properties preprocessor tab.
 	#endif
 
 	#include "FreeRTOS.h"
