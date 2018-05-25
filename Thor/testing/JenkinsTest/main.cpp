@@ -26,7 +26,7 @@ int main(void)
 	HAL_Init();
 	ThorInit();
 
-	//yoooo
+	//yoooos
 
 	xTaskCreate(redLED, "ledThread1", 350, NULL, 2, NULL);
 	xTaskCreate(greenLED, "ledThread2", 350, NULL, 2, NULL);
