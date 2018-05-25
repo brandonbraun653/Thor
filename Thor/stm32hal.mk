@@ -118,7 +118,7 @@ hal_clean:
 	$(call colorecho, $(GREEN), STM32 HAL Build Files Cleaned)
 
 hal_test:
-	@echo $(STM32_DEVICE_INC_FILES)
+	@echo $(STM32_BUILD_ROOT)
 
 #------------------------------------------
 # Primary build recipes, triggered off of $(STM32_OBJECTS_xxx)
