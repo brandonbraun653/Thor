@@ -26,7 +26,7 @@ int main(void)
 	HAL_Init();
 	ThorInit();
 
-	//Please please Jenkins work...
+	//Please please Jenkins work...again
 
 	xTaskCreate(redLED, "ledThread1", 350, NULL, 2, NULL);
 	xTaskCreate(greenLED, "ledThread2", 350, NULL, 2, NULL);
