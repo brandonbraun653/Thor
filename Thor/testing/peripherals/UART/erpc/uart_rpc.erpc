@@ -1,4 +1,4 @@
-interface IO {
+interface TEST_UART {
     turnGreenLEDON() -> void
     turnGreenLEDOFF() -> void
 }

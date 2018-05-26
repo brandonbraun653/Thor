@@ -1,6 +1,0 @@
-@outputDir("ledTest")
-
-interface IO {
-    turnGreenLEDON() -> void
-    turnGreenLEDOFF() -> void
-}

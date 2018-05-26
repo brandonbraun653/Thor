@@ -17,10 +17,11 @@
 			const uint32_t MAX_THREADS = 10;
 			extern TaskHandle_t TaskHandle[];
 		
-			extern BaseType_t xRegisterTaskHandle(const uint32_t idx, TaskHandle_t handle);
-			extern BaseType_t xRemoveTaskHandle(const uint32_t idx);
-			extern BaseType_t xTaskSendMessage(const uint32_t idx, const uint32_t);
-			extern BaseType_t xTaskSendMessageFromISR(const uint32_t idx, const uint32_t);
+			extern BaseType_t xRegisterTaskHandle(const uint32_t, TaskHandle_t);
+			extern BaseType_t xRemoveTaskHandle(const uint32_t);
+			extern BaseType_t xTaskSendMessage(const uint32_t, const uint32_t);
+			extern void vTaskSendMessageAndWait(const uint32_t, const uint32_t);
+			extern BaseType_t xTaskSendMessageFromISR(const uint32_t, const uint32_t);
 		}
 	#endif /* !USING_FREERTOS */
 #endif /* !THOR_THREADING_HPP */

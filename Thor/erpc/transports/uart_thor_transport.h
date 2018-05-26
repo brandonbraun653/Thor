@@ -14,8 +14,7 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 
-
-extern SemaphoreHandle_t serverWakeup;
+extern SemaphoreHandle_t serverWakeup; /**<! Semaphore that can be used to wake up the eRPC server upon incoming Serial data */
 
 namespace erpc
 {

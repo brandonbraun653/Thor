@@ -54,6 +54,13 @@
 			}	
 		}
 
+		void vTaskSendMessageAndWait(const uint32_t idx, const uint32_t msg)
+		{
+			xTaskSendMessage(idx, msg);
+			vTaskSuspend(NULL);
+			taskYIELD();
+		}
+
 		BaseType_t xTaskSendMessageFromISR(const uint32_t idx, uint32_t msg)
 		{
 			if ((idx < MAX_THREADS) && TaskHandle[idx])
