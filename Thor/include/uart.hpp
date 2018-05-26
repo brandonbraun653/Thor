@@ -118,7 +118,7 @@ namespace Thor
 
 				/** Reads the next packet received into a buffer 
 				 *	@param[out] buff		Address of an external buffer to read data into
-				 *	@param[in]	buff_length	The size of the external buffer
+				 *	@param[in]	length		Number of bytes to read out from the packet
 				 *	@return Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it
 				 *			will return a code from Thor::Peripheral::UART::UART_Status
 				 *

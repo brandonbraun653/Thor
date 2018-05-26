@@ -1,4 +1,4 @@
-#include <Thor/include/threading.hpp>
+#include <Thor/include/threads.hpp>
 
 #ifdef USING_FREERTOS
 
