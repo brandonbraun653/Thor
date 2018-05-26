@@ -1,1 +1,2 @@
-echo hello
+erpcgen uart.erpc -o ./src test_uart -g c
+erpcgen uart.erpc -o ./py test_uart -g py
