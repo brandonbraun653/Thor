@@ -2,7 +2,7 @@
 #include <cassert>
 #include <cstdio>
 
-#include <Thor/include/definitions.h>
+#include <Thor/include/definitions.hpp>
 
 using namespace erpc;
 using namespace Thor::Peripheral::Serial;
@@ -45,9 +45,7 @@ erpc_status_t UartTransport::underlyingReceive(uint8_t *data, uint32_t size)
 	}
 	else
 		errorCode = kErpcStatus_ReceiveFailed;
-	
 
-	
 	return errorCode;
 }
 

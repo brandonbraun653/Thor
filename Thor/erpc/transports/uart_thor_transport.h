@@ -7,8 +7,8 @@
 #include <stdlib.h>
 
 /* Thor Includes */
-#include <Thor/include/thor.h>
-#include <Thor/include/serial.h>
+#include <Thor/include/thor.hpp>
+#include <Thor/include/serial.hpp>
 
 /* FreeRTOS Includes */
 #include "FreeRTOS.h"
