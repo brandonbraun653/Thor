@@ -181,7 +181,7 @@ namespace Thor
 					//TX Pin
 					{ GPIOA, PIN_0, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART4 }, //Normally C10, changed for VFCS
 
-																				 //RX Pin
+					//RX Pin
 					{ GPIOA, PIN_1, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF8_UART4 }, //Normally C11, changed for VFCS
 
 					//Instance Ptr
