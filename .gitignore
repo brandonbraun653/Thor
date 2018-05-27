@@ -2,6 +2,7 @@
 Thor/testing/.idea/
 **/.idea
 **/.pytest_cache
+**/__pycache__
 **/.cache
 **/build
 **/build/*
