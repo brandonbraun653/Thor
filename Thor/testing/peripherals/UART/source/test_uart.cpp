@@ -17,6 +17,7 @@ GPIOClass_sPtr blueLed = boost::make_shared<GPIOClass>(BLUE_LED_PORT, BLUE_LED_P
 
 void ledTask(void* arguments)
 {
+	greenLed->mode(OUTPUT_PP);
 	blueLed->mode(OUTPUT_PP);
 	vTaskSendMessageAndWait(INIT_THREAD, 1u);
 
