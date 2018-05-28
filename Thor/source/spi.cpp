@@ -16,7 +16,8 @@ void SPI1_IRQHandler()
 {
 	spi1->SPI_IRQHandler();
 }
-#endif
+#endif
+
 #ifdef ENABLE_SPI2
 	#ifdef USING_CHIMERA
 	SPIClass_sPtr spi2;
@@ -423,6 +424,9 @@ namespace Thor
 
 				default: break;
 				}
+
+				//Switch over to an error code var
+				return SPI_OK;
 			}
 
 			Status SPIClass::write(uint8_t* val_in, uint8_t* val_out, size_t length, Options options)
@@ -537,6 +541,9 @@ namespace Thor
 
 				default: break;
 				}
+
+				//Switch over to an error code var
+				return SPI_OK;
 			}
 
 			void SPIClass::end()
@@ -663,7 +670,8 @@ namespace Thor
 				#ifdef ENABLE_SPI1
 				if (channel == 1)
 					__SPI1_CLK_ENABLE();
-				#endif
+				#endif
+
 				#ifdef ENABLE_SPI2
 				if (channel == 2)
 					__SPI2_CLK_ENABLE();
@@ -695,7 +703,8 @@ namespace Thor
 				#ifdef ENABLE_SPI1
 				if (channel == 1)
 					__SPI1_CLK_DISABLE();
-				#endif
+				#endif
+
 				#ifdef ENABLE_SPI2
 				if (channel == 2)
 					__SPI2_CLK_DISABLE();

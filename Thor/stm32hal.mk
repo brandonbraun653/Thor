@@ -71,10 +71,15 @@ STM32_SRC_DIRS := $(HAL_SRC_DIRS) $(CMSIS_SRC_DIRS)
 STM32_DEVICE_INC_FILES := $(STM32_DEVICE_CONF_DIR)$(STM32_DEVICE_FAMILY)xx_hal_conf.h $(CMSIS_DEVICE_INC_DIR)$(STM32_DEVICE).h
 
 STM32_INC_FILES := $(foreach dir, $(STM32_INC_DIRS), $(wildcard $(dir)*.h))
-STM32_SRC_FILES  = $(foreach dir, $(STM32_SRC_DIRS), $(wildcard $(dir)*.c))
+STM32_SRC_FILES := $(foreach dir, $(STM32_SRC_DIRS), $(wildcard $(dir)*.c))
 
 # Device specific startup file
 STM32_SRC_FILES += $(STM32_DEVICE_STARTUP_DIR)$(STM32_DEVICE_FAMILY_UC)/startup_$(STM32_DEVICE).c
+
+
+# Note: Before generating the object files, there are sometimes %template.c files in the HAL Cube distribution
+# that need to be removed. Otherwise they generate duplicate function definitions.
+STM32_SRC_FILES := $(filter-out %template.c, $(STM32_SRC_FILES))
 STM32_OBJ_FILES := $(patsubst %.c, %.o, $(STM32_SRC_FILES))
 
 
@@ -105,7 +110,7 @@ vpath %.c $(sort $(dir $(STM32_SRC_FILES)))
 ###########################################################
 # Recipes
 ###########################################################
-.PHONY: hal_all hal_release hal_debug hal_clean 
+.PHONY: hal_all hal_release hal_debug hal_clean  hal_test
 hal_all: hal_release hal_debug
 
 hal_release: $(STM32_OBJECTS_RLS)
@@ -118,7 +123,7 @@ hal_clean:
 	$(call colorecho, $(GREEN), STM32 HAL Build Files Cleaned)
 
 hal_test:
-	@echo $(STM32_BUILD_ROOT)
+	@echo $(STM32_SRC_FILES)
 
 #------------------------------------------
 # Primary build recipes, triggered off of $(STM32_OBJECTS_xxx)

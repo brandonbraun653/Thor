@@ -10,10 +10,6 @@ PROJECT_ROOT = $(CURDIR)/
 # Where the build directory will be located 
 PROJECT_BUILD_ROOT = $(PROJECT_ROOT)build/
 
-# Where all the files specific to this project lie
-PROJECT_INC_DIRS := $(PROJECT_ROOT)/source $(THOR_INC_DIRS)
-PROJECT_SRC_DIRS := $(PROJECT_ROOT)/source
-
 # Full name of STM processor in lowercase 
 STM32_PROCESSOR = stm32f767zit
 
@@ -44,6 +40,10 @@ include $(THOR_ROOT)/Thor/thor.mk
 ###########################################################
 # Directories 
 ###########################################################
+# Where all the files specific to this project lie
+PROJECT_INC_DIRS := $(PROJECT_ROOT)source/ $(PROJECT_ROOT)erpcgen_files/src/ $(ERPC_INC_DIRS) 
+PROJECT_SRC_DIRS := $(strip $(PROJECT_ROOT)source/ $(PROJECT_ROOT)erpcgen_files/src/)
+
 PROJECT_DBG_DIR  := $(addprefix $(PROJECT_BUILD_ROOT), debug/)
 PROJECT_RLS_DIR  := $(addprefix $(PROJECT_BUILD_ROOT), release/)
 
@@ -57,8 +57,13 @@ DBG_LD_OBJS = $(shell find $(PROJECT_DBG_DIR) -type f -name '*.o')
 ###########################################################
 # Files
 ###########################################################
-PROJECT_INC_FILES = $(wildcard $(PROJECT_INC_DIRS)*.hpp)
-PROJECT_SRC_FILES = $(wildcard $(PROJECT_SRC_DIRS)*.cpp)
+PROJECT_INC_FILES := $(foreach dir, $(PROJECT_INC_DIRS), $(wildcard $(dir)*.hpp))
+PROJECT_SRC_FILES := $(foreach dir, $(PROJECT_SRC_DIRS), $(wildcard $(dir)*.cpp))
+
+# This is the server build, so remove all client files
+PROJECT_SRC_FILES := $(filter-out %client.cpp, $(PROJECT_SRC_FILES))
+
+
 PROJECT_OBJ_FILES = $(patsubst %.cpp, %.o, $(PROJECT_SRC_FILES))
 
 
@@ -112,12 +117,12 @@ LINKER_SCRIPT = $(THOR_ROOT)/Thor/device/ld/STM32F767ZI_flash.lds
 ###########################################################
 # Recipes
 ###########################################################
-.PHONY: all release debug clean flash_release flash_debug
+.PHONY: all release debug clean flash_release flash_debug update_idl
 all: release debug 
 
-release: $(RELEASE_TARGET).bin
+release: update_idl $(RELEASE_TARGET).bin
 
-debug: $(DEBUG_TARGET).bin
+debug: update_idl $(DEBUG_TARGET).bin
 
 flash_release: release
 	st-flash write $(RELEASE_TARGET).bin 0x08000000
@@ -125,13 +130,22 @@ flash_release: release
 flash_debug: debug
 	st-flash write $(DEBUG_TARGET).bin 0x08000000
 
+update_idl:
+	$(call colorecho, $(BLUE),Updating IDL reference files)
+	@mkdir -p ./erpcgen_files/src
+	@mkdir -p ./erpcgen_files/py
+	
+	@erpcgen -g c -o ./erpcgen_files/src/ -v ./erpcgen_files/uart_rpc.erpc 
+	@erpcgen -g py -o ./erpcgen_files/py/ -v ./erpcgen_files/uart_rpc.erpc
+
 clean: $(THOR_CLEAN_DEPS)
 	@rm -f $(PROJECT_DBG_DIR)*.o $(PROJECT_DBG_DIR)*.bin $(PROJECT_DBG_DIR)*.elf
 	@rm -f $(PROJECT_RLS_DIR)*.o $(PROJECT_RLS_DIR)*.bin $(PROJECT_RLS_DIR)*.elf
 	$(call colorecho, $(GREEN), Project Build Files Cleaned)
 
 test:
-	@echo $(STM32_HAL_ROOT)
+	@echo $(PROJECT_OBJ_FILES)
+	
 
 #------------------------------------------
 # Generate binaries from the .elf files 

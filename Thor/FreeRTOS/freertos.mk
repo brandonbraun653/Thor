@@ -78,7 +78,7 @@ rtos_release: RTOS_CDEFS   += -DNDEBUG=1 -DRELEASE=1
 ###########################################################
 # Recipes
 ###########################################################
-.PHONY: rtos_all rtos_release rtos_debug rtos_clean 
+.PHONY: rtos_all rtos_release rtos_debug rtos_clean rtos_test
 rtos_all: rtos_release rtos_debug
 
 rtos_release: $(RTOS_OBJECTS_RLS)

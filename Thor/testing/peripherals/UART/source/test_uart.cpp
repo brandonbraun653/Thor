@@ -3,7 +3,7 @@
 /* eRPC Includes */
 #include "uart_rpc.h"
 #include "erpc_server_setup.h"
-#include "uart_thor_transport.h"
+#include "serial_thor_transport.h"
 #include "uart_rpc_server.h"
 
 using namespace Thor;
@@ -46,7 +46,7 @@ void serverTask(void* arguments)
 void setupRPCServer()
 {
 	/* Init the eRPC server environment */
-	erpc_transport_t transport = erpc_transport_thor_uart_init(RPC_SERIAL_CHANNEL);
+	erpc_transport_t transport = erpc_transport_thor_serial_init(RPC_SERIAL_CHANNEL);
 
 	/* Message buffer factory initialization */
 	erpc_mbf_t message_buffer_factory = erpc_mbf_dynamic_init();
@@ -55,8 +55,9 @@ void setupRPCServer()
 	erpc_server_init(transport, message_buffer_factory);
 
 	/* Connect generated service into server */
-	erpc_add_service_to_server(create_IO_service());
+	erpc_add_service_to_server(create_TEST_UART_service());
 }
+
 
 void turnGreenLEDON()
 {

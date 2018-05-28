@@ -60,7 +60,9 @@
 #endif
 
 #if __has_include("erpc_config.h")
-	#define USING_ERPC
+	#ifndef USING_ERPC
+		#define USING_ERPC
+	#endif
 #endif 
 
 /*-------------------------------------------

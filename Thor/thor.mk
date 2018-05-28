@@ -2,6 +2,17 @@
 # GNU Make Standard Library: https://gmsl.sourceforge.io/ 
 include /usr/bin/gmsl
 include /usr/bin/colors
+
+# Define some larger architectural design setup choices 
+USE_FREERTOS ?= TRUE
+USE_CHIMERA  ?= FALSE
+USE_ERPC     ?= TRUE
+
+
+# Pull in the dependencies in this order:
+# 	1) STM32 Hal
+# 	2) FreeRTOS
+#	3) eRPC (depends on 1 & 2)
 include $(addprefix $(THOR_ROOT), /Thor/stm32hal.mk)
 include $(addprefix $(THOR_ROOT), /Thor/FreeRTOS/freertos.mk)
 include $(addprefix $(THOR_ROOT), /Thor/erpc/erpc.mk)
@@ -27,10 +38,6 @@ endif
 THOR_BUILD_ROOT  := $(PROJECT_BUILD_ROOT)
 THOR_DBG_DIR     := $(addprefix $(THOR_BUILD_ROOT), debug/thor/)
 THOR_RLS_DIR     := $(addprefix $(THOR_BUILD_ROOT), release/thor/)
-
-# Define some larger architectural design setup choices 
-USE_FREERTOS ?= TRUE
-USE_CHIMERA  ?= FALSE
 
 
 ###########################################################
@@ -88,17 +95,29 @@ ifeq ($(USE_CHIMERA), TRUE)
 THOR_CXXDEFS += -DUSING_CHIMERA
 endif 
 
-# Update the dependencies 
+#---------------------------------------
+# Update the dependencies to be built in this order
+#	1) HAL
+# 	2) FreeRTOS (if needed)
+# 	3) eRPC (if using 2)
+# 
 THOR_RELEASE_DEPS = hal_release 
 THOR_DEBUG_DEPS   = hal_debug
 THOR_CLEAN_DEPS   = hal_clean
 
 ifeq ($(USE_FREERTOS), TRUE)
-THOR_RELEASE_DEPS += rtos_release
-THOR_DEBUG_DEPS   += rtos_debug
-THOR_CLEAN_DEPS   += rtos_clean
+THOR_RELEASE_DEPS += rtos_release erpc_release
+THOR_DEBUG_DEPS   += rtos_debug	erpc_debug
+THOR_CLEAN_DEPS   += rtos_clean erpc_clean
 THOR_CXXDEFS      += -DUSE_FREERTOS -DUSING_FREERTOS
 endif
+
+ifeq ($(USE_ERPC), TRUE)
+THOR_RELEASE_DEPS += erpc_release
+THOR_DEBUG_DEPS   += erpc_debug
+THOR_CLEAN_DEPS   += erpc_clean
+THOR_CXXDEFS      += -DUSING_ERPC
+endif 
 
 ###########################################################
 # Recipes

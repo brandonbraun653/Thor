@@ -228,7 +228,8 @@ namespace Thor
 				SPI_NOT_READY       = -1,
 				SPI_READY           = 0,
 				SPI_TX_BUSY,
-				SPI_RX_OK
+				SPI_RX_OK,
+				SPI_OK
 			};
 		}
 
