@@ -4,6 +4,7 @@ include /usr/bin/gmsl
 include /usr/bin/colors
 include $(addprefix $(THOR_ROOT), /Thor/stm32hal.mk)
 include $(addprefix $(THOR_ROOT), /Thor/FreeRTOS/freertos.mk)
+include $(addprefix $(THOR_ROOT), /Thor/erpc/erpc.mk)
 
 # Make sure that the necessary dependencies exist!
 ifndef PROJECT_BUILD_ROOT
@@ -58,7 +59,8 @@ THOR_SRC_FILES := $(wildcard $(THOR_ROOT)/Thor/source/*.cpp)
 THOR_OBJ_FILES := $(patsubst %.cpp, %.o, $(THOR_SRC_FILES))
 
 # Let Make know where all the .cpp files are
-vpath %.cpp $(sort $(dir $(THOR_SRC_FILES)))
+#vpath %.cpp $(sort $(dir $(THOR_SRC_FILES)))/
+THOR_SRC_DIRS := $(strip $(sort $(dir $(THOR_SRC_FILES))))
 
 ###########################################################
 # Build vars
@@ -114,16 +116,17 @@ thor_clean: $(THOR_CLEAN_DEPS)
 	$(call colorecho, $(GREEN), Thor Build Files Cleaned)
 
 thor_test:
-	@echo $(sort $(notdir $(THOR_INC_FILES)))
+	@echo $(sort $(dir $(THOR_SRC_FILES)))
+	@echo $(THOR_SRC_DIRS)
 
 #------------------------------------------
 # Primary build recipes, triggered off of $(THOR_OBJECTS_xxx)
 #------------------------------------------
 #$(EIGEN_HEADERS) $(BOOST_HEADERS)
-$(THOR_DBG_DIR)%.o: %.cpp
+$(THOR_DBG_DIR)%.o: $(THOR_SRC_DIRS)%.cpp
 	$(call colorecho, $(CYAN), Compiling $(notdir $<) into $@)
 	@$(CPP) $(THOR_CXXFLAGS) $(USER_CXXFLAGS) $(THOR_CXXDEFS) -std=gnu++11 $(THOR_INCLUDES) $< -o $@ 
 
-$(THOR_RLS_DIR)%.o: %.cpp
+$(THOR_RLS_DIR)%.o: $(THOR_SRC_DIRS)%.cpp
 	$(call colorecho, $(CYAN), Compiling $(notdir $<) into $@)
 	@$(CPP) $(THOR_CXXFLAGS) $(USER_CXXFLAGS) $(THOR_CXXDEFS) -std=gnu++11 $(THOR_INCLUDES) $< -o $@ 

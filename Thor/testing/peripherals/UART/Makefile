@@ -2,13 +2,17 @@
 # Global Project Settings/Variables 
 ###########################################################
 # Name of the project/output binary and elf files 
-PROJECT = blinky
+PROJECT = test_uart
 
 # Where this specific project is housed
 PROJECT_ROOT = $(CURDIR)/
 
 # Where the build directory will be located 
 PROJECT_BUILD_ROOT = $(PROJECT_ROOT)build/
+
+# Where all the files specific to this project lie
+PROJECT_INC_DIRS := $(PROJECT_ROOT)/source $(THOR_INC_DIRS)
+PROJECT_SRC_DIRS := $(PROJECT_ROOT)/source
 
 # Full name of STM processor in lowercase 
 STM32_PROCESSOR = stm32f767zit
@@ -23,9 +27,9 @@ SIZE    = arm-none-eabi-size
 
 # Relevant directories
 THOR_ROOT  = /home/brandon/git/Microcontrollers/thor_stm32
-EIGEN_ROOT = /home/brandon/git/ExternalLibraries/eigen
-BOOST_ROOT = /home/brandon/ProgramFiles/boost/boost_1_67_0
-STM32_HAL_ROOT = /home/brandon/ProgramFiles/STMicroelectronics/STM32F7/STM32Cube_FW_F7_V1.11.0
+EIGEN_ROOT = $(EIGEN_PATH)
+BOOST_ROOT = $(BOOST_PATH)
+STM32_HAL_ROOT = $(STM32F7_HAL_PATH)
 
 # Override settings for the Thor Makefile
 USE_FREERTOS  = TRUE
@@ -42,7 +46,6 @@ include $(THOR_ROOT)/Thor/thor.mk
 ###########################################################
 PROJECT_DBG_DIR  := $(addprefix $(PROJECT_BUILD_ROOT), debug/)
 PROJECT_RLS_DIR  := $(addprefix $(PROJECT_BUILD_ROOT), release/)
-PROJECT_INC_DIRS := $(PROJECT_ROOT) $(THOR_INC_DIRS)
 
 $(shell mkdir -p $(PROJECT_DBG_DIR))
 $(shell mkdir -p $(PROJECT_RLS_DIR))
@@ -54,8 +57,8 @@ DBG_LD_OBJS = $(shell find $(PROJECT_DBG_DIR) -type f -name '*.o')
 ###########################################################
 # Files
 ###########################################################
-PROJECT_INC_FILES = $(wildcard $(PROJECT_ROOT)*.hpp)
-PROJECT_SRC_FILES = $(wildcard $(PROJECT_ROOT)*.cpp)
+PROJECT_INC_FILES = $(wildcard $(PROJECT_INC_DIRS)*.hpp)
+PROJECT_SRC_FILES = $(wildcard $(PROJECT_SRC_DIRS)*.cpp)
 PROJECT_OBJ_FILES = $(patsubst %.cpp, %.o, $(PROJECT_SRC_FILES))
 
 
@@ -128,6 +131,7 @@ clean: $(THOR_CLEAN_DEPS)
 	$(call colorecho, $(GREEN), Project Build Files Cleaned)
 
 test:
+	@echo $(STM32_HAL_ROOT)
 
 #------------------------------------------
 # Generate binaries from the .elf files 

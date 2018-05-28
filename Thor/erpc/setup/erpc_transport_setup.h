@@ -67,7 +67,7 @@ extern "C" {
 //! @name Transport setup
 //@{
 
-erpc_transport_t erpc_transport_thor_uart_init(int channel);
+erpc_transport_t erpc_transport_thor_serial_init(int channel);
 	
 /*!
  * @brief Create a CMSIS UART transport.
