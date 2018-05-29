@@ -12,11 +12,6 @@ int main(void)
 	HAL_Init();
 	ThorInit();
 
-	#ifdef DEBUG
-	InitializeSamplingProfiler();
-	InitializeInstrumentingProfiler();
-	#endif
-
 	setupRPCServer();
 
 	TaskHandle_t initHandle;
