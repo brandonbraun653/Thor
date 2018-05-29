@@ -1,7 +1,3 @@
-#ifdef DEBUG
-#include "SysprogsProfiler.h"
-#endif
-
 #include "test_uart_settings.hpp"
 #include "test_uart.hpp"
 
