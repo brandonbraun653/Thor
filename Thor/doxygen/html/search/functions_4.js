@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['flush',['flush',['../class_thor_1_1_peripheral_1_1_serial_1_1_serial_class.html#aaaedab10d8139950b651b46938141f64',1,'Thor::Peripheral::Serial::SerialClass::flush()'],['../class_thor_1_1_peripheral_1_1_u_s_a_r_t_1_1_u_s_a_r_t_class.html#ada39ff773606effad78d4c8a4f2f8ecd',1,'Thor::Peripheral::USART::USARTClass::flush()']]]
+  ['irqhandler',['IRQHandler',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a1ea0ce3d2908c1cf0927ebd418834a39',1,'Thor::Peripheral::UART::UARTClass']]],
+  ['irqhandler_5frxdma',['IRQHandler_RXDMA',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a135048b23f4dc5d40d7f8faf14401a15',1,'Thor::Peripheral::UART::UARTClass']]],
+  ['irqhandler_5ftxdma',['IRQHandler_TXDMA',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a8702f75ba28ab2a244904e6b5730250e',1,'Thor::Peripheral::UART::UARTClass']]]
 ];

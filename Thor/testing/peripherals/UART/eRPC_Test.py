@@ -16,7 +16,9 @@ def hello():
             crc_value = int(define.split(' ')[1])
 
 
-    transport = erpc.transport.SerialTransport("/dev/ttyUSB0", 115200)
+    #transport = erpc.transport.SerialTransport("/dev/ttyUSB0", 115200)
+
+    transport = erpc.transport.SerialTransport("COM5", 115200)
     transport.crc_16 = crc_value
 
     clientManager = erpc.client.ClientManager(transport, erpc.basic_codec.BasicCodec)
@@ -24,14 +26,20 @@ def hello():
     print("Trying to open client\n")
     myClient = client.TEST_UARTClient(clientManager)
 
-    print("Turning Green LED on?")
-    myClient.turnGreenLEDON()
+    # print("Turning Green LED on?")
+    # myClient.turnGreenLEDON()
+    #
+    # time.sleep(3)
+    #
+    # print("Turning Green LED off?")
+    # myClient.turnGreenLEDOFF()
 
-    time.sleep(3)
+    myClient.setupSerialUnderTest()
+    time.sleep(1)
+    myClient.testStart_blockingTX()
 
-    print("Turning Green LED off?")
-    myClient.turnGreenLEDOFF()
-
+    time.sleep(5)
+    myClient.testEnd_blockingTX()
 
 if __name__ == "__main__":
     hello()

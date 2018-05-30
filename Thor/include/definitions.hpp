@@ -370,7 +370,7 @@ namespace Thor
 			;
 		}
 
-		/** @namespace Thor::Defintions::UART */
+		/** @namespace Thor::Definitions::UART */
 		namespace UART
 		{
 			const unsigned int MAX_UART_CHANNELS = 4;			/**< Total possible UART specific channels for any supported STM32 chip. */

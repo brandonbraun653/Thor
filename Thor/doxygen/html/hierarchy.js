@@ -20,6 +20,10 @@ var hierarchy =
     [ "Thor::Libraries::SD::SD_CID", "struct_thor_1_1_libraries_1_1_s_d_1_1_s_d___c_i_d.html", null ],
     [ "Thor::Libraries::SD::SD_CSD", "struct_thor_1_1_libraries_1_1_s_d_1_1_s_d___c_s_d.html", null ],
     [ "Serial", "struct_serial.html", null ],
+    [ "Thor::Definitions::Serial::SerialBase", "class_thor_1_1_definitions_1_1_serial_1_1_serial_base.html", [
+      [ "Thor::Peripheral::UART::UARTClass", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html", null ],
+      [ "Thor::Peripheral::USART::USARTClass", "class_thor_1_1_peripheral_1_1_u_s_a_r_t_1_1_u_s_a_r_t_class.html", null ]
+    ] ],
     [ "Thor::Peripheral::Serial::SerialClass", "class_thor_1_1_peripheral_1_1_serial_1_1_serial_class.html", null ],
     [ "Thor::Defaults::Serial::SerialConfig", "struct_thor_1_1_defaults_1_1_serial_1_1_serial_config.html", null ],
     [ "Thor::Interrupt::SPI::SPI_DMAHandlerManager", "class_thor_1_1_interrupt_1_1_s_p_i_1_1_s_p_i___d_m_a_handler_manager.html", null ],
@@ -30,7 +34,5 @@ var hierarchy =
     [ "Thor::Libraries::SD::struct_v2", "struct_thor_1_1_libraries_1_1_s_d_1_1struct__v2.html", null ],
     [ "TimerFlags", "struct_timer_flags.html", null ],
     [ "Thor::Interrupt::UART::UART_DMAHandlerManager", "class_thor_1_1_interrupt_1_1_u_a_r_t_1_1_u_a_r_t___d_m_a_handler_manager.html", null ],
-    [ "Thor::Peripheral::UART::UARTClass", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html", null ],
-    [ "Thor::Peripheral::UART::UARTClass::UARTPacket", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html", null ],
-    [ "Thor::Peripheral::USART::USARTClass", "class_thor_1_1_peripheral_1_1_u_s_a_r_t_1_1_u_s_a_r_t_class.html", null ]
+    [ "Thor::Peripheral::UART::UARTClass::UARTPacket", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html", null ]
 ];

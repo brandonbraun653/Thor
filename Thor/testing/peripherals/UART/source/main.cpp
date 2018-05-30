@@ -1,5 +1,6 @@
-#include "test_uart_settings.hpp"
 #include "test_uart.hpp"
+#include "test_uart_settings.hpp"
+
 
 #include <Thor/include/threads.hpp>
 using namespace Thor::Threading;
@@ -13,15 +14,8 @@ int main(void)
 	HAL_Init();
 	ThorInit();
 
-	setupRPCServer();
-
-	//TaskHandle_t initHandle;
-	//xTaskCreate(init, "init", 500, NULL, 1, &initHandle);
-	//Thor::xRegisterTaskHandle(Thor::INIT_THREAD, initHandle);
-	//vTaskStartScheduler();
-
-	addThread(ledTask, "led", 350, NULL, 2, &ledThread);
-	addThread(serverTask, "rpcServer", 250, NULL, 4, &rpcThread);
+	addThread(ledTask, "led", 350, NULL, 1, &ledThread);
+	addThread(serverTask, "rpcServer", 250, NULL, RPC_PRIORITY_LEVEL, &rpcThread);
 	startScheduler();
 
 	/* Should never reach here as scheduler should be running */

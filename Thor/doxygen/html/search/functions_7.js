@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['readpacket',['readPacket',['../class_thor_1_1_peripheral_1_1_serial_1_1_serial_class.html#a7f3502322e3f6937613bfeb442087cba',1,'Thor::Peripheral::Serial::SerialClass::readPacket()'],['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#af3b5e3ba6a190c915a05b0f7790e67b5',1,'Thor::Peripheral::UART::UARTClass::readPacket()'],['../class_thor_1_1_peripheral_1_1_u_s_a_r_t_1_1_u_s_a_r_t_class.html#a4ed4b9bc7e7a338604d7121868ed323c',1,'Thor::Peripheral::USART::USARTClass::readPacket()']]],
-  ['readsync',['readSync',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#abbad408f9f76ebc4eb6285021bdcbcda',1,'Thor::Peripheral::UART::UARTClass']]]
+  ['setmode',['setMode',['../class_thor_1_1_peripheral_1_1_serial_1_1_serial_class.html#a2cbd7b64e7588153c5a98c2d57fa9c53',1,'Thor::Peripheral::Serial::SerialClass::setMode()'],['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a9471a72a44537b4e45489e2dd8efd8e7',1,'Thor::Peripheral::UART::UARTClass::setMode()'],['../class_thor_1_1_peripheral_1_1_u_s_a_r_t_1_1_u_s_a_r_t_class.html#aa66c0aa8273b8a6ea29e422868036be9',1,'Thor::Peripheral::USART::USARTClass::setMode()']]]
 ];

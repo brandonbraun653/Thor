@@ -1,5 +1,6 @@
 var struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet =
 [
+    [ "bytesRead", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html#a6183a1075230db018b67f9f27211afee", null ],
     [ "data_ptr", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html#a81db2662accd1d3e68bfa59f1d1f5a20", null ],
     [ "length", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html#adfdf0a2826280734d8cf9c4d1d1dffbf", null ]
 ];

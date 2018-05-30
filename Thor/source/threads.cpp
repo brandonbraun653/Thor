@@ -10,10 +10,12 @@ namespace Thor
 	namespace Threading
 	{
 		TaskHandle_t INIT_THREAD;
+		bool setupCallbacksEnabled = true;
 		static boost::container::static_vector<Thread_t, maxThreads> registeredThreads;
 
-		/* Implements a simple timeout while waiting for a newly created thread to complete
-		 * its initialization sequence and signal back to the init thread. */
+		/* Private Function:
+		 *	Implements a simple timeout while waiting for a newly created thread to complete
+		 *	its initialization sequence and signal back to the init thread. */
 		BaseType_t threadInitTimeout(TaskHandle_t* threadHandle)
 		{
 			volatile BaseType_t error = pdPASS;
@@ -35,40 +37,49 @@ namespace Thor
 			return error;
 		}
 
+		/* Private Function:
+		 *	Initializes all threads registered before startScheduler() was called. */
 		void initThreads(void* arguments)
 		{
 			volatile BaseType_t error = pdPASS;
 			Thread_t thread;
 
-			/* Allow thread startup code to run and then halt */
+			/* Create all the threads */
 			for (int i = 0; i < registeredThreads.size(); i++)
 			{
 				thread = registeredThreads[i];
 				error = xTaskCreate(thread.func, thread.name, thread.stackDepth, thread.funcParams, thread.priority, thread.handle);
 					
-				if (error == pdPASS && threadInitTimeout(thread.handle) == pdPASS)
-					registeredThreads[i].handle = thread.handle;
-				else
+				/* If using initialization callbacks, wait for setup to be complete */
+				if (setupCallbacksEnabled)
 				{
-					/* If you get stuck here, it's because you did not call back to this thread after initialization code was
-					 * completed. Place "sendMessageAndWait(INIT_THREAD, 1u);" after setup code and just before the infinite loop.
-					 * Alternatively, call "signalThreadSetupComplete()".
-					 */
-					vTaskSuspendAll();
-					while (1);
+					if (error == pdPASS && threadInitTimeout(thread.handle) == pdPASS)
+						registeredThreads[i].handle = thread.handle;
+					else
+					{
+						/* If you get stuck here, it's because you did not call back to this thread after initialization code was
+						* completed. Call "signalThreadSetupComplete()" after setup code and just before the infinite loop. */
+						vTaskSuspendAll();
+						while (1);
+					}
 				}
 			}
 
 			/* Resume threads in the order which they were registered */
-			for (int i = 0; i < registeredThreads.size(); i++)
-				vTaskResume(registeredThreads[i].handle);
-
+			if (setupCallbacksEnabled)
+			{
+				for (int i = 0; i < registeredThreads.size(); i++)
+					vTaskResume(registeredThreads[i].handle);
+			}
+			
 			/* Cleanly exit this thread */
+			INIT_THREAD = nullptr;
 			vTaskDelete(NULL);
 		}
 
-		Status startScheduler()
+		void startScheduler(bool useSetupCallbacks)
 		{
+			setupCallbacksEnabled = useSetupCallbacks;
 			xTaskCreate(initThreads, "thor_init", 500, NULL, 1, &INIT_THREAD);
 			vTaskStartScheduler();
 		}
@@ -98,7 +109,10 @@ namespace Thor
 
 		BaseType_t signalThreadSetupComplete()
 		{
-			return sendMessageAndWait(INIT_THREAD, 1u);
+			if (setupCallbacksEnabled)
+				return sendMessageAndWait(INIT_THREAD, 1u);
+			else
+				return pdPASS;
 		}
 
 		BaseType_t sendMessageAndWait(TaskHandle_t task, const uint32_t msg)
@@ -107,16 +121,6 @@ namespace Thor
 				return xTaskNotify(task, msg, eSetValueWithOverwrite);
 			else
 				return pdFAIL;
-		}
-
-		unsigned long queryStackMaxSize(TaskHandle_t task)
-		{
-			return uxTaskGetStackHighWaterMark(task);
-		}
-
-		unsigned long getTotalThreads()
-		{
-			return uxTaskGetNumberOfTasks();
 		}
 	}
 }

@@ -2,7 +2,7 @@
 #ifndef THOR_UTILITIES_HPP
 #define THOR_UTILITIES_HPP
 
-
+#define SIZE_OF_ARRAY(x) (sizeof(x)/sizeof(*x))
 
 namespace Thor
 {

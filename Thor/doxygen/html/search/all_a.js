@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['max_5fserial_5fchannels',['MAX_SERIAL_CHANNELS',['../namespace_thor_1_1_definitions_1_1_serial.html#aa5400ef1b08a82859bffd1f3269486c3',1,'Thor::Definitions::Serial']]],
-  ['max_5fusart_5fchannels',['MAX_USART_CHANNELS',['../namespace_thor_1_1_definitions_1_1_u_s_a_r_t.html#a7dd2ba9e4fe318ad90468e56a71452f6',1,'Thor::Definitions::USART']]],
-  ['modes',['Modes',['../namespace_thor_1_1_definitions_1_1_serial.html#aeb46e286ac4da2f34a54a4081f1539ef',1,'Thor::Definitions::Serial']]]
+  ['nextpacketsize',['nextPacketSize',['../class_thor_1_1_peripheral_1_1_serial_1_1_serial_class.html#a05df467638feda58484e8734e1a4a9ab',1,'Thor::Peripheral::Serial::SerialClass::nextPacketSize()'],['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a13b7807e67ae78cea259dd5e54d9c6c8',1,'Thor::Peripheral::UART::UARTClass::nextPacketSize()'],['../class_thor_1_1_peripheral_1_1_u_s_a_r_t_1_1_u_s_a_r_t_class.html#a2445210cd993d252358f5bd117f3ddda',1,'Thor::Peripheral::USART::USARTClass::nextPacketSize()']]]
 ];

@@ -1,16 +1,10 @@
 var searchData=
 [
-  ['defaults',['Defaults',['../namespace_thor_1_1_defaults.html',1,'Thor']]],
-  ['definitions',['Definitions',['../namespace_thor_1_1_definitions.html',1,'Thor']]],
-  ['dma',['DMA',['../namespace_thor_1_1_definitions_1_1_d_m_a.html',1,'Thor::Definitions']]],
-  ['gpio',['GPIO',['../namespace_thor_1_1_defaults_1_1_g_p_i_o.html',1,'Thor::Defaults::GPIO'],['../namespace_thor_1_1_definitions_1_1_g_p_i_o.html',1,'Thor::Definitions::GPIO']]],
-  ['interrupt',['Interrupt',['../namespace_thor_1_1_defaults_1_1_interrupt.html',1,'Thor::Defaults::Interrupt'],['../namespace_thor_1_1_definitions_1_1_interrupt.html',1,'Thor::Definitions::Interrupt']]],
-  ['peripheral',['Peripheral',['../namespace_thor_1_1_peripheral.html',1,'Thor']]],
-  ['serial',['Serial',['../namespace_thor_1_1_defaults_1_1_serial.html',1,'Thor::Defaults::Serial'],['../namespace_thor_1_1_definitions_1_1_serial.html',1,'Thor::Definitions::Serial'],['../namespace_thor_1_1_peripheral_1_1_serial.html',1,'Thor::Peripheral::Serial']]],
-  ['spi',['SPI',['../namespace_thor_1_1_defaults_1_1_s_p_i.html',1,'Thor::Defaults::SPI'],['../namespace_thor_1_1_definitions_1_1_s_p_i.html',1,'Thor::Definitions::SPI']]],
-  ['thor',['Thor',['../namespace_thor.html',1,'']]],
-  ['timer',['Timer',['../namespace_thor_1_1_defaults_1_1_timer.html',1,'Thor::Defaults::Timer'],['../namespace_thor_1_1_definitions_1_1_t_i_m_e_r.html',1,'Thor::Definitions::TIMER']]],
-  ['timerflags',['TimerFlags',['../struct_timer_flags.html',1,'']]],
-  ['uart',['UART',['../namespace_thor_1_1_defintions_1_1_u_a_r_t.html',1,'Thor::Defintions::UART'],['../namespace_thor_1_1_peripheral_1_1_u_a_r_t.html',1,'Thor::Peripheral::UART']]],
-  ['usart',['USART',['../namespace_thor_1_1_definitions_1_1_u_s_a_r_t.html',1,'Thor::Definitions::USART'],['../namespace_thor_1_1_peripheral_1_1_u_s_a_r_t.html',1,'Thor::Peripheral::USART']]]
+  ['uart_5fdmahandlermanager',['UART_DMAHandlerManager',['../class_thor_1_1_interrupt_1_1_u_a_r_t_1_1_u_a_r_t___d_m_a_handler_manager.html',1,'Thor::Interrupt::UART']]],
+  ['uart_5fqueue_5fbuffer_5fsize',['UART_QUEUE_BUFFER_SIZE',['../namespace_thor_1_1_definitions_1_1_u_a_r_t.html#acc6d619df75d9b6845b96e9a8b48790e',1,'Thor::Definitions::UART']]],
+  ['uart_5fqueue_5fsize',['UART_QUEUE_SIZE',['../namespace_thor_1_1_definitions_1_1_u_a_r_t.html#a1299f4a1c546110f841fb1e38e473fe3',1,'Thor::Definitions::UART']]],
+  ['uartclass',['UARTClass',['../class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html',1,'Thor::Peripheral::UART']]],
+  ['uartclass_5fsptr',['UARTClass_sPtr',['../namespace_thor_1_1_peripheral_1_1_u_a_r_t.html#ab625b3855cc91f75250c630d50805284',1,'Thor::Peripheral::UART']]],
+  ['uartpacket',['UARTPacket',['../struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html',1,'Thor::Peripheral::UART::UARTClass']]],
+  ['usartclass',['USARTClass',['../class_thor_1_1_peripheral_1_1_u_s_a_r_t_1_1_u_s_a_r_t_class.html',1,'Thor::Peripheral::USART']]]
 ];
