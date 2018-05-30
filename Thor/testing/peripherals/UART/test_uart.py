@@ -1,5 +1,4 @@
 import unittest
-from pystlink import PyStlink
 # import some definitions that explain what different kind of commands are available for the user
 
 
@@ -12,9 +11,7 @@ class TestUART(unittest.TestCase):
         Check for device existence, can connect, gives ack, etc.
         :return:
         """
-        cls.stlink = PyStlink()
-        cls.stlink.start()
-
+        pass
 
     @classmethod
     def tearDownClass(cls):

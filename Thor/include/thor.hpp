@@ -6,6 +6,7 @@
 
 #include <Thor/include/config.hpp>
 #include <Thor/include/core.hpp>
+#include <Thor/include/definitions.hpp>
 
 extern void ThorInit();
 

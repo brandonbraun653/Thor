@@ -1,75 +1,124 @@
 #include <Thor/include/threads.hpp>
 
+#include <boost/container/static_vector.hpp>
+
 #ifdef USING_FREERTOS
-
-	namespace Thor
+using namespace Thor::Definitions::Threading;
+	
+namespace Thor
+{
+	namespace Threading
 	{
-		TaskHandle_t TaskHandle[MAX_THREADS];
-		
-		/* Registers a TaskHandle to Chimera if the requested idx is free */
-		BaseType_t xRegisterTaskHandle(const uint32_t idx, TaskHandle_t handle)
+		TaskHandle_t INIT_THREAD;
+		static boost::container::static_vector<Thread_t, maxThreads> registeredThreads;
+
+		/* Implements a simple timeout while waiting for a newly created thread to complete
+		 * its initialization sequence and signal back to the init thread. */
+		BaseType_t threadInitTimeout(TaskHandle_t* threadHandle)
 		{
-			if ((idx < MAX_THREADS) && !TaskHandle[idx])
+			volatile BaseType_t error = pdPASS;
+			TickType_t lastTimeWoken = xTaskGetTickCount();
+			uint32_t timeoutCounter = 0;
+
+			while (!ulTaskNotifyTake(pdTRUE, 0))
 			{
-				TaskHandle[idx] = handle;
-				return pdPASS;
-			}
-			else
-			{
-				return pdFAIL;
-			}
-		}
-		
-		/* DANGEROUS: Completely destroys all references to the thread at 'idx' regardless of 
-		 * which task this function is called from */
-		BaseType_t xRemoveTaskHandle(const uint32_t idx)
-		{
-			if (idx < MAX_THREADS)
-			{
-				/* Removes FreeRTOS log of the task's existence. Fall through silently
-					* if the task is already empty. */
-				if (TaskHandle[idx])
+				vTaskDelayUntil(&lastTimeWoken, pdMS_TO_TICKS(threadInitCheckDelay_ms));
+				timeoutCounter += threadInitCheckDelay_ms;
+
+				if (timeoutCounter > maxThreadInitTimeout_ms)
 				{
-					vTaskDelete(TaskHandle[idx]); 
+					error = pdFAIL;
+					break;
 				}
-				
-				/* Removes personal log of the task's existence */
-				TaskHandle[idx] = (void*)0; 
-				
-				return pdPASS;
 			}
-			else
-			{ 	
-				return pdFAIL;
-			}
-		}
-		
-		BaseType_t xTaskSendMessage(const uint32_t idx, uint32_t msg)
-		{
-			if ((idx < MAX_THREADS) && TaskHandle[idx])
-				return xTaskNotify(TaskHandle[idx], msg, eSetValueWithOverwrite);
-			else
-			{
-				return pdFAIL;
-			}	
+
+			return error;
 		}
 
-		void vTaskSendMessageAndWait(const uint32_t idx, const uint32_t msg)
+		void initThreads(void* arguments)
 		{
-			xTaskSendMessage(idx, msg);
-			vTaskSuspend(NULL);
-			taskYIELD();
+			volatile BaseType_t error = pdPASS;
+			Thread_t thread;
+
+			/* Allow thread startup code to run and then halt */
+			for (int i = 0; i < registeredThreads.size(); i++)
+			{
+				thread = registeredThreads[i];
+				error = xTaskCreate(thread.func, thread.name, thread.stackDepth, thread.funcParams, thread.priority, thread.handle);
+					
+				if (error == pdPASS && threadInitTimeout(thread.handle) == pdPASS)
+					registeredThreads[i].handle = thread.handle;
+				else
+				{
+					/* If you get stuck here, it's because you did not call back to this thread after initialization code was
+					 * completed. Place "sendMessageAndWait(INIT_THREAD, 1u);" after setup code and just before the infinite loop.
+					 * Alternatively, call "signalThreadSetupComplete()".
+					 */
+					vTaskSuspendAll();
+					while (1);
+				}
+			}
+
+			/* Resume threads in the order which they were registered */
+			for (int i = 0; i < registeredThreads.size(); i++)
+				vTaskResume(registeredThreads[i].handle);
+
+			/* Cleanly exit this thread */
+			vTaskDelete(NULL);
 		}
 
-		BaseType_t xTaskSendMessageFromISR(const uint32_t idx, uint32_t msg)
+		Status startScheduler()
 		{
-			if ((idx < MAX_THREADS) && TaskHandle[idx])
-				return xTaskNotifyFromISR(TaskHandle[idx], msg, eSetValueWithOverwrite, NULL);
+			xTaskCreate(initThreads, "thor_init", 500, NULL, 1, &INIT_THREAD);
+			vTaskStartScheduler();
+		}
+
+		BaseType_t addThread(TaskFunction_t threadFunc, const char* threadName, const uint16_t stackDepth, void* const threadFuncParams,
+			UBaseType_t threadPriority, TaskHandle_t* const threadHandle)
+		{
+			volatile BaseType_t error = pdPASS;
+
+			if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
+				error = xTaskCreate(threadFunc, threadName, stackDepth, threadFuncParams, threadPriority, threadHandle);
 			else
-			{
+				registeredThreads.push_back({ threadFunc, threadName, stackDepth, threadFuncParams, threadPriority, threadHandle });
+
+			return error;
+		}
+
+		BaseType_t addThread(Thread_t& thread)
+		{
+			return addThread(thread.func, thread.name, thread.stackDepth, thread.funcParams, thread.priority, thread.handle);
+		}
+
+		void deleteThread(TaskHandle_t task)
+		{
+			vTaskDelete(task);
+		}
+
+		BaseType_t signalThreadSetupComplete()
+		{
+			return sendMessageAndWait(INIT_THREAD, 1u);
+		}
+
+		BaseType_t sendMessageAndWait(TaskHandle_t task, const uint32_t msg)
+		{
+			if (task)
+				return xTaskNotify(task, msg, eSetValueWithOverwrite);
+			else
 				return pdFAIL;
-			}
+		}
+
+		unsigned long queryStackMaxSize(TaskHandle_t task)
+		{
+			return uxTaskGetStackHighWaterMark(task);
+		}
+
+		unsigned long getTotalThreads()
+		{
+			return uxTaskGetNumberOfTasks();
 		}
 	}
+}
 
 #endif /* !USING_FREERTOS */

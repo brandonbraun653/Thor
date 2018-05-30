@@ -6,6 +6,7 @@
 
 #if defined(USING_FREERTOS)
 #include "FreeRTOS.h"
+#include "task.h"
 #include "semphr.h"
 #endif 
 
@@ -472,7 +473,18 @@ namespace Thor
 			};
 		}
 		
-		
+		/** @namespace Thor::Definitions::Threading */
+		namespace Threading
+		{
+			const uint8_t maxThreads = 15;					/**< Maximum number of threads */
+			const uint32_t threadInitCheckDelay_ms = 10;	/**< How long to wait during thread initialization before polling to check init complete */
+			const uint32_t maxThreadInitTimeout_ms = 1000;  /**< Max time to wait for thread init sequence to complete */
+
+			enum Status : uint8_t
+			{
+
+			};
+		}
 	}
 
 	//TODO: Deprecate this!

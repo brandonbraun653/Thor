@@ -8,8 +8,10 @@
 
 using namespace Thor;
 using namespace Thor::Nucleo;
+using namespace Thor::Threading;
 using namespace Thor::Peripheral::GPIO;
 using namespace Thor::Peripheral::Serial;
+
 
 
 GPIOClass_sPtr greenLed = boost::make_shared<GPIOClass>(GREEN_LED_PORT, GREEN_LED_PIN);
@@ -19,7 +21,8 @@ void ledTask(void* arguments)
 {
 	greenLed->mode(OUTPUT_PP);
 	blueLed->mode(OUTPUT_PP);
-	vTaskSendMessageAndWait(INIT_THREAD, 1u);
+	
+	signalThreadSetupComplete();
 
 	TickType_t lastTimeWoken = xTaskGetTickCount();
 	for (;;)
@@ -33,7 +36,7 @@ void ledTask(void* arguments)
 void serverTask(void* arguments)
 {
 	volatile erpc_status_t status;
-	vTaskSendMessageAndWait(INIT_THREAD, 1u);
+	signalThreadSetupComplete();
 
 	TickType_t lastTimeWoken = xTaskGetTickCount();
 	for (;;)
