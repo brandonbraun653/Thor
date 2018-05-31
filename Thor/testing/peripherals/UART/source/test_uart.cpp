@@ -102,6 +102,9 @@ void test_blockingTX(void* arguments)
 	}
 }
 
+NOTE: NEED TO PUT "GET DEVICE ID" AS SOME KIND OF ALWAYS AVAILABLE AND CALLABLE FUNCTION.
+	HONESTLY IT WOULD BE A GOOD IDEA TO PROBABLY DO THAT FOR A BUNCH OF GENERAL FUNCTIONS
+
 /*-------------------------------------------------------------------
  *						   eRPC FUNCTIONS
  *------------------------------------------------------------------*/
