@@ -22,7 +22,7 @@ OBJCOPY = arm-none-eabi-objcopy
 SIZE    = arm-none-eabi-size
 
 # Relevant directories
-THOR_ROOT  = /home/brandon/git/Microcontrollers/thor_stm32
+THOR_ROOT  = $(THOR_PATH)
 EIGEN_ROOT = $(EIGEN_PATH)
 BOOST_ROOT = $(BOOST_PATH)
 STM32_HAL_ROOT = $(STM32F7_HAL_PATH)
