@@ -93,17 +93,14 @@ void test_blockingTX(void* arguments)
 	TickType_t lastTimeWoken = xTaskGetTickCount();
 	for (;;)
 	{
-		serial->write(byte_data, SIZE_OF_ARRAY(byte_data));
-		serial->write(char_data, SIZE_OF_ARRAY(char_data));
+		//serial->write(byte_data, SIZE_OF_ARRAY(byte_data));
+		//serial->write(char_data, SIZE_OF_ARRAY(char_data));
 		serial->write("Hello World\r\n");
-		serial->write(const_char_data, strlen(const_char_data));
+		//serial->write(const_char_data, strlen(const_char_data));
 
 		vTaskDelayUntil(&lastTimeWoken, pdMS_TO_TICKS(1000));
 	}
 }
-
-NOTE: NEED TO PUT "GET DEVICE ID" AS SOME KIND OF ALWAYS AVAILABLE AND CALLABLE FUNCTION.
-	HONESTLY IT WOULD BE A GOOD IDEA TO PROBABLY DO THAT FOR A BUNCH OF GENERAL FUNCTIONS
 
 /*-------------------------------------------------------------------
  *						   eRPC FUNCTIONS

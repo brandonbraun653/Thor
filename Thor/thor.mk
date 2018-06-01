@@ -48,7 +48,7 @@ $(shell mkdir -p $(THOR_RLS_DIR))
 
 EIGEN_DIR      = $(addprefix $(EIGEN_ROOT), /Eigen/)
 BOOST_DIR      = $(addprefix $(BOOST_ROOT), /boost/)
-THOR_INC_DIRS := $(THOR_ROOT) $(STM32_INC_DIRS) $(EIGEN_ROOT) $(BOOST_ROOT)
+THOR_INC_DIRS := $(sort $(THOR_ROOT) $(ERPC_INC_DIRS) $(STM32_INC_DIRS) $(EIGEN_ROOT) $(BOOST_ROOT))
 
 # These includes come from freertos.mk
 ifeq ($(USE_FREERTOS), TRUE)

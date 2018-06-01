@@ -21,3 +21,16 @@ namespace Thor
 		}
 	}
 }
+
+/*------------------------------------------------
+ * Actual RPC Functions
+ *-----------------------------------------------*/
+uint8_t ping()
+{
+	return (uint8_t)0xAA;
+}
+
+uint32_t getDeviceID()
+{
+	//TODO: Fill this in and generate an IDL file
+}

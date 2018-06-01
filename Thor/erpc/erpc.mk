@@ -29,7 +29,7 @@ ERPC_SRC_DIRS  = $(addprefix $(ERPC_ROOT), bin/ config/ infra/ port/ setup/ tran
 ERPC_INC_DIRS  = $(addprefix $(ERPC_ROOT), bin/ config/ infra/ port/ setup/ transports/)
 
 
-ERPC_INC_DIRS += $(THOR_ROOT) $(RTOS_INC_DIRS) $(STM32_INC_DIRS) $(EIGEN_ROOT) $(BOOST_ROOT)
+ERPC_INC_DIRS += $(sort $(THOR_ROOT) $(RTOS_INC_DIRS) $(STM32_INC_DIRS) $(EIGEN_ROOT) $(BOOST_ROOT))
 
 ###########################################################
 # Files

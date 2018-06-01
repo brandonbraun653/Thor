@@ -117,12 +117,15 @@ LINKER_SCRIPT = $(THOR_ROOT)/Thor/device/ld/STM32F767ZI_flash.lds
 ###########################################################
 # Recipes
 ###########################################################
+
 .PHONY: all release debug clean flash_release flash_debug update_idl
 all: release debug 
 
 release: update_idl $(RELEASE_TARGET).bin
+	$(call colorecho, $(GREEN), Release build successful)
 
 debug: update_idl $(DEBUG_TARGET).bin
+	$(call colorecho, $(GREEN), Debug build successful)
 
 flash_release: release
 	st-flash write $(RELEASE_TARGET).bin 0x08000000
@@ -144,7 +147,7 @@ clean: $(THOR_CLEAN_DEPS)
 	$(call colorecho, $(GREEN), Project Build Files Cleaned)
 
 test:
-	@echo $(PROJECT_OBJ_FILES)
+	@echo $(THOR_ROOT)
 	
 
 #------------------------------------------
