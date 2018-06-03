@@ -435,11 +435,6 @@ namespace Thor
 
 		namespace SPI
 		{
-			/*-------------------------------------
-			* Handles all the default IO/IT/DMA configuration settings for
-			* various chips. Usually this just involves swapping out a few
-			* GPIO definitions.
-			*------------------------------------*/
 			const SPIConfig spi_cfg[] =
 			{
 				/* SPI 0: Doesn't exist. Only used for easy index alignment to peripheral names */
@@ -448,299 +443,298 @@ namespace Thor
 					{},
 
 					//MISO Pin
-			{},
+					{},
 
-			//SCK Pin
-			{},
+					//SCK Pin
+					{},
 
-			//NSS Pin
-			{},
+					//NSS Pin
+					{},
 
-			//SPI Instance Ptr
-			nullptr,
+					//SPI Instance Ptr
+					nullptr,
 
-			//IT_HW
-			{},
+					//IT_HW
+					{},
 
-			//DMA_IT_TX
-			{},
+					//DMA_IT_TX
+					{},
 
-			//DMA_IT_RX
-			{},
+					//DMA_IT_RX
+					{},
 
-			//DMA TX settings
-			{},
+					//DMA TX settings
+					{},
 
-			//DMA RX settings
-			{}
+					//DMA RX settings
+					{}
 				},
 
 				/* SPI 1: */
-		{
-			#if defined(ENABLE_SPI1)
+				{
+					#if defined(SPI1)
 
-			#if (defined(STM32F446xx) || defined(STM32F767xx))
-			//MOSI Pin
-			{ GPIOA, PIN_7, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI1 },
+					#if (defined(STM32F446xx) || defined(STM32F767xx))
+					//MOSI Pin
+					{ GPIOA, PIN_7, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI1 },
 
-			//MISO Pin
-			{ GPIOA, PIN_6, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI1 },
+					//MISO Pin
+					{ GPIOA, PIN_6, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI1 },
 
-			//SCK Pin
-			{ GPIOA, PIN_5, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI1 },
+					//SCK Pin
+					{ GPIOA, PIN_5, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI1 },
 
-			//NSS Pin
-			{ GPIOA, PIN_4, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI1 },
+					//NSS Pin
+					{ GPIOA, PIN_4, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI1 },
 
-			//SPI Instance Ptr
-			SPI1,
+					//SPI Instance Ptr
+					SPI1,
 
-			//IT_HW
-			{ SPI1_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//IT_HW
+					{ SPI1_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_TX
-			{ DMA2_Stream5_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_TX
+					{ DMA2_Stream5_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_RX
-			{ DMA2_Stream0_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_RX
+					{ DMA2_Stream0_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA TX settings
-			{ DMA2_Stream5, DMA_CHANNEL_3, DMA_MEMORY_TO_PERIPH },
+					//DMA TX settings
+					{ DMA2_Stream5, DMA_CHANNEL_3, DMA_MEMORY_TO_PERIPH },
 
-			//DMA RX settings
-			{ DMA2_Stream0, DMA_CHANNEL_3, DMA_PERIPH_TO_MEMORY }
-			#endif
+					//DMA RX settings
+					{ DMA2_Stream0, DMA_CHANNEL_3, DMA_PERIPH_TO_MEMORY }
+					#endif
 
-			#endif /* ENABLE_SPI1 */
-		},
+					#endif /* ENABLE_SPI1 */
+				},
 
 				/* SPI 2: */
-		{
-			#if defined(ENABLE_SPI2)
+				{
+					#if defined(SPI2)
 
-			#if defined(STM32F767xx)
-			//MOSI Pin
-			{ GPIOC, PIN_3, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },
+					#if defined(STM32F767xx)
+					//MOSI Pin
+					{ GPIOC, PIN_3, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },
 
-			//MISO Pin
-			{ GPIOC, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },
+					//MISO Pin
+					{ GPIOC, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },
 
-			//SCK Pin
-			{ GPIOB, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },
+					//SCK Pin
+					{ GPIOB, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },
 
-			//NSS Pin
-			{ GPIOB, PIN_12, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },
-			#endif
+					//NSS Pin
+					{ GPIOB, PIN_12, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },
+					#endif
 
-			#if defined(STM32F446xx)
-			//MOSI Pin
-			{ GPIOC, PIN_1, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_SPI2 },	//Nucleo was B15 AF5
+					#if defined(STM32F446xx)
+					//MOSI Pin
+					{ GPIOC, PIN_1, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_SPI2 },	//Nucleo was B15 AF5
 
-																		//MISO Pin
-			{ GPIOC, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },	//Nucleo was B14 AF5
+					//MISO Pin
+					{ GPIOC, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },	//Nucleo was B14 AF5
 
-																		//SCK Pin
-			{ GPIOB, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },//Nucleo was B3 AF5
+					//SCK Pin
+					{ GPIOB, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },//Nucleo was B3 AF5
 
-																		//NSS Pin
-			{ GPIOB, PIN_12, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },
-			#endif
+					//NSS Pin
+					{ GPIOB, PIN_12, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI2 },
+					#endif
 
-			#if (defined(STM32F446xx) || defined(STM32F767xx))
-			//SPI Instance Ptr
-			SPI2,
+					#if (defined(STM32F446xx) || defined(STM32F767xx))
+					//SPI Instance Ptr
+					SPI2,
 
-			//IT_HW
-			{ SPI2_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//IT_HW
+					{ SPI2_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_TX
-			{ DMA1_Stream4_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_TX
+					{ DMA1_Stream4_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_RX
-			{ DMA1_Stream3_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_RX
+					{ DMA1_Stream3_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA TX settings
-			{ DMA1_Stream4, DMA_CHANNEL_0, DMA_MEMORY_TO_PERIPH },
+					//DMA TX settings
+					{ DMA1_Stream4, DMA_CHANNEL_0, DMA_MEMORY_TO_PERIPH },
 
-			//DMA RX settings
-			{ DMA1_Stream3, DMA_CHANNEL_0, DMA_PERIPH_TO_MEMORY }
-			#endif
+					//DMA RX settings
+					{ DMA1_Stream3, DMA_CHANNEL_0, DMA_PERIPH_TO_MEMORY }
+					#endif
 
-			#endif /* ENABLE_SPI2 */
-		},
+					#endif /* ENABLE_SPI2 */
+				},
 
 				/* SPI 3: */
-		{
-			#if defined(ENABLE_SPI3)
-			#if defined(STM32F767xx)
-			//MOSI Pin
-			{ GPIOC, PIN_12, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 },
+				{
+					#if defined(SPI3)
+					#if defined(STM32F767xx)
+					//MOSI Pin
+					{ GPIOC, PIN_12, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 },
 
-			//MISO Pin
-			{ GPIOC, PIN_11, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 },
+					//MISO Pin
+					{ GPIOC, PIN_11, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 },
 
-			//SCK Pin
-			{ GPIOC, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 },
+					//SCK Pin
+					{ GPIOC, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 },
 
-			//NSS Pin
-			{ GPIOA, PIN_15, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 },
-			#endif
+					//NSS Pin
+					{ GPIOA, PIN_15, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 },
+					#endif
 
-			#if defined(STM32F446xx)
-			//MOSI Pin
-			{ GPIOB, PIN_0, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_SPI3 },	//nucleo was B5 AF6
+					#if defined(STM32F446xx)
+					//MOSI Pin
+					{ GPIOB, PIN_0, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_SPI3 },	//nucleo was B5 AF6
 
-																		//MISO Pin
-			{ GPIOC, PIN_11, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 }, //nucleo was B4
+					//MISO Pin
+					{ GPIOC, PIN_11, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 }, //nucleo was B4
 
-																		 //SCK Pin
-			{ GPIOC, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 }, //nucleo was B3
+					//SCK Pin
+					{ GPIOC, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 }, //nucleo was B3
 
-																		 //NSS Pin
-			{ GPIOA, PIN_15, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 },
-			#endif
+					//NSS Pin
+					{ GPIOA, PIN_15, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF6_SPI3 },
+					#endif
 
-			#if defined(STM32F767xx) || defined(STM32F446xx)
-			//SPI Instance Ptr
-			SPI3,
+					#if defined(STM32F767xx) || defined(STM32F446xx)
+					//SPI Instance Ptr
+					SPI3,
 
-			//IT_HW
-			{ SPI3_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//IT_HW
+					{ SPI3_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_TX
-			{ DMA1_Stream5_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_TX
+					{ DMA1_Stream5_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_RX
-			{ DMA1_Stream2_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_RX
+					{ DMA1_Stream2_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA TX settings
-			{ DMA1_Stream5, DMA_CHANNEL_0, DMA_MEMORY_TO_PERIPH },
+					//DMA TX settings
+					{ DMA1_Stream5, DMA_CHANNEL_0, DMA_MEMORY_TO_PERIPH },
 
-			//DMA RX settings
-			{ DMA1_Stream2, DMA_CHANNEL_0, DMA_PERIPH_TO_MEMORY }
-			#endif 
-			#endif /* ENABLE_SPI3 */
-		},
+					//DMA RX settings
+					{ DMA1_Stream2, DMA_CHANNEL_0, DMA_PERIPH_TO_MEMORY }
+					#endif 
+					#endif /* ENABLE_SPI3 */
+				},
 
 				/* SPI 4: */
-		{
-			#if defined(ENABLE_SPI4)
-			#if defined(STM32F767xx) || defined(STM32F446xx)
-			//MOSI Pin
-			{ GPIOE, PIN_6, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI4 },
+				{
+					#if defined(SPI4)
+					#if defined(STM32F767xx) || defined(STM32F446xx)
+					//MOSI Pin
+					{ GPIOE, PIN_6, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI4 },
 
-			//MISO Pin
-			{ GPIOE, PIN_5, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI4 },
+					//MISO Pin
+					{ GPIOE, PIN_5, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI4 },
 
-			//SCK Pin
-			{ GPIOE, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI4 },
+					//SCK Pin
+					{ GPIOE, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI4 },
 
-			//NSS Pin
-			{ GPIOE, PIN_4, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI4 },
+					//NSS Pin
+					{ GPIOE, PIN_4, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI4 },
 
-			//SPI Instance Ptr
-			SPI4,
+					//SPI Instance Ptr
+					SPI4,
 
-			//IT_HW
-			{ SPI4_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//IT_HW
+					{ SPI4_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_TX
-			{ DMA2_Stream1_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_TX
+					{ DMA2_Stream1_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_RX
-			{ DMA2_Stream0_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_RX
+					{ DMA2_Stream0_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA TX settings
-			{ DMA2_Stream1, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
+					//DMA TX settings
+					{ DMA2_Stream1, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
 
-			//DMA RX settings
-			{ DMA2_Stream0, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY }
-			#endif
-			#endif /* ENABLE_SPI4 */
-		},
+					//DMA RX settings
+					{ DMA2_Stream0, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY }
+					#endif
+					#endif /* ENABLE_SPI4 */
+				},
 
 				/* SPI 5: */
-		{
-			#if defined(ENABLE_SPI5)
-			#if defined(STM32F767xx)
-			//MOSI Pin
-			{ GPIOF, PIN_9, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI5 },
+				{
+					#if defined(SPI5)
+					#if defined(STM32F767xx)
+					//MOSI Pin
+					{ GPIOF, PIN_9, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI5 },
 
-			//MISO Pin
-			{ GPIOF, PIN_8, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI5 },
+					//MISO Pin
+					{ GPIOF, PIN_8, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI5 },
 
-			//SCK Pin
-			{ GPIOF, PIN_7, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI5 },
+					//SCK Pin
+					{ GPIOF, PIN_7, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI5 },
 
-			//NSS Pin
-			{ GPIOF, PIN_6, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI5 },
+					//NSS Pin
+					{ GPIOF, PIN_6, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI5 },
 
-			//SPI Instance Ptr
-			SPI5,
+					//SPI Instance Ptr
+					SPI5,
 
-			//IT_HW
-			{ SPI5_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//IT_HW
+					{ SPI5_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_TX
-			{ DMA2_Stream4_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_TX
+					{ DMA2_Stream4_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_RX
-			{ DMA2_Stream3_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_RX
+					{ DMA2_Stream3_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA TX settings
-			{ DMA2_Stream4, DMA_CHANNEL_2, DMA_MEMORY_TO_PERIPH },
+					//DMA TX settings
+					{ DMA2_Stream4, DMA_CHANNEL_2, DMA_MEMORY_TO_PERIPH },
 
-			//DMA RX settings
-			{ DMA2_Stream3, DMA_CHANNEL_2, DMA_PERIPH_TO_MEMORY }
-			#endif
-			#endif /* ENABLE_SPI5 */
+					//DMA RX settings
+					{ DMA2_Stream3, DMA_CHANNEL_2, DMA_PERIPH_TO_MEMORY }
+					#endif
+					#endif /* ENABLE_SPI5 */
 
 
-		},
+				},
 
 				/* SPI 6: */
-		{
-			#if defined(ENABLE_SPI6)
-			#if defined(STM32F767xx)
-			//MOSI Pin
-			{ GPIOG, PIN_14, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI6 },
+				{
+					#if defined(SPI6)
+					#if defined(STM32F767xx)
+					//MOSI Pin
+					{ GPIOG, PIN_14, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI6 },
 
-			//MISO Pin
-			{ GPIOG, PIN_12, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI6 },
+					//MISO Pin
+					{ GPIOG, PIN_12, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI6 },
 
-			//SCK Pin
-			{ GPIOG, PIN_13, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI6 },
+					//SCK Pin
+					{ GPIOG, PIN_13, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI6 },
 
-			//NSS Pin
-			{ GPIOG, PIN_8, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI6 },
+					//NSS Pin
+					{ GPIOG, PIN_8, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF5_SPI6 },
 
-			//SPI Instance Ptr
-			SPI6,
+					//SPI Instance Ptr
+					SPI6,
 
-			//IT_HW
-			{ SPI6_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//IT_HW
+					{ SPI6_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_TX
-			{ DMA2_Stream5_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_TX
+					{ DMA2_Stream5_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA_IT_RX
-			{ DMA2_Stream6_IRQn, NVIC_PRIORITYGROUP_4, 0u, 0u },
+					//DMA_IT_RX
+					{ DMA2_Stream6_IRQn, NVIC_PRIORITYGROUP_4, 0u },
 
-			//DMA TX settings
-			{ DMA2_Stream5, DMA_CHANNEL_1, DMA_MEMORY_TO_PERIPH },
+					//DMA TX settings
+					{ DMA2_Stream5, DMA_CHANNEL_1, DMA_MEMORY_TO_PERIPH },
 
-			//DMA RX settings
-			{ DMA2_Stream6, DMA_CHANNEL_1, DMA_PERIPH_TO_MEMORY }
-			#endif
-			#endif /* ENABLE_SPI6 */
-		}
+					//DMA RX settings
+					{ DMA2_Stream6, DMA_CHANNEL_1, DMA_PERIPH_TO_MEMORY }
+					#endif
+					#endif /* ENABLE_SPI6 */
+				}
 			};
 
 
 			/*-------------------------------------
-			* Rest of the default initializer structs. Some of the lower end
-			* chips don't have all the HAL options so separate defaults sometimes
-			* need to be created for a particular family of devices.
+			* Rest of the default initializer structs. Some of the lower end chips don't have all the HAL 
+			* options, so separate default settings are needed for a couple of device families.
 			*------------------------------------*/
 			#if defined(STM32F7) || defined(STM32F4)
 			const DMA_InitTypeDef dflt_DMA_Init_TX = {

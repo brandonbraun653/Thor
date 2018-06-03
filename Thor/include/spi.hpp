@@ -41,14 +41,9 @@ namespace Thor
 		namespace SPI
 		{
 
-			class SPIClass : public boost::enable_shared_from_this<SPIClass>
+			class SPIClass
 			{
 			public:
-				
-
-				boost::shared_ptr<SPIClass> getSharedPtrRef();
-				
-
 
 				void begin(Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::NO_OPTIONS);
 
@@ -84,11 +79,28 @@ namespace Thor
 				void SPI_IRQHandler();
 				void SPI_IRQHandler_TXDMA();
 				void SPI_IRQHandler_RXDMA();
+				
+				
+			private:
+				/** The real constructor used by SPIClass::create */
+				SPIClass(const int channel);
+				
+			public:
+				/** A factory method to create a new SPIClass object 
+				 *	
+				 *	This method intentionally replaces the typical constructor for the purpose of allowing
+				 *	the SPI ISR handlers to deduce at runtim which class generated the interrupt. The new 
+				 *	object is internally registered with a static vector that keeps track of this.
+				 *	
+				 *	@param[in] channel Hardware SPI peripheral channel number (i.e. 1 for SPI1, 2 for SPI2, etc)
+				 *	@return Shared pointer to the new object
+				 **/
+				static boost::shared_ptr<SPIClass> create(const int channel);
+				~SPIClass() = default;
 
 				/*-------------------------------
 				* Status Flags for User
 				*------------------------------*/
-				//MOVE TO STRUCT
 				bool* isInitialized;
 				bool tx_complete = true;
 				bool rx_complete = true;
@@ -119,9 +131,8 @@ namespace Thor
 				size_t _rxbuffpcktlen[Thor::Definitions::SPI::SPI_BUFFER_SIZE];
 				SmartBuffer::RingBuffer<size_t>* rxBufferedPacketLengths;
 
-				SPIClass(int channel);
-				SPIClass() = default;
-				~SPIClass() = default;
+
+				
 
 				#ifdef USING_CHIMERA
 				Chimera::SPI::Status init(int channel, const Chimera::SPI::Setup& setupStruct);
@@ -131,6 +142,37 @@ namespace Thor
 				Chimera::SPI::Status setTxMode(Chimera::SPI::TXRXMode mode);
 				Chimera::SPI::Status setRxMode(Chimera::SPI::TXRXMode mode);
 				#endif
+				
+				/*-------------------------------
+				* ISR Stubs 
+				*------------------------------*/
+				int _getChannel()
+				{
+					return spi_channel;
+				}
+				
+				void _setTXComplete()
+				{
+					tx_complete = true;
+				}
+				
+				void _setRXComplete()
+				{
+					rx_complete = true;
+				}
+				
+				bool _getRXComplete()
+				{
+					return rx_complete;
+				}
+				
+				bool _getInitStatus(){ return SPI_PeriphState.spi_enabled; }
+				
+				bool _txBufferEmpty(){ return TXPacketBuffer.empty(); }
+				
+				void _txBufferRemoveFrontPacket(){ TXPacketBuffer.pop_front(); }
+				
+				const SPIPacket& _txBufferNextPacket(){ return TXPacketBuffer.front(); }
 
 			private:
 				/*-------------------------------
@@ -188,64 +230,5 @@ namespace Thor
 		}
 	}
 }
-
-
-
-#ifdef ENABLE_SPI1
-extern Thor::Peripheral::SPI::SPIClass_sPtr spi1;
-#endif
-#ifdef ENABLE_SPI2
-extern Thor::Peripheral::SPI::SPIClass_sPtr spi2;
-#endif
-
-#ifdef ENABLE_SPI3
-extern Thor::Peripheral::SPI::SPIClass_sPtr spi3;
-#endif
-
-#ifdef ENABLE_SPI4
-extern Thor::Peripheral::SPI::SPIClass_sPtr spi4;
-#endif
-
-#ifdef ENABLE_SPI5
-extern Thor::Peripheral::SPI::SPIClass_sPtr spi5;
-#endif
-
-#ifdef ENABLE_SPI6
-extern Thor::Peripheral::SPI::SPIClass_sPtr spi6;
-#endif
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-	#ifdef ENABLE_SPI1
-	void SPI1_IRQHandler();
-	#endif
-
-	#ifdef ENABLE_SPI2
-	void SPI2_IRQHandler();
-	#endif
-
-	#ifdef ENABLE_SPI3
-	void SPI3_IRQHandler();
-	#endif
-
-	#ifdef ENABLE_SPI4
-	void SPI4_IRQHandler();
-	#endif
-
-	#ifdef ENABLE_SPI5
-	void SPI5_IRQHandler();
-	#endif
-
-	#ifdef ENABLE_SPI6
-	void SPI6_IRQHandler();
-	#endif
-
-#ifdef __cplusplus
-}
-#endif
-
 
 #endif /* SPI_H_*/

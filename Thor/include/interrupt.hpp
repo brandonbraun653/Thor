@@ -157,9 +157,22 @@ extern Thor::Interrupt::DMA::DMAHandler dma_handler;
 extern Thor::Interrupt::UART::UART_DMAHandlerManager uart_dma_manager;
 extern Thor::Interrupt::SPI::SPI_DMAHandlerManager spi_dma_manager;
 
+
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+	/*----------------------------------
+	 * Handler declarations for all sorts of devices. Note that just because they are declared 
+	 * does NOT mean they exist in hardware. Some just serve as placeholders since generating a large
+	 * amount of #if statements to handle all device cases would be too cumbersome. There is hardly 
+	 * any code overhead. 
+	 *---------------------------------*/
+	
+	/*----------------------------------
+	 * DMA
+	 *---------------------------------*/
 	#if defined(DMA1)
 	void DMA1_Stream0_IRQHandler();
 	void DMA1_Stream1_IRQHandler();
@@ -183,13 +196,14 @@ extern "C" {
 	#endif
 	
 
-	/* Possible USART Handlers: Note that not all of these will actually exist in hardware */
+	/*----------------------------------
+	 * USART/UART
+	 *---------------------------------*/
 	void USART1_IRQHandler();
 	void USART2_IRQHandler();
 	void USART3_IRQHandler();
 	void USART6_IRQHandler();
 	
-	/* Possible UART Handlers: Note that not all of these will actually exist in hardware */
 	void UART1_IRQHandler();
 	void UART2_IRQHandler();
 	void UART3_IRQHandler();
@@ -199,6 +213,15 @@ extern "C" {
 	void UART7_IRQHandler();
 	void UART8_IRQHandler();
 	
+	/*----------------------------------
+	 * SPI
+	 *---------------------------------*/
+	void SPI1_IRQHandler();
+	void SPI2_IRQHandler();
+	void SPI3_IRQHandler();
+	void SPI4_IRQHandler();
+	void SPI5_IRQHandler();
+	void SPI6_IRQHandler();
 	
 #ifdef __cplusplus
 }

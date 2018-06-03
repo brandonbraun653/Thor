@@ -1,3 +1,8 @@
+/* Boost Includes */
+#include <boost/container/flat_map.hpp>
+#include <boost/container/static_vector.hpp>
+
+/* Thor Includes */
 #include <Thor/include/spi.hpp>
 #include <Thor/include/exti.hpp>
 
@@ -9,66 +14,34 @@ using namespace Thor::Interrupt;
 using namespace Thor::Peripheral::SPI;
 using namespace Thor::Peripheral::GPIO;
 
-#ifdef ENABLE_SPI1
-SPIClass_sPtr spi1 = boost::make_shared<SPIClass>(1);
 
-void SPI1_IRQHandler()
+
+/* Stores references to available SPIClass objects */
+static boost::container::static_vector<SPIClass_sPtr, MAX_SPI_CHANNELS + 1> spiObjects(MAX_SPI_CHANNELS + 1);
+
+/* Directly maps the HAL SPI Instance pointer to a possible SPIClass object */
+static boost::container::flat_map<SPI_TypeDef*, SPIClass_sPtr> spiObjectLookup =
 {
-	spi1->SPI_IRQHandler();
-}
-#endif
-
-#ifdef ENABLE_SPI2
-	#ifdef USING_CHIMERA
-	SPIClass_sPtr spi2;
-	#else
-	SPIClass_sPtr spi2 = boost::make_shared<SPIClass>(2);
+	#if defined(SPI1)
+	{ SPI1, spiObjects[1] },	
 	#endif 
+	#if defined(SPI2)
+	{ SPI2, spiObjects[2] },	
+	#endif 
+	#if defined(SPI3)
+	{ SPI3, spiObjects[3] },	
+	#endif 
+	#if defined(SPI4)
+	{ SPI4, spiObjects[4] },	
+	#endif 
+	#if defined(SPI5)
+	{ SPI5, spiObjects[5] },	
+	#endif 
+	#if defined(SPI6)
+	{ SPI6, spiObjects[6] }	
+	#endif 
+};
 
-void SPI2_IRQHandler()
-{
-	if (spi2)
-	{
-		spi2->SPI_IRQHandler();
-	}
-}
-#endif
-
-#ifdef ENABLE_SPI3
-SPIClass_sPtr spi3 = boost::make_shared<SPIClass>(3);
-
-void SPI3_IRQHandler()
-{
-	spi3->SPI_IRQHandler();
-}
-#endif
-
-#ifdef ENABLE_SPI4
-SPIClass_sPtr spi4 = boost::make_shared<SPIClass>(4);
-
-void SPI4_IRQHandler()
-{
-	spi4->SPI_IRQHandler();
-}
-#endif
-
-#ifdef ENABLE_SPI5
-SPIClass_sPtr spi5 = boost::make_shared<SPIClass>(5);
-
-void SPI5_IRQHandler()
-{
-	spi5->SPI_IRQHandler();
-}
-#endif
-
-#ifdef ENABLE_SPI6
-SPIClass_sPtr spi6 = boost::make_shared<SPIClass>(6);
-
-void SPI6_IRQHandler()
-{
-	spi6->SPI_IRQHandler();
-}
-#endif
 
 namespace Thor
 {
@@ -250,13 +223,6 @@ namespace Thor
 
 				rxBufferedPackets = new SmartBuffer::RingBuffer<uint16_t>(_rxbuffpckt, Thor::Definitions::SPI::SPI_BUFFER_SIZE);
 				rxBufferedPacketLengths = new SmartBuffer::RingBuffer<size_t>(_rxbuffpcktlen, Thor::Definitions::SPI::SPI_BUFFER_SIZE);
-			}
-
-			boost::shared_ptr<SPIClass> SPIClass::getSharedPtrRef()
-			{
-				/* If failing here, there must already be a shared_ptr in
-				* existence to an object of this class */
-				return shared_from_this();
 			}
 
 			void SPIClass::begin(Options options)
@@ -896,71 +862,33 @@ namespace Thor
 
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-	/* This callback is used when only the Transmit() HAL function is used.
-	 * TransmitReceive() is handled in the TxRxCpltCallback() */
+	/* Determine at runtime which object actually triggered this callback. Because this function
+	 * resides in an interrupt, grab a constant reference so we don't take time instantiating a new shared_ptr. */
+	const SPIClass_sPtr& spi = spiObjectLookup[hspi->Instance];
 
-	/*-------------------------------
-	* Filter through the possible calling instances
-	*-------------------------------*/
-	SPIClass_sPtr spi;
-
-	#ifdef ENABLE_SPI1
-	if (hspi->Instance == SPI1)
-		spi = spi1;
-	#endif
-
-	#ifdef ENABLE_SPI2
-	if (hspi->Instance == SPI2)
-		spi = spi2;
-	#endif
-
-	#ifdef ENABLE_SPI3
-	if (hspi->Instance == SPI3)
-		spi = spi3;
-	#endif
-
-	#ifdef ENABLE_SPI4
-	if (hspi->Instance == SPI4)
-		spi = spi4;
-	#endif
-
-	#ifdef ENABLE_SPI5
-	if (hspi->Instance == SPI5)
-		spi = spi5;
-	#endif
-
-	#ifdef ENABLE_SPI6
-	if (hspi->Instance == SPI6)
-		spi = spi6;
-	#endif
-
-	/* No SPI instance available */
-	if (!spi)
-		return;
-
-	if (spi->isInitialized)
+	if (spi && spi->_getInitStatus())
 	{
-		spi->tx_complete = true;
+		spi->_setTXComplete();
 
-		if (!spi->TXPacketBuffer.empty())
+		if (!spi->_txBufferEmpty())
 		{
 			/*-------------------------------
 			* Handle any operations on the completed TX
 			*-------------------------------*/
-			SPIClass::SPIPacket packet = spi->TXPacketBuffer.front();
+			auto packet = spi->_txBufferNextPacket();
 
 			if ((packet.options & SS_INACTIVE_AFTER_TX) == SS_INACTIVE_AFTER_TX &&
 				(spi->SlaveSelectControl == SS_AUTOMATIC_CONTROL))
 				spi->writeSS(LogicLevel::HIGH);
 
-			spi->TXPacketBuffer.pop_front();
+			spi->_txBufferRemoveFrontPacket();
 
 			/*-------------------------------
 			* If more data is left to send, queue it up.
 			*-------------------------------*/
-			if (!spi->TXPacketBuffer.empty())
+			if (!spi->_txBufferEmpty())
 			{
-				packet = spi->TXPacketBuffer.front();
+				packet = spi->_txBufferNextPacket();
 
 				if (packet.data_tx != nullptr)
 					spi->write(packet.data_tx, packet.length, packet.options);
@@ -1094,4 +1022,52 @@ void HAL_SPI_TxRxHalfCpltCallback(SPI_HandleTypeDef *hspi)
 
 void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
 {
+}
+
+void SPI1_IRQHandler()
+{
+	if (spiObjects[1])
+	{
+		spiObjects[1]->SPI_IRQHandler();
+	}
+}
+
+void SPI2_IRQHandler()
+{
+	if (spiObjects[2])
+	{
+		spiObjects[2]->SPI_IRQHandler();
+	}
+}
+
+void SPI3_IRQHandler()
+{
+	if (spiObjects[3])
+	{
+		spiObjects[3]->SPI_IRQHandler();
+	}
+}
+
+void SPI4_IRQHandler()
+{
+	if (spiObjects[4])
+	{
+		spiObjects[4]->SPI_IRQHandler();
+	}
+}
+
+void SPI5_IRQHandler()
+{
+	if (spiObjects[5])
+	{
+		spiObjects[5]->SPI_IRQHandler();
+	}
+}
+
+void SPI6_IRQHandler()
+{
+	if (spiObjects[6])
+	{
+		spiObjects[6]->SPI_IRQHandler();
+	}
 }

@@ -3,7 +3,7 @@
 #include <boost/container/flat_map.hpp>
 #include <boost/container/static_vector.hpp>
 
-/* Project Includes */
+/* Thor Includes */
 #include <Thor/include/uart.hpp>
 #include <Thor/include/exceptions.hpp>
 #include <Thor/include/interrupt.hpp>
