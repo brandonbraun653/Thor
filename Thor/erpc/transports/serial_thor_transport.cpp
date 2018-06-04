@@ -3,8 +3,10 @@
 #include <cstdio>
 
 using namespace erpc;
-using namespace Thor::Peripheral::Serial;
+using namespace Thor::Definitions;
 using namespace Thor::Definitions::Serial;
+using namespace Thor::Peripheral::Serial;
+
 
 SemaphoreHandle_t serverWakeup = xSemaphoreCreateBinary();
 
@@ -18,8 +20,8 @@ erpc_status_t SerialTransport::init()
 	serial = boost::make_shared<SerialClass>(serial_channel);
 	
 	serial->begin(SERIAL_BAUD_115200);
-	serial->setMode(TX, BLOCKING);		//Transmit to PC
-	serial->setMode(RX, INTERRUPT);		//Receive transmissions from PC
+	serial->setMode(SubPeripheral::TX, Modes::BLOCKING);		//Transmit to PC
+	serial->setMode(SubPeripheral::RX, Modes::INTERRUPT);		//Receive transmissions from PC
 	
 	serial->attachThreadTrigger(RX_COMPLETE, &serverWakeup);
 
@@ -32,7 +34,7 @@ erpc_status_t SerialTransport::underlyingReceive(uint8_t *data, uint32_t size)
 	
 	if (serial->availablePackets())
 	{
-		if (serial->readPacket(data, (size_t)size) != PERIPH_OK)
+		if (serial->readPacket(data, (size_t)size) != Status::PERIPH_OK)
 		{
 			errorCode = kErpcStatus_ReceiveFailed;
 		}

@@ -36,6 +36,7 @@ namespace Thor
 		/** @namespace Thor::Peripheral::UART */
 		namespace UART
 		{
+			using namespace Thor::Definitions;
 			using namespace Thor::Definitions::Serial;
 			using namespace Thor::Definitions::Interrupt;
 			using namespace Thor::Definitions::UART;
@@ -63,8 +64,8 @@ namespace Thor
 				 *			will return a code from Thor::Peripheral::Serial::Status
 				 **/
 				Status begin(const BaudRate& baud = SERIAL_BAUD_115200,
-					const Modes& tx_mode = BLOCKING,
-					const Modes& rx_mode = BLOCKING) override;
+					const Modes& tx_mode = Modes::BLOCKING,
+					const Modes& rx_mode = Modes::BLOCKING) override;
 
 				/** Places the specified peripheral into a given mode
 				 *	@param[in] periph	Explicitly states which peripheral subsystem (TX or RX) to set from Thor::Peripheral::Serial::SubPeripheral
@@ -215,9 +216,9 @@ namespace Thor
 				
 				bool _getInitStatus(){ return UART_PeriphState.uart_enabled; }
 				
-				uint32_t _getTxMode(){ return txMode; }
+				Modes _getTxMode(){ return txMode; }
 				
-				uint32_t _getRxMode(){ return rxMode; }
+				Modes _getRxMode(){ return rxMode; }
 				
 				bool _txBufferEmpty(){ return TXPacketBuffer.empty(); }
 				
@@ -242,8 +243,8 @@ namespace Thor
 				bool tx_complete = true;														/**< Indicates if a transmission has been completed */
 				bool rx_complete = true;														/**< Indicates if a reception has been completed */
 				bool RX_ASYNC = true;															/**< Enables/Disables asynchronous reception of data */
-				uint32_t txMode = Thor::Definitions::Serial::MODE_UNDEFINED;					/**< Logs which mode the TX peripheral is currently in */
-				uint32_t rxMode = Thor::Definitions::Serial::MODE_UNDEFINED;					/**< Logs which mode the RX peripheral is currently in */
+				Modes txMode = Modes::MODE_UNDEFINED;										/**< Logs which mode the TX peripheral is currently in */
+				Modes rxMode = Modes::MODE_UNDEFINED;										/**< Logs which mode the RX peripheral is currently in */
 
 				UARTPacket TX_tempPacket, RX_tempPacket;										/**< Used in ISR routines to prevent creation/deletion on the stack and help cleanup code a bit */
 				boost::circular_buffer<UARTPacket> TXPacketBuffer, RXPacketBuffer;				/**< User level buffers for queuing data to transmit or holding data that was received */

@@ -1,4 +1,5 @@
 /* Boost Includes */
+#include <boost/bind.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/static_vector.hpp>
 
@@ -6,10 +7,10 @@
 #include <Thor/include/spi.hpp>
 #include <Thor/include/exti.hpp>
 
+using namespace Thor::Definitions;
 using namespace Thor::Definitions::SPI;
 using namespace Thor::Definitions::GPIO;
 using namespace Thor::Defaults::SPI;
-using namespace Thor::Interrupt;
 
 using namespace Thor::Peripheral::SPI;
 using namespace Thor::Peripheral::GPIO;
@@ -39,6 +40,72 @@ static boost::container::flat_map<SPI_TypeDef*, SPIClass_sPtr> spiObjectLookup =
 	#endif 
 	#if defined(SPI6)
 	{ SPI6, spiObjects[6] }	
+	#endif 
+};
+
+/* Directly maps the HAL SPI Instance pointer to the correct bit mask for enabling/disabling the peripheral clock  */
+static boost::container::flat_map<SPI_TypeDef*, uint32_t> spiClockMask = 
+{ 
+	#if defined(TARGET_STM32F4) || defined(TARGET_STM32F7)
+		#if defined (SPI1)
+		{ SPI1, RCC_APB2ENR_SPI1EN },
+		#endif
+		
+		#if defined (SPI2)
+	    { SPI2, RCC_APB1ENR_SPI2EN },
+		#endif
+	
+		#if defined (SPI3)
+	    { SPI3, RCC_APB1ENR_SPI3EN },
+		#endif
+		
+		#if defined (SPI4)
+	    { SPI4, RCC_APB2ENR_SPI4EN },
+		#endif
+	#endif 
+	
+	
+	#if defined(TARGET_STM32F7)
+		#if defined (SPI5)
+	    { SPI5, RCC_APB2ENR_SPI5EN },
+		#endif
+	
+		#if defined (SPI6)
+	    { SPI6, RCC_APB2ENR_SPI6EN },
+		#endif
+	#endif 
+};
+
+/* Directly maps the HAL SPI Instance pointer to the correct register for enabling/disabling the peripheral clock */
+static boost::container::flat_map<SPI_TypeDef*, uint32_t> spiClockRegister =
+{ 
+	#if defined(TARGET_STM32F4) || defined(TARGET_STM32F7)
+		#if defined (SPI1)
+		{ SPI1, RCC->APB2ENR },
+		#endif
+		
+		#if defined (SPI2)
+		{ SPI2, RCC->APB1ENR },
+		#endif
+	
+		#if defined (SPI3)
+		{ SPI3, RCC->APB1ENR },
+		#endif
+		
+		#if defined (SPI4)
+		{ SPI4, RCC->APB2ENR },
+		#endif
+	#endif 
+	
+	
+	#if defined(TARGET_STM32F7)
+		#if defined (SPI5)
+		{ SPI5, RCC->APB2ENR },
+		#endif
+	
+		#if defined (SPI6)
+		{ SPI6, RCC->APB2ENR },
+		#endif
 	#endif 
 };
 
@@ -126,11 +193,16 @@ namespace Thor
 			}
 
 			#endif
-
+			
+			using namespace Thor::Definitions;
+			
+			
 			using namespace Thor::Definitions::GPIO;
 
-			using Status = Thor::Definitions::SPI::Status;
+			using Status = Thor::Definitions::Status;
+			using Modes = Thor::Definitions::Modes;
 			using Options = Thor::Definitions::SPI::Options;
+			
 
 			void SPIClass::SPI_IRQHandler()
 			{
@@ -149,27 +221,12 @@ namespace Thor
 
 			SPIClass::SPIClass(int channel)
 			{
-				/* Initialize some variable states */
 				spi_channel = channel;
-				txMode = TX_MODE_NONE;
-				rxMode = RX_MODE_NONE;
-
-				isInitialized = &SPI_PeriphState.spi_enabled;
-
-				SPI_PeriphState.gpio_enabled = false;
-				SPI_PeriphState.spi_enabled = false;
-				SPI_PeriphState.spi_interrupts_enabled = false;
-				SPI_PeriphState.dma_enabled_tx = false;
-				SPI_PeriphState.dma_enabled_rx = false;
-				SPI_PeriphState.dma_interrupts_enabled_tx = false;
-				SPI_PeriphState.dma_interrupts_enabled_rx = false;
-
-				SlaveSelectControl = SS_AUTOMATIC_CONTROL;
-
-				/* Assign the instance */
 				spi_handle.Instance = spi_cfg[spi_channel].instance;
 
-				/* Copy over interrupt info */
+				/*------------------------------------
+				 * Interrupt Setup
+				 *-----------------------------------*/
 				ITSettingsHW.IRQn = spi_cfg[spi_channel].IT_HW.IRQn;
 				ITSettingsHW.preemptPriority = spi_cfg[spi_channel].IT_HW.preemptPriority;
 				ITSettingsHW.subPriority = spi_cfg[spi_channel].IT_HW.subPriority;
@@ -182,7 +239,9 @@ namespace Thor
 				ITSettings_DMA_RX.preemptPriority = spi_cfg[spi_channel].dmaIT_RX.preemptPriority;
 				ITSettings_DMA_RX.subPriority = spi_cfg[spi_channel].dmaIT_RX.subPriority;
 
-				/* Use the default HW configuration and modify a few values */
+				/*------------------------------------
+				 * DMA Setup
+				 *-----------------------------------*/
 				spi_handle.Init = Defaults::SPI::dflt_SPI_Init;
 				hdma_spi_tx.Init = Defaults::SPI::dflt_DMA_Init_TX;
 				hdma_spi_rx.Init = Defaults::SPI::dflt_DMA_Init_RX;
@@ -193,7 +252,9 @@ namespace Thor
 				hdma_spi_tx.Instance = spi_cfg[spi_channel].dmaTX.Instance;
 				hdma_spi_rx.Instance = spi_cfg[spi_channel].dmaRX.Instance;
 
-				/* Create the GPIO pin objects */
+				/*------------------------------------
+				 * GPIO Setup
+				 *-----------------------------------*/
 				MOSI = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
 					spi_cfg[spi_channel].MOSI.GPIOx,
 					spi_cfg[spi_channel].MOSI.PinNum,
@@ -218,7 +279,9 @@ namespace Thor
 					spi_cfg[spi_channel].NSS.Speed,
 					spi_cfg[spi_channel].NSS.Alternate);
 
-				/* Initialize the buffer memories */
+				/*------------------------------------
+				 * Buffer Setup
+				 *-----------------------------------*/
 				TXPacketBuffer.set_capacity(Thor::Definitions::SPI::SPI_BUFFER_SIZE);
 
 				rxBufferedPackets = new SmartBuffer::RingBuffer<uint16_t>(_rxbuffpckt, Thor::Definitions::SPI::SPI_BUFFER_SIZE);
@@ -242,8 +305,8 @@ namespace Thor
 				/* Setup SPI */
 				SPI_Init();
 
-				setTxModeBlock();
-				setRxModeBlock();
+				setMode(SubPeripheral::TX, Modes::BLOCKING);
+				setMode(SubPeripheral::RX, Modes::BLOCKING);
 			}
 
 			void SPIClass::attachPin(boost::shared_ptr<Thor::Peripheral::GPIO::GPIOClass> slave_select)
@@ -263,10 +326,10 @@ namespace Thor
 			void SPIClass::setSSMode(Thor::Definitions::SPI::Options ss_mode)
 			{
 				if (ss_mode == SS_MANUAL_CONTROL)
-					SlaveSelectControl = SS_MANUAL_CONTROL;
+					slaveSelectControl = SS_MANUAL_CONTROL;
 
 				if (ss_mode == SS_AUTOMATIC_CONTROL)
-					SlaveSelectControl = SS_AUTOMATIC_CONTROL;
+					slaveSelectControl = SS_AUTOMATIC_CONTROL;
 			}
 
 			void SPIClass::attachSettings(SPI_InitTypeDef& settings)
@@ -285,441 +348,231 @@ namespace Thor
 				SPI_Init();
 			}
 
-			Status SPIClass::write(uint8_t* val, size_t length, Options options)
+			Status SPIClass::write(uint8_t* data_in, size_t length, Options options)
 			{
-				if (!SPI_PeriphState.gpio_enabled || !SPI_PeriphState.spi_enabled)
-					return SPI_NOT_INITIALIZED;
-
-				HAL_StatusTypeDef errorCode = HAL_OK;
-
-				switch (txMode)
-				{
-				case TX_MODE_BLOCKING:
-					if (tx_complete)
-					{
-						tx_complete = false;
-
-						if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
-						{
-							writeSS(LogicLevel::LOW);
-							errorCode = HAL_SPI_Transmit(&spi_handle, val, length, HAL_MAX_DELAY);
-
-							if ((options & SS_INACTIVE_AFTER_TX) == SS_INACTIVE_AFTER_TX)
-								writeSS(LogicLevel::HIGH);
-						}
-						else
-							HAL_SPI_Transmit(&spi_handle, val, length, HAL_MAX_DELAY);
-
-						tx_complete = true;
-						return SPI_READY;
-					}
-					else
-						return SPI_TX_BUSY;
-					break;
-
-				case TX_MODE_INTERRUPT:
-				case TXRX_MODE_INTERRUPT:
-					if (SPI_PeriphState.spi_interrupts_enabled)
-					{
-						if (tx_complete)
-						{
-							/* TX hardware is free. Go ahead and send data.*/
-							tx_complete = false;
-
-							TX_tempPacket.data_tx = nullptr;
-							TX_tempPacket.data_rx = nullptr;
-							TX_tempPacket.length = 0;
-							TX_tempPacket.options = options;
-							TXPacketBuffer.push_back(TX_tempPacket);
-
-							if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
-								writeSS(LogicLevel::LOW);
-
-							errorCode = HAL_SPI_Transmit_IT(&spi_handle, val, length);
-							return SPI_TX_BUSY;
-						}
-						else
-						{
-							TX_tempPacket.data_tx = val;
-							TX_tempPacket.data_rx = nullptr;
-							TX_tempPacket.length = length;
-							TX_tempPacket.options = options;
-							TXPacketBuffer.push_back(TX_tempPacket);
-
-							return SPI_NOT_READY;
-						}
-					}
-					else
-						return SPI_ERROR;
-					break;
-
-				case TX_MODE_DMA:
-				case TXRX_MODE_DMA:
-					if (SPI_PeriphState.dma_enabled_tx)
-					{
-						if (tx_complete)
-						{
-							tx_complete = false;
-
-							TX_tempPacket.data_tx = nullptr;
-							TX_tempPacket.data_rx = nullptr;
-							TX_tempPacket.length = 0;
-							TX_tempPacket.options = options;
-							TXPacketBuffer.push_back(TX_tempPacket);
-
-							if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
-								writeSS(LogicLevel::LOW);
-
-							errorCode = HAL_SPI_Transmit_DMA(&spi_handle, val, length);
-							return SPI_TX_BUSY;
-						}
-						else
-						{
-							TX_tempPacket.data_tx = val;
-							TX_tempPacket.data_rx = nullptr;
-							TX_tempPacket.length = length;
-							TX_tempPacket.options = options;
-							TXPacketBuffer.push_back(TX_tempPacket);
-
-							return SPI_NOT_READY;
-						}
-					}
-					else
-						return SPI_ERROR;
-					break;
-
-				default: break;
-				}
-
-				//Switch over to an error code var
-				return SPI_OK;
+				return this->write(data_in, nullptr, length, options);
 			}
 
-			Status SPIClass::write(uint8_t* val_in, uint8_t* val_out, size_t length, Options options)
+			Status SPIClass::write(uint8_t* data_in, uint8_t* data_out, size_t length, Options options)
 			{
 				if (!SPI_PeriphState.gpio_enabled || !SPI_PeriphState.spi_enabled)
-					return SPI_NOT_INITIALIZED;
-
-				/* SUPER HACKY QUICK FIX FOR DRONE SD LOGGER BUG */
-				//memcpy(internalTXBuffer, val_in, length);
-
+					return Status::PERIPH_NOT_INITIALIZED;
 
 				HAL_StatusTypeDef error;
 
 				switch (txMode)
 				{
-				case TX_MODE_BLOCKING:
+				case Modes::BLOCKING:
 					if (tx_complete)
 					{
 						tx_complete = false;
-						if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
+						if (slaveSelectControl == SS_AUTOMATIC_CONTROL)
 						{
 							writeSS(LogicLevel::LOW);
-
-							error = HAL_SPI_TransmitReceive(&spi_handle, val_in, val_out, length, HAL_MAX_DELAY);
-							//error = HAL_SPI_TransmitReceive(&spi_handle, internalTXBuffer, val_out, length, HAL_MAX_DELAY);
-
-							if ((options & SS_INACTIVE_AFTER_TX) == SS_INACTIVE_AFTER_TX)
+							
+							if (data_out == nullptr)
+								#if defined(USING_FREERTOS)
+								error = HAL_SPI_Transmit(&spi_handle, data_in, length, pdMS_TO_TICKS(BLOCKING_TIMEOUT_MS));
+								#else
+								error = HAL_SPI_Transmit(&spi_handle, data_in, length, BLOCKING_TIMEOUT_MS);
+								#endif
+							else
+								#if defined(USING_FREERTOS)
+								error = HAL_SPI_TransmitReceive(&spi_handle, data_in, data_out, length, pdMS_TO_TICKS(BLOCKING_TIMEOUT_MS));
+								#else
+								error = HAL_SPI_TransmitReceive(&spi_handle, data_in, data_out, length, BLOCKING_TIMEOUT_MS);
+								#endif
+								
+							if((options & SS_INACTIVE_AFTER_TX) == SS_INACTIVE_AFTER_TX)
 								writeSS(LogicLevel::HIGH);
 						}
 						else
-							//error = HAL_SPI_TransmitReceive(&spi_handle, internalTXBuffer, val_out, length, HAL_MAX_DELAY);
-							error = HAL_SPI_TransmitReceive(&spi_handle, val_in, val_out, length, HAL_MAX_DELAY);
+							error = HAL_SPI_TransmitReceive(&spi_handle, data_in, data_out, length, HAL_MAX_DELAY);
 
 						tx_complete = true;
 
-						return SPI_READY;
+						return Status::PERIPH_READY;
 					}
 					else
-						return SPI_TX_BUSY;
+						return Status::PERIPH_TX_IN_PROGRESS;
 					break;
 
-				case TX_MODE_INTERRUPT:
-				case TXRX_MODE_INTERRUPT:
-					if (SPI_PeriphState.spi_interrupts_enabled)
+				case Modes::INTERRUPT:
+					if (tx_complete)
 					{
-						if (tx_complete)
-						{
-							/* TX hardware is free. Go ahead and send data.*/
-							tx_complete = false;
+						tx_complete = false;
 
-							/* Buffer only the SS option for after packet has been transmitted */
-							TX_tempPacket.data_tx = nullptr;
-							TX_tempPacket.data_rx = nullptr;
-							TX_tempPacket.length = 0;
-							TX_tempPacket.options = options;
-							TXPacketBuffer.push_back(TX_tempPacket);
+						/* Buffer only the slave select behavior for after packet has been transmitted */
+						TX_tempPacket.data_tx = nullptr;
+						TX_tempPacket.data_rx = nullptr;
+						TX_tempPacket.length = 0;
+						TX_tempPacket.options = options;
+						TXPacketBuffer.push_back(TX_tempPacket);
 
-							if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
-								writeSS(LogicLevel::LOW);
-
-							HAL_SPI_TransmitReceive_IT(&spi_handle, val_in, val_out, length);
-							return SPI_TX_BUSY;
-						}
+						if (slaveSelectControl == SS_AUTOMATIC_CONTROL)
+							writeSS(LogicLevel::LOW);
+						
+						if (data_out == nullptr)
+							error = HAL_SPI_Transmit_IT(&spi_handle, data_in, length);
 						else
-						{
-							/* Busy. Buffer data */
-							TX_tempPacket.data_tx = val_in;
-							TX_tempPacket.data_rx = val_out;
-							TX_tempPacket.length = length;
-							TX_tempPacket.options = options;
-							TXPacketBuffer.push_back(TX_tempPacket);
-							return SPI_NOT_READY;
-						}
+							error = HAL_SPI_TransmitReceive_IT(&spi_handle, data_in, data_out, length);
+						
+						return Status::PERIPH_TX_IN_PROGRESS;
 					}
 					else
-						return SPI_ERROR;
-					break;
-
-				case TX_MODE_DMA:
-				case TXRX_MODE_DMA:
-					if (SPI_PeriphState.dma_enabled_tx)
 					{
-						if (tx_complete)
-						{
-							tx_complete = false;
-
-							TX_tempPacket.data_tx = nullptr;
-							TX_tempPacket.length = 0;
-							TX_tempPacket.options = options;
-							TXPacketBuffer.push_back(TX_tempPacket);
-
-							if (SlaveSelectControl == SS_AUTOMATIC_CONTROL)
-								writeSS(LogicLevel::LOW);
-
-							HAL_SPI_TransmitReceive_DMA(&spi_handle, val_in, val_out, length);
-							return SPI_TX_BUSY;
-						}
-						else
-						{
-							TX_tempPacket.data_tx = val_in;
-							TX_tempPacket.data_rx = val_out;
-							TX_tempPacket.length = length;
-							TX_tempPacket.options = options;
-							TXPacketBuffer.push_back(TX_tempPacket);
-
-							return SPI_NOT_READY;
-						}
+						/* Busy. Buffer data */
+						TX_tempPacket.data_tx = data_in;
+						TX_tempPacket.data_rx = data_out;
+						TX_tempPacket.length = length;
+						TX_tempPacket.options = options;
+						TXPacketBuffer.push_back(TX_tempPacket);
+						
+						return Status::PERIPH_NOT_READY;
 					}
-					else
-						return SPI_ERROR;
 					break;
 
-				default: break;
+				case Modes::DMA:
+					if (tx_complete)
+					{
+						tx_complete = false;
+
+						TX_tempPacket.data_tx = nullptr;
+						TX_tempPacket.length = 0;
+						TX_tempPacket.options = options;
+						TXPacketBuffer.push_back(TX_tempPacket);
+
+						if (slaveSelectControl == SS_AUTOMATIC_CONTROL)
+							writeSS(LogicLevel::LOW);
+							
+						if (data_out == nullptr)
+							error = HAL_SPI_Transmit_DMA(&spi_handle, data_in, length);
+						else
+							error = HAL_SPI_TransmitReceive_DMA(&spi_handle, data_in, data_out, length);
+							
+						return Status::PERIPH_TX_IN_PROGRESS;
+					}
+					else
+					{
+						TX_tempPacket.data_tx = data_in;
+						TX_tempPacket.data_rx = data_out;
+						TX_tempPacket.length = length;
+						TX_tempPacket.options = options;
+						TXPacketBuffer.push_back(TX_tempPacket);
+
+						return Status::PERIPH_NOT_READY;
+					}
+					break;
+
+				default: 
+					return Status::PERIPH_ERROR;
+					break;
 				}
-
-				//Switch over to an error code var
-				return SPI_OK;
+				return Status::PERIPH_OK;
 			}
 
 			void SPIClass::end()
 			{
 				SPI_GPIO_DeInit();
 				SPI_DisableInterrupts();
-				SPI_DMA_DeInit_TX();
-				SPI_DMA_DeInit_RX();
+				SPI_DMA_DeInit(SubPeripheral::TX);
+				SPI_DMA_DeInit(SubPeripheral::RX);
 
-				txMode = TX_MODE_NONE;
-				rxMode = RX_MODE_NONE;
+				txMode = Modes::MODE_UNDEFINED;
+				rxMode = Modes::MODE_UNDEFINED;
 			}
-
-			void SPIClass::setTxModeBlock()
+			
+			
+			Status SPIClass::setMode(const SubPeripheral& periph, const Modes& mode)
 			{
-				txMode = TX_MODE_BLOCKING;
+				if (periph == SubPeripheral::TX)
+				{
+					switch (mode)
+					{
+					case Modes::BLOCKING:
+						txMode = mode;   // Must be set before the other functions 
+						
+						/* Make sure RX side isn't using interrupts before disabling */
+						if(rxMode == Modes::BLOCKING)
+							SPI_DisableInterrupts();
 
-				if (rxMode == TX_MODE_BLOCKING)
-					SPI_DisableInterrupts();
+						SPI_DMA_DeInit(periph);
+						break;
 
-				SPI_DMA_DeInit_TX();
+					case Modes::INTERRUPT:
+						txMode = mode;   // Must be set before the other functions 
+						
+						SPI_EnableInterrupts();
+						SPI_DMA_DeInit(periph);
+						break;
+
+					case Modes::DMA:
+						txMode = mode;   // Must be set before the other functions 
+						
+						SPI_EnableInterrupts();
+						SPI_DMA_Init(periph);
+						break;
+
+					default:
+						txMode = Modes::MODE_UNDEFINED;
+						return Status::PERIPH_ERROR;
+						break;
+					}
+
+					return Status::PERIPH_OK;
+				}
+				else
+				{
+					switch (mode)
+					{
+					case Modes::BLOCKING:
+						rxMode = mode;   // Must be set before the other functions 
+						
+						/* Make sure TX side isn't using interrupts before disabling */
+						if(txMode == Modes::BLOCKING)
+							SPI_DisableInterrupts();
+
+						SPI_DMA_DeInit(periph);
+						
+						break;
+
+					case Modes::INTERRUPT:
+						rxMode = mode;  	// Must be set before the other functions 
+						
+						SPI_EnableInterrupts();
+						SPI_DMA_DeInit(periph);
+						break;
+
+					case Modes::DMA:
+						rxMode = mode;   // Must be set before the other functions 
+						
+						SPI_EnableInterrupts();
+						SPI_DMA_Init(periph);
+
+						/* Set the idle line interrupt for asynchronously getting the end of transmission */
+						//UART_EnableIT_IDLE(&uart_handle);
+						
+						/* Instruct the DMA hardware to start listening for transmissions */
+						//HAL_UART_Receive_DMA(&uart_handle, RX_Queue[RXQueueIdx], UART_QUEUE_BUFFER_SIZE);
+						break;
+
+					default:
+						rxMode = Modes::MODE_UNDEFINED;
+						return Status::PERIPH_ERROR;
+						break;
+					}
+
+					return Status::PERIPH_OK;
+				}
 			}
-
-			void SPIClass::setTxModeInterrupt()
-			{
-				txMode = TX_MODE_INTERRUPT;
-
-				SPI_EnableInterrupts();
-				SPI_DMA_DeInit_TX();
-			}
-
-			void SPIClass::setTxModeDMA()
-			{
-				txMode = TX_MODE_DMA;
-
-				SPI_EnableInterrupts();
-				SPI_DMA_Init_TX();
-			}
-
-			void SPIClass::setRxModeBlock()
-			{
-				rxMode = RX_MODE_BLOCKING;
-
-				if (txMode == TX_MODE_BLOCKING)
-					SPI_DisableInterrupts();
-
-				SPI_DMA_DeInit_RX();
-			}
-
-			void SPIClass::setRxModeInterrupt()
-			{
-				rxMode = RX_MODE_INTERRUPT;
-
-				SPI_EnableInterrupts();
-				SPI_DMA_DeInit_RX();
-			}
-
-			void SPIClass::setRxModeDMA()
-			{
-				rxMode = RX_MODE_INTERRUPT;
-
-				SPI_EnableInterrupts();
-				SPI_DMA_Init_TX();
-			}
-
-			void SPIClass::setTxRxModeBlock()
-			{
-				txMode = TXRX_MODE_BLOCKING;
-				rxMode = TXRX_MODE_BLOCKING;
-
-				SPI_DisableInterrupts();
-				SPI_DMA_DeInit_TX();
-				SPI_DMA_DeInit_RX();
-			}
-
-			void SPIClass::setTxRxModeInterrupt()
-			{
-				txMode = TXRX_MODE_INTERRUPT;
-				rxMode = TXRX_MODE_INTERRUPT;
-
-				SPI_EnableInterrupts();
-				SPI_DMA_DeInit_TX();
-				SPI_DMA_DeInit_RX();
-			}
-
-			void SPIClass::setTxRxModeDMA()
-			{
-				txMode = TXRX_MODE_DMA;
-				rxMode = TXRX_MODE_DMA;
-
-				SPI_EnableInterrupts();
-				SPI_DMA_Init_TX();
-				SPI_DMA_Init_RX();
-			}
-
+			
 			void SPIClass::writeSS(LogicLevel state)
 			{
 				if (SlaveSelectType == EXTERNAL_SLAVE_SELECT && EXT_NSS_ATTACHED)
 					EXT_NSS->write(state);
 			}
 
-			void SPIClass::SPI_Init()
-			{
-				SPI_EnableClock(spi_channel);
-
-				if (HAL_SPI_Init(&spi_handle) != HAL_OK)
-					BasicErrorHandler(logError("Failed SPI Init"));
-
-				SPI_PeriphState.spi_enabled = true;
-			}
-
-			void SPIClass::SPI_DeInit()
-			{
-				if (HAL_SPI_DeInit(&spi_handle) != HAL_OK)
-					BasicErrorHandler(logError("Failed SPI DeInit"));
-
-				SPI_DisableClock(spi_channel);
-
-				SPI_PeriphState.spi_enabled = false;
-			}
-
-			void SPIClass::SPI_EnableClock(int channel)
-			{
-				#ifdef ENABLE_SPI1
-				if (channel == 1)
-					__SPI1_CLK_ENABLE();
-				#endif
-
-				#ifdef ENABLE_SPI2
-				if (channel == 2)
-					__SPI2_CLK_ENABLE();
-				#endif
-
-				#ifdef ENABLE_SPI3
-				if (channel == 3)
-					__SPI3_CLK_ENABLE();
-				#endif
-
-				#ifdef ENABLE_SPI4
-				if (channel == 4)
-					__SPI4_CLK_ENABLE();
-				#endif
-
-				#ifdef ENABLE_SPI5
-				if (channel == 5)
-					__SPI5_CLK_ENABLE();
-				#endif
-
-				#ifdef ENABLE_SPI6
-				if (channel == 6)
-					__SPI6_CLK_ENABLE();
-				#endif
-			}
-
-			void SPIClass::SPI_DisableClock(int channel)
-			{
-				#ifdef ENABLE_SPI1
-				if (channel == 1)
-					__SPI1_CLK_DISABLE();
-				#endif
-
-				#ifdef ENABLE_SPI2
-				if (channel == 2)
-					__SPI2_CLK_DISABLE();
-				#endif
-
-				#ifdef ENABLE_SPI3
-				if (channel == 3)
-					__SPI3_CLK_DISABLE();
-				#endif
-
-				#ifdef ENABLE_SPI4
-				if (channel == 4)
-					__SPI4_CLK_DISABLE();
-				#endif
-
-				#ifdef ENABLE_SPI5
-				if (channel == 5)
-					__SPI5_CLK_DISABLE();
-				#endif
-
-				#ifdef ENABLE_SPI6
-				if (channel == 6)
-					__SPI6_CLK_DISABLE();
-				#endif
-			}
-
-			void SPIClass::SPI_EnableInterrupts()
-			{
-				HAL_NVIC_DisableIRQ(ITSettingsHW.IRQn);
-				HAL_NVIC_SetPriority(ITSettingsHW.IRQn, ITSettingsHW.preemptPriority, ITSettingsHW.subPriority);
-				HAL_NVIC_EnableIRQ(ITSettingsHW.IRQn);
-
-				/* Specific interrupts to enable */
-				if (rxMode == RX_MODE_INTERRUPT)
-					__HAL_SPI_ENABLE_IT(&spi_handle, SPI_IT_RXNE); 	//RX Data Register not Empty
-
-				SPI_PeriphState.spi_interrupts_enabled = true;
-			}
-
-			void SPIClass::SPI_DisableInterrupts()
-			{
-				__HAL_SPI_DISABLE_IT(&spi_handle, SPI_IT_RXNE);
-
-				HAL_NVIC_ClearPendingIRQ(ITSettingsHW.IRQn);
-				HAL_NVIC_DisableIRQ(ITSettingsHW.IRQn);
-
-				SPI_PeriphState.spi_interrupts_enabled = false;
-			}
-
+			
 			void SPIClass::SPI_GPIO_Init()
 			{
 				if (spi_handle.Init.Mode == SPI_MODE_MASTER)
@@ -750,66 +603,40 @@ namespace Thor
 			{
 				//If there ever is a Thor::Peripheral::GPIO::GPIOClass deinit function, use it.
 			}
-
-			void SPIClass::SPI_DMA_Init_TX()
+			
+			void SPIClass::SPI_Init()
 			{
-				SPI_DMA_EnableClock();
+				SPI_EnableClock();
 
-				if (HAL_DMA_Init(&hdma_spi_tx) != HAL_OK)
-					BasicErrorHandler(logError("Failed TX DMA Init"));
+				if (HAL_SPI_Init(&spi_handle) != HAL_OK)
+					BasicErrorHandler(logError("Failed SPI Init"));
 
-				__HAL_LINKDMA(&spi_handle, hdmatx, hdma_spi_tx);
-
-				spi_dma_manager.attachCallbackFunction_TXDMA(spi_channel, boost::bind(&SPIClass::SPI_IRQHandler_TXDMA, this));
-
-				SPI_DMA_EnableInterrupts_TX();
-
-				SPI_PeriphState.dma_enabled_tx = true;
+				SPI_PeriphState.spi_enabled = true;
 			}
 
-			void SPIClass::SPI_DMA_Init_RX()
+			void SPIClass::SPI_DeInit()
 			{
-				SPI_DMA_EnableClock();
+				if (HAL_SPI_DeInit(&spi_handle) != HAL_OK)
+					BasicErrorHandler(logError("Failed SPI DeInit"));
 
-				if (HAL_DMA_Init(&hdma_spi_rx) != HAL_OK)
-					BasicErrorHandler(logError("Failed RX DMA Init. Check Init settings."));
+				SPI_DisableClock();
 
-				__HAL_LINKDMA(&spi_handle, hdmarx, hdma_spi_rx);
-
-				spi_dma_manager.attachCallbackFunction_RXDMA(spi_channel, boost::bind(&SPIClass::SPI_IRQHandler_RXDMA, this));
-
-				SPI_DMA_EnableInterrupts_RX();
-
-				SPI_PeriphState.dma_enabled_rx = true;
+				SPI_PeriphState.spi_enabled = false;
+			}
+			
+			void SPIClass::SPI_EnableClock()
+			{
+				spiClockRegister[spi_handle.Instance] |= spiClockMask[spi_handle.Instance];
 			}
 
-			void SPIClass::SPI_DMA_DeInit_TX()
+			void SPIClass::SPI_DisableClock()
 			{
-				if (!SPI_PeriphState.dma_enabled_tx)
-					return;
-
-				HAL_DMA_DeInit(spi_handle.hdmatx);
-				SPI_DMA_DisableInterrupts_TX();
-				spi_dma_manager.removeCallbackFunction_TXDMA(spi_channel);
-
-				SPI_PeriphState.dma_enabled_tx = false;
-			}
-
-			void SPIClass::SPI_DMA_DeInit_RX()
-			{
-				if (!SPI_PeriphState.dma_enabled_rx)
-					return;
-
-				HAL_DMA_DeInit(spi_handle.hdmarx);
-				SPI_DMA_DisableInterrupts_RX();
-				spi_dma_manager.removeCallbackFunction_RXDMA(spi_channel);
-
-				SPI_PeriphState.dma_enabled_rx = false;
+				spiClockRegister[spi_handle.Instance] &= ~spiClockMask[spi_handle.Instance];
 			}
 
 			void SPIClass::SPI_DMA_EnableClock()
 			{
-				/* Global DMA Clock options. Only turn on capability is
+				/* Global Modes::DMA Clock options. Only turn on capability is
 				provided due to other peripherals possibly using DMA. */
 				if (__DMA1_IS_CLK_DISABLED())
 					__DMA1_CLK_ENABLE();
@@ -818,41 +645,133 @@ namespace Thor
 					__DMA2_CLK_ENABLE();
 			}
 
-			void SPIClass::SPI_DMA_EnableInterrupts_TX()
+			void SPIClass::SPI_EnableInterrupts()
 			{
-				HAL_NVIC_DisableIRQ(ITSettings_DMA_TX.IRQn);
-				HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_TX.IRQn);
-				HAL_NVIC_SetPriority(ITSettings_DMA_TX.IRQn, ITSettings_DMA_TX.preemptPriority, ITSettings_DMA_TX.subPriority);
-				HAL_NVIC_EnableIRQ(ITSettings_DMA_TX.IRQn);
+				HAL_NVIC_DisableIRQ(ITSettingsHW.IRQn);
+				HAL_NVIC_SetPriority(ITSettingsHW.IRQn, ITSettingsHW.preemptPriority, ITSettingsHW.subPriority);
+				HAL_NVIC_EnableIRQ(ITSettingsHW.IRQn);
 
-				SPI_PeriphState.dma_interrupts_enabled_tx = true;
+				/* Specific interrupts to enable */
+				if (rxMode == Modes::INTERRUPT)
+					__HAL_SPI_ENABLE_IT(&spi_handle, SPI_IT_RXNE); 	//RX Data Register not Empty
+
+				SPI_PeriphState.spi_interrupts_enabled = true;
 			}
 
-			void SPIClass::SPI_DMA_EnableInterrupts_RX()
+			void SPIClass::SPI_DisableInterrupts()
 			{
-				HAL_NVIC_DisableIRQ(ITSettings_DMA_RX.IRQn);
-				HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_RX.IRQn);
-				HAL_NVIC_SetPriority(ITSettings_DMA_RX.IRQn, ITSettings_DMA_RX.preemptPriority, ITSettings_DMA_RX.subPriority);
-				HAL_NVIC_EnableIRQ(ITSettings_DMA_RX.IRQn);
+				__HAL_SPI_DISABLE_IT(&spi_handle, SPI_IT_RXNE);
 
-				SPI_PeriphState.dma_interrupts_enabled_rx = true;
+				HAL_NVIC_ClearPendingIRQ(ITSettingsHW.IRQn);
+				HAL_NVIC_DisableIRQ(ITSettingsHW.IRQn);
+
+				SPI_PeriphState.spi_interrupts_enabled = false;
 			}
 
-			void SPIClass::SPI_DMA_DisableInterrupts_TX()
+			void SPIClass::SPI_DMA_Init(const SubPeripheral& periph)
 			{
-				HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_TX.IRQn);
-				HAL_NVIC_DisableIRQ(ITSettings_DMA_TX.IRQn);
+				if (periph == SubPeripheral::TX)
+				{
+					SPI_DMA_EnableClock();
 
-				SPI_PeriphState.dma_interrupts_enabled_tx = false;
+					if (HAL_DMA_Init(&hdma_spi_tx) != HAL_OK)
+						BasicErrorHandler(logError("Failed TX Modes::DMA Init"));
+
+					__HAL_LINKDMA(&spi_handle, hdmatx, hdma_spi_tx);
+
+					spi_dma_manager.attachCallbackFunction_TXDMA(spi_channel, boost::bind(&SPIClass::SPI_IRQHandler_TXDMA, this));
+
+					SPI_DMA_EnableInterrupts(periph);
+
+					SPI_PeriphState.dma_enabled_tx = true;
+				}
+				else
+				{
+					SPI_DMA_EnableClock();
+
+					if (HAL_DMA_Init(&hdma_spi_rx) != HAL_OK)
+						BasicErrorHandler(logError("Failed RX Modes::DMA Init. Check Init settings."));
+
+					__HAL_LINKDMA(&spi_handle, hdmarx, hdma_spi_rx);
+
+					spi_dma_manager.attachCallbackFunction_RXDMA(spi_channel, boost::bind(&SPIClass::SPI_IRQHandler_RXDMA, this));
+
+					SPI_DMA_EnableInterrupts(periph);
+
+					SPI_PeriphState.dma_enabled_rx = true;
+				}
+			}
+			
+			void SPIClass::SPI_DMA_DeInit(const SubPeripheral& periph)
+			{
+				if (periph == SubPeripheral::TX)
+				{
+					if (!SPI_PeriphState.dma_enabled_tx)
+						return;
+
+					HAL_DMA_Abort(spi_handle.hdmatx);
+					HAL_DMA_DeInit(spi_handle.hdmatx);
+					SPI_DMA_DisableInterrupts(periph);
+					spi_dma_manager.removeCallbackFunction_TXDMA(spi_channel);
+
+					SPI_PeriphState.dma_enabled_tx = false;
+				}
+				else
+				{
+					if (!SPI_PeriphState.dma_enabled_rx)
+						return;
+
+					HAL_DMA_Abort(spi_handle.hdmarx);
+					HAL_DMA_DeInit(spi_handle.hdmarx);
+					SPI_DMA_DisableInterrupts(periph);
+					spi_dma_manager.removeCallbackFunction_RXDMA(spi_channel);
+
+					SPI_PeriphState.dma_enabled_rx = false;
+				}
+			}
+			
+			void SPIClass::SPI_DMA_EnableInterrupts(const SubPeripheral& periph)
+			{
+				if (periph == SubPeripheral::TX)
+				{
+					HAL_NVIC_DisableIRQ(ITSettings_DMA_TX.IRQn);
+					HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_TX.IRQn);
+					HAL_NVIC_SetPriority(ITSettings_DMA_TX.IRQn, ITSettings_DMA_TX.preemptPriority, ITSettings_DMA_TX.subPriority);
+					HAL_NVIC_EnableIRQ(ITSettings_DMA_TX.IRQn);
+
+					SPI_PeriphState.dma_interrupts_enabled_tx = true;
+				}
+				else
+				{
+					HAL_NVIC_DisableIRQ(ITSettings_DMA_RX.IRQn);
+					HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_RX.IRQn);
+					HAL_NVIC_SetPriority(ITSettings_DMA_RX.IRQn, ITSettings_DMA_RX.preemptPriority, ITSettings_DMA_RX.subPriority);
+					HAL_NVIC_EnableIRQ(ITSettings_DMA_RX.IRQn);
+
+					SPI_PeriphState.dma_interrupts_enabled_rx = true;
+				}
+			}
+			
+			void SPIClass::SPI_DMA_DisableInterrupts(const SubPeripheral& periph)
+			{
+				if (periph == SubPeripheral::TX)
+				{
+					HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_TX.IRQn);
+					HAL_NVIC_DisableIRQ(ITSettings_DMA_TX.IRQn);
+					
+					SPI_PeriphState.dma_interrupts_enabled_tx = false;
+				}
+				else
+				{
+					HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_RX.IRQn);
+					HAL_NVIC_DisableIRQ(ITSettings_DMA_RX.IRQn);
+					
+					SPI_PeriphState.dma_interrupts_enabled_rx = false;
+				}
+
 			}
 
-			void SPIClass::SPI_DMA_DisableInterrupts_RX()
-			{
-				HAL_NVIC_ClearPendingIRQ(ITSettings_DMA_RX.IRQn);
-				HAL_NVIC_DisableIRQ(ITSettings_DMA_RX.IRQn);
-
-				SPI_PeriphState.dma_interrupts_enabled_rx = false;
-			}
+			
 		}
 	}
 }
@@ -863,7 +782,7 @@ namespace Thor
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
 	/* Determine at runtime which object actually triggered this callback. Because this function
-	 * resides in an interrupt, grab a constant reference so we don't take time instantiating a new shared_ptr. */
+	 * resides in an Modes::INTERRUPT, grab a constant reference so we don't take time instantiating a new shared_ptr. */
 	const SPIClass_sPtr& spi = spiObjectLookup[hspi->Instance];
 
 	if (spi && spi->_getInitStatus())
@@ -878,7 +797,7 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 			auto packet = spi->_txBufferNextPacket();
 
 			if ((packet.options & SS_INACTIVE_AFTER_TX) == SS_INACTIVE_AFTER_TX &&
-				(spi->SlaveSelectControl == SS_AUTOMATIC_CONTROL))
+				(spi->_getSSControlType() == SS_AUTOMATIC_CONTROL))
 				spi->writeSS(LogicLevel::HIGH);
 
 			spi->_txBufferRemoveFrontPacket();
@@ -905,89 +824,33 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-	/* This callback is used when the TransmitReceive() HAL function is used. */
+	/* Determine at runtime which object actually triggered this callback. Because this function
+	 * resides in an Modes::INTERRUPT, grab a constant reference so we don't take time instantiating a new shared_ptr. */
+	const SPIClass_sPtr& spi = spiObjectLookup[hspi->Instance];
 
-	/*-------------------------------
-	* Filter through the possible calling instances
-	*-------------------------------*/
-	SPIClass_sPtr spi;
-	uint32_t spi_channel = 0;
-
-	#ifdef ENABLE_SPI1
-	if (hspi->Instance == SPI1)
+	if (spi && spi->_getInitStatus())
 	{
-		spi = spi1;
-		spi_channel = 1;
-	}
-	#endif
+		spi->_setTXComplete();
 
-	#ifdef ENABLE_SPI2
-	if (hspi->Instance == SPI2)
-	{
-		spi = spi2;
-		spi_channel = 2;
-	}
-	#endif
-
-	#ifdef ENABLE_SPI3
-	if (hspi->Instance == SPI3)
-	{
-		spi = spi3;
-		spi_channel = 3;
-	}
-	#endif
-
-	#ifdef ENABLE_SPI4
-	if (hspi->Instance == SPI4)
-	{
-		spi = spi4;
-		spi_channel = 4;
-	}
-	#endif
-
-	#ifdef ENABLE_SPI5
-	if (hspi->Instance == SPI5)
-	{
-		spi = spi5;
-		spi_channel = 5;
-	}
-	#endif
-
-	#ifdef ENABLE_SPI6
-	if (hspi->Instance == SPI6)
-	{
-		spi = spi6;
-		spi_channel = 6;
-	}
-	#endif
-
-	/* No SPI instance available */
-	if (!spi)
-		return;
-
-	if (spi->isInitialized)
-	{
-		spi->tx_complete = true;
-
-		if (!spi->TXPacketBuffer.empty())
+		if (!spi->_txBufferEmpty())
 		{
 			/*-------------------------------
 			* Handle any operations on the completed TX
 			*-------------------------------*/
-			SPIClass::SPIPacket packet = spi->TXPacketBuffer.front();
+			auto packet = spi->_txBufferNextPacket();
 
 			if ((packet.options & SS_INACTIVE_AFTER_TX) == SS_INACTIVE_AFTER_TX &&
-				(spi->SlaveSelectControl == SS_AUTOMATIC_CONTROL))
+				(spi->_getSSControlType() == SS_AUTOMATIC_CONTROL))
 				spi->writeSS(LogicLevel::HIGH);
 
-			spi->TXPacketBuffer.pop_front();
+			spi->_txBufferRemoveFrontPacket();
 
 			/*-------------------------------
 			* If more data is left to send, queue it up.
 			*-------------------------------*/
-			if (!spi->TXPacketBuffer.empty())
+			if (!spi->_txBufferEmpty())
 			{
-				packet = spi->TXPacketBuffer.front();
+				packet = spi->_txBufferNextPacket();
 
 				if (packet.data_tx != nullptr && packet.data_rx != nullptr)
 					spi->write(packet.data_tx, packet.data_rx, packet.length, packet.options);

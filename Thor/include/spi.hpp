@@ -8,11 +8,9 @@
 #include <string.h>
 
 /* Boost Includes */
-#include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/circular_buffer.hpp>
-#include <boost/enable_shared_from_this.hpp>
 
 /* Thor Includes */
 #include <Thor/include/config.hpp>
@@ -40,15 +38,16 @@ namespace Thor
 	{
 		namespace SPI
 		{
-
+			using namespace Thor::Definitions;
+			
 			class SPIClass
 			{
 			public:
 
 				void begin(Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::NO_OPTIONS);
 
-				Thor::Definitions::SPI::Status write(uint8_t* val, size_t length = 0, Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::SS_INACTIVE_AFTER_TX);
-				Thor::Definitions::SPI::Status write(uint8_t* val_in, uint8_t* val_out, size_t length = 0, Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::SS_INACTIVE_AFTER_TX);
+				Status write(uint8_t* data_in, size_t length = 0, Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::SS_INACTIVE_AFTER_TX);
+				Status write(uint8_t* data_in, uint8_t* data_out, size_t length = 0, Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::SS_INACTIVE_AFTER_TX);
 
 
 				void end();
@@ -60,18 +59,14 @@ namespace Thor
 				void attachSettings(SPI_InitTypeDef& settings);
 				SPI_InitTypeDef getSettings();
 				void reInitialize();
-
-				void setTxModeBlock();
-				void setTxModeInterrupt();
-				void setTxModeDMA();
-
-				void setRxModeBlock();
-				void setRxModeInterrupt();
-				void setRxModeDMA();
-
-				void setTxRxModeBlock();
-				void setTxRxModeInterrupt();
-				void setTxRxModeDMA();
+				
+				/** Place the specified peripheral into a given mode
+				 *	@param[in] periph	Explicitly states which peripheral subsystem (TX or RX) to set from Thor::Peripheral::SPI::SubPeripheral
+				 *	@param[in] mode		The corresponding mode for the peripheral to enter, from Thor::Peripheral::SPI::Modes
+				 *	@return Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
+				 *			will return a code from Thor::Peripheral::SPI::Status
+				 **/
+				Status setMode(const SubPeripheral& periph, const Modes& mode);
 
 				/*-------------------------------
 				* Interrupt Handlers
@@ -98,18 +93,11 @@ namespace Thor
 				static boost::shared_ptr<SPIClass> create(const int channel);
 				~SPIClass() = default;
 
-				/*-------------------------------
-				* Status Flags for User
-				*------------------------------*/
-				bool* isInitialized;
-				bool tx_complete = true;
-				bool rx_complete = true;
-				bool RX_ASYNC;
+				
 
 
-				uint32_t txMode;
-				uint32_t rxMode;
-				Thor::Definitions::SPI::Options SS_ActionAfterTX, SlaveSelectControl;
+				
+				
 
 				/*-------------------------------
 				* Buffers
@@ -166,6 +154,8 @@ namespace Thor
 					return rx_complete;
 				}
 				
+				Thor::Definitions::SPI::Options _getSSControlType(){ return slaveSelectControl; }
+				
 				bool _getInitStatus(){ return SPI_PeriphState.spi_enabled; }
 				
 				bool _txBufferEmpty(){ return TXPacketBuffer.empty(); }
@@ -181,14 +171,24 @@ namespace Thor
 				int spi_channel;
 				struct SPIClassStatus
 				{
-					bool gpio_enabled;
-					bool spi_enabled;
-					bool spi_interrupts_enabled;
-					bool dma_enabled_tx;
-					bool dma_enabled_rx;
-					bool dma_interrupts_enabled_tx;
-					bool dma_interrupts_enabled_rx;
+					bool gpio_enabled = false;
+					bool spi_enabled = false;
+					bool spi_interrupts_enabled = false;
+					bool dma_enabled_tx = false;
+					bool dma_enabled_rx = false;
+					bool dma_interrupts_enabled_tx = false;
+					bool dma_interrupts_enabled_rx = false;
 				} SPI_PeriphState;
+				
+				Modes txMode = Modes::MODE_UNDEFINED;
+				Modes rxMode = Modes::MODE_UNDEFINED;
+				
+				Thor::Definitions::SPI::Options SS_ActionAfterTX;
+				Thor::Definitions::SPI::Options slaveSelectControl = Thor::Definitions::SPI::Options::SS_AUTOMATIC_CONTROL;
+				
+				bool tx_complete = true;
+				bool rx_complete = true;
+				bool RX_ASYNC;
 
 				SPI_HandleTypeDef spi_handle;
 				DMA_HandleTypeDef hdma_spi_tx;
@@ -202,26 +202,25 @@ namespace Thor
 				Thor::Definitions::SPI::Options SLAVE_SELECT_MODE;
 
 				Thor::Peripheral::GPIO::GPIOClass_sPtr MOSI, MISO, SCK, NSS;
-
+				
+				/*-------------------------------
+				* Low Level Setup/Teardown Functions
+				*------------------------------*/
+				void SPI_GPIO_Init();
+				void SPI_GPIO_DeInit();
+				
 				void SPI_Init();
 				void SPI_DeInit();
-				void SPI_EnableClock(int channel);
-				void SPI_DisableClock(int channel);
+				void SPI_EnableClock();
+				void SPI_DisableClock();
+				void SPI_DMA_EnableClock();
 				void SPI_EnableInterrupts();
 				void SPI_DisableInterrupts();
 
-				void SPI_GPIO_Init();
-				void SPI_GPIO_DeInit();
-
-				void SPI_DMA_Init_RX();
-				void SPI_DMA_Init_TX();
-				void SPI_DMA_DeInit_TX();
-				void SPI_DMA_DeInit_RX();
-				void SPI_DMA_EnableClock();
-				void SPI_DMA_EnableInterrupts_TX();
-				void SPI_DMA_EnableInterrupts_RX();
-				void SPI_DMA_DisableInterrupts_TX();
-				void SPI_DMA_DisableInterrupts_RX();
+				void SPI_DMA_Init(const SubPeripheral& periph);
+				void SPI_DMA_DeInit(const SubPeripheral& periph);
+				void SPI_DMA_EnableInterrupts(const SubPeripheral& periph);
+				void SPI_DMA_DisableInterrupts(const SubPeripheral& periph);
 			};
 			typedef boost::shared_ptr<SPIClass> SPIClass_sPtr;
 

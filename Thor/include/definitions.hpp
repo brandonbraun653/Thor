@@ -16,6 +16,36 @@ namespace Thor
 	/** @namespace Thor::Definitions */
 	namespace Definitions
 	{
+		enum class Status : int
+		{
+			PERIPH_TIMEOUT                     = -5,
+			PERIPH_LOCKED                      = -4,
+			PERIPH_NOT_INITIALIZED             = -3,
+			PERIPH_ERROR                       = -2,
+			PERIPH_NOT_READY                   = -1,
+			PERIPH_OK                          = 0,
+			PERIPH_READY,
+			PERIPH_INVALID_PARAM,
+			PERIPH_TX_IN_PROGRESS,
+			PERIPH_RX_IN_PROGRESS,
+			PERIPH_PACKET_TOO_LARGE_FOR_BUFFER,
+			PERIPH_PACKET_NONE_AVAILABLE
+		};
+
+		enum class SubPeripheral : bool
+		{
+			RX = false,
+			TX = true
+		};
+		
+		enum class Modes : uint8_t
+		{
+			MODE_UNDEFINED,
+			BLOCKING,
+			INTERRUPT,
+			DMA
+		};
+		
 		/** @namespace Thor::Definitions::Interrupt */
 		namespace Interrupt
 		{
@@ -53,9 +83,6 @@ namespace Thor
 		/** @namespace Thor::Definitions::TIMER */
 		namespace TIMER
 		{
-			#ifdef TARGET_STM32F7
-
-			#endif
 			const unsigned int MAX_CHANNELS = 16;
 			const unsigned int MAX_SUB_CHANNELS = 6;
 			const unsigned int MAX_ALT_PORTS = 4;
@@ -191,22 +218,8 @@ namespace Thor
 		{
 			const unsigned int MAX_SPI_CHANNELS = 6;
 			const unsigned int SPI_BUFFER_SIZE = 32;
-
-			enum TxRxModes
-			{
-				TX_MODE_NONE,
-				TX_MODE_BLOCKING,
-				TX_MODE_INTERRUPT,
-				TX_MODE_DMA,
-				RX_MODE_NONE,
-				RX_MODE_BLOCKING,
-				RX_MODE_INTERRUPT,
-				RX_MODE_DMA,
-				TXRX_MODE_BLOCKING,
-				TXRX_MODE_INTERRUPT,
-				TXRX_MODE_DMA
-			};
-
+			const uint32_t BLOCKING_TIMEOUT_MS = 10;	/**< Time in mS before a TX or RX in blocking mode will timeout */
+			
 			enum Options
 			{
 				NO_OPTIONS            = 0u,
@@ -219,18 +232,6 @@ namespace Thor
 				SS_PULSE              = (1u << 6),
 				SS_MANUAL_CONTROL     = (1u << 7),
 				SS_AUTOMATIC_CONTROL  = (1u << 8)
-			};
-
-			/** Returns state of the spi hardware */
-			enum Status
-			{
-				SPI_NOT_INITIALIZED = -3,
-				SPI_ERROR           = -2,
-				SPI_NOT_READY       = -1,
-				SPI_READY           = 0,
-				SPI_TX_BUSY,
-				SPI_RX_OK,
-				SPI_OK
 			};
 		}
 
@@ -366,8 +367,7 @@ namespace Thor
 				MEM_TO_PERIPH,
 				MEM_TO_MEM,
 				TRANSFER_DIRECTION_UNDEFINED
-			}
-			;
+			};
 		}
 
 		/** @namespace Thor::Definitions::UART */
@@ -390,15 +390,6 @@ namespace Thor
 			const unsigned int MAX_SERIAL_CHANNELS = Thor::Definitions::UART::MAX_UART_CHANNELS + Thor::Definitions::USART::MAX_USART_CHANNELS; /**< Total possible UART or USART channels for any supported STM32 chip. */
 			const uint32_t BLOCKING_TIMEOUT_MS = 10;	/**< Time in mS before a TX or RX in blocking mode will timeout */
 
-			/** Common peripheral transmit and receive communication modes */
-			enum Modes : uint8_t
-			{
-				MODE_UNDEFINED,
-				BLOCKING,
-				INTERRUPT,
-				DMA
-			};
-
 			/** Supported communication baudrates */
 			enum BaudRate : uint32_t
 			{
@@ -416,29 +407,6 @@ namespace Thor
 				SERIAL_BAUD_230400 = 230400u,
 				SERIAL_BAUD_460800 = 460800u,
 				SERIAL_BAUD_921600 = 921600u
-			};
-
-			/** Indicates various possible states of the serial peripheral. This includes general messages as well as error codes. */
-			enum Status : int
-			{
-				PERIPH_TIMEOUT                     = -5,
-				PERIPH_LOCKED                      = -4,
-				PERIPH_NOT_INITIALIZED             = -3,
-				PERIPH_ERROR                       = -2,
-				PERIPH_NOT_READY                   = -1,
-				PERIPH_OK                          = 0,
-				PERIPH_INVALID_PARAM,
-				PERIPH_TX_IN_PROGRESS,
-				PERIPH_RX_IN_PROGRESS,
-				PERIPH_PACKET_TOO_LARGE_FOR_BUFFER,
-				PERIPH_PACKET_NONE_AVAILABLE
-			};
-
-			/** Explicitly defines a peripheral type for different member functions of SerialClass, UARTClass, or USARTClass. */
-			enum SubPeripheral : bool
-			{
-				RX = false,
-				TX = true
 			};
 
 			/** Allows mapping of either a USART or UART peripheral to the serial class. This is intended to be internal use only. */
@@ -479,11 +447,6 @@ namespace Thor
 			const uint8_t maxThreads = 15;					/**< Maximum number of threads */
 			const uint32_t threadInitCheckDelay_ms = 10;	/**< How long to wait during thread initialization before polling to check init complete */
 			const uint32_t maxThreadInitTimeout_ms = 1000;  /**< Max time to wait for thread init sequence to complete */
-
-			enum Status : uint8_t
-			{
-
-			};
 		}
 	}
 

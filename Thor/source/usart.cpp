@@ -8,6 +8,7 @@
 #include <Thor/include/exceptions.hpp>
 #include <Thor/include/interrupt.hpp>
 
+using namespace Thor::Definitions;
 using namespace Thor::Definitions::Serial;
 using namespace Thor::Definitions::USART;
 using namespace Thor::Peripheral::USART;
@@ -76,42 +77,42 @@ namespace Thor
 		{
 			Status USARTClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
 			{
-				return PERIPH_OK;
+				return Status::PERIPH_OK;
 			}
 			
 			Status USARTClass::setMode(const SubPeripheral& periph, const Modes& mode)
 			{
-				return PERIPH_OK;
+				return Status::PERIPH_OK;
 			}
 
 			Status USARTClass::write(uint8_t* val, size_t length)
 			{
-				return PERIPH_OK;
+				return Status::PERIPH_OK;
 			}
 
 			Status USARTClass::write(char* string, size_t length)
 			{
-				return PERIPH_OK;
+				return Status::PERIPH_OK;
 			}
 
 			Status USARTClass::write(const char* string)
 			{
-				return PERIPH_OK;
+				return Status::PERIPH_OK;
 			}
 
 			Status USARTClass::write(const char* string, size_t length)
 			{
-				return PERIPH_OK;
+				return Status::PERIPH_OK;
 			}
 
 			Status USARTClass::readPacket(uint8_t* buff, size_t buff_length)
 			{
-				return PERIPH_OK;
+				return Status::PERIPH_OK;
 			}
 			
 			Status USARTClass::readSync(uint8_t* buff, size_t length)
 			{
-				return PERIPH_OK;
+				return Status::PERIPH_OK;
 			}
 			
 			uint32_t USARTClass::availablePackets()

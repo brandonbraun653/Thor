@@ -24,6 +24,7 @@ namespace Thor
 		/** @namespace Thor::Peripheral::USART */
 		namespace USART
 		{
+			using namespace Thor::Definitions;
 			using namespace Thor::Definitions::Serial;
 			using namespace Thor::Definitions::Interrupt;
 			using namespace Thor::Definitions::USART;

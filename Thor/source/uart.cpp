@@ -8,6 +8,7 @@
 #include <Thor/include/exceptions.hpp>
 #include <Thor/include/interrupt.hpp>
 
+using namespace Thor::Definitions;
 using namespace Thor::Definitions::Serial;
 using namespace Thor::Definitions::UART;
 using namespace Thor::Definitions::Interrupt;
@@ -175,36 +176,36 @@ namespace Thor
 				uart_handle.Init.BaudRate = baud;
 				UART_Init();
 
-				setMode(TX, tx_mode);
-				setMode(RX, rx_mode);
+				setMode(SubPeripheral::TX, tx_mode);
+				setMode(SubPeripheral::RX, rx_mode);
 
-				return PERIPH_OK;
+				return Status::PERIPH_OK;
 			}
 
 			Status UARTClass::setMode(const SubPeripheral& periph, const Modes& mode)
 			{
-				if (periph == TX)
+				if (periph == SubPeripheral::TX)
 				{
 					switch (mode)
 					{
-					case BLOCKING:
+					case Modes::BLOCKING:
 						txMode = mode; // Must be set before the other functions 
 						
 						/* Make sure RX side isn't using interrupts before disabling */
-						if (rxMode == BLOCKING)
+						if (rxMode == Modes::BLOCKING)
 							UART_DisableInterrupts();
 
 						UART_DMA_DeInit(periph);
 						break;
 
-					case INTERRUPT:
+					case Modes::INTERRUPT:
 						txMode = mode; // Must be set before the other functions 
 						
 						UART_EnableInterrupts();
 						UART_DMA_DeInit(periph);
 						break;
 
-					case DMA:
+					case Modes::DMA:
 						txMode = mode; // Must be set before the other functions 
 						
 						UART_EnableInterrupts();
@@ -212,36 +213,36 @@ namespace Thor
 						break;
 
 					default:
-						txMode = MODE_UNDEFINED;
-						return PERIPH_ERROR;
+						txMode = Modes::MODE_UNDEFINED;
+						return Status::PERIPH_ERROR;
 						break;
 					}
 
-					return PERIPH_OK;
+					return Status::PERIPH_OK;
 				}
 				else
 				{
 					switch (mode)
 					{
-					case BLOCKING:
+					case Modes::BLOCKING:
 						rxMode = mode; // Must be set before the other functions 
 						
 						/* Make sure TX side isn't using interrupts before disabling */
-						if (txMode == BLOCKING)
+						if (txMode == Modes::BLOCKING)
 							UART_DisableInterrupts();
 
 						UART_DMA_DeInit(periph);
 						
 						break;
 
-					case INTERRUPT:
+					case Modes::INTERRUPT:
 						rxMode = mode;	// Must be set before the other functions 
 						
 						UART_EnableInterrupts();
 						UART_DMA_DeInit(periph);
 						break;
 
-					case DMA:
+					case Modes::DMA:
 						rxMode = mode; // Must be set before the other functions 
 						
 						UART_EnableInterrupts();
@@ -255,12 +256,12 @@ namespace Thor
 						break;
 
 					default:
-						rxMode = MODE_UNDEFINED;
-						return PERIPH_ERROR;
+						rxMode = Modes::MODE_UNDEFINED;
+						return Status::PERIPH_ERROR;
 						break;
 					}
 
-					return PERIPH_OK;
+					return Status::PERIPH_OK;
 				}
 			}
 
@@ -282,14 +283,14 @@ namespace Thor
 			Status UARTClass::write(uint8_t* val, size_t length)
 			{
 				if (!UART_PeriphState.gpio_enabled || !UART_PeriphState.uart_enabled)
-					return PERIPH_NOT_INITIALIZED;
+					return Status::PERIPH_NOT_INITIALIZED;
 
-				auto statusCode = PERIPH_ERROR;
+				auto statusCode = Status::PERIPH_ERROR;
 				auto halCode = HAL_OK;
 
 				switch (txMode)
 				{
-				case BLOCKING:
+				case Modes::BLOCKING:
 					#if defined(USING_FREERTOS)
 						halCode = HAL_UART_Transmit(&uart_handle, val, length, pdMS_TO_TICKS(BLOCKING_TIMEOUT_MS));
 					#else 
@@ -297,27 +298,27 @@ namespace Thor
 					#endif
 
 					if (halCode == HAL_TIMEOUT)
-						statusCode = PERIPH_TIMEOUT;
+						statusCode = Status::PERIPH_TIMEOUT;
 					else
-						statusCode = PERIPH_OK;
+						statusCode = Status::PERIPH_OK;
 					break;
 
-				case INTERRUPT:
+				case Modes::INTERRUPT:
 					if (tx_complete)
 					{
 						/* Starting a brand new IT transmission */
 						tx_complete = false;
 						HAL_UART_Transmit_IT(&uart_handle, assignTXBuffer(val, length), length);
-						statusCode = PERIPH_TX_IN_PROGRESS;
+						statusCode = Status::PERIPH_TX_IN_PROGRESS;
 					}
 					else
 					{
-						statusCode = PERIPH_NOT_READY;
+						statusCode = Status::PERIPH_NOT_READY;
 						
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(uart_semphrs[uart_channel], NULL) != pdPASS)
 						{
-							statusCode = PERIPH_LOCKED;
+							statusCode = Status::PERIPH_LOCKED;
 							break;
 						}
 						#endif
@@ -329,22 +330,22 @@ namespace Thor
 					}
 					break;
 
-				case DMA:
+				case Modes::DMA:
 					if (tx_complete)
 					{
 						/* Starting a brand new DMA transmission */
 						tx_complete = false;
 						HAL_UART_Transmit_DMA(&uart_handle, assignTXBuffer(val, length), length);
-						statusCode = PERIPH_TX_IN_PROGRESS;
+						statusCode = Status::PERIPH_TX_IN_PROGRESS;
 					}
 					else
 					{
-						statusCode = PERIPH_NOT_READY;
+						statusCode = Status::PERIPH_NOT_READY;
 						
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(uart_semphrs[uart_channel], NULL) != pdPASS)
 						{
-							statusCode = PERIPH_LOCKED;
+							statusCode = Status::PERIPH_LOCKED;
 							break;
 						}
 						#endif
@@ -358,7 +359,7 @@ namespace Thor
 					break;
 
 				default: 
-					statusCode = PERIPH_ERROR; 
+					statusCode = Status::PERIPH_ERROR; 
 					break;
 				}
 				return statusCode;
@@ -367,12 +368,12 @@ namespace Thor
 			Status UARTClass::readSync(uint8_t* buff, size_t length)
 			{
 				if (!UART_PeriphState.gpio_enabled || !UART_PeriphState.uart_enabled)
-					return PERIPH_NOT_INITIALIZED;
+					return Status::PERIPH_NOT_INITIALIZED;
 
-				auto statusCode = PERIPH_ERROR;
+				auto statusCode = Status::PERIPH_ERROR;
 				switch (rxMode)
 				{
-				case BLOCKING:
+				case Modes::BLOCKING:
 					/* It's possible to get into the condition where ORE is set before trying to receive some
 					 * new data. In the current STM HAL library, all error interrupts for the blocking mode are 
 					 * disabled by default so the overrun has to be handled manually. This restores normal
@@ -383,27 +384,27 @@ namespace Thor
 					
 					#if defined(USING_FREERTOS)
 					if (HAL_UART_Receive(&uart_handle, buff, length, pdMS_TO_TICKS(BLOCKING_TIMEOUT_MS)) == HAL_OK)
-						statusCode = PERIPH_OK;
+						statusCode = Status::PERIPH_OK;
 					#else
 					if (HAL_UART_Receive(&uart_handle, buff, length, BLOCKING_TIMEOUT_MS) == HAL_OK)
 						statusCode = PERIPH_OK;
 					#endif
 					break;
 
-				case INTERRUPT:
+				case Modes::INTERRUPT:
 					/* Redirects the data storage from internal buffers to the one specified for this function */
 					RX_ASYNC = false;
 					
 					if (HAL_UART_Receive_IT(&uart_handle, buff, length) == HAL_OK)
-						statusCode = PERIPH_RX_IN_PROGRESS;
+						statusCode = Status::PERIPH_RX_IN_PROGRESS;
 					break;
 
-				case DMA:
+				case Modes::DMA:
 					/* Redirects the data storage from internal buffers to the one specified for this function */
 					RX_ASYNC = false;
 					
 					if (HAL_UART_Receive_DMA(&uart_handle, buff, length) == HAL_OK)
-						statusCode = PERIPH_RX_IN_PROGRESS;
+						statusCode = Status::PERIPH_RX_IN_PROGRESS;
 					break;
 
 				default: break;
@@ -414,7 +415,7 @@ namespace Thor
 
 			Status UARTClass::readPacket(uint8_t* buff, size_t length)
 			{
-				Status error = PERIPH_ERROR;
+				Status error = Status::PERIPH_ERROR;
 				UARTPacket packet = RXPacketBuffer.front();
 				
 				/* First make sure we have a valid address */
@@ -441,7 +442,7 @@ namespace Thor
 						RXPacketBuffer.push_front(packet);
 					}
 					
-					error = PERIPH_OK;
+					error = Status::PERIPH_OK;
 				}
 				
 				return error;
@@ -468,8 +469,8 @@ namespace Thor
 				UART_DMA_DeInit(SubPeripheral::TX);
 				UART_DMA_DeInit(SubPeripheral::RX);
 
-				txMode = MODE_UNDEFINED;
-				rxMode = MODE_UNDEFINED;
+				txMode = Modes::MODE_UNDEFINED;
+				rxMode = Modes::MODE_UNDEFINED;
 			}
 
 			void UARTClass::attachSettings(UART_InitTypeDef config)
@@ -631,7 +632,7 @@ namespace Thor
 							}
 
 							/* Buffer the new data and increase packet size count */
-							if (rxMode == INTERRUPT && (asyncRXDataSize < UART_QUEUE_BUFFER_SIZE))
+							if (rxMode == Modes::INTERRUPT && (asyncRXDataSize < UART_QUEUE_BUFFER_SIZE))
 							{
 								RX_Queue[RXQueueIdx][asyncRXDataSize] = (uint8_t)(data_reg & (uint8_t)0xFF);
 								asyncRXDataSize += 1u;
@@ -653,7 +654,7 @@ namespace Thor
 					/* RX Complete */
 					if (RX_LINE_IDLE && RX_LINE_IDLE_IE)
 					{
-						if (rxMode == INTERRUPT)
+						if (rxMode == Modes::INTERRUPT)
 						{
 							UART_DisableIT_IDLE(&uart_handle);
 							
@@ -673,7 +674,7 @@ namespace Thor
 							HAL_UART_RxCpltCallback(&uart_handle);
 						}
 
-						else if (rxMode == DMA)
+						else if (rxMode == Modes::DMA)
 						{
 							auto num_received = (size_t)(uart_handle.RxXferSize - uart_handle.hdmarx->Instance->NDTR);
 							
@@ -727,8 +728,8 @@ namespace Thor
 				if (HAL_UART_Init(&uart_handle) != HAL_OK)
 					BasicErrorHandler(logError("Failed UART Init. Check settings."));
 
-				setMode(TX, BLOCKING);
-				setMode(RX, BLOCKING);
+				setMode(SubPeripheral::TX, Modes::BLOCKING);
+				setMode(SubPeripheral::RX, Modes::BLOCKING);
 
 				UART_PeriphState.uart_enabled = true;
 			}
@@ -776,7 +777,7 @@ namespace Thor
 				HAL_NVIC_EnableIRQ(ITSettings_HW.IRQn);
 
 				/* Specific interrupts to enable */
-				if (rxMode == INTERRUPT)
+				if (rxMode == Modes::INTERRUPT)
 				{
 					RX_ASYNC = true;
 					__HAL_UART_ENABLE_IT(&uart_handle, UART_IT_RXNE); 	//RX Data Register not Empty
@@ -989,7 +990,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	uint32_t uartIdx = uartObjectIndex[UartHandle->Instance];
 	auto uart = uartObjects[uartIdx];
 
-	if (uart->_getRxMode() == DMA)
+	if (uart->_getRxMode() == Modes::DMA)
 	{
 		uart->_setRxComplete();
 
@@ -1016,7 +1017,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	{
 		uart->_setRxComplete();
 
-		if (uart->_getRxMode() == INTERRUPT)
+		if (uart->_getRxMode() == Modes::INTERRUPT)
 			uart->_setRxAsync();
 	}
 	

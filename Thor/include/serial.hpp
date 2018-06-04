@@ -24,6 +24,7 @@ namespace Thor
 		/** @namespace Thor::Peripheral::Serial */
 		namespace Serial
 		{
+			using namespace Thor::Definitions;
 			using namespace Thor::Definitions::Serial;
 
 
@@ -48,8 +49,8 @@ namespace Thor
 				 *			will return a code from Thor::Peripheral::Serial::Status
 				 **/
 				Status begin(const BaudRate& baud = SERIAL_BAUD_115200,
-					const Modes& tx_mode = BLOCKING,
-					const Modes& rx_mode = BLOCKING);
+					const Modes& tx_mode = Modes::BLOCKING,
+					const Modes& rx_mode = Modes::BLOCKING);
 				
 				/** Places the specified peripheral into a given mode
 				 *	@param[in] periph	Explicitly states which peripheral subsystem (TX or RX) to set from Thor::Peripheral::Serial::SubPeripheral
@@ -158,7 +159,7 @@ namespace Thor
 
 				Chimera::Serial::Status creadPacket(uint8_t* buff, size_t buff_length);
 
-				Chimera::Serial::Status convertStatus(Thor::Definitions::Serial::Status status);
+				Chimera::Serial::Status convertStatus(Status status);
 				#endif 
 
 			private:			

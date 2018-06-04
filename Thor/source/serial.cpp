@@ -5,14 +5,15 @@
 /* Project Includes */
 #include <Thor/include/serial.hpp>
 
+using namespace Thor::Definitions;
 using namespace Thor::Definitions::Serial;
 using namespace Thor::Peripheral::UART;
 using namespace Thor::Peripheral::USART;
 
-using ThorStatus = Thor::Definitions::Serial::Status;
+using ThorStatus = Thor::Definitions::Status;
+using ThorMode = Thor::Definitions::Modes;
+using ThorSubPeriph = Thor::Definitions::SubPeripheral;
 using ThorBaud = Thor::Definitions::Serial::BaudRate;
-using ThorMode = Thor::Definitions::Serial::Modes;
-using ThorSubPeriph = Thor::Definitions::Serial::SubPeripheral;
 
 #if defined(USING_CHIMERA)
 using ChimStatus = Chimera::Serial::Status;
@@ -150,15 +151,15 @@ namespace Thor
 					switch (mode)
 					{
 					case Chimera::Serial::Modes::BLOCKING:
-						serial->setMode(TX, BLOCKING);
+						serial->setMode(ThorSubPeriph::TX, ThorMode::BLOCKING);
 						break;
 						
 					case Chimera::Serial::Modes::INTERRUPT:
-						serial->setMode(TX, INTERRUPT);
+						serial->setMode(ThorSubPeriph::TX, ThorMode::INTERRUPT);
 						break;
 					
 					case Chimera::Serial::Modes::DMA:
-						serial->setMode(TX, DMA);
+						serial->setMode(ThorSubPeriph::TX, ThorMode::DMA);
 						break;
 						
 					default: break;
@@ -169,15 +170,15 @@ namespace Thor
 					switch (mode)
 					{
 					case Chimera::Serial::Modes::BLOCKING:
-						serial->setMode(RX, BLOCKING);
+						serial->setMode(ThorSubPeriph::RX, ThorMode::BLOCKING);
 						break;
 						
 					case Chimera::Serial::Modes::INTERRUPT:
-						serial->setMode(RX, INTERRUPT);
+						serial->setMode(ThorSubPeriph::RX, ThorMode::INTERRUPT);
 						break;
 					
 					case Chimera::Serial::Modes::DMA:
-						serial->setMode(RX, DMA);
+						serial->setMode(ThorSubPeriph::RX, ThorMode::DMA);
 						break;
 						
 					default: break;
@@ -252,43 +253,43 @@ namespace Thor
 				return chimera_error;
 			}
 
-			Chimera::Serial::Status SerialClass::convertStatus(Thor::Definitions::Serial::Status status)
+			Chimera::Serial::Status SerialClass::convertStatus(ThorStatus status)
 			{
 				switch (status)
 				{
-				case PERIPH_OK:
+				case ThorStatus::PERIPH_OK:
 					return ChimStatus::SERIAL_OK;
 					break;
 
-				case PERIPH_LOCKED:
+				case ThorStatus::PERIPH_LOCKED:
 					return ChimStatus::SERIAL_LOCKED;
 					break;
 
-				case PERIPH_NOT_INITIALIZED:
+				case ThorStatus::PERIPH_NOT_INITIALIZED:
 					return ChimStatus::SERIAL_NOT_INITIALIZED;
 					break;
 
-				case PERIPH_ERROR:
+				case ThorStatus::PERIPH_ERROR:
 					return ChimStatus::SERIAL_ERROR;
 					break;
 
-				case PERIPH_NOT_READY:
+				case ThorStatus::PERIPH_NOT_READY:
 					return ChimStatus::SERIAL_NOT_READY;
 					break;
 
-				case PERIPH_TX_IN_PROGRESS:
+				case ThorStatus::PERIPH_TX_IN_PROGRESS:
 					return ChimStatus::SERIAL_TX_IN_PROGRESS;
 					break;
 				
-				case PERIPH_RX_IN_PROGRESS:
+				case ThorStatus::PERIPH_RX_IN_PROGRESS:
 					return ChimStatus::SERIAL_RX_IN_PROGRESS;
 					break;
 
-				case PERIPH_PACKET_TOO_LARGE_FOR_BUFFER:
+				case ThorStatus::PERIPH_PACKET_TOO_LARGE_FOR_BUFFER:
 					return ChimStatus::SERIAL_PACKET_TOO_LARGE_FOR_BUFFER;
 					break;
 					
-				case PERIPH_TIMEOUT:
+				case ThorStatus::PERIPH_TIMEOUT:
 					return ChimStatus::SERIAL_TIMEOUT;
 					break;
 
