@@ -21,7 +21,6 @@ using namespace Thor::Defaults::Serial;
 static boost::container::static_vector<SemaphoreHandle_t, MAX_SERIAL_CHANNELS + 1> uart_semphrs(MAX_SERIAL_CHANNELS + 1);
 
 TaskTrigger uartTaskTrigger;
-
 #endif
 
 static boost::container::static_vector<UARTClass_sPtr, MAX_SERIAL_CHANNELS + 1> uartObjects(MAX_SERIAL_CHANNELS + 1);

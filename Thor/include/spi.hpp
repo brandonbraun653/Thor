@@ -1,6 +1,6 @@
 #pragma once
-#ifndef SPI_H_
-#define SPI_H_
+#ifndef THOR_SPI_HPP
+#define THOR_SPI_HPP
 
 /* C/C++ Includes */
 #include <stdlib.h>
@@ -12,6 +12,12 @@
 #include <boost/make_shared.hpp>
 #include <boost/circular_buffer.hpp>
 
+/* FreeRTOS Includes */
+#if defined(USING_FREERTOS)
+#include "FreeRTOS.h"
+#include "semphr.h"
+#endif
+
 /* Thor Includes */
 #include <Thor/include/config.hpp>
 #include <Thor/include/definitions.hpp>
@@ -21,15 +27,7 @@
 #include <Thor/include/ringbuffer.hpp>
 #include <Thor/include/exceptions.hpp>
 
-#ifdef TARGET_STM32F7
-#include <stm32f7xx_hal_dma.h>
-#include <stm32f7xx_hal_spi.h>
-#endif
 
-#ifdef TARGET_STM32F4
-#include <stm32f4xx_hal_dma.h>
-#include <stm32f4xx_hal_spi.h>
-#endif
 
 
 namespace Thor
@@ -46,8 +44,8 @@ namespace Thor
 
 				void begin(Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::NO_OPTIONS);
 
-				Status write(uint8_t* data_in, size_t length = 0, Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::SS_INACTIVE_AFTER_TX);
-				Status write(uint8_t* data_in, uint8_t* data_out, size_t length = 0, Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::SS_INACTIVE_AFTER_TX);
+				Thor::Definitions::Status write(uint8_t* data_in, size_t length = 0, const bool& nssDisableAfterTX = true);
+				Thor::Definitions::Status write(uint8_t* data_in, uint8_t* data_out, size_t length = 0, const bool& nssDisableAfterTX = true);
 
 
 				void end();
@@ -66,7 +64,7 @@ namespace Thor
 				 *	@return Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				 *			will return a code from Thor::Peripheral::SPI::Status
 				 **/
-				Status setMode(const SubPeripheral& periph, const Modes& mode);
+				Thor::Definitions::Status setMode(const SubPeripheral& periph, const Modes& mode);
 
 				/*-------------------------------
 				* Interrupt Handlers
@@ -90,14 +88,9 @@ namespace Thor
 				 *	@param[in] channel Hardware SPI peripheral channel number (i.e. 1 for SPI1, 2 for SPI2, etc)
 				 *	@return Shared pointer to the new object
 				 **/
-				static boost::shared_ptr<SPIClass> create(const int channel);
+				static const boost::shared_ptr<SPIClass>& create(const int channel);
+				SPIClass() = default;
 				~SPIClass() = default;
-
-				
-
-
-				
-				
 
 				/*-------------------------------
 				* Buffers
@@ -107,7 +100,7 @@ namespace Thor
 					size_t length;
 					uint8_t *data_tx;
 					uint8_t *data_rx;
-					Thor::Definitions::SPI::Options options;
+					bool disableNSS;
 				} TX_tempPacket;
 				boost::circular_buffer<SPIPacket> TXPacketBuffer;
 
@@ -123,13 +116,17 @@ namespace Thor
 				
 
 				#ifdef USING_CHIMERA
-				Chimera::SPI::Status init(int channel, const Chimera::SPI::Setup& setupStruct);
-				Chimera::SPI::Status write(uint8_t* in, size_t length);
-				Chimera::SPI::Status write(uint8_t* in, uint8_t* out, size_t length);
+				Chimera::SPI::Status cbegin(const Chimera::SPI::Setup& setupStruct);
+				Chimera::SPI::Status cwrite(uint8_t* in, size_t length, const bool& nssDisableAfterTX);
+				Chimera::SPI::Status cwrite(uint8_t* in, uint8_t* out, size_t length, const bool& nssDisableAfterTX);
 
-				Chimera::SPI::Status setTxMode(Chimera::SPI::TXRXMode mode);
-				Chimera::SPI::Status setRxMode(Chimera::SPI::TXRXMode mode);
+				Chimera::SPI::Status csetMode(Chimera::SPI::SubPeripheral periph, Chimera::SPI::SubPeripheralMode mode);
 				#endif
+				
+				#ifdef USING_FREERTOS
+				void attachThreadTrigger(Thor::Definitions::Interrupt::Trigger trig, SemaphoreHandle_t* semphr);
+				void removeThreadTrigger(Thor::Definitions::Interrupt::Trigger trig);
+				#endif 
 				
 				/*-------------------------------
 				* ISR Stubs 
@@ -221,11 +218,14 @@ namespace Thor
 				void SPI_DMA_DeInit(const SubPeripheral& periph);
 				void SPI_DMA_EnableInterrupts(const SubPeripheral& periph);
 				void SPI_DMA_DisableInterrupts(const SubPeripheral& periph);
+				
+				/*-------------------------------
+				* Utility Functions
+				*------------------------------*/
+				bool txRxModesEqual(Modes mode);
 			};
 			typedef boost::shared_ptr<SPIClass> SPIClass_sPtr;
 
-
-			extern void attachSPI(int channel, SPIClass* spi_class);
 		}
 	}
 }

@@ -467,7 +467,10 @@ namespace Thor
 					{},
 
 					//DMA RX settings
-					{}
+					{},
+
+					//Clock Bus
+					
 				},
 
 				/* SPI 1: */
@@ -503,7 +506,10 @@ namespace Thor
 					{ DMA2_Stream5, DMA_CHANNEL_3, DMA_MEMORY_TO_PERIPH },
 
 					//DMA RX settings
-					{ DMA2_Stream0, DMA_CHANNEL_3, DMA_PERIPH_TO_MEMORY }
+					{ DMA2_Stream0, DMA_CHANNEL_3, DMA_PERIPH_TO_MEMORY },
+
+					//Clock Bus
+					Thor::Definitions::ClockBus::APB2_PERIPH
 					#endif
 
 					#endif /* ENABLE_SPI1 */
@@ -558,7 +564,10 @@ namespace Thor
 					{ DMA1_Stream4, DMA_CHANNEL_0, DMA_MEMORY_TO_PERIPH },
 
 					//DMA RX settings
-					{ DMA1_Stream3, DMA_CHANNEL_0, DMA_PERIPH_TO_MEMORY }
+					{ DMA1_Stream3, DMA_CHANNEL_0, DMA_PERIPH_TO_MEMORY },
+
+					//Clock Bus
+					Thor::Definitions::ClockBus::APB1_PERIPH
 					#endif
 
 					#endif /* ENABLE_SPI2 */
@@ -612,7 +621,10 @@ namespace Thor
 					{ DMA1_Stream5, DMA_CHANNEL_0, DMA_MEMORY_TO_PERIPH },
 
 					//DMA RX settings
-					{ DMA1_Stream2, DMA_CHANNEL_0, DMA_PERIPH_TO_MEMORY }
+					{ DMA1_Stream2, DMA_CHANNEL_0, DMA_PERIPH_TO_MEMORY },
+
+					//Clock Bus
+					Thor::Definitions::ClockBus::APB1_PERIPH
 					#endif 
 					#endif /* ENABLE_SPI3 */
 				},
@@ -649,7 +661,10 @@ namespace Thor
 					{ DMA2_Stream1, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
 
 					//DMA RX settings
-					{ DMA2_Stream0, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY }
+					{ DMA2_Stream0, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY },
+
+					//Clock Bus
+					Thor::Definitions::ClockBus::APB2_PERIPH
 					#endif
 					#endif /* ENABLE_SPI4 */
 				},
@@ -686,7 +701,10 @@ namespace Thor
 					{ DMA2_Stream4, DMA_CHANNEL_2, DMA_MEMORY_TO_PERIPH },
 
 					//DMA RX settings
-					{ DMA2_Stream3, DMA_CHANNEL_2, DMA_PERIPH_TO_MEMORY }
+					{ DMA2_Stream3, DMA_CHANNEL_2, DMA_PERIPH_TO_MEMORY },
+
+					//Clock Bus
+					Thor::Definitions::ClockBus::APB2_PERIPH
 					#endif
 					#endif /* ENABLE_SPI5 */
 
@@ -725,7 +743,10 @@ namespace Thor
 					{ DMA2_Stream5, DMA_CHANNEL_1, DMA_MEMORY_TO_PERIPH },
 
 					//DMA RX settings
-					{ DMA2_Stream6, DMA_CHANNEL_1, DMA_PERIPH_TO_MEMORY }
+					{ DMA2_Stream6, DMA_CHANNEL_1, DMA_PERIPH_TO_MEMORY },
+
+					//Clock Bus
+					Thor::Definitions::ClockBus::APB2_PERIPH
 					#endif
 					#endif /* ENABLE_SPI6 */
 				}

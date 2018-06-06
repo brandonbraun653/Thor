@@ -93,6 +93,9 @@ namespace Thor
 				/* DMA Settings */
 				DMA_Initializer dmaTX;
 				DMA_Initializer dmaRX;
+
+				/* Clock Bus */
+				Thor::Definitions::ClockBus clockBus;
 			};
 			extern const SPIConfig spi_cfg[];
 

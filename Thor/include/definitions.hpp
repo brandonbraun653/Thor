@@ -32,10 +32,11 @@ namespace Thor
 			PERIPH_PACKET_NONE_AVAILABLE
 		};
 
-		enum class SubPeripheral : bool
+		enum class SubPeripheral : uint8_t
 		{
-			RX = false,
-			TX = true
+			RX,
+			TX,
+			TXRX
 		};
 		
 		enum class Modes : uint8_t
@@ -45,6 +46,15 @@ namespace Thor
 			INTERRUPT,
 			DMA
 		};
+
+		enum class ClockBus : uint8_t
+		{
+			APB1_PERIPH,
+			APB2_PERIPH,
+			APB1_TIMER,
+			APB2_TIMER
+		};
+
 		
 		/** @namespace Thor::Definitions::Interrupt */
 		namespace Interrupt
@@ -58,6 +68,7 @@ namespace Thor
 			{
 				RX_COMPLETE,
 				TX_COMPLETE,
+				TXRX_COMPLETE,
 				MAX_SOURCES
 			};
 			#endif

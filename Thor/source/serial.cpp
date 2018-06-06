@@ -257,43 +257,16 @@ namespace Thor
 			{
 				switch (status)
 				{
-				case ThorStatus::PERIPH_OK:
-					return ChimStatus::SERIAL_OK;
-					break;
-
-				case ThorStatus::PERIPH_LOCKED:
-					return ChimStatus::SERIAL_LOCKED;
-					break;
-
-				case ThorStatus::PERIPH_NOT_INITIALIZED:
-					return ChimStatus::SERIAL_NOT_INITIALIZED;
-					break;
-
-				case ThorStatus::PERIPH_ERROR:
-					return ChimStatus::SERIAL_ERROR;
-					break;
-
-				case ThorStatus::PERIPH_NOT_READY:
-					return ChimStatus::SERIAL_NOT_READY;
-					break;
-
-				case ThorStatus::PERIPH_TX_IN_PROGRESS:
-					return ChimStatus::SERIAL_TX_IN_PROGRESS;
-					break;
-				
-				case ThorStatus::PERIPH_RX_IN_PROGRESS:
-					return ChimStatus::SERIAL_RX_IN_PROGRESS;
-					break;
-
-				case ThorStatus::PERIPH_PACKET_TOO_LARGE_FOR_BUFFER:
-					return ChimStatus::SERIAL_PACKET_TOO_LARGE_FOR_BUFFER;
-					break;
-					
-				case ThorStatus::PERIPH_TIMEOUT:
-					return ChimStatus::SERIAL_TIMEOUT;
-					break;
-
-				default: return ChimStatus::SERIAL_UNKNOWN_ERROR;
+				case ThorStatus::PERIPH_OK:								return ChimStatus::SERIAL_OK;
+				case ThorStatus::PERIPH_LOCKED:							return ChimStatus::SERIAL_LOCKED;
+				case ThorStatus::PERIPH_NOT_INITIALIZED:				return ChimStatus::SERIAL_NOT_INITIALIZED;
+				case ThorStatus::PERIPH_ERROR:							return ChimStatus::SERIAL_ERROR;
+				case ThorStatus::PERIPH_NOT_READY:						return ChimStatus::SERIAL_NOT_READY;
+				case ThorStatus::PERIPH_TX_IN_PROGRESS:					return ChimStatus::SERIAL_TX_IN_PROGRESS;
+				case ThorStatus::PERIPH_RX_IN_PROGRESS:					return ChimStatus::SERIAL_RX_IN_PROGRESS;
+				case ThorStatus::PERIPH_PACKET_TOO_LARGE_FOR_BUFFER:	return ChimStatus::SERIAL_PACKET_TOO_LARGE_FOR_BUFFER;
+				case ThorStatus::PERIPH_TIMEOUT:						return ChimStatus::SERIAL_TIMEOUT;
+				default:												return ChimStatus::SERIAL_UNKNOWN_ERROR;
 				}
 			}
 
