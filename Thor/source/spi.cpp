@@ -218,10 +218,10 @@ static uint32_t chimeraClkPhaseToHAL(ChimClockMode mode)
 {
 	switch (mode)
 	{
-	case ChimClockMode::MODE1:
-	case ChimClockMode::MODE3:	return SPI_PHASE_1EDGE;
+	case ChimClockMode::MODE0:
+	case ChimClockMode::MODE1:	return SPI_PHASE_1EDGE;
 	case ChimClockMode::MODE2:
-	case ChimClockMode::MODE4:	return SPI_PHASE_2EDGE;
+	case ChimClockMode::MODE3:	return SPI_PHASE_2EDGE;
 	default:					return Thor::Defaults::SPI::dflt_SPI_Init.CLKPhase;
 	};
 };
@@ -230,10 +230,10 @@ static uint32_t chimeraClkPolarityToHAL(ChimClockMode mode)
 {
 	switch (mode)
 	{
-	case ChimClockMode::MODE1:
-	case ChimClockMode::MODE2:	return SPI_POLARITY_LOW;
-	case ChimClockMode::MODE3:
-	case ChimClockMode::MODE4:	return SPI_POLARITY_HIGH;
+	case ChimClockMode::MODE0:
+	case ChimClockMode::MODE1:	return SPI_POLARITY_LOW;
+	case ChimClockMode::MODE2:
+	case ChimClockMode::MODE3:	return SPI_POLARITY_HIGH;
 	default:					return Thor::Defaults::SPI::dflt_SPI_Init.CLKPolarity;
 	};
 };
