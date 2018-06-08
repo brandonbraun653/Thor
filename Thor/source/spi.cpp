@@ -337,6 +337,12 @@ namespace Thor
 
 				return thorStatusToChimera(setMode(p, m));
 			}
+
+			ChimStatus SPIClass::cupdateClockFrequency(uint32_t freq)
+			{
+				return thorStatusToChimera(updateClockFrequency(freq));
+			}
+
 			#endif
 			
 			#ifdef USING_FREERTOS
@@ -499,8 +505,14 @@ namespace Thor
 
 			void SPIClass::reInitialize()
 			{
+				auto oldRXMode = rxMode;
+				auto oldTXMode = txMode;
+
 				SPI_DeInit();
 				SPI_Init();
+			
+				setMode(SubPeripheral::RX, oldRXMode);
+				setMode(SubPeripheral::TX, oldTXMode);
 			}
 
 			Status SPIClass::write(uint8_t* data_in, size_t length, const bool& nssDisableAfterTX)
@@ -776,6 +788,16 @@ namespace Thor
 				}
 			}
 			
+
+			Status SPIClass::updateClockFrequency(uint32_t freq)
+			{
+				spi_handle.Init.BaudRatePrescaler = getBaudRatePrescalerFromFreq(spi_channel, freq);
+				reInitialize();
+
+				return Status::PERIPH_OK;
+			}
+
+
 			bool SPIClass::txRxModesEqual(Modes mode)
 			{
 				if ((txMode == mode) && (rxMode == mode))
@@ -1019,13 +1041,17 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 
 				/* Don't pop_front() yet because the options are needed for when TX is complete */
 			}
+			#if defined(USING_FREERTOS)
+			else
+				spiTaskTrigger.logEvent(BUFFERED_TX_COMPLETE, &spiTaskTrigger);
+			#endif 
 		}
+
+		/* Signal any waiting threads */
+		#if defined(USING_FREERTOS)
+		spiTaskTrigger.logEvent(TX_COMPLETE, &spiTaskTrigger);
+		#endif
 	}
-	
-	/* Signal any waiting threads */
-	#if defined(USING_FREERTOS)
-	spiTaskTrigger.logEvent(TX_COMPLETE, &spiTaskTrigger);
-	#endif
 }
 
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
@@ -1066,13 +1092,17 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 
 				/* Don't pop_front() yet because the options are needed for when TX is complete */
 			}
+			#if defined(USING_FREERTOS)
+			else
+				spiTaskTrigger.logEvent(BUFFERED_TXRX_COMPLETE, &spiTaskTrigger);
+			#endif 
 		}
+
+		/* Signal any waiting threads */
+		#if defined(USING_FREERTOS)
+		spiTaskTrigger.logEvent(TXRX_COMPLETE, &spiTaskTrigger);
+		#endif
 	}
-	
-	/* Signal any waiting threads */
-	#if defined(USING_FREERTOS)
-	spiTaskTrigger.logEvent(TXRX_COMPLETE, &spiTaskTrigger);
-	#endif
 }
 
 void HAL_SPI_TxHalfCpltCallback(SPI_HandleTypeDef *hspi)

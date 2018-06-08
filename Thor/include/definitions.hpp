@@ -69,6 +69,8 @@ namespace Thor
 				RX_COMPLETE,
 				TX_COMPLETE,
 				TXRX_COMPLETE,
+				BUFFERED_TX_COMPLETE,
+				BUFFERED_TXRX_COMPLETE,
 				MAX_SOURCES
 			};
 			#endif

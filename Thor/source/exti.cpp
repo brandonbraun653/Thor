@@ -15,7 +15,7 @@ boost::circular_buffer<TaskTrigger*>TriggerBuffer;
 
 void setupEXTI0_Interrupt()
 {
-	TriggerBuffer.set_capacity(5);
+	TriggerBuffer.set_capacity(10);
 	
 	LL_EXTI_InitTypeDef exti_init;
 
@@ -38,24 +38,22 @@ void EXTI0_IRQHandler()
 	/* Clear the flag to prevent infinite looping */
 	LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_0);
 
-	/* Grab the latest instance that triggered this ISR */
-	trigger_obj = TriggerBuffer.front();
-	
-	if (trigger_obj)
+	/* Address all queued triggers */
+	while (!TriggerBuffer.empty())
 	{
-		/* Remove the reference and grab the appropriate semaphore */
-		TriggerBuffer.pop_front();
+		trigger_obj = TriggerBuffer.front();
 		trigger_semphr = trigger_obj->getEventSemaphore();
-		
+
+		/* Give a semaphore to the waiting task and possibly request a context switch */
 		if (trigger_semphr)
 		{
-			/* Give a semaphore to the waiting task */
 			BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 			xSemaphoreGiveFromISR(*trigger_semphr, &xHigherPriorityTaskWoken);
 
-			/* Request a context switch if xHPTW is true */
 			portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 		}
+
+		TriggerBuffer.pop_front();
 	}
 }
 #else

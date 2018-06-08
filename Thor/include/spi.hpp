@@ -28,8 +28,6 @@
 #include <Thor/include/exceptions.hpp>
 
 
-
-
 namespace Thor
 {
 	namespace Peripheral
@@ -65,6 +63,13 @@ namespace Thor
 				 *			will return a code from Thor::Peripheral::SPI::Status
 				 **/
 				Thor::Definitions::Status setMode(const SubPeripheral& periph, const Modes& mode);
+
+				/** Updates the clock frequency of an already initialized SPI object
+				 *	@param[in] freq	Desired clock frequency in Hz
+				 *	@return Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
+				 *			will return a code from Thor::Peripheral::SPI::Status
+				 **/
+				Thor::Definitions::Status updateClockFrequency(uint32_t freq);
 
 				/*-------------------------------
 				* Interrupt Handlers
@@ -119,8 +124,8 @@ namespace Thor
 				Chimera::SPI::Status cbegin(const Chimera::SPI::Setup& setupStruct);
 				Chimera::SPI::Status cwrite(uint8_t* in, size_t length, const bool& nssDisableAfterTX);
 				Chimera::SPI::Status cwrite(uint8_t* in, uint8_t* out, size_t length, const bool& nssDisableAfterTX);
-
 				Chimera::SPI::Status csetMode(Chimera::SPI::SubPeripheral periph, Chimera::SPI::SubPeripheralMode mode);
+				Chimera::SPI::Status cupdateClockFrequency(uint32_t freq);
 				#endif
 				
 				#ifdef USING_FREERTOS
