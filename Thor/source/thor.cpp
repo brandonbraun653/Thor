@@ -2,6 +2,11 @@
 #include <Thor/include/defaults.hpp>
 #include <Thor/include/exti.hpp>
 
+#if defined(USING_FREERTOS)
+#include "FreeRTOS.h"
+#include "task.h"
+#endif 
+
 
 void ThorInit()
 {
@@ -17,4 +22,21 @@ void ThorInit()
 	setupEXTI0_Interrupt();
 	#endif
 
+}
+
+namespace Thor
+{
+	void delayMilliseconds(uint32_t ms)
+	{
+		#if defined(USING_FREERTOS)
+		vTaskDelay(pdMS_TO_TICKS(ms)); //Non-blocking
+		#else
+		HAL_Delay(ms); //Blocking
+		#endif
+	}
+
+	void delayMicroseconds(uint32_t us)
+	{
+		//TODO: use a timer for this
+	}
 }
