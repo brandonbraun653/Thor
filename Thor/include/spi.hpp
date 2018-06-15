@@ -146,6 +146,11 @@ namespace Thor
 					tx_complete = true;
 				}
 				
+				bool _getTXComplete()
+				{
+					return tx_complete;
+				}
+
 				void _setRXComplete()
 				{
 					rx_complete = true;
@@ -164,7 +169,7 @@ namespace Thor
 				
 				void _txBufferRemoveFrontPacket(){ TXPacketBuffer.pop_front(); }
 				
-				const SPIPacket& _txBufferNextPacket(){ return TXPacketBuffer.front(); }
+				SPIPacket _txBufferNextPacket(){ return TXPacketBuffer.front(); }
 
 			private:
 				/*-------------------------------

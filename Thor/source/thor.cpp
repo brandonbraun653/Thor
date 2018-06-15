@@ -10,6 +10,9 @@
 
 void ThorInit()
 {
+	/* This absolutely must be called first to setup the HAL system properly */
+	HAL_Init();
+
 	/* Set the clock and peripheral settings to max performance */
 	ThorSystemClockConfig();
 	
@@ -24,6 +27,13 @@ void ThorInit()
 
 }
 
+#if defined(USING_CHIMERA)
+void cSystemInit()
+{
+	ThorInit();
+}
+#endif 
+
 namespace Thor
 {
 	void delayMilliseconds(uint32_t ms)
@@ -35,8 +45,10 @@ namespace Thor
 		#endif
 	}
 
+	//TODO: use a timer for this
 	void delayMicroseconds(uint32_t us)
 	{
-		//TODO: use a timer for this
+
 	}
+	
 }

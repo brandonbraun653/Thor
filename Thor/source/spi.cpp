@@ -313,8 +313,6 @@ namespace Thor
 			{
 				SPI_InitTypeDef config = chimeraSetupToThor(spi_channel, setupStruct);
 				attachSettings(config);
-				//reInitialize();
-
 				begin();
 
 				return thorStatusToChimera(Status::PERIPH_OK);

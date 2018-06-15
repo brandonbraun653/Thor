@@ -120,9 +120,11 @@ namespace Thor
 
 
 				#ifdef USING_CHIMERA
-				Chimera::GPIO::Status init(Chimera::GPIO::Port port, uint8_t pin);
-				Chimera::GPIO::Status mode(Chimera::GPIO::Mode pin_mode, bool pullup);
-				Chimera::GPIO::Status write(Chimera::GPIO::State state);
+				Chimera::GPIO::Status cinit(Chimera::GPIO::Port port, uint8_t pin);
+				Chimera::GPIO::Status cmode(Chimera::GPIO::Mode pin_mode, bool pullup);
+				Chimera::GPIO::Status cwrite(Chimera::GPIO::State state);
+				void ctoggle();
+				bool cread();
 				#endif 
 	
 			private:
@@ -136,8 +138,7 @@ namespace Thor
 				void GPIO_ClockEnable(PinPort GPIOx);
 				void GPIO_ClockDisable(PinPort GPIOx);
 			};
-			typedef boost::shared_ptr<GPIOClass> GPIOClass_sPtr;
-			typedef boost::movelib::unique_ptr<GPIOClass> GPIOClass_uPtr;
+			typedef boost::shared_ptr<Thor::Peripheral::GPIO::GPIOClass> GPIOClass_sPtr;
 		}
 	}
 }

@@ -7,6 +7,7 @@
 #include <boost/container/vector.hpp>
 
 /* Thor Includes */
+#include <Thor/include/macro.hpp>
 #include <Thor/include/config.hpp>
 #include <Thor/include/definitions.hpp>
 #include <Thor/include/types.hpp>

@@ -94,61 +94,83 @@ namespace Thor
 			
 
 			#ifdef USING_CHIMERA
-			Chimera::GPIO::Status GPIOClass::init(Chimera::GPIO::Port port, uint8_t pin)
+			boost::container::flat_map<Chimera::GPIO::Port, GPIO_TypeDef*> portMap = 
 			{
-				/* Validate the input pin */
-				if (!(pin < MAX_PINS))
+				#if defined(TARGET_STM32F7) || defined(TARGET_STM32F4)
+				{ Chimera::GPIO::Port::PORTA, GPIOA },
+				{ Chimera::GPIO::Port::PORTB, GPIOB },
+				{ Chimera::GPIO::Port::PORTC, GPIOC },
+				{ Chimera::GPIO::Port::PORTD, GPIOD },
+				{ Chimera::GPIO::Port::PORTE, GPIOE },
+				{ Chimera::GPIO::Port::PORTF, GPIOF },
+				{ Chimera::GPIO::Port::PORTG, GPIOG },
+				{ Chimera::GPIO::Port::PORTH, GPIOH },
+				#endif
+
+				#if defined(TARGET_STM32F7)				{ Chimera::GPIO::Port::PORTI, GPIOI },				{ Chimera::GPIO::Port::PORTJ, GPIOJ },				{ Chimera::GPIO::Port::PORTK, GPIOK }				#endif
+			};
+
+			boost::container::flat_map<uint8_t, Thor::Peripheral::GPIO::PinNum> pinMap =
+			{
+				{ 0, PIN_0 },
+				{ 1, PIN_1 },
+				{ 2, PIN_2 },
+				{ 3, PIN_3 },
+				{ 4, PIN_4 },
+				{ 5, PIN_5 },
+				{ 6, PIN_6 },
+				{ 7, PIN_7 },
+				{ 8, PIN_8 },
+				{ 9, PIN_9 },
+				{ 10, PIN_10 },
+				{ 11, PIN_11 },
+				{ 12, PIN_12 },
+				{ 13, PIN_13 },
+				{ 14, PIN_14 },
+				{ 15, PIN_15 }
+			};
+
+			boost::container::flat_map<Chimera::GPIO::Mode, Thor::Peripheral::GPIO::PinMode> modeMap =
+			{
+				{ Chimera::GPIO::Mode::INPUT,					INPUT },
+				{ Chimera::GPIO::Mode::OUTPUT_PUSH_PULL,		OUTPUT_PP },
+				{ Chimera::GPIO::Mode::OUTPUT_OPEN_DRAIN,		OUTPUT_OD },
+				{ Chimera::GPIO::Mode::ALTERNATE_PUSH_PULL,		ALT_PP },
+				{ Chimera::GPIO::Mode::ALTERNATE_OPEN_DRAIN,	ALT_OD },
+				{ Chimera::GPIO::Mode::ANALOG,					ANALOG }
+			};
+
+			Chimera::GPIO::Status GPIOClass::cinit(Chimera::GPIO::Port port, uint8_t pin)
+			{
+				pinConfig.pinNum = pinMap[pin];
+				if (pinConfig.pinNum == (PinNum)0)
 					return Chimera::GPIO::Status::GPIO_ERROR_INVALID_PIN;
-				else
-					pinConfig.pinNum = static_cast<PinNum>(1u << pin);
 
-				/* Grab the port from the rcc_gpio_mask map by a reverse lookup */
-				PinPort portKey;
-				uint32_t mask = (1u << port);
-
-				if (!Thor::Util::findKeyFromVal(portKey, rcc_gpio_mask, mask))
+				pinConfig.GPIOx = portMap[port];
+				if (pinConfig.GPIOx == (GPIO_TypeDef*)0)
 					return Chimera::GPIO::Status::GPIO_ERROR_INVALID_PORT;
-				else
-					pinConfig.GPIOx = portKey;
+
 
 				chimera_settings_recorded = true;
 				return Chimera::GPIO::Status::GPIO_OK;
 			}
 
-			Chimera::GPIO::Status GPIOClass::mode(Chimera::GPIO::Mode pin_mode, bool pullup = false)
+			Chimera::GPIO::Status GPIOClass::cmode(Chimera::GPIO::Mode mode, bool pullup = false)
 			{
 				if (chimera_settings_recorded)
 				{
-					PinMode _mode;
-					PinPull _pull;
+					//Note: PinMode::INPUT and output of modeMap are the same when "mode" is invalid (0u). No good way to check for invalid input.
+					PinMode pinMode = modeMap[mode];
+					PinPull pinPull = (pullup) ? PULLUP : NOPULL;
 
-					
-					switch (pin_mode)
-					{
-					case Chimera::GPIO::Mode::OUTPUT:
-						_mode = OUTPUT_PP;
-						break;
-					
-					case Chimera::GPIO::Mode::INPUT:
-						_mode = INPUT;
-						break;
-
-					//TODO: Going to need to do alt_pp at some point
-
-					default:
-						_mode = INPUT;
-						break;
-					}
-
-					_pull = (pullup) ? PULLUP : NOPULL;
-
-					this->mode(_mode, _pull);
+					this->mode(pinMode, pinPull);
+					return Chimera::GPIO::Status::GPIO_OK;
 				}
 				else
 					return Chimera::GPIO::Status::GPIO_ERROR_UNINITIALIZED;
 			}
 
-			Chimera::GPIO::Status GPIOClass::write(Chimera::GPIO::State state)
+			Chimera::GPIO::Status GPIOClass::cwrite(Chimera::GPIO::State state)
 			{
 				if (chimera_settings_recorded)
 				{
@@ -157,6 +179,16 @@ namespace Thor
 				}
 				else
 					return Chimera::GPIO::Status::GPIO_ERROR_UNINITIALIZED;
+			}
+
+			void GPIOClass::ctoggle()
+			{
+				this->toggle();
+			}
+
+			bool GPIOClass::cread()
+			{
+				return this->read();
 			}
 			#endif
 		}

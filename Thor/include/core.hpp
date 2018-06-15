@@ -3,6 +3,7 @@
 
 #include <Thor/include/config.hpp>
 #include <Thor/include/exceptions.hpp>
+#include <Thor/include/macro.hpp>
 
 #ifdef TARGET_STM32F7
 #include <stm32f7xx_hal.h>

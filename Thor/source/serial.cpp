@@ -34,7 +34,7 @@ namespace Thor
 			 * each type of chip.*/
 			boost::container::static_vector<HardwareClassMapping, MAX_SERIAL_CHANNELS + 1> serialPeripheralMap =
 			{ 
-				#if defined(STM32F767xx)
+				#if defined(STM32F767xx) || defined(STM32F446xx)
 				{false, 0},		/* Not actually a UART instance */
 				{false, 1},		/* USART 1	*/
 				{false, 2},		/* USART 2	*/
