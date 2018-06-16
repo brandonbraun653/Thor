@@ -3,7 +3,7 @@
 #define SERIAL_THOR_TRANSPORT_H
 
 /* eRPC Includes */
-#include "framed_transport.h"
+#include "Thor/erpc/infra/framed_transport.h"
 #include <stdlib.h>
 
 /* Thor Includes */

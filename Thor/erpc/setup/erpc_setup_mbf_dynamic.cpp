@@ -29,10 +29,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "erpc_config_internal.h"
-#include "erpc_mbf_setup.h"
-#include "manually_constructed.h"
-#include "message_buffer.h"
+#include "Thor/erpc/port/erpc_config_internal.h"
+#include "Thor/erpc/setup/erpc_mbf_setup.h"
+#include "Thor/erpc/infra/manually_constructed.h"
+#include "Thor/erpc/infra/message_buffer.h"
 #include <assert.h>
 #include <new>
 

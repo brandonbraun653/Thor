@@ -32,7 +32,7 @@
 #ifndef _EMBEDDED_RPC__BASIC_SERIALIZATION_H_
 #define _EMBEDDED_RPC__BASIC_SERIALIZATION_H_
 
-#include "codec.h"
+#include "Thor/erpc/infra/codec.h"
 #include <new>
 
 #if !(__embedded_cplusplus)

@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "message_buffer.h"
+#include "Thor/erpc/infra/message_buffer.h"
 #include <cassert>
 #include <cstring>
 

@@ -32,7 +32,7 @@
 #ifndef _ERPC_DETECT_H_
 #define _ERPC_DETECT_H_
 
-#include "erpc_config.h"
+#include "Thor/erpc/config/erpc_config.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Declarations

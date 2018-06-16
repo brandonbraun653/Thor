@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "basic_codec.h"
+#include "Thor/erpc/infra/basic_codec.h"
 
 using namespace erpc;
 

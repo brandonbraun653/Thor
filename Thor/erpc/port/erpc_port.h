@@ -32,7 +32,7 @@
 #ifndef _EMBEDDED_RPC__PORT_H_
 #define _EMBEDDED_RPC__PORT_H_
 
-#include "erpc_config_internal.h"
+#include "Thor/erpc/port/erpc_config_internal.h"
 #include <stddef.h>
 
 /*!

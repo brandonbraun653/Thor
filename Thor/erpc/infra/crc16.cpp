@@ -28,7 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "crc16.h"
+#include "Thor/erpc/infra/crc16.h"
 
 using namespace erpc;
 

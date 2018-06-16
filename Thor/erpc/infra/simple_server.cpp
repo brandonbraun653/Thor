@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "simple_server.h"
+#include "Thor/erpc/infra/simple_server.h"
 
 using namespace erpc;
 #if !(__embedded_cplusplus)

@@ -32,7 +32,7 @@
 #ifndef _EMBEDDED_RPC__SIMPLE_SERVER_H_
 #define _EMBEDDED_RPC__SIMPLE_SERVER_H_
 
-#include "server.h"
+#include "Thor/erpc/infra/server.h"
 
 /*!
  * @addtogroup infra_server

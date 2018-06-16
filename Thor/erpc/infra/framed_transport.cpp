@@ -29,8 +29,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "framed_transport.h"
-#include "message_buffer.h"
+#include "Thor/erpc/infra/framed_transport.h"
+#include "Thor/erpc/infra/message_buffer.h"
 #include <cassert>
 #include <cstdio>
 

@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "erpc_port.h"
+#include "Thor/erpc/port/erpc_port.h"
 #include "FreeRTOS.h"
 #include <new>
 

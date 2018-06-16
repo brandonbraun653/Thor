@@ -59,7 +59,7 @@
 	#endif 
 #endif
 
-#if __has_include("erpc_config.h")
+#if __has_include("Thor/erpc/config/erpc_config.h")
 	#ifndef USING_ERPC
 		#define USING_ERPC
 	#endif

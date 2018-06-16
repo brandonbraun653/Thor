@@ -32,8 +32,8 @@
 #ifndef _EMBEDDED_RPC__SERVER_H_
 #define _EMBEDDED_RPC__SERVER_H_
 
-#include "erpc_config_internal.h"
-#include "codec.h"
+#include "Thor/erpc/port/erpc_config_internal.h"
+#include "Thor/erpc/infra/codec.h"
 #if ERPC_NESTED_CALLS
 #include "client_manager.h"
 #endif

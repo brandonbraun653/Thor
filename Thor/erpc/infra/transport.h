@@ -32,9 +32,9 @@
 #ifndef _EMBEDDED_RPC__TRANSPORT_H_
 #define _EMBEDDED_RPC__TRANSPORT_H_
 
-#include "erpc_common.h"
-#include "crc16.h"
-#include "message_buffer.h"
+#include "Thor/erpc/infra/erpc_common.h"
+#include "Thor/erpc/infra/crc16.h"
+#include "Thor/erpc/infra/message_buffer.h"
 #include <cstring>
 
 /*!

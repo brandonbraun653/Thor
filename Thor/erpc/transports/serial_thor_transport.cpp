@@ -1,4 +1,4 @@
-#include "serial_thor_transport.h"
+#include "Thor/erpc/transports/serial_thor_transport.h"
 #include <cassert>
 #include <cstdio>
 

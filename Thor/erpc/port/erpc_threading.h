@@ -32,7 +32,7 @@
 #ifndef __embedded_rpc__thread__
 #define __embedded_rpc__thread__
 
-#include "erpc_config_internal.h"
+#include "Thor/erpc/port/erpc_config_internal.h"
 #include <stdint.h>
 
 // Exclude the rest of the file if threading is disabled.

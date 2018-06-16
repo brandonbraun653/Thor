@@ -32,7 +32,7 @@
 #ifndef _ERPC_MBF_SETUP_H_
 #define _ERPC_MBF_SETUP_H_
 
-#include "erpc_transport_setup.h"
+#include "Thor/erpc/setup/erpc_transport_setup.h"
 
 /*!
  * @addtogroup message_buffer_factory_setup

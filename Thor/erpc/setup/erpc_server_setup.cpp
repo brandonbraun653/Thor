@@ -29,11 +29,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "erpc_server_setup.h"
-#include "basic_codec.h"
-#include "crc16.h"
-#include "manually_constructed.h"
-#include "simple_server.h"
+#include "Thor/erpc/setup/erpc_server_setup.h"
+#include "Thor/erpc/infra/basic_codec.h"
+#include "Thor/erpc/infra/crc16.h"
+#include "Thor/erpc/infra/manually_constructed.h"
+#include "Thor/erpc/infra/simple_server.h"
 #include <assert.h>
 #include <new>
 

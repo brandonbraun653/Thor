@@ -32,7 +32,7 @@
 #ifndef _EMBEDDED_RPC__MESSAGE_BUFFER_H_
 #define _EMBEDDED_RPC__MESSAGE_BUFFER_H_
 
-#include "erpc_common.h"
+#include "Thor/erpc/infra/erpc_common.h"
 #include <cstddef>
 #include <stdint.h>
 

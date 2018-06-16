@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "server.h"
+#include "Thor/erpc/infra/server.h"
 #include "assert.h"
 
 using namespace erpc;

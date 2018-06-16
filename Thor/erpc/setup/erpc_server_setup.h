@@ -32,10 +32,10 @@
 #ifndef _EMBEDDED_RPC__SERVER_SETUP_H_
 #define _EMBEDDED_RPC__SERVER_SETUP_H_
 
-#include "erpc_common.h"
-#include "erpc_config_internal.h"
-#include "erpc_mbf_setup.h"
-#include "erpc_transport_setup.h"
+#include "Thor/erpc/infra/erpc_common.h"
+#include "Thor/erpc/port/erpc_config_internal.h"
+#include "Thor/erpc/setup/erpc_mbf_setup.h"
+#include "Thor/erpc/setup/erpc_transport_setup.h"
 #include <stdbool.h>
 #include <stdint.h>
 

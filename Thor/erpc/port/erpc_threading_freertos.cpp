@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "erpc_threading.h"
+#include "Thor/erpc/port/erpc_threading.h"
 #include <cassert>
 #include <errno.h>
 

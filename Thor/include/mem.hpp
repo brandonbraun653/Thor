@@ -1,14 +1,13 @@
 #pragma once
-#ifndef MEM_H_
-#define MEM_H_
+#ifndef THOR_MEM_HPP
+#define THOR_MEM_HPP
 
 #include <Thor/include/config.hpp>
 
-/*----------------------------------------------------------------
- * Globally overload the new/delete operators to use the FreeRTOS
- * mem management functions. Without this, all hell will break loose.
- *---------------------------------------------------------------*/
-#if	defined(USING_FREERTOS) && defined __cplusplus
+/* Globally overload the new/delete operators to use the FreeRTOS mem management functions. Without this, all hell will break loose.
+ * If using the Embedded Remote Procedural Call library (eRPC), it provides the necessary overload definitions and thus the ones below
+ * can be disabled safely. */
+#if	defined(USING_FREERTOS) && !defined(USING_ERPC) && defined __cplusplus
 #include <Thor/FreeRTOS/include/FreeRTOS.h>
 #include <Thor/FreeRTOS/include/portable.h>
 #include "new"
@@ -21,4 +20,4 @@ void operator delete(void *p) noexcept;
 
 #endif /* USING_FREERTOS */
 
-#endif /* MEM_H_*/
+#endif /* THOR_MEM_HPP*/

@@ -1,6 +1,6 @@
-#include "erpc_transport_setup.h"
-#include "manually_constructed.h"
-#include "serial_thor_transport.h"
+#include "Thor/erpc/setup/erpc_transport_setup.h"
+#include "Thor/erpc/infra/manually_constructed.h"
+#include "Thor/erpc/transports/serial_thor_transport.h"
 
 using namespace erpc;
 

@@ -32,13 +32,13 @@
 #ifndef _EMBEDDED_RPC__FRAMED_TRANSPORT_H_
 #define _EMBEDDED_RPC__FRAMED_TRANSPORT_H_
 
-#include "erpc_config_internal.h"
-#include "message_buffer.h"
-#include "transport.h"
+#include "Thor/erpc/port/erpc_config_internal.h"
+#include "Thor/erpc/infra/message_buffer.h"
+#include "Thor/erpc/infra/transport.h"
 #include <cstring>
 
 #if ERPC_THREADS
-#include "erpc_threading.h"
+#include "Thor/erpc/port/erpc_threading.h"
 #endif
 
 /*!
