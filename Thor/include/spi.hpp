@@ -126,6 +126,7 @@ namespace Thor
 				Chimera::SPI::Status cwrite(uint8_t* in, uint8_t* out, size_t length, const bool& nssDisableAfterTX);
 				Chimera::SPI::Status csetMode(Chimera::SPI::SubPeripheral periph, Chimera::SPI::SubPeripheralMode mode);
 				Chimera::SPI::Status cupdateClockFrequency(uint32_t freq);
+				void cwriteSS(Chimera::GPIO::State value);
 				#endif
 				
 				#ifdef USING_FREERTOS

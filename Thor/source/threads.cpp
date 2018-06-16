@@ -115,10 +115,23 @@ namespace Thor
 				return pdPASS;
 		}
 
-		BaseType_t sendMessageAndWait(TaskHandle_t task, const uint32_t msg)
+		BaseType_t sendMessage(TaskHandle_t task, const uint32_t msg)
 		{
 			if (task)
 				return xTaskNotify(task, msg, eSetValueWithOverwrite);
+			else
+				return pdFAIL;
+		}
+
+		BaseType_t sendMessageAndWait(TaskHandle_t task, const uint32_t msg)
+		{
+			if (task)
+			{
+				xTaskNotify(task, msg, eSetValueWithOverwrite);
+				vTaskSuspend(NULL);
+				taskYIELD();
+				return pdPASS;
+			}
 			else
 				return pdFAIL;
 		}

@@ -379,6 +379,10 @@ namespace Thor
 				return thorStatusToChimera(updateClockFrequency(freq));
 			}
 
+			void SPIClass::cwriteSS(Chimera::GPIO::State value)
+			{
+				writeSS(static_cast<LogicLevel>(value));
+			}
 			#endif
 			
 			#ifdef USING_FREERTOS
