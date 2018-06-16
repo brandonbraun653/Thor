@@ -34,102 +34,143 @@ using Modes = Thor::Definitions::Modes;
 using Options = Thor::Definitions::SPI::Options;
 
 #if defined(USING_FREERTOS)
-static boost::container::static_vector<SemaphoreHandle_t, MAX_SPI_CHANNELS + 1> spi_semphrs(MAX_SPI_CHANNELS + 1);
-
+static SemaphoreHandle_t spiSemphrs[MAX_SPI_CHANNELS + 1];
 TaskTrigger spiTaskTrigger;
 #endif 
 
-/* Stores references to available SPIClass objects */
-static boost::container::static_vector<SPIClass_sPtr, MAX_SPI_CHANNELS + 1> spiObjects(MAX_SPI_CHANNELS + 1);
+/* Stores references to available SPIClass objects. Automatically initializes to empty shared_ptr. */
+static SPIClass_sPtr spiObjects[MAX_SPI_CHANNELS + 1];
 
 /* Directly maps the HAL SPI Instance pointer to a possible SPIClass object */
-static boost::container::flat_map<SPI_TypeDef*, uint32_t> spiIndexLookup =
+static const SPIClass_sPtr& getSPIClassRef(SPI_TypeDef* instance)
 {
+	auto i = reinterpret_cast<std::uintptr_t>(instance);
+
+	switch (i)
+	{
 	#if defined(SPI1)
-	{ SPI1, 1 },	
-	#endif 
+	case SPI1_BASE:
+		return spiObjects[1];
+		break;
+	#endif
 	#if defined(SPI2)
-	{ SPI2, 2 },	
-	#endif 
+	case SPI2_BASE:
+		return spiObjects[2];
+		break;
+	#endif
 	#if defined(SPI3)
-	{ SPI3, 3 },	
-	#endif 
+	case SPI3_BASE:
+		return spiObjects[3];
+		break;
+	#endif
 	#if defined(SPI4)
-	{ SPI4, 4 },	
-	#endif 
+	case SPI4_BASE:
+		return spiObjects[4];
+		break;
+	#endif
 	#if defined(SPI5)
-	{ SPI5, 5 },	
+	case SPI5_BASE:
+		return spiObjects[5];
+		break;
 	#endif 
 	#if defined(SPI6)
-	{ SPI6, 6 }	
-	#endif 
-};
+	case SPI6_BASE:
+		return spiObjects[6];
+		break;
+	#endif
+	};
+}
 
-/* Directly maps the HAL SPI Instance pointer to the correct bit mask for enabling/disabling the peripheral clock  */
-static boost::container::flat_map<SPI_TypeDef*, uint32_t> spiClockMask = 
-{ 
+/* Directly maps the HAL SPI Instance pointer to the correct bit mask for enabling/disabling the peripheral clock */
+static uint32_t spiClockMask(SPI_TypeDef* instance)
+{
+	auto i = reinterpret_cast<std::uintptr_t>(instance);
+
+	switch (i)
+	{
 	#if defined(TARGET_STM32F4) || defined(TARGET_STM32F7)
-		#if defined (SPI1)
-		{ SPI1, RCC_APB2ENR_SPI1EN },
-		#endif
-		
-		#if defined (SPI2)
-	    { SPI2, RCC_APB1ENR_SPI2EN },
-		#endif
-	
-		#if defined (SPI3)
-	    { SPI3, RCC_APB1ENR_SPI3EN },
-		#endif
-		
-		#if defined (SPI4)
-	    { SPI4, RCC_APB2ENR_SPI4EN },
-		#endif
+	#if defined(SPI1)
+	case SPI1_BASE:
+		return RCC_APB2ENR_SPI1EN;
+		break;
+	#endif
+	#if defined(SPI2)
+	case SPI2_BASE:
+		return RCC_APB1ENR_SPI2EN;
+		break;
+	#endif
+	#if defined(SPI3)
+	case SPI3_BASE:
+		return RCC_APB1ENR_SPI3EN;
+		break;
+	#endif
+	#if defined(SPI4)
+	case SPI4_BASE:
+		return RCC_APB2ENR_SPI4EN;
+		break;
+	#endif
 	#endif 
-	
-	
+		
 	#if defined(TARGET_STM32F7)
-		#if defined (SPI5)
-	    { SPI5, RCC_APB2ENR_SPI5EN },
+	#if defined(SPI5)
+	case SPI5_BASE:
+		return RCC_APB2ENR_SPI5EN;
+		break;
+		#endif 
+		#if defined(SPI6)
+	case SPI6_BASE:
+		return RCC_APB2ENR_SPI6EN;
+		break;
 		#endif
-	
-		#if defined (SPI6)
-	    { SPI6, RCC_APB2ENR_SPI6EN },
-		#endif
-	#endif 
-};
+	#endif /* !TARGET_STM32F7 */
+	};
+}
 
 /* Directly maps the HAL SPI Instance pointer to the correct register for enabling/disabling the peripheral clock.
  * For examples on how this variable memory mapping is accomplished, see: https://goo.gl/t9dgbs */
-static boost::container::flat_map<SPI_TypeDef*, volatile uint32_t*> spiClockRegister =
-{ 
-	#if defined(TARGET_STM32F4) || defined(TARGET_STM32F7)
-		#if defined (SPI1)
-		{ SPI1, &(RCC->APB2ENR) },
-		#endif
-		
-		#if defined (SPI2)
-		{ SPI2, &(RCC->APB1ENR) },
-		#endif
-	
-		#if defined (SPI3)
-		{ SPI3, &(RCC->APB1ENR) },
-		#endif
-		
-		#if defined (SPI4)
-		{ SPI4, &(RCC->APB2ENR) },
-		#endif
+static volatile uint32_t* spiClockRegister(SPI_TypeDef* instance)
+{
+	auto i = reinterpret_cast<std::uintptr_t>(instance);
+
+	switch (i)
+	{
+#if defined(TARGET_STM32F4) || defined(TARGET_STM32F7)
+	#if defined(SPI1)
+	case SPI1_BASE:
+		return &(RCC->APB2ENR);
+		break;
+	#endif
+	#if defined(SPI2)
+	case SPI2_BASE:
+		return &(RCC->APB1ENR);
+		break;
+	#endif
+	#if defined(SPI3)
+	case SPI3_BASE:
+		return &(RCC->APB1ENR);
+		break;
+	#endif
+	#if defined(SPI4)
+	case SPI4_BASE:
+		return &(RCC->APB2ENR);
+		break;
+	#endif
+#endif 
+
+#if defined(TARGET_STM32F7)
+	#if defined(SPI5)
+	case SPI5_BASE:
+		return &(RCC->APB2ENR);
+		break;
 	#endif 
-	
-	#if defined(TARGET_STM32F7)
-		#if defined (SPI5)
-		{ SPI5, RCC->APB2ENR },
-		#endif
-	
-		#if defined (SPI6)
-		{ SPI6, RCC->APB2ENR },
-		#endif
-	#endif 
-};
+	#if defined(SPI6)
+	case SPI6_BASE:
+		return &(RCC->APB2ENR);
+		break;
+	#endif
+#endif /* !TARGET_STM32F7 */
+	};
+}
 
 
 static const uint32_t getBaudRatePrescalerFromFreq(int channel, int freq)
@@ -857,12 +898,12 @@ namespace Thor
 			
 			void SPIClass::SPI_EnableClock()
 			{
-				*spiClockRegister[spi_handle.Instance] |= spiClockMask[spi_handle.Instance];
+				*spiClockRegister(spi_handle.Instance) |= spiClockMask(spi_handle.Instance);
 			}
 
 			void SPIClass::SPI_DisableClock()
 			{
-				*spiClockRegister[spi_handle.Instance] &= ~spiClockMask[spi_handle.Instance];
+				*spiClockRegister(spi_handle.Instance) &= ~spiClockMask(spi_handle.Instance);
 			}
 
 			void SPIClass::SPI_DMA_EnableClock()
@@ -1009,7 +1050,7 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
 	/* Determine at runtime which object actually triggered this callback. Because this function
 	 * resides in an interrupt, grab a constant reference so we don't take time instantiating a new shared_ptr. */
-	const SPIClass_sPtr& spi = spiObjects[spiIndexLookup[hspi->Instance]];
+	const SPIClass_sPtr& spi = getSPIClassRef(hspi->Instance);
 
 	if (spi && spi->_getInitStatus())
 	{
@@ -1060,7 +1101,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
 	/* Determine at runtime which object actually triggered this callback. Because this function
 	 * resides in an interrupt, grab a constant reference so we don't take time instantiating a new shared_ptr. */
-	const SPIClass_sPtr& spi = spiObjects[spiIndexLookup[hspi->Instance]];
+	const SPIClass_sPtr& spi = getSPIClassRef(hspi->Instance);
 
 	if (spi && spi->_getInitStatus())
 	{
