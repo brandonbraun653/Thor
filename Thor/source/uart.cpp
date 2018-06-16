@@ -1,6 +1,5 @@
 /* Boost Includes */
 #include <boost/bind.hpp>
-#include <boost/container/flat_map.hpp>
 #include <boost/container/static_vector.hpp>
 
 /* Thor Includes */
@@ -19,56 +18,91 @@ using namespace Thor::Defaults::Serial;
 
 #if defined(USING_FREERTOS)
 static boost::container::static_vector<SemaphoreHandle_t, MAX_SERIAL_CHANNELS + 1> uart_semphrs(MAX_SERIAL_CHANNELS + 1);
-
 TaskTrigger uartTaskTrigger;
 #endif
 
 static boost::container::static_vector<UARTClass_sPtr, MAX_SERIAL_CHANNELS + 1> uartObjects(MAX_SERIAL_CHANNELS + 1);
 
-static boost::container::flat_map<USART_TypeDef*, uint32_t> uartObjectIndex =
+static const UARTClass_sPtr& getUARTClassRef(USART_TypeDef* instance)
 {
+	/* Simply converts the pointer into the raw numerical address value, which be compared against 
+	   the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
+	auto i = reinterpret_cast<std::uintptr_t>(instance);
+	switch (i)
+	{
 	#if defined(UART1)
-	{ UART1, 1 },
+	case UART1_BASE:
+		return uartObjects[1];
+		break;
 	#endif
 	#if defined(UART2)
-	{ UART2, 2 },
+	case UART2_BASE:
+		return uartObjects[2];
+		break;
 	#endif
 	#if defined(UART3)
-	{ UART3, 3 },
+	case UART3_BASE:
+		return uartObjects[3];
+		break;
 	#endif
 	#if defined(UART4)
-	{ UART4, 4 },
+	case UART4_BASE:
+		return uartObjects[4];
+		break;
 	#endif
 	#if defined(UART5)
-	{ UART5, 5 },
+	case UART5_BASE:
+		return uartObjects[5];
+		break;
 	#endif
 	#if defined(UART6)
-	{ UART6, 6 },
+	case UART6_BASE:
+		return uartObjects[6];
+		break;
 	#endif
 	#if defined(UART7)
-	{ UART7, 7 },
+	case UART7_BASE:
+		return uartObjects[7];
+		break;
 	#endif
 	#if defined(UART8)
-	{ UART8, 8 },
+	case UART8_BASE:
+		return uartObjects[8];
+		break;
 	#endif
+	};
 };
 
-static boost::container::flat_map<USART_TypeDef*, uint32_t> uartClockMask =
+static uint32_t uartClockMask(USART_TypeDef* instance)
 {
-#if defined(STM32F446xx) || defined(STM32F767xx)
+	/* Simply converts the pointer into the raw numerical address value, which be compared against
+	the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
+	auto i = reinterpret_cast<std::uintptr_t>(instance);
+	switch (i)
+	{
+	#if defined(STM32F446xx) || defined(STM32F767xx)
 	#if defined(UART4)
-	{ UART4, RCC_APB1ENR_UART4EN },
+	case UART4_BASE:
+		return RCC_APB1ENR_UART4EN;
+		break;
 	#endif
 	#if defined(UART5)
-	{ UART5, RCC_APB1ENR_UART5EN },
+	case UART5_BASE:
+		return RCC_APB1ENR_UART5EN;
+		break;
 	#endif
 	#if defined(UART7)
-	{ UART7, RCC_APB1ENR_UART7EN },
+	case UART7_BASE:
+		return RCC_APB1ENR_UART7EN;
+		break;
 	#endif
 	#if defined(UART8)
-	{ UART8, RCC_APB1ENR_UART8EN },
+	case UART8_BASE:
+		return RCC_APB1ENR_UART8EN;
+		break;
 	#endif
-#endif
+	#endif /* !STM32F446xx  !STM32F767xx */
+	};
 };
 
 
@@ -744,7 +778,7 @@ namespace Thor
 				using namespace Thor::Definitions::Serial;
 
 				#if defined(TARGET_STM32F7) || defined(TARGET_STM32F4)
-				RCC->APB1ENR |= (uartClockMask[uart_handle.Instance]);
+				RCC->APB1ENR |= (uartClockMask(uart_handle.Instance));
 				#endif
 			}
 
@@ -753,7 +787,7 @@ namespace Thor
 				using namespace Thor::Definitions::Serial;
 
 				#if defined(TARGET_STM32F7) || defined(TARGET_STM32F4)
-				RCC->APB1ENR &= ~(uartClockMask[uart_handle.Instance]);
+				RCC->APB1ENR &= ~(uartClockMask(uart_handle.Instance));
 				#endif
 			}
 
@@ -956,8 +990,7 @@ namespace Thor
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
 	/* Deduce at runtime which class object triggered this interrupt */
-	uint32_t uartIdx = uartObjectIndex[UartHandle->Instance];
-	auto uart = uartObjects[uartIdx];
+	auto uart = getUARTClassRef(UartHandle->Instance);
 
 	if (uart && uart->_getInitStatus())
 	{
@@ -986,8 +1019,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
 	/* Deduce at runtime which class object triggered this interrupt */
-	uint32_t uartIdx = uartObjectIndex[UartHandle->Instance];
-	auto uart = uartObjects[uartIdx];
+	auto uart = getUARTClassRef(UartHandle->Instance);
 
 	if (uart->_getRxMode() == Modes::DMA)
 	{
