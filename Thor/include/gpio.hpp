@@ -9,7 +9,6 @@
 
 /* Boost Includes */
 #include <boost/shared_ptr.hpp>
-#include <boost/move/unique_ptr.hpp>
 
 /* Thor Includes */
 #include <Thor/include/config.hpp>
@@ -47,7 +46,8 @@ namespace Thor
 				PIN_14  = GPIO_PIN_14,
 				PIN_15  = GPIO_PIN_15,
 				PIN_ALL = GPIO_PIN_All,
-				MAX_PINS = 16
+				MAX_PINS = 16,
+				NOT_A_PIN = UINT_MAX
 			};
 
 			enum PinMode : uint32_t
