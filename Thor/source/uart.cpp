@@ -1,6 +1,5 @@
 /* Boost Includes */
 #include <boost/bind.hpp>
-#include <boost/container/static_vector.hpp>
 
 /* Thor Includes */
 #include <Thor/include/uart.hpp>

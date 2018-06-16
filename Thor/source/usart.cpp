@@ -1,7 +1,5 @@
 /* Boost Includes */
 #include <boost/bind.hpp>
-#include <boost/container/flat_map.hpp>
-#include <boost/container/static_vector.hpp>
 
 /* Project Includes */
 #include <Thor/include/usart.hpp>
@@ -18,55 +16,89 @@ using namespace Thor::Defaults::Serial;
 
 
 #if defined(USING_FREERTOS)
-static boost::container::static_vector<SemaphoreHandle_t, MAX_SERIAL_CHANNELS + 1> usart_semphrs(MAX_SERIAL_CHANNELS + 1);
+static SemaphoreHandle_t usartSemphrs[MAX_SERIAL_CHANNELS + 1];
 #endif
 
-static boost::container::static_vector<USARTClass_sPtr, MAX_SERIAL_CHANNELS + 1> usartObjects(MAX_SERIAL_CHANNELS + 1);
+static USARTClass_sPtr usartObjects[MAX_SERIAL_CHANNELS + 1];
 
-static boost::container::flat_map<USART_TypeDef*, uint32_t> usartObjectIndex =
+static const USARTClass_sPtr& getUSARTClassRef(USART_TypeDef* instance)
 {
-	#if defined(USART1)
-	{ USART1, 1 },
-	#endif
-	#if defined(USART2)
-	{ USART2, 2 },
-	#endif
-	#if defined(USART3)
-	{ USART3, 3 },
-	#endif
-	#if defined(USART4)
-	{ USART4, 4 },
-	#endif
-	#if defined(USART5)
-	{ USART5, 5 },
-	#endif
-	#if defined(USART6)
-	{ USART6, 6 },
-	#endif
-	#if defined(USART7)
-	{ USART7, 7 },
-	#endif
-	#if defined(USART8)
-	{ USART8, 8 },
-	#endif
+	/* Simply converts the pointer into the raw numerical address value, which be compared against
+	the peripheral base address. USARTx is simply (USART_TypeDef*)USARTx_Base. */
+	auto i = reinterpret_cast<std::uintptr_t>(instance);
+	switch (i)
+	{
+		#if defined(USART1)
+	case USART1_BASE:
+		return usartObjects[1];
+		break;
+		#endif
+		#if defined(USART2)
+	case USART2_BASE:
+		return usartObjects[2];
+		break;
+		#endif
+		#if defined(USART3)
+	case USART3_BASE:
+		return usartObjects[3];
+		break;
+		#endif
+		#if defined(USART4)
+	case USART4_BASE:
+		return usartObjects[4];
+		break;
+		#endif
+		#if defined(USART5)
+	case USART5_BASE:
+		return usartObjects[5];
+		break;
+		#endif
+		#if defined(USART6)
+	case USART6_BASE:
+		return usartObjects[6];
+		break;
+		#endif
+		#if defined(USART7)
+	case USART7_BASE:
+		return usartObjects[7];
+		break;
+		#endif
+		#if defined(USART8)
+	case USART8_BASE:
+		return usartObjects[8];
+		break;
+		#endif
+	};
 };
 
-static boost::container::flat_map<USART_TypeDef*, uint32_t> usartClockMask =
+static uint32_t usartClockMask(USART_TypeDef* instance)
 {
-	//#if defined(STM32F446xx) || defined(STM32F767xx)
-	//	#if defined(UART4)
-	//	{ UART4, RCC_APB1ENR_UART4EN },
+	//auto i = reinterpret_cast<std::uintptr_t>(instance);
+	//switch (i)
+	//{
+	//	#if defined(STM32F446xx) || defined(STM32F767xx)
+	//	#if defined(USART1)
+	//case USART1_BASE:
+	//	return ;
+	//	break;
 	//	#endif
-	//	#if defined(UART5)
-	//	{ UART5, RCC_APB1ENR_UART5EN },
+	//	#if defined(USART2)
+	//case USART2_BASE:
+	//	return ;
+	//	break;
 	//	#endif
-	//	#if defined(UART7)
-	//	{ UART7, RCC_APB1ENR_UART7EN },
+	//	#if defined(USART3)
+	//case USART3_BASE:
+	//	return ;
+	//	break;
 	//	#endif
-	//	#if defined(UART8)
-	//	{ UART8, RCC_APB1ENR_UART8EN },
+	//	#if defined(USART6)
+	//case USART6_BASE:
+	//	return ;
+	//	break;
 	//	#endif
-	//#endif
+	//	#endif /* !STM32F446xx  !STM32F767xx */
+	//};
 };
 
 namespace Thor
