@@ -1,12 +1,9 @@
 /* Boost Includes */
 #include <boost/bind.hpp>
-#include <boost/container/flat_map.hpp>
-#include <boost/container/static_vector.hpp>
 
 /* Thor Includes */
 #include <Thor/include/spi.hpp>
 #include <Thor/include/exti.hpp>
-
 
 #ifdef TARGET_STM32F7
 #include <stm32f7xx_hal_dma.h>

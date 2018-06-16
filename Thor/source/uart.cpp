@@ -17,11 +17,11 @@ using namespace Thor::Defaults::Serial;
 
 
 #if defined(USING_FREERTOS)
-static boost::container::static_vector<SemaphoreHandle_t, MAX_SERIAL_CHANNELS + 1> uart_semphrs(MAX_SERIAL_CHANNELS + 1);
+static SemaphoreHandle_t uartSemphrs[MAX_SERIAL_CHANNELS + 1];
 TaskTrigger uartTaskTrigger;
 #endif
 
-static boost::container::static_vector<UARTClass_sPtr, MAX_SERIAL_CHANNELS + 1> uartObjects(MAX_SERIAL_CHANNELS + 1);
+static UARTClass_sPtr uartObjects[MAX_SERIAL_CHANNELS + 1];
 
 static const UARTClass_sPtr& getUARTClassRef(USART_TypeDef* instance)
 {
@@ -180,7 +180,7 @@ namespace Thor
 				RXPacketBuffer.clear();
 
 				#if defined(USING_FREERTOS)
-				uart_semphrs[uart_channel] = xSemaphoreCreateCounting(UART_QUEUE_SIZE, UART_QUEUE_SIZE);
+				uartSemphrs[uart_channel] = xSemaphoreCreateCounting(UART_QUEUE_SIZE, UART_QUEUE_SIZE);
 				#endif
 			}
 
@@ -349,7 +349,7 @@ namespace Thor
 						statusCode = Status::PERIPH_NOT_READY;
 						
 						#if defined(USING_FREERTOS)
-						if (xSemaphoreTakeFromISR(uart_semphrs[uart_channel], NULL) != pdPASS)
+						if (xSemaphoreTakeFromISR(uartSemphrs[uart_channel], NULL) != pdPASS)
 						{
 							statusCode = Status::PERIPH_LOCKED;
 							break;
@@ -376,7 +376,7 @@ namespace Thor
 						statusCode = Status::PERIPH_NOT_READY;
 						
 						#if defined(USING_FREERTOS)
-						if (xSemaphoreTakeFromISR(uart_semphrs[uart_channel], NULL) != pdPASS)
+						if (xSemaphoreTakeFromISR(uartSemphrs[uart_channel], NULL) != pdPASS)
 						{
 							statusCode = Status::PERIPH_LOCKED;
 							break;
@@ -1005,7 +1005,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 			/* Release the resource used for buffering */
 			uart->_txBufferRemoveFrontPacket();
 			#if defined(USING_FREERTOS)
-			xSemaphoreGiveFromISR(uart_semphrs[uart->_getChannel()], NULL);
+			xSemaphoreGiveFromISR(uartSemphrs[uart->_getChannel()], NULL);
 			#endif
 		}
 	}
