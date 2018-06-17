@@ -16,7 +16,7 @@ namespace Thor
 		/* Private Function:
 		 *	Implements a simple timeout while waiting for a newly created thread to complete
 		 *	its initialization sequence and signal back to the init thread. */
-		BaseType_t threadInitTimeout(TaskHandle_t* threadHandle)
+		BaseType_t threadInitTimeout()
 		{
 			volatile BaseType_t error = pdPASS;
 			TickType_t lastTimeWoken = xTaskGetTickCount();
@@ -48,12 +48,19 @@ namespace Thor
 			for (int i = 0; i < registeredThreads.size(); i++)
 			{
 				thread = registeredThreads[i];
-				error = xTaskCreate(thread.func, thread.name, thread.stackDepth, thread.funcParams, thread.priority, thread.handle);
-					
-				/* If using initialization callbacks, wait for setup to be complete */
+				error = xTaskCreate(thread.func, thread.name, thread.stackDepth, thread.funcParams, thread.priority, &thread.handle);
+
+				if (error == errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY)
+				{
+					/* If you hit this point, one of the above tasks tried to allocate more heap space than was available. */
+					volatile size_t bytesRemaining = xPortGetFreeHeapSize();
+					for (;;);
+				}
+
+				/* If using initialization callbacks, wait for setup to be complete. Otherwise do nothing. Tasks are running. */
 				if (setupCallbacksEnabled)
 				{
-					if (error == pdPASS && threadInitTimeout(thread.handle) == pdPASS)
+					if (error == pdPASS && threadInitTimeout() == pdPASS)
 						registeredThreads[i].handle = thread.handle;
 					else
 					{
@@ -69,9 +76,11 @@ namespace Thor
 			if (setupCallbacksEnabled)
 			{
 				for (int i = 0; i < registeredThreads.size(); i++)
-					vTaskResume(registeredThreads[i].handle);
+				{
+					xTaskNotify(registeredThreads[i].handle, 1u, eSetValueWithOverwrite);
+				}
 			}
-			
+
 			/* Cleanly exit this thread */
 			INIT_THREAD = nullptr;
 			vTaskDelete(NULL);
@@ -85,12 +94,12 @@ namespace Thor
 		}
 
 		BaseType_t addThread(TaskFunction_t threadFunc, const char* threadName, const uint16_t stackDepth, void* const threadFuncParams,
-			UBaseType_t threadPriority, TaskHandle_t* const threadHandle)
+			UBaseType_t threadPriority, TaskHandle_t threadHandle)
 		{
 			volatile BaseType_t error = pdPASS;
 
 			if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING)
-				error = xTaskCreate(threadFunc, threadName, stackDepth, threadFuncParams, threadPriority, threadHandle);
+				error = xTaskCreate(threadFunc, threadName, stackDepth, threadFuncParams, threadPriority, &threadHandle);
 			else
 				registeredThreads.push_back({ threadFunc, threadName, stackDepth, threadFuncParams, threadPriority, threadHandle });
 
@@ -110,28 +119,23 @@ namespace Thor
 		BaseType_t signalThreadSetupComplete()
 		{
 			if (setupCallbacksEnabled)
-				return sendMessageAndWait(INIT_THREAD, 1u);
-			else
-				return pdPASS;
+			{
+				uint32_t tmp;
+
+				//Notify the initialization thread that this task setup is complete
+				xTaskNotify(INIT_THREAD, 1u, eSetValueWithOverwrite);
+
+				//Block this task until the init thread resumes it
+				xTaskNotifyWait(0u, 0u, &tmp, portMAX_DELAY);
+			}
+
+			return pdPASS;
 		}
 
 		BaseType_t sendMessage(TaskHandle_t task, const uint32_t msg)
 		{
 			if (task)
 				return xTaskNotify(task, msg, eSetValueWithOverwrite);
-			else
-				return pdFAIL;
-		}
-
-		BaseType_t sendMessageAndWait(TaskHandle_t task, const uint32_t msg)
-		{
-			if (task)
-			{
-				xTaskNotify(task, msg, eSetValueWithOverwrite);
-				vTaskSuspend(NULL);
-				taskYIELD();
-				return pdPASS;
-			}
 			else
 				return pdFAIL;
 		}
