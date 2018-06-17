@@ -28,8 +28,6 @@ namespace Thor
 			using namespace Thor::Peripheral;
 			using namespace Thor::Definitions;
 
-			
-
 			class USARTClass : public Thor::Definitions::Serial::SerialBase
 			{
 			public:
@@ -100,7 +98,7 @@ namespace Thor
 				*	@return Status code indicating peripheral state. Will read 'UART_OK' if everything is fine. Otherwise it
 				*			will return a code from Thor::Peripheral::UART::UART_Status
 				**/
-				Status readPacket(uint8_t* buff, size_t buff_length) override;
+				Status readPacket(uint8_t* buff, size_t length) override;
 
 				/** Returns how many unread received packets are available
 				*	@return number of available packets
@@ -114,6 +112,17 @@ namespace Thor
 
 				/** Deinitializes and cleans up the peripheral */
 				void end() override;
+
+				/** Primary handler for interrupt mode in TX or RX.
+				*	Additionally, will be called in DMA mode after USARTClass::IRQHandler_TXDMA or USARTClass::IRQHandler_RXDMA
+				**/
+				void IRQHandler();
+
+				/** DMA Handler for TX. It is a simple wrapper that calls the correct STM32 HAL DMA Handler. */
+				void IRQHandler_TXDMA();
+
+				/** DMA Handler for RX. It is a simple wrapper that calls the correct STM32 HAL DMA Handler. */
+				void IRQHandler_RXDMA();
 
 				#if defined(USING_FREERTOS)
 				/** Attaches a semaphore to a specific trigger source. When an event is triggered on that source,
@@ -144,13 +153,75 @@ namespace Thor
 					size_t length = 0;				/**< Number of bytes contained in data_ptr */
 				};
 
+				/*-------------------------------
+				 * ISR Stubs
+				 *------------------------------*/
+				int _getChannel() { return usartChannel; }
+
+				void _setTxComplete() { tx_complete = true; }
+
+				void _setRxComplete() { rx_complete = true; }
+
+				bool _getRxComplete() { return rx_complete; }
+
+				void _setRxAsync() { RX_ASYNC = true; }
+
+				bool _getInitStatus() { return USARTPeriphState.usart_enabled; }
+
+				Modes _getTxMode() { return txMode; }
+
+				Modes _getRxMode() { return rxMode; }
+
+				bool _txBufferEmpty() { return TXPacketBuffer.empty(); }
+
+				void _txBufferRemoveFrontPacket() { TXPacketBuffer.pop_front(); }
+
+				const USARTPacket& _txBufferNextPacket() { return TXPacketBuffer.front(); }
+
+				void _rxBufferPushBack(const USARTPacket& newPkt) { RXPacketBuffer.push_back(newPkt); }
+
+				uint8_t* _rxCurrentQueueAddr() { return RX_Queue[RXQueueIdx]; }
+
+				void _rxIncrQueueIdx()
+				{
+					RXQueueIdx++;
+
+					if (RXQueueIdx == Thor::Definitions::USART::USART_QUEUE_SIZE)
+						RXQueueIdx = 0;
+				}
+
 			private:
 
 				int usartChannel;											/* Which peripheral hardware channel this class is mapped to (ie USART1, USART2, etc ...) */
+				bool tx_complete = true;									/**< Indicates if a transmission has been completed */
+				bool rx_complete = true;									/**< Indicates if a reception has been completed */
+				bool RX_ASYNC = true;										/**< Enables/Disables asynchronous reception of data */
+
+				Modes txMode = Modes::MODE_UNDEFINED;						/**< Logs which mode the TX peripheral is currently in */
+				Modes rxMode = Modes::MODE_UNDEFINED;						/**< Logs which mode the RX peripheral is currently in */
 
 				boost::circular_buffer<USARTPacket> TXPacketBuffer;			/* User level buffers for queuing data to transmit or holding data that was received */
 				boost::circular_buffer<USARTPacket> RXPacketBuffer;				
 
+				USARTPacket TX_tempPacket, RX_tempPacket;										/**< Used in ISR routines to prevent creation/deletion on the stack and help cleanup code a bit */
+				uint8_t RX_Queue[Thor::Definitions::USART::USART_QUEUE_SIZE][Thor::Definitions::USART::USART_QUEUE_BUFFER_SIZE];						/**< The raw data buffer that stores all receptions. RXPacketBuffer references this for the user. */
+				uint8_t TX_Queue[Thor::Definitions::USART::USART_QUEUE_SIZE][Thor::Definitions::USART::USART_QUEUE_BUFFER_SIZE];						/**< The raw data buffer that stores all transmissions. TXPacketBuffer references this. */
+				uint8_t RXQueueIdx = 0;															/**< Indicates which array in RX_Queue[x] is currently selected to hold the next RX data */
+				uint8_t TXQueueIdx = 0;															/**< Indicates which array in TX_Queue[x] is currently selected to hold the next RX data */
+				uint8_t asyncRXDataSize = 0;													/**< Temporarily holds how large (in bytes) an RX data reception is */
+				uint32_t totalUnreadPackets = 0;													/**< Counter to inform the user how many unread packets are waiting */
+
+
+				struct USARTClassStatus
+				{
+					bool gpio_enabled = false;
+					bool usart_enabled = false;
+					bool dma_enabled_tx = false;
+					bool dma_enabled_rx = false;
+					bool usart_interrupts_enabled = false;
+					bool dma_interrupts_enabled_tx = false;
+					bool dma_interrupts_enabled_rx = false;
+				} USARTPeriphState;
 
 				/*-------------------------------
 				 * Object Pointers / Handles
@@ -166,6 +237,49 @@ namespace Thor
 				Thor::Peripheral::GPIO::GPIOClass_sPtr tx_pin;
 				Thor::Peripheral::GPIO::GPIOClass_sPtr rx_pin;
 
+
+				/*-------------------------------
+				 * Misc Functions
+				 *------------------------------*/
+				uint8_t* assignTXBuffer(const uint8_t* data, const size_t length);
+
+				uint8_t* txCurrentQueueAddr() 
+				{ 
+					return TX_Queue[TXQueueIdx]; 
+				}
+
+				void txIncrQueueIdx()
+				{
+					TXQueueIdx++;
+
+					if (TXQueueIdx == Thor::Definitions::USART::USART_QUEUE_SIZE)
+						TXQueueIdx = 0;
+				}
+
+
+				/*-------------------------------
+				 * Low Level Setup/Teardown Functions
+				 *------------------------------*/
+				void USART_GPIO_Init();
+				void USART_GPIO_DeInit();
+
+				void USART_Init();
+				void USART_DeInit();
+				void USART_EnableClock();
+				void USART_DisableClock();
+				void USART_DMA_EnableClock();
+				void USART_EnableInterrupts();
+				void USART_DisableInterrupts();
+
+				void USART_DMA_Init(const Thor::Definitions::SubPeripheral& periph);
+				void USART_DMA_DeInit(const Thor::Definitions::SubPeripheral& periph);
+				void USART_DMA_EnableIT(const Thor::Definitions::SubPeripheral& periph);
+				void USART_DMA_DisableIT(const Thor::Definitions::SubPeripheral& periph);
+
+				/*-------------------------------
+				 * Error Handler Functions
+				 *------------------------------*/
+				void USART_OverrunHandler();
 			};
 			typedef boost::shared_ptr<USARTClass> USARTClass_sPtr;
 		}

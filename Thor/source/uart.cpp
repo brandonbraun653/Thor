@@ -1031,7 +1031,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	/* Deduce at runtime which class object triggered this interrupt */
 	auto uart = getUARTClassRef(UartHandle->Instance);
 
-	if (uart->_getRxMode() == Modes::DMA)
+	if (uart && uart->_getRxMode() == Modes::DMA)
 	{
 		uart->_setRxComplete();
 
@@ -1054,7 +1054,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	}
 
 	/* Only runs if the user explicitly requests RX in blocking or interrupt mode */
-	else if (!uart->_getRxComplete())
+	else if (uart && !uart->_getRxComplete())
 	{
 		uart->_setRxComplete();
 

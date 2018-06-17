@@ -255,7 +255,7 @@ namespace Thor
 				uint8_t asyncRXDataSize = 0;													/**< Temporarily holds how large (in bytes) an RX data reception is */
 				uint32_t totalUnreadPackets = 0;													/**< Counter to inform the user how many unread packets are waiting */
 				
-				boost::circular_buffer<uint8_t> runningTally;
+				//boost::circular_buffer<uint8_t> runningTally;
 				
 				struct UARTClassStatus
 				{

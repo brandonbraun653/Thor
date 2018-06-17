@@ -59,29 +59,26 @@ namespace Thor
 					USART1,
 
 					//IT_HW
-					{},
+					{ USART1_IRQn, USART_IT_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_TX
-					{},
+					{ DMA2_Stream7_IRQn, USART_DMA_PREEMPT_PRIORITY, 0u},
 
 					//DMA_IT_RX
-					{},
+					{ DMA2_Stream2_IRQn, USART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA TX settings
-					{},
+					{ DMA2_Stream7, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
 
 					//DMA RX settings
-					{}
+					{ DMA2_Stream2, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY }
 					#endif
-
-					/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
-
 				#endif
 				},
 
 				/* SERIAL 2: */
 				{
-				#if defined(USART2) && !defined(UART2)
+				#if defined(USART2)
 					#if defined(STM32F767xx) || defined(STM32F446xx)
 					//TX pin
 					{ GPIOD, PIN_5, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
@@ -93,57 +90,26 @@ namespace Thor
 					USART2,
 
 					//IT_HW
-					{},
+					{ USART2_IRQn, USART_IT_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_TX
-					{},
+					{ DMA1_Stream6_IRQn, USART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_RX
-					{},
+					{ DMA1_Stream5_IRQn, USART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA TX settings
-					{},
+					{ DMA1_Stream6, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
 
 					//DMA RX settings
-					{}
+					{ DMA1_Stream5, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY }
 					#endif
-
-					/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
-				#endif
-
-				#if defined(UART2) && !defined(USART2)
-					#if defined(STM32F446xx)
-					//TX pin
-					{ GPIOA, PIN_2, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
-
-						//RX Pin
-					{ GPIOA, PIN_3, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART2 },
-
-						//Instance Ptr
-						USART2,
-
-						//IT_HW
-					{ USART2_IRQn, NVIC_PRIORITYGROUP_4, 6u, 0u },
-
-						//DMA_IT_TX
-					{},
-
-						//DMA_IT_RX
-					{},
-
-						//DMA TX settings
-					{},
-
-						//DMA RX settings
-					{}
-						#endif
-
 				#endif
 				},
 
 				/* SERIAL 3: */
 				{
-				#if defined(USART3) || defined(UART3)
+				#if defined(USART3)
 					#if defined(STM32F767xx) || defined(STM32F446xx)
 					//TX Pin
 					{ GPIOB, PIN_10, ALT_PP, ULTRA_SPD, PULLUP, GPIO_AF7_USART3 },
@@ -155,21 +121,20 @@ namespace Thor
 					USART3,
 
 					//IT_HW
-					{},
+					{ USART3_IRQn, USART_IT_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_TX
-					{},
+					{ DMA1_Stream3_IRQn, USART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_RX
-					{},
+					{ DMA1_Stream1_IRQn, USART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA TX settings
-					{},
+					{ DMA1_Stream3, DMA_CHANNEL_4, DMA_MEMORY_TO_PERIPH },
 
 					//DMA RX settings
-					{}
+					{ DMA1_Stream1, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY }
 					#endif
-					/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
 				#endif
 				},
 
@@ -251,21 +216,20 @@ namespace Thor
 					USART6,
 
 					//IT_HW
-					{},
+					{ USART6_IRQn, USART_IT_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_TX
-					{},
+					{ DMA2_Stream6_IRQn, USART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA_IT_RX
-					{},
+					{ DMA2_Stream1_IRQn, USART_DMA_PREEMPT_PRIORITY, 0u },
 
 					//DMA TX settings
-					{},
+					{ DMA2_Stream6, DMA_CHANNEL_5, DMA_MEMORY_TO_PERIPH },
 
 					//DMA RX settings
-					{}
+					{ DMA2_Stream1, DMA_CHANNEL_5, DMA_PERIPH_TO_MEMORY }
 					#endif
-					/* WHEN YOU SUPORT USART, COMPARE DMA AND IT SETTINGS */
 				#endif
 				},
 

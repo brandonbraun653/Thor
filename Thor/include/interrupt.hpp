@@ -155,7 +155,7 @@ namespace Thor
 }
 
 extern Thor::Interrupt::DMA::DMAHandler dma_handler;
-extern Thor::Interrupt::UART::UART_DMAHandlerManager uart_dma_manager;
+extern Thor::Interrupt::UART::UART_DMAHandlerManager uart_dma_manager, usart_dma_manager;
 extern Thor::Interrupt::SPI::SPI_DMAHandlerManager spi_dma_manager;
 
 

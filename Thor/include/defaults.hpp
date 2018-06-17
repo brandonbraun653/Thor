@@ -117,6 +117,8 @@ namespace Thor
 			 * that us the FreeRTOS ISR API calls. Their priority cannot be higher than configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY.*/
 			const uint32_t UART_IT_PREEMPT_PRIORITY = 5; CHECK_IT_PRIO(UART_IT_PREEMPT_PRIORITY);
 			const uint32_t UART_DMA_PREEMPT_PRIORITY = 5; CHECK_IT_PRIO(UART_DMA_PREEMPT_PRIORITY);
+			const uint32_t USART_IT_PREEMPT_PRIORITY = UART_IT_PREEMPT_PRIORITY;
+			const uint32_t USART_DMA_PREEMPT_PRIORITY = UART_DMA_PREEMPT_PRIORITY;
 			
 			#else			/* These values can safely take on the full range of the priority grouping bits (0-15) with 0 as the highest priority. */			const uint32_t UART_IT_PREEMPT_PRIORITY = 2;			const uint32_t UART_DMA_PREEMPT_PRIORITY = 2;
 			#endif 

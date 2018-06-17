@@ -195,8 +195,8 @@ namespace Thor
 			{
 				switch (pConfig.peripheral_instance)
 				{
-					#if defined(UART1)
-				case Thor::Interrupt::SRC_UART1:
+					#if defined(USART1)
+				case Thor::Interrupt::SRC_USART1:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(1);
 
@@ -205,8 +205,8 @@ namespace Thor
 					break;
 					#endif
 
-					#if defined(UART2)
-				case Thor::Interrupt::SRC_UART2:
+					#if defined(USART2)
+				case Thor::Interrupt::SRC_USART2:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(2);
 
@@ -215,8 +215,8 @@ namespace Thor
 					break;
 					#endif
 
-					#if defined(UART3)
-				case Thor::Interrupt::SRC_UART3:
+					#if defined(USART3)
+				case Thor::Interrupt::SRC_USART3:
 					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
 						executeCallbackFunction_TXDMA(3);
 
@@ -242,6 +242,16 @@ namespace Thor
 
 					else if (pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM)
 						executeCallbackFunction_RXDMA(5);
+					break;
+					#endif
+
+					#if defined(USART6)
+				case Thor::Interrupt::SRC_USART6:
+					if (pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH)
+						executeCallbackFunction_TXDMA(6);
+
+					else if (pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM)
+						executeCallbackFunction_RXDMA(6);
 					break;
 					#endif
 
@@ -419,7 +429,7 @@ namespace Thor
 }
 
 Thor::Interrupt::DMA::DMAHandler dma_handler;
-Thor::Interrupt::UART::UART_DMAHandlerManager uart_dma_manager;
+Thor::Interrupt::UART::UART_DMAHandlerManager uart_dma_manager, usart_dma_manager;
 Thor::Interrupt::SPI::SPI_DMAHandlerManager spi_dma_manager;
 
 #if defined(DMA1)
@@ -436,6 +446,9 @@ void DMA1_Stream0_IRQHandler(void)
 		case Thor::Interrupt::SRC_UART:
 			uart_dma_manager.requestCallback(config);
 			break;
+
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
 
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
@@ -461,6 +474,9 @@ void DMA1_Stream1_IRQHandler(void)
 			uart_dma_manager.requestCallback(config);
 			break;
 
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
+
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
 
@@ -484,6 +500,9 @@ void DMA1_Stream2_IRQHandler(void)
 		case Thor::Interrupt::SRC_UART:
 			uart_dma_manager.requestCallback(config);
 			break;
+
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
 
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
@@ -509,6 +528,9 @@ void DMA1_Stream3_IRQHandler(void)
 			uart_dma_manager.requestCallback(config);
 			break;
 
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
+
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
 
@@ -532,6 +554,9 @@ void DMA1_Stream4_IRQHandler(void)
 		case Thor::Interrupt::SRC_UART:
 			uart_dma_manager.requestCallback(config);
 			break;
+
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
 
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
@@ -557,6 +582,9 @@ void DMA1_Stream5_IRQHandler(void)
 			uart_dma_manager.requestCallback(config);
 			break;
 
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
+
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
 
@@ -581,6 +609,9 @@ void DMA1_Stream6_IRQHandler(void)
 			uart_dma_manager.requestCallback(config);
 			break;
 
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
+
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
 
@@ -604,6 +635,9 @@ void DMA1_Stream7_IRQHandler(void)
 		case Thor::Interrupt::SRC_UART:
 			uart_dma_manager.requestCallback(config);
 			break;
+
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
 
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
@@ -633,6 +667,9 @@ void DMA2_Stream0_IRQHandler(void)
 			uart_dma_manager.requestCallback(config);
 			break;
 
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
+
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
 
@@ -659,6 +696,9 @@ void DMA2_Stream1_IRQHandler(void)
 			uart_dma_manager.requestCallback(config);
 			break;
 
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
+
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
 
@@ -682,6 +722,9 @@ void DMA2_Stream2_IRQHandler(void)
 		case Thor::Interrupt::SRC_UART:
 			uart_dma_manager.requestCallback(config);
 			break;
+
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
 
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
@@ -707,6 +750,9 @@ void DMA2_Stream3_IRQHandler(void)
 			uart_dma_manager.requestCallback(config);
 			break;
 
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
+
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
 
@@ -730,6 +776,9 @@ void DMA2_Stream4_IRQHandler(void)
 		case Thor::Interrupt::SRC_UART:
 			uart_dma_manager.requestCallback(config);
 			break;
+
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
 
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
@@ -755,6 +804,9 @@ void DMA2_Stream5_IRQHandler(void)
 			uart_dma_manager.requestCallback(config);
 			break;
 
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
+
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
 
@@ -779,6 +831,9 @@ void DMA2_Stream6_IRQHandler(void)
 			uart_dma_manager.requestCallback(config);
 			break;
 
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
+
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
 
@@ -802,6 +857,9 @@ void DMA2_Stream7_IRQHandler(void)
 		case Thor::Interrupt::SRC_UART:
 			uart_dma_manager.requestCallback(config);
 			break;
+
+		case Thor::Interrupt::SRC_USART:
+			usart_dma_manager.requestCallback(config);
 
 		case Thor::Interrupt::SRC_SPI:
 			spi_dma_manager.requestCallback(config);
