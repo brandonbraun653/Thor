@@ -137,7 +137,15 @@ namespace Thor
 				void removeThreadTrigger(Trigger trig);
 				#endif 
 				
-				SerialClass(const int& channel);
+				/** Constructor used with Thor */
+				SerialClass(const int& channel, SerialPins* pinConfig);
+
+				/** Constructor used with Chimera */
+				SerialClass(const int& channel, const void* params = nullptr)
+				{
+					SerialClass(channel, (SerialPins*)params);
+				}
+				
 				~SerialClass() = default;
 
 

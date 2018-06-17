@@ -14,7 +14,6 @@ using namespace Thor::Peripheral::UART;
 using namespace Thor::Peripheral::GPIO;
 using namespace Thor::Defaults::Serial;
 
-
 #if defined(USING_FREERTOS)
 static SemaphoreHandle_t uartSemphrs[MAX_SERIAL_CHANNELS + 1];
 TaskTrigger uartTaskTrigger;
@@ -24,51 +23,51 @@ static UARTClass_sPtr uartObjects[MAX_SERIAL_CHANNELS + 1];
 
 static const UARTClass_sPtr& getUARTClassRef(USART_TypeDef* instance)
 {
-	/* Simply converts the pointer into the raw numerical address value, which be compared against 
+	/* Simply converts the pointer into the raw numerical address value, which be compared against
 	   the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
 	auto i = reinterpret_cast<std::uintptr_t>(instance);
 	switch (i)
 	{
-	#if defined(UART1)
+		#if defined(UART1)
 	case UART1_BASE:
 		return uartObjects[1];
 		break;
-	#endif
-	#if defined(UART2)
+		#endif
+		#if defined(UART2)
 	case UART2_BASE:
 		return uartObjects[2];
 		break;
-	#endif
-	#if defined(UART3)
+		#endif
+		#if defined(UART3)
 	case UART3_BASE:
 		return uartObjects[3];
 		break;
-	#endif
-	#if defined(UART4)
+		#endif
+		#if defined(UART4)
 	case UART4_BASE:
 		return uartObjects[4];
 		break;
-	#endif
-	#if defined(UART5)
+		#endif
+		#if defined(UART5)
 	case UART5_BASE:
 		return uartObjects[5];
 		break;
-	#endif
-	#if defined(UART6)
+		#endif
+		#if defined(UART6)
 	case UART6_BASE:
 		return uartObjects[6];
 		break;
-	#endif
-	#if defined(UART7)
+		#endif
+		#if defined(UART7)
 	case UART7_BASE:
 		return uartObjects[7];
 		break;
-	#endif
-	#if defined(UART8)
+		#endif
+		#if defined(UART8)
 	case UART8_BASE:
 		return uartObjects[8];
 		break;
-	#endif
+		#endif
 	};
 };
 
@@ -79,31 +78,30 @@ static uint32_t uartClockMask(USART_TypeDef* instance)
 	auto i = reinterpret_cast<std::uintptr_t>(instance);
 	switch (i)
 	{
-	#if defined(STM32F446xx) || defined(STM32F767xx)
-	#if defined(UART4)
+		#if defined(STM32F446xx) || defined(STM32F767xx)
+		#if defined(UART4)
 	case UART4_BASE:
 		return RCC_APB1ENR_UART4EN;
 		break;
-	#endif
-	#if defined(UART5)
+		#endif
+		#if defined(UART5)
 	case UART5_BASE:
 		return RCC_APB1ENR_UART5EN;
 		break;
-	#endif
-	#if defined(UART7)
+		#endif
+		#if defined(UART7)
 	case UART7_BASE:
 		return RCC_APB1ENR_UART7EN;
 		break;
-	#endif
-	#if defined(UART8)
+		#endif
+		#if defined(UART8)
 	case UART8_BASE:
 		return RCC_APB1ENR_UART8EN;
 		break;
-	#endif
-	#endif /* !STM32F446xx  !STM32F767xx */
+		#endif
+		#endif /* !STM32F446xx  !STM32F767xx */
 	};
 };
-
 
 namespace Thor
 {
@@ -117,20 +115,20 @@ namespace Thor
 				__HAL_UART_CLEAR_IT(UartHandle, UART_CLEAR_IDLEF);
 				#endif
 			}
-			
+
 			inline void UART_EnableIT_IDLE(UART_HandleTypeDef *UartHandle)
 			{
 				UART_ClearIT_IDLE(UartHandle);
 				__HAL_UART_ENABLE_IT(UartHandle, UART_IT_IDLE);
 			}
-			
+
 			inline void UART_DisableIT_IDLE(UART_HandleTypeDef *UartHandle)
 			{
 				UART_ClearIT_IDLE(UartHandle);
 				__HAL_UART_DISABLE_IT(UartHandle, UART_IT_IDLE);
 			}
-			
-			UARTClass::UARTClass(const int& channel)
+
+			UARTClass::UARTClass(const int& channel, Thor::Definitions::Serial::SerialPins* pinConfig)
 			{
 				uart_channel = channel;
 
@@ -147,35 +145,51 @@ namespace Thor
 				ITSettings_DMA_TX = srl_cfg[uart_channel].dmaIT_TX;
 				ITSettings_DMA_RX = srl_cfg[uart_channel].dmaIT_RX;
 
-				/* Create the output gpio pin objects */
-				tx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
-					srl_cfg[uart_channel].txPin.GPIOx,
-					srl_cfg[uart_channel].txPin.PinNum,
-					srl_cfg[uart_channel].txPin.Speed,
-					srl_cfg[uart_channel].txPin.Alternate);
+				/* Create the output GPIO pin objects */
+				if (pinConfig)
+				{
+					tx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+						pinConfig->TX_GPIOx,
+						pinConfig->TX_Pin,
+						PinSpeed::ULTRA_SPD,
+						pinConfig->TX_AltFuncCode);
 
-				rx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
-					srl_cfg[uart_channel].rxPin.GPIOx,
-					srl_cfg[uart_channel].rxPin.PinNum,
-					srl_cfg[uart_channel].rxPin.Speed,
-					srl_cfg[uart_channel].rxPin.Alternate);
+					rx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+						pinConfig->RX_GPIOx,
+						pinConfig->RX_Pin,
+						PinSpeed::ULTRA_SPD,
+						pinConfig->RX_AltFuncCode);
+				}
+				else
+				{
+					tx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+						srl_cfg[uart_channel].txPin.GPIOx,
+						srl_cfg[uart_channel].txPin.PinNum,
+						srl_cfg[uart_channel].txPin.Speed,
+						srl_cfg[uart_channel].txPin.Alternate);
+
+					rx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+						srl_cfg[uart_channel].rxPin.GPIOx,
+						srl_cfg[uart_channel].rxPin.PinNum,
+						srl_cfg[uart_channel].rxPin.Speed,
+						srl_cfg[uart_channel].rxPin.Alternate);
+				}
 
 				/* Initialize the buffer memory */
 				TXPacketBuffer.set_capacity(UART_QUEUE_SIZE);	TXPacketBuffer.clear();
 				RXPacketBuffer.set_capacity(UART_QUEUE_SIZE);	RXPacketBuffer.clear();
-				
-				
+
 				//Sometimes the buffer initializes with random data, which is bad...
 				//TODO: Check what causes this error ^^^
 				UARTPacket tmp;
 				tmp.data_ptr = nullptr;
 				tmp.length = 0;
 				tmp.bytesRead = 0;
-				
+
 				for (int i = 0; i < RXPacketBuffer.capacity(); i++)
 					RXPacketBuffer.push_back(tmp);
-				
-				//Should reset the begin/end pointers? 
+
+				//Should reset the begin/end pointers?
 				RXPacketBuffer.clear();
 
 				#if defined(USING_FREERTOS)
@@ -188,12 +202,12 @@ namespace Thor
 				end();
 			}
 
-			boost::shared_ptr<UARTClass> UARTClass::create(const int channel)
+			boost::shared_ptr<UARTClass> UARTClass::create(const int channel, Thor::Definitions::Serial::SerialPins* pinConfig)
 			{
 				//TODO: Put runtime assertion here and gracefully fail if channel outside bounds
 
 				//Forced to use this instead of make_shared due to required private constructor
-				boost::shared_ptr<UARTClass> newClass(new UARTClass(channel));
+				boost::shared_ptr<UARTClass> newClass(new UARTClass(channel, pinConfig));
 
 				//Register the object so interrupt handlers know the correct reference
 				uartObjects[channel] = newClass;
@@ -221,8 +235,8 @@ namespace Thor
 					switch (mode)
 					{
 					case Modes::BLOCKING:
-						txMode = mode; // Must be set before the other functions 
-						
+						txMode = mode; // Must be set before the other functions
+
 						/* Make sure RX side isn't using interrupts before disabling */
 						if (rxMode == Modes::BLOCKING)
 							UART_DisableInterrupts();
@@ -231,15 +245,15 @@ namespace Thor
 						break;
 
 					case Modes::INTERRUPT:
-						txMode = mode; // Must be set before the other functions 
-						
+						txMode = mode; // Must be set before the other functions
+
 						UART_EnableInterrupts();
 						UART_DMA_DeInit(periph);
 						break;
 
 					case Modes::DMA:
-						txMode = mode; // Must be set before the other functions 
-						
+						txMode = mode; // Must be set before the other functions
+
 						UART_EnableInterrupts();
 						UART_DMA_Init(periph);
 						break;
@@ -257,32 +271,32 @@ namespace Thor
 					switch (mode)
 					{
 					case Modes::BLOCKING:
-						rxMode = mode; // Must be set before the other functions 
-						
+						rxMode = mode; // Must be set before the other functions
+
 						/* Make sure TX side isn't using interrupts before disabling */
 						if (txMode == Modes::BLOCKING)
 							UART_DisableInterrupts();
 
 						UART_DMA_DeInit(periph);
-						
+
 						break;
 
 					case Modes::INTERRUPT:
-						rxMode = mode;	// Must be set before the other functions 
-						
+						rxMode = mode;	// Must be set before the other functions
+
 						UART_EnableInterrupts();
 						UART_DMA_DeInit(periph);
 						break;
 
 					case Modes::DMA:
-						rxMode = mode; // Must be set before the other functions 
-						
+						rxMode = mode; // Must be set before the other functions
+
 						UART_EnableInterrupts();
 						UART_DMA_Init(periph);
 
 						/* Set the idle line interrupt for asynchronously getting the end of transmission */
 						UART_EnableIT_IDLE(&uart_handle);
-						
+
 						/* Instruct the DMA hardware to start listening for transmissions */
 						HAL_UART_Receive_DMA(&uart_handle, RX_Queue[RXQueueIdx], UART_QUEUE_BUFFER_SIZE);
 						break;
@@ -324,9 +338,9 @@ namespace Thor
 				{
 				case Modes::BLOCKING:
 					#if defined(USING_FREERTOS)
-						halCode = HAL_UART_Transmit(&uart_handle, val, length, pdMS_TO_TICKS(BLOCKING_TIMEOUT_MS));
-					#else 
-						halCode = HAL_UART_Transmit(&uart_handle, val, length, BLOCKING_TIMEOUT_MS));
+					halCode = HAL_UART_Transmit(&uart_handle, val, length, pdMS_TO_TICKS(BLOCKING_TIMEOUT_MS));
+					#else
+					halCode = HAL_UART_Transmit(&uart_handle, val, length, BLOCKING_TIMEOUT_MS));
 					#endif
 
 					if (halCode == HAL_TIMEOUT)
@@ -346,7 +360,7 @@ namespace Thor
 					else
 					{
 						statusCode = Status::PERIPH_NOT_READY;
-						
+
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(uartSemphrs[uart_channel], NULL) != pdPASS)
 						{
@@ -373,7 +387,7 @@ namespace Thor
 					else
 					{
 						statusCode = Status::PERIPH_NOT_READY;
-						
+
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(uartSemphrs[uart_channel], NULL) != pdPASS)
 						{
@@ -390,8 +404,8 @@ namespace Thor
 					}
 					break;
 
-				default: 
-					statusCode = Status::PERIPH_ERROR; 
+				default:
+					statusCode = Status::PERIPH_ERROR;
 					break;
 				}
 				return statusCode;
@@ -407,13 +421,12 @@ namespace Thor
 				{
 				case Modes::BLOCKING:
 					/* It's possible to get into the condition where ORE is set before trying to receive some
-					 * new data. In the current STM HAL library, all error interrupts for the blocking mode are 
+					 * new data. In the current STM HAL library, all error interrupts for the blocking mode are
 					 * disabled by default so the overrun has to be handled manually. This restores normal
-					 * operation. A nearly exact condition of this bug is encountered here: https://goo.gl/bKi8Ps 
+					 * operation. A nearly exact condition of this bug is encountered here: https://goo.gl/bKi8Ps
 					 **/
 					UART_OverrunHandler();
-					
-					
+
 					#if defined(USING_FREERTOS)
 					if (HAL_UART_Receive(&uart_handle, buff, length, pdMS_TO_TICKS(BLOCKING_TIMEOUT_MS)) == HAL_OK)
 						statusCode = Status::PERIPH_OK;
@@ -426,7 +439,7 @@ namespace Thor
 				case Modes::INTERRUPT:
 					/* Redirects the data storage from internal buffers to the one specified for this function */
 					RX_ASYNC = false;
-					
+
 					if (HAL_UART_Receive_IT(&uart_handle, buff, length) == HAL_OK)
 						statusCode = Status::PERIPH_RX_IN_PROGRESS;
 					break;
@@ -434,7 +447,7 @@ namespace Thor
 				case Modes::DMA:
 					/* Redirects the data storage from internal buffers to the one specified for this function */
 					RX_ASYNC = false;
-					
+
 					if (HAL_UART_Receive_DMA(&uart_handle, buff, length) == HAL_OK)
 						statusCode = Status::PERIPH_RX_IN_PROGRESS;
 					break;
@@ -449,7 +462,7 @@ namespace Thor
 			{
 				Status error = Status::PERIPH_ERROR;
 				UARTPacket packet = RXPacketBuffer.front();
-				
+
 				/* First make sure we have a valid address */
 				if (packet.data_ptr)
 				{
@@ -457,10 +470,10 @@ namespace Thor
 					size_t readLength = packet.length - packet.bytesRead;
 					if (readLength > length)
 						readLength = length;
-					
+
 					memcpy(buff, packet.data_ptr + packet.bytesRead, readLength);
-					
-					/* Check if this read operation will completely empty the 
+
+					/* Check if this read operation will completely empty the
 					 * stored packet data. If so, we are free to pop it off the buffer */
 					if (length + packet.bytesRead >= packet.length)
 					{
@@ -473,10 +486,10 @@ namespace Thor
 						RXPacketBuffer.pop_front();
 						RXPacketBuffer.push_front(packet);
 					}
-					
+
 					error = Status::PERIPH_OK;
 				}
-				
+
 				return error;
 			}
 
@@ -519,14 +532,14 @@ namespace Thor
 			{
 				/** NOTE: The way some of these interrupts are handled may seem weird, but it's to protect against
 				 *	instances where the ISR is randomly triggered and there really shouldn't be any processing going on.
-				 *	While a few sources of these errant events have been tracked down, not all are found. Thus, it is 
+				 *	While a few sources of these errant events have been tracked down, not all are found. Thus, it is
 				 *	easier to structure the code in such a way that it only runs exactly when certain conditions are met.
 				 **/
-				
+
 				#if defined(STM32F7)
-				bool RX_DATA_READY		= __HAL_UART_GET_FLAG(&uart_handle, UART_FLAG_RXNE);
-				bool RX_LINE_IDLE		= __HAL_UART_GET_FLAG(&uart_handle, UART_FLAG_IDLE);
-				bool RX_LINE_IDLE_EN	= __HAL_UART_GET_IT_SOURCE(&uart_handle, UART_IT_IDLE);
+				bool RX_DATA_READY = __HAL_UART_GET_FLAG(&uart_handle, UART_FLAG_RXNE);
+				bool RX_LINE_IDLE = __HAL_UART_GET_FLAG(&uart_handle, UART_FLAG_IDLE);
+				bool RX_LINE_IDLE_EN = __HAL_UART_GET_IT_SOURCE(&uart_handle, UART_IT_IDLE);
 
 				/*------------------------------------
 				* Handle Asynchronous RX (Interrupt and DMA Mode)
@@ -543,7 +556,7 @@ namespace Thor
 						if (asyncRXDataSize == 0)
 						{
 							memset(RX_Queue[RXQueueIdx], 0, UART_QUEUE_BUFFER_SIZE);
-							
+
 							/* Enable UART_IT_IDLE to detect transmission end.
 							 * Sometimes IDLEF is set before interrupt enable, which will immediately trigger this ISR,
 							 * and cause reception of only 1 character. Clear first to ensure accurate idle line trigger. */
@@ -580,18 +593,18 @@ namespace Thor
 					if (rxMode == INTERRUPT)
 					{
 						UART_DisableIT_IDLE(&uart_handle);
-						
+
 						/* Copy data received to the internal buffer */
-						RX_tempPacket.data_ptr  = RX_Queue[RXQueueIdx];
-						RX_tempPacket.length	= asyncRXDataSize;
+						RX_tempPacket.data_ptr = RX_Queue[RXQueueIdx];
+						RX_tempPacket.length = asyncRXDataSize;
 						RXPacketBuffer.push_back(RX_tempPacket);
-						
+
 						/* Clean up the class variables to prepare for a new reception */
 						rx_complete = true;
-						asyncRXDataSize = 0;	
+						asyncRXDataSize = 0;
 						totalUnreadPackets++;
 						_rxIncrQueueIdx();
-						
+
 						/* Finally, call this here because the normal HAL_UART_IRQHandler does not get called
 						 * due to the asynchronous nature of operation. */
 						HAL_UART_RxCpltCallback(&uart_handle);
@@ -599,13 +612,13 @@ namespace Thor
 					else if (rxMode == DMA)
 					{
 						auto num_received = (size_t)(uart_handle.RxXferSize - uart_handle.hdmarx->Instance->NDTR);
-						
+
 						if (num_received != 0)
 						{
 							UART_DisableIT_IDLE(&uart_handle);
 							rx_complete = true;
 							totalUnreadPackets++;
-						
+
 							/* Force DMA hard reset to trigger the DMA RX Complete handler */
 							__HAL_DMA_DISABLE(uart_handle.hdmarx);
 						}
@@ -614,7 +627,6 @@ namespace Thor
 							/* ISR was randomly triggered. Clear any errant flags that might be enabled.*/
 							UART_ClearIT_IDLE(&uart_handle);
 						}
-							
 					}
 				}
 
@@ -642,11 +654,11 @@ namespace Thor
 					volatile uint32_t cr1 = READ_REG(uart_handle.Instance->CR1);
 
 					/* Prepare necessary flags for ISR flow control */
-					bool RX_DATA_READY		= ((isrflags & UART_FLAG_RXNE) == UART_FLAG_RXNE);
-					bool RX_LINE_IDLE		= ((isrflags & UART_FLAG_IDLE) == UART_FLAG_IDLE);
-					bool RX_DATA_READY_IE	= ((cr1 & USART_CR1_RXNEIE) == USART_CR1_RXNEIE);
-					bool RX_LINE_IDLE_IE	= ((cr1 & USART_CR1_IDLEIE) == USART_CR1_IDLEIE);
-					
+					bool RX_DATA_READY = ((isrflags & UART_FLAG_RXNE) == UART_FLAG_RXNE);
+					bool RX_LINE_IDLE = ((isrflags & UART_FLAG_IDLE) == UART_FLAG_IDLE);
+					bool RX_DATA_READY_IE = ((cr1 & USART_CR1_RXNEIE) == USART_CR1_RXNEIE);
+					bool RX_LINE_IDLE_IE = ((cr1 & USART_CR1_IDLEIE) == USART_CR1_IDLEIE);
+
 					/* RX In Progress */
 					if (RX_DATA_READY && RX_DATA_READY_IE && uart_handle.gState != HAL_UART_STATE_BUSY_TX)
 					{
@@ -689,15 +701,15 @@ namespace Thor
 						if (rxMode == Modes::INTERRUPT)
 						{
 							UART_DisableIT_IDLE(&uart_handle);
-							
+
 							/* Copy packets received to the internal buffer */
-							RX_tempPacket.data_ptr	= RX_Queue[RXQueueIdx];
-							RX_tempPacket.length	= asyncRXDataSize;
+							RX_tempPacket.data_ptr = RX_Queue[RXQueueIdx];
+							RX_tempPacket.length = asyncRXDataSize;
 							RXPacketBuffer.push_back(RX_tempPacket);
-							
+
 							/* Clean up the class variables to prepare for a new reception */
 							rx_complete = true;
-							asyncRXDataSize = 0; 
+							asyncRXDataSize = 0;
 							totalUnreadPackets++;
 							_rxIncrQueueIdx();
 
@@ -709,13 +721,13 @@ namespace Thor
 						else if (rxMode == Modes::DMA)
 						{
 							auto num_received = (size_t)(uart_handle.RxXferSize - uart_handle.hdmarx->Instance->NDTR);
-							
+
 							if (num_received != 0)
 							{
 								UART_DisableIT_IDLE(&uart_handle);
 								rx_complete = true;
 								totalUnreadPackets++;
-						
+
 								/* Force DMA hard reset to trigger the DMA RX Complete handler */
 								__HAL_DMA_DISABLE(uart_handle.hdmarx);
 							}
@@ -726,7 +738,7 @@ namespace Thor
 				/*------------------------------------
 				* Handle Synchronous RX or Asynchronous TX (Interrupt Mode)
 				*------------------------------------*/
-				if(!RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX)
+				if (!RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX)
 					HAL_UART_IRQHandler(&uart_handle);
 				#endif
 			}
@@ -746,13 +758,13 @@ namespace Thor
 			{
 				uartTaskTrigger.attachEventConsumer(trig, semphr);
 			}
-			
+
 			void UARTClass::removeThreadTrigger(Trigger trig)
 			{
 				uartTaskTrigger.removeEventConsumer(trig);
 			}
-			#endif 
-			
+			#endif
+
 			void UARTClass::UART_Init()
 			{
 				UART_EnableClock();
@@ -814,7 +826,6 @@ namespace Thor
 					RX_ASYNC = true;
 					__HAL_UART_ENABLE_IT(&uart_handle, UART_IT_RXNE); 	//RX Data Register not Empty
 				}
-					
 
 				UART_PeriphState.uart_interrupts_enabled = true;
 			}
@@ -968,18 +979,18 @@ namespace Thor
 				#if defined(STM32F7)
 				__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_OREF);
 				uart_handle.Instance->RDR;
-				#endif 
+				#endif
 			}
-			
+
 			uint8_t* UARTClass::assignTXBuffer(const uint8_t* data, const size_t length)
 			{
 				/* Move to the next array */
 				txIncrQueueIdx();
-				
+
 				/* Overwrite the old data */
-				//memset(_txCurrentQueueAddr(), 0, UART_QUEUE_BUFFER_SIZE); //Likely not needed 
+				//memset(_txCurrentQueueAddr(), 0, UART_QUEUE_BUFFER_SIZE); //Likely not needed
 				memcpy(txCurrentQueueAddr(), data, length);
-				
+
 				return txCurrentQueueAddr();
 			}
 		}
@@ -1008,7 +1019,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 			#endif
 		}
 	}
-	
+
 	/* Signal any waiting threads */
 	#if defined(USING_FREERTOS)
 	uartTaskTrigger.logEvent(TX_COMPLETE, &uartTaskTrigger);
@@ -1031,26 +1042,26 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 		/* Construct the received packet and push into the receive queue */
 		Thor::Peripheral::UART::UARTClass::UARTPacket tempPacket;
 		tempPacket.data_ptr = uart->_rxCurrentQueueAddr();
-		tempPacket.length	= num_received;
+		tempPacket.length = num_received;
 		uart->_rxBufferPushBack(tempPacket);
-		
+
 		/* Increment the queue address pointer so we don't overwrite data */
 		uart->_rxIncrQueueIdx();
-		
+
 		/* Start the listening process again for a new packet */
 		UART_EnableIT_IDLE(UartHandle);
 		HAL_UART_Receive_DMA(UartHandle, uart->_rxCurrentQueueAddr(), UART_QUEUE_BUFFER_SIZE);
 	}
 
 	/* Only runs if the user explicitly requests RX in blocking or interrupt mode */
-	else if(!uart->_getRxComplete())
+	else if (!uart->_getRxComplete())
 	{
 		uart->_setRxComplete();
 
 		if (uart->_getRxMode() == Modes::INTERRUPT)
 			uart->_setRxAsync();
 	}
-	
+
 	/* Signal any waiting threads  */
 	#if defined(USING_FREERTOS)
 	uartTaskTrigger.logEvent(RX_COMPLETE, &uartTaskTrigger);

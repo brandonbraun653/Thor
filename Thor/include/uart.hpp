@@ -178,7 +178,7 @@ namespace Thor
 
 			private:
 				/** The real constructor used by UARTClass::create */
-				UARTClass(const int& channel);
+				UARTClass(const int& channel, Thor::Definitions::Serial::SerialPins* pinConfig);
 
 			public:
 				/** A factory method to create a new UARTClass object.
@@ -190,7 +190,7 @@ namespace Thor
 				 *	@param[in] channel Hardware peripheral channel number (i.e. 1 for UART1, 4 for UART4, etc)
 				 *	@return Shared pointer to the new object
 				 **/
-				static boost::shared_ptr<UARTClass> create(const int channel);
+				static boost::shared_ptr<UARTClass> create(const int channel, Thor::Definitions::Serial::SerialPins* pinConfig = nullptr);
 				~UARTClass();
 
 				/** Easily references buffered data for TX or RX */

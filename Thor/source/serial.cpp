@@ -47,18 +47,18 @@ namespace Thor
 				#endif 
 			};
 			
-			SerialClass::SerialClass(const int& channel)
+			SerialClass::SerialClass(const int& channel, SerialPins* config)
 			{
 				//TODO: Add an assert here for checking the channel boundary...exceptions?
 				this->serial_channel = channel;
 				if (serialPeripheralMap[channel].ON_UART)
 				{
-					auto tmp = UARTClass::create(serialPeripheralMap[channel].peripheral_number);
+					auto tmp = UARTClass::create(serialPeripheralMap[channel].peripheral_number, config);
 					serial = boost::dynamic_pointer_cast<SerialBase, UARTClass>(tmp);
 				}
 				else
 				{
-					auto tmp = USARTClass::create(serialPeripheralMap[channel].peripheral_number);
+					auto tmp = USARTClass::create(serialPeripheralMap[channel].peripheral_number, config);
 					serial = boost::dynamic_pointer_cast<SerialBase, USARTClass>(tmp);
 				}
 			}

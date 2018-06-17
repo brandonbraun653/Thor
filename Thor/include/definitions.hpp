@@ -91,6 +91,60 @@ namespace Thor
 				ONE      = true,
 				ENABLED  = true
 			};
+
+			enum PinNum : uint32_t
+			{
+				PIN_0 = GPIO_PIN_0,
+				PIN_1 = GPIO_PIN_1,
+				PIN_2 = GPIO_PIN_2,
+				PIN_3 = GPIO_PIN_3,
+				PIN_4 = GPIO_PIN_4,
+				PIN_5 = GPIO_PIN_5,
+				PIN_6 = GPIO_PIN_6,
+				PIN_7 = GPIO_PIN_7,
+				PIN_8 = GPIO_PIN_8,
+				PIN_9 = GPIO_PIN_9,
+				PIN_10 = GPIO_PIN_10,
+				PIN_11 = GPIO_PIN_11,
+				PIN_12 = GPIO_PIN_12,
+				PIN_13 = GPIO_PIN_13,
+				PIN_14 = GPIO_PIN_14,
+				PIN_15 = GPIO_PIN_15,
+				PIN_ALL = GPIO_PIN_All,
+				MAX_PINS = 16,
+				NOT_A_PIN = UINT_MAX
+			};
+
+			enum PinMode : uint32_t
+			{
+				INPUT = GPIO_MODE_INPUT,
+				OUTPUT_PP = GPIO_MODE_OUTPUT_PP,
+				OUTPUT_OD = GPIO_MODE_OUTPUT_OD,
+				ALT_PP = GPIO_MODE_AF_PP,
+				ALT_OD = GPIO_MODE_AF_OD,
+				ANALOG = GPIO_MODE_ANALOG,
+				IT_RISING = GPIO_MODE_IT_RISING,
+				IT_FALLING = GPIO_MODE_IT_FALLING,
+				IT_RISING_FALLING = GPIO_MODE_IT_RISING_FALLING,
+				EVT_RISING = GPIO_MODE_EVT_RISING,
+				EVT_FALLING = GPIO_MODE_EVT_FALLING,
+				EVT_RISING_FALLING = GPIO_MODE_EVT_RISING_FALLING
+			};
+
+			enum PinSpeed : uint32_t
+			{
+				LOW_SPD = GPIO_SPEED_FREQ_LOW,
+				MEDIUM_SPD = GPIO_SPEED_FREQ_MEDIUM,
+				HIGH_SPD = GPIO_SPEED_FREQ_HIGH,
+				ULTRA_SPD = GPIO_SPEED_FREQ_VERY_HIGH
+			};
+
+			enum PinPull : uint32_t
+			{
+				NOPULL = GPIO_NOPULL,
+				PULLUP = GPIO_PULLUP,
+				PULLDN = GPIO_PULLDOWN
+			};
 		}
 
 		/** @namespace Thor::Definitions::TIMER */
@@ -387,14 +441,16 @@ namespace Thor
 		namespace UART
 		{
 			const unsigned int MAX_UART_CHANNELS = 4;			/**< Total possible UART specific channels for any supported STM32 chip. */
-			const unsigned int UART_QUEUE_SIZE = 10;				/**< The max number of independent transmissions that can be stored internally. */
+			const unsigned int UART_QUEUE_SIZE = 10;			/**< The max number of independent transmissions that can be stored internally. */
 			const unsigned int UART_QUEUE_BUFFER_SIZE = 32;		/**< The max number of bytes that can be stored from a single continuous transmission. */
 		}
 
 		/** @namespace Thor::Definitions::USART */
 		namespace USART
 		{
-			const unsigned int MAX_USART_CHANNELS = 4; /**< Total possible USART specific channels for any supported STM32 chip. */
+			const unsigned int MAX_USART_CHANNELS = 4;			/**< Total possible USART specific channels for any supported STM32 chip. */
+			const unsigned int USART_QUEUE_SIZE = 10;			/**< The max number of independent transmissions that can be stored internally. */
+			const unsigned int USART_QUEUE_BUFFER_SIZE = 32;	/**< The max number of bytes that can be stored from a single continuous transmission. */
 		}
 
 		/** @namespace Thor::Definitions::Serial */
@@ -427,6 +483,19 @@ namespace Thor
 			{
 				bool ON_UART;
 				uint8_t peripheral_number;
+			};
+
+			/** A description of specific TX/RX pins to use for USART. This comes in handy when the Thor default channel options are not
+			*	acceptable and an alternate pin configuration must be used.
+			**/
+			struct SerialPins
+			{
+				GPIO_TypeDef* TX_GPIOx;		/**< Port assignment for the TX line */
+				GPIO_TypeDef* RX_GPIOx;		/**< Port assignment for the RX line */
+				GPIO::PinNum TX_Pin;		/**< Pin assignment for the TX line */
+				GPIO::PinNum RX_Pin;		/**< Pin assignment for the RX line */
+				uint8_t TX_AltFuncCode;		/**< Alternate function for the pin peripheral. See device datasheet for details on the mapping. */
+				uint8_t RX_AltFuncCode;		/**< Alternate function for the pin peripheral. See device datasheet for details on the mapping. */
 			};
 			
 			class SerialBase
