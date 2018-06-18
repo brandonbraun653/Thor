@@ -952,7 +952,7 @@ namespace Thor
 
 					__HAL_LINKDMA(&spi_handle, hdmatx, hdma_spi_tx);
 
-					spi_dma_manager.attachCallbackFunction_TXDMA(spi_channel, boost::bind(&SPIClass::SPI_IRQHandler_TXDMA, this));
+					spiDMAManager.attachCallback_TXDMA(spi_channel, boost::bind(&SPIClass::SPI_IRQHandler_TXDMA, this));
 
 					SPI_DMA_EnableInterrupts(periph);
 
@@ -967,7 +967,7 @@ namespace Thor
 
 					__HAL_LINKDMA(&spi_handle, hdmarx, hdma_spi_rx);
 
-					spi_dma_manager.attachCallbackFunction_RXDMA(spi_channel, boost::bind(&SPIClass::SPI_IRQHandler_RXDMA, this));
+					spiDMAManager.attachCallback_RXDMA(spi_channel, boost::bind(&SPIClass::SPI_IRQHandler_RXDMA, this));
 
 					SPI_DMA_EnableInterrupts(periph);
 
@@ -985,7 +985,7 @@ namespace Thor
 					HAL_DMA_Abort(spi_handle.hdmatx);
 					HAL_DMA_DeInit(spi_handle.hdmatx);
 					SPI_DMA_DisableInterrupts(periph);
-					spi_dma_manager.removeCallbackFunction_TXDMA(spi_channel);
+					spiDMAManager.removeCallback_TXDMA(spi_channel);
 
 					SPI_PeriphState.dma_enabled_tx = false;
 				}
@@ -997,7 +997,7 @@ namespace Thor
 					HAL_DMA_Abort(spi_handle.hdmarx);
 					HAL_DMA_DeInit(spi_handle.hdmarx);
 					SPI_DMA_DisableInterrupts(periph);
-					spi_dma_manager.removeCallbackFunction_RXDMA(spi_channel);
+					spiDMAManager.removeCallback_RXDMA(spi_channel);
 
 					SPI_PeriphState.dma_enabled_rx = false;
 				}

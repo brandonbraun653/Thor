@@ -876,7 +876,7 @@ namespace Thor
 
 					__HAL_LINKDMA(&uart_handle, hdmatx, hdma_uart_tx);
 
-					uart_dma_manager.attachCallbackFunction_TXDMA(uart_channel, boost::bind(&UARTClass::IRQHandler_TXDMA, this));
+					serialDMAManager.attachCallback_TXDMA(uart_channel, boost::bind(&UARTClass::IRQHandler_TXDMA, this));
 
 					UART_DMA_EnableIT(periph);
 
@@ -898,7 +898,7 @@ namespace Thor
 
 					__HAL_LINKDMA(&uart_handle, hdmarx, hdma_uart_rx);
 
-					uart_dma_manager.attachCallbackFunction_RXDMA(uart_channel, boost::bind(&UARTClass::IRQHandler_RXDMA, this));
+					serialDMAManager.attachCallback_RXDMA(uart_channel, boost::bind(&UARTClass::IRQHandler_RXDMA, this));
 
 					UART_DMA_EnableIT(periph);
 
@@ -916,7 +916,7 @@ namespace Thor
 					HAL_DMA_Abort(uart_handle.hdmatx);
 					HAL_DMA_DeInit(uart_handle.hdmatx);
 					UART_DMA_DisableIT(periph);
-					uart_dma_manager.removeCallbackFunction_TXDMA(uart_channel);
+					serialDMAManager.removeCallback_TXDMA(uart_channel);
 
 					UART_PeriphState.dma_enabled_tx = false;
 				}
@@ -928,7 +928,7 @@ namespace Thor
 					HAL_DMA_Abort(uart_handle.hdmarx);
 					HAL_DMA_DeInit(uart_handle.hdmarx);
 					UART_DMA_DisableIT(periph);
-					uart_dma_manager.removeCallbackFunction_RXDMA(uart_channel);
+					serialDMAManager.removeCallback_RXDMA(uart_channel);
 
 					UART_PeriphState.dma_enabled_rx = false;
 				}

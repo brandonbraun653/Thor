@@ -90,73 +90,72 @@ namespace Thor
 				bool calculatePeriphSource(PeriphConfig& output);
 				void updateDMASource(uint32_t periph, uint32_t stream);
 				void copyRegisters(uint32_t REG_LISR, uint32_t REG_HISR, uint32_t REG_SxCR, uint32_t REG_SxPAR);
+				void IRQHandler();
 
-				DMAHandler();
-				~DMAHandler();
+				DMAHandler() = default;
+				~DMAHandler() = default;
 			private:
 				uint32_t DMA_Periph, DMA_Stream, DMA_Channel;
 				uint32_t REG_DMA_LISR, REG_DMA_HISR;
 				uint32_t REG_DMA_SxCR, REG_DMA_SxPAR;
 			};
-		}
 
-		namespace UART
-		{
-			class UART_DMAHandlerManager
+			class DMAManagerBase
 			{
 			public:
-				void requestCallback(Interrupt::DMA::PeriphConfig pConfig);
+				/** User defined function that specifies exactly which callback to use 
+				 *	@param[in]	pConfig		Container of information describing the DMA source and type*/
+				virtual void requestCallback(PeriphConfig pConfig) = 0;
 
-				void attachCallbackFunction_TXDMA(int uart_num, func_void func);
-				void removeCallbackFunction_TXDMA(int uart_num);
-				void attachCallbackFunction_RXDMA(int uart_num, func_void func);
-				void removeCallbackFunction_RXDMA(int uart_num);
+				void attachCallback_TXDMA(int periphNum, func_void func);
+				void attachCallback_RXDMA(int periphNum, func_void func);
+				void removeCallback_TXDMA(int periphNum);
+				void removeCallback_RXDMA(int periphNum);
 
-				UART_DMAHandlerManager();
-				~UART_DMAHandlerManager();
+				void executeCallback_TXDMA(int periphNum);
+				void executeCallback_RXDMA(int periphNum);
+
+				DMAManagerBase(const int numCallbacks);
+				~DMAManagerBase() = default;
 
 			private:
-				/* Assumed maximum number of channels to ever be encountered on any device.
-				* If needed, the number can always be updated. It is only used for memory
-				* allocation sizes. */
-				const int MAX_UART_CHANNELS = 10;
-				boost::container::vector<func_void> txdma_callbacks;
-				boost::container::vector<func_void> rxdma_callbacks;
+				boost::container::vector<func_void> txdmaCallbacks;
+				boost::container::vector<func_void> rxdmaCallbacks;
+			};
+		}
 
-				void executeCallbackFunction_TXDMA(int uart_num);
-				void executeCallbackFunction_RXDMA(int uart_num);
+		namespace Serial
+		{
+			class Serial_DMAHandlerManager : public Interrupt::DMA::DMAManagerBase
+			{
+			public:
+				void requestCallback(Interrupt::DMA::PeriphConfig pConfig) override;
+
+				Serial_DMAHandlerManager() : DMAManagerBase(Thor::Definitions::Serial::MAX_SERIAL_CHANNELS + 1) {};
+				~Serial_DMAHandlerManager() = default;
+
+			private:
 			};
 		}
 
 		namespace SPI
 		{
-			class SPI_DMAHandlerManager
+			class SPI_DMAHandlerManager : public Interrupt::DMA::DMAManagerBase
 			{
 			public:
-				void requestCallback(Interrupt::DMA::PeriphConfig pConfig);
+				void requestCallback(Interrupt::DMA::PeriphConfig pConfig) override;
 
-				void attachCallbackFunction_TXDMA(int spi_num, func_void func);
-				void removeCallbackFunction_TXDMA(int spi_num);
-				void attachCallbackFunction_RXDMA(int spi_num, func_void func);
-				void removeCallbackFunction_RXDMA(int spi_num);
-
-				SPI_DMAHandlerManager();
-				~SPI_DMAHandlerManager();
+				SPI_DMAHandlerManager() : DMAManagerBase(Thor::Definitions::SPI::MAX_SPI_CHANNELS + 1) {};
+				~SPI_DMAHandlerManager() = default;
 
 			private:
-				boost::container::vector<func_void> txdma_callbacks;
-				boost::container::vector<func_void> rxdma_callbacks;
-
-				void executeCallbackFunction_TXDMA(int spi_num);
-				void executeCallbackFunction_RXDMA(int spi_num);
 			};
 		}
 	}
 }
 
-extern Thor::Interrupt::DMA::DMAHandler dma_handler;
-extern Thor::Interrupt::UART::UART_DMAHandlerManager uart_dma_manager, usart_dma_manager;
-extern Thor::Interrupt::SPI::SPI_DMAHandlerManager spi_dma_manager;
+extern Thor::Interrupt::Serial::Serial_DMAHandlerManager serialDMAManager;
+extern Thor::Interrupt::SPI::SPI_DMAHandlerManager spiDMAManager;
 
 
 
