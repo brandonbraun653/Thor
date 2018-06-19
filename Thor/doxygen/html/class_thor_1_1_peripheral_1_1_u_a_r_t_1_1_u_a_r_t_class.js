@@ -3,7 +3,7 @@ var class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class =
     [ "UARTPacket", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet.html", "struct_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class_1_1_u_a_r_t_packet" ],
     [ "attachSettings", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a9038df0656f11d307889e148f45890d5", null ],
     [ "availablePackets", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a7d583b00cbd5f3ddc58db5bac9fa2eb3", null ],
-    [ "begin", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a6edd6433ecf5800949eba17d45a50355", null ],
+    [ "begin", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a217d3484fac030b38dce2eb8a5e50736", null ],
     [ "end", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#ad56dde1a0a75879dfb4a27fab098a8d5", null ],
     [ "IRQHandler", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a1ea0ce3d2908c1cf0927ebd418834a39", null ],
     [ "IRQHandler_RXDMA", "class_thor_1_1_peripheral_1_1_u_a_r_t_1_1_u_a_r_t_class.html#a135048b23f4dc5d40d7f8faf14401a15", null ],

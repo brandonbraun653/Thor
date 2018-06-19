@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['gpio_5finitializer',['GPIO_Initializer',['../struct_g_p_i_o___initializer.html',1,'']]],
-  ['gpioclass',['GPIOClass',['../class_thor_1_1_peripheral_1_1_g_p_i_o_1_1_g_p_i_o_class.html',1,'Thor::Peripheral::GPIO']]]
+  ['hardwareclassmapping',['HardwareClassMapping',['../struct_thor_1_1_definitions_1_1_serial_1_1_hardware_class_mapping.html',1,'Thor::Definitions::Serial']]]
 ];

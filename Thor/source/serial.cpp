@@ -54,79 +54,79 @@ namespace Thor
 				if (serialPeripheralMap[channel].ON_UART)
 				{
 					auto tmp = UARTClass::create(serialPeripheralMap[channel].peripheral_number, config);
-					serial = boost::dynamic_pointer_cast<SerialBase, UARTClass>(tmp);
+					this->serial = boost::dynamic_pointer_cast<SerialBase, UARTClass>(tmp);
 				}
 				else
 				{
 					auto tmp = USARTClass::create(serialPeripheralMap[channel].peripheral_number, config);
-					serial = boost::dynamic_pointer_cast<SerialBase, USARTClass>(tmp);
+					this->serial = boost::dynamic_pointer_cast<SerialBase, USARTClass>(tmp);
 				}
 			}
 
 			ThorStatus SerialClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
 			{
-				return serial->begin(baud, tx_mode, rx_mode);
+				return this->serial->begin(baud, tx_mode, rx_mode);
 			}
 			
 			Status SerialClass::setMode(const SubPeripheral& periph, const Modes& mode)
 			{
-				return serial->setMode(periph, mode);
+				return this->serial->setMode(periph, mode);
 			}
 			
 			Status SerialClass::write(uint8_t* val, size_t length)
 			{
-				return serial->write(val, length);
+				return this->serial->write(val, length);
 			}
 			
 			Status SerialClass::write(char* string, size_t length)
 			{
-				return serial->write(string, length);
+				return this->serial->write(string, length);
 			}
 			
 			Status SerialClass::write(const char* string)
 			{
-				return serial->write(string);
+				return this->serial->write(string);
 			}
 			
 			Status SerialClass::write(const char* string, size_t length)
 			{
-				return serial->write(string, length);
+				return this->serial->write(string, length);
 			}
 			
 			Status SerialClass::readSync(uint8_t* buff, size_t length)
 			{
-				return serial->readSync(buff, length);
+				return this->serial->readSync(buff, length);
 			}
 			
 			Status SerialClass::readPacket(uint8_t* buff, size_t buff_length)
 			{
-				return serial->readPacket(buff, buff_length);
+				return this->serial->readPacket(buff, buff_length);
 			}
 	
 			uint32_t SerialClass::availablePackets()
 			{
-				return serial->availablePackets();
+				return this->serial->availablePackets();
 			}
 			
 			size_t SerialClass::nextPacketSize()
 			{
-				return serial->nextPacketSize();
+				return this->serial->nextPacketSize();
 			}
 			
 			void SerialClass::end()
 			{
-				serial->end();
+				this->serial->end();
 			}
 			
 			#if defined(USING_FREERTOS)
 			void SerialClass::attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr)
 			{
-				serial->attachThreadTrigger(trig, semphr);
+				this->serial->attachThreadTrigger(trig, semphr);
 			}
 			
 			void SerialClass::removeThreadTrigger(Trigger trig)
 			{
-				serial->removeThreadTrigger(trig);
+				this->serial->removeThreadTrigger(trig);
 			}
 			#endif 
 

@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['max_5fserial_5fchannels',['MAX_SERIAL_CHANNELS',['../namespace_thor_1_1_definitions_1_1_serial.html#aa5400ef1b08a82859bffd1f3269486c3',1,'Thor::Definitions::Serial']]],
-  ['max_5fuart_5fchannels',['MAX_UART_CHANNELS',['../namespace_thor_1_1_definitions_1_1_u_a_r_t.html#a3e2e798f93ffa6e15f110efe079a1555',1,'Thor::Definitions::UART']]],
-  ['max_5fusart_5fchannels',['MAX_USART_CHANNELS',['../namespace_thor_1_1_definitions_1_1_u_s_a_r_t.html#a7dd2ba9e4fe318ad90468e56a71452f6',1,'Thor::Definitions::USART']]],
-  ['maxthreadinittimeout_5fms',['maxThreadInitTimeout_ms',['../namespace_thor_1_1_definitions_1_1_threading.html#a04ab19028537156d217495e324976a87',1,'Thor::Definitions::Threading']]],
-  ['maxthreads',['maxThreads',['../namespace_thor_1_1_definitions_1_1_threading.html#a4da3bf1d9b6632d485679771304a2eb3',1,'Thor::Definitions::Threading']]]
+  ['rx_5faltfunccode',['RX_AltFuncCode',['../struct_thor_1_1_definitions_1_1_serial_1_1_serial_pins.html#a67529d1867e66ea62d0ef0d9c70dccf6',1,'Thor::Definitions::Serial::SerialPins']]],
+  ['rx_5fgpiox',['RX_GPIOx',['../struct_thor_1_1_definitions_1_1_serial_1_1_serial_pins.html#ad8fe2b5043eaf92bfd430cbe79dc3882',1,'Thor::Definitions::Serial::SerialPins']]],
+  ['rx_5fpin',['RX_Pin',['../struct_thor_1_1_definitions_1_1_serial_1_1_serial_pins.html#a71046490561fe707197c93c46912dd0a',1,'Thor::Definitions::Serial::SerialPins']]]
 ];

@@ -87,25 +87,128 @@ $(document).ready(function(){initNavTree('class_thor_1_1_peripheral_1_1_s_p_i_1_
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="class_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">Thor::Peripheral::SPI::SPIClass Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="dynheader">
-Inheritance diagram for Thor::Peripheral::SPI::SPIClass:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="class_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class.png" usemap="#Thor::Peripheral::SPI::SPIClass_map" alt=""/>
-  <map id="Thor::Peripheral::SPI::SPIClass_map" name="Thor::Peripheral::SPI::SPIClass_map">
-</map>
- </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class_1_1_s_p_i_packet.html">SPIPacket</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a079a2ab8df8302c7243c20f7dd7ffcbf"><td class="memItemLeft" align="right" valign="top">Thor::Definitions::Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class.html#a079a2ab8df8302c7243c20f7dd7ffcbf">setMode</a> (const SubPeripheral &amp;periph, const Modes &amp;mode)</td></tr>
+<tr class="separator:a079a2ab8df8302c7243c20f7dd7ffcbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa06435e61d67dff32ae23262182a1a48"><td class="memItemLeft" align="right" valign="top">Thor::Definitions::Status&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class.html#aa06435e61d67dff32ae23262182a1a48">updateClockFrequency</a> (uint32_t freq)</td></tr>
+<tr class="separator:aa06435e61d67dff32ae23262182a1a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a5833287f3f7af59ddff2fd30c7996e2d"><td class="memItemLeft" align="right" valign="top">static const boost::shared_ptr&lt; <a class="el" href="class_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class.html">SPIClass</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class.html#a5833287f3f7af59ddff2fd30c7996e2d">create</a> (const int channel)</td></tr>
+<tr class="separator:a5833287f3f7af59ddff2fd30c7996e2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a5833287f3f7af59ddff2fd30c7996e2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5833287f3f7af59ddff2fd30c7996e2d">&#9670;&nbsp;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static const boost::shared_ptr&lt;<a class="el" href="class_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class.html">SPIClass</a>&gt;&amp; Thor::Peripheral::SPI::SPIClass::create </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>A factory method to create a new <a class="el" href="class_thor_1_1_peripheral_1_1_s_p_i_1_1_s_p_i_class.html">SPIClass</a> object</p>
+<p>This method intentionally replaces the typical constructor for the purpose of allowing the SPI ISR handlers to deduce at runtim which class generated the interrupt. The new object is internally registered with a static vector that keeps track of this.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">channel</td><td>Hardware SPI peripheral channel number (i.e. 1 for SPI1, 2 for SPI2, etc) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Shared pointer to the new object </dd></dl>
+
+</div>
+</div>
+<a id="a079a2ab8df8302c7243c20f7dd7ffcbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a079a2ab8df8302c7243c20f7dd7ffcbf">&#9670;&nbsp;</a></span>setMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Thor::Definitions::Status Thor::Peripheral::SPI::SPIClass::setMode </td>
+          <td>(</td>
+          <td class="paramtype">const SubPeripheral &amp;&#160;</td>
+          <td class="paramname"><em>periph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Modes &amp;&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Place the specified peripheral into a given mode </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">periph</td><td>Explicitly states which peripheral subsystem (TX or RX) to set from Thor::Peripheral::SPI::SubPeripheral </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mode</td><td>The corresponding mode for the peripheral to enter, from Thor::Peripheral::SPI::Modes </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it will return a code from Thor::Peripheral::SPI::Status </dd></dl>
+
+</div>
+</div>
+<a id="aa06435e61d67dff32ae23262182a1a48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa06435e61d67dff32ae23262182a1a48">&#9670;&nbsp;</a></span>updateClockFrequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Thor::Definitions::Status Thor::Peripheral::SPI::SPIClass::updateClockFrequency </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>freq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Updates the clock frequency of an already initialized SPI object </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">freq</td><td>Desired clock frequency in Hz </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it will return a code from Thor::Peripheral::SPI::Status </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>G:/git/Microcontrollers/Thor_STM32/Thor/include/<a class="el" href="spi_8hpp_source.html">spi.hpp</a></li>
 </ul>

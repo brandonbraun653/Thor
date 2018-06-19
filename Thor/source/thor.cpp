@@ -1,11 +1,16 @@
 #include <Thor/include/thor.hpp>
+#include <Thor/include/macro.hpp>
 #include <Thor/include/defaults.hpp>
 #include <Thor/include/exti.hpp>
+#include <Thor/include/print.hpp>
 
 #if defined(USING_FREERTOS)
 #include "FreeRTOS.h"
 #include "task.h"
 #endif 
+
+
+
 
 
 void ThorInit()
@@ -19,12 +24,21 @@ void ThorInit()
 	/* Enforce the system interrupt priority structure */
 	HAL_NVIC_SetPriorityGrouping(Thor::Defaults::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING);
 	
+
+	#if WRITE_BUFFERING_DISABLED
+	DISABLE_WRITE_BUFFERING;
+	#endif
+
+
 	/* Set up the EXTI handler for passing messages from
 	 * from high priority to low priority interrupts. */
 	#ifdef USING_FREERTOS
 	setupEXTI0_Interrupt();
 	#endif
 
+	#if USE_SERIAL_DEBUG_OUTPUT
+	setupSTDIO();
+	#endif
 }
 
 #if defined(USING_CHIMERA)

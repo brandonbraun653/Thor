@@ -138,7 +138,7 @@ namespace Thor
 				#endif 
 				
 				/** Constructor used with Thor */
-				SerialClass(const int& channel, SerialPins* pinConfig);
+				SerialClass(const int& channel, SerialPins* pinConfig = nullptr);
 
 				/** Constructor used with Chimera */
 				SerialClass(const int& channel, const void* params = nullptr)

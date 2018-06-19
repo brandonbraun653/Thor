@@ -5,14 +5,6 @@
 #include <Thor/include/exceptions.hpp>
 #include <Thor/include/macro.hpp>
 
-#ifdef TARGET_STM32F7
-#include <stm32f7xx_hal.h>
-#endif
-
-#ifdef TARGET_STM32F4
-#include <stm32f4xx_hal.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -26,10 +18,6 @@ extern "C" {
 #endif
 
 extern void ThorSystemClockConfig();
-
-
-
-
 
 
 #endif /*! CORE_H_ */

@@ -3,6 +3,7 @@ var searchData=
   ['defaults',['Defaults',['../namespace_thor_1_1_defaults.html',1,'Thor']]],
   ['definitions',['Definitions',['../namespace_thor_1_1_definitions.html',1,'Thor']]],
   ['dma',['DMA',['../namespace_thor_1_1_definitions_1_1_d_m_a.html',1,'Thor::Definitions']]],
+  ['erpc',['eRPC',['../namespace_thor_1_1e_r_p_c.html',1,'Thor']]],
   ['gpio',['GPIO',['../namespace_thor_1_1_defaults_1_1_g_p_i_o.html',1,'Thor::Defaults::GPIO'],['../namespace_thor_1_1_definitions_1_1_g_p_i_o.html',1,'Thor::Definitions::GPIO']]],
   ['interrupt',['Interrupt',['../namespace_thor_1_1_defaults_1_1_interrupt.html',1,'Thor::Defaults::Interrupt'],['../namespace_thor_1_1_definitions_1_1_interrupt.html',1,'Thor::Definitions::Interrupt']]],
   ['peripheral',['Peripheral',['../namespace_thor_1_1_peripheral.html',1,'Thor']]],
