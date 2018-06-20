@@ -23,10 +23,13 @@ std::string float2String(float number)
 }
 
 
-/* Unable to overload the Newlib Nano _write _read stubs if using the Visual GDB
- * Sysprogs Profiler. The profiler contains its own implementation of _write. */
- //&& !defined(USING_VGDB_PROFILER)
-#if USE_SERIAL_DEBUG_OUTPUT 
+/*	Unable to overload the Newlib-Nano _write _read stubs if using Visual GDB Semihosting/Profiling.
+ *	VGDB has its own implementations that collide with the ones below. printf() will simply redirect to VGDB output. 
+ *
+ *	If still getting build errors related to this section, make sure that "Implementations for _sbrk(), ect" under
+ *	the VGDB Embedded Project Settings tab is set to "Minimal (no semihosting)". 
+ */
+#if USE_SERIAL_DEBUG_OUTPUT  && !defined(USING_VGDB_PROFILER)
 #include <Thor/include/serial.hpp>
 using namespace Thor::Peripheral::Serial;
 using namespace Thor::Definitions::Serial;

@@ -19,7 +19,7 @@
  *	and declared with C linkage, otherwise the setup code will not be able to find it and throw a compiler error. It is 
  *	vital that this struct has been initialized with values before calling ThorInit(), or if using Chimera, ChimeraInit().
  */
-#define USE_SERIAL_DEBUG_EXT_PINS		1
+#define USE_SERIAL_DEBUG_EXT_PINS		0
 
 /*! @def SERIAL_DEBUG_CHANNEL
  *	@brief Defines which serial channel to use for printf() redirection 

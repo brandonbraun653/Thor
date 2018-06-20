@@ -60,7 +60,7 @@
 #endif
 
 /* Visual GDB Fast Semihosting and Embedded Profiler */
-#if __has_include("SysprogsProfiler.h")
+#if __has_include("FastSemihosting.cpp")
 #ifndef USING_VGDB_PROFILER
 #define USING_VGDB_PROFILER
 #endif
