@@ -1,7 +1,6 @@
 #include <Thor/include/config.hpp>
+#include <Thor/include/macro.hpp>
 #include <Thor/include/print.hpp>
-
-
 
 /* VERY basic float->string with 4 decimal places of precision */
 std::string float2String(float number)
@@ -29,36 +28,45 @@ std::string float2String(float number)
  //&& !defined(USING_VGDB_PROFILER)
 #if USE_SERIAL_DEBUG_OUTPUT 
 #include <Thor/include/serial.hpp>
+using namespace Thor::Peripheral::Serial;
+using namespace Thor::Definitions::Serial;
+using namespace Thor::Definitions::GPIO;
 
-static Thor::Peripheral::Serial::SerialClass_sPtr serial;
+static SerialClass_uPtr serial;
+
+extern "C" SerialPins serialDebugPinConfig;
 
 void setupSTDIO()
 {
-	serial = boost::make_shared<Thor::Peripheral::Serial::SerialClass>(SERIAL_DEBUG_CHANNEL);
+	//Note that serialDebugPinConfig is used with C linkage! If getting errors here, you probably didn't instantiate it right.
+	#if USE_SERIAL_DEBUG_EXT_PINS
+		serial = boost::movelib::unique_ptr<SerialClass>(new SerialClass(SERIAL_DEBUG_CHANNEL, &serialDebugPinConfig));
+	#else
+		serial = boost::movelib::unique_ptr<SerialClass>(new SerialClass(SERIAL_DEBUG_CHANNEL, nullptr));
+	#endif
 
-	serial->begin();
-	serial->setMode(Thor::Definitions::SubPeripheral::TXRX, Thor::Definitions::Modes::BLOCKING);
+	if (serial)
+	{
+		serial->begin(SERIAL_DEBUG_BAUDRATE);
+		serial->setMode(SubPeripheral::TXRX, Modes::BLOCKING);
+	}
+	else
+	{
+		INSERT_BREAKPOINT;
+	}	
 }
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-	//int _isatty()
-	//{
-	//	return 1;
-	//}
-
 	int _write(int file, const char* buf, int len)
 	{
 		if (serial)
 		{
 			serial->write((uint8_t*)buf, len);
-			return 0;
 		}
-		else
-		{
-			return 0;
-		}
+		return len;
 	}
 
 	int _read(int file, const char* buf, int len)

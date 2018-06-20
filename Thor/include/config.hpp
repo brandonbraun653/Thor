@@ -2,44 +2,34 @@
 #pragma once
 #ifndef THOR_CONFIG_HPP
 #define THOR_CONFIG_HPP
-
-//Ensures various compiler options and necessary dependencies are met before building
 #include <Thor/include/preprocessor.hpp>
 
-/*-------------------------------------------
-* Include the needed headers 
-*-------------------------------------------*/
-#if defined(USING_CHIMERA)
-#include <Chimera/chimera.hpp>
-#endif
+/*! @def USE_SERIAL_DEBUG_OUTPUT 
+ *	@brief Reroutes printf to use a serial channel as output 
+ *
+ *	@note	In order for this to work properly, the Visual GDB Semihosting code must not be in use. If it is, all 
+ *			printf() statements will be redirected to whichever serial port VGDB is using.
+ */
+#define USE_SERIAL_DEBUG_OUTPUT			1
 
-#if defined(TARGET_STM32F7)
-#include "stm32f7xx_hal.h"
-#endif
+/*! @def USE_SERIAL_DEBUG_EXT_PINS 
+ *	@brief Instructs the setup code to either use default pin settings for a Serial channel (0) or user defined settings (1)
+ *	
+ *	If using external defintion, it must be of type Thor::Definitions::Serial::SerialPins, be named "serialDebugPinConfig" 
+ *	and declared with C linkage, otherwise the setup code will not be able to find it and throw a compiler error. It is 
+ *	vital that this struct has been initialized with values before calling ThorInit(), or if using Chimera, ChimeraInit().
+ */
+#define USE_SERIAL_DEBUG_EXT_PINS		1
 
-#if defined(TARGET_STM32F4)
-#include "stm32f4xx_hal.h"
-#endif
+/*! @def SERIAL_DEBUG_CHANNEL
+ *	@brief Defines which serial channel to use for printf() redirection 
+ */
+#define SERIAL_DEBUG_CHANNEL			1			
 
-#if defined(USING_FREERTOS)
-#include "FreeRTOS.h"
-#include "FreeRTOSConfig.h"
-#if configUSE_TICK_HOOK != 1
-	#warning Please set "configUSE_TICK_HOOK" in FreeRTOSConfig.h or some HAL Libs will break.
-#endif
-#endif
-
-/*-------------------------------------------
-* Configure various embedded Thor features 
-*-------------------------------------------*/
-
-//SERIAL DEBUG SETTINGS 
-#define USE_SERIAL_DEBUG_OUTPUT		1			/** Enables/Disables the use of a serial channel for rerouting printf() messages */
-#define SERIAL_DEBUG_CHANNEL		1			/** Defines which default serial channel should be used for printf() */
-#define SERIAL_DEBUG_BAUDRATE		115200		/** Sets the default baud rate to use for printf() */
-
-
-//PROGRAM DEBUG SETTINGS
+/*! @def SERIAL_DEBUG_BAUDRATE
+ *	@brief Defines the baud rate to use for printf() redirection 
+ */
+#define SERIAL_DEBUG_BAUDRATE			Thor::Definitions::Serial::BaudRate::SERIAL_BAUD_115200
 
 /*! @def WRITE_BUFFERING_DISABLED 
  *	@brief Disables write buffer during default memory map access. (Default 0)
@@ -50,6 +40,6 @@
  *	@note	If the IMPRECISERR bit is set in the BFSR register on a Hard Fault, enabling this macro should cause the error to become precise, thus
  *			loading the value of the offending instruction BFAR register. Currently only supported on Cortex-M3/M4.
  */
-#define WRITE_BUFFERING_DISABLED	1
+#define WRITE_BUFFERING_DISABLED		1
 
 #endif /* !THOR_CONFIG_HPP */

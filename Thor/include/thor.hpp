@@ -1,6 +1,7 @@
 #ifndef THOR_H_
 #define THOR_H_
 
+#include <Thor/include/headers.hpp>
 #include <Thor/include/config.hpp>
 #include <Thor/include/core.hpp>
 #include <Thor/include/definitions.hpp>

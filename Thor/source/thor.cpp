@@ -9,10 +9,6 @@
 #include "task.h"
 #endif 
 
-
-
-
-
 void ThorInit()
 {
 	/* This absolutely must be called first to setup the HAL system properly */

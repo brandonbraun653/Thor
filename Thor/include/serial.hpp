@@ -8,6 +8,7 @@
 
 /* Boost Includes */
 #include <boost/shared_ptr.hpp>
+#include <boost/move/unique_ptr.hpp>
 
 /* Thor Includes */
 #include <Thor/include/config.hpp>
@@ -141,10 +142,10 @@ namespace Thor
 				SerialClass(const int& channel, SerialPins* pinConfig = nullptr);
 
 				/** Constructor used with Chimera */
-				SerialClass(const int& channel, const void* params = nullptr)
-				{
-					SerialClass(channel, (SerialPins*)params);
-				}
+				//SerialClass(const int& channel, const void* params = nullptr)
+				//{
+				//	SerialClass(channel, (SerialPins*)params);
+				//}
 				
 				~SerialClass() = default;
 
@@ -171,10 +172,11 @@ namespace Thor
 				#endif 
 
 			private:			
-				int serial_channel = 0;
-				boost::shared_ptr<SerialBase> serial;
+				int serialChannel = 0;
+				boost::shared_ptr<SerialBase> serialObject;	//Absolutely must be a shared_ptr. Multiple references stored elsewhere with static scope.
 			};
 			typedef boost::shared_ptr<SerialClass> SerialClass_sPtr;
+			typedef boost::movelib::unique_ptr<SerialClass> SerialClass_uPtr;
 		}
 	}
 }

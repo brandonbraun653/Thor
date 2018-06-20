@@ -2,7 +2,8 @@
 #ifndef THOR_DEFINITIONS_H_
 #define THOR_DEFINITIONS_H_
 
-#include <Thor/include/config.hpp>
+#include <Thor/include/headers.hpp>
+
 
 #if defined(USING_FREERTOS)
 #include "FreeRTOS.h"

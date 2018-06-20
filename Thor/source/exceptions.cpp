@@ -1,3 +1,4 @@
+#include <Thor/include/thor.hpp>
 #include <Thor/include/exceptions.hpp>
 #include <Thor/include/system.hpp>
 
@@ -5,8 +6,12 @@ void BasicErrorHandler(std::string err_msg)
 {
 	/* If you got here, look at the message and trace back to the root problem */
 	volatile std::string message = err_msg;
+
 	for (;;)
-		;
+	{
+		printf(err_msg.c_str());
+		Thor::delayMilliseconds(1000);
+	}
 }
 
 

@@ -2,6 +2,11 @@
 #ifndef THOR_UTILITIES_HPP
 #define THOR_UTILITIES_HPP
 
+#include <cstddef>
+#include <memory>
+#include <type_traits>
+#include <utility>
+
 #define SIZE_OF_ARRAY(x) (sizeof(x)/sizeof(*x))
 
 namespace Thor
@@ -26,6 +31,7 @@ namespace Thor
 			}
 			return result;
 		}
+
 	}
 }
 

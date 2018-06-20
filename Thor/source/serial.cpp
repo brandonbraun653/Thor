@@ -50,83 +50,83 @@ namespace Thor
 			SerialClass::SerialClass(const int& channel, SerialPins* config)
 			{
 				//TODO: Add an assert here for checking the channel boundary...exceptions?
-				this->serial_channel = channel;
+				this->serialChannel = channel;
 				if (serialPeripheralMap[channel].ON_UART)
 				{
 					auto tmp = UARTClass::create(serialPeripheralMap[channel].peripheral_number, config);
-					this->serial = boost::dynamic_pointer_cast<SerialBase, UARTClass>(tmp);
+					this->serialObject = boost::dynamic_pointer_cast<SerialBase, UARTClass>(tmp);
 				}
 				else
 				{
 					auto tmp = USARTClass::create(serialPeripheralMap[channel].peripheral_number, config);
-					this->serial = boost::dynamic_pointer_cast<SerialBase, USARTClass>(tmp);
+					this->serialObject = boost::dynamic_pointer_cast<SerialBase, USARTClass>(tmp);
 				}
 			}
 
 			ThorStatus SerialClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
 			{
-				return this->serial->begin(baud, tx_mode, rx_mode);
+				return this->serialObject->begin(baud, tx_mode, rx_mode);
 			}
 			
 			Status SerialClass::setMode(const SubPeripheral& periph, const Modes& mode)
 			{
-				return this->serial->setMode(periph, mode);
+				return this->serialObject->setMode(periph, mode);
 			}
 			
 			Status SerialClass::write(uint8_t* val, size_t length)
 			{
-				return this->serial->write(val, length);
+				return this->serialObject->write(val, length);
 			}
 			
 			Status SerialClass::write(char* string, size_t length)
 			{
-				return this->serial->write(string, length);
+				return this->serialObject->write(string, length);
 			}
 			
 			Status SerialClass::write(const char* string)
 			{
-				return this->serial->write(string);
+				return this->serialObject->write(string);
 			}
 			
 			Status SerialClass::write(const char* string, size_t length)
 			{
-				return this->serial->write(string, length);
+				return this->serialObject->write(string, length);
 			}
 			
 			Status SerialClass::readSync(uint8_t* buff, size_t length)
 			{
-				return this->serial->readSync(buff, length);
+				return this->serialObject->readSync(buff, length);
 			}
 			
 			Status SerialClass::readPacket(uint8_t* buff, size_t buff_length)
 			{
-				return this->serial->readPacket(buff, buff_length);
+				return this->serialObject->readPacket(buff, buff_length);
 			}
 	
 			uint32_t SerialClass::availablePackets()
 			{
-				return this->serial->availablePackets();
+				return this->serialObject->availablePackets();
 			}
 			
 			size_t SerialClass::nextPacketSize()
 			{
-				return this->serial->nextPacketSize();
+				return this->serialObject->nextPacketSize();
 			}
 			
 			void SerialClass::end()
 			{
-				this->serial->end();
+				this->serialObject->end();
 			}
 			
 			#if defined(USING_FREERTOS)
 			void SerialClass::attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr)
 			{
-				this->serial->attachThreadTrigger(trig, semphr);
+				this->serialObject->attachThreadTrigger(trig, semphr);
 			}
 			
 			void SerialClass::removeThreadTrigger(Trigger trig)
 			{
-				this->serial->removeThreadTrigger(trig);
+				this->serialObject->removeThreadTrigger(trig);
 			}
 			#endif 
 
@@ -151,15 +151,15 @@ namespace Thor
 					switch (mode)
 					{
 					case Chimera::Serial::Modes::BLOCKING:
-						serial->setMode(ThorSubPeriph::TX, ThorMode::BLOCKING);
+						serialObject->setMode(ThorSubPeriph::TX, ThorMode::BLOCKING);
 						break;
 						
 					case Chimera::Serial::Modes::INTERRUPT:
-						serial->setMode(ThorSubPeriph::TX, ThorMode::INTERRUPT);
+						serialObject->setMode(ThorSubPeriph::TX, ThorMode::INTERRUPT);
 						break;
 					
 					case Chimera::Serial::Modes::DMA:
-						serial->setMode(ThorSubPeriph::TX, ThorMode::DMA);
+						serialObject->setMode(ThorSubPeriph::TX, ThorMode::DMA);
 						break;
 						
 					default: break;
@@ -170,15 +170,15 @@ namespace Thor
 					switch (mode)
 					{
 					case Chimera::Serial::Modes::BLOCKING:
-						serial->setMode(ThorSubPeriph::RX, ThorMode::BLOCKING);
+						serialObject->setMode(ThorSubPeriph::RX, ThorMode::BLOCKING);
 						break;
 						
 					case Chimera::Serial::Modes::INTERRUPT:
-						serial->setMode(ThorSubPeriph::RX, ThorMode::INTERRUPT);
+						serialObject->setMode(ThorSubPeriph::RX, ThorMode::INTERRUPT);
 						break;
 					
 					case Chimera::Serial::Modes::DMA:
-						serial->setMode(ThorSubPeriph::RX, ThorMode::DMA);
+						serialObject->setMode(ThorSubPeriph::RX, ThorMode::DMA);
 						break;
 						
 					default: break;
