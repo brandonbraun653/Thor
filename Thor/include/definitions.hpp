@@ -1,10 +1,14 @@
 #pragma once
 #ifndef THOR_DEFINITIONS_H_
 #define THOR_DEFINITIONS_H_
+/* C/C++ Includes */
+#include <limits>
+#include <cstdint>
 
+/* Thor Includes */
 #include <Thor/include/headers.hpp>
 
-
+/* FreeRTOS Includes */
 #if defined(USING_FREERTOS)
 #include "FreeRTOS.h"
 #include "task.h"
@@ -113,7 +117,7 @@ namespace Thor
 				PIN_15 = GPIO_PIN_15,
 				PIN_ALL = GPIO_PIN_All,
 				MAX_PINS = 16,
-				NOT_A_PIN = UINT_MAX
+				NOT_A_PIN = std::numeric_limits<std::int32_t>::max()
 			};
 
 			enum PinMode : uint32_t

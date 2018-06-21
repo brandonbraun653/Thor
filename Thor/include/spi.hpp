@@ -78,6 +78,7 @@ namespace Thor
 				void SPI_IRQHandler_TXDMA();
 				void SPI_IRQHandler_RXDMA();
 				
+				static constexpr bool usesBoost = true;
 				
 			private:
 				/** The real constructor used by SPIClass::create */
