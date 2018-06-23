@@ -40,6 +40,6 @@
  *	@note	If the IMPRECISERR bit is set in the BFSR register on a Hard Fault, enabling this macro should cause the error to become precise, thus
  *			loading the value of the offending instruction BFAR register. Currently only supported on Cortex-M3/M4.
  */
-#define WRITE_BUFFERING_DISABLED		1
+#define WRITE_BUFFERING_DISABLED		0
 
 #endif /* !THOR_CONFIG_HPP */

@@ -10,6 +10,7 @@
 /* Boost Includes */
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/move/unique_ptr.hpp>
 #include <boost/circular_buffer.hpp>
 
 /* FreeRTOS Includes */
@@ -237,6 +238,7 @@ namespace Thor
 				bool txRxModesEqual(Modes mode);
 			};
 			typedef boost::shared_ptr<SPIClass> SPIClass_sPtr;
+			typedef boost::movelib::unique_ptr<SPIClass> SPIClass_uPtr;
 
 		}
 	}
