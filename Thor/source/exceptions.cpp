@@ -95,8 +95,8 @@ extern "C" {
 		volatile char* task = pcTaskName;
 		for (;;)
 		{
-
-
+			printf("CRITICAL FAILURE: Stack overflow in %s\r\n", pcTaskName);
+			vTaskDelay(pdMS_TO_TICKS(1000));
 		}
 	}
 
