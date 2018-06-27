@@ -128,6 +128,7 @@ namespace Thor
 				Chimera::SPI::Status cwrite(uint8_t* in, uint8_t* out, size_t length, const bool& nssDisableAfterTX);
 				Chimera::SPI::Status csetMode(Chimera::SPI::SubPeripheral periph, Chimera::SPI::SubPeripheralMode mode);
 				Chimera::SPI::Status cupdateClockFrequency(uint32_t freq);
+				uint32_t cgetClockFrequency();
 				void cwriteSS(Chimera::GPIO::State value);
 				#endif
 				
@@ -179,6 +180,7 @@ namespace Thor
 				* Class Variables / Flags
 				*------------------------------*/
 				int spi_channel;
+				uint32_t actualClockFrequency = 0;
 				struct SPIClassStatus
 				{
 					bool gpio_enabled = false;

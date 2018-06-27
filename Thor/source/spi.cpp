@@ -195,18 +195,77 @@ static const uint32_t getBaudRatePrescalerFromFreq(int channel, int freq)
 
 	switch (idx)
 	{
-	case 0:		return SPI_BAUDRATEPRESCALER_2;
-	case 1:		return SPI_BAUDRATEPRESCALER_4;
-	case 2:		return SPI_BAUDRATEPRESCALER_8;
-	case 3:		return SPI_BAUDRATEPRESCALER_16;
-	case 4:		return SPI_BAUDRATEPRESCALER_32;
-	case 5:		return SPI_BAUDRATEPRESCALER_64;
-	case 6:		return SPI_BAUDRATEPRESCALER_128;
-	case 7:		return SPI_BAUDRATEPRESCALER_256;
-	default:	return Thor::Defaults::SPI::dflt_SPI_Init.BaudRatePrescaler;
+	case 0:
+		return SPI_BAUDRATEPRESCALER_2;
+
+	case 1:
+		return SPI_BAUDRATEPRESCALER_4;
+
+	case 2:
+		return SPI_BAUDRATEPRESCALER_8;
+
+	case 3:
+		return SPI_BAUDRATEPRESCALER_16;
+
+	case 4:
+		return SPI_BAUDRATEPRESCALER_32;
+
+	case 5:
+		return SPI_BAUDRATEPRESCALER_64;
+
+	case 6:
+		return SPI_BAUDRATEPRESCALER_128;
+
+	case 7:
+		return SPI_BAUDRATEPRESCALER_256;
+
+	default:	
+		return Thor::Defaults::SPI::dflt_SPI_Init.BaudRatePrescaler;
 	};
 };
 
+static const uint32_t getFreqFromBaudRatePrescaler(int channel, uint32_t baudRatePrescaler)
+{
+	uint32_t busFreq = 1;
+
+	/* Figure out what bus frequency is in use for this channel */
+	if (spi_cfg[channel].clockBus == Thor::Definitions::ClockBus::APB1_PERIPH)
+		busFreq = HAL_RCC_GetPCLK1Freq();
+	else if (spi_cfg[channel].clockBus == Thor::Definitions::ClockBus::APB2_PERIPH)
+		busFreq = HAL_RCC_GetPCLK2Freq();
+
+
+	switch (baudRatePrescaler)
+	{
+	case SPI_BAUDRATEPRESCALER_2:
+		return busFreq / 2;
+
+	case SPI_BAUDRATEPRESCALER_4:
+		return busFreq / 4;
+
+	case SPI_BAUDRATEPRESCALER_8:
+		return busFreq / 8;
+
+	case SPI_BAUDRATEPRESCALER_16:
+		return busFreq / 16;
+
+	case SPI_BAUDRATEPRESCALER_32:
+		return busFreq / 32;
+
+	case SPI_BAUDRATEPRESCALER_64:
+		return busFreq / 64;
+
+	case SPI_BAUDRATEPRESCALER_128:
+		return busFreq / 128;
+
+	case SPI_BAUDRATEPRESCALER_256:
+		return busFreq / 256;
+
+	default:
+		return 0u;
+	};
+
+}
 
 #if defined(USING_CHIMERA)
 /* Status Code conversion */
@@ -379,6 +438,11 @@ namespace Thor
 				return thorStatusToChimera(updateClockFrequency(freq));
 			}
 
+			uint32_t SPIClass::cgetClockFrequency()
+			{
+				return getFreqFromBaudRatePrescaler(spi_channel, spi_handle.Init.BaudRatePrescaler);
+			}
+
 			void SPIClass::cwriteSS(Chimera::GPIO::State value)
 			{
 				writeSS(static_cast<LogicLevel>(value));
@@ -416,6 +480,7 @@ namespace Thor
 			{
 				spi_channel = channel;
 				spi_handle.Instance = spi_cfg[spi_channel].instance;
+				spi_handle.Init = Defaults::SPI::dflt_SPI_Init;
 
 				/*------------------------------------
 				 * Interrupt Setup
@@ -435,7 +500,6 @@ namespace Thor
 				/*------------------------------------
 				 * DMA Setup
 				 *-----------------------------------*/
-				spi_handle.Init = Defaults::SPI::dflt_SPI_Init;
 				hdma_spi_tx.Init = Defaults::SPI::dflt_DMA_Init_TX;
 				hdma_spi_rx.Init = Defaults::SPI::dflt_DMA_Init_RX;
 
@@ -883,6 +947,8 @@ namespace Thor
 
 				if (HAL_SPI_Init(&spi_handle) != HAL_OK)
 					BasicErrorHandler(logError("Failed SPI Init"));
+
+				actualClockFrequency = getFreqFromBaudRatePrescaler(spi_channel, spi_handle.Init.BaudRatePrescaler);
 
 				SPI_PeriphState.spi_enabled = true;
 			}
