@@ -6,3 +6,5 @@ Thor/testing/.idea/
 **/.cache
 **/build
 **/build/*
+**/.vscode
+**/.DS_Store
