@@ -52,6 +52,19 @@ namespace Thor
 				 **/
 				Status setMode(const SubPeripheral& periph, const Modes& mode) override;
 
+
+				/**
+				*
+				**/
+				Status setBaud(const uint32_t& baud) override;
+
+				/**
+				*
+				**/
+				Status setBaud(const Thor::Definitions::Serial::BaudRate& baud) override;
+
+
+
 				/** Writes data to the serial output gpio
 				*	@param[in] val		Pointer to an array of data to be sent out
 				*	@param[in] length	The length of data to be sent out

@@ -259,6 +259,16 @@ namespace Thor
 				}
 			}
 
+			Status USARTClass::setBaud(const uint32_t& baud)
+			{
+				return Status::PERIPH_OK;
+			}
+
+			Status USARTClass::setBaud(const BaudRate& baud)
+			{
+				return Status::PERIPH_OK;
+			}
+
 			Status USARTClass::write(uint8_t* val, size_t length)
 			{
 				if (!USARTPeriphState.gpio_enabled || !USARTPeriphState.usart_enabled)

@@ -63,6 +63,12 @@ namespace Thor
 				 **/
 				Status setMode(const SubPeripheral& periph, const Modes& mode);
 
+				/** Change the baudrate of the peripheral
+				 *	@param[in] baud	Desired buadrate
+				 *	@return SERIAL_OK if everything is alright, error code from Thor::Peripheral::Serial::Status if not
+				 **/
+				Status setBaud(const BaudRate& baud);
+
 				/** Writes data to the serial output gpio
 				 *	@param[in] val		Pointer to an array of data to be sent out
 				 *	@param[in] length	The length of data to be sent out 
@@ -140,13 +146,6 @@ namespace Thor
 				
 				/** Constructor used with Thor */
 				SerialClass(const int& channel, SerialPins* pinConfig = nullptr);
-
-				/** Constructor used with Chimera */
-				//SerialClass(const int& channel, const void* params = nullptr)
-				//{
-				//	SerialClass(channel, (SerialPins*)params);
-				//}
-				
 				~SerialClass() = default;
 
 
@@ -157,6 +156,8 @@ namespace Thor
 												Chimera::Serial::Modes rx_mode = Chimera::Serial::Modes::BLOCKING);
 
 				Chimera::Serial::Status csetMode(Chimera::Serial::SubPeripheral periph, Chimera::Serial::Modes mode);
+
+				Chimera::Serial::Status csetBaud(Chimera::Serial::BaudRate baud);
 
 				Chimera::Serial::Status cwrite(uint8_t* val, size_t length);
 

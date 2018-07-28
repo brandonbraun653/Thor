@@ -508,13 +508,14 @@ namespace Thor
 			public:
 				virtual Status begin(const BaudRate&, const Modes&, const Modes&) = 0;
 				virtual Status setMode(const SubPeripheral&, const Modes&) = 0;
+				virtual Status setBaud(const BaudRate&) = 0;
+				virtual Status setBaud(const uint32_t&) = 0;
 				virtual Status write(uint8_t*, size_t) = 0;
 				virtual Status write(char*, size_t) = 0;
 				virtual Status write(const char*) = 0;
 				virtual Status write(const char*, size_t) = 0;
 				virtual Status readSync(uint8_t*, size_t) = 0;
 				virtual Status readPacket(uint8_t*, size_t) = 0;
-				//virtual Status readBytes(uint8_t*, size_t) = 0;
 				virtual uint32_t availablePackets() = 0;
 				virtual size_t nextPacketSize() = 0;
 				virtual void end() = 0;

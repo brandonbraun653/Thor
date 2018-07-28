@@ -73,6 +73,11 @@ namespace Thor
 				return this->serialObject->setMode(periph, mode);
 			}
 			
+			Status SerialClass::setBaud(const BaudRate& baud)
+			{
+				return this->serialObject->setBaud(baud);
+			}
+
 			Status SerialClass::write(uint8_t* val, size_t length)
 			{
 				return this->serialObject->write(val, length);
@@ -186,6 +191,21 @@ namespace Thor
 				}
 					
 				return ChimStatus::SERIAL_OK;
+			}
+
+			Chimera::Serial::Status SerialClass::csetBaud(Chimera::Serial::BaudRate baud)
+			{
+				auto chimera_error = ChimStatus::SERIAL_OK;
+
+				//TODO: Need to convert between Thor/Chimera bauds...or just allow numbers??
+				//auto thor_error = write(val, length);
+
+				//if (thor_error != ThorStatus::PERIPH_OK)
+				//{
+				//	chimera_error = convertStatus(thor_error);
+				//}
+
+				return chimera_error;
 			}
 
 			ChimStatus SerialClass::cwrite(uint8_t* val, size_t length)

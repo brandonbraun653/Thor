@@ -311,6 +311,16 @@ namespace Thor
 				}
 			}
 
+			Status UARTClass::setBaud(const uint32_t& baud)
+			{
+				return Status::PERIPH_OK;
+			}
+
+			Status UARTClass::setBaud(const BaudRate& baud)
+			{
+				return Status::PERIPH_OK;
+			}
+
 			Status UARTClass::write(char* string, size_t length)
 			{
 				return write((uint8_t*)string, length);
