@@ -28,6 +28,185 @@ namespace Thor
 	{
 		namespace Serial
 		{
+			#if defined(USING_CHIMERA)
+			Chimera::Serial::Status SerialClass::convertStatus(ThorStatus status)
+			{
+				switch (status)
+				{
+				case ThorStatus::PERIPH_OK:								return ChimStatus::SERIAL_OK;
+				case ThorStatus::PERIPH_LOCKED:							return ChimStatus::SERIAL_LOCKED;
+				case ThorStatus::PERIPH_NOT_INITIALIZED:				return ChimStatus::SERIAL_NOT_INITIALIZED;
+				case ThorStatus::PERIPH_ERROR:							return ChimStatus::SERIAL_ERROR;
+				case ThorStatus::PERIPH_NOT_READY:						return ChimStatus::SERIAL_NOT_READY;
+				case ThorStatus::PERIPH_TX_IN_PROGRESS:					return ChimStatus::SERIAL_TX_IN_PROGRESS;
+				case ThorStatus::PERIPH_RX_IN_PROGRESS:					return ChimStatus::SERIAL_RX_IN_PROGRESS;
+				case ThorStatus::PERIPH_PACKET_TOO_LARGE_FOR_BUFFER:	return ChimStatus::SERIAL_PACKET_TOO_LARGE_FOR_BUFFER;
+				case ThorStatus::PERIPH_TIMEOUT:						return ChimStatus::SERIAL_TIMEOUT;
+				default:												return ChimStatus::SERIAL_UNKNOWN_ERROR;
+				}
+			}
+
+			ThorBaud convertBaud(ChimBaud baud)
+			{
+				switch (baud)
+				{
+				case ChimBaud::SERIAL_BAUD_110:			return ThorBaud::SERIAL_BAUD_110;
+				case ChimBaud::SERIAL_BAUD_150:			return ThorBaud::SERIAL_BAUD_150;
+				case ChimBaud::SERIAL_BAUD_300:			return ThorBaud::SERIAL_BAUD_300;
+				case ChimBaud::SERIAL_BAUD_1200:		return ThorBaud::SERIAL_BAUD_1200;
+				case ChimBaud::SERIAL_BAUD_2400:		return ThorBaud::SERIAL_BAUD_2400;
+				case ChimBaud::SERIAL_BAUD_4800:		return ThorBaud::SERIAL_BAUD_4800;
+				case ChimBaud::SERIAL_BAUD_9600:		return ThorBaud::SERIAL_BAUD_9600;
+				case ChimBaud::SERIAL_BAUD_19200:		return ThorBaud::SERIAL_BAUD_19200;
+				case ChimBaud::SERIAL_BAUD_38400:		return ThorBaud::SERIAL_BAUD_38400;
+				case ChimBaud::SERIAL_BAUD_57600:		return ThorBaud::SERIAL_BAUD_57600;
+				case ChimBaud::SERIAL_BAUD_115200:		return ThorBaud::SERIAL_BAUD_115200;
+				case ChimBaud::SERIAL_BAUD_230400:		return ThorBaud::SERIAL_BAUD_230400;
+				case ChimBaud::SERIAL_BAUD_460800:		return ThorBaud::SERIAL_BAUD_460800;
+				case ChimBaud::SERIAL_BAUD_921600:		return ThorBaud::SERIAL_BAUD_921600;
+				default:								return ThorBaud::SERIAL_BAUD_9600;
+				}
+			}
+
+			ChimStatus SerialClass::cbegin(ChimBaud baud, ChimMode tx_mode, ChimMode rx_mode)
+			{
+				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto thor_error = begin(static_cast<ThorBaud>(baud), static_cast<ThorMode>(tx_mode), static_cast<ThorMode>(rx_mode));
+
+				if (thor_error != ThorStatus::PERIPH_OK)
+				{
+					chimera_error = ChimStatus::SERIAL_ERROR;
+				}
+
+				return chimera_error;
+			}
+
+			ChimStatus SerialClass::csetMode(ChimSubPeriph periph, ChimMode mode)
+			{
+				if (periph == ChimSubPeriph::TX)
+				{
+					switch (mode)
+					{
+					case Chimera::Serial::Modes::BLOCKING:
+						serialObject->setMode(ThorSubPeriph::TX, ThorMode::BLOCKING);
+						break;
+
+					case Chimera::Serial::Modes::INTERRUPT:
+						serialObject->setMode(ThorSubPeriph::TX, ThorMode::INTERRUPT);
+						break;
+
+					case Chimera::Serial::Modes::DMA:
+						serialObject->setMode(ThorSubPeriph::TX, ThorMode::DMA);
+						break;
+
+					default: break;
+					}
+				}
+				else if (periph == ChimSubPeriph::RX)
+				{
+					switch (mode)
+					{
+					case Chimera::Serial::Modes::BLOCKING:
+						serialObject->setMode(ThorSubPeriph::RX, ThorMode::BLOCKING);
+						break;
+
+					case Chimera::Serial::Modes::INTERRUPT:
+						serialObject->setMode(ThorSubPeriph::RX, ThorMode::INTERRUPT);
+						break;
+
+					case Chimera::Serial::Modes::DMA:
+						serialObject->setMode(ThorSubPeriph::RX, ThorMode::DMA);
+						break;
+
+					default: break;
+					}
+				}
+
+				return ChimStatus::SERIAL_OK;
+			}
+
+			Chimera::Serial::Status SerialClass::csetBaud(Chimera::Serial::BaudRate baud)
+			{
+				auto chimera_error = ChimStatus::SERIAL_OK;
+
+				//TODO: Need to convert between Thor/Chimera bauds...or just allow numbers??
+				auto thor_error = this->serialObject->setBaud(convertBaud(baud));
+
+				if (thor_error != ThorStatus::PERIPH_OK)
+				{
+					chimera_error = convertStatus(thor_error);
+				}
+
+				return chimera_error;
+			}
+
+			ChimStatus SerialClass::cwrite(uint8_t* val, size_t length)
+			{
+				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto thor_error = write(val, length);
+
+				if (thor_error != ThorStatus::PERIPH_OK)
+				{
+					chimera_error = convertStatus(thor_error);
+				}
+
+				return chimera_error;
+			}
+
+			ChimStatus SerialClass::cwrite(char* string, size_t length)
+			{
+				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto thor_error = write(string, length);
+
+				if (thor_error != ThorStatus::PERIPH_OK)
+				{
+					chimera_error = convertStatus(thor_error);
+				}
+
+				return chimera_error;
+			}
+
+			ChimStatus SerialClass::cwrite(const char* string)
+			{
+				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto thor_error = write(string);
+
+				if (thor_error != ThorStatus::PERIPH_OK)
+				{
+					chimera_error = convertStatus(thor_error);
+				}
+
+				return chimera_error;
+			}
+
+			ChimStatus SerialClass::cwrite(const char* string, size_t length)
+			{
+				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto thor_error = write(string, length);
+
+				if (thor_error != ThorStatus::PERIPH_OK)
+				{
+					chimera_error = convertStatus(thor_error);
+				}
+
+				return chimera_error;
+			}
+
+			ChimStatus SerialClass::creadPacket(uint8_t* buff, size_t buff_length)
+			{
+				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto thor_error = readPacket(buff, buff_length);
+
+				if (thor_error != ThorStatus::PERIPH_OK)
+				{
+					chimera_error = convertStatus(thor_error);
+				}
+
+				return chimera_error;
+			}
+
+			#endif
+
 			/* This maps various UART and USART peripherals into the higher level Serial class. The purpose
 			 * is to allow the user to only call 'Serial(1)' or 'Serial(5)' and not have to worry about 
 			 * whether or not it is a UART or USART type. This mapping will however need to be updated for
@@ -135,162 +314,7 @@ namespace Thor
 			}
 			#endif 
 
-			#if defined(USING_CHIMERA)
-			ChimStatus SerialClass::cbegin(ChimBaud baud, ChimMode tx_mode, ChimMode rx_mode)
-			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
-				auto thor_error = begin(static_cast<ThorBaud>(baud), static_cast<ThorMode>(tx_mode), static_cast<ThorMode>(rx_mode));
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = ChimStatus::SERIAL_ERROR;
-				}
-
-				return chimera_error;
-			}
-
-			ChimStatus SerialClass::csetMode(ChimSubPeriph periph, ChimMode mode)
-			{					
-				if (periph == ChimSubPeriph::TX)
-				{
-					switch (mode)
-					{
-					case Chimera::Serial::Modes::BLOCKING:
-						serialObject->setMode(ThorSubPeriph::TX, ThorMode::BLOCKING);
-						break;
-						
-					case Chimera::Serial::Modes::INTERRUPT:
-						serialObject->setMode(ThorSubPeriph::TX, ThorMode::INTERRUPT);
-						break;
-					
-					case Chimera::Serial::Modes::DMA:
-						serialObject->setMode(ThorSubPeriph::TX, ThorMode::DMA);
-						break;
-						
-					default: break;
-					}
-				}
-				else if (periph == ChimSubPeriph::RX)
-				{
-					switch (mode)
-					{
-					case Chimera::Serial::Modes::BLOCKING:
-						serialObject->setMode(ThorSubPeriph::RX, ThorMode::BLOCKING);
-						break;
-						
-					case Chimera::Serial::Modes::INTERRUPT:
-						serialObject->setMode(ThorSubPeriph::RX, ThorMode::INTERRUPT);
-						break;
-					
-					case Chimera::Serial::Modes::DMA:
-						serialObject->setMode(ThorSubPeriph::RX, ThorMode::DMA);
-						break;
-						
-					default: break;
-					}
-				}
-					
-				return ChimStatus::SERIAL_OK;
-			}
-
-			Chimera::Serial::Status SerialClass::csetBaud(Chimera::Serial::BaudRate baud)
-			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
-
-				//TODO: Need to convert between Thor/Chimera bauds...or just allow numbers??
-				//auto thor_error = write(val, length);
-
-				//if (thor_error != ThorStatus::PERIPH_OK)
-				//{
-				//	chimera_error = convertStatus(thor_error);
-				//}
-
-				return chimera_error;
-			}
-
-			ChimStatus SerialClass::cwrite(uint8_t* val, size_t length)
-			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
-				auto thor_error = write(val, length);
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = convertStatus(thor_error);
-				}
-
-				return chimera_error;
-			}
-			
-			ChimStatus SerialClass::cwrite(char* string, size_t length)
-			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
-				auto thor_error = write(string, length);
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = convertStatus(thor_error);
-				}
-
-				return chimera_error;
-			}
-			
-			ChimStatus SerialClass::cwrite(const char* string)
-			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
-				auto thor_error = write(string);
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = convertStatus(thor_error);
-				}
-
-				return chimera_error;
-			}
-			
-			ChimStatus SerialClass::cwrite(const char* string, size_t length)
-			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
-				auto thor_error = write(string, length);
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = convertStatus(thor_error);
-				}
-
-				return chimera_error;
-			}
-			
-			ChimStatus SerialClass::creadPacket(uint8_t* buff, size_t buff_length)
-			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
-				auto thor_error = readPacket(buff, buff_length);
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = convertStatus(thor_error);
-				}
-
-				return chimera_error;
-			}
-
-			Chimera::Serial::Status SerialClass::convertStatus(ThorStatus status)
-			{
-				switch (status)
-				{
-				case ThorStatus::PERIPH_OK:								return ChimStatus::SERIAL_OK;
-				case ThorStatus::PERIPH_LOCKED:							return ChimStatus::SERIAL_LOCKED;
-				case ThorStatus::PERIPH_NOT_INITIALIZED:				return ChimStatus::SERIAL_NOT_INITIALIZED;
-				case ThorStatus::PERIPH_ERROR:							return ChimStatus::SERIAL_ERROR;
-				case ThorStatus::PERIPH_NOT_READY:						return ChimStatus::SERIAL_NOT_READY;
-				case ThorStatus::PERIPH_TX_IN_PROGRESS:					return ChimStatus::SERIAL_TX_IN_PROGRESS;
-				case ThorStatus::PERIPH_RX_IN_PROGRESS:					return ChimStatus::SERIAL_RX_IN_PROGRESS;
-				case ThorStatus::PERIPH_PACKET_TOO_LARGE_FOR_BUFFER:	return ChimStatus::SERIAL_PACKET_TOO_LARGE_FOR_BUFFER;
-				case ThorStatus::PERIPH_TIMEOUT:						return ChimStatus::SERIAL_TIMEOUT;
-				default:												return ChimStatus::SERIAL_UNKNOWN_ERROR;
-				}
-			}
-
-			#endif 
+			 
 		}
 	}
 }

@@ -313,11 +313,29 @@ namespace Thor
 
 			Status UARTClass::setBaud(const uint32_t& baud)
 			{
+				/* Copy, modify, write */
+				UART_InitTypeDef init = uart_handle.Init;
+				init.BaudRate = baud;
+				uart_handle.Init = init;
+
+				/* Clear the hardware config and re-initialize with new settings */
+				UART_DeInit();
+				UART_Init();
+
 				return Status::PERIPH_OK;
 			}
 
 			Status UARTClass::setBaud(const BaudRate& baud)
 			{
+				/* Copy, modify, write */
+				UART_InitTypeDef init = uart_handle.Init;
+				init.BaudRate = static_cast<uint32_t>(baud);
+				uart_handle.Init = init;
+
+				/* Clear the hardware config and re-initialize with new settings */
+				UART_DeInit();
+				UART_Init();
+
 				return Status::PERIPH_OK;
 			}
 
