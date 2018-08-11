@@ -1,0 +1,12 @@
+[submodule "Thor/lib/FreeRTOS"]
+	path = Thor/lib/FreeRTOS
+	url = git@github.com:brandonbraun653/FreeRTOS.git
+[submodule "Thor/lib/erpc"]
+	path = Thor/lib/erpc
+	url = git@github.com:brandonbraun653/erpc.git
+[submodule "Thor/lib/stm32hal_f7"]
+	path = Thor/lib/stm32hal_f7
+	url = git@github.com:brandonbraun653/STM32HAL_F7.git
+[submodule "Thor/lib/stm32hal_f4"]
+	path = Thor/lib/stm32hal_f4
+	url = git@github.com:brandonbraun653/STM32HAL_F4.git
