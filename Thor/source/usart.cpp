@@ -266,9 +266,18 @@ namespace Thor
 				init.BaudRate = baud;
 				usartHandle.Init = init;
 
+				if (init.BaudRate == baud)
+				{
+					return Status::PERIPH_OK;
+				}
+
 				/* Clear the hardware config and re-initialize with new settings */
 				USART_DeInit();
 				USART_Init();
+
+				/* Reset the TX/RX modes to what they were before. They are clobbered on DeInit */
+				setMode(SubPeripheral::TX, txMode);
+				setMode(SubPeripheral::RX, rxMode);
 
 				return Status::PERIPH_OK;
 			}
@@ -722,9 +731,6 @@ namespace Thor
 
 				if (HAL_USART_Init(&usartHandle) != HAL_OK)
 					BasicErrorHandler(logError("Failed USART init. Check settings."));
-
-				setMode(SubPeripheral::TX, Modes::BLOCKING);
-				setMode(SubPeripheral::RX, Modes::BLOCKING);
 
 				USARTPeriphState.usart_enabled = true;
 			}

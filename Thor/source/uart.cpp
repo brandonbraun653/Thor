@@ -313,14 +313,24 @@ namespace Thor
 
 			Status UARTClass::setBaud(const uint32_t& baud)
 			{
-				/* Copy, modify, write */
+				/* Copy, modify, write (maybe save a few cycles?) */
 				UART_InitTypeDef init = uart_handle.Init;
+
+				if (init.BaudRate == baud)
+				{
+					return Status::PERIPH_OK;
+				}
+
 				init.BaudRate = baud;
 				uart_handle.Init = init;
 
-				/* Clear the hardware config and re-initialize with new settings */
+				/* Clear the hardware config and re-initialize with the new settings struct */
 				UART_DeInit();
 				UART_Init();
+
+				/* Reset the TX/RX modes to what they were before. They are clobbered on DeInit */
+				setMode(SubPeripheral::TX, txMode);
+				setMode(SubPeripheral::RX, rxMode);
 
 				return Status::PERIPH_OK;
 			}
@@ -785,9 +795,6 @@ namespace Thor
 
 				if (HAL_UART_Init(&uart_handle) != HAL_OK)
 					BasicErrorHandler(logError("Failed UART Init. Check settings."));
-
-				setMode(SubPeripheral::TX, Modes::BLOCKING);
-				setMode(SubPeripheral::RX, Modes::BLOCKING);
 
 				UART_PeriphState.uart_enabled = true;
 			}
