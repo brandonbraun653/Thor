@@ -63,7 +63,7 @@ namespace Thor
 				 *	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				 *			will return a code from Thor::Peripheral::Serial::Status
 				 **/
-				Status begin(const BaudRate& baud = SERIAL_BAUD_115200,
+				Status begin(const uint32_t& baud = 115200u,
 					const Modes& tx_mode = Modes::BLOCKING,
 					const Modes& rx_mode = Modes::BLOCKING) override;
 
@@ -81,12 +81,6 @@ namespace Thor
 				 *
 				 **/
 				Status setBaud(const uint32_t& baud) override;
-
-				/**
-				*
-				**/
-				Status setBaud(const BaudRate& baud) override;
-
 
 
 				/** Writes data to the serial output
@@ -139,10 +133,6 @@ namespace Thor
 				 *		  is known and only one transmission is to be received, use the provided readSync function instead.
 				 **/
 				Status readPacket(uint8_t* buff, size_t length) override;
-				
-				
-				//Status readBytes(uint8_t* buff, size_t numBytes) override;
-				
 
 				/** How many unread asynchronously received packets are available
 				 *	@return number of available packets
@@ -157,7 +147,7 @@ namespace Thor
 				/** Deinitializes and cleans up the peripheral */
 				void end() override;
 
-				/** Provides a convenient way for the user to specifiy advanced configuration settings.
+				/** Provides a convenient way for the user to specify advanced configuration settings.
 				 *	@param[in] config Configuration settings customized from the STM32 UART HAL struct defintion
 				 **/
 				void attachSettings(UART_InitTypeDef config);

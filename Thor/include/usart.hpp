@@ -38,7 +38,7 @@ namespace Thor
 				*	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				*			will return a code from Thor::Peripheral::Serial::Status
 				**/
-				Status begin(const Thor::Definitions::Serial::BaudRate& baud = Thor::Definitions::Serial::BaudRate::SERIAL_BAUD_115200,
+				Status begin(const uint32_t& baud = 115200u,
 					const Modes& tx_mode = Modes::BLOCKING, 
 					const Modes& rx_mode = Modes::BLOCKING) override;
 
@@ -51,19 +51,11 @@ namespace Thor
 				 *	@note When setting the RX peripheral to IT or DMA mode, it automatically enables asynchronous data reception
 				 **/
 				Status setMode(const SubPeripheral& periph, const Modes& mode) override;
-
-
+				
 				/**
 				*
 				**/
 				Status setBaud(const uint32_t& baud) override;
-
-				/**
-				*
-				**/
-				Status setBaud(const Thor::Definitions::Serial::BaudRate& baud) override;
-
-
 
 				/** Writes data to the serial output gpio
 				*	@param[in] val		Pointer to an array of data to be sent out

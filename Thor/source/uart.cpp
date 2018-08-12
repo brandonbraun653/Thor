@@ -215,7 +215,7 @@ namespace Thor
 				return newClass;
 			}
 
-			Status UARTClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
+			Status UARTClass::begin(const uint32_t& baud, const Modes& tx_mode, const Modes& rx_mode)
 			{
 				UART_GPIO_Init();
 
@@ -316,20 +316,6 @@ namespace Thor
 				/* Copy, modify, write */
 				UART_InitTypeDef init = uart_handle.Init;
 				init.BaudRate = baud;
-				uart_handle.Init = init;
-
-				/* Clear the hardware config and re-initialize with new settings */
-				UART_DeInit();
-				UART_Init();
-
-				return Status::PERIPH_OK;
-			}
-
-			Status UARTClass::setBaud(const BaudRate& baud)
-			{
-				/* Copy, modify, write */
-				UART_InitTypeDef init = uart_handle.Init;
-				init.BaudRate = static_cast<uint32_t>(baud);
 				uart_handle.Init = init;
 
 				/* Clear the hardware config and re-initialize with new settings */

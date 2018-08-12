@@ -46,32 +46,34 @@ namespace Thor
 				}
 			}
 
-			ThorBaud convertBaud(ChimBaud baud)
-			{
-				switch (baud)
-				{
-				case ChimBaud::SERIAL_BAUD_110:			return ThorBaud::SERIAL_BAUD_110;
-				case ChimBaud::SERIAL_BAUD_150:			return ThorBaud::SERIAL_BAUD_150;
-				case ChimBaud::SERIAL_BAUD_300:			return ThorBaud::SERIAL_BAUD_300;
-				case ChimBaud::SERIAL_BAUD_1200:		return ThorBaud::SERIAL_BAUD_1200;
-				case ChimBaud::SERIAL_BAUD_2400:		return ThorBaud::SERIAL_BAUD_2400;
-				case ChimBaud::SERIAL_BAUD_4800:		return ThorBaud::SERIAL_BAUD_4800;
-				case ChimBaud::SERIAL_BAUD_9600:		return ThorBaud::SERIAL_BAUD_9600;
-				case ChimBaud::SERIAL_BAUD_19200:		return ThorBaud::SERIAL_BAUD_19200;
-				case ChimBaud::SERIAL_BAUD_38400:		return ThorBaud::SERIAL_BAUD_38400;
-				case ChimBaud::SERIAL_BAUD_57600:		return ThorBaud::SERIAL_BAUD_57600;
-				case ChimBaud::SERIAL_BAUD_115200:		return ThorBaud::SERIAL_BAUD_115200;
-				case ChimBaud::SERIAL_BAUD_230400:		return ThorBaud::SERIAL_BAUD_230400;
-				case ChimBaud::SERIAL_BAUD_460800:		return ThorBaud::SERIAL_BAUD_460800;
-				case ChimBaud::SERIAL_BAUD_921600:		return ThorBaud::SERIAL_BAUD_921600;
-				default:								return ThorBaud::SERIAL_BAUD_9600;
-				}
-			}
+			//ThorBaud convertBaud(ChimBaud baud)
+			//{
+			//	switch (baud)
+			//	{
+			//	case ChimBaud::SERIAL_BAUD_110:			return ThorBaud::SERIAL_BAUD_110;
+			//	case ChimBaud::SERIAL_BAUD_150:			return ThorBaud::SERIAL_BAUD_150;
+			//	case ChimBaud::SERIAL_BAUD_300:			return ThorBaud::SERIAL_BAUD_300;
+			//	case ChimBaud::SERIAL_BAUD_1200:		return ThorBaud::SERIAL_BAUD_1200;
+			//	case ChimBaud::SERIAL_BAUD_2400:		return ThorBaud::SERIAL_BAUD_2400;
+			//	case ChimBaud::SERIAL_BAUD_4800:		return ThorBaud::SERIAL_BAUD_4800;
+			//	case ChimBaud::SERIAL_BAUD_9600:		return ThorBaud::SERIAL_BAUD_9600;
+			//	case ChimBaud::SERIAL_BAUD_19200:		return ThorBaud::SERIAL_BAUD_19200;
+			//	case ChimBaud::SERIAL_BAUD_38400:		return ThorBaud::SERIAL_BAUD_38400;
+			//	case ChimBaud::SERIAL_BAUD_57600:		return ThorBaud::SERIAL_BAUD_57600;
+			//	case ChimBaud::SERIAL_BAUD_115200:		return ThorBaud::SERIAL_BAUD_115200;
+			//	case ChimBaud::SERIAL_BAUD_230400:		return ThorBaud::SERIAL_BAUD_230400;
+			//	case ChimBaud::SERIAL_BAUD_460800:		return ThorBaud::SERIAL_BAUD_460800;
+			//	case ChimBaud::SERIAL_BAUD_921600:		return ThorBaud::SERIAL_BAUD_921600;
+			//	default:								return ThorBaud::SERIAL_BAUD_9600;
+			//	}
+			//}
 
-			ChimStatus SerialClass::cbegin(ChimBaud baud, ChimMode tx_mode, ChimMode rx_mode)
+			Chimera::Serial::Status SerialClass::cbegin(uint32_t baud, 
+				Chimera::Serial::Modes tx_mode, 
+				Chimera::Serial::Modes rx_mode)
 			{
 				auto chimera_error = ChimStatus::SERIAL_OK;
-				auto thor_error = begin(static_cast<ThorBaud>(baud), static_cast<ThorMode>(tx_mode), static_cast<ThorMode>(rx_mode));
+				auto thor_error = begin(baud, static_cast<ThorMode>(tx_mode), static_cast<ThorMode>(rx_mode));
 
 				if (thor_error != ThorStatus::PERIPH_OK)
 				{
@@ -125,12 +127,12 @@ namespace Thor
 				return ChimStatus::SERIAL_OK;
 			}
 
-			Chimera::Serial::Status SerialClass::csetBaud(Chimera::Serial::BaudRate baud)
+			Chimera::Serial::Status SerialClass::csetBaud(uint32_t baud)
 			{
 				auto chimera_error = ChimStatus::SERIAL_OK;
 
 				//TODO: Need to convert between Thor/Chimera bauds...or just allow numbers??
-				auto thor_error = this->serialObject->setBaud(convertBaud(baud));
+				auto thor_error = this->serialObject->setBaud(baud);
 
 				if (thor_error != ThorStatus::PERIPH_OK)
 				{
@@ -242,7 +244,9 @@ namespace Thor
 				}
 			}
 
-			ThorStatus SerialClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
+			Status SerialClass::begin(const uint32_t& baud, 
+				const Modes& tx_mode, 
+				const Modes& rx_mode)
 			{
 				return this->serialObject->begin(baud, tx_mode, rx_mode);
 			}
@@ -252,7 +256,7 @@ namespace Thor
 				return this->serialObject->setMode(periph, mode);
 			}
 			
-			Status SerialClass::setBaud(const BaudRate& baud)
+			Status SerialClass::setBaud(const uint32_t& baud)
 			{
 				return this->serialObject->setBaud(baud);
 			}

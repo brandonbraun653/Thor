@@ -163,7 +163,7 @@ namespace Thor
 				__HAL_USART_DISABLE_IT(UsartHandle, USART_IT_IDLE);
 			}
 
-			Status USARTClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
+			Status USARTClass::begin(const uint32_t& baud, const Modes& tx_mode, const Modes& rx_mode)
 			{
 				USART_GPIO_Init();
 
@@ -264,20 +264,6 @@ namespace Thor
 				/* Copy, modify, write */
 				USART_InitTypeDef init = usartHandle.Init;
 				init.BaudRate = baud;
-				usartHandle.Init = init;
-
-				/* Clear the hardware config and re-initialize with new settings */
-				USART_DeInit();
-				USART_Init();
-
-				return Status::PERIPH_OK;
-			}
-
-			Status USARTClass::setBaud(const BaudRate& baud)
-			{
-				/* Copy, modify, write */
-				USART_InitTypeDef init = usartHandle.Init;
-				init.BaudRate = static_cast<uint32_t>(baud);
 				usartHandle.Init = init;
 
 				/* Clear the hardware config and re-initialize with new settings */
