@@ -467,19 +467,19 @@ void __attribute__ ((weak)) DMA1_Stream7_IRQHandler()
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) FMC_IRQHandler() 
+void __attribute__ ((weak)) FSMC_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void FMC_IRQHandler();
+	//	extern "C" void FSMC_IRQHandler();
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) SDMMC1_IRQHandler() 
+void __attribute__ ((weak)) SDIO_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void SDMMC1_IRQHandler();
+	//	extern "C" void SDIO_IRQHandler();
 	asm("bkpt 255");
 }
 
@@ -571,19 +571,19 @@ void __attribute__ ((weak)) DMA2_Stream4_IRQHandler()
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) ETH_IRQHandler() 
+void __attribute__ ((weak)) DFSDM1_FLT0_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void ETH_IRQHandler();
+	//	extern "C" void DFSDM1_FLT0_IRQHandler();
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) ETH_WKUP_IRQHandler() 
+void __attribute__ ((weak)) DFSDM1_FLT1_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void ETH_WKUP_IRQHandler();
+	//	extern "C" void DFSDM1_FLT1_IRQHandler();
 	asm("bkpt 255");
 }
 
@@ -675,43 +675,43 @@ void __attribute__ ((weak)) I2C3_ER_IRQHandler()
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) OTG_HS_EP1_OUT_IRQHandler() 
+void __attribute__ ((weak)) CAN3_TX_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void OTG_HS_EP1_OUT_IRQHandler();
+	//	extern "C" void CAN3_TX_IRQHandler();
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) OTG_HS_EP1_IN_IRQHandler() 
+void __attribute__ ((weak)) CAN3_RX0_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void OTG_HS_EP1_IN_IRQHandler();
+	//	extern "C" void CAN3_RX0_IRQHandler();
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) OTG_HS_WKUP_IRQHandler() 
+void __attribute__ ((weak)) CAN3_RX1_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void OTG_HS_WKUP_IRQHandler();
+	//	extern "C" void CAN3_RX1_IRQHandler();
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) OTG_HS_IRQHandler() 
+void __attribute__ ((weak)) CAN3_SCE_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void OTG_HS_IRQHandler();
+	//	extern "C" void CAN3_SCE_IRQHandler();
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) DCMI_IRQHandler() 
+void __attribute__ ((weak)) AES_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void DCMI_IRQHandler();
+	//	extern "C" void AES_IRQHandler();
 	asm("bkpt 255");
 }
 
@@ -763,14 +763,6 @@ void __attribute__ ((weak)) SPI5_IRQHandler()
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) SPI6_IRQHandler() 
-{
-	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
-	//Define the following function in your code to handle it:
-	//	extern "C" void SPI6_IRQHandler();
-	asm("bkpt 255");
-}
-
 void __attribute__ ((weak)) SAI1_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
@@ -779,19 +771,19 @@ void __attribute__ ((weak)) SAI1_IRQHandler()
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) DMA2D_IRQHandler() 
+void __attribute__ ((weak)) UART9_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void DMA2D_IRQHandler();
+	//	extern "C" void UART9_IRQHandler();
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) SAI2_IRQHandler() 
+void __attribute__ ((weak)) UART10_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void SAI2_IRQHandler();
+	//	extern "C" void UART10_IRQHandler();
 	asm("bkpt 255");
 }
 
@@ -803,6 +795,22 @@ void __attribute__ ((weak)) QUADSPI_IRQHandler()
 	asm("bkpt 255");
 }
 
+void __attribute__ ((weak)) FMPI2C1_EV_IRQHandler() 
+{
+	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
+	//Define the following function in your code to handle it:
+	//	extern "C" void FMPI2C1_EV_IRQHandler();
+	asm("bkpt 255");
+}
+
+void __attribute__ ((weak)) FMPI2C1_ER_IRQHandler() 
+{
+	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
+	//Define the following function in your code to handle it:
+	//	extern "C" void FMPI2C1_ER_IRQHandler();
+	asm("bkpt 255");
+}
+
 void __attribute__ ((weak)) LPTIM1_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
@@ -811,115 +819,35 @@ void __attribute__ ((weak)) LPTIM1_IRQHandler()
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) CEC_IRQHandler() 
+void __attribute__ ((weak)) DFSDM2_FLT0_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void CEC_IRQHandler();
+	//	extern "C" void DFSDM2_FLT0_IRQHandler();
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) I2C4_EV_IRQHandler() 
+void __attribute__ ((weak)) DFSDM2_FLT1_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void I2C4_EV_IRQHandler();
+	//	extern "C" void DFSDM2_FLT1_IRQHandler();
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) I2C4_ER_IRQHandler() 
+void __attribute__ ((weak)) DFSDM2_FLT2_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void I2C4_ER_IRQHandler();
+	//	extern "C" void DFSDM2_FLT2_IRQHandler();
 	asm("bkpt 255");
 }
 
-void __attribute__ ((weak)) SPDIF_RX_IRQHandler() 
+void __attribute__ ((weak)) DFSDM2_FLT3_IRQHandler() 
 {
 	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
 	//Define the following function in your code to handle it:
-	//	extern "C" void SPDIF_RX_IRQHandler();
-	asm("bkpt 255");
-}
-
-void __attribute__ ((weak)) DFSDM1_FLT0_IRQHandler() 
-{
-	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
-	//Define the following function in your code to handle it:
-	//	extern "C" void DFSDM1_FLT0_IRQHandler();
-	asm("bkpt 255");
-}
-
-void __attribute__ ((weak)) DFSDM1_FLT1_IRQHandler() 
-{
-	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
-	//Define the following function in your code to handle it:
-	//	extern "C" void DFSDM1_FLT1_IRQHandler();
-	asm("bkpt 255");
-}
-
-void __attribute__ ((weak)) DFSDM1_FLT2_IRQHandler() 
-{
-	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
-	//Define the following function in your code to handle it:
-	//	extern "C" void DFSDM1_FLT2_IRQHandler();
-	asm("bkpt 255");
-}
-
-void __attribute__ ((weak)) DFSDM1_FLT3_IRQHandler() 
-{
-	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
-	//Define the following function in your code to handle it:
-	//	extern "C" void DFSDM1_FLT3_IRQHandler();
-	asm("bkpt 255");
-}
-
-void __attribute__ ((weak)) SDMMC2_IRQHandler() 
-{
-	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
-	//Define the following function in your code to handle it:
-	//	extern "C" void SDMMC2_IRQHandler();
-	asm("bkpt 255");
-}
-
-void __attribute__ ((weak)) CAN3_TX_IRQHandler() 
-{
-	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
-	//Define the following function in your code to handle it:
-	//	extern "C" void CAN3_TX_IRQHandler();
-	asm("bkpt 255");
-}
-
-void __attribute__ ((weak)) CAN3_RX0_IRQHandler() 
-{
-	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
-	//Define the following function in your code to handle it:
-	//	extern "C" void CAN3_RX0_IRQHandler();
-	asm("bkpt 255");
-}
-
-void __attribute__ ((weak)) CAN3_RX1_IRQHandler() 
-{
-	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
-	//Define the following function in your code to handle it:
-	//	extern "C" void CAN3_RX1_IRQHandler();
-	asm("bkpt 255");
-}
-
-void __attribute__ ((weak)) CAN3_SCE_IRQHandler() 
-{
-	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
-	//Define the following function in your code to handle it:
-	//	extern "C" void CAN3_SCE_IRQHandler();
-	asm("bkpt 255");
-}
-
-void __attribute__ ((weak)) MDIOS_IRQHandler() 
-{
-	//If you hit the breakpoint below, one of the interrupts was unhandled in your code. 
-	//Define the following function in your code to handle it:
-	//	extern "C" void MDIOS_IRQHandler();
+	//	extern "C" void DFSDM2_FLT3_IRQHandler();
 	asm("bkpt 255");
 }
 
@@ -981,8 +909,8 @@ void TIM8_UP_TIM13_IRQHandler()       __attribute__ ((weak, alias ("Default_Hand
 void TIM8_TRG_COM_TIM14_IRQHandler()  __attribute__ ((weak, alias ("Default_Handler")));
 void TIM8_CC_IRQHandler()             __attribute__ ((weak, alias ("Default_Handler")));
 void DMA1_Stream7_IRQHandler()        __attribute__ ((weak, alias ("Default_Handler")));
-void FMC_IRQHandler()                 __attribute__ ((weak, alias ("Default_Handler")));
-void SDMMC1_IRQHandler()              __attribute__ ((weak, alias ("Default_Handler")));
+void FSMC_IRQHandler()                __attribute__ ((weak, alias ("Default_Handler")));
+void SDIO_IRQHandler()                __attribute__ ((weak, alias ("Default_Handler")));
 void TIM5_IRQHandler()                __attribute__ ((weak, alias ("Default_Handler")));
 void SPI3_IRQHandler()                __attribute__ ((weak, alias ("Default_Handler")));
 void UART4_IRQHandler()               __attribute__ ((weak, alias ("Default_Handler")));
@@ -994,8 +922,8 @@ void DMA2_Stream1_IRQHandler()        __attribute__ ((weak, alias ("Default_Hand
 void DMA2_Stream2_IRQHandler()        __attribute__ ((weak, alias ("Default_Handler")));
 void DMA2_Stream3_IRQHandler()        __attribute__ ((weak, alias ("Default_Handler")));
 void DMA2_Stream4_IRQHandler()        __attribute__ ((weak, alias ("Default_Handler")));
-void ETH_IRQHandler()                 __attribute__ ((weak, alias ("Default_Handler")));
-void ETH_WKUP_IRQHandler()            __attribute__ ((weak, alias ("Default_Handler")));
+void DFSDM1_FLT0_IRQHandler()         __attribute__ ((weak, alias ("Default_Handler")));
+void DFSDM1_FLT1_IRQHandler()         __attribute__ ((weak, alias ("Default_Handler")));
 void CAN2_TX_IRQHandler()             __attribute__ ((weak, alias ("Default_Handler")));
 void CAN2_RX0_IRQHandler()            __attribute__ ((weak, alias ("Default_Handler")));
 void CAN2_RX1_IRQHandler()            __attribute__ ((weak, alias ("Default_Handler")));
@@ -1007,40 +935,31 @@ void DMA2_Stream7_IRQHandler()        __attribute__ ((weak, alias ("Default_Hand
 void USART6_IRQHandler()              __attribute__ ((weak, alias ("Default_Handler")));
 void I2C3_EV_IRQHandler()             __attribute__ ((weak, alias ("Default_Handler")));
 void I2C3_ER_IRQHandler()             __attribute__ ((weak, alias ("Default_Handler")));
-void OTG_HS_EP1_OUT_IRQHandler()      __attribute__ ((weak, alias ("Default_Handler")));
-void OTG_HS_EP1_IN_IRQHandler()       __attribute__ ((weak, alias ("Default_Handler")));
-void OTG_HS_WKUP_IRQHandler()         __attribute__ ((weak, alias ("Default_Handler")));
-void OTG_HS_IRQHandler()              __attribute__ ((weak, alias ("Default_Handler")));
-void DCMI_IRQHandler()                __attribute__ ((weak, alias ("Default_Handler")));
+void CAN3_TX_IRQHandler()             __attribute__ ((weak, alias ("Default_Handler")));
+void CAN3_RX0_IRQHandler()            __attribute__ ((weak, alias ("Default_Handler")));
+void CAN3_RX1_IRQHandler()            __attribute__ ((weak, alias ("Default_Handler")));
+void CAN3_SCE_IRQHandler()            __attribute__ ((weak, alias ("Default_Handler")));
+void AES_IRQHandler()                 __attribute__ ((weak, alias ("Default_Handler")));
 void RNG_IRQHandler()                 __attribute__ ((weak, alias ("Default_Handler")));
 void FPU_IRQHandler()                 __attribute__ ((weak, alias ("Default_Handler")));
 void UART7_IRQHandler()               __attribute__ ((weak, alias ("Default_Handler")));
 void UART8_IRQHandler()               __attribute__ ((weak, alias ("Default_Handler")));
 void SPI4_IRQHandler()                __attribute__ ((weak, alias ("Default_Handler")));
 void SPI5_IRQHandler()                __attribute__ ((weak, alias ("Default_Handler")));
-void SPI6_IRQHandler()                __attribute__ ((weak, alias ("Default_Handler")));
 void SAI1_IRQHandler()                __attribute__ ((weak, alias ("Default_Handler")));
-void DMA2D_IRQHandler()               __attribute__ ((weak, alias ("Default_Handler")));
-void SAI2_IRQHandler()                __attribute__ ((weak, alias ("Default_Handler")));
+void UART9_IRQHandler()               __attribute__ ((weak, alias ("Default_Handler")));
+void UART10_IRQHandler()              __attribute__ ((weak, alias ("Default_Handler")));
 void QUADSPI_IRQHandler()             __attribute__ ((weak, alias ("Default_Handler")));
+void FMPI2C1_EV_IRQHandler()          __attribute__ ((weak, alias ("Default_Handler")));
+void FMPI2C1_ER_IRQHandler()          __attribute__ ((weak, alias ("Default_Handler")));
 void LPTIM1_IRQHandler()              __attribute__ ((weak, alias ("Default_Handler")));
-void CEC_IRQHandler()                 __attribute__ ((weak, alias ("Default_Handler")));
-void I2C4_EV_IRQHandler()             __attribute__ ((weak, alias ("Default_Handler")));
-void I2C4_ER_IRQHandler()             __attribute__ ((weak, alias ("Default_Handler")));
-void SPDIF_RX_IRQHandler()            __attribute__ ((weak, alias ("Default_Handler")));
-void DFSDM1_FLT0_IRQHandler()         __attribute__ ((weak, alias ("Default_Handler")));
-void DFSDM1_FLT1_IRQHandler()         __attribute__ ((weak, alias ("Default_Handler")));
-void DFSDM1_FLT2_IRQHandler()         __attribute__ ((weak, alias ("Default_Handler")));
-void DFSDM1_FLT3_IRQHandler()         __attribute__ ((weak, alias ("Default_Handler")));
-void SDMMC2_IRQHandler()              __attribute__ ((weak, alias ("Default_Handler")));
-void CAN3_TX_IRQHandler()             __attribute__ ((weak, alias ("Default_Handler")));
-void CAN3_RX0_IRQHandler()            __attribute__ ((weak, alias ("Default_Handler")));
-void CAN3_RX1_IRQHandler()            __attribute__ ((weak, alias ("Default_Handler")));
-void CAN3_SCE_IRQHandler()            __attribute__ ((weak, alias ("Default_Handler")));
-void MDIOS_IRQHandler()               __attribute__ ((weak, alias ("Default_Handler")));
+void DFSDM2_FLT0_IRQHandler()         __attribute__ ((weak, alias ("Default_Handler")));
+void DFSDM2_FLT1_IRQHandler()         __attribute__ ((weak, alias ("Default_Handler")));
+void DFSDM2_FLT2_IRQHandler()         __attribute__ ((weak, alias ("Default_Handler")));
+void DFSDM2_FLT3_IRQHandler()         __attribute__ ((weak, alias ("Default_Handler")));
 #endif
 
-void * g_pfnVectors[0x7e] __attribute__ ((section (".isr_vector"), used)) = 
+void * g_pfnVectors[0x76] __attribute__ ((section (".isr_vector"), used)) = 
 {
 	&_estack,
 	&Reset_Handler,
@@ -1106,8 +1025,8 @@ void * g_pfnVectors[0x7e] __attribute__ ((section (".isr_vector"), used)) =
 	&TIM8_TRG_COM_TIM14_IRQHandler,
 	&TIM8_CC_IRQHandler,
 	&DMA1_Stream7_IRQHandler,
-	&FMC_IRQHandler,
-	&SDMMC1_IRQHandler,
+	&FSMC_IRQHandler,
+	&SDIO_IRQHandler,
 	&TIM5_IRQHandler,
 	&SPI3_IRQHandler,
 	&UART4_IRQHandler,
@@ -1119,8 +1038,8 @@ void * g_pfnVectors[0x7e] __attribute__ ((section (".isr_vector"), used)) =
 	&DMA2_Stream2_IRQHandler,
 	&DMA2_Stream3_IRQHandler,
 	&DMA2_Stream4_IRQHandler,
-	&ETH_IRQHandler,
-	&ETH_WKUP_IRQHandler,
+	&DFSDM1_FLT0_IRQHandler,
+	&DFSDM1_FLT1_IRQHandler,
 	&CAN2_TX_IRQHandler,
 	&CAN2_RX0_IRQHandler,
 	&CAN2_RX1_IRQHandler,
@@ -1132,42 +1051,34 @@ void * g_pfnVectors[0x7e] __attribute__ ((section (".isr_vector"), used)) =
 	&USART6_IRQHandler,
 	&I2C3_EV_IRQHandler,
 	&I2C3_ER_IRQHandler,
-	&OTG_HS_EP1_OUT_IRQHandler,
-	&OTG_HS_EP1_IN_IRQHandler,
-	&OTG_HS_WKUP_IRQHandler,
-	&OTG_HS_IRQHandler,
-	&DCMI_IRQHandler,
+	&CAN3_TX_IRQHandler,
+	&CAN3_RX0_IRQHandler,
+	&CAN3_RX1_IRQHandler,
+	&CAN3_SCE_IRQHandler,
 	NULL,
+	&AES_IRQHandler,
 	&RNG_IRQHandler,
 	&FPU_IRQHandler,
 	&UART7_IRQHandler,
 	&UART8_IRQHandler,
 	&SPI4_IRQHandler,
 	&SPI5_IRQHandler,
-	&SPI6_IRQHandler,
+	NULL,
 	&SAI1_IRQHandler,
+	&UART9_IRQHandler,
+	&UART10_IRQHandler,
 	NULL,
 	NULL,
-	&DMA2D_IRQHandler,
-	&SAI2_IRQHandler,
 	&QUADSPI_IRQHandler,
+	NULL,
+	NULL,
+	&FMPI2C1_EV_IRQHandler,
+	&FMPI2C1_ER_IRQHandler,
 	&LPTIM1_IRQHandler,
-	&CEC_IRQHandler,
-	&I2C4_EV_IRQHandler,
-	&I2C4_ER_IRQHandler,
-	&SPDIF_RX_IRQHandler,
-	NULL,
-	&DFSDM1_FLT0_IRQHandler,
-	&DFSDM1_FLT1_IRQHandler,
-	&DFSDM1_FLT2_IRQHandler,
-	&DFSDM1_FLT3_IRQHandler,
-	&SDMMC2_IRQHandler,
-	&CAN3_TX_IRQHandler,
-	&CAN3_RX0_IRQHandler,
-	&CAN3_RX1_IRQHandler,
-	&CAN3_SCE_IRQHandler,
-	NULL,
-	&MDIOS_IRQHandler,
+	&DFSDM2_FLT0_IRQHandler,
+	&DFSDM2_FLT1_IRQHandler,
+	&DFSDM2_FLT2_IRQHandler,
+	&DFSDM2_FLT3_IRQHandler,
 };
 
 void SystemInit();
