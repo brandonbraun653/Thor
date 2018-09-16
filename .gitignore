@@ -4,7 +4,6 @@ Thor/testing/.idea/
 **/.pytest_cache
 **/__pycache__
 **/.cache
-**/build
-**/build/*
 **/.vscode
 **/.DS_Store
+**.obj

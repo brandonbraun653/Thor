@@ -1,0 +1,6 @@
+C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/edit_cache.dir
+C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/thor.dir
+C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/STM32F4_HAL.dir
+C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/debug.dir
+C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/release.dir
+C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/rebuild_cache.dir
