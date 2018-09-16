@@ -1,0 +1,2 @@
+C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libthor_dbg.a  CMakeFiles/thor.dir/main.cpp.obj
+C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libthor_dbg.a

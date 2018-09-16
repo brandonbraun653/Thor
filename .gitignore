@@ -7,4 +7,9 @@ Thor/testing/.idea/
 **/build
 **/build/*
 **/.vscode
+<<<<<<< HEAD
 **/.DS_Store
+=======
+**/.DS_Store
+**.obj
+>>>>>>> 6599447... Added a significant number of cmake helper functions to support common stm32 tasks. Updated the gitmodules with new refs. Updated the toolchain.cmake file to run more cleanly.
