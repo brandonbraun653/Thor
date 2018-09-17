@@ -58,3 +58,13 @@ if(NOT TARGET release)
         COMMENT "Creating the executable in the release mode."
     )
 endif()
+
+# Assign a dbg tag to delineate debug build outputs
+if(NOT CMAKE_DEBUG_POSTFIX)
+    set(CMAKE_DEBUG_POSTFIX _dbg)
+endif()
+
+# Assign a rel tag to delineate release build outputs
+if(NOT CMAKE_RELEASE_POSTFIX)
+    set(CMAKE_RELEASE_POSTFIX _rel)
+endif()
