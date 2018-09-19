@@ -16,10 +16,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "../Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Inc"
-  "../Thor/lib/stm32hal_f4/Device/conf"
-  "../Thor/lib/stm32hal_f4/CMSIS/Include"
-  "../Thor/lib/stm32hal_f4/CMSIS/Device/ST/STM32F4xx/Include"
+  "../STM32F4_HAL_INC_DIRS"
   )
 
 # Targets to which this target links.

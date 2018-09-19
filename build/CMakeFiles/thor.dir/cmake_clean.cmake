@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/thor.dir/main.cpp.obj"
-  "libthor_dbg.pdb"
-  "libthor_dbg.a"
+  "libthor.pdb"
+  "libthor.a"
 )
 
 # Per-language clean rules from dependency scanning.
