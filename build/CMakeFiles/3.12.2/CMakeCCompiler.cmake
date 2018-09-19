@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 set(CMAKE_C_COMPILER "C:/GNU/SysGCC/gcc-arm-none-eabi-7-2018-q2-update-win32/bin/arm-none-eabi-gcc.exe")
 set(CMAKE_C_COMPILER_ARG1 "")
 set(CMAKE_C_COMPILER_ID "GNU")
@@ -9,6 +10,19 @@ set(CMAKE_C_COMPILE_FEATURES "")
 set(CMAKE_C90_COMPILE_FEATURES "")
 set(CMAKE_C99_COMPILE_FEATURES "")
 set(CMAKE_C11_COMPILE_FEATURES "")
+=======
+set(CMAKE_C_COMPILER "G:/SysGCC/GNUToolsARMEmbedded/7_2017_q4_major/bin/arm-none-eabi-gcc.exe")
+set(CMAKE_C_COMPILER_ARG1 "")
+set(CMAKE_C_COMPILER_ID "GNU")
+set(CMAKE_C_COMPILER_VERSION "7.2.1")
+set(CMAKE_C_COMPILER_VERSION_INTERNAL "")
+set(CMAKE_C_COMPILER_WRAPPER "")
+set(CMAKE_C_STANDARD_COMPUTED_DEFAULT "11")
+set(CMAKE_C_COMPILE_FEATURES "c_std_90;c_function_prototypes;c_std_99;c_restrict;c_variadic_macros;c_std_11;c_static_assert")
+set(CMAKE_C90_COMPILE_FEATURES "c_std_90;c_function_prototypes")
+set(CMAKE_C99_COMPILE_FEATURES "c_std_99;c_restrict;c_variadic_macros")
+set(CMAKE_C11_COMPILE_FEATURES "c_std_11;c_static_assert")
+>>>>>>> 4a5a2ef... Update
 
 set(CMAKE_C_PLATFORM_ID "")
 set(CMAKE_C_SIMULATE_ID "")
@@ -16,6 +30,7 @@ set(CMAKE_C_SIMULATE_VERSION "")
 
 
 
+<<<<<<< HEAD
 set(CMAKE_AR "C:/GNU/SysGCC/gcc-arm-none-eabi-7-2018-q2-update-win32/bin/arm-none-eabi-ar.exe")
 set(CMAKE_C_COMPILER_AR "C:/GNU/SysGCC/gcc-arm-none-eabi-7-2018-q2-update-win32/bin/arm-none-eabi-gcc-ar.exe")
 set(CMAKE_RANLIB "C:/GNU/SysGCC/gcc-arm-none-eabi-7-2018-q2-update-win32/bin/arm-none-eabi-ranlib.exe")
@@ -25,6 +40,17 @@ set(CMAKE_COMPILER_IS_GNUCC 1)
 set(CMAKE_C_COMPILER_LOADED 1)
 set(CMAKE_C_COMPILER_WORKS )
 set(CMAKE_C_ABI_COMPILED )
+=======
+set(CMAKE_AR "G:/SysGCC/GNUToolsARMEmbedded/7_2017_q4_major/bin/arm-none-eabi-ar.exe")
+set(CMAKE_C_COMPILER_AR "G:/SysGCC/GNUToolsARMEmbedded/7_2017_q4_major/bin/arm-none-eabi-gcc-ar.exe")
+set(CMAKE_RANLIB "G:/SysGCC/GNUToolsARMEmbedded/7_2017_q4_major/bin/arm-none-eabi-ranlib.exe")
+set(CMAKE_C_COMPILER_RANLIB "G:/SysGCC/GNUToolsARMEmbedded/7_2017_q4_major/bin/arm-none-eabi-gcc-ranlib.exe")
+set(CMAKE_LINKER "G:/SysGCC/GNUToolsARMEmbedded/7_2017_q4_major/bin/arm-none-eabi-ld.exe")
+set(CMAKE_COMPILER_IS_GNUCC 1)
+set(CMAKE_C_COMPILER_LOADED 1)
+set(CMAKE_C_COMPILER_WORKS TRUE)
+set(CMAKE_C_ABI_COMPILED TRUE)
+>>>>>>> 4a5a2ef... Update
 set(CMAKE_COMPILER_IS_MINGW )
 set(CMAKE_COMPILER_IS_CYGWIN )
 if(CMAKE_COMPILER_IS_CYGWIN)
@@ -43,8 +69,13 @@ set(CMAKE_C_IGNORE_EXTENSIONS h;H;o;O;obj;OBJ;def;DEF;rc;RC)
 set(CMAKE_C_LINKER_PREFERENCE 10)
 
 # Save compiler ABI information.
+<<<<<<< HEAD
 set(CMAKE_C_SIZEOF_DATA_PTR "")
 set(CMAKE_C_COMPILER_ABI "")
+=======
+set(CMAKE_C_SIZEOF_DATA_PTR "4")
+set(CMAKE_C_COMPILER_ABI "ELF")
+>>>>>>> 4a5a2ef... Update
 set(CMAKE_C_LIBRARY_ARCHITECTURE "")
 
 if(CMAKE_C_SIZEOF_DATA_PTR)

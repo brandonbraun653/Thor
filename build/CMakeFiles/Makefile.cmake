@@ -7,6 +7,7 @@ set(CMAKE_DEPENDS_GENERATOR "MinGW Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
+<<<<<<< HEAD
   "C:/Program Files/CMake/share/cmake-3.12/Modules/CMakeCInformation.cmake"
   "C:/Program Files/CMake/share/cmake-3.12/Modules/CMakeCXXInformation.cmake"
   "C:/Program Files/CMake/share/cmake-3.12/Modules/CMakeCommonLanguageInclude.cmake"
@@ -22,10 +23,34 @@ set(CMAKE_MAKEFILE_DEPENDS
   "C:/Program Files/CMake/share/cmake-3.12/Modules/Compiler/GNU.cmake"
   "C:/Program Files/CMake/share/cmake-3.12/Modules/Platform/Generic.cmake"
   "../CMakeLists.txt"
+=======
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/CMakeCInformation.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/CMakeCXXInformation.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/CMakeCommonLanguageInclude.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/CMakeGenericSystem.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/CMakeInitializeConfigs.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/CMakeLanguageInformation.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/CMakeSystemSpecificInformation.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/CMakeSystemSpecificInitialize.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/Compiler/GNU-C.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/Compiler/GNU-CXX.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/Compiler/GNU.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/FindBoost.cmake"
+  "G:/ProgramFiles/CMake/share/cmake-3.12/Modules/Platform/Generic.cmake"
+  "../CMakeLists.txt"
+  "../Thor/lib/FreeRTOS/CMakeLists.txt"
+  "../Thor/lib/erpc/CMakeLists.txt"
+>>>>>>> 4a5a2ef... Update
   "../Thor/lib/stm32hal_f4/CMakeLists.txt"
   "CMakeFiles/3.12.2/CMakeCCompiler.cmake"
   "CMakeFiles/3.12.2/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.12.2/CMakeSystem.cmake"
+<<<<<<< HEAD
+=======
+  "../cmake/gcc_stm32.cmake"
+  "../cmake/gcc_stm32f4.cmake"
+>>>>>>> 4a5a2ef... Update
   "../cmake/toolchain.cmake"
   )
 
@@ -46,4 +71,9 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/STM32F4_HAL.dir/DependInfo.cmake"
   "CMakeFiles/debug.dir/DependInfo.cmake"
   "CMakeFiles/release.dir/DependInfo.cmake"
+<<<<<<< HEAD
+=======
+  "CMakeFiles/erpc_server.dir/DependInfo.cmake"
+  "CMakeFiles/FreeRTOS.dir/DependInfo.cmake"
+>>>>>>> 4a5a2ef... Update
   )

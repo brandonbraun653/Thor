@@ -58,6 +58,17 @@ ENDFUNCTION()
 
 # Import the specific device family file
 STRING(TOLOWER ${STM32_FAMILY} STM32_FAMILY_LOWER)
+<<<<<<< HEAD
 INCLUDE(${STM32_CMAKE_DIR}/gcc_stm32${STM32_FAMILY_LOWER}.cmake)
 
 STM32_GET_CHIP_TYPE(${STM32_CHIP} STM32_CHIP_TYPExx)
+=======
+
+# FUNCTION(STM32_VALIDATE_DEVICE)
+    
+# ENDFUNCTION()
+
+
+
+
+>>>>>>> 4a5a2ef... Update

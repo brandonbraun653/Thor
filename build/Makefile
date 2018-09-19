@@ -38,19 +38,33 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
+<<<<<<< HEAD
 CMAKE_COMMAND = "C:\Program Files\CMake\bin\cmake.exe"
 
 # The command to remove a file.
 RM = "C:\Program Files\CMake\bin\cmake.exe" -E remove -f
+=======
+CMAKE_COMMAND = G:\ProgramFiles\CMake\bin\cmake.exe
+
+# The command to remove a file.
+RM = G:\ProgramFiles\CMake\bin\cmake.exe -E remove -f
+>>>>>>> 4a5a2ef... Update
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
+<<<<<<< HEAD
 CMAKE_SOURCE_DIR = C:\git\Microcontrollers\Thor_STM32
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = C:\git\Microcontrollers\Thor_STM32\build
+=======
+CMAKE_SOURCE_DIR = G:\git\Microcontrollers\Thor_STM32
+
+# The top-level build directory on which CMake was run.
+CMAKE_BINARY_DIR = G:\git\Microcontrollers\Thor_STM32\build
+>>>>>>> 4a5a2ef... Update
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -58,7 +72,11 @@ CMAKE_BINARY_DIR = C:\git\Microcontrollers\Thor_STM32\build
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+<<<<<<< HEAD
 	"C:\Program Files\CMake\bin\cmake-gui.exe" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+=======
+	G:\ProgramFiles\CMake\bin\cmake-gui.exe -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+>>>>>>> 4a5a2ef... Update
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -69,7 +87,11 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+<<<<<<< HEAD
 	"C:\Program Files\CMake\bin\cmake.exe" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+=======
+	G:\ProgramFiles\CMake\bin\cmake.exe -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+>>>>>>> 4a5a2ef... Update
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -79,9 +101,15 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
+<<<<<<< HEAD
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\progress.marks
 	$(MAKE) -f CMakeFiles\Makefile2 all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles 0
+=======
+	$(CMAKE_COMMAND) -E cmake_progress_start G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\progress.marks
+	$(MAKE) -f CMakeFiles\Makefile2 all
+	$(CMAKE_COMMAND) -E cmake_progress_start G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles 0
+>>>>>>> 4a5a2ef... Update
 .PHONY : all
 
 # The main clean target
@@ -161,6 +189,1277 @@ release/fast:
 	$(MAKE) -f CMakeFiles\release.dir\build.make CMakeFiles/release.dir/build
 .PHONY : release/fast
 
+<<<<<<< HEAD
+=======
+#=============================================================================
+# Target rules for targets named erpc_server
+
+# Build rule for target.
+erpc_server: cmake_check_build_system
+	$(MAKE) -f CMakeFiles\Makefile2 erpc_server
+.PHONY : erpc_server
+
+# fast build rule for target.
+erpc_server/fast:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/build
+.PHONY : erpc_server/fast
+
+#=============================================================================
+# Target rules for targets named FreeRTOS
+
+# Build rule for target.
+FreeRTOS: cmake_check_build_system
+	$(MAKE) -f CMakeFiles\Makefile2 FreeRTOS
+.PHONY : FreeRTOS
+
+# fast build rule for target.
+FreeRTOS/fast:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/build
+.PHONY : FreeRTOS/fast
+
+Thor/Thor/source/clock.obj: Thor/Thor/source/clock.cpp.obj
+
+.PHONY : Thor/Thor/source/clock.obj
+
+# target to build an object file
+Thor/Thor/source/clock.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/clock.cpp.obj
+.PHONY : Thor/Thor/source/clock.cpp.obj
+
+Thor/Thor/source/clock.i: Thor/Thor/source/clock.cpp.i
+
+.PHONY : Thor/Thor/source/clock.i
+
+# target to preprocess a source file
+Thor/Thor/source/clock.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/clock.cpp.i
+.PHONY : Thor/Thor/source/clock.cpp.i
+
+Thor/Thor/source/clock.s: Thor/Thor/source/clock.cpp.s
+
+.PHONY : Thor/Thor/source/clock.s
+
+# target to generate assembly for a file
+Thor/Thor/source/clock.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/clock.cpp.s
+.PHONY : Thor/Thor/source/clock.cpp.s
+
+Thor/Thor/source/core.obj: Thor/Thor/source/core.cpp.obj
+
+.PHONY : Thor/Thor/source/core.obj
+
+# target to build an object file
+Thor/Thor/source/core.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/core.cpp.obj
+.PHONY : Thor/Thor/source/core.cpp.obj
+
+Thor/Thor/source/core.i: Thor/Thor/source/core.cpp.i
+
+.PHONY : Thor/Thor/source/core.i
+
+# target to preprocess a source file
+Thor/Thor/source/core.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/core.cpp.i
+.PHONY : Thor/Thor/source/core.cpp.i
+
+Thor/Thor/source/core.s: Thor/Thor/source/core.cpp.s
+
+.PHONY : Thor/Thor/source/core.s
+
+# target to generate assembly for a file
+Thor/Thor/source/core.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/core.cpp.s
+.PHONY : Thor/Thor/source/core.cpp.s
+
+Thor/Thor/source/defaults.obj: Thor/Thor/source/defaults.cpp.obj
+
+.PHONY : Thor/Thor/source/defaults.obj
+
+# target to build an object file
+Thor/Thor/source/defaults.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/defaults.cpp.obj
+.PHONY : Thor/Thor/source/defaults.cpp.obj
+
+Thor/Thor/source/defaults.i: Thor/Thor/source/defaults.cpp.i
+
+.PHONY : Thor/Thor/source/defaults.i
+
+# target to preprocess a source file
+Thor/Thor/source/defaults.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/defaults.cpp.i
+.PHONY : Thor/Thor/source/defaults.cpp.i
+
+Thor/Thor/source/defaults.s: Thor/Thor/source/defaults.cpp.s
+
+.PHONY : Thor/Thor/source/defaults.s
+
+# target to generate assembly for a file
+Thor/Thor/source/defaults.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/defaults.cpp.s
+.PHONY : Thor/Thor/source/defaults.cpp.s
+
+Thor/Thor/source/definitions.obj: Thor/Thor/source/definitions.cpp.obj
+
+.PHONY : Thor/Thor/source/definitions.obj
+
+# target to build an object file
+Thor/Thor/source/definitions.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/definitions.cpp.obj
+.PHONY : Thor/Thor/source/definitions.cpp.obj
+
+Thor/Thor/source/definitions.i: Thor/Thor/source/definitions.cpp.i
+
+.PHONY : Thor/Thor/source/definitions.i
+
+# target to preprocess a source file
+Thor/Thor/source/definitions.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/definitions.cpp.i
+.PHONY : Thor/Thor/source/definitions.cpp.i
+
+Thor/Thor/source/definitions.s: Thor/Thor/source/definitions.cpp.s
+
+.PHONY : Thor/Thor/source/definitions.s
+
+# target to generate assembly for a file
+Thor/Thor/source/definitions.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/definitions.cpp.s
+.PHONY : Thor/Thor/source/definitions.cpp.s
+
+Thor/Thor/source/exceptions.obj: Thor/Thor/source/exceptions.cpp.obj
+
+.PHONY : Thor/Thor/source/exceptions.obj
+
+# target to build an object file
+Thor/Thor/source/exceptions.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exceptions.cpp.obj
+.PHONY : Thor/Thor/source/exceptions.cpp.obj
+
+Thor/Thor/source/exceptions.i: Thor/Thor/source/exceptions.cpp.i
+
+.PHONY : Thor/Thor/source/exceptions.i
+
+# target to preprocess a source file
+Thor/Thor/source/exceptions.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exceptions.cpp.i
+.PHONY : Thor/Thor/source/exceptions.cpp.i
+
+Thor/Thor/source/exceptions.s: Thor/Thor/source/exceptions.cpp.s
+
+.PHONY : Thor/Thor/source/exceptions.s
+
+# target to generate assembly for a file
+Thor/Thor/source/exceptions.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exceptions.cpp.s
+.PHONY : Thor/Thor/source/exceptions.cpp.s
+
+Thor/Thor/source/exti.obj: Thor/Thor/source/exti.cpp.obj
+
+.PHONY : Thor/Thor/source/exti.obj
+
+# target to build an object file
+Thor/Thor/source/exti.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exti.cpp.obj
+.PHONY : Thor/Thor/source/exti.cpp.obj
+
+Thor/Thor/source/exti.i: Thor/Thor/source/exti.cpp.i
+
+.PHONY : Thor/Thor/source/exti.i
+
+# target to preprocess a source file
+Thor/Thor/source/exti.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exti.cpp.i
+.PHONY : Thor/Thor/source/exti.cpp.i
+
+Thor/Thor/source/exti.s: Thor/Thor/source/exti.cpp.s
+
+.PHONY : Thor/Thor/source/exti.s
+
+# target to generate assembly for a file
+Thor/Thor/source/exti.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exti.cpp.s
+.PHONY : Thor/Thor/source/exti.cpp.s
+
+Thor/Thor/source/flags.obj: Thor/Thor/source/flags.cpp.obj
+
+.PHONY : Thor/Thor/source/flags.obj
+
+# target to build an object file
+Thor/Thor/source/flags.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/flags.cpp.obj
+.PHONY : Thor/Thor/source/flags.cpp.obj
+
+Thor/Thor/source/flags.i: Thor/Thor/source/flags.cpp.i
+
+.PHONY : Thor/Thor/source/flags.i
+
+# target to preprocess a source file
+Thor/Thor/source/flags.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/flags.cpp.i
+.PHONY : Thor/Thor/source/flags.cpp.i
+
+Thor/Thor/source/flags.s: Thor/Thor/source/flags.cpp.s
+
+.PHONY : Thor/Thor/source/flags.s
+
+# target to generate assembly for a file
+Thor/Thor/source/flags.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/flags.cpp.s
+.PHONY : Thor/Thor/source/flags.cpp.s
+
+Thor/Thor/source/gdb.obj: Thor/Thor/source/gdb.cpp.obj
+
+.PHONY : Thor/Thor/source/gdb.obj
+
+# target to build an object file
+Thor/Thor/source/gdb.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gdb.cpp.obj
+.PHONY : Thor/Thor/source/gdb.cpp.obj
+
+Thor/Thor/source/gdb.i: Thor/Thor/source/gdb.cpp.i
+
+.PHONY : Thor/Thor/source/gdb.i
+
+# target to preprocess a source file
+Thor/Thor/source/gdb.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gdb.cpp.i
+.PHONY : Thor/Thor/source/gdb.cpp.i
+
+Thor/Thor/source/gdb.s: Thor/Thor/source/gdb.cpp.s
+
+.PHONY : Thor/Thor/source/gdb.s
+
+# target to generate assembly for a file
+Thor/Thor/source/gdb.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gdb.cpp.s
+.PHONY : Thor/Thor/source/gdb.cpp.s
+
+Thor/Thor/source/gpio.obj: Thor/Thor/source/gpio.cpp.obj
+
+.PHONY : Thor/Thor/source/gpio.obj
+
+# target to build an object file
+Thor/Thor/source/gpio.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gpio.cpp.obj
+.PHONY : Thor/Thor/source/gpio.cpp.obj
+
+Thor/Thor/source/gpio.i: Thor/Thor/source/gpio.cpp.i
+
+.PHONY : Thor/Thor/source/gpio.i
+
+# target to preprocess a source file
+Thor/Thor/source/gpio.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gpio.cpp.i
+.PHONY : Thor/Thor/source/gpio.cpp.i
+
+Thor/Thor/source/gpio.s: Thor/Thor/source/gpio.cpp.s
+
+.PHONY : Thor/Thor/source/gpio.s
+
+# target to generate assembly for a file
+Thor/Thor/source/gpio.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gpio.cpp.s
+.PHONY : Thor/Thor/source/gpio.cpp.s
+
+Thor/Thor/source/i2c.obj: Thor/Thor/source/i2c.cpp.obj
+
+.PHONY : Thor/Thor/source/i2c.obj
+
+# target to build an object file
+Thor/Thor/source/i2c.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/i2c.cpp.obj
+.PHONY : Thor/Thor/source/i2c.cpp.obj
+
+Thor/Thor/source/i2c.i: Thor/Thor/source/i2c.cpp.i
+
+.PHONY : Thor/Thor/source/i2c.i
+
+# target to preprocess a source file
+Thor/Thor/source/i2c.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/i2c.cpp.i
+.PHONY : Thor/Thor/source/i2c.cpp.i
+
+Thor/Thor/source/i2c.s: Thor/Thor/source/i2c.cpp.s
+
+.PHONY : Thor/Thor/source/i2c.s
+
+# target to generate assembly for a file
+Thor/Thor/source/i2c.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/i2c.cpp.s
+.PHONY : Thor/Thor/source/i2c.cpp.s
+
+Thor/Thor/source/interrupt.obj: Thor/Thor/source/interrupt.cpp.obj
+
+.PHONY : Thor/Thor/source/interrupt.obj
+
+# target to build an object file
+Thor/Thor/source/interrupt.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/interrupt.cpp.obj
+.PHONY : Thor/Thor/source/interrupt.cpp.obj
+
+Thor/Thor/source/interrupt.i: Thor/Thor/source/interrupt.cpp.i
+
+.PHONY : Thor/Thor/source/interrupt.i
+
+# target to preprocess a source file
+Thor/Thor/source/interrupt.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/interrupt.cpp.i
+.PHONY : Thor/Thor/source/interrupt.cpp.i
+
+Thor/Thor/source/interrupt.s: Thor/Thor/source/interrupt.cpp.s
+
+.PHONY : Thor/Thor/source/interrupt.s
+
+# target to generate assembly for a file
+Thor/Thor/source/interrupt.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/interrupt.cpp.s
+.PHONY : Thor/Thor/source/interrupt.cpp.s
+
+Thor/Thor/source/mem.obj: Thor/Thor/source/mem.cpp.obj
+
+.PHONY : Thor/Thor/source/mem.obj
+
+# target to build an object file
+Thor/Thor/source/mem.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/mem.cpp.obj
+.PHONY : Thor/Thor/source/mem.cpp.obj
+
+Thor/Thor/source/mem.i: Thor/Thor/source/mem.cpp.i
+
+.PHONY : Thor/Thor/source/mem.i
+
+# target to preprocess a source file
+Thor/Thor/source/mem.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/mem.cpp.i
+.PHONY : Thor/Thor/source/mem.cpp.i
+
+Thor/Thor/source/mem.s: Thor/Thor/source/mem.cpp.s
+
+.PHONY : Thor/Thor/source/mem.s
+
+# target to generate assembly for a file
+Thor/Thor/source/mem.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/mem.cpp.s
+.PHONY : Thor/Thor/source/mem.cpp.s
+
+Thor/Thor/source/nucleo.obj: Thor/Thor/source/nucleo.cpp.obj
+
+.PHONY : Thor/Thor/source/nucleo.obj
+
+# target to build an object file
+Thor/Thor/source/nucleo.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/nucleo.cpp.obj
+.PHONY : Thor/Thor/source/nucleo.cpp.obj
+
+Thor/Thor/source/nucleo.i: Thor/Thor/source/nucleo.cpp.i
+
+.PHONY : Thor/Thor/source/nucleo.i
+
+# target to preprocess a source file
+Thor/Thor/source/nucleo.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/nucleo.cpp.i
+.PHONY : Thor/Thor/source/nucleo.cpp.i
+
+Thor/Thor/source/nucleo.s: Thor/Thor/source/nucleo.cpp.s
+
+.PHONY : Thor/Thor/source/nucleo.s
+
+# target to generate assembly for a file
+Thor/Thor/source/nucleo.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/nucleo.cpp.s
+.PHONY : Thor/Thor/source/nucleo.cpp.s
+
+Thor/Thor/source/print.obj: Thor/Thor/source/print.cpp.obj
+
+.PHONY : Thor/Thor/source/print.obj
+
+# target to build an object file
+Thor/Thor/source/print.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/print.cpp.obj
+.PHONY : Thor/Thor/source/print.cpp.obj
+
+Thor/Thor/source/print.i: Thor/Thor/source/print.cpp.i
+
+.PHONY : Thor/Thor/source/print.i
+
+# target to preprocess a source file
+Thor/Thor/source/print.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/print.cpp.i
+.PHONY : Thor/Thor/source/print.cpp.i
+
+Thor/Thor/source/print.s: Thor/Thor/source/print.cpp.s
+
+.PHONY : Thor/Thor/source/print.s
+
+# target to generate assembly for a file
+Thor/Thor/source/print.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/print.cpp.s
+.PHONY : Thor/Thor/source/print.cpp.s
+
+Thor/Thor/source/pwm.obj: Thor/Thor/source/pwm.cpp.obj
+
+.PHONY : Thor/Thor/source/pwm.obj
+
+# target to build an object file
+Thor/Thor/source/pwm.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/pwm.cpp.obj
+.PHONY : Thor/Thor/source/pwm.cpp.obj
+
+Thor/Thor/source/pwm.i: Thor/Thor/source/pwm.cpp.i
+
+.PHONY : Thor/Thor/source/pwm.i
+
+# target to preprocess a source file
+Thor/Thor/source/pwm.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/pwm.cpp.i
+.PHONY : Thor/Thor/source/pwm.cpp.i
+
+Thor/Thor/source/pwm.s: Thor/Thor/source/pwm.cpp.s
+
+.PHONY : Thor/Thor/source/pwm.s
+
+# target to generate assembly for a file
+Thor/Thor/source/pwm.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/pwm.cpp.s
+.PHONY : Thor/Thor/source/pwm.cpp.s
+
+Thor/Thor/source/ringbuffer.obj: Thor/Thor/source/ringbuffer.cpp.obj
+
+.PHONY : Thor/Thor/source/ringbuffer.obj
+
+# target to build an object file
+Thor/Thor/source/ringbuffer.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/ringbuffer.cpp.obj
+.PHONY : Thor/Thor/source/ringbuffer.cpp.obj
+
+Thor/Thor/source/ringbuffer.i: Thor/Thor/source/ringbuffer.cpp.i
+
+.PHONY : Thor/Thor/source/ringbuffer.i
+
+# target to preprocess a source file
+Thor/Thor/source/ringbuffer.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/ringbuffer.cpp.i
+.PHONY : Thor/Thor/source/ringbuffer.cpp.i
+
+Thor/Thor/source/ringbuffer.s: Thor/Thor/source/ringbuffer.cpp.s
+
+.PHONY : Thor/Thor/source/ringbuffer.s
+
+# target to generate assembly for a file
+Thor/Thor/source/ringbuffer.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/ringbuffer.cpp.s
+.PHONY : Thor/Thor/source/ringbuffer.cpp.s
+
+Thor/Thor/source/rpc.obj: Thor/Thor/source/rpc.cpp.obj
+
+.PHONY : Thor/Thor/source/rpc.obj
+
+# target to build an object file
+Thor/Thor/source/rpc.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/rpc.cpp.obj
+.PHONY : Thor/Thor/source/rpc.cpp.obj
+
+Thor/Thor/source/rpc.i: Thor/Thor/source/rpc.cpp.i
+
+.PHONY : Thor/Thor/source/rpc.i
+
+# target to preprocess a source file
+Thor/Thor/source/rpc.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/rpc.cpp.i
+.PHONY : Thor/Thor/source/rpc.cpp.i
+
+Thor/Thor/source/rpc.s: Thor/Thor/source/rpc.cpp.s
+
+.PHONY : Thor/Thor/source/rpc.s
+
+# target to generate assembly for a file
+Thor/Thor/source/rpc.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/rpc.cpp.s
+.PHONY : Thor/Thor/source/rpc.cpp.s
+
+Thor/Thor/source/serial.obj: Thor/Thor/source/serial.cpp.obj
+
+.PHONY : Thor/Thor/source/serial.obj
+
+# target to build an object file
+Thor/Thor/source/serial.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/serial.cpp.obj
+.PHONY : Thor/Thor/source/serial.cpp.obj
+
+Thor/Thor/source/serial.i: Thor/Thor/source/serial.cpp.i
+
+.PHONY : Thor/Thor/source/serial.i
+
+# target to preprocess a source file
+Thor/Thor/source/serial.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/serial.cpp.i
+.PHONY : Thor/Thor/source/serial.cpp.i
+
+Thor/Thor/source/serial.s: Thor/Thor/source/serial.cpp.s
+
+.PHONY : Thor/Thor/source/serial.s
+
+# target to generate assembly for a file
+Thor/Thor/source/serial.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/serial.cpp.s
+.PHONY : Thor/Thor/source/serial.cpp.s
+
+Thor/Thor/source/spi.obj: Thor/Thor/source/spi.cpp.obj
+
+.PHONY : Thor/Thor/source/spi.obj
+
+# target to build an object file
+Thor/Thor/source/spi.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/spi.cpp.obj
+.PHONY : Thor/Thor/source/spi.cpp.obj
+
+Thor/Thor/source/spi.i: Thor/Thor/source/spi.cpp.i
+
+.PHONY : Thor/Thor/source/spi.i
+
+# target to preprocess a source file
+Thor/Thor/source/spi.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/spi.cpp.i
+.PHONY : Thor/Thor/source/spi.cpp.i
+
+Thor/Thor/source/spi.s: Thor/Thor/source/spi.cpp.s
+
+.PHONY : Thor/Thor/source/spi.s
+
+# target to generate assembly for a file
+Thor/Thor/source/spi.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/spi.cpp.s
+.PHONY : Thor/Thor/source/spi.cpp.s
+
+Thor/Thor/source/thor.obj: Thor/Thor/source/thor.cpp.obj
+
+.PHONY : Thor/Thor/source/thor.obj
+
+# target to build an object file
+Thor/Thor/source/thor.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/thor.cpp.obj
+.PHONY : Thor/Thor/source/thor.cpp.obj
+
+Thor/Thor/source/thor.i: Thor/Thor/source/thor.cpp.i
+
+.PHONY : Thor/Thor/source/thor.i
+
+# target to preprocess a source file
+Thor/Thor/source/thor.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/thor.cpp.i
+.PHONY : Thor/Thor/source/thor.cpp.i
+
+Thor/Thor/source/thor.s: Thor/Thor/source/thor.cpp.s
+
+.PHONY : Thor/Thor/source/thor.s
+
+# target to generate assembly for a file
+Thor/Thor/source/thor.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/thor.cpp.s
+.PHONY : Thor/Thor/source/thor.cpp.s
+
+Thor/Thor/source/threads.obj: Thor/Thor/source/threads.cpp.obj
+
+.PHONY : Thor/Thor/source/threads.obj
+
+# target to build an object file
+Thor/Thor/source/threads.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/threads.cpp.obj
+.PHONY : Thor/Thor/source/threads.cpp.obj
+
+Thor/Thor/source/threads.i: Thor/Thor/source/threads.cpp.i
+
+.PHONY : Thor/Thor/source/threads.i
+
+# target to preprocess a source file
+Thor/Thor/source/threads.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/threads.cpp.i
+.PHONY : Thor/Thor/source/threads.cpp.i
+
+Thor/Thor/source/threads.s: Thor/Thor/source/threads.cpp.s
+
+.PHONY : Thor/Thor/source/threads.s
+
+# target to generate assembly for a file
+Thor/Thor/source/threads.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/threads.cpp.s
+.PHONY : Thor/Thor/source/threads.cpp.s
+
+Thor/Thor/source/timer.obj: Thor/Thor/source/timer.cpp.obj
+
+.PHONY : Thor/Thor/source/timer.obj
+
+# target to build an object file
+Thor/Thor/source/timer.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/timer.cpp.obj
+.PHONY : Thor/Thor/source/timer.cpp.obj
+
+Thor/Thor/source/timer.i: Thor/Thor/source/timer.cpp.i
+
+.PHONY : Thor/Thor/source/timer.i
+
+# target to preprocess a source file
+Thor/Thor/source/timer.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/timer.cpp.i
+.PHONY : Thor/Thor/source/timer.cpp.i
+
+Thor/Thor/source/timer.s: Thor/Thor/source/timer.cpp.s
+
+.PHONY : Thor/Thor/source/timer.s
+
+# target to generate assembly for a file
+Thor/Thor/source/timer.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/timer.cpp.s
+.PHONY : Thor/Thor/source/timer.cpp.s
+
+Thor/Thor/source/uart.obj: Thor/Thor/source/uart.cpp.obj
+
+.PHONY : Thor/Thor/source/uart.obj
+
+# target to build an object file
+Thor/Thor/source/uart.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/uart.cpp.obj
+.PHONY : Thor/Thor/source/uart.cpp.obj
+
+Thor/Thor/source/uart.i: Thor/Thor/source/uart.cpp.i
+
+.PHONY : Thor/Thor/source/uart.i
+
+# target to preprocess a source file
+Thor/Thor/source/uart.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/uart.cpp.i
+.PHONY : Thor/Thor/source/uart.cpp.i
+
+Thor/Thor/source/uart.s: Thor/Thor/source/uart.cpp.s
+
+.PHONY : Thor/Thor/source/uart.s
+
+# target to generate assembly for a file
+Thor/Thor/source/uart.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/uart.cpp.s
+.PHONY : Thor/Thor/source/uart.cpp.s
+
+Thor/Thor/source/usart.obj: Thor/Thor/source/usart.cpp.obj
+
+.PHONY : Thor/Thor/source/usart.obj
+
+# target to build an object file
+Thor/Thor/source/usart.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/usart.cpp.obj
+.PHONY : Thor/Thor/source/usart.cpp.obj
+
+Thor/Thor/source/usart.i: Thor/Thor/source/usart.cpp.i
+
+.PHONY : Thor/Thor/source/usart.i
+
+# target to preprocess a source file
+Thor/Thor/source/usart.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/usart.cpp.i
+.PHONY : Thor/Thor/source/usart.cpp.i
+
+Thor/Thor/source/usart.s: Thor/Thor/source/usart.cpp.s
+
+.PHONY : Thor/Thor/source/usart.s
+
+# target to generate assembly for a file
+Thor/Thor/source/usart.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/usart.cpp.s
+.PHONY : Thor/Thor/source/usart.cpp.s
+
+Thor/lib/FreeRTOS/croutine.obj: Thor/lib/FreeRTOS/croutine.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/croutine.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/croutine.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/croutine.c.obj
+.PHONY : Thor/lib/FreeRTOS/croutine.c.obj
+
+Thor/lib/FreeRTOS/croutine.i: Thor/lib/FreeRTOS/croutine.c.i
+
+.PHONY : Thor/lib/FreeRTOS/croutine.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/croutine.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/croutine.c.i
+.PHONY : Thor/lib/FreeRTOS/croutine.c.i
+
+Thor/lib/FreeRTOS/croutine.s: Thor/lib/FreeRTOS/croutine.c.s
+
+.PHONY : Thor/lib/FreeRTOS/croutine.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/croutine.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/croutine.c.s
+.PHONY : Thor/lib/FreeRTOS/croutine.c.s
+
+Thor/lib/FreeRTOS/event_groups.obj: Thor/lib/FreeRTOS/event_groups.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/event_groups.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/event_groups.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/event_groups.c.obj
+.PHONY : Thor/lib/FreeRTOS/event_groups.c.obj
+
+Thor/lib/FreeRTOS/event_groups.i: Thor/lib/FreeRTOS/event_groups.c.i
+
+.PHONY : Thor/lib/FreeRTOS/event_groups.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/event_groups.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/event_groups.c.i
+.PHONY : Thor/lib/FreeRTOS/event_groups.c.i
+
+Thor/lib/FreeRTOS/event_groups.s: Thor/lib/FreeRTOS/event_groups.c.s
+
+.PHONY : Thor/lib/FreeRTOS/event_groups.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/event_groups.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/event_groups.c.s
+.PHONY : Thor/lib/FreeRTOS/event_groups.c.s
+
+Thor/lib/FreeRTOS/list.obj: Thor/lib/FreeRTOS/list.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/list.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/list.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/list.c.obj
+.PHONY : Thor/lib/FreeRTOS/list.c.obj
+
+Thor/lib/FreeRTOS/list.i: Thor/lib/FreeRTOS/list.c.i
+
+.PHONY : Thor/lib/FreeRTOS/list.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/list.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/list.c.i
+.PHONY : Thor/lib/FreeRTOS/list.c.i
+
+Thor/lib/FreeRTOS/list.s: Thor/lib/FreeRTOS/list.c.s
+
+.PHONY : Thor/lib/FreeRTOS/list.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/list.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/list.c.s
+.PHONY : Thor/lib/FreeRTOS/list.c.s
+
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.obj: Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.obj
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.obj
+
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.i: Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.i
+
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.i
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.i
+
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.s: Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.s
+
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.s
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.s
+
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.obj: Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.obj
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.obj
+
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.i: Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.i
+
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.i
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.i
+
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.s: Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.s
+
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.s
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.s
+
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.obj: Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.obj
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.obj
+
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.i: Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.i
+
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.i
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.i
+
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.s: Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.s
+
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.s
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.s
+
+Thor/lib/FreeRTOS/queue.obj: Thor/lib/FreeRTOS/queue.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/queue.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/queue.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/queue.c.obj
+.PHONY : Thor/lib/FreeRTOS/queue.c.obj
+
+Thor/lib/FreeRTOS/queue.i: Thor/lib/FreeRTOS/queue.c.i
+
+.PHONY : Thor/lib/FreeRTOS/queue.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/queue.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/queue.c.i
+.PHONY : Thor/lib/FreeRTOS/queue.c.i
+
+Thor/lib/FreeRTOS/queue.s: Thor/lib/FreeRTOS/queue.c.s
+
+.PHONY : Thor/lib/FreeRTOS/queue.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/queue.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/queue.c.s
+.PHONY : Thor/lib/FreeRTOS/queue.c.s
+
+Thor/lib/FreeRTOS/stream_buffer.obj: Thor/lib/FreeRTOS/stream_buffer.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/stream_buffer.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/stream_buffer.c.obj
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.c.obj
+
+Thor/lib/FreeRTOS/stream_buffer.i: Thor/lib/FreeRTOS/stream_buffer.c.i
+
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/stream_buffer.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/stream_buffer.c.i
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.c.i
+
+Thor/lib/FreeRTOS/stream_buffer.s: Thor/lib/FreeRTOS/stream_buffer.c.s
+
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/stream_buffer.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/stream_buffer.c.s
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.c.s
+
+Thor/lib/FreeRTOS/tasks.obj: Thor/lib/FreeRTOS/tasks.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/tasks.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/tasks.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/tasks.c.obj
+.PHONY : Thor/lib/FreeRTOS/tasks.c.obj
+
+Thor/lib/FreeRTOS/tasks.i: Thor/lib/FreeRTOS/tasks.c.i
+
+.PHONY : Thor/lib/FreeRTOS/tasks.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/tasks.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/tasks.c.i
+.PHONY : Thor/lib/FreeRTOS/tasks.c.i
+
+Thor/lib/FreeRTOS/tasks.s: Thor/lib/FreeRTOS/tasks.c.s
+
+.PHONY : Thor/lib/FreeRTOS/tasks.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/tasks.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/tasks.c.s
+.PHONY : Thor/lib/FreeRTOS/tasks.c.s
+
+Thor/lib/FreeRTOS/timers.obj: Thor/lib/FreeRTOS/timers.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/timers.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/timers.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/timers.c.obj
+.PHONY : Thor/lib/FreeRTOS/timers.c.obj
+
+Thor/lib/FreeRTOS/timers.i: Thor/lib/FreeRTOS/timers.c.i
+
+.PHONY : Thor/lib/FreeRTOS/timers.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/timers.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/timers.c.i
+.PHONY : Thor/lib/FreeRTOS/timers.c.i
+
+Thor/lib/FreeRTOS/timers.s: Thor/lib/FreeRTOS/timers.c.s
+
+.PHONY : Thor/lib/FreeRTOS/timers.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/timers.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/timers.c.s
+.PHONY : Thor/lib/FreeRTOS/timers.c.s
+
+Thor/lib/erpc/erpc_c/infra/basic_codec.obj: Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/basic_codec.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.obj
+
+Thor/lib/erpc/erpc_c/infra/basic_codec.i: Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/basic_codec.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.i
+
+Thor/lib/erpc/erpc_c/infra/basic_codec.s: Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/basic_codec.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/infra/basic_codec.cpp.s
+
+Thor/lib/erpc/erpc_c/infra/crc16.obj: Thor/lib/erpc/erpc_c/infra/crc16.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/crc16.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/infra/crc16.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/crc16.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/infra/crc16.cpp.obj
+
+Thor/lib/erpc/erpc_c/infra/crc16.i: Thor/lib/erpc/erpc_c/infra/crc16.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/crc16.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/infra/crc16.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/crc16.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/infra/crc16.cpp.i
+
+Thor/lib/erpc/erpc_c/infra/crc16.s: Thor/lib/erpc/erpc_c/infra/crc16.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/crc16.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/infra/crc16.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/crc16.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/infra/crc16.cpp.s
+
+Thor/lib/erpc/erpc_c/infra/framed_transport.obj: Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/framed_transport.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.obj
+
+Thor/lib/erpc/erpc_c/infra/framed_transport.i: Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/framed_transport.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.i
+
+Thor/lib/erpc/erpc_c/infra/framed_transport.s: Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/framed_transport.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/infra/framed_transport.cpp.s
+
+Thor/lib/erpc/erpc_c/infra/message_buffer.obj: Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/message_buffer.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.obj
+
+Thor/lib/erpc/erpc_c/infra/message_buffer.i: Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/message_buffer.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.i
+
+Thor/lib/erpc/erpc_c/infra/message_buffer.s: Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/message_buffer.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/infra/message_buffer.cpp.s
+
+Thor/lib/erpc/erpc_c/infra/server.obj: Thor/lib/erpc/erpc_c/infra/server.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/server.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/infra/server.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/server.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/infra/server.cpp.obj
+
+Thor/lib/erpc/erpc_c/infra/server.i: Thor/lib/erpc/erpc_c/infra/server.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/server.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/infra/server.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/server.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/infra/server.cpp.i
+
+Thor/lib/erpc/erpc_c/infra/server.s: Thor/lib/erpc/erpc_c/infra/server.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/server.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/infra/server.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/server.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/infra/server.cpp.s
+
+Thor/lib/erpc/erpc_c/infra/simple_server.obj: Thor/lib/erpc/erpc_c/infra/simple_server.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/simple_server.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/infra/simple_server.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/simple_server.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/infra/simple_server.cpp.obj
+
+Thor/lib/erpc/erpc_c/infra/simple_server.i: Thor/lib/erpc/erpc_c/infra/simple_server.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/simple_server.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/infra/simple_server.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/simple_server.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/infra/simple_server.cpp.i
+
+Thor/lib/erpc/erpc_c/infra/simple_server.s: Thor/lib/erpc/erpc_c/infra/simple_server.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/infra/simple_server.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/infra/simple_server.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/infra/simple_server.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/infra/simple_server.cpp.s
+
+Thor/lib/erpc/erpc_c/port/erpc_port_freertos.obj: Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_port_freertos.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.obj
+
+Thor/lib/erpc/erpc_c/port/erpc_port_freertos.i: Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_port_freertos.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.i
+
+Thor/lib/erpc/erpc_c/port/erpc_port_freertos.s: Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_port_freertos.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_port_freertos.cpp.s
+
+Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.obj: Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.obj
+
+Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.i: Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.i
+
+Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.s: Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.cpp.s
+
+Thor/lib/erpc/erpc_c/setup/erpc_server_setup.obj: Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_server_setup.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.obj
+
+Thor/lib/erpc/erpc_c/setup/erpc_server_setup.i: Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_server_setup.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.i
+
+Thor/lib/erpc/erpc_c/setup/erpc_server_setup.s: Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_server_setup.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_server_setup.cpp.s
+
+Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.obj: Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.obj
+
+Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.i: Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.i
+
+Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.s: Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.cpp.s
+
+Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.obj: Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.obj
+
+Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.i: Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.i
+
+Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.s: Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.cpp.s
+
+Thor/lib/erpc/erpc_c/transports/serial_thor_transport.obj: Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.obj
+
+.PHONY : Thor/lib/erpc/erpc_c/transports/serial_thor_transport.obj
+
+# target to build an object file
+Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.obj:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.obj
+.PHONY : Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.obj
+
+Thor/lib/erpc/erpc_c/transports/serial_thor_transport.i: Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.i
+
+.PHONY : Thor/lib/erpc/erpc_c/transports/serial_thor_transport.i
+
+# target to preprocess a source file
+Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.i:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.i
+.PHONY : Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.i
+
+Thor/lib/erpc/erpc_c/transports/serial_thor_transport.s: Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.s
+
+.PHONY : Thor/lib/erpc/erpc_c/transports/serial_thor_transport.s
+
+# target to generate assembly for a file
+Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.s:
+	$(MAKE) -f CMakeFiles\erpc_server.dir\build.make CMakeFiles/erpc_server.dir/Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.s
+.PHONY : Thor/lib/erpc/erpc_c/transports/serial_thor_transport.cpp.s
+
+>>>>>>> 4a5a2ef... Update
 Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.obj: Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.obj
 
 .PHONY : Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.obj
@@ -2510,6 +3809,7 @@ Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.s:
 	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.s
 .PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.s
 
+<<<<<<< HEAD
 main.obj: main.cpp.obj
 
 .PHONY : main.obj
@@ -2537,6 +3837,8 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+=======
+>>>>>>> 4a5a2ef... Update
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -2548,7 +3850,151 @@ help:
 	@echo ... STM32F4_HAL
 	@echo ... debug
 	@echo ... release
+<<<<<<< HEAD
 	@echo ... rebuild_cache
+=======
+	@echo ... erpc_server
+	@echo ... FreeRTOS
+	@echo ... rebuild_cache
+	@echo ... Thor/Thor/source/clock.obj
+	@echo ... Thor/Thor/source/clock.i
+	@echo ... Thor/Thor/source/clock.s
+	@echo ... Thor/Thor/source/core.obj
+	@echo ... Thor/Thor/source/core.i
+	@echo ... Thor/Thor/source/core.s
+	@echo ... Thor/Thor/source/defaults.obj
+	@echo ... Thor/Thor/source/defaults.i
+	@echo ... Thor/Thor/source/defaults.s
+	@echo ... Thor/Thor/source/definitions.obj
+	@echo ... Thor/Thor/source/definitions.i
+	@echo ... Thor/Thor/source/definitions.s
+	@echo ... Thor/Thor/source/exceptions.obj
+	@echo ... Thor/Thor/source/exceptions.i
+	@echo ... Thor/Thor/source/exceptions.s
+	@echo ... Thor/Thor/source/exti.obj
+	@echo ... Thor/Thor/source/exti.i
+	@echo ... Thor/Thor/source/exti.s
+	@echo ... Thor/Thor/source/flags.obj
+	@echo ... Thor/Thor/source/flags.i
+	@echo ... Thor/Thor/source/flags.s
+	@echo ... Thor/Thor/source/gdb.obj
+	@echo ... Thor/Thor/source/gdb.i
+	@echo ... Thor/Thor/source/gdb.s
+	@echo ... Thor/Thor/source/gpio.obj
+	@echo ... Thor/Thor/source/gpio.i
+	@echo ... Thor/Thor/source/gpio.s
+	@echo ... Thor/Thor/source/i2c.obj
+	@echo ... Thor/Thor/source/i2c.i
+	@echo ... Thor/Thor/source/i2c.s
+	@echo ... Thor/Thor/source/interrupt.obj
+	@echo ... Thor/Thor/source/interrupt.i
+	@echo ... Thor/Thor/source/interrupt.s
+	@echo ... Thor/Thor/source/mem.obj
+	@echo ... Thor/Thor/source/mem.i
+	@echo ... Thor/Thor/source/mem.s
+	@echo ... Thor/Thor/source/nucleo.obj
+	@echo ... Thor/Thor/source/nucleo.i
+	@echo ... Thor/Thor/source/nucleo.s
+	@echo ... Thor/Thor/source/print.obj
+	@echo ... Thor/Thor/source/print.i
+	@echo ... Thor/Thor/source/print.s
+	@echo ... Thor/Thor/source/pwm.obj
+	@echo ... Thor/Thor/source/pwm.i
+	@echo ... Thor/Thor/source/pwm.s
+	@echo ... Thor/Thor/source/ringbuffer.obj
+	@echo ... Thor/Thor/source/ringbuffer.i
+	@echo ... Thor/Thor/source/ringbuffer.s
+	@echo ... Thor/Thor/source/rpc.obj
+	@echo ... Thor/Thor/source/rpc.i
+	@echo ... Thor/Thor/source/rpc.s
+	@echo ... Thor/Thor/source/serial.obj
+	@echo ... Thor/Thor/source/serial.i
+	@echo ... Thor/Thor/source/serial.s
+	@echo ... Thor/Thor/source/spi.obj
+	@echo ... Thor/Thor/source/spi.i
+	@echo ... Thor/Thor/source/spi.s
+	@echo ... Thor/Thor/source/thor.obj
+	@echo ... Thor/Thor/source/thor.i
+	@echo ... Thor/Thor/source/thor.s
+	@echo ... Thor/Thor/source/threads.obj
+	@echo ... Thor/Thor/source/threads.i
+	@echo ... Thor/Thor/source/threads.s
+	@echo ... Thor/Thor/source/timer.obj
+	@echo ... Thor/Thor/source/timer.i
+	@echo ... Thor/Thor/source/timer.s
+	@echo ... Thor/Thor/source/uart.obj
+	@echo ... Thor/Thor/source/uart.i
+	@echo ... Thor/Thor/source/uart.s
+	@echo ... Thor/Thor/source/usart.obj
+	@echo ... Thor/Thor/source/usart.i
+	@echo ... Thor/Thor/source/usart.s
+	@echo ... Thor/lib/FreeRTOS/croutine.obj
+	@echo ... Thor/lib/FreeRTOS/croutine.i
+	@echo ... Thor/lib/FreeRTOS/croutine.s
+	@echo ... Thor/lib/FreeRTOS/event_groups.obj
+	@echo ... Thor/lib/FreeRTOS/event_groups.i
+	@echo ... Thor/lib/FreeRTOS/event_groups.s
+	@echo ... Thor/lib/FreeRTOS/list.obj
+	@echo ... Thor/lib/FreeRTOS/list.i
+	@echo ... Thor/lib/FreeRTOS/list.s
+	@echo ... Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.obj
+	@echo ... Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.i
+	@echo ... Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.s
+	@echo ... Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.obj
+	@echo ... Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.i
+	@echo ... Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.s
+	@echo ... Thor/lib/FreeRTOS/portable/MemMang/heap_4.obj
+	@echo ... Thor/lib/FreeRTOS/portable/MemMang/heap_4.i
+	@echo ... Thor/lib/FreeRTOS/portable/MemMang/heap_4.s
+	@echo ... Thor/lib/FreeRTOS/queue.obj
+	@echo ... Thor/lib/FreeRTOS/queue.i
+	@echo ... Thor/lib/FreeRTOS/queue.s
+	@echo ... Thor/lib/FreeRTOS/stream_buffer.obj
+	@echo ... Thor/lib/FreeRTOS/stream_buffer.i
+	@echo ... Thor/lib/FreeRTOS/stream_buffer.s
+	@echo ... Thor/lib/FreeRTOS/tasks.obj
+	@echo ... Thor/lib/FreeRTOS/tasks.i
+	@echo ... Thor/lib/FreeRTOS/tasks.s
+	@echo ... Thor/lib/FreeRTOS/timers.obj
+	@echo ... Thor/lib/FreeRTOS/timers.i
+	@echo ... Thor/lib/FreeRTOS/timers.s
+	@echo ... Thor/lib/erpc/erpc_c/infra/basic_codec.obj
+	@echo ... Thor/lib/erpc/erpc_c/infra/basic_codec.i
+	@echo ... Thor/lib/erpc/erpc_c/infra/basic_codec.s
+	@echo ... Thor/lib/erpc/erpc_c/infra/crc16.obj
+	@echo ... Thor/lib/erpc/erpc_c/infra/crc16.i
+	@echo ... Thor/lib/erpc/erpc_c/infra/crc16.s
+	@echo ... Thor/lib/erpc/erpc_c/infra/framed_transport.obj
+	@echo ... Thor/lib/erpc/erpc_c/infra/framed_transport.i
+	@echo ... Thor/lib/erpc/erpc_c/infra/framed_transport.s
+	@echo ... Thor/lib/erpc/erpc_c/infra/message_buffer.obj
+	@echo ... Thor/lib/erpc/erpc_c/infra/message_buffer.i
+	@echo ... Thor/lib/erpc/erpc_c/infra/message_buffer.s
+	@echo ... Thor/lib/erpc/erpc_c/infra/server.obj
+	@echo ... Thor/lib/erpc/erpc_c/infra/server.i
+	@echo ... Thor/lib/erpc/erpc_c/infra/server.s
+	@echo ... Thor/lib/erpc/erpc_c/infra/simple_server.obj
+	@echo ... Thor/lib/erpc/erpc_c/infra/simple_server.i
+	@echo ... Thor/lib/erpc/erpc_c/infra/simple_server.s
+	@echo ... Thor/lib/erpc/erpc_c/port/erpc_port_freertos.obj
+	@echo ... Thor/lib/erpc/erpc_c/port/erpc_port_freertos.i
+	@echo ... Thor/lib/erpc/erpc_c/port/erpc_port_freertos.s
+	@echo ... Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.obj
+	@echo ... Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.i
+	@echo ... Thor/lib/erpc/erpc_c/port/erpc_threading_freertos.s
+	@echo ... Thor/lib/erpc/erpc_c/setup/erpc_server_setup.obj
+	@echo ... Thor/lib/erpc/erpc_c/setup/erpc_server_setup.i
+	@echo ... Thor/lib/erpc/erpc_c/setup/erpc_server_setup.s
+	@echo ... Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.obj
+	@echo ... Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.i
+	@echo ... Thor/lib/erpc/erpc_c/setup/erpc_setup_mbf_dynamic.s
+	@echo ... Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.obj
+	@echo ... Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.i
+	@echo ... Thor/lib/erpc/erpc_c/setup/erpc_setup_serial_thor.s
+	@echo ... Thor/lib/erpc/erpc_c/transports/serial_thor_transport.obj
+	@echo ... Thor/lib/erpc/erpc_c/transports/serial_thor_transport.i
+	@echo ... Thor/lib/erpc/erpc_c/transports/serial_thor_transport.s
+>>>>>>> 4a5a2ef... Update
 	@echo ... Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.obj
 	@echo ... Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.i
 	@echo ... Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.s
@@ -2810,9 +4256,12 @@ help:
 	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.obj
 	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.i
 	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.s
+<<<<<<< HEAD
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+=======
+>>>>>>> 4a5a2ef... Update
 .PHONY : help
 
 

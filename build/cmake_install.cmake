@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 # Install script for directory: C:/git/Microcontrollers/Thor_STM32
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
   set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/stm32f4_hal")
+=======
+# Install script for directory: G:/git/Microcontrollers/Thor_STM32
+
+# Set the install prefix
+if(NOT DEFINED CMAKE_INSTALL_PREFIX)
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/STM32F4_HAL")
+>>>>>>> 4a5a2ef... Update
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -40,5 +48,9 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
+<<<<<<< HEAD
 file(WRITE "C:/git/Microcontrollers/Thor_STM32/build/${CMAKE_INSTALL_MANIFEST}"
+=======
+file(WRITE "G:/git/Microcontrollers/Thor_STM32/build/${CMAKE_INSTALL_MANIFEST}"
+>>>>>>> 4a5a2ef... Update
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
