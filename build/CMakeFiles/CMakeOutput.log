@@ -1,7 +1,7 @@
 The target system is: Generic -  - arm
 The host system is: Windows - 10.0.17134 - AMD64
 Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
-Compiler: C:/GNU/SysGCC/gcc-arm-none-eabi-7-2018-q2-update-win32/bin/arm-none-eabi-gcc.exe 
+Compiler: G:/SysGCC/GNUToolsARMEmbedded/7_2017_q4_major/bin/arm-none-eabi-gcc.exe 
 Build flags: 
 Id flags: -c 
 
@@ -11,10 +11,10 @@ The output was:
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.o"
 
-The C compiler identification is GNU, found in "C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/3.12.2/CompilerIdC/CMakeCCompilerId.o"
+The C compiler identification is GNU, found in "G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/3.12.2/CompilerIdC/CMakeCCompilerId.o"
 
 Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
-Compiler: C:/GNU/SysGCC/gcc-arm-none-eabi-7-2018-q2-update-win32/bin/arm-none-eabi-g++.exe 
+Compiler: G:/SysGCC/GNUToolsARMEmbedded/7_2017_q4_major/bin/arm-none-eabi-g++.exe 
 Build flags: 
 Id flags: -c 
 
@@ -24,55 +24,55 @@ The output was:
 
 Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.o"
 
-The CXX compiler identification is GNU, found in "C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/3.12.2/CompilerIdCXX/CMakeCXXCompilerId.o"
+The CXX compiler identification is GNU, found in "G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/3.12.2/CompilerIdCXX/CMakeCXXCompilerId.o"
 
 Determining if the C compiler works passed with the following output:
-Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
+Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_99a6a/fast"
-C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_99a6a.dir\build.make CMakeFiles/cmTC_99a6a.dir/build
-mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_99a6a.dir/testCCompiler.c.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-gcc.exe    -o CMakeFiles\cmTC_99a6a.dir\testCCompiler.c.obj   -c C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\CMakeTmp\testCCompiler.c
-Linking C static library libcmTC_99a6a.a
-"C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_99a6a.dir\cmake_clean_target.cmake
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_99a6a.dir\link.txt --verbose=1
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_99a6a.a  CMakeFiles/cmTC_99a6a.dir/testCCompiler.c.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_99a6a.a
-mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_24f96/fast"
+C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_24f96.dir\build.make CMakeFiles/cmTC_24f96.dir/build
+mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_24f96.dir/testCCompiler.c.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-gcc.exe    -o CMakeFiles\cmTC_24f96.dir\testCCompiler.c.obj   -c G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\CMakeTmp\testCCompiler.c
+Linking C static library libcmTC_24f96.a
+G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_24f96.dir\cmake_clean_target.cmake
+G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_24f96.dir\link.txt --verbose=1
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_24f96.a  CMakeFiles/cmTC_24f96.dir/testCCompiler.c.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_24f96.a
+mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
 
 
 Detecting C compiler ABI info compiled with the following output:
-Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
+Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_fd6c5/fast"
-C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_fd6c5.dir\build.make CMakeFiles/cmTC_fd6c5.dir/build
-mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_fd6c5.dir/CMakeCCompilerABI.c.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-gcc.exe    -o CMakeFiles\cmTC_fd6c5.dir\CMakeCCompilerABI.c.obj   -c "C:\Program Files\CMake\share\cmake-3.12\Modules\CMakeCCompilerABI.c"
-Linking C static library libcmTC_fd6c5.a
-"C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_fd6c5.dir\cmake_clean_target.cmake
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_fd6c5.dir\link.txt --verbose=1
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_fd6c5.a  CMakeFiles/cmTC_fd6c5.dir/CMakeCCompilerABI.c.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_fd6c5.a
-mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_ddcb9/fast"
+C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_ddcb9.dir\build.make CMakeFiles/cmTC_ddcb9.dir/build
+mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_ddcb9.dir/CMakeCCompilerABI.c.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-gcc.exe    -o CMakeFiles\cmTC_ddcb9.dir\CMakeCCompilerABI.c.obj   -c G:\ProgramFiles\CMake\share\cmake-3.12\Modules\CMakeCCompilerABI.c
+Linking C static library libcmTC_ddcb9.a
+G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_ddcb9.dir\cmake_clean_target.cmake
+G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_ddcb9.dir\link.txt --verbose=1
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_ddcb9.a  CMakeFiles/cmTC_ddcb9.dir/CMakeCCompilerABI.c.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_ddcb9.a
+mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
 
 
 Parsed C implicit link information from above output:
   link line regex: [^( *|.*[/\])(arm-none-eabi-ld\.exe|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
-  ignore line: [Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp]
+  ignore line: [Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp]
   ignore line: []
-  ignore line: [Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_fd6c5/fast"]
-  ignore line: [C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_fd6c5.dir\build.make CMakeFiles/cmTC_fd6c5.dir/build]
-  ignore line: [mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp']
-  ignore line: [Building C object CMakeFiles/cmTC_fd6c5.dir/CMakeCCompilerABI.c.obj]
-  ignore line: [C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-gcc.exe    -o CMakeFiles\cmTC_fd6c5.dir\CMakeCCompilerABI.c.obj   -c "C:\Program Files\CMake\share\cmake-3.12\Modules\CMakeCCompilerABI.c"]
-  ignore line: [Linking C static library libcmTC_fd6c5.a]
-  ignore line: ["C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_fd6c5.dir\cmake_clean_target.cmake]
-  ignore line: ["C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_fd6c5.dir\link.txt --verbose=1]
-  ignore line: [C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_fd6c5.a  CMakeFiles/cmTC_fd6c5.dir/CMakeCCompilerABI.c.obj]
-  ignore line: [C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_fd6c5.a]
-  ignore line: [mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp']
+  ignore line: [Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_ddcb9/fast"]
+  ignore line: [C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_ddcb9.dir\build.make CMakeFiles/cmTC_ddcb9.dir/build]
+  ignore line: [mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp']
+  ignore line: [Building C object CMakeFiles/cmTC_ddcb9.dir/CMakeCCompilerABI.c.obj]
+  ignore line: [G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-gcc.exe    -o CMakeFiles\cmTC_ddcb9.dir\CMakeCCompilerABI.c.obj   -c G:\ProgramFiles\CMake\share\cmake-3.12\Modules\CMakeCCompilerABI.c]
+  ignore line: [Linking C static library libcmTC_ddcb9.a]
+  ignore line: [G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_ddcb9.dir\cmake_clean_target.cmake]
+  ignore line: [G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_ddcb9.dir\link.txt --verbose=1]
+  ignore line: [G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_ddcb9.a  CMakeFiles/cmTC_ddcb9.dir/CMakeCCompilerABI.c.obj]
+  ignore line: [G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_ddcb9.a]
+  ignore line: [mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp']
   ignore line: []
   implicit libs: []
   implicit dirs: []
@@ -82,19 +82,19 @@ Parsed C implicit link information from above output:
 
 
 Detecting C [-std=c11] compiler features compiled with the following output:
-Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
+Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_465b2/fast"
-C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_465b2.dir\build.make CMakeFiles/cmTC_465b2.dir/build
-mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_465b2.dir/feature_tests.c.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-gcc.exe   -std=c11 -o CMakeFiles\cmTC_465b2.dir\feature_tests.c.obj   -c C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.c
-Linking C static library libcmTC_465b2.a
-"C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_465b2.dir\cmake_clean_target.cmake
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_465b2.dir\link.txt --verbose=1
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_465b2.a  CMakeFiles/cmTC_465b2.dir/feature_tests.c.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_465b2.a
-mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_37c61/fast"
+C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_37c61.dir\build.make CMakeFiles/cmTC_37c61.dir/build
+mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_37c61.dir/feature_tests.c.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-gcc.exe   -std=c11 -o CMakeFiles\cmTC_37c61.dir\feature_tests.c.obj   -c G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.c
+Linking C static library libcmTC_37c61.a
+G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_37c61.dir\cmake_clean_target.cmake
+G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_37c61.dir\link.txt --verbose=1
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_37c61.a  CMakeFiles/cmTC_37c61.dir/feature_tests.c.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_37c61.a
+mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
 
 
     Feature record: C_FEATURE:1c_function_prototypes
@@ -104,19 +104,19 @@ mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build
 
 
 Detecting C [-std=c99] compiler features compiled with the following output:
-Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
+Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_88425/fast"
-C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_88425.dir\build.make CMakeFiles/cmTC_88425.dir/build
-mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_88425.dir/feature_tests.c.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-gcc.exe   -std=c99 -o CMakeFiles\cmTC_88425.dir\feature_tests.c.obj   -c C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.c
-Linking C static library libcmTC_88425.a
-"C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_88425.dir\cmake_clean_target.cmake
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_88425.dir\link.txt --verbose=1
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_88425.a  CMakeFiles/cmTC_88425.dir/feature_tests.c.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_88425.a
-mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_480a2/fast"
+C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_480a2.dir\build.make CMakeFiles/cmTC_480a2.dir/build
+mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_480a2.dir/feature_tests.c.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-gcc.exe   -std=c99 -o CMakeFiles\cmTC_480a2.dir\feature_tests.c.obj   -c G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.c
+Linking C static library libcmTC_480a2.a
+G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_480a2.dir\cmake_clean_target.cmake
+G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_480a2.dir\link.txt --verbose=1
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_480a2.a  CMakeFiles/cmTC_480a2.dir/feature_tests.c.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_480a2.a
+mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
 
 
     Feature record: C_FEATURE:1c_function_prototypes
@@ -126,19 +126,19 @@ mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build
 
 
 Detecting C [-std=c90] compiler features compiled with the following output:
-Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
+Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_e83c3/fast"
-C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_e83c3.dir\build.make CMakeFiles/cmTC_e83c3.dir/build
-mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_e83c3.dir/feature_tests.c.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-gcc.exe   -std=c90 -o CMakeFiles\cmTC_e83c3.dir\feature_tests.c.obj   -c C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.c
-Linking C static library libcmTC_e83c3.a
-"C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_e83c3.dir\cmake_clean_target.cmake
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_e83c3.dir\link.txt --verbose=1
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_e83c3.a  CMakeFiles/cmTC_e83c3.dir/feature_tests.c.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_e83c3.a
-mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_8d9dd/fast"
+C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_8d9dd.dir\build.make CMakeFiles/cmTC_8d9dd.dir/build
+mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_8d9dd.dir/feature_tests.c.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-gcc.exe   -std=c90 -o CMakeFiles\cmTC_8d9dd.dir\feature_tests.c.obj   -c G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.c
+Linking C static library libcmTC_8d9dd.a
+G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_8d9dd.dir\cmake_clean_target.cmake
+G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_8d9dd.dir\link.txt --verbose=1
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_8d9dd.a  CMakeFiles/cmTC_8d9dd.dir/feature_tests.c.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_8d9dd.a
+mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
 
 
     Feature record: C_FEATURE:1c_function_prototypes
@@ -146,52 +146,52 @@ mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build
     Feature record: C_FEATURE:0c_static_assert
     Feature record: C_FEATURE:0c_variadic_macros
 Determining if the CXX compiler works passed with the following output:
-Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
+Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_a5572/fast"
-C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_a5572.dir\build.make CMakeFiles/cmTC_a5572.dir/build
-mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_a5572.dir/testCXXCompiler.cxx.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-g++.exe     -o CMakeFiles\cmTC_a5572.dir\testCXXCompiler.cxx.obj -c C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
-Linking CXX static library libcmTC_a5572.a
-"C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_a5572.dir\cmake_clean_target.cmake
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_a5572.dir\link.txt --verbose=1
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_a5572.a  CMakeFiles/cmTC_a5572.dir/testCXXCompiler.cxx.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_a5572.a
-mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_4313a/fast"
+C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_4313a.dir\build.make CMakeFiles/cmTC_4313a.dir/build
+mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_4313a.dir/testCXXCompiler.cxx.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-g++.exe     -o CMakeFiles\cmTC_4313a.dir\testCXXCompiler.cxx.obj -c G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
+Linking CXX static library libcmTC_4313a.a
+G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_4313a.dir\cmake_clean_target.cmake
+G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_4313a.dir\link.txt --verbose=1
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_4313a.a  CMakeFiles/cmTC_4313a.dir/testCXXCompiler.cxx.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_4313a.a
+mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
 
 
 Detecting CXX compiler ABI info compiled with the following output:
-Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
+Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_ed2d6/fast"
-C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_ed2d6.dir\build.make CMakeFiles/cmTC_ed2d6.dir/build
-mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_ed2d6.dir/CMakeCXXCompilerABI.cpp.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-g++.exe     -o CMakeFiles\cmTC_ed2d6.dir\CMakeCXXCompilerABI.cpp.obj -c "C:\Program Files\CMake\share\cmake-3.12\Modules\CMakeCXXCompilerABI.cpp"
-Linking CXX static library libcmTC_ed2d6.a
-"C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_ed2d6.dir\cmake_clean_target.cmake
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_ed2d6.dir\link.txt --verbose=1
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_ed2d6.a  CMakeFiles/cmTC_ed2d6.dir/CMakeCXXCompilerABI.cpp.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_ed2d6.a
-mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_91fe8/fast"
+C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_91fe8.dir\build.make CMakeFiles/cmTC_91fe8.dir/build
+mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_91fe8.dir/CMakeCXXCompilerABI.cpp.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-g++.exe     -o CMakeFiles\cmTC_91fe8.dir\CMakeCXXCompilerABI.cpp.obj -c G:\ProgramFiles\CMake\share\cmake-3.12\Modules\CMakeCXXCompilerABI.cpp
+Linking CXX static library libcmTC_91fe8.a
+G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_91fe8.dir\cmake_clean_target.cmake
+G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_91fe8.dir\link.txt --verbose=1
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_91fe8.a  CMakeFiles/cmTC_91fe8.dir/CMakeCXXCompilerABI.cpp.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_91fe8.a
+mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
 
 
 Parsed CXX implicit link information from above output:
   link line regex: [^( *|.*[/\])(arm-none-eabi-ld\.exe|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
-  ignore line: [Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp]
+  ignore line: [Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp]
   ignore line: []
-  ignore line: [Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_ed2d6/fast"]
-  ignore line: [C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_ed2d6.dir\build.make CMakeFiles/cmTC_ed2d6.dir/build]
-  ignore line: [mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp']
-  ignore line: [Building CXX object CMakeFiles/cmTC_ed2d6.dir/CMakeCXXCompilerABI.cpp.obj]
-  ignore line: [C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-g++.exe     -o CMakeFiles\cmTC_ed2d6.dir\CMakeCXXCompilerABI.cpp.obj -c "C:\Program Files\CMake\share\cmake-3.12\Modules\CMakeCXXCompilerABI.cpp"]
-  ignore line: [Linking CXX static library libcmTC_ed2d6.a]
-  ignore line: ["C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_ed2d6.dir\cmake_clean_target.cmake]
-  ignore line: ["C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_ed2d6.dir\link.txt --verbose=1]
-  ignore line: [C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_ed2d6.a  CMakeFiles/cmTC_ed2d6.dir/CMakeCXXCompilerABI.cpp.obj]
-  ignore line: [C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_ed2d6.a]
-  ignore line: [mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp']
+  ignore line: [Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_91fe8/fast"]
+  ignore line: [C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_91fe8.dir\build.make CMakeFiles/cmTC_91fe8.dir/build]
+  ignore line: [mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp']
+  ignore line: [Building CXX object CMakeFiles/cmTC_91fe8.dir/CMakeCXXCompilerABI.cpp.obj]
+  ignore line: [G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-g++.exe     -o CMakeFiles\cmTC_91fe8.dir\CMakeCXXCompilerABI.cpp.obj -c G:\ProgramFiles\CMake\share\cmake-3.12\Modules\CMakeCXXCompilerABI.cpp]
+  ignore line: [Linking CXX static library libcmTC_91fe8.a]
+  ignore line: [G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_91fe8.dir\cmake_clean_target.cmake]
+  ignore line: [G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_91fe8.dir\link.txt --verbose=1]
+  ignore line: [G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_91fe8.a  CMakeFiles/cmTC_91fe8.dir/CMakeCXXCompilerABI.cpp.obj]
+  ignore line: [G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_91fe8.a]
+  ignore line: [mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp']
   ignore line: []
   implicit libs: []
   implicit dirs: []
@@ -201,19 +201,19 @@ Parsed CXX implicit link information from above output:
 
 
 Detecting CXX [-std=c++1z] compiler features compiled with the following output:
-Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
+Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_077b9/fast"
-C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_077b9.dir\build.make CMakeFiles/cmTC_077b9.dir/build
-mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_077b9.dir/feature_tests.cxx.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-g++.exe    -std=c++1z -o CMakeFiles\cmTC_077b9.dir\feature_tests.cxx.obj -c C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.cxx
-Linking CXX static library libcmTC_077b9.a
-"C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_077b9.dir\cmake_clean_target.cmake
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_077b9.dir\link.txt --verbose=1
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_077b9.a  CMakeFiles/cmTC_077b9.dir/feature_tests.cxx.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_077b9.a
-mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_d90a2/fast"
+C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_d90a2.dir\build.make CMakeFiles/cmTC_d90a2.dir/build
+mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_d90a2.dir/feature_tests.cxx.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-g++.exe    -std=c++1z -o CMakeFiles\cmTC_d90a2.dir\feature_tests.cxx.obj -c G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.cxx
+Linking CXX static library libcmTC_d90a2.a
+G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_d90a2.dir\cmake_clean_target.cmake
+G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_d90a2.dir\link.txt --verbose=1
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_d90a2.a  CMakeFiles/cmTC_d90a2.dir/feature_tests.cxx.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_d90a2.a
+mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
 
 
     Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
@@ -276,19 +276,19 @@ mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build
 
 
 Detecting CXX [-std=c++14] compiler features compiled with the following output:
-Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
+Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_26749/fast"
-C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_26749.dir\build.make CMakeFiles/cmTC_26749.dir/build
-mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_26749.dir/feature_tests.cxx.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-g++.exe    -std=c++14 -o CMakeFiles\cmTC_26749.dir\feature_tests.cxx.obj -c C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.cxx
-Linking CXX static library libcmTC_26749.a
-"C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_26749.dir\cmake_clean_target.cmake
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_26749.dir\link.txt --verbose=1
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_26749.a  CMakeFiles/cmTC_26749.dir/feature_tests.cxx.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_26749.a
-mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_5c9c3/fast"
+C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_5c9c3.dir\build.make CMakeFiles/cmTC_5c9c3.dir/build
+mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_5c9c3.dir/feature_tests.cxx.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-g++.exe    -std=c++14 -o CMakeFiles\cmTC_5c9c3.dir\feature_tests.cxx.obj -c G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.cxx
+Linking CXX static library libcmTC_5c9c3.a
+G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_5c9c3.dir\cmake_clean_target.cmake
+G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_5c9c3.dir\link.txt --verbose=1
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_5c9c3.a  CMakeFiles/cmTC_5c9c3.dir/feature_tests.cxx.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_5c9c3.a
+mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
 
 
     Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
@@ -351,19 +351,19 @@ mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build
 
 
 Detecting CXX [-std=c++11] compiler features compiled with the following output:
-Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
+Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_2a3da/fast"
-C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_2a3da.dir\build.make CMakeFiles/cmTC_2a3da.dir/build
-mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_2a3da.dir/feature_tests.cxx.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-g++.exe    -std=c++11 -o CMakeFiles\cmTC_2a3da.dir\feature_tests.cxx.obj -c C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.cxx
-Linking CXX static library libcmTC_2a3da.a
-"C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_2a3da.dir\cmake_clean_target.cmake
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_2a3da.dir\link.txt --verbose=1
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_2a3da.a  CMakeFiles/cmTC_2a3da.dir/feature_tests.cxx.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_2a3da.a
-mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_f953f/fast"
+C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_f953f.dir\build.make CMakeFiles/cmTC_f953f.dir/build
+mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_f953f.dir/feature_tests.cxx.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-g++.exe    -std=c++11 -o CMakeFiles\cmTC_f953f.dir\feature_tests.cxx.obj -c G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.cxx
+Linking CXX static library libcmTC_f953f.a
+G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_f953f.dir\cmake_clean_target.cmake
+G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_f953f.dir\link.txt --verbose=1
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_f953f.a  CMakeFiles/cmTC_f953f.dir/feature_tests.cxx.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_f953f.a
+mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
 
 
     Feature record: CXX_FEATURE:0cxx_aggregate_default_initializers
@@ -426,19 +426,19 @@ mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build
 
 
 Detecting CXX [-std=c++98] compiler features compiled with the following output:
-Change Dir: C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
+Change Dir: G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_d1ae4/fast"
-C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_d1ae4.dir\build.make CMakeFiles/cmTC_d1ae4.dir/build
-mingw32-make.exe[1]: Entering directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_d1ae4.dir/feature_tests.cxx.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-g++.exe    -std=c++98 -o CMakeFiles\cmTC_d1ae4.dir\feature_tests.cxx.obj -c C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.cxx
-Linking CXX static library libcmTC_d1ae4.a
-"C:\Program Files\CMake\bin\cmake.exe" -P CMakeFiles\cmTC_d1ae4.dir\cmake_clean_target.cmake
-"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_d1ae4.dir\link.txt --verbose=1
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ar.exe qc libcmTC_d1ae4.a  CMakeFiles/cmTC_d1ae4.dir/feature_tests.cxx.obj
-C:\GNU\SysGCC\gcc-arm-none-eabi-7-2018-q2-update-win32\bin\arm-none-eabi-ranlib.exe libcmTC_d1ae4.a
-mingw32-make.exe[1]: Leaving directory 'C:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Run Build Command:"C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe" "cmTC_a3dea/fast"
+C:/PROGRA~2/MINGW-~1/I686-8~1.0-P/mingw32/bin/mingw32-make.exe -f CMakeFiles\cmTC_a3dea.dir\build.make CMakeFiles/cmTC_a3dea.dir/build
+mingw32-make.exe[1]: Entering directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_a3dea.dir/feature_tests.cxx.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-g++.exe    -std=c++98 -o CMakeFiles\cmTC_a3dea.dir\feature_tests.cxx.obj -c G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\feature_tests.cxx
+Linking CXX static library libcmTC_a3dea.a
+G:\ProgramFiles\CMake\bin\cmake.exe -P CMakeFiles\cmTC_a3dea.dir\cmake_clean_target.cmake
+G:\ProgramFiles\CMake\bin\cmake.exe -E cmake_link_script CMakeFiles\cmTC_a3dea.dir\link.txt --verbose=1
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ar.exe qc libcmTC_a3dea.a  CMakeFiles/cmTC_a3dea.dir/feature_tests.cxx.obj
+G:\SysGCC\GNUToolsARMEmbedded\7_2017_q4_major\bin\arm-none-eabi-ranlib.exe libcmTC_a3dea.a
+mingw32-make.exe[1]: Leaving directory 'G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/CMakeTmp'
 
 
     Feature record: CXX_FEATURE:0cxx_aggregate_default_initializers

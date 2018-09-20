@@ -38,19 +38,19 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = "C:\Program Files\CMake\bin\cmake.exe"
+CMAKE_COMMAND = G:\ProgramFiles\CMake\bin\cmake.exe
 
 # The command to remove a file.
-RM = "C:\Program Files\CMake\bin\cmake.exe" -E remove -f
+RM = G:\ProgramFiles\CMake\bin\cmake.exe -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\git\Microcontrollers\Thor_STM32
+CMAKE_SOURCE_DIR = G:\git\Microcontrollers\Thor_STM32
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\git\Microcontrollers\Thor_STM32\build
+CMAKE_BINARY_DIR = G:\git\Microcontrollers\Thor_STM32\build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -58,7 +58,7 @@ CMAKE_BINARY_DIR = C:\git\Microcontrollers\Thor_STM32\build
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	"C:\Program Files\CMake\bin\cmake-gui.exe" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	G:\ProgramFiles\CMake\bin\cmake-gui.exe -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -69,7 +69,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	"C:\Program Files\CMake\bin\cmake.exe" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	G:\ProgramFiles\CMake\bin\cmake.exe -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -79,9 +79,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\progress.marks
 	$(MAKE) -f CMakeFiles\Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -123,6 +123,19 @@ thor/fast:
 .PHONY : thor/fast
 
 #=============================================================================
+# Target rules for targets named STM32F4_HAL
+
+# Build rule for target.
+STM32F4_HAL: cmake_check_build_system
+	$(MAKE) -f CMakeFiles\Makefile2 STM32F4_HAL
+.PHONY : STM32F4_HAL
+
+# fast build rule for target.
+STM32F4_HAL/fast:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/build
+.PHONY : STM32F4_HAL/fast
+
+#=============================================================================
 # Target rules for targets named debug
 
 # Build rule for target.
@@ -148,32 +161,3285 @@ release/fast:
 	$(MAKE) -f CMakeFiles\release.dir\build.make CMakeFiles/release.dir/build
 .PHONY : release/fast
 
-main.obj: main.cpp.obj
+#=============================================================================
+# Target rules for targets named FreeRTOS
 
-.PHONY : main.obj
+# Build rule for target.
+FreeRTOS: cmake_check_build_system
+	$(MAKE) -f CMakeFiles\Makefile2 FreeRTOS
+.PHONY : FreeRTOS
+
+# fast build rule for target.
+FreeRTOS/fast:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/build
+.PHONY : FreeRTOS/fast
+
+Thor/Thor/source/clock.obj: Thor/Thor/source/clock.cpp.obj
+
+.PHONY : Thor/Thor/source/clock.obj
 
 # target to build an object file
-main.cpp.obj:
-	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/main.cpp.obj
-.PHONY : main.cpp.obj
+Thor/Thor/source/clock.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/clock.cpp.obj
+.PHONY : Thor/Thor/source/clock.cpp.obj
 
-main.i: main.cpp.i
+Thor/Thor/source/clock.i: Thor/Thor/source/clock.cpp.i
 
-.PHONY : main.i
+.PHONY : Thor/Thor/source/clock.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/main.cpp.i
-.PHONY : main.cpp.i
+Thor/Thor/source/clock.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/clock.cpp.i
+.PHONY : Thor/Thor/source/clock.cpp.i
 
-main.s: main.cpp.s
+Thor/Thor/source/clock.s: Thor/Thor/source/clock.cpp.s
 
-.PHONY : main.s
+.PHONY : Thor/Thor/source/clock.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/main.cpp.s
-.PHONY : main.cpp.s
+Thor/Thor/source/clock.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/clock.cpp.s
+.PHONY : Thor/Thor/source/clock.cpp.s
+
+Thor/Thor/source/core.obj: Thor/Thor/source/core.cpp.obj
+
+.PHONY : Thor/Thor/source/core.obj
+
+# target to build an object file
+Thor/Thor/source/core.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/core.cpp.obj
+.PHONY : Thor/Thor/source/core.cpp.obj
+
+Thor/Thor/source/core.i: Thor/Thor/source/core.cpp.i
+
+.PHONY : Thor/Thor/source/core.i
+
+# target to preprocess a source file
+Thor/Thor/source/core.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/core.cpp.i
+.PHONY : Thor/Thor/source/core.cpp.i
+
+Thor/Thor/source/core.s: Thor/Thor/source/core.cpp.s
+
+.PHONY : Thor/Thor/source/core.s
+
+# target to generate assembly for a file
+Thor/Thor/source/core.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/core.cpp.s
+.PHONY : Thor/Thor/source/core.cpp.s
+
+Thor/Thor/source/defaults.obj: Thor/Thor/source/defaults.cpp.obj
+
+.PHONY : Thor/Thor/source/defaults.obj
+
+# target to build an object file
+Thor/Thor/source/defaults.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/defaults.cpp.obj
+.PHONY : Thor/Thor/source/defaults.cpp.obj
+
+Thor/Thor/source/defaults.i: Thor/Thor/source/defaults.cpp.i
+
+.PHONY : Thor/Thor/source/defaults.i
+
+# target to preprocess a source file
+Thor/Thor/source/defaults.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/defaults.cpp.i
+.PHONY : Thor/Thor/source/defaults.cpp.i
+
+Thor/Thor/source/defaults.s: Thor/Thor/source/defaults.cpp.s
+
+.PHONY : Thor/Thor/source/defaults.s
+
+# target to generate assembly for a file
+Thor/Thor/source/defaults.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/defaults.cpp.s
+.PHONY : Thor/Thor/source/defaults.cpp.s
+
+Thor/Thor/source/definitions.obj: Thor/Thor/source/definitions.cpp.obj
+
+.PHONY : Thor/Thor/source/definitions.obj
+
+# target to build an object file
+Thor/Thor/source/definitions.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/definitions.cpp.obj
+.PHONY : Thor/Thor/source/definitions.cpp.obj
+
+Thor/Thor/source/definitions.i: Thor/Thor/source/definitions.cpp.i
+
+.PHONY : Thor/Thor/source/definitions.i
+
+# target to preprocess a source file
+Thor/Thor/source/definitions.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/definitions.cpp.i
+.PHONY : Thor/Thor/source/definitions.cpp.i
+
+Thor/Thor/source/definitions.s: Thor/Thor/source/definitions.cpp.s
+
+.PHONY : Thor/Thor/source/definitions.s
+
+# target to generate assembly for a file
+Thor/Thor/source/definitions.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/definitions.cpp.s
+.PHONY : Thor/Thor/source/definitions.cpp.s
+
+Thor/Thor/source/exceptions.obj: Thor/Thor/source/exceptions.cpp.obj
+
+.PHONY : Thor/Thor/source/exceptions.obj
+
+# target to build an object file
+Thor/Thor/source/exceptions.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exceptions.cpp.obj
+.PHONY : Thor/Thor/source/exceptions.cpp.obj
+
+Thor/Thor/source/exceptions.i: Thor/Thor/source/exceptions.cpp.i
+
+.PHONY : Thor/Thor/source/exceptions.i
+
+# target to preprocess a source file
+Thor/Thor/source/exceptions.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exceptions.cpp.i
+.PHONY : Thor/Thor/source/exceptions.cpp.i
+
+Thor/Thor/source/exceptions.s: Thor/Thor/source/exceptions.cpp.s
+
+.PHONY : Thor/Thor/source/exceptions.s
+
+# target to generate assembly for a file
+Thor/Thor/source/exceptions.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exceptions.cpp.s
+.PHONY : Thor/Thor/source/exceptions.cpp.s
+
+Thor/Thor/source/exti.obj: Thor/Thor/source/exti.cpp.obj
+
+.PHONY : Thor/Thor/source/exti.obj
+
+# target to build an object file
+Thor/Thor/source/exti.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exti.cpp.obj
+.PHONY : Thor/Thor/source/exti.cpp.obj
+
+Thor/Thor/source/exti.i: Thor/Thor/source/exti.cpp.i
+
+.PHONY : Thor/Thor/source/exti.i
+
+# target to preprocess a source file
+Thor/Thor/source/exti.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exti.cpp.i
+.PHONY : Thor/Thor/source/exti.cpp.i
+
+Thor/Thor/source/exti.s: Thor/Thor/source/exti.cpp.s
+
+.PHONY : Thor/Thor/source/exti.s
+
+# target to generate assembly for a file
+Thor/Thor/source/exti.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/exti.cpp.s
+.PHONY : Thor/Thor/source/exti.cpp.s
+
+Thor/Thor/source/flags.obj: Thor/Thor/source/flags.cpp.obj
+
+.PHONY : Thor/Thor/source/flags.obj
+
+# target to build an object file
+Thor/Thor/source/flags.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/flags.cpp.obj
+.PHONY : Thor/Thor/source/flags.cpp.obj
+
+Thor/Thor/source/flags.i: Thor/Thor/source/flags.cpp.i
+
+.PHONY : Thor/Thor/source/flags.i
+
+# target to preprocess a source file
+Thor/Thor/source/flags.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/flags.cpp.i
+.PHONY : Thor/Thor/source/flags.cpp.i
+
+Thor/Thor/source/flags.s: Thor/Thor/source/flags.cpp.s
+
+.PHONY : Thor/Thor/source/flags.s
+
+# target to generate assembly for a file
+Thor/Thor/source/flags.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/flags.cpp.s
+.PHONY : Thor/Thor/source/flags.cpp.s
+
+Thor/Thor/source/gdb.obj: Thor/Thor/source/gdb.cpp.obj
+
+.PHONY : Thor/Thor/source/gdb.obj
+
+# target to build an object file
+Thor/Thor/source/gdb.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gdb.cpp.obj
+.PHONY : Thor/Thor/source/gdb.cpp.obj
+
+Thor/Thor/source/gdb.i: Thor/Thor/source/gdb.cpp.i
+
+.PHONY : Thor/Thor/source/gdb.i
+
+# target to preprocess a source file
+Thor/Thor/source/gdb.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gdb.cpp.i
+.PHONY : Thor/Thor/source/gdb.cpp.i
+
+Thor/Thor/source/gdb.s: Thor/Thor/source/gdb.cpp.s
+
+.PHONY : Thor/Thor/source/gdb.s
+
+# target to generate assembly for a file
+Thor/Thor/source/gdb.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gdb.cpp.s
+.PHONY : Thor/Thor/source/gdb.cpp.s
+
+Thor/Thor/source/gpio.obj: Thor/Thor/source/gpio.cpp.obj
+
+.PHONY : Thor/Thor/source/gpio.obj
+
+# target to build an object file
+Thor/Thor/source/gpio.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gpio.cpp.obj
+.PHONY : Thor/Thor/source/gpio.cpp.obj
+
+Thor/Thor/source/gpio.i: Thor/Thor/source/gpio.cpp.i
+
+.PHONY : Thor/Thor/source/gpio.i
+
+# target to preprocess a source file
+Thor/Thor/source/gpio.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gpio.cpp.i
+.PHONY : Thor/Thor/source/gpio.cpp.i
+
+Thor/Thor/source/gpio.s: Thor/Thor/source/gpio.cpp.s
+
+.PHONY : Thor/Thor/source/gpio.s
+
+# target to generate assembly for a file
+Thor/Thor/source/gpio.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/gpio.cpp.s
+.PHONY : Thor/Thor/source/gpio.cpp.s
+
+Thor/Thor/source/i2c.obj: Thor/Thor/source/i2c.cpp.obj
+
+.PHONY : Thor/Thor/source/i2c.obj
+
+# target to build an object file
+Thor/Thor/source/i2c.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/i2c.cpp.obj
+.PHONY : Thor/Thor/source/i2c.cpp.obj
+
+Thor/Thor/source/i2c.i: Thor/Thor/source/i2c.cpp.i
+
+.PHONY : Thor/Thor/source/i2c.i
+
+# target to preprocess a source file
+Thor/Thor/source/i2c.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/i2c.cpp.i
+.PHONY : Thor/Thor/source/i2c.cpp.i
+
+Thor/Thor/source/i2c.s: Thor/Thor/source/i2c.cpp.s
+
+.PHONY : Thor/Thor/source/i2c.s
+
+# target to generate assembly for a file
+Thor/Thor/source/i2c.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/i2c.cpp.s
+.PHONY : Thor/Thor/source/i2c.cpp.s
+
+Thor/Thor/source/interrupt.obj: Thor/Thor/source/interrupt.cpp.obj
+
+.PHONY : Thor/Thor/source/interrupt.obj
+
+# target to build an object file
+Thor/Thor/source/interrupt.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/interrupt.cpp.obj
+.PHONY : Thor/Thor/source/interrupt.cpp.obj
+
+Thor/Thor/source/interrupt.i: Thor/Thor/source/interrupt.cpp.i
+
+.PHONY : Thor/Thor/source/interrupt.i
+
+# target to preprocess a source file
+Thor/Thor/source/interrupt.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/interrupt.cpp.i
+.PHONY : Thor/Thor/source/interrupt.cpp.i
+
+Thor/Thor/source/interrupt.s: Thor/Thor/source/interrupt.cpp.s
+
+.PHONY : Thor/Thor/source/interrupt.s
+
+# target to generate assembly for a file
+Thor/Thor/source/interrupt.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/interrupt.cpp.s
+.PHONY : Thor/Thor/source/interrupt.cpp.s
+
+Thor/Thor/source/mem.obj: Thor/Thor/source/mem.cpp.obj
+
+.PHONY : Thor/Thor/source/mem.obj
+
+# target to build an object file
+Thor/Thor/source/mem.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/mem.cpp.obj
+.PHONY : Thor/Thor/source/mem.cpp.obj
+
+Thor/Thor/source/mem.i: Thor/Thor/source/mem.cpp.i
+
+.PHONY : Thor/Thor/source/mem.i
+
+# target to preprocess a source file
+Thor/Thor/source/mem.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/mem.cpp.i
+.PHONY : Thor/Thor/source/mem.cpp.i
+
+Thor/Thor/source/mem.s: Thor/Thor/source/mem.cpp.s
+
+.PHONY : Thor/Thor/source/mem.s
+
+# target to generate assembly for a file
+Thor/Thor/source/mem.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/mem.cpp.s
+.PHONY : Thor/Thor/source/mem.cpp.s
+
+Thor/Thor/source/nucleo.obj: Thor/Thor/source/nucleo.cpp.obj
+
+.PHONY : Thor/Thor/source/nucleo.obj
+
+# target to build an object file
+Thor/Thor/source/nucleo.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/nucleo.cpp.obj
+.PHONY : Thor/Thor/source/nucleo.cpp.obj
+
+Thor/Thor/source/nucleo.i: Thor/Thor/source/nucleo.cpp.i
+
+.PHONY : Thor/Thor/source/nucleo.i
+
+# target to preprocess a source file
+Thor/Thor/source/nucleo.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/nucleo.cpp.i
+.PHONY : Thor/Thor/source/nucleo.cpp.i
+
+Thor/Thor/source/nucleo.s: Thor/Thor/source/nucleo.cpp.s
+
+.PHONY : Thor/Thor/source/nucleo.s
+
+# target to generate assembly for a file
+Thor/Thor/source/nucleo.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/nucleo.cpp.s
+.PHONY : Thor/Thor/source/nucleo.cpp.s
+
+Thor/Thor/source/print.obj: Thor/Thor/source/print.cpp.obj
+
+.PHONY : Thor/Thor/source/print.obj
+
+# target to build an object file
+Thor/Thor/source/print.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/print.cpp.obj
+.PHONY : Thor/Thor/source/print.cpp.obj
+
+Thor/Thor/source/print.i: Thor/Thor/source/print.cpp.i
+
+.PHONY : Thor/Thor/source/print.i
+
+# target to preprocess a source file
+Thor/Thor/source/print.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/print.cpp.i
+.PHONY : Thor/Thor/source/print.cpp.i
+
+Thor/Thor/source/print.s: Thor/Thor/source/print.cpp.s
+
+.PHONY : Thor/Thor/source/print.s
+
+# target to generate assembly for a file
+Thor/Thor/source/print.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/print.cpp.s
+.PHONY : Thor/Thor/source/print.cpp.s
+
+Thor/Thor/source/pwm.obj: Thor/Thor/source/pwm.cpp.obj
+
+.PHONY : Thor/Thor/source/pwm.obj
+
+# target to build an object file
+Thor/Thor/source/pwm.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/pwm.cpp.obj
+.PHONY : Thor/Thor/source/pwm.cpp.obj
+
+Thor/Thor/source/pwm.i: Thor/Thor/source/pwm.cpp.i
+
+.PHONY : Thor/Thor/source/pwm.i
+
+# target to preprocess a source file
+Thor/Thor/source/pwm.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/pwm.cpp.i
+.PHONY : Thor/Thor/source/pwm.cpp.i
+
+Thor/Thor/source/pwm.s: Thor/Thor/source/pwm.cpp.s
+
+.PHONY : Thor/Thor/source/pwm.s
+
+# target to generate assembly for a file
+Thor/Thor/source/pwm.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/pwm.cpp.s
+.PHONY : Thor/Thor/source/pwm.cpp.s
+
+Thor/Thor/source/ringbuffer.obj: Thor/Thor/source/ringbuffer.cpp.obj
+
+.PHONY : Thor/Thor/source/ringbuffer.obj
+
+# target to build an object file
+Thor/Thor/source/ringbuffer.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/ringbuffer.cpp.obj
+.PHONY : Thor/Thor/source/ringbuffer.cpp.obj
+
+Thor/Thor/source/ringbuffer.i: Thor/Thor/source/ringbuffer.cpp.i
+
+.PHONY : Thor/Thor/source/ringbuffer.i
+
+# target to preprocess a source file
+Thor/Thor/source/ringbuffer.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/ringbuffer.cpp.i
+.PHONY : Thor/Thor/source/ringbuffer.cpp.i
+
+Thor/Thor/source/ringbuffer.s: Thor/Thor/source/ringbuffer.cpp.s
+
+.PHONY : Thor/Thor/source/ringbuffer.s
+
+# target to generate assembly for a file
+Thor/Thor/source/ringbuffer.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/ringbuffer.cpp.s
+.PHONY : Thor/Thor/source/ringbuffer.cpp.s
+
+Thor/Thor/source/rpc.obj: Thor/Thor/source/rpc.cpp.obj
+
+.PHONY : Thor/Thor/source/rpc.obj
+
+# target to build an object file
+Thor/Thor/source/rpc.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/rpc.cpp.obj
+.PHONY : Thor/Thor/source/rpc.cpp.obj
+
+Thor/Thor/source/rpc.i: Thor/Thor/source/rpc.cpp.i
+
+.PHONY : Thor/Thor/source/rpc.i
+
+# target to preprocess a source file
+Thor/Thor/source/rpc.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/rpc.cpp.i
+.PHONY : Thor/Thor/source/rpc.cpp.i
+
+Thor/Thor/source/rpc.s: Thor/Thor/source/rpc.cpp.s
+
+.PHONY : Thor/Thor/source/rpc.s
+
+# target to generate assembly for a file
+Thor/Thor/source/rpc.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/rpc.cpp.s
+.PHONY : Thor/Thor/source/rpc.cpp.s
+
+Thor/Thor/source/serial.obj: Thor/Thor/source/serial.cpp.obj
+
+.PHONY : Thor/Thor/source/serial.obj
+
+# target to build an object file
+Thor/Thor/source/serial.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/serial.cpp.obj
+.PHONY : Thor/Thor/source/serial.cpp.obj
+
+Thor/Thor/source/serial.i: Thor/Thor/source/serial.cpp.i
+
+.PHONY : Thor/Thor/source/serial.i
+
+# target to preprocess a source file
+Thor/Thor/source/serial.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/serial.cpp.i
+.PHONY : Thor/Thor/source/serial.cpp.i
+
+Thor/Thor/source/serial.s: Thor/Thor/source/serial.cpp.s
+
+.PHONY : Thor/Thor/source/serial.s
+
+# target to generate assembly for a file
+Thor/Thor/source/serial.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/serial.cpp.s
+.PHONY : Thor/Thor/source/serial.cpp.s
+
+Thor/Thor/source/spi.obj: Thor/Thor/source/spi.cpp.obj
+
+.PHONY : Thor/Thor/source/spi.obj
+
+# target to build an object file
+Thor/Thor/source/spi.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/spi.cpp.obj
+.PHONY : Thor/Thor/source/spi.cpp.obj
+
+Thor/Thor/source/spi.i: Thor/Thor/source/spi.cpp.i
+
+.PHONY : Thor/Thor/source/spi.i
+
+# target to preprocess a source file
+Thor/Thor/source/spi.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/spi.cpp.i
+.PHONY : Thor/Thor/source/spi.cpp.i
+
+Thor/Thor/source/spi.s: Thor/Thor/source/spi.cpp.s
+
+.PHONY : Thor/Thor/source/spi.s
+
+# target to generate assembly for a file
+Thor/Thor/source/spi.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/spi.cpp.s
+.PHONY : Thor/Thor/source/spi.cpp.s
+
+Thor/Thor/source/thor.obj: Thor/Thor/source/thor.cpp.obj
+
+.PHONY : Thor/Thor/source/thor.obj
+
+# target to build an object file
+Thor/Thor/source/thor.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/thor.cpp.obj
+.PHONY : Thor/Thor/source/thor.cpp.obj
+
+Thor/Thor/source/thor.i: Thor/Thor/source/thor.cpp.i
+
+.PHONY : Thor/Thor/source/thor.i
+
+# target to preprocess a source file
+Thor/Thor/source/thor.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/thor.cpp.i
+.PHONY : Thor/Thor/source/thor.cpp.i
+
+Thor/Thor/source/thor.s: Thor/Thor/source/thor.cpp.s
+
+.PHONY : Thor/Thor/source/thor.s
+
+# target to generate assembly for a file
+Thor/Thor/source/thor.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/thor.cpp.s
+.PHONY : Thor/Thor/source/thor.cpp.s
+
+Thor/Thor/source/threads.obj: Thor/Thor/source/threads.cpp.obj
+
+.PHONY : Thor/Thor/source/threads.obj
+
+# target to build an object file
+Thor/Thor/source/threads.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/threads.cpp.obj
+.PHONY : Thor/Thor/source/threads.cpp.obj
+
+Thor/Thor/source/threads.i: Thor/Thor/source/threads.cpp.i
+
+.PHONY : Thor/Thor/source/threads.i
+
+# target to preprocess a source file
+Thor/Thor/source/threads.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/threads.cpp.i
+.PHONY : Thor/Thor/source/threads.cpp.i
+
+Thor/Thor/source/threads.s: Thor/Thor/source/threads.cpp.s
+
+.PHONY : Thor/Thor/source/threads.s
+
+# target to generate assembly for a file
+Thor/Thor/source/threads.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/threads.cpp.s
+.PHONY : Thor/Thor/source/threads.cpp.s
+
+Thor/Thor/source/timer.obj: Thor/Thor/source/timer.cpp.obj
+
+.PHONY : Thor/Thor/source/timer.obj
+
+# target to build an object file
+Thor/Thor/source/timer.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/timer.cpp.obj
+.PHONY : Thor/Thor/source/timer.cpp.obj
+
+Thor/Thor/source/timer.i: Thor/Thor/source/timer.cpp.i
+
+.PHONY : Thor/Thor/source/timer.i
+
+# target to preprocess a source file
+Thor/Thor/source/timer.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/timer.cpp.i
+.PHONY : Thor/Thor/source/timer.cpp.i
+
+Thor/Thor/source/timer.s: Thor/Thor/source/timer.cpp.s
+
+.PHONY : Thor/Thor/source/timer.s
+
+# target to generate assembly for a file
+Thor/Thor/source/timer.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/timer.cpp.s
+.PHONY : Thor/Thor/source/timer.cpp.s
+
+Thor/Thor/source/uart.obj: Thor/Thor/source/uart.cpp.obj
+
+.PHONY : Thor/Thor/source/uart.obj
+
+# target to build an object file
+Thor/Thor/source/uart.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/uart.cpp.obj
+.PHONY : Thor/Thor/source/uart.cpp.obj
+
+Thor/Thor/source/uart.i: Thor/Thor/source/uart.cpp.i
+
+.PHONY : Thor/Thor/source/uart.i
+
+# target to preprocess a source file
+Thor/Thor/source/uart.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/uart.cpp.i
+.PHONY : Thor/Thor/source/uart.cpp.i
+
+Thor/Thor/source/uart.s: Thor/Thor/source/uart.cpp.s
+
+.PHONY : Thor/Thor/source/uart.s
+
+# target to generate assembly for a file
+Thor/Thor/source/uart.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/uart.cpp.s
+.PHONY : Thor/Thor/source/uart.cpp.s
+
+Thor/Thor/source/usart.obj: Thor/Thor/source/usart.cpp.obj
+
+.PHONY : Thor/Thor/source/usart.obj
+
+# target to build an object file
+Thor/Thor/source/usart.cpp.obj:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/usart.cpp.obj
+.PHONY : Thor/Thor/source/usart.cpp.obj
+
+Thor/Thor/source/usart.i: Thor/Thor/source/usart.cpp.i
+
+.PHONY : Thor/Thor/source/usart.i
+
+# target to preprocess a source file
+Thor/Thor/source/usart.cpp.i:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/usart.cpp.i
+.PHONY : Thor/Thor/source/usart.cpp.i
+
+Thor/Thor/source/usart.s: Thor/Thor/source/usart.cpp.s
+
+.PHONY : Thor/Thor/source/usart.s
+
+# target to generate assembly for a file
+Thor/Thor/source/usart.cpp.s:
+	$(MAKE) -f CMakeFiles\thor.dir\build.make CMakeFiles/thor.dir/Thor/Thor/source/usart.cpp.s
+.PHONY : Thor/Thor/source/usart.cpp.s
+
+Thor/lib/FreeRTOS/croutine.obj: Thor/lib/FreeRTOS/croutine.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/croutine.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/croutine.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/croutine.c.obj
+.PHONY : Thor/lib/FreeRTOS/croutine.c.obj
+
+Thor/lib/FreeRTOS/croutine.i: Thor/lib/FreeRTOS/croutine.c.i
+
+.PHONY : Thor/lib/FreeRTOS/croutine.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/croutine.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/croutine.c.i
+.PHONY : Thor/lib/FreeRTOS/croutine.c.i
+
+Thor/lib/FreeRTOS/croutine.s: Thor/lib/FreeRTOS/croutine.c.s
+
+.PHONY : Thor/lib/FreeRTOS/croutine.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/croutine.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/croutine.c.s
+.PHONY : Thor/lib/FreeRTOS/croutine.c.s
+
+Thor/lib/FreeRTOS/event_groups.obj: Thor/lib/FreeRTOS/event_groups.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/event_groups.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/event_groups.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/event_groups.c.obj
+.PHONY : Thor/lib/FreeRTOS/event_groups.c.obj
+
+Thor/lib/FreeRTOS/event_groups.i: Thor/lib/FreeRTOS/event_groups.c.i
+
+.PHONY : Thor/lib/FreeRTOS/event_groups.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/event_groups.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/event_groups.c.i
+.PHONY : Thor/lib/FreeRTOS/event_groups.c.i
+
+Thor/lib/FreeRTOS/event_groups.s: Thor/lib/FreeRTOS/event_groups.c.s
+
+.PHONY : Thor/lib/FreeRTOS/event_groups.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/event_groups.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/event_groups.c.s
+.PHONY : Thor/lib/FreeRTOS/event_groups.c.s
+
+Thor/lib/FreeRTOS/list.obj: Thor/lib/FreeRTOS/list.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/list.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/list.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/list.c.obj
+.PHONY : Thor/lib/FreeRTOS/list.c.obj
+
+Thor/lib/FreeRTOS/list.i: Thor/lib/FreeRTOS/list.c.i
+
+.PHONY : Thor/lib/FreeRTOS/list.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/list.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/list.c.i
+.PHONY : Thor/lib/FreeRTOS/list.c.i
+
+Thor/lib/FreeRTOS/list.s: Thor/lib/FreeRTOS/list.c.s
+
+.PHONY : Thor/lib/FreeRTOS/list.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/list.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/list.c.s
+.PHONY : Thor/lib/FreeRTOS/list.c.s
+
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.obj: Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.obj
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.obj
+
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.i: Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.i
+
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.i
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.i
+
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.s: Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.s
+
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.s
+.PHONY : Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.c.s
+
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.obj: Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.obj
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.obj
+
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.i: Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.i
+
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.i
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.i
+
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.s: Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.s
+
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.s
+.PHONY : Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.c.s
+
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.obj: Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.obj
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.obj
+
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.i: Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.i
+
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.i
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.i
+
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.s: Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.s
+
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.s
+.PHONY : Thor/lib/FreeRTOS/portable/MemMang/heap_4.c.s
+
+Thor/lib/FreeRTOS/queue.obj: Thor/lib/FreeRTOS/queue.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/queue.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/queue.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/queue.c.obj
+.PHONY : Thor/lib/FreeRTOS/queue.c.obj
+
+Thor/lib/FreeRTOS/queue.i: Thor/lib/FreeRTOS/queue.c.i
+
+.PHONY : Thor/lib/FreeRTOS/queue.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/queue.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/queue.c.i
+.PHONY : Thor/lib/FreeRTOS/queue.c.i
+
+Thor/lib/FreeRTOS/queue.s: Thor/lib/FreeRTOS/queue.c.s
+
+.PHONY : Thor/lib/FreeRTOS/queue.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/queue.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/queue.c.s
+.PHONY : Thor/lib/FreeRTOS/queue.c.s
+
+Thor/lib/FreeRTOS/stream_buffer.obj: Thor/lib/FreeRTOS/stream_buffer.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/stream_buffer.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/stream_buffer.c.obj
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.c.obj
+
+Thor/lib/FreeRTOS/stream_buffer.i: Thor/lib/FreeRTOS/stream_buffer.c.i
+
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/stream_buffer.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/stream_buffer.c.i
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.c.i
+
+Thor/lib/FreeRTOS/stream_buffer.s: Thor/lib/FreeRTOS/stream_buffer.c.s
+
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/stream_buffer.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/stream_buffer.c.s
+.PHONY : Thor/lib/FreeRTOS/stream_buffer.c.s
+
+Thor/lib/FreeRTOS/tasks.obj: Thor/lib/FreeRTOS/tasks.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/tasks.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/tasks.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/tasks.c.obj
+.PHONY : Thor/lib/FreeRTOS/tasks.c.obj
+
+Thor/lib/FreeRTOS/tasks.i: Thor/lib/FreeRTOS/tasks.c.i
+
+.PHONY : Thor/lib/FreeRTOS/tasks.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/tasks.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/tasks.c.i
+.PHONY : Thor/lib/FreeRTOS/tasks.c.i
+
+Thor/lib/FreeRTOS/tasks.s: Thor/lib/FreeRTOS/tasks.c.s
+
+.PHONY : Thor/lib/FreeRTOS/tasks.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/tasks.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/tasks.c.s
+.PHONY : Thor/lib/FreeRTOS/tasks.c.s
+
+Thor/lib/FreeRTOS/timers.obj: Thor/lib/FreeRTOS/timers.c.obj
+
+.PHONY : Thor/lib/FreeRTOS/timers.obj
+
+# target to build an object file
+Thor/lib/FreeRTOS/timers.c.obj:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/timers.c.obj
+.PHONY : Thor/lib/FreeRTOS/timers.c.obj
+
+Thor/lib/FreeRTOS/timers.i: Thor/lib/FreeRTOS/timers.c.i
+
+.PHONY : Thor/lib/FreeRTOS/timers.i
+
+# target to preprocess a source file
+Thor/lib/FreeRTOS/timers.c.i:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/timers.c.i
+.PHONY : Thor/lib/FreeRTOS/timers.c.i
+
+Thor/lib/FreeRTOS/timers.s: Thor/lib/FreeRTOS/timers.c.s
+
+.PHONY : Thor/lib/FreeRTOS/timers.s
+
+# target to generate assembly for a file
+Thor/lib/FreeRTOS/timers.c.s:
+	$(MAKE) -f CMakeFiles\FreeRTOS.dir\build.make CMakeFiles/FreeRTOS.dir/Thor/lib/FreeRTOS/timers.c.s
+.PHONY : Thor/lib/FreeRTOS/timers.c.s
+
+Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.obj: Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.obj
+.PHONY : Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.obj
+
+Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.i: Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.i
+.PHONY : Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.i
+
+Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.s: Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.s
+.PHONY : Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.c.s
+
+Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.obj: Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.obj
+.PHONY : Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.obj
+
+Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.i: Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.i
+.PHONY : Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.i
+
+Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.s: Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.s
+.PHONY : Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c.s
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.obj: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.obj
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.obj
+
+# target to build an object file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.obj:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.obj
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.obj
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.i: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.i
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.i
+
+# target to preprocess a source file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.i:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.i
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.i
+
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.s: Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.s
+
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.s
+
+# target to generate assembly for a file
+Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.s:
+	$(MAKE) -f CMakeFiles\STM32F4_HAL.dir\build.make CMakeFiles/STM32F4_HAL.dir/Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.s
+.PHONY : Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.c.s
 
 # Help Target
 help:
@@ -183,12 +3449,374 @@ help:
 	@echo ... depend
 	@echo ... edit_cache
 	@echo ... thor
+	@echo ... STM32F4_HAL
 	@echo ... debug
 	@echo ... release
+	@echo ... FreeRTOS
 	@echo ... rebuild_cache
-	@echo ... main.obj
-	@echo ... main.i
-	@echo ... main.s
+	@echo ... Thor/Thor/source/clock.obj
+	@echo ... Thor/Thor/source/clock.i
+	@echo ... Thor/Thor/source/clock.s
+	@echo ... Thor/Thor/source/core.obj
+	@echo ... Thor/Thor/source/core.i
+	@echo ... Thor/Thor/source/core.s
+	@echo ... Thor/Thor/source/defaults.obj
+	@echo ... Thor/Thor/source/defaults.i
+	@echo ... Thor/Thor/source/defaults.s
+	@echo ... Thor/Thor/source/definitions.obj
+	@echo ... Thor/Thor/source/definitions.i
+	@echo ... Thor/Thor/source/definitions.s
+	@echo ... Thor/Thor/source/exceptions.obj
+	@echo ... Thor/Thor/source/exceptions.i
+	@echo ... Thor/Thor/source/exceptions.s
+	@echo ... Thor/Thor/source/exti.obj
+	@echo ... Thor/Thor/source/exti.i
+	@echo ... Thor/Thor/source/exti.s
+	@echo ... Thor/Thor/source/flags.obj
+	@echo ... Thor/Thor/source/flags.i
+	@echo ... Thor/Thor/source/flags.s
+	@echo ... Thor/Thor/source/gdb.obj
+	@echo ... Thor/Thor/source/gdb.i
+	@echo ... Thor/Thor/source/gdb.s
+	@echo ... Thor/Thor/source/gpio.obj
+	@echo ... Thor/Thor/source/gpio.i
+	@echo ... Thor/Thor/source/gpio.s
+	@echo ... Thor/Thor/source/i2c.obj
+	@echo ... Thor/Thor/source/i2c.i
+	@echo ... Thor/Thor/source/i2c.s
+	@echo ... Thor/Thor/source/interrupt.obj
+	@echo ... Thor/Thor/source/interrupt.i
+	@echo ... Thor/Thor/source/interrupt.s
+	@echo ... Thor/Thor/source/mem.obj
+	@echo ... Thor/Thor/source/mem.i
+	@echo ... Thor/Thor/source/mem.s
+	@echo ... Thor/Thor/source/nucleo.obj
+	@echo ... Thor/Thor/source/nucleo.i
+	@echo ... Thor/Thor/source/nucleo.s
+	@echo ... Thor/Thor/source/print.obj
+	@echo ... Thor/Thor/source/print.i
+	@echo ... Thor/Thor/source/print.s
+	@echo ... Thor/Thor/source/pwm.obj
+	@echo ... Thor/Thor/source/pwm.i
+	@echo ... Thor/Thor/source/pwm.s
+	@echo ... Thor/Thor/source/ringbuffer.obj
+	@echo ... Thor/Thor/source/ringbuffer.i
+	@echo ... Thor/Thor/source/ringbuffer.s
+	@echo ... Thor/Thor/source/rpc.obj
+	@echo ... Thor/Thor/source/rpc.i
+	@echo ... Thor/Thor/source/rpc.s
+	@echo ... Thor/Thor/source/serial.obj
+	@echo ... Thor/Thor/source/serial.i
+	@echo ... Thor/Thor/source/serial.s
+	@echo ... Thor/Thor/source/spi.obj
+	@echo ... Thor/Thor/source/spi.i
+	@echo ... Thor/Thor/source/spi.s
+	@echo ... Thor/Thor/source/thor.obj
+	@echo ... Thor/Thor/source/thor.i
+	@echo ... Thor/Thor/source/thor.s
+	@echo ... Thor/Thor/source/threads.obj
+	@echo ... Thor/Thor/source/threads.i
+	@echo ... Thor/Thor/source/threads.s
+	@echo ... Thor/Thor/source/timer.obj
+	@echo ... Thor/Thor/source/timer.i
+	@echo ... Thor/Thor/source/timer.s
+	@echo ... Thor/Thor/source/uart.obj
+	@echo ... Thor/Thor/source/uart.i
+	@echo ... Thor/Thor/source/uart.s
+	@echo ... Thor/Thor/source/usart.obj
+	@echo ... Thor/Thor/source/usart.i
+	@echo ... Thor/Thor/source/usart.s
+	@echo ... Thor/lib/FreeRTOS/croutine.obj
+	@echo ... Thor/lib/FreeRTOS/croutine.i
+	@echo ... Thor/lib/FreeRTOS/croutine.s
+	@echo ... Thor/lib/FreeRTOS/event_groups.obj
+	@echo ... Thor/lib/FreeRTOS/event_groups.i
+	@echo ... Thor/lib/FreeRTOS/event_groups.s
+	@echo ... Thor/lib/FreeRTOS/list.obj
+	@echo ... Thor/lib/FreeRTOS/list.i
+	@echo ... Thor/lib/FreeRTOS/list.s
+	@echo ... Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.obj
+	@echo ... Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.i
+	@echo ... Thor/lib/FreeRTOS/portable/Common/mpu_wrappers.s
+	@echo ... Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.obj
+	@echo ... Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.i
+	@echo ... Thor/lib/FreeRTOS/portable/GCC/ARM_CM4F/port.s
+	@echo ... Thor/lib/FreeRTOS/portable/MemMang/heap_4.obj
+	@echo ... Thor/lib/FreeRTOS/portable/MemMang/heap_4.i
+	@echo ... Thor/lib/FreeRTOS/portable/MemMang/heap_4.s
+	@echo ... Thor/lib/FreeRTOS/queue.obj
+	@echo ... Thor/lib/FreeRTOS/queue.i
+	@echo ... Thor/lib/FreeRTOS/queue.s
+	@echo ... Thor/lib/FreeRTOS/stream_buffer.obj
+	@echo ... Thor/lib/FreeRTOS/stream_buffer.i
+	@echo ... Thor/lib/FreeRTOS/stream_buffer.s
+	@echo ... Thor/lib/FreeRTOS/tasks.obj
+	@echo ... Thor/lib/FreeRTOS/tasks.i
+	@echo ... Thor/lib/FreeRTOS/tasks.s
+	@echo ... Thor/lib/FreeRTOS/timers.obj
+	@echo ... Thor/lib/FreeRTOS/timers.i
+	@echo ... Thor/lib/FreeRTOS/timers.s
+	@echo ... Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.obj
+	@echo ... Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.i
+	@echo ... Thor/lib/stm32hal_f4/Device/startup/startup_stm32f446xx.s
+	@echo ... Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.obj
+	@echo ... Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.i
+	@echo ... Thor/lib/stm32hal_f4/Device/sys/system_stm32f4xx.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cec.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dsi.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_iwdg.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nand.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_nor.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sdram.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_smartcard.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spdifrx.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_usart.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_crc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dac.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma2d.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_exti.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fsmc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_i2c.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_lptim.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_pwr.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rcc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rng.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_rtc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_sdmmc.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_spi.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.s
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.obj
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.i
+	@echo ... Thor/lib/stm32hal_f4/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.s
 .PHONY : help
 
 

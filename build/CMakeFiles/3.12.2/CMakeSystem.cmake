@@ -3,7 +3,7 @@ set(CMAKE_HOST_SYSTEM_NAME "Windows")
 set(CMAKE_HOST_SYSTEM_VERSION "10.0.17134")
 set(CMAKE_HOST_SYSTEM_PROCESSOR "AMD64")
 
-include("C:/git/Microcontrollers/Thor_STM32/cmake/toolchain.cmake")
+include("G:/git/Microcontrollers/Thor_STM32/cmake/toolchain.cmake")
 
 set(CMAKE_SYSTEM "Generic")
 set(CMAKE_SYSTEM_NAME "Generic")

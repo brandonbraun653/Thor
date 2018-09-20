@@ -33,19 +33,19 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = "C:\Program Files\CMake\bin\cmake.exe"
+CMAKE_COMMAND = G:\ProgramFiles\CMake\bin\cmake.exe
 
 # The command to remove a file.
-RM = "C:\Program Files\CMake\bin\cmake.exe" -E remove -f
+RM = G:\ProgramFiles\CMake\bin\cmake.exe -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\git\Microcontrollers\Thor_STM32
+CMAKE_SOURCE_DIR = G:\git\Microcontrollers\Thor_STM32
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\git\Microcontrollers\Thor_STM32\build
+CMAKE_BINARY_DIR = G:\git\Microcontrollers\Thor_STM32\build
 
 # Utility rule file for debug.
 
@@ -53,9 +53,9 @@ CMAKE_BINARY_DIR = C:\git\Microcontrollers\Thor_STM32\build
 include CMakeFiles/debug.dir/progress.make
 
 CMakeFiles/debug:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Creating the executable in the debug mode."
-	"C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug C:/git/Microcontrollers/Thor_STM32
-	"C:\Program Files\CMake\bin\cmake.exe" --build C:/git/Microcontrollers/Thor_STM32/build --target all
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Creating the executable in the debug mode."
+	G:\ProgramFiles\CMake\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug G:/git/Microcontrollers/Thor_STM32
+	G:\ProgramFiles\CMake\bin\cmake.exe --build G:/git/Microcontrollers/Thor_STM32/build --target all
 
 debug: CMakeFiles/debug
 debug: CMakeFiles/debug.dir/build.make
@@ -72,6 +72,6 @@ CMakeFiles/debug.dir/clean:
 .PHONY : CMakeFiles/debug.dir/clean
 
 CMakeFiles/debug.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\git\Microcontrollers\Thor_STM32 C:\git\Microcontrollers\Thor_STM32 C:\git\Microcontrollers\Thor_STM32\build C:\git\Microcontrollers\Thor_STM32\build C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\debug.dir\DependInfo.cmake --color=$(COLOR)
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" G:\git\Microcontrollers\Thor_STM32 G:\git\Microcontrollers\Thor_STM32 G:\git\Microcontrollers\Thor_STM32\build G:\git\Microcontrollers\Thor_STM32\build G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\debug.dir\DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/debug.dir/depend
 

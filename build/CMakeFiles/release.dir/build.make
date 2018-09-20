@@ -33,19 +33,19 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = "C:\Program Files\CMake\bin\cmake.exe"
+CMAKE_COMMAND = G:\ProgramFiles\CMake\bin\cmake.exe
 
 # The command to remove a file.
-RM = "C:\Program Files\CMake\bin\cmake.exe" -E remove -f
+RM = G:\ProgramFiles\CMake\bin\cmake.exe -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\git\Microcontrollers\Thor_STM32
+CMAKE_SOURCE_DIR = G:\git\Microcontrollers\Thor_STM32
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\git\Microcontrollers\Thor_STM32\build
+CMAKE_BINARY_DIR = G:\git\Microcontrollers\Thor_STM32\build
 
 # Utility rule file for release.
 
@@ -53,9 +53,9 @@ CMAKE_BINARY_DIR = C:\git\Microcontrollers\Thor_STM32\build
 include CMakeFiles/release.dir/progress.make
 
 CMakeFiles/release:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Creating the executable in the release mode."
-	"C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Release C:/git/Microcontrollers/Thor_STM32
-	"C:\Program Files\CMake\bin\cmake.exe" --build C:/git/Microcontrollers/Thor_STM32/build --target all
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Creating the executable in the release mode."
+	G:\ProgramFiles\CMake\bin\cmake.exe -DCMAKE_BUILD_TYPE=Release G:/git/Microcontrollers/Thor_STM32
+	G:\ProgramFiles\CMake\bin\cmake.exe --build G:/git/Microcontrollers/Thor_STM32/build --target all
 
 release: CMakeFiles/release
 release: CMakeFiles/release.dir/build.make
@@ -72,6 +72,6 @@ CMakeFiles/release.dir/clean:
 .PHONY : CMakeFiles/release.dir/clean
 
 CMakeFiles/release.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\git\Microcontrollers\Thor_STM32 C:\git\Microcontrollers\Thor_STM32 C:\git\Microcontrollers\Thor_STM32\build C:\git\Microcontrollers\Thor_STM32\build C:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\release.dir\DependInfo.cmake --color=$(COLOR)
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" G:\git\Microcontrollers\Thor_STM32 G:\git\Microcontrollers\Thor_STM32 G:\git\Microcontrollers\Thor_STM32\build G:\git\Microcontrollers\Thor_STM32\build G:\git\Microcontrollers\Thor_STM32\build\CMakeFiles\release.dir\DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/release.dir/depend
 

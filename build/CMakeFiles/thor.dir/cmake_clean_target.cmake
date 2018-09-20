@@ -1,3 +1,3 @@
 file(REMOVE_RECURSE
-  "libthor.a"
+  "libthor_rel.a"
 )
