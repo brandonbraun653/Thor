@@ -8,8 +8,10 @@
  * If using the Embedded Remote Procedural Call library (eRPC), it provides the necessary overload definitions and thus the ones below
  * can be disabled safely. */
 #if	defined(USING_FREERTOS) && !defined(USING_ERPC) && defined __cplusplus
-#include <Thor/FreeRTOS/include/FreeRTOS.h>
-#include <Thor/FreeRTOS/include/portable.h>
+// #include <Thor/FreeRTOS/include/FreeRTOS.h>
+// #include <Thor/FreeRTOS/include/portable.h>
+#include "FreeRTOS.h"
+#include "portable.h"
 #include "new"
 
 void * operator new(size_t size);
