@@ -31,7 +31,7 @@ using Modes = Thor::Definitions::Modes;
 using Options = Thor::Definitions::SPI::Options;
 
 #if defined(USING_FREERTOS)
-static SemaphoreHandle_t spiSemphrs[MAX_SPI_CHANNELS + 1];
+//static SemaphoreHandle_t spiSemphrs[MAX_SPI_CHANNELS + 1];
 TaskTrigger spiTaskTrigger;
 #endif 
 
@@ -75,6 +75,11 @@ static const SPIClass_sPtr& getSPIClassRef(SPI_TypeDef* instance)
 		return spiObjects[6];
 		break;
 	#endif
+
+	/* If we get here, something went wrong and the program will likely crash */
+	default:
+		return spiObjects[0];
+		break;
 	};
 }
 
@@ -120,6 +125,11 @@ static uint32_t spiClockMask(SPI_TypeDef* instance)
 		break;
 		#endif
 	#endif /* !TARGET_STM32F7 */
+
+	/* If we get here, something went wrong */
+	default:
+		return 0u;
+		break;
 	};
 }
 
@@ -166,6 +176,11 @@ static volatile uint32_t* spiClockRegister(SPI_TypeDef* instance)
 		break;
 	#endif
 #endif /* !TARGET_STM32F7 */
+
+	/* If we get here, something went wrong */
+	default:
+		return nullptr;
+		break;
 	};
 }
 
@@ -188,7 +203,7 @@ static const uint32_t getBaudRatePrescalerFromFreq(int channel, int freq)
 	memset(clockError, INT_MAX, numPrescalers);
 
 	for (int i = 0; i < numPrescalers; i++)
-		clockError[i] = abs((busFreq / (1 << i + 1)) - freq);
+		clockError[i] = abs((busFreq / (1 << (i + 1)) - freq));
 
 	/* Find the index of the element with lowest error */
 	auto idx = std::distance(clockError, std::min_element(clockError, clockError + numPrescalers - 1));
@@ -629,7 +644,7 @@ namespace Thor
 				if (!SPI_PeriphState.gpio_enabled || !SPI_PeriphState.spi_enabled)
 					return Status::PERIPH_NOT_INITIALIZED;
 
-				volatile HAL_StatusTypeDef error = HAL_OK;
+				volatile HAL_StatusTypeDef error __attribute((unused)) = HAL_OK;
 
 				switch (txMode)
 				{

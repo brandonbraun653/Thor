@@ -2,6 +2,7 @@
 #include <Thor/include/exceptions.hpp>
 #include <Thor/include/system.hpp>
 
+
 void BasicErrorHandler(std::string err_msg)
 {
 	/* If you got here, look at the message and trace back to the root problem */
@@ -28,6 +29,10 @@ void BasicErrorHandler(std::string err_msg)
 #ifdef __cplusplus
 extern "C" {
 #endif 
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 	void HardFault_HandlerC(unsigned long *hardfault_args) {
 		volatile unsigned long stacked_r0;				// General Purpose Register
 		volatile unsigned long stacked_r1;				// General Purpose Register
@@ -57,6 +62,30 @@ extern "C" {
 		__asm("BKPT #0\n"); // Break into the debugger
 	}
 
+	void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
+	{
+		/* If you get here, check the task name and call stack to see what caused the issue. */
+		volatile size_t bytesRemaining = xPortGetFreeHeapSize();
+		volatile char* task = pcTaskName;
+		for (;;)
+		{
+			printf("CRITICAL FAILURE: Stack overflow in %s\r\n", pcTaskName);
+			vTaskDelay(pdMS_TO_TICKS(1000));
+		}
+	}
+
+	void vApplicationMallocFailedHook()
+	{
+		/* If you get here, a task tried to create but ran out of heap space. */
+		volatile size_t bytesRemaining = xPortGetFreeHeapSize();
+		for (;;)
+		{
+
+		}
+	}
+
+#pragma GCC diagnostic pop
+
 #ifdef __cplusplus
 }
 #endif 
@@ -84,32 +113,3 @@ void HardFault_Handler()
 	{
 	}
 }
-
-#ifdef __cplusplus
-extern "C" {
-	#endif
-	void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
-	{
-		/* If you get here, check the task name and call stack to see what caused the issue. */
-		volatile size_t bytesRemaining = xPortGetFreeHeapSize();
-		volatile char* task = pcTaskName;
-		for (;;)
-		{
-			printf("CRITICAL FAILURE: Stack overflow in %s\r\n", pcTaskName);
-			vTaskDelay(pdMS_TO_TICKS(1000));
-		}
-	}
-
-	void vApplicationMallocFailedHook()
-	{
-		/* If you get here, a task tried to create but ran out of heap space. */
-		volatile size_t bytesRemaining = xPortGetFreeHeapSize();
-		for (;;)
-		{
-
-		}
-	}
-
-	#ifdef __cplusplus
-}
-#endif

@@ -71,6 +71,9 @@ namespace Thor
 			SRC_SPI4,
 			SRC_SPI5,
 			SRC_SPI6,
+
+			TOTAL_TRIGGER_SOURCES,
+			TRIGGER_SOURCE_UNKNOWN
 				
 		};
 
@@ -78,10 +81,10 @@ namespace Thor
 		{
 			struct PeriphConfig
 			{
-				TriggerSource peripheral_type;
-				TriggerSource peripheral_instance;
-				Thor::Definitions::DMA::TransferDirection direction;
-				uint32_t channel_selection;
+				TriggerSource peripheral_type = TRIGGER_SOURCE_UNKNOWN;
+				TriggerSource peripheral_instance = TRIGGER_SOURCE_UNKNOWN;
+				Thor::Definitions::DMA::TransferDirection direction = Thor::Definitions::DMA::TransferDirection::TRANSFER_DIRECTION_UNDEFINED;
+				uint32_t channel_selection = 0u;
 			};
 
 			class DMAHandler
@@ -107,15 +110,14 @@ namespace Thor
 				 *	@param[in]	pConfig		Container of information describing the DMA source and type*/
 				virtual void requestCallback(PeriphConfig pConfig) = 0;
 
-				void attachCallback_TXDMA(int periphNum, func_void func);
-				void attachCallback_RXDMA(int periphNum, func_void func);
-				void removeCallback_TXDMA(int periphNum);
-				void removeCallback_RXDMA(int periphNum);
+				void attachCallback_TXDMA(size_t periphNum, func_void func);
+				void attachCallback_RXDMA(size_t periphNum, func_void func);
+				void removeCallback_TXDMA(size_t periphNum);
+				void removeCallback_RXDMA(size_t periphNum);
+				void executeCallback_TXDMA(size_t periphNum);
+				void executeCallback_RXDMA(size_t periphNum);
 
-				void executeCallback_TXDMA(int periphNum);
-				void executeCallback_RXDMA(int periphNum);
-
-				DMAManagerBase(const int numCallbacks);
+				DMAManagerBase(const size_t numCallbacks);
 				~DMAManagerBase() = default;
 
 			private:

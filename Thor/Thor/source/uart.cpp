@@ -1,6 +1,3 @@
-/* Boost Includes */
-#include <boost/bind.hpp>
-
 /* Thor Includes */
 #include <Thor/include/uart.hpp>
 #include <Thor/include/exceptions.hpp>
@@ -68,6 +65,10 @@ static const UARTClass_sPtr& getUARTClassRef(USART_TypeDef* instance)
 		return uartObjects[8];
 		break;
 		#endif
+
+	default:
+		return uartObjects[0];
+		break;
 	};
 };
 
@@ -100,6 +101,10 @@ static uint32_t uartClockMask(USART_TypeDef* instance)
 		break;
 		#endif
 		#endif /* !STM32F446xx  !STM32F767xx */
+
+	default:
+		return 0u;
+		break;
 	};
 };
 
@@ -186,7 +191,7 @@ namespace Thor
 				tmp.length = 0;
 				tmp.bytesRead = 0;
 
-				for (int i = 0; i < RXPacketBuffer.capacity(); i++)
+				for (size_t i = 0; i < RXPacketBuffer.capacity(); i++)
 					RXPacketBuffer.push_back(tmp);
 
 				//Should reset the begin/end pointers?
