@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.12.2)
+set_property(GLOBAL PROPERTY USING_THOR "TRUE")
 
 set(THOR_ROOT "${CMAKE_CURRENT_LIST_DIR}")
 
@@ -13,7 +14,6 @@ set(STM32_CMAKE_TOOLS_DIR "${THOR_ROOT}/cmake")
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(CMAKE_TOOLCHAIN_FILE "${STM32_CMAKE_TOOLS_DIR}/toolchain.cmake")
 endif()
-
 
 # --------------------------------------
 # STM32 Resources
@@ -49,7 +49,7 @@ endif()
 find_package(BOOST)
 
 # --------------------------------------
-# Thor Resources
+# Thor Resources [Depends on Boost, FreeRTOS, STM32HAL]
 # --------------------------------------
 # Add build specific definitions
 get_property(STM32_HAL_COMPILER_DEFINITIONS GLOBAL PROPERTY STM32_HAL_COMPILER_DEFINITIONS)
@@ -66,7 +66,7 @@ set_property(GLOBAL PROPERTY THOR_COMPILER_DEFINITIONS "${THOR_COMPILER_DEFINITI
 
 # Compiler Options
 set(THOR_COMPILER_OPTIONS ${STM32_COMPILER_OPTIONS} --std=gnu++11 -fexceptions)
-set_property(GLOBAL PROPERTY THOR_COMPILER_OPTIONS "${THOR_COMPILER_OPTOINS}")
+set_property(GLOBAL PROPERTY THOR_COMPILER_OPTIONS "${THOR_COMPILER_OPTIONS}")
 
 # Gather all the include directories and make them public
 set(THOR_INC_DIRS 
@@ -106,6 +106,11 @@ set(THOR_SRC_FILES
 )
 
 # --------------------------------------
+# eRPC Resources [Depends on Thor]
+# --------------------------------------
+include("${THOR_ROOT}/Thor/lib/erpc/CMakeLists.txt")
+
+# --------------------------------------
 # Thor Project
 # --------------------------------------
 project(thor)
@@ -129,8 +134,10 @@ target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:RELEASE>:-O3>)
 target_link_libraries(${PROJECT_NAME} $<$<CONFIG:DEBUG>: 
     "libstm32${STM32_FAMILY_LOWER}_hal_dbg.a"
     "libFreeRTOS_dbg.a"
+    "liberpc_server_dbg.a"
 >)
 target_link_libraries(${PROJECT_NAME} $<$<CONFIG:RELEASE>: 
     "libstm32${STM32_FAMILY_LOWER}_hal_rel.a"
     "libFreeRTOS_rel.a"
+    "liberpc_server_rel.a"
 >)
