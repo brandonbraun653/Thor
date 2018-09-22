@@ -1,5 +1,4 @@
 .TMP
-Thor/testing/.idea/
 **/.idea
 **/.pytest_cache
 **/__pycache__
@@ -7,3 +6,4 @@ Thor/testing/.idea/
 **/.vscode
 **/.DS_Store
 **.obj
+**/build

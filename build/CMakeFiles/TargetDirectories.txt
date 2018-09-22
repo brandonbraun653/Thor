@@ -1,7 +1,0 @@
-G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/edit_cache.dir
-G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/thor.dir
-G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/STM32F4_HAL.dir
-G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/debug.dir
-G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/release.dir
-G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/FreeRTOS.dir
-G:/git/Microcontrollers/Thor_STM32/build/CMakeFiles/rebuild_cache.dir
