@@ -5,7 +5,8 @@ set(THOR_ROOT "${CMAKE_CURRENT_LIST_DIR}")
 # --------------------------------------
 # Identify the location of the cmake tools directory
 # --------------------------------------
-set(STM32_CMAKE_TOOLS_DIR "${THOR_ROOT}/cmake" CACHE STRING "Thor: STM32 location for cmake tools")
+set_property(GLOBAL PROPERTY STM32_CMAKE_TOOLS_DIR "${THOR_ROOT}/cmake")
+set(STM32_CMAKE_TOOLS_DIR "${THOR_ROOT}/cmake")
 
 
 # Assign the Thor toolchain file if one isn't passed to the command line
@@ -18,56 +19,118 @@ endif()
 # STM32 Resources
 # --------------------------------------
 include("${STM32_CMAKE_TOOLS_DIR}/gcc_stm32.cmake")
+STM32_VALIDATE_DEVICE()
 
-# Using definitions from gcc_stm32.cmake, find, validate, and import the specific device family
-# cmake file
-include(${STM32_CMAKE_DIR}/gcc_stm32${STM32_FAMILY_LOWER}.cmake)
-STM32_GET_CHIP_TYPE(${STM32_CHIP} STM32_CHIP_TYPExx)
+# Find and include the correct HAL CMakeLists.txt file
+string(TOLOWER ${STM32_FAMILY} STM32_FAMILY_LOWER)
+include("${THOR_ROOT}/Thor/lib/stm32hal_${STM32_FAMILY_LOWER}/CMakeLists.txt")
 
-set(STM32_HAL_DIR "${THOR_ROOT}/Thor/lib/stm32hal_${STM32_FAMILY_LOWER}")
-set(STM32_HAL_INC_DIRS "STM32${STM32_FAMILY}_HAL_INC_DIRS")
-
-message(STATUS "Stuff: ${STM32F4_HAL_INC_DIRS}")
+# Get a few properties set in the above file
+get_property(STM32_HAL_INC_DIRS GLOBAL PROPERTY STM32_HAL_INC_DIRS)
+get_property(STM32_COMPILER_OPTIONS GLOBAL PROPERTY STM32_COMPILER_OPTIONS)
+get_property(STM32_HAL_DEVICE_DEFINITION GLOBAL PROPERTY STM32_HAL_DEVICE_DEFINITION)
 
 # --------------------------------------
 # FreeRTOS Resources
 # --------------------------------------
-set(FREERTOS_DIR "${THOR_ROOT}/Thor/lib/FreeRTOS")
+include("${THOR_ROOT}/Thor/lib/FreeRTOS/CMakeLists.txt")
 
-# Try and find the Boost library 
+# --------------------------------------
+# Boost Resources
+# --------------------------------------
+# Give a hint to the find_package module on where boost will lie
+# This would be a directory that contains a folder named something like "boost_1_68_0"
+if("$ENV{BOOST_ROOT}" STREQUAL "")
+    message(FATAL_ERROR "Could not find BOOST_ROOT environment variable!")
+else()
+    set(BOOST_ROOT $ENV{BOOST_ROOT})    
+endif()
 
-# if(NOT $ENV{BOOST_ROOT})
-#     message(FATAL_ERROR "Could not find BOOST_ROOT environment variable!")
-# endif()
+find_package(BOOST)
 
-# set(BOOST_ROOT $ENV{BOOST_ROOT})
+# --------------------------------------
+# Thor Resources
+# --------------------------------------
+# Add build specific definitions
+get_property(STM32_HAL_COMPILER_DEFINITIONS GLOBAL PROPERTY STM32_HAL_COMPILER_DEFINITIONS)
 
-# find_package(BOOST 1.65.1)
+set(THOR_COMPILER_DEFINITIONS
+    -DUSING_FREERTOS 
+    -DUSE_FREERTOS 
+    -DEIGEN_INITIALIZE_MATRICES_BY_ZERO
+    ${STM32_HAL_COMPILER_DEFINITIONS}
+)
+set(THOR_COMPILER_DEFINITIONS ${THOR_COMPILER_DEFINITIONS} $<$<CONFIG:DEBUG>: -DDEBUG=1 -DDEBUG_DEFAULT_INTERRUPT_HANDLERS>)
+set(THOR_COMPILER_DEFINITIONS ${THOR_COMPILER_DEFINITIONS} $<$<CONFIG:RELEASE>: -DNDEBUG=1 -DRELEASE=1 -DEIGEN_NO_DEBUG>)
+set_property(GLOBAL PROPERTY THOR_COMPILER_DEFINITIONS "${THOR_COMPILER_DEFINITIONS}")
 
+# Compiler Options
+set(THOR_COMPILER_OPTIONS ${STM32_COMPILER_OPTIONS} --std=gnu++11 -fexceptions)
+set_property(GLOBAL PROPERTY THOR_COMPILER_OPTIONS "${THOR_COMPILER_OPTOINS}")
 
-## Define Directories
+# Gather all the include directories and make them public
+set(THOR_INC_DIRS 
+    "${THOR_ROOT}/Thor" 
+    ${STM32_HAL_INC_DIRS} 
+    ${FREERTOS_INC_DIRS} 
+    ${Boost_INCLUDE_DIR}
+)
+set_property(GLOBAL PROPERTY THOR_INC_DIRS "${THOR_INC_DIRS}")
 
+# Assign the source files
+set(THOR_SRC_FILES 
+    "${THOR_ROOT}/Thor/Thor/source/clock.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/core.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/defaults.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/definitions.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/exceptions.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/exti.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/flags.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/gdb.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/gpio.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/i2c.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/interrupt.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/mem.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/nucleo.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/print.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/pwm.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/ringbuffer.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/rpc.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/serial.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/spi.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/thor.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/threads.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/timer.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/uart.cpp"
+    "${THOR_ROOT}/Thor/Thor/source/usart.cpp"
+)
 
-
-
-set(THOR_INC_DIR "${THOR_ROOT}/Thor/src/include")
-set(THOR_SRC_DIR "${THOR_ROOT}/Thor/src/source")
-
-file(GLOB THOR_SRC_FILES "${THOR_SRC_DIR}/*.cpp")
-
-
+# --------------------------------------
+# Thor Project
+# --------------------------------------
 project(thor)
-add_library(${PROJECT_NAME} main.cpp)
+add_library(${PROJECT_NAME} ${THOR_SRC_FILES})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${STM32_HAL_INC_DIRS})
+# Force the link language to C++
+set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
-target_compile_definitions(${PROJECT_NAME} PUBLIC -DSTM32F446xx -DUSE_FULL_LL_DRIVER)
+# Include Directories
+target_include_directories(${PROJECT_NAME} PUBLIC ${THOR_INC_DIRS})
+
+# Compiler Definitions 
+target_compile_definitions(${PROJECT_NAME} PUBLIC ${THOR_COMPILER_DEFINITIONS})
+
+# Compiler Options
+target_compile_options(${PROJECT_NAME} PRIVATE ${THOR_COMPILER_OPTIONS})
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:DEBUG>:-ggdb -Og>)
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:RELEASE>:-O3>)
+
 
 target_link_libraries(${PROJECT_NAME} $<$<CONFIG:DEBUG>: 
-    "${STM32_HAL_DIR}/project/makefile/libstm32${STM32_FAMILY_LOWER}_hal_dbg.a"
-    "${FREERTOS_DIR}/build/libFreeRTOS_dbg.a"
+    "libstm32${STM32_FAMILY_LOWER}_hal_dbg.a"
+    "libFreeRTOS_dbg.a"
 >)
 target_link_libraries(${PROJECT_NAME} $<$<CONFIG:RELEASE>: 
-    "${STM32_HAL_DIR}/project/makefile/libstm32${STM32_FAMILY_LOWER}_hal_rel.a"
-    "${FREERTOS_DIR}/build/libFreeRTOS_rel.a"
+    "libstm32${STM32_FAMILY_LOWER}_hal_rel.a"
+    "libFreeRTOS_rel.a"
 >)
