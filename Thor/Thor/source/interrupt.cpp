@@ -111,7 +111,8 @@ namespace Thor
 						#if defined(USART3)
 						if (uart_candidate == USART3)
 							output.peripheral_instance = Thor::Interrupt::SRC_USART3;
-						#endif
+						#endif
+
 						#if defined(USART6)
 						if (uart_candidate == USART6)
 							output.peripheral_instance = Thor::Interrupt::SRC_USART6;
@@ -124,19 +125,23 @@ namespace Thor
 						#if defined(UART4)
 						if (uart_candidate == UART4)
 							output.peripheral_instance = Thor::Interrupt::SRC_UART4;
-						#endif
+						#endif
+
 						#if defined(UART5)
 						if (uart_candidate == UART5)
 							output.peripheral_instance = Thor::Interrupt::SRC_UART5;
-						#endif
+						#endif
+
 						#if defined(UART7)
 						if (uart_candidate == UART7)
 							output.peripheral_instance = Thor::Interrupt::SRC_UART7;
-						#endif
+						#endif
+
 						#if defined(UART8)
 						if (uart_candidate == UART8)
 							output.peripheral_instance = Thor::Interrupt::SRC_UART8;
-						#endif
+						#endif
+
 					}
 				}
 
@@ -153,19 +158,23 @@ namespace Thor
 					#if defined(SPI2)
 					if (uart_candidate == SPI2)
 						output.peripheral_instance = Thor::Interrupt::SRC_SPI2;
-					#endif
+					#endif
+
 					#if defined(SPI3)
 					if (uart_candidate == SPI3)
 						output.peripheral_instance = Thor::Interrupt::SRC_SPI3;
-					#endif
+					#endif
+
 					#if defined(SPI4)
 					if (uart_candidate == SPI4)
 						output.peripheral_instance = Thor::Interrupt::SRC_SPI4;
-					#endif
+					#endif
+
 					#if defined(SPI5)
 					if (uart_candidate == SPI5)
 						output.peripheral_instance = Thor::Interrupt::SRC_SPI5;
-					#endif
+					#endif
+
 					#if defined(SPI6)
 					if (uart_candidate == SPI6)
 						output.peripheral_instance = Thor::Interrupt::SRC_SPI6;
@@ -202,43 +211,43 @@ namespace Thor
 			}
 			
 			
-			DMAManagerBase::DMAManagerBase(const int numCallbacks)
+			DMAManagerBase::DMAManagerBase(const size_t numCallbacks)
 			{
 				txdmaCallbacks.resize(numCallbacks);
 				rxdmaCallbacks.resize(numCallbacks);
 			}
 
-			void DMAManagerBase::attachCallback_TXDMA(int periphNum, func_void func)
+			void DMAManagerBase::attachCallback_TXDMA(size_t periphNum, func_void func)
 			{
 				if (periphNum < txdmaCallbacks.size())
 					txdmaCallbacks[periphNum] = func;
 			}
 
-			void DMAManagerBase::attachCallback_RXDMA(int periphNum, func_void func)
+			void DMAManagerBase::attachCallback_RXDMA(size_t periphNum, func_void func)
 			{
 				if (periphNum < rxdmaCallbacks.size())
 					rxdmaCallbacks[periphNum] = func;
 			}
 
-			void DMAManagerBase::removeCallback_TXDMA(int periphNum)
+			void DMAManagerBase::removeCallback_TXDMA(size_t periphNum)
 			{
 				if (periphNum < txdmaCallbacks.size())
 					txdmaCallbacks[periphNum].clear();
 			}
 
-			void DMAManagerBase::removeCallback_RXDMA(int periphNum)
+			void DMAManagerBase::removeCallback_RXDMA(size_t periphNum)
 			{
 				if (periphNum < rxdmaCallbacks.size())
 					rxdmaCallbacks[periphNum].clear();
 			}
 
-			void DMAManagerBase::executeCallback_TXDMA(int periphNum)
+			void DMAManagerBase::executeCallback_TXDMA(size_t periphNum)
 			{
 				if ((periphNum < txdmaCallbacks.size()) && !txdmaCallbacks[periphNum].empty())
 					txdmaCallbacks[periphNum]();
 			}
 
-			void DMAManagerBase::executeCallback_RXDMA(int periphNum)
+			void DMAManagerBase::executeCallback_RXDMA(size_t periphNum)
 			{
 				if ((periphNum < rxdmaCallbacks.size()) && !rxdmaCallbacks[periphNum].empty())
 					rxdmaCallbacks[periphNum]();

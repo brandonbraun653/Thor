@@ -7,8 +7,13 @@
 #include <stdint.h>
 
 /* Boost Includes */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
+#include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/circular_buffer.hpp>
+#pragma GCC diagnostic pop
 
 /* Thor Includes */
 #include <Thor/include/config.hpp>

@@ -15,6 +15,10 @@
 #include "semphr.h"
 #endif 
 
+#ifndef UNUSED
+#define UNUSED(x) (void)x
+#endif
+
 /** @namespace Thor */
 namespace Thor
 {

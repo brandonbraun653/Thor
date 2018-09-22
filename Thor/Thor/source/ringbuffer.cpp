@@ -112,6 +112,7 @@ int RingBufferClass::uint8_t_write(uint8_t *dataBuffer, int writeLength)
 
 	writeLocation = writeLength;
 	bufferedData = writeLength;
+	return writeLength;
 }
 
 uint8_t RingBufferClass::uint8_t_read()
@@ -172,6 +173,7 @@ int RingBufferClass::int_write(int *dataBuffer, int writeLength)
 
 	writeLocation = writeLength;
 	bufferedData = writeLength;
+	return writeLength;
 }
 
 int RingBufferClass::int_read() 

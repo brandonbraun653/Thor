@@ -50,7 +50,23 @@ namespace Thor
 					break;
 				#endif
 
-				#if defined(TARGET_STM32F7)				case GPIOI_BASE:					return (1u << 8);					break;				case GPIOJ_BASE:					return (1u << 9);					break;				case GPIOK_BASE:					return (1u << 10);					break;				#endif
+				#if defined(TARGET_STM32F7)
+				case GPIOI_BASE:
+					return (1u << 8);
+					break;
+
+				case GPIOJ_BASE:
+					return (1u << 9);
+					break;
+
+				case GPIOK_BASE:
+					return (1u << 10);
+					break;
+				#endif
+
+				default:
+					return 0u;
+					break;
 				};
 			}
 
@@ -158,7 +174,8 @@ namespace Thor
 					break;
 				#endif
 
-				#if defined(TARGET_STM32F7)				case Chimera::GPIO::Port::PORTI:
+				#if defined(TARGET_STM32F7)
+				case Chimera::GPIO::Port::PORTI:
 					return GPIOI;
 					break;
 
@@ -168,7 +185,8 @@ namespace Thor
 
 				case Chimera::GPIO::Port::PORTK:
 					return GPIOK;
-					break;				#endif
+					break;
+				#endif
 				};
 			}
 

@@ -1,7 +1,3 @@
-/* Boost Includes */
-#include <boost/bind.hpp>
-#include <boost/make_shared.hpp>
-
 /* Project Includes */
 #include <Thor/include/config.hpp>
 #include <Thor/include/usart.hpp>
@@ -73,6 +69,10 @@ static const USARTClass_sPtr& getUSARTClassRef(USART_TypeDef* instance)
 		return usartObjects[8];
 		break;
 		#endif
+
+	default:
+		return usartObjects[0];
+		break;
 	};
 };
 
@@ -104,6 +104,10 @@ static volatile uint32_t* getUsartClockReg(USART_TypeDef* instance)
 		break;
 		#endif
 		#endif /* !STM32F446xx  !STM32F767xx */
+
+	default:
+		return nullptr;
+		break;
 	};
 }
 
@@ -134,6 +138,10 @@ static uint32_t usartClockMask(USART_TypeDef* instance)
 		break;
 		#endif
 		#endif /* !STM32F446xx  !STM32F767xx */
+
+	default:
+		return 0u;
+		break;
 	};
 };
 
