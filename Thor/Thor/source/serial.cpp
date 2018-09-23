@@ -68,7 +68,7 @@ namespace Thor
 				}
 			}
 
-			ChimStatus SerialClass::cbegin(ChimBaud baud, ChimMode tx_mode, ChimMode rx_mode)
+			ChimStatus SerialClass::cbegin(uint32_t baud, ChimMode tx_mode, ChimMode rx_mode)
 			{
 				auto chimera_error = ChimStatus::SERIAL_OK;
 				auto thor_error = begin(static_cast<ThorBaud>(baud), static_cast<ThorMode>(tx_mode), static_cast<ThorMode>(rx_mode));
@@ -125,12 +125,12 @@ namespace Thor
 				return ChimStatus::SERIAL_OK;
 			}
 
-			Chimera::Serial::Status SerialClass::csetBaud(Chimera::Serial::BaudRate baud)
+			Chimera::Serial::Status SerialClass::csetBaud(uint32_t baud)
 			{
 				auto chimera_error = ChimStatus::SERIAL_OK;
 
 				//TODO: Need to convert between Thor/Chimera bauds...or just allow numbers??
-				auto thor_error = this->serialObject->setBaud(convertBaud(baud));
+				auto thor_error = this->serialObject->setBaud(baud);
 
 				if (thor_error != ThorStatus::PERIPH_OK)
 				{

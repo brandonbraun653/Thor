@@ -151,13 +151,13 @@ namespace Thor
 
 				/* Specialized functions used only when interfacing with the Chimera HAL and are not intended be called by the user. */
 				#if defined(USING_CHIMERA)
-				Chimera::Serial::Status cbegin(Chimera::Serial::BaudRate baud = Chimera::Serial::BaudRate::SERIAL_BAUD_115200,
+				Chimera::Serial::Status cbegin(uint32_t baud = Chimera::Serial::BaudRate::SERIAL_BAUD_115200,
 												Chimera::Serial::Modes tx_mode = Chimera::Serial::Modes::BLOCKING,
 												Chimera::Serial::Modes rx_mode = Chimera::Serial::Modes::BLOCKING);
 
 				Chimera::Serial::Status csetMode(Chimera::Serial::SubPeripheral periph, Chimera::Serial::Modes mode);
 
-				Chimera::Serial::Status csetBaud(Chimera::Serial::BaudRate baud);
+				Chimera::Serial::Status csetBaud(uint32_t baud);
 
 				Chimera::Serial::Status cwrite(uint8_t* val, size_t length);
 
