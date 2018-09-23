@@ -12,6 +12,7 @@ set(STM32_CMAKE_TOOLS_DIR "${THOR_ROOT}/cmake")
 
 # Assign the Thor toolchain file if one isn't passed to the command line
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    message(STATUS "Setting toolchain file")
     set(CMAKE_TOOLCHAIN_FILE "${STM32_CMAKE_TOOLS_DIR}/toolchain.cmake")
 endif()
 
@@ -43,10 +44,10 @@ include("${THOR_ROOT}/Thor/lib/FreeRTOS/CMakeLists.txt")
 if("$ENV{BOOST_ROOT}" STREQUAL "")
     message(FATAL_ERROR "Could not find BOOST_ROOT environment variable!")
 else()
-    set(BOOST_ROOT $ENV{BOOST_ROOT})    
+    set(BOOST_ROOT $ENV{BOOST_ROOT})
 endif()
 
-find_package(BOOST)
+find_package(Boost)
 
 # --------------------------------------
 # Thor Resources [Depends on Boost, FreeRTOS, STM32HAL]
