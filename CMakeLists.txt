@@ -61,6 +61,12 @@ set(THOR_COMPILER_DEFINITIONS
     -DEIGEN_INITIALIZE_MATRICES_BY_ZERO
     ${STM32_HAL_COMPILER_DEFINITIONS}
 )
+
+if(USING_CHIMERA STREQUAL "TRUE")
+    set(THOR_COMPILER_DEFINITIONS ${THOR_COMPILER_DEFINITIONS} -DUSING_CHIMERA)
+    get_property(CHIMERA_HEADERS_DIR GLOBAL PROPERTY CHIMERA_HEADERS_DIR)
+endif()
+
 set(THOR_COMPILER_DEFINITIONS ${THOR_COMPILER_DEFINITIONS} $<$<CONFIG:DEBUG>: -DDEBUG=1 -DDEBUG_DEFAULT_INTERRUPT_HANDLERS>)
 set(THOR_COMPILER_DEFINITIONS ${THOR_COMPILER_DEFINITIONS} $<$<CONFIG:RELEASE>: -DNDEBUG=1 -DRELEASE=1 -DEIGEN_NO_DEBUG>)
 set_property(GLOBAL PROPERTY THOR_COMPILER_DEFINITIONS "${THOR_COMPILER_DEFINITIONS}")
@@ -69,12 +75,14 @@ set_property(GLOBAL PROPERTY THOR_COMPILER_DEFINITIONS "${THOR_COMPILER_DEFINITI
 set(THOR_COMPILER_OPTIONS ${STM32_COMPILER_OPTIONS} --std=gnu++11 -fexceptions)
 set_property(GLOBAL PROPERTY THOR_COMPILER_OPTIONS "${THOR_COMPILER_OPTIONS}")
 
-# Gather all the include directories and make them public
+# Gather all the include directories and make them public. If Chimera isn't being used, the value
+# should simply expand into nothing.
 set(THOR_INC_DIRS 
     "${THOR_ROOT}/Thor" 
     ${STM32_HAL_INC_DIRS} 
     ${FREERTOS_INC_DIRS} 
     ${Boost_INCLUDE_DIR}
+    ${CHIMERA_HEADERS_DIR}
 )
 set_property(GLOBAL PROPERTY THOR_INC_DIRS "${THOR_INC_DIRS}")
 
@@ -131,14 +139,20 @@ target_compile_options(${PROJECT_NAME} PRIVATE ${THOR_COMPILER_OPTIONS})
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:DEBUG>:-ggdb -Og>)
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:RELEASE>:-O3>)
 
-
-target_link_libraries(${PROJECT_NAME} $<$<CONFIG:DEBUG>: 
+# Linked Libraries
+set(THOR_LINK_LIBS_DBG
     "libstm32${STM32_FAMILY_LOWER}_hal_dbg.a"
     "libFreeRTOS_dbg.a"
     "liberpc_server_dbg.a"
->)
-target_link_libraries(${PROJECT_NAME} $<$<CONFIG:RELEASE>: 
+)
+set_property(GLOBAL PROPERTY THOR_LINK_LIBS_DBG ${THOR_LINK_LIBS_DBG})
+
+set(THOR_LINK_LIBS_REL
     "libstm32${STM32_FAMILY_LOWER}_hal_rel.a"
     "libFreeRTOS_rel.a"
     "liberpc_server_rel.a"
->)
+)
+set_property(GLOBAL PROPERTY THOR_LINK_LIBS_REL ${THOR_LINK_LIBS_REL})
+
+target_link_libraries(${PROJECT_NAME} $<$<CONFIG:DEBUG>: ${THOR_LINK_LIBS_DBG}>)
+target_link_libraries(${PROJECT_NAME} $<$<CONFIG:RELEASE>: ${THOR_LINK_LIBS_REL}>)

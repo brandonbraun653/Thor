@@ -187,6 +187,11 @@ namespace Thor
 					return GPIOK;
 					break;
 				#endif
+
+				/* If we get here, something is wrong */
+				default:
+					return GPIOA;
+					break;
 				};
 			}
 
@@ -268,6 +273,10 @@ namespace Thor
 					break;
 				case Chimera::GPIO::Mode::ANALOG:
 					return Thor::Peripheral::GPIO::PinMode::ANALOG;
+					break;
+
+				default:
+					return Thor::Peripheral::GPIO::PinMode::INPUT;
 					break;
 				};
 			}

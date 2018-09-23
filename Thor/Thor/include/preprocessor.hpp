@@ -19,7 +19,9 @@
 *-------------------------------------------*/
 /* Chimera Files */
 #if __has_include("Chimera/chimera.hpp")
-#define USING_CHIMERA
+    #ifndef USING_CHIMERA
+        #define USING_CHIMERA
+    #endif
 #endif
 
 /* STM32 Files */
