@@ -598,7 +598,7 @@ namespace Thor
 						}
 
 						/* Buffer the new data */
-						if (rxMode == INTERRUPT && (asyncRXDataSize < UART_QUEUE_BUFFER_SIZE))
+						if (rxMode == Modes::INTERRUPT && (asyncRXDataSize < UART_QUEUE_BUFFER_SIZE))
 						{
 							RX_Queue[RXQueueIdx][asyncRXDataSize] = (uint8_t)(uart_handle.Instance->RDR & (uint8_t)0xFF);
 							asyncRXDataSize += 1u;
@@ -623,7 +623,7 @@ namespace Thor
 				/* RX Complete */
 				if (RX_ASYNC && RX_LINE_IDLE_EN && RX_LINE_IDLE)
 				{
-					if (rxMode == INTERRUPT)
+					if (rxMode == Modes::INTERRUPT)
 					{
 						UART_DisableIT_IDLE(&uart_handle);
 
@@ -642,7 +642,7 @@ namespace Thor
 						 * due to the asynchronous nature of operation. */
 						HAL_UART_RxCpltCallback(&uart_handle);
 					}
-					else if (rxMode == DMA)
+					else if (rxMode == Modes::DMA)
 					{
 						auto num_received = (size_t)(uart_handle.RxXferSize - uart_handle.hdmarx->Instance->NDTR);
 

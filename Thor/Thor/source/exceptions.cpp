@@ -34,6 +34,7 @@ extern "C" {
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 	void HardFault_HandlerC(unsigned long *hardfault_args) {
+		#if defined(TARGET_STM32F4)
 		volatile unsigned long stacked_r0;				// General Purpose Register
 		volatile unsigned long stacked_r1;				// General Purpose Register
 		volatile unsigned long stacked_r2;				// General Purpose Register
@@ -57,6 +58,7 @@ extern "C" {
 		stacked_lr = ((unsigned long)hardfault_args[5]);
 		stacked_pc = ((unsigned long)hardfault_args[6]);
 		stacked_psr = ((unsigned long)hardfault_args[7]);
+		#endif
 
 
 		__asm("BKPT #0\n"); // Break into the debugger
