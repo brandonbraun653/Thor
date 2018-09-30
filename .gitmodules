@@ -10,3 +10,6 @@
 [submodule "Thor/lib/stm32hal_f4"]
 	path = Thor/lib/stm32hal_f4
 	url = git@github.com:brandonbraun653/STM32HAL_F4.git
+[submodule "stm32-cmake"]
+	path = stm32-cmake
+	url = git@github.com:brandonbraun653/stm32-cmake.git

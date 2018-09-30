@@ -1,158 +1,187 @@
 cmake_minimum_required(VERSION 3.12.2)
-set_property(GLOBAL PROPERTY USING_THOR "TRUE")
 
-set(THOR_ROOT "${CMAKE_CURRENT_LIST_DIR}")
+# TEMP VARS FOR TESTING
+set(STM32_CHIP "stm32f446xx")
+# TEMP VARS FOR TESTING
 
 # --------------------------------------
-# Identify the location of the cmake tools directory
+# Properties for this file
 # --------------------------------------
-set_property(GLOBAL PROPERTY STM32_CMAKE_TOOLS_DIR "${THOR_ROOT}/cmake")
-set(STM32_CMAKE_TOOLS_DIR "${THOR_ROOT}/cmake")
+set(THOR_VERSION "1.0")
+set(PRJ_ROOT "${CMAKE_CURRENT_LIST_DIR}")
 
+# --------------------------------------
+# Pull the STM32 toolchain and some needed functions
+# --------------------------------------
+include("${PRJ_ROOT}/cmake/thor.cmake")
+include("${PRJ_ROOT}/stm32-cmake/cmake/toolchain.cmake")
+include("${PRJ_ROOT}/stm32-cmake/cmake/gcc_stm32.cmake")
 
-# Assign the Thor toolchain file if one isn't passed to the command line
-if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    message(STATUS "Setting toolchain file")
-    set(CMAKE_TOOLCHAIN_FILE "${STM32_CMAKE_TOOLS_DIR}/toolchain.cmake")
+# --------------------------------------
+# Define the installation directory based on the STM32 Family
+# --------------------------------------
+set(CMAKE_MODULE_PATH 
+    "C:/CMakeModules/freertos/10.0.0/STM32F4"
+    "C:/CMakeModules/stm32hal_f4/1.21.0"
+)
+
+if(NOT INSTALL_CMAKE_DIR)
+    if(WIN32)
+        set(INSTALL_CMAKE_DIR "C:/CMakeModules/thor/${THOR_VERSION}/STM32${STM32_FAMILY}")
+    elseif(UNIX)
+        set(INSTALL_CMAKE_DIR "/home/$ENV{USER}/CMakeModules/thor/${THOR_VERSION}/STM32${STM32_FAMILY}")
+    else()
+        message(WARNING "No install directory is set! You will be able to build locally but not install.")
+    endif()
 endif()
 
 # --------------------------------------
-# STM32 Resources
-# --------------------------------------
-include("${STM32_CMAKE_TOOLS_DIR}/gcc_stm32.cmake")
-STM32_VALIDATE_DEVICE()
-
-# Find and include the correct HAL CMakeLists.txt file
-string(TOLOWER ${STM32_FAMILY} STM32_FAMILY_LOWER)
-include("${THOR_ROOT}/Thor/lib/stm32hal_${STM32_FAMILY_LOWER}/CMakeLists.txt")
-
-# Get a few properties set in the above file
-get_property(STM32_HAL_INC_DIRS GLOBAL PROPERTY STM32_HAL_INC_DIRS)
-get_property(STM32_COMPILER_OPTIONS GLOBAL PROPERTY STM32_COMPILER_OPTIONS)
-get_property(STM32_HAL_DEVICE_DEFINITION GLOBAL PROPERTY STM32_HAL_DEVICE_DEFINITION)
-
-# --------------------------------------
-# FreeRTOS Resources
-# --------------------------------------
-include("${THOR_ROOT}/Thor/lib/FreeRTOS/CMakeLists.txt")
-
-# --------------------------------------
-# Boost Resources
-# --------------------------------------
 # Give a hint to the find_package module on where boost will lie
 # This would be a directory that contains a folder named something like "boost_1_68_0"
+# --------------------------------------
 if("$ENV{BOOST_ROOT}" STREQUAL "")
     message(FATAL_ERROR "Could not find BOOST_ROOT environment variable!")
 else()
     set(BOOST_ROOT $ENV{BOOST_ROOT})
 endif()
 
-find_package(Boost)
+# --------------------------------------
+# Find several packages needed
+# --------------------------------------
+find_package(Boost REQUIRED)
+find_package("STM32${STM32_FAMILY}_HAL" REQUIRED)
+find_package(FreeRTOS REQUIRED)
+# find_package(FreeRTOS 10.0.0 REQUIRED COMPONENTS STM32F4)
+
 
 # --------------------------------------
-# Thor Resources [Depends on Boost, FreeRTOS, STM32HAL]
+# Define directories. These are relative to this file on purpose 
+# so that the install command can prepend the INSTALL_PREFIX to it. 
 # --------------------------------------
-# Add build specific definitions
-get_property(STM32_HAL_COMPILER_DEFINITIONS GLOBAL PROPERTY STM32_HAL_COMPILER_DEFINITIONS)
+set(THOR_REL_INC_DIR "Thor/Thor/include")
+set(THOR_REL_SRC_DIR "Thor/Thor/source")
 
-set(THOR_COMPILER_DEFINITIONS
-    -DUSING_FREERTOS 
-    -DUSE_FREERTOS 
-    -DEIGEN_INITIALIZE_MATRICES_BY_ZERO
-    ${STM32_HAL_COMPILER_DEFINITIONS}
-)
-
-if(USING_CHIMERA STREQUAL "TRUE")
-    set(THOR_COMPILER_DEFINITIONS ${THOR_COMPILER_DEFINITIONS} -DUSING_CHIMERA)
-    get_property(CHIMERA_HEADERS_DIR GLOBAL PROPERTY CHIMERA_HEADERS_DIR)
-endif()
-
-set(THOR_COMPILER_DEFINITIONS ${THOR_COMPILER_DEFINITIONS} $<$<CONFIG:DEBUG>: -DDEBUG=1 -DDEBUG_DEFAULT_INTERRUPT_HANDLERS>)
-set(THOR_COMPILER_DEFINITIONS ${THOR_COMPILER_DEFINITIONS} $<$<CONFIG:RELEASE>: -DNDEBUG=1 -DRELEASE=1 -DEIGEN_NO_DEBUG>)
-set_property(GLOBAL PROPERTY THOR_COMPILER_DEFINITIONS "${THOR_COMPILER_DEFINITIONS}")
-
-# Compiler Options
-set(THOR_COMPILER_OPTIONS ${STM32_COMPILER_OPTIONS} --std=gnu++11 -fexceptions)
-set_property(GLOBAL PROPERTY THOR_COMPILER_OPTIONS "${THOR_COMPILER_OPTIONS}")
-
-# Gather all the include directories and make them public. If Chimera isn't being used, the value
-# should simply expand into nothing.
-set(THOR_INC_DIRS 
-    "${THOR_ROOT}/Thor" 
-    ${STM32_HAL_INC_DIRS} 
-    ${FREERTOS_INC_DIRS} 
-    ${Boost_INCLUDE_DIR}
-    ${CHIMERA_HEADERS_DIR}
-)
-set_property(GLOBAL PROPERTY THOR_INC_DIRS "${THOR_INC_DIRS}")
-
-# Assign the source files
+# --------------------------------------
+# Grab all the needed .cpp files. These are used for the compiler to build 
+# all the supported static libraries.
+# --------------------------------------
 set(THOR_SRC_FILES 
-    "${THOR_ROOT}/Thor/Thor/source/clock.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/core.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/defaults.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/definitions.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/exceptions.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/exti.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/flags.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/gdb.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/gpio.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/i2c.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/interrupt.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/mem.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/nucleo.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/print.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/pwm.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/ringbuffer.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/rpc.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/serial.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/spi.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/thor.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/threads.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/timer.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/uart.cpp"
-    "${THOR_ROOT}/Thor/Thor/source/usart.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/clock.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/core.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/defaults.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/definitions.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/exceptions.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/exti.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/flags.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/gdb.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/gpio.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/i2c.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/interrupt.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/mem.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/nucleo.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/print.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/pwm.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/ringbuffer.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/rpc.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/serial.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/spi.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/thor.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/threads.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/timer.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/uart.cpp"
+    "${PRJ_ROOT}/${THOR_REL_SRC_DIR}/usart.cpp"
+)
+
+# --------------------------------------
+# Grab all the needed .hpp files. This is for the purpose of installing all the 
+# targets into the INSTALL_CMAKE_DIR and need to be relative paths.
+# --------------------------------------
+set(THOR_INC_FILES
+    "${THOR_REL_INC_DIR}/clock.hpp"
+    "${THOR_REL_INC_DIR}/config.hpp"
+    "${THOR_REL_INC_DIR}/core.hpp"
+    "${THOR_REL_INC_DIR}/defaults.hpp"
+    "${THOR_REL_INC_DIR}/definitions.hpp"
+    "${THOR_REL_INC_DIR}/exceptions.hpp"
+    "${THOR_REL_INC_DIR}/exti.hpp"
+    "${THOR_REL_INC_DIR}/flags.hpp"
+    "${THOR_REL_INC_DIR}/gdb.hpp"
+    "${THOR_REL_INC_DIR}/gpio.hpp"
+    "${THOR_REL_INC_DIR}/headers.hpp"
+    "${THOR_REL_INC_DIR}/i2c.hpp"
+    "${THOR_REL_INC_DIR}/interrupt.hpp"
+    "${THOR_REL_INC_DIR}/macro.hpp"
+    "${THOR_REL_INC_DIR}/mem.hpp"
+    "${THOR_REL_INC_DIR}/nucleo.hpp"
+    "${THOR_REL_INC_DIR}/preprocessor.hpp"
+    "${THOR_REL_INC_DIR}/print.hpp"
+    "${THOR_REL_INC_DIR}/pwm.hpp"
+    "${THOR_REL_INC_DIR}/ringbuffer.hpp"
+    "${THOR_REL_INC_DIR}/rpc.hpp"
+    "${THOR_REL_INC_DIR}/serial.hpp"
+    "${THOR_REL_INC_DIR}/spi.hpp"
+    "${THOR_REL_INC_DIR}/system.hpp"
+    "${THOR_REL_INC_DIR}/thor.hpp"
+    "${THOR_REL_INC_DIR}/threads.hpp"
+    "${THOR_REL_INC_DIR}/timer.hpp"
+    "${THOR_REL_INC_DIR}/types.hpp"
+    "${THOR_REL_INC_DIR}/uart.hpp"
+    "${THOR_REL_INC_DIR}/usart.hpp"
+    "${THOR_REL_INC_DIR}/utilities.hpp"
 )
 
 # --------------------------------------
 # eRPC Resources [Depends on Thor]
 # --------------------------------------
-include("${THOR_ROOT}/Thor/lib/erpc/CMakeLists.txt")
+#include("${PRJ_ROOT}/Thor/lib/erpc/CMakeLists.txt")
+
+# --------------------------------------
+# Thor Resources [Depends on Boost, FreeRTOS, STM32HAL]
+# --------------------------------------
+
+# This is for local builds
+set(THOR_BUILD_INC_DIRS 
+    "${PRJ_ROOT}/Thor"
+    "${Boost_INCLUDE_DIR}"
+)
+
+# These are for the install command
+set(THOR_INSTALL_INC_DIRS
+    "${INSTALL_CMAKE_DIR}/Thor"
+    "${Boost_INCLUDE_DIR}"
+)
 
 # --------------------------------------
 # Thor Project
 # --------------------------------------
-project(thor)
+project(THOR VERSION ${THOR_VERSION} LANGUAGES CXX)
 add_library(${PROJECT_NAME} ${THOR_SRC_FILES})
 
-# Force the link language to C++
-set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+if(USING_CHIMERA)
+    #define_property(TARGET ${PROJECT_NAME} PROPERTY FEATURE_CHIMERA)
+    set_property(TARGET ${PROJECT_NAME} PROPERTY FEATURE_CHIMERA "ON")
+endif()
 
 # Include Directories
-target_include_directories(${PROJECT_NAME} PUBLIC ${THOR_INC_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${THOR_BUILD_INC_DIRS})
+target_include_directories(${PROJECT_NAME} INTERFACE
+    "$<BUILD_INTERFACE:${THOR_BUILD_INC_DIRS}>"
+    "$<INSTALL_INTERFACE:${THOR_INSTALL_INC_DIRS}>"
+)
 
-# Compiler Definitions 
-target_compile_definitions(${PROJECT_NAME} PUBLIC ${THOR_COMPILER_DEFINITIONS})
+# Compiler Definitions
+SET_THOR_COMPILER_DEFINITIONS(${PROJECT_NAME})
 
 # Compiler Options
-target_compile_options(${PROJECT_NAME} PRIVATE ${THOR_COMPILER_OPTIONS})
-target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:DEBUG>:-ggdb -Og>)
-target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:RELEASE>:-O3>)
+#SET_THOR_COMPILER_OPTIONS(${PROJECT_NAME})
+target_compile_options(${PROJECT_NAME} PUBLIC -fexceptions)
+target_compile_options(${PROJECT_NAME} PUBLIC $<$<CONFIG:DEBUG>:-ggdb -Og>)
+target_compile_options(${PROJECT_NAME} PUBLIC $<$<CONFIG:RELEASE>:-O3>)
+target_compile_options(${PROJECT_NAME} PRIVATE --std=gnu++11)
 
 # Linked Libraries
-set(THOR_LINK_LIBS_DBG
-    "libstm32${STM32_FAMILY_LOWER}_hal_dbg.a"
-    "libFreeRTOS_dbg.a"
-    "liberpc_server_dbg.a"
-)
-set_property(GLOBAL PROPERTY THOR_LINK_LIBS_DBG ${THOR_LINK_LIBS_DBG})
+target_link_libraries(${PROJECT_NAME} stm32f446xx FreeRTOS)
 
-set(THOR_LINK_LIBS_REL
-    "libstm32${STM32_FAMILY_LOWER}_hal_rel.a"
-    "libFreeRTOS_rel.a"
-    "liberpc_server_rel.a"
-)
-set_property(GLOBAL PROPERTY THOR_LINK_LIBS_REL ${THOR_LINK_LIBS_REL})
+# get_target_property(testvar ${PROJECT_NAME} COMPILE_DEFINITIONS)
+# message(STATUS "compile defs: ${testvar}")
 
-target_link_libraries(${PROJECT_NAME} $<$<CONFIG:DEBUG>: ${THOR_LINK_LIBS_DBG}>)
-target_link_libraries(${PROJECT_NAME} $<$<CONFIG:RELEASE>: ${THOR_LINK_LIBS_REL}>)
