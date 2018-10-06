@@ -21,7 +21,7 @@ include("${PRJ_ROOT}/stm32-cmake/cmake/gcc_stm32.cmake")
 # Define the installation directory based on the STM32 Family
 # --------------------------------------
 set(CMAKE_MODULE_PATH 
-    "C:/CMakeModules/freertos/10.0.0/STM32F4"
+    "C:/CMakeModules"
     "C:/CMakeModules/stm32hal_f4/1.21.0"
 )
 
@@ -50,9 +50,7 @@ endif()
 # --------------------------------------
 find_package(Boost REQUIRED)
 find_package("STM32${STM32_FAMILY}_HAL" REQUIRED)
-find_package(FreeRTOS REQUIRED)
-# find_package(FreeRTOS 10.0.0 REQUIRED COMPONENTS STM32F4)
-
+find_package(FreeRTOS 10.0.0 REQUIRED COMPONENTS "STM32${STM32_FAMILY}")
 
 # --------------------------------------
 # Define directories. These are relative to this file on purpose 
@@ -131,14 +129,8 @@ set(THOR_INC_FILES
 )
 
 # --------------------------------------
-# eRPC Resources [Depends on Thor]
-# --------------------------------------
-#include("${PRJ_ROOT}/Thor/lib/erpc/CMakeLists.txt")
-
-# --------------------------------------
 # Thor Resources [Depends on Boost, FreeRTOS, STM32HAL]
 # --------------------------------------
-
 # This is for local builds
 set(THOR_BUILD_INC_DIRS 
     "${PRJ_ROOT}/Thor"
@@ -158,7 +150,6 @@ project(THOR VERSION ${THOR_VERSION} LANGUAGES CXX)
 add_library(${PROJECT_NAME} ${THOR_SRC_FILES})
 
 if(USING_CHIMERA)
-    #define_property(TARGET ${PROJECT_NAME} PROPERTY FEATURE_CHIMERA)
     set_property(TARGET ${PROJECT_NAME} PROPERTY FEATURE_CHIMERA "ON")
 endif()
 
@@ -180,7 +171,7 @@ target_compile_options(${PROJECT_NAME} PUBLIC $<$<CONFIG:RELEASE>:-O3>)
 target_compile_options(${PROJECT_NAME} PRIVATE --std=gnu++11)
 
 # Linked Libraries
-target_link_libraries(${PROJECT_NAME} stm32f446xx FreeRTOS)
+target_link_libraries(${PROJECT_NAME} stm32f446xx FreeRTOS_STM32F4)
 
 # get_target_property(testvar ${PROJECT_NAME} COMPILE_DEFINITIONS)
 # message(STATUS "compile defs: ${testvar}")
