@@ -175,7 +175,7 @@ namespace Thor
 			{
 				USART_GPIO_Init();
 
-				usartHandle.Init.BaudRate = baud;
+				usartHandle.Init.BaudRate = static_cast<uint32_t>(baud);
 				USART_Init();
 
 				setMode(SubPeripheral::TX, tx_mode);
@@ -328,7 +328,7 @@ namespace Thor
 					}
 					else
 					{
-						statusCode = Status::PERIPH_NOT_READY;
+						statusCode = Status::PERIPH_BUSY;
 
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(usartSemphrs[usartChannel], NULL) != pdPASS)
@@ -355,7 +355,7 @@ namespace Thor
 					}
 					else
 					{
-						statusCode = Status::PERIPH_NOT_READY;
+						statusCode = Status::PERIPH_BUSY;
 
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(usartSemphrs[usartChannel], NULL) != pdPASS)
@@ -722,11 +722,11 @@ namespace Thor
 
 			void USARTClass::USART_GPIO_Init()
 			{
-				/* These should be configured as ALT_PP with PULLUP in order to work properly. Ignore srl_cfg settings. */
+				/* These should be configured as Thor::Definitions::GPIO::PinMode::ALT_PP with Thor::Definitions::GPIO::PinPull::PULLUP in order to work properly. Ignore srl_cfg settings. */
 				if (tx_pin && rx_pin)
 				{
-					tx_pin->mode(ALT_PP, PULLUP);
-					rx_pin->mode(ALT_PP, PULLUP);
+					tx_pin->mode(Thor::Definitions::GPIO::PinMode::ALT_PP, Thor::Definitions::GPIO::PinPull::PULLUP);
+					rx_pin->mode(Thor::Definitions::GPIO::PinMode::ALT_PP, Thor::Definitions::GPIO::PinPull::PULLUP);
 					USARTPeriphState.gpio_enabled = true;
 				}
 				else

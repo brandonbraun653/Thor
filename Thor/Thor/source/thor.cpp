@@ -32,7 +32,7 @@ void ThorInit()
 	setupEXTI0_Interrupt();
 	#endif
 
-	#if USE_SERIAL_DEBUG_OUTPUT && !defined(USING_VGDB_PROFILER)
+	#if USE_SERIAL_DEBUG_OUTPUT && !defined(USING_VISUALGDB_PROFILER)
 	setupSTDIO();
 	#endif
 }

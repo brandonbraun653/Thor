@@ -29,7 +29,7 @@ std::string float2String(float number)
  *	If still getting build errors related to this section, make sure that "Implementations for _sbrk(), ect" under
  *	the VGDB Embedded Project Settings tab is set to "Minimal (no semihosting)". 
  */
-#if USE_SERIAL_DEBUG_OUTPUT  && !defined(USING_VGDB_PROFILER)
+#if USE_SERIAL_DEBUG_OUTPUT  && !defined(USING_VISUALGDB_PROFILER)
 #include <Thor/include/serial.hpp>
 using namespace Thor::Peripheral::Serial;
 using namespace Thor::Definitions::Serial;
@@ -58,7 +58,6 @@ void setupSTDIO()
 		INSERT_BREAKPOINT;
 	}	
 }
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -89,4 +88,4 @@ extern "C" {
 }
 #endif
 
-#endif /* !USE_SERIAL_DEBUG_OUTPUT */
+#endif

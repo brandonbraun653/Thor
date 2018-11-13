@@ -49,7 +49,7 @@ namespace Thor
 				 *	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				 *			will return a code from Thor::Peripheral::Serial::Status
 				 **/
-				Status begin(const BaudRate& baud = SERIAL_BAUD_115200,
+                Status begin(const BaudRate& baud = BaudRate::SERIAL_BAUD_115200,
 					const Modes& tx_mode = Modes::BLOCKING,
 					const Modes& rx_mode = Modes::BLOCKING);
 				
@@ -151,7 +151,7 @@ namespace Thor
 
 				/* Specialized functions used only when interfacing with the Chimera HAL and are not intended be called by the user. */
 				#if defined(USING_CHIMERA)
-				Chimera::Serial::Status cbegin(uint32_t baud = Chimera::Serial::BaudRate::SERIAL_BAUD_115200,
+				Chimera::Serial::Status cbegin(uint32_t baud = static_cast<uint32_t>(Chimera::Serial::BaudRate::SERIAL_BAUD_115200),
 												Chimera::Serial::Modes tx_mode = Chimera::Serial::Modes::BLOCKING,
 												Chimera::Serial::Modes rx_mode = Chimera::Serial::Modes::BLOCKING);
 

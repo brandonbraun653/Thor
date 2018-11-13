@@ -224,7 +224,7 @@ namespace Thor
 			{
 				UART_GPIO_Init();
 
-				uart_handle.Init.BaudRate = baud;
+				uart_handle.Init.BaudRate = static_cast<uint32_t>(baud);
 				UART_Init();
 
 				setMode(SubPeripheral::TX, tx_mode);
@@ -392,7 +392,7 @@ namespace Thor
 					}
 					else
 					{
-						statusCode = Status::PERIPH_NOT_READY;
+						statusCode = Status::PERIPH_BUSY;
 
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(uartSemphrs[uart_channel], NULL) != pdPASS)
@@ -419,7 +419,7 @@ namespace Thor
 					}
 					else
 					{
-						statusCode = Status::PERIPH_NOT_READY;
+						statusCode = Status::PERIPH_BUSY;
 
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(uartSemphrs[uart_channel], NULL) != pdPASS)
