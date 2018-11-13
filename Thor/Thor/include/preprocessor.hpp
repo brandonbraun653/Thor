@@ -71,6 +71,9 @@
 /*-------------------------------------------
 * Check for needed preprocessor definitions
 *-------------------------------------------*/
+
+//TODO: Add something about disabling memory leak detection with CppUTest
+
 /* Allows some of the libraries to take advantage of the low level STM32
 * driver definitions and functions. */
 #ifndef USE_FULL_LL_DRIVER

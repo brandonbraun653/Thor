@@ -89,7 +89,7 @@ namespace Thor
 				/** A factory method to create a new SPIClass object 
 				 *	
 				 *	This method intentionally replaces the typical constructor for the purpose of allowing
-				 *	the SPI ISR handlers to deduce at runtim which class generated the interrupt. The new 
+				 *	the SPI ISR handlers to deduce at runtime which class generated the interrupt. The new 
 				 *	object is internally registered with a static vector that keeps track of this.
 				 *	
 				 *	@param[in] channel Hardware SPI peripheral channel number (i.e. 1 for SPI1, 2 for SPI2, etc)
