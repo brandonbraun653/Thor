@@ -67,7 +67,7 @@ namespace Thor
 				 *	@return	Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				 *			will return a code from Thor::Peripheral::Serial::Status
 				 **/
-				Status begin(const BaudRate& baud = SERIAL_BAUD_115200,
+                Status begin(const BaudRate& baud = BaudRate::SERIAL_BAUD_115200,
 					const Modes& tx_mode = Modes::BLOCKING,
 					const Modes& rx_mode = Modes::BLOCKING) override;
 
