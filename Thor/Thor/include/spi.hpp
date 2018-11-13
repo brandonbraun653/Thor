@@ -43,50 +43,144 @@ namespace Thor
 
 				void begin(Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::NO_OPTIONS);
 
-				Thor::Definitions::Status write(uint8_t* data_in, size_t length = 0, const bool& nssDisableAfterTX = true);
-				Thor::Definitions::Status write(uint8_t* data_in, uint8_t* data_out, size_t length = 0, const bool& nssDisableAfterTX = true);
+				/**
+				 * @brief Writes a buffer of data
+				 * 
+				 * @param[in] 	data_in 			Input data buffer that will be written to MOSI
+				 * @param[in] 	length 				Number of bytes to be transfered
+				 * @param[in]	nssDisableAfterTX 	Optionally disable the chip select line after the transmition is complete
+				 * @return Thor::Definitions::Status 
+				 */
+				Thor::Definitions::Status write(uint8_t * data_in, size_t length = 0, const bool& nssDisableAfterTX = true);
+				
+				/**
+				 * @brief Simultaneously writes and reads data
+				 * 
+				 * @param[in] 	data_in				Data buffer that will be written to MOSI
+				 * @param[out] 	data_out 			Data buffer that will have MISO written to it
+				 * @param[in] 	length 				Number of bytes to be transfered
+				 * @param[in] 	nssDisableAfterTX 	Optionally disable the chip select line after the transmition is complete
+				 * @return Thor::Definitions::Status 
+				 */
+				Thor::Definitions::Status write(uint8_t * data_in, uint8_t * data_out, size_t length = 0, const bool& nssDisableAfterTX = true);
 
-
+				/**
+				 * @brief De-initializes the SPI peripheral
+				 * 
+				 * @return void
+				 */
 				void end();
+
+				/**
+				 * @brief Writes the device slave select line high or low
+				 * 
+				 * @param[in]	state 	The state to drive the chip select line to
+				 * @return void
+				 */
 				void writeSS(Thor::Definitions::GPIO::LogicLevel state);
+
+				/**
+				 * @brief Attaches an external pin to be used as the slave select
+				 * 
+				 * @param[in] 	slave_select 	Reference to the initialized GPIO pin
+				 * @return void
+				 */
 				void attachPin(boost::shared_ptr<Thor::Peripheral::GPIO::GPIOClass> slave_select);
+
+				/**
+				 * @brief Removes any previous pin that was attached as the slave select
+				 * 
+				 * @return void
+				 */
 				void detachPin();
 
+				/**
+				 * @brief Sets the chip select behavior 
+				 * 
+				 * @param[in]	ss_mode 	Chip select mode
+				 * @return void
+				 */
 				void setSSMode(Thor::Definitions::SPI::Options ss_mode);
+
+				/**
+				 * @brief Assigns custom SPI bus settings
+				 * 
+				 * @param[in]	settings 	User SPI configuration settings
+				 * @return void
+				 */
 				void attachSettings(SPI_InitTypeDef& settings);
+
+				/**
+				 * @brief Get the current SPI settings configuration
+				 * 
+				 * @return SPI_InitTypeDef 
+				 */
 				SPI_InitTypeDef getSettings();
+
+				/**
+				 * @brief Reinitializes the SPI hardware with the current settings
+				 * 
+				 * @return void
+				 */
 				void reInitialize();
 				
-				/** Place the specified peripheral into a given mode
-				 *	@param[in] periph	Explicitly states which peripheral subsystem (TX or RX) to set from Thor::Peripheral::SPI::SubPeripheral
-				 *	@param[in] mode		The corresponding mode for the peripheral to enter, from Thor::Peripheral::SPI::Modes
+				/** 
+				 * 	@brief Place the specified peripheral into a given mode
+				 * 
+				 *	@param[in]	periph	Explicitly state which peripheral subsystem (TX or RX) to set from Thor::Peripheral::SPI::SubPeripheral
+				 *	@param[in] 	mode	The corresponding mode for the peripheral to enter, from Thor::Peripheral::SPI::Modes
 				 *	@return Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				 *			will return a code from Thor::Peripheral::SPI::Status
 				 **/
 				Thor::Definitions::Status setMode(const SubPeripheral& periph, const Modes& mode);
 
-				/** Updates the clock frequency of an already initialized SPI object
-				 *	@param[in] freq	Desired clock frequency in Hz
+				/** 
+				 *  @brief Updates the clock frequency of an already initialized SPI object
+				 * 
+				 *	@param[in] freq		Desired clock frequency in Hz
 				 *	@return Status code indicating peripheral state. Will read 'PERIPH_OK' if everything is fine. Otherwise it
 				 *			will return a code from Thor::Peripheral::SPI::Status
 				 **/
 				Thor::Definitions::Status updateClockFrequency(uint32_t freq);
 
-				/*-------------------------------
-				* Interrupt Handlers
-				*------------------------------*/
+				/**
+				 * @brief Normal interrupt based ISR handler
+				 * 
+				 * @return void
+				 */
 				void SPI_IRQHandler();
+
+				/**
+				 * @brief DMA TX ISR handler
+				 * 
+				 * @return void
+				 */
 				void SPI_IRQHandler_TXDMA();
+
+				/**
+				 * @brief DMA RX ISR handler
+				 * 
+				 * @return void
+				 */
 				void SPI_IRQHandler_RXDMA();
 				
 				static constexpr bool usesBoost = true;
 				
 			private:
-				/** The real constructor used by SPIClass::create */
+				/**
+				 *  @brief Construct a new SPIClass object
+				 * 	
+				 * 	This is kept private so users properly manage the class object with 
+				 *  shared_ptr instances. 
+				 * 	The public constructor is Thor::Peripheral::SPI::SPIClass::create.
+				 *  
+				 *  @param[in]	channel 	Which hardware peripheral to control with the class
+				 */
 				SPIClass(const int channel);
 				
 			public:
-				/** A factory method to create a new SPIClass object 
+				/** 
+				 *  @brief A factory method to create a new SPIClass object 
 				 *	
 				 *	This method intentionally replaces the typical constructor for the purpose of allowing
 				 *	the SPI ISR handlers to deduce at runtime which class generated the interrupt. The new 
