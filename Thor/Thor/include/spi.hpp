@@ -348,7 +348,7 @@ namespace Thor
 
             private:
                 int channel;
-                boost::shared_ptr<SPIClass> spi;
+                SPIClass_sPtr spi;
             };
 		}
 	}
