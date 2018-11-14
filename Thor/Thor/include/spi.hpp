@@ -13,12 +13,6 @@
 #include <boost/move/unique_ptr.hpp>
 #include <boost/circular_buffer.hpp>
 
-/* FreeRTOS Includes */
-#if defined(USING_FREERTOS)
-#include "FreeRTOS.h"
-#include "semphr.h"
-#endif
-
 /* Thor Includes */
 #include <Thor/include/config.hpp>
 #include <Thor/include/definitions.hpp>
@@ -28,6 +22,16 @@
 #include <Thor/include/ringbuffer.hpp>
 #include <Thor/include/exceptions.hpp>
 
+/* FreeRTOS Includes */
+#if defined(USING_FREERTOS)
+#include "FreeRTOS.h"
+#include "semphr.h"
+#endif
+
+/* Chimera Includes */
+#if defined(USING_CHIMERA)
+#include <Chimera/interface.hpp>
+#endif
 
 namespace Thor
 {
@@ -143,6 +147,8 @@ namespace Thor
 				 **/
 				Thor::Definitions::Status updateClockFrequency(uint32_t freq);
 
+                uint32_t getClockFrequency();
+
 				/**
 				 * @brief Normal interrupt based ISR handler
 				 * 
@@ -163,8 +169,6 @@ namespace Thor
 				 * @return void
 				 */
 				void SPI_IRQHandler_RXDMA();
-				
-				static constexpr bool usesBoost = true;
 				
 			private:
 				/**
@@ -216,15 +220,7 @@ namespace Thor
 
 				
 
-				#ifdef USING_CHIMERA
-				Chimera::SPI::Status cbegin(const Chimera::SPI::Setup& setupStruct);
-				Chimera::SPI::Status cwrite(uint8_t* in, size_t length, const bool& nssDisableAfterTX);
-				Chimera::SPI::Status cwrite(uint8_t* in, uint8_t* out, size_t length, const bool& nssDisableAfterTX);
-				Chimera::SPI::Status csetMode(Chimera::SPI::SubPeripheral periph, Chimera::SPI::SubPeripheralMode mode);
-				Chimera::SPI::Status cupdateClockFrequency(uint32_t freq);
-				uint32_t cgetClockFrequency();
-				void cwriteSS(Chimera::GPIO::State value);
-				#endif
+				
 				
 				#ifdef USING_FREERTOS
 				void attachThreadTrigger(Thor::Definitions::Interrupt::Trigger trig, SemaphoreHandle_t* semphr);
@@ -336,6 +332,24 @@ namespace Thor
 			typedef boost::shared_ptr<SPIClass> SPIClass_sPtr;
 			typedef boost::movelib::unique_ptr<SPIClass> SPIClass_uPtr;
 
+            class ChimeraSPI : public Chimera::SPI::Interface
+            {
+            public:
+                Chimera::SPI::Status begin(const Chimera::SPI::Setup& setupStruct) override;
+                Chimera::SPI::Status write(uint8_t* data_in, size_t length, const bool& ssDisableAfterTX = true) override;
+                Chimera::SPI::Status write(uint8_t* data_in, uint8_t* data_out, size_t length, const bool& ssDisableAfterTX = true) override;
+                Chimera::SPI::Status setMode(Chimera::SPI::SubPeripheral periph, Chimera::SPI::SubPeripheralMode mode) override;
+                Chimera::SPI::Status updateClockFrequency(uint32_t freq) override;
+                uint32_t getClockFrequency() override;
+                void writeSS(Chimera::GPIO::State value) override;
+
+                ChimeraSPI(const int& channel);
+                ~ChimeraSPI() = default;
+
+            private:
+                int channel;
+                boost::shared_ptr<SPIClass> spi;
+            };
 		}
 	}
 }

@@ -420,50 +420,6 @@ namespace Thor
 	{
 		namespace SPI
 		{
-			#ifdef USING_CHIMERA
-			ChimStatus SPIClass::cbegin(const ChimSetup& setupStruct)
-			{
-				SPI_InitTypeDef config = chimeraSetupToThor(spi_channel, setupStruct);
-				attachSettings(config);
-				begin();
-
-				return thorStatusToChimera(Status::PERIPH_OK);
-			}
-
-			ChimStatus SPIClass::cwrite(uint8_t* in, size_t length, const bool& nssDisableAfterTX)
-			{
-				return thorStatusToChimera(write(in, length, nssDisableAfterTX));
-			}
-
-			ChimStatus SPIClass::cwrite(uint8_t* in, uint8_t* out, size_t length, const bool& nssDisableAfterTX)
-			{
-				return thorStatusToChimera(write(in, out, length, nssDisableAfterTX));
-			}
-
-			ChimStatus SPIClass::csetMode(ChimSubPeriph periph, ChimSubPeriphMode mode)
-			{
-				auto p = chimeraSubPeriphToThor(periph);
-				auto m = chimeraSubPeriphModeToThor(mode);
-
-				return thorStatusToChimera(setMode(p, m));
-			}
-
-			ChimStatus SPIClass::cupdateClockFrequency(uint32_t freq)
-			{
-				return thorStatusToChimera(updateClockFrequency(freq));
-			}
-
-			uint32_t SPIClass::cgetClockFrequency()
-			{
-				return getFreqFromBaudRatePrescaler(spi_channel, spi_handle.Init.BaudRatePrescaler);
-			}
-
-			void SPIClass::cwriteSS(Chimera::GPIO::State value)
-			{
-				writeSS(static_cast<LogicLevel>(value));
-			}
-			#endif
-			
 			#ifdef USING_FREERTOS
 			void SPIClass::attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr)
 			{
@@ -917,7 +873,12 @@ namespace Thor
 			}
 
 
-			bool SPIClass::txRxModesEqual(Modes mode)
+            uint32_t SPIClass::getClockFrequency()
+            {
+                return getFreqFromBaudRatePrescaler(spi_channel, spi_handle.Init.BaudRatePrescaler);
+            }
+
+            bool SPIClass::txRxModesEqual(Modes mode)
 			{
 				if ((txMode == mode) && (rxMode == mode))
 					return true;
@@ -1124,6 +1085,59 @@ namespace Thor
 				}
 
 			}
+
+
+            ChimeraSPI::ChimeraSPI(const int& channel)
+            {
+                this->channel = channel;
+                spi = SPIClass::create(channel);
+            }
+
+
+            Chimera::SPI::Status ChimeraSPI::begin(const Chimera::SPI::Setup& setupStruct)
+            {
+                SPI_InitTypeDef config = chimeraSetupToThor(channel, setupStruct);
+                spi->attachSettings(config);
+                spi->begin();
+
+                return thorStatusToChimera(Status::PERIPH_OK);
+            }
+
+            Chimera::SPI::Status ChimeraSPI::write(uint8_t* in, size_t length, const bool& nssDisableAfterTX)
+            {
+                return thorStatusToChimera(spi->write(in, length, nssDisableAfterTX));
+            }
+
+            Chimera::SPI::Status ChimeraSPI::write(uint8_t* in, uint8_t* out, size_t length, const bool& nssDisableAfterTX)
+            {
+                return thorStatusToChimera(spi->write(in, out, length, nssDisableAfterTX));
+            }
+
+            Chimera::SPI::Status ChimeraSPI::setMode(Chimera::SPI::SubPeripheral periph, Chimera::SPI::SubPeripheralMode mode)
+            {
+                auto p = chimeraSubPeriphToThor(periph);
+                auto m = chimeraSubPeriphModeToThor(mode);
+
+                return thorStatusToChimera(spi->setMode(p, m));
+            }
+
+            Chimera::SPI::Status ChimeraSPI::updateClockFrequency(uint32_t freq)
+            {
+                return thorStatusToChimera(spi->updateClockFrequency(freq));
+            }
+
+            uint32_t ChimeraSPI::getClockFrequency()
+            {
+                return spi->getClockFrequency();
+            }
+
+            void ChimeraSPI::writeSS(Chimera::GPIO::State value)
+            {
+                spi->writeSS(static_cast<LogicLevel>(value));
+            }
+
+
+
 		}
 	}
 }
