@@ -176,7 +176,7 @@ namespace Thor
 
               protected:
 
-                friend void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi);
+                friend void (::HAL_SPI_TxCpltCallback)(SPI_HandleTypeDef *hspi);
 
                 volatile bool tx_complete = true;
                 volatile bool rx_complete = true;
