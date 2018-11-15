@@ -33,6 +33,8 @@
 #include <Chimera/interface.hpp>
 #endif
 
+extern void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi);
+
 namespace Thor
 {
 	namespace Peripheral
@@ -43,32 +45,34 @@ namespace Thor
 			
 			class SPIClass
 			{
-			public:
+                
 
-				void begin(Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::NO_OPTIONS);
+              public:
+
+                void begin(Thor::Definitions::SPI::Options options = Thor::Definitions::SPI::NO_OPTIONS);
 
 				/**
 				 * @brief Writes a buffer of data
 				 * 
-				 * @param[in] 	data_in 			Input data buffer that will be written to MOSI
-				 * @param[in] 	length 				Number of bytes to be transfered
-				 * @param[in]	nssDisableAfterTX 	Optionally disable the chip select line after the transmition is complete
+				 * @param[in] 	txBuffer 		Input data buffer that will be written to MOSI
+				 * @param[in] 	length 			Number of bytes to be transfered
+				 * @param[in]	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
 				 * @return Thor::Definitions::Status 
 				 */
-				Thor::Definitions::Status write(uint8_t * data_in, size_t length = 0, const bool& nssDisableAfterTX = true);
-				
-				/**
+                Thor::Definitions::Status writeBytes(uint8_t *const txBuffer, size_t length = 0, const bool &autoDisableCS = true);
+
+                /**
 				 * @brief Simultaneously writes and reads data
 				 * 
-				 * @param[in] 	data_in				Data buffer that will be written to MOSI
-				 * @param[out] 	data_out 			Data buffer that will have MISO written to it
-				 * @param[in] 	length 				Number of bytes to be transfered
-				 * @param[in] 	nssDisableAfterTX 	Optionally disable the chip select line after the transmition is complete
+				 * @param[in] 	txBuffer	    Data buffer that will be written to MOSI
+				 * @param[out] 	rxBuffer 		Data buffer that will have MISO written to it
+				 * @param[in] 	length 			Number of bytes to be transfered
+				 * @param[in] 	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
 				 * @return Thor::Definitions::Status 
 				 */
-				Thor::Definitions::Status write(uint8_t * data_in, uint8_t * data_out, size_t length = 0, const bool& nssDisableAfterTX = true);
+                Thor::Definitions::Status readWriteBytes(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length = 0, const bool &autoDisableCS = true);
 
-				/**
+                /**
 				 * @brief De-initializes the SPI peripheral
 				 * 
 				 * @return void
@@ -81,7 +85,7 @@ namespace Thor
 				 * @param[in]	state 	The state to drive the chip select line to
 				 * @return void
 				 */
-				void writeSS(Thor::Definitions::GPIO::LogicLevel state);
+				void setChipSelect(Thor::Definitions::GPIO::LogicLevel state);
 
 				/**
 				 * @brief Attaches an external pin to be used as the slave select
@@ -169,9 +173,22 @@ namespace Thor
 				 * @return void
 				 */
 				void SPI_IRQHandler_RXDMA();
-				
-			private:
-				/**
+
+              protected:
+
+                friend void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi);
+
+                volatile bool tx_complete = true;
+                volatile bool rx_complete = true;
+
+                Thor::Definitions::Status transfer_blocking(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
+                
+                Thor::Definitions::Status transfer_interrupt(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
+                
+                Thor::Definitions::Status transfer_dma(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
+
+              private:
+                /**
 				 *  @brief Construct a new SPIClass object
 				 * 	
 				 * 	This is kept private so users properly manage the class object with 
@@ -180,9 +197,9 @@ namespace Thor
 				 *  
 				 *  @param[in]	channel 	Which hardware peripheral to control with the class
 				 */
-				SPIClass(const int channel);
-				
-			public:
+                SPIClass(const int channel);
+
+              public:
 				/** 
 				 *  @brief A factory method to create a new SPIClass object 
 				 *	
@@ -217,11 +234,6 @@ namespace Thor
 				size_t _rxbuffpcktlen[Thor::Definitions::SPI::SPI_BUFFER_SIZE];
 				SmartBuffer::RingBuffer<size_t>* rxBufferedPacketLengths;
 
-
-				
-
-				
-				
 				#ifdef USING_FREERTOS
 				void attachThreadTrigger(Thor::Definitions::Interrupt::Trigger trig, SemaphoreHandle_t* semphr);
 				void removeThreadTrigger(Thor::Definitions::Interrupt::Trigger trig);
@@ -288,8 +300,7 @@ namespace Thor
 				Thor::Definitions::SPI::Options SS_ActionAfterTX;
 				Thor::Definitions::SPI::Options slaveSelectControl = Thor::Definitions::SPI::Options::SS_AUTOMATIC_CONTROL;
 				
-				bool tx_complete = true;
-				bool rx_complete = true;
+				
 				bool RX_ASYNC;
 
 				SPI_HandleTypeDef spi_handle;
@@ -324,27 +335,52 @@ namespace Thor
 				void SPI_DMA_EnableInterrupts(const SubPeripheral& periph);
 				void SPI_DMA_DisableInterrupts(const SubPeripheral& periph);
 				
-				/*-------------------------------
-				* Utility Functions
-				*------------------------------*/
 				bool txRxModesEqual(Modes mode);
 			};
 			typedef boost::shared_ptr<SPIClass> SPIClass_sPtr;
 			typedef boost::movelib::unique_ptr<SPIClass> SPIClass_uPtr;
 
+
             class ChimeraSPI : public Chimera::SPI::Interface
             {
             public:
-                Chimera::SPI::Status begin(const Chimera::SPI::Setup& setupStruct) override;
-                Chimera::SPI::Status write(uint8_t* data_in, size_t length, const bool& ssDisableAfterTX = true) override;
-                Chimera::SPI::Status write(uint8_t* data_in, uint8_t* data_out, size_t length, const bool& ssDisableAfterTX = true) override;
-                Chimera::SPI::Status setMode(Chimera::SPI::SubPeripheral periph, Chimera::SPI::SubPeripheralMode mode) override;
-                Chimera::SPI::Status updateClockFrequency(uint32_t freq) override;
-                uint32_t getClockFrequency() override;
-                void writeSS(Chimera::GPIO::State value) override;
-
                 ChimeraSPI(const int& channel);
+
                 ~ChimeraSPI() = default;
+
+                Chimera::SPI::Status init(const Chimera::SPI::Setup& setupStruct) override;
+
+                Chimera::SPI::Status setChipSelect(Chimera::GPIO::State value) override;
+
+                Chimera::SPI::Status writeBytes(uint8_t * const txBuffer, size_t length, const bool & disableCS = true) override;
+
+                Chimera::SPI::Status readBytes(uint8_t * const rxBuffer, size_t length, const bool & disableCS = true) override;
+
+                Chimera::SPI::Status readWriteBytes(uint8_t * const txBuffer, uint8_t * const rxBuffer, size_t length, const bool& disableCS = true) override;
+
+                Chimera::SPI::Status setPeripheralMode(Chimera::SPI::SubPeripheral periph, Chimera::SPI::SubPeripheralMode mode) override;
+
+                Chimera::SPI::Status setClockFrequency(uint32_t freq) override;
+
+                Chimera::SPI::Status getClockFrequency(uint32_t * const freq) override;
+
+                Chimera::SPI::Status reserve(uint32_t timeout_ms) override;
+
+                Chimera::SPI::Status release(uint32_t timeout_ms) override;
+
+                Chimera::SPI::Status onWriteComplete(Chimera::void_func_void func) override;
+
+                Chimera::SPI::Status onReadComplete(Chimera::void_func_void func) override;
+
+                Chimera::SPI::Status onReadWriteComplete(Chimera::void_func_void func) override;
+
+                Chimera::SPI::Status onError(Chimera::void_func_uint32_t func) override;
+
+                #if defined(USING_FREERTOS)
+                Chimera::SPI::Status attachEventWakeup(Chimera::FreeRTOS::Event event, SemaphoreHandle_t *const semphr) override;
+
+                Chimera::SPI::Status removeEventWakeup(SemaphoreHandle_t *const semphr) override;
+                #endif
 
             private:
                 int channel;

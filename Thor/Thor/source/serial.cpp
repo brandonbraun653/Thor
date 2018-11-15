@@ -37,7 +37,7 @@ namespace Thor
 				case ThorStatus::PERIPH_LOCKED:							return ChimStatus::SERIAL_LOCKED;
 				case ThorStatus::PERIPH_NOT_INITIALIZED:				return ChimStatus::SERIAL_NOT_INITIALIZED;
 				case ThorStatus::PERIPH_ERROR:							return ChimStatus::SERIAL_ERROR;
-				case ThorStatus::PERIPH_NOT_READY:						return ChimStatus::SERIAL_NOT_READY;
+				case ThorStatus::PERIPH_BUSY:						return ChimStatus::SERIAL_NOT_READY;
 				case ThorStatus::PERIPH_TX_IN_PROGRESS:					return ChimStatus::SERIAL_TX_IN_PROGRESS;
 				case ThorStatus::PERIPH_RX_IN_PROGRESS:					return ChimStatus::SERIAL_RX_IN_PROGRESS;
 				case ThorStatus::PERIPH_PACKET_TOO_LARGE_FOR_BUFFER:	return ChimStatus::SERIAL_PACKET_TOO_LARGE_FOR_BUFFER;

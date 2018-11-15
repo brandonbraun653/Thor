@@ -328,7 +328,7 @@ namespace Thor
 					}
 					else
 					{
-						statusCode = Status::PERIPH_NOT_READY;
+						statusCode = Status::PERIPH_BUSY;
 
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(usartSemphrs[usartChannel], NULL) != pdPASS)
@@ -355,7 +355,7 @@ namespace Thor
 					}
 					else
 					{
-						statusCode = Status::PERIPH_NOT_READY;
+						statusCode = Status::PERIPH_BUSY;
 
 						#if defined(USING_FREERTOS)
 						if (xSemaphoreTakeFromISR(usartSemphrs[usartChannel], NULL) != pdPASS)

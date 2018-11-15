@@ -31,12 +31,13 @@ namespace Thor
 			PERIPH_LOCKED                      = -4,
 			PERIPH_NOT_INITIALIZED             = -3,
 			PERIPH_ERROR                       = -2,
-			PERIPH_NOT_READY                   = -1,
+			PERIPH_BUSY                   = -1,
 			PERIPH_OK                          = 0,
 			PERIPH_READY,
 			PERIPH_INVALID_PARAM,
 			PERIPH_TX_IN_PROGRESS,
 			PERIPH_RX_IN_PROGRESS,
+            PERIPH_TXRX_IN_PROGRESS,
 			PERIPH_PACKET_TOO_LARGE_FOR_BUFFER,
 			PERIPH_PACKET_NONE_AVAILABLE
 		};
