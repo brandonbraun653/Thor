@@ -33,16 +33,16 @@ namespace Thor
 			{
 				switch (status)
 				{
-				case ThorStatus::PERIPH_OK:								return ChimStatus::SERIAL_OK;
-				case ThorStatus::PERIPH_LOCKED:							return ChimStatus::SERIAL_LOCKED;
-				case ThorStatus::PERIPH_NOT_INITIALIZED:				return ChimStatus::SERIAL_NOT_INITIALIZED;
-				case ThorStatus::PERIPH_ERROR:							return ChimStatus::SERIAL_ERROR;
-				case ThorStatus::PERIPH_BUSY:						return ChimStatus::SERIAL_NOT_READY;
-				case ThorStatus::PERIPH_TX_IN_PROGRESS:					return ChimStatus::SERIAL_TX_IN_PROGRESS;
-				case ThorStatus::PERIPH_RX_IN_PROGRESS:					return ChimStatus::SERIAL_RX_IN_PROGRESS;
-				case ThorStatus::PERIPH_PACKET_TOO_LARGE_FOR_BUFFER:	return ChimStatus::SERIAL_PACKET_TOO_LARGE_FOR_BUFFER;
-				case ThorStatus::PERIPH_TIMEOUT:						return ChimStatus::SERIAL_TIMEOUT;
-				default:												return ChimStatus::SERIAL_UNKNOWN_ERROR;
+				case ThorStatus::PERIPH_OK:								return ChimStatus::OK;
+				case ThorStatus::PERIPH_LOCKED:							return ChimStatus::LOCKED;
+				case ThorStatus::PERIPH_NOT_INITIALIZED:				return ChimStatus::NOT_INITIALIZED;
+				case ThorStatus::PERIPH_ERROR:							return ChimStatus::ERROR;
+				case ThorStatus::PERIPH_BUSY:						    return ChimStatus::NOT_READY;
+				case ThorStatus::PERIPH_TX_IN_PROGRESS:					return ChimStatus::TX_IN_PROGRESS;
+				case ThorStatus::PERIPH_RX_IN_PROGRESS:					return ChimStatus::RX_IN_PROGRESS;
+				case ThorStatus::PERIPH_PACKET_TOO_LARGE_FOR_BUFFER:	return ChimStatus::PACKET_TOO_LARGE_FOR_BUFFER;
+				case ThorStatus::PERIPH_TIMEOUT:						return ChimStatus::TIMEOUT;
+				default:												return ChimStatus::UNKNOWN_ERROR;
 				}
 			}
 
@@ -70,12 +70,12 @@ namespace Thor
 
 			ChimStatus SerialClass::cbegin(uint32_t baud, ChimMode tx_mode, ChimMode rx_mode)
 			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto chimera_error = ChimStatus::OK;
 				auto thor_error = begin(static_cast<ThorBaud>(baud), static_cast<ThorMode>(tx_mode), static_cast<ThorMode>(rx_mode));
 
 				if (thor_error != ThorStatus::PERIPH_OK)
 				{
-					chimera_error = ChimStatus::SERIAL_ERROR;
+					chimera_error = ChimStatus::ERROR;
 				}
 
 				return chimera_error;
@@ -122,12 +122,12 @@ namespace Thor
 					}
 				}
 
-				return ChimStatus::SERIAL_OK;
+				return ChimStatus::OK;
 			}
 
 			Chimera::Serial::Status SerialClass::csetBaud(uint32_t baud)
 			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto chimera_error = ChimStatus::OK;
 
 				//TODO: Need to convert between Thor/Chimera bauds...or just allow numbers??
 				auto thor_error = this->serialObject->setBaud(baud);
@@ -142,7 +142,7 @@ namespace Thor
 
 			ChimStatus SerialClass::cwrite(uint8_t* val, size_t length)
 			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto chimera_error = ChimStatus::OK;
 				auto thor_error = write(val, length);
 
 				if (thor_error != ThorStatus::PERIPH_OK)
@@ -155,7 +155,7 @@ namespace Thor
 
 			ChimStatus SerialClass::cwrite(char* string, size_t length)
 			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto chimera_error = ChimStatus::OK;
 				auto thor_error = write(string, length);
 
 				if (thor_error != ThorStatus::PERIPH_OK)
@@ -168,7 +168,7 @@ namespace Thor
 
 			ChimStatus SerialClass::cwrite(const char* string)
 			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto chimera_error = ChimStatus::OK;
 				auto thor_error = write(string);
 
 				if (thor_error != ThorStatus::PERIPH_OK)
@@ -181,7 +181,7 @@ namespace Thor
 
 			ChimStatus SerialClass::cwrite(const char* string, size_t length)
 			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto chimera_error = ChimStatus::OK;
 				auto thor_error = write(string, length);
 
 				if (thor_error != ThorStatus::PERIPH_OK)
@@ -194,7 +194,7 @@ namespace Thor
 
 			ChimStatus SerialClass::creadPacket(uint8_t* buff, size_t buff_length)
 			{
-				auto chimera_error = ChimStatus::SERIAL_OK;
+				auto chimera_error = ChimStatus::OK;
 				auto thor_error = readPacket(buff, buff_length);
 
 				if (thor_error != ThorStatus::PERIPH_OK)

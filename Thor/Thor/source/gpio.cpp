@@ -285,15 +285,15 @@ namespace Thor
 			{
 				pinConfig.pinNum = pinMap(pin);
 				if (pinConfig.pinNum == (PinNum)0)
-					return Chimera::GPIO::Status::GPIO_ERROR_INVALID_PIN;
+					return Chimera::GPIO::Status::ERROR_INVALID_PIN;
 
 				pinConfig.GPIOx = portMap(port);
 				if (pinConfig.GPIOx == (GPIO_TypeDef*)0)
-					return Chimera::GPIO::Status::GPIO_ERROR_INVALID_PORT;
+					return Chimera::GPIO::Status::ERROR_INVALID_PORT;
 
 
 				chimera_settings_recorded = true;
-				return Chimera::GPIO::Status::GPIO_OK;
+				return Chimera::GPIO::Status::OK;
 			}
 
 			Chimera::GPIO::Status GPIOClass::cmode(Chimera::GPIO::Mode mode, bool pullup = false)
@@ -305,10 +305,10 @@ namespace Thor
 					PinPull pinPull = (pullup) ? PULLUP : NOPULL;
 
 					this->mode(pinMode, pinPull);
-					return Chimera::GPIO::Status::GPIO_OK;
+					return Chimera::GPIO::Status::OK;
 				}
 				else
-					return Chimera::GPIO::Status::GPIO_ERROR_UNINITIALIZED;
+					return Chimera::GPIO::Status::ERROR_UNINITIALIZED;
 			}
 
 			Chimera::GPIO::Status GPIOClass::cwrite(Chimera::GPIO::State state)
@@ -316,10 +316,10 @@ namespace Thor
 				if (chimera_settings_recorded)
 				{
 					HAL_GPIO_WritePin(pinConfig.GPIOx, pinConfig.pinNum, static_cast<GPIO_PinState>(state));
-					return Chimera::GPIO::Status::GPIO_OK;
+					return Chimera::GPIO::Status::OK;
 				}
 				else
-					return Chimera::GPIO::Status::GPIO_ERROR_UNINITIALIZED;
+					return Chimera::GPIO::Status::ERROR_UNINITIALIZED;
 			}
 
 			void GPIOClass::ctoggle()
