@@ -9,13 +9,13 @@
 #if defined(USING_FREERTOS)
 #include "FreeRTOSConfig.h"
 
-/** Checks an interrupt's priority value for compatibility with FreeRTOS. If triggered, the priority level 
+/** Checks an interrupt's priority value for compatibility with FreeRTOS. If triggered, the priority level
  *	needs to be lowered (lower priorities are higher numeric values for ARM-M). This macro should ONLY be used
  *	to check peripherals that call a FreeRTOS API function from an ISR. Otherwise, this check is pointless.
- *	See for more detail: http://www.freertos.org/RTOS-Cortex-M3-M4.html 
+ *	See for more detail: http://www.freertos.org/RTOS-Cortex-M3-M4.html
  **/
 #define CHECK_IT_PRIO(X) static_assert(X >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority for " #X)
-#endif 
+#endif
 
 /** @namespace Thor */
 namespace Thor
@@ -26,9 +26,9 @@ namespace Thor
 		/** @namespace Thor::Defaults::GPIO */
 		namespace GPIO
 		{
-			
+
 		}
-		
+
 		/** @namespace Thor::Defaults::Serial */
 		namespace Serial
 		{
@@ -64,13 +64,13 @@ namespace Thor
 			extern const UART_AdvFeatureInitTypeDef dflt_UART_AdvInit;
 			#endif
 		}
-	
+
 		/** @namespace Thor::Defaults::Timer */
 		namespace Timer
 		{
-	
+
 		}
-	
+
 		/** @namespace Thor::Defaults::SPI */
 		namespace SPI
 		{
@@ -105,13 +105,13 @@ namespace Thor
 			extern const DMA_InitTypeDef dflt_DMA_Init_RX;
 			#endif
 		}
-		
+
 		/** @namespace Thor::Defaults::Interrupt */
 		namespace Interrupt
 		{
 			const uint32_t SYSTEM_NVIC_PRIORITY_GROUPING = NVIC_PRIORITYGROUP_4;	/**< DO NOT CHANGE: Sets the priority grouping to use all 4 preempt bits with no subpriority bits. */
-			
-			
+
+
 			#if defined(USING_FREERTOS)
 			/* These values can utilize the full range of priority grouping bits EXCEPT for peripherals
 			 * that us the FreeRTOS ISR API calls. Their priority cannot be higher than configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY.*/
@@ -119,9 +119,13 @@ namespace Thor
 			const uint32_t UART_DMA_PREEMPT_PRIORITY = 5; CHECK_IT_PRIO(UART_DMA_PREEMPT_PRIORITY);
 			const uint32_t USART_IT_PREEMPT_PRIORITY = UART_IT_PREEMPT_PRIORITY;
 			const uint32_t USART_DMA_PREEMPT_PRIORITY = UART_DMA_PREEMPT_PRIORITY;
-			
-			#else			/* These values can safely take on the full range of the priority grouping bits (0-15) with 0 as the highest priority. */			const uint32_t UART_IT_PREEMPT_PRIORITY = 2;			const uint32_t UART_DMA_PREEMPT_PRIORITY = 2;
-			#endif 
+
+			#else
+			/* These values can safely take on the full range of the priority grouping bits (0-15) with 0 as the highest priority. */
+			const uint32_t UART_IT_PREEMPT_PRIORITY = 2;
+			const uint32_t UART_DMA_PREEMPT_PRIORITY = 2;
+
+			#endif
 		}
 	}
 }

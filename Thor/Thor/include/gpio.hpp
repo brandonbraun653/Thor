@@ -25,55 +25,47 @@ namespace Thor
 		{
 			using PinPort = GPIO_TypeDef*;
 			using namespace Thor::Definitions::GPIO;
-			
-			const int NOALTERNATE = (0x08000CC8);	//Default value for the alternate configuration var
+
+			constexpr uint32_t NOALTERNATE = (0x08000CC8);	//Default value for the alternate configuration var
 
 			struct PinConfig
 			{
-				PinPort		GPIOx		= GPIOA;
-				PinSpeed	speed		= HIGH_SPD;
-				PinMode		mode		= INPUT;
-				PinNum		pinNum		= PIN_0;
-				PinPull     pull		= NOPULL;
-				uint32_t	alternate	= NOALTERNATE;
-
-				GPIO_InitTypeDef getHALInit()
-				{
-					GPIO_InitTypeDef InitStruct;
-
-					InitStruct.Pin = pinNum;
-					InitStruct.Speed = speed;
-					InitStruct.Mode = mode;
-					InitStruct.Pull = pull;
-					InitStruct.Alternate = alternate;
-
-					return InitStruct;
-				}
+				PinPort	GPIOx		= GPIOA;
+				PinSpeed speed		= PinSpeed::MEDIUM_SPD;
+				PinMode	mode		= PinMode::INPUT;
+                PinNum pinNum		= PinNum::NOT_A_PIN;
+				PinPull pull		= PinPull::NOPULL;
+				uint32_t alternate	= NOALTERNATE;
 			};
 
-			class GPIOClass
+            GPIO_InitTypeDef getHALInit(const PinConfig &config);
+
+
+
+
+            class GPIOClass
 			{
 			public:
-				void mode(PinMode Mode, PinPull Pull = NOPULL);
+				void mode(PinMode Mode, PinPull Pull = PinPull::NOPULL);
 				void write(const LogicLevel& state);
 				void toggle();
 				bool read();
 
-				void reconfigure(PinPort GPIOx, PinNum PIN_x, PinSpeed SPEED = HIGH_SPD, uint32_t ALTERNATE = NOALTERNATE);
-	
+				void reconfigure(PinPort GPIOx, PinNum PIN_x, PinSpeed SPEED = PinSpeed::HIGH_SPD, uint32_t ALTERNATE = NOALTERNATE);
+
 				GPIOClass() = default;
 				~GPIOClass() = default;
-				GPIOClass(PinPort GPIOx, PinNum PIN_x, PinSpeed SPEED = HIGH_SPD, uint32_t ALTERNATE = NOALTERNATE);
+				GPIOClass(PinPort GPIOx, PinNum PIN_x, PinSpeed SPEED = PinSpeed::HIGH_SPD, uint32_t ALTERNATE = NOALTERNATE);
 
 
 				#ifdef USING_CHIMERA
 				Chimera::GPIO::Status cinit(Chimera::GPIO::Port port, uint8_t pin);
-				Chimera::GPIO::Status cmode(Chimera::GPIO::Mode pin_mode, bool pullup);
+				Chimera::GPIO::Status cmode(Chimera::GPIO::Drive pin_mode, bool pullup);
 				Chimera::GPIO::Status cwrite(Chimera::GPIO::State state);
 				void ctoggle();
 				bool cread();
-				#endif 
-	
+				#endif
+
 			private:
 				PinConfig pinConfig;
 
@@ -87,6 +79,23 @@ namespace Thor
 			};
 			typedef boost::shared_ptr<Thor::Peripheral::GPIO::GPIOClass> GPIOClass_sPtr;
             typedef boost::movelib::unique_ptr<Thor::Peripheral::GPIO::GPIOClass> GPIOClass_uPtr;
+
+
+            #if defined(USING_CHIMERA)
+            class ChimeraGPIO
+            {
+            public:
+                static PinNum convertPinNum(const uint8_t &num);
+                static PinPort convertPort(const Chimera::GPIO::Port &port);
+                static PinMode convertDrive(const Chimera::GPIO::Drive &drive);
+                static PinPull convertPull(const Chimera::GPIO::Pull &pull);
+
+                static PinConfig convertPinInit(const Chimera::GPIO::PinInit &pin);
+
+            private:
+
+            };
+            #endif
 		}
 	}
 }

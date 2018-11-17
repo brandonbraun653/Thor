@@ -224,7 +224,7 @@ namespace Thor
 			{
 				UART_GPIO_Init();
 
-				uart_handle.Init.BaudRate = baud;
+				uart_handle.Init.BaudRate = static_cast<uint32_t>(baud);
 				UART_Init();
 
 				setMode(SubPeripheral::TX, tx_mode);
