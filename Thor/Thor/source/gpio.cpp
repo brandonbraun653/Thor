@@ -297,6 +297,7 @@ namespace Thor
                 cfg.mode = convertDrive(pin.mode);
                 cfg.pinNum = convertPinNum(pin.number);
                 cfg.pull = convertPull(pin.pull);
+                cfg.alternate = pin.alternate;
 
                 return cfg;
             }

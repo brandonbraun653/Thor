@@ -28,6 +28,7 @@ namespace Thor
 	{
 		enum class Status : int
 		{
+            NOT_OWNER                          = -6,
 			PERIPH_TIMEOUT                     = -5,
 			PERIPH_LOCKED                      = -4,
 			PERIPH_NOT_INITIALIZED             = -3,
@@ -40,7 +41,8 @@ namespace Thor
 			PERIPH_RX_IN_PROGRESS,
             PERIPH_TXRX_IN_PROGRESS,
 			PERIPH_PACKET_TOO_LARGE_FOR_BUFFER,
-			PERIPH_PACKET_NONE_AVAILABLE
+			PERIPH_PACKET_NONE_AVAILABLE,
+
 		};
 
 		enum class SubPeripheral : uint8_t
@@ -80,6 +82,7 @@ namespace Thor
 				RX_COMPLETE,
 				TX_COMPLETE,
 				TXRX_COMPLETE,
+                TRANSFER_ERROR,
 				BUFFERED_TX_COMPLETE,
 				BUFFERED_TXRX_COMPLETE,
 				MAX_SOURCES

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <limits>
 
 /* Boost Includes */
 #include <boost/shared_ptr.hpp>
@@ -103,7 +104,7 @@ namespace Thor
 				 *  @param[in]	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
 				 *  @return Thor::Definitions::Status
 				 */
-                Thor::Definitions::Status writeBytes(uint8_t *const txBuffer, size_t length = 0, const bool &autoDisableCS = true);
+                Thor::Definitions::Status writeBytes(const uint8_t *const txBuffer, size_t length = 0, const bool &autoDisableCS = true);
 
                 /**
 				 *  @brief Simultaneously writes and reads data
@@ -114,7 +115,7 @@ namespace Thor
 				 *  @param[in] 	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
 				 *  @return Thor::Definitions::Status
 				 */
-                Thor::Definitions::Status readWriteBytes(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length = 0, const bool &autoDisableCS = true);
+                Thor::Definitions::Status readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length = 0, const bool &autoDisableCS = true);
 
 
 
@@ -141,6 +142,9 @@ namespace Thor
 				 */
 				void detachChipSelect();
 
+    			Thor::Definitions::Status reserve(const uint32_t &timeout_ms = 0u);
+
+    			Thor::Definitions::Status release(const uint32_t &timeout_ms = 0u);
 
 				/**
 				 * 	@brief Place the specified peripheral into a given mode
@@ -188,19 +192,33 @@ namespace Thor
                 void removeThreadTrigger(const SemaphoreHandle_t *const semphr);
                 #endif
 
+    			
+
+
               protected:
                 friend void(::HAL_SPI_TxCpltCallback)(SPI_HandleTypeDef *hspi);
                 friend void(::HAL_SPI_TxRxCpltCallback)(SPI_HandleTypeDef *hspi);
+    			friend void(::HAL_SPI_ErrorCallback)(SPI_HandleTypeDef *hspi);
 
                 static uint32_t getPrescaler(const int &channel, const uint32_t &freq);
 
                 static uint32_t getFrequency(const int &channel, const uint32_t &prescaler);
 
-                Thor::Definitions::Status transfer_blocking(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
+                Thor::Definitions::Status transfer_blocking(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
 
-                Thor::Definitions::Status transfer_interrupt(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
+                Thor::Definitions::Status transfer_interrupt(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
 
-                Thor::Definitions::Status transfer_dma(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
+                Thor::Definitions::Status transfer_dma(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
+
+    			bool isAvailable(const uint32_t &ownerID);
+
+    			bool isLocked();
+                
+    			bool isOwner(const uint32_t &ownerID = std::numeric_limits<uint32_t>::max());
+
+    			bool isTransferComplete();
+
+    			bool isExternallyReserved();
 
               private:
                 /**
@@ -216,6 +234,8 @@ namespace Thor
 
                 volatile bool tx_complete = true;
                 volatile bool isr_disable_chip_select;
+
+    			uint32_t ownerID;
 
                 int spi_channel;
 				uint32_t actualClockFrequency = 0;
@@ -239,10 +259,13 @@ namespace Thor
 
 				IT_Initializer ITSettingsHW, ITSettings_DMA_TX, ITSettings_DMA_RX;
 
-				bool EXT_NSS_ATTACHED;
+				bool alternateCS;
 
-				Thor::Peripheral::GPIO::GPIOClass_sPtr extChipSelect;
+				Thor::Peripheral::GPIO::GPIOClass_sPtr externalCS;
                 Thor::Peripheral::GPIO::GPIOClass_uPtr MOSI, MISO, SCK, CS;
+
+    			void lock(const bool &external_lock = false);
+    			void unlock();
 
 				void SPI_GPIO_Init();
 				void SPI_GPIO_DeInit();

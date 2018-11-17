@@ -1,5 +1,6 @@
 /* C/C++ Includes */
 #include <math.h>
+#include <cstdlib>
 
 /* Boost Includes */
 #include <boost/bind.hpp>
@@ -36,10 +37,23 @@ using Modes = Thor::Definitions::Modes;
 TaskTrigger spiTaskTrigger;
 #endif
 
+static constexpr uint8_t NUM_CHANNELS = MAX_SPI_CHANNELS + 1;
+static constexpr uint32_t NO_OWNER_ID = std::numeric_limits<uint32_t>::max();
+
+struct SPIChannel
+{
+    volatile bool auto_unlock = false;
+    volatile bool lock = false;
+    volatile bool transfer_error = false;
+    volatile bool transfer_complete = true;
+    volatile bool externally_reserved = false;
+    volatile uint32_t owner = NO_OWNER_ID;
+};
+
 /*------------------------------------------------
 Stores references to available SPIClass objects
 -------------------------------------------------*/
-static SPIClass_sPtr spiObjects[MAX_SPI_CHANNELS + 1];
+static SPIClass_sPtr spiObjects[NUM_CHANNELS];
 
 /*------------------------------------------------
 Directly maps the HAL SPI Instance pointer to a possible SPIClass object
@@ -194,6 +208,11 @@ static volatile uint32_t* spiClockRegister(SPI_TypeDef* instance)
 	};
 }
 
+/*------------------------------------------------
+Track channel usage and ownership
+-------------------------------------------------*/
+static volatile SPIChannel channelState[NUM_CHANNELS];
+
 namespace Thor
 {
 	namespace Peripheral
@@ -203,6 +222,9 @@ namespace Thor
 
             SPIClass::SPIClass(const int& channel)
             {
+                alternateCS = false;
+                ownerID = NO_OWNER_ID;
+
 				spi_channel = channel;
 				spi_handle.Instance = spi_cfg[spi_channel].instance;
 				spi_handle.Init = Defaults::SPI::dflt_SPI_Init;
@@ -233,34 +255,6 @@ namespace Thor
 
 				hdma_spi_tx.Instance = spi_cfg[spi_channel].dmaTX.Instance;
 				hdma_spi_rx.Instance = spi_cfg[spi_channel].dmaRX.Instance;
-
-				/*------------------------------------
-				GPIO
-				------------------------------------*/
-                MOSI = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass(
-					spi_cfg[spi_channel].MOSI.GPIOx,
-					spi_cfg[spi_channel].MOSI.PinNum,
-					spi_cfg[spi_channel].MOSI.Speed,
-					spi_cfg[spi_channel].MOSI.Alternate));
-
-				MISO = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass(
-					spi_cfg[spi_channel].MISO.GPIOx,
-					spi_cfg[spi_channel].MISO.PinNum,
-					spi_cfg[spi_channel].MISO.Speed,
-					spi_cfg[spi_channel].MISO.Alternate));
-
-				SCK = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass(
-					spi_cfg[spi_channel].SCK.GPIOx,
-					spi_cfg[spi_channel].SCK.PinNum,
-					spi_cfg[spi_channel].SCK.Speed,
-					spi_cfg[spi_channel].SCK.Alternate));
-
-				CS = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass(
-					spi_cfg[spi_channel].NSS.GPIOx,
-					spi_cfg[spi_channel].NSS.PinNum,
-					spi_cfg[spi_channel].NSS.Speed,
-					spi_cfg[spi_channel].NSS.Alternate));
-
 			}
 
 			const SPIClass_sPtr& SPIClass::create(const int channel)
@@ -281,16 +275,96 @@ namespace Thor
 				return spiObjects[channel];
 			}
 
-
-
 			Thor::Definitions::Status SPIClass::begin(const Config& settings, const bool &force)
 			{
+    			/*------------------------------------
+                Create the GPIO instances depending on what the user supplied
+                ------------------------------------*/
+    			if (settings.MOSI.pinNum == PinNum::NOT_A_PIN)
+    			{
+                    /* Default pin as described in defaults.cpp for this channel */
+        			MOSI = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+                        spi_cfg[spi_channel].MOSI.GPIOx,
+            			spi_cfg[spi_channel].MOSI.PinNum,
+            			spi_cfg[spi_channel].MOSI.Speed,
+            			spi_cfg[spi_channel].MOSI.Alternate));
+    			}
+    			else
+    			{
+                    /* User supplied pin */
+        			MOSI = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+                        settings.MOSI.GPIOx,
+                        settings.MOSI.pinNum,
+                        settings.MOSI.speed,
+                        settings.MOSI.alternate));
+    			}
+    			
+    			if(settings.MISO.pinNum == PinNum::NOT_A_PIN)
+    			{
+        			/* Default pin as described in defaults.cpp for this channel */
+        			MISO = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+    				    spi_cfg[spi_channel].MISO.GPIOx,
+            			spi_cfg[spi_channel].MISO.PinNum,
+            			spi_cfg[spi_channel].MISO.Speed,
+            			spi_cfg[spi_channel].MISO.Alternate));
+    			}
+    			else
+    			{
+        			/* User supplied pin */
+        			MISO = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+                        settings.MISO.GPIOx,
+            			settings.MISO.pinNum,
+            			settings.MISO.speed,
+            			settings.MISO.alternate));
+    			}
+    			
+    			if(settings.SCK.pinNum == PinNum::NOT_A_PIN)
+    			{
+        			/* Default pin as described in defaults.cpp for this channel */
+        			SCK = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+    				    spi_cfg[spi_channel].SCK.GPIOx,
+            			spi_cfg[spi_channel].SCK.PinNum,
+            			spi_cfg[spi_channel].SCK.Speed,
+            			spi_cfg[spi_channel].SCK.Alternate));
+    			}
+    			else
+    			{
+        			/* User supplied pin */
+        			SCK = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+                        settings.SCK.GPIOx,
+            			settings.SCK.pinNum,
+            			settings.SCK.speed,
+            			settings.SCK.alternate));
+    			}
+    			
+    			if(settings.CS.pinNum == PinNum::NOT_A_PIN)
+    			{
+                    /* Default pin as described in defaults.cpp for this channel */
+        			CS = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+    				    spi_cfg[spi_channel].NSS.GPIOx,
+            			spi_cfg[spi_channel].NSS.PinNum,
+            			spi_cfg[spi_channel].NSS.Speed,
+            			spi_cfg[spi_channel].NSS.Alternate));
+    			}
+    			else
+    			{
+        			/* User supplied pin */
+        			CS = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+                        settings.CS.GPIOx,
+            			settings.CS.pinNum,
+            			settings.CS.speed,
+            			settings.CS.alternate));
+
+        			alternateCS = true;
+    			}
 
 				SPI_GPIO_Init();
 				SPI_Init();
 
 				setMode(SubPeripheral::TX, Modes::BLOCKING);
 				setMode(SubPeripheral::RX, Modes::BLOCKING);
+
+    			return Thor::Definitions::Status::PERIPH_OK;
 			}
 
             void SPIClass::end()
@@ -304,24 +378,22 @@ namespace Thor
 				rxMode = Modes::MODE_UNDEFINED;
 			}
 
-
 			void SPIClass::attachChipSelect(const Thor::Peripheral::GPIO::GPIOClass_sPtr &slave_select)
 			{
-				extChipSelect = slave_select;
+				externalCS = slave_select;
 			}
 
 			void SPIClass::detachChipSelect()
 			{
-				extChipSelect = nullptr;
+				externalCS = nullptr;
 			}
 
-
-            Thor::Definitions::Status SPIClass::writeBytes(uint8_t *const txBuffer, size_t length, const bool &autoDisableCS)
+            Thor::Definitions::Status SPIClass::writeBytes(const uint8_t *const txBuffer, size_t length, const bool &autoDisableCS)
             {
-                return readWriteBytes(txBuffer, NULL, length, autoDisableCS);
+                return readWriteBytes(txBuffer, nullptr, length, autoDisableCS);
             }
 
-            Thor::Definitions::Status SPIClass::readWriteBytes(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS)
+            Thor::Definitions::Status SPIClass::readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS)
             {
                 /*------------------------------------------------
                 Verify hardware is initialized and function inputs are ok
@@ -358,12 +430,7 @@ namespace Thor
                 }
             }
 
-
-
-
-
-
-			Status SPIClass::setMode(const SubPeripheral& periph, const Modes& mode)
+    		Thor::Definitions::Status SPIClass::setMode(const SubPeripheral& periph, const Modes& mode)
 			{
 				if ((periph == SubPeripheral::TXRX) || (periph == SubPeripheral::TX))
 				{
@@ -375,9 +442,11 @@ namespace Thor
 						/*------------------------------------------------
                         Disable interrupts as both periphs are now in blocking mode
                         -------------------------------------------------*/
-						if(rxMode == Modes::BLOCKING)
-							SPI_DisableInterrupts();
-
+    					if(rxMode == Modes::BLOCKING)
+    					{
+        					SPI_DisableInterrupts();
+    					}
+					    
 						SPI_DMA_DeInit(SubPeripheral::TX);
 						break;
 
@@ -441,21 +510,32 @@ namespace Thor
 					}
 				}
 
-				return Status::PERIPH_OK;
+    			return Thor::Definitions::Status::PERIPH_OK;
 			}
 
 			void SPIClass::setChipSelect(LogicLevel state)
 			{
-				/*------------------------------------------------
-                Use the external chip select line if the reference exists, otherwise
-                control the default peripheral NSS (chip select) pin.
-                -------------------------------------------------*/
-                if (extChipSelect)
+    			if(externalCS)
+    			{
+        			/*------------------------------------
+    			    External GPIOClass object supplied by the user
+    			    ------------------------------------*/
+        			externalCS->write(state);
+    			}
+                else if (alternateCS)
                 {
-                    extChipSelect->write(state);
+                    /*------------------------------------
+                    Internal GPIOClass object that has different settings than 
+                    the default for this channel.
+                    ------------------------------------*/
+                    CS->write(state);
                 }
 				else
 				{
+    				/*------------------------------------
+				    Default pin for this channel. We can only control setting it HIGH.
+				    ------------------------------------*/
+
 					/**
                      *  This is only useful when the peripheral's dedicated NSS pin is used, configured for hardware
 					 *  management, and the SSOE bit in CR1 is set. (By default this is how Thor is set up)
@@ -472,7 +552,6 @@ namespace Thor
 				}
 			}
 
-
 			Status SPIClass::updateClockFrequency(uint32_t freq)
 			{
 				spi_handle.Init.BaudRatePrescaler = getPrescaler(spi_channel, freq);
@@ -481,7 +560,6 @@ namespace Thor
 
 				return Status::PERIPH_OK;
 			}
-
 
             uint32_t SPIClass::getClockFrequency()
             {
@@ -502,6 +580,70 @@ namespace Thor
 			{
 				HAL_DMA_IRQHandler(spi_handle.hdmarx);
 			}
+
+    		Thor::Definitions::Status SPIClass::reserve(const uint32_t &timeout_ms)
+    		{
+        		Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_LOCKED;
+
+        		/*------------------------------------------------
+        		If not locked, grab immediately
+        		-------------------------------------------------*/
+        		if(!isLocked())
+        		{
+            		lock(true);
+            		status = Thor::Definitions::Status::PERIPH_OK;
+        		}
+        		else
+        		{
+            		/*------------------------------------------------
+                    Otherwise, block the current task for a bit and check
+                    again when unblocked.
+                    -------------------------------------------------*/
+            		#if defined(USING_FREERTOS)
+            		vTaskDelay(pdMS_TO_TICKS(timeout_ms));
+
+            		if(!isLocked())
+            		{
+                		lock(true);
+                		status = Thor::Definitions::Status::PERIPH_OK;
+            		}
+                    #endif
+        		}
+
+        		return status;
+    		}
+
+    		Thor::Definitions::Status SPIClass::release(const uint32_t &timeout_ms)
+    		{
+        		Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_TIMEOUT;
+
+        		if(isOwner(ownerID))
+        		{
+            		if(isTransferComplete())
+            		{
+                		unlock();
+                		status = Thor::Definitions::Status::PERIPH_OK;
+            		}
+            		else
+            		{
+            		    #if defined(USING_FREERTOS)
+                		vTaskDelay(pdMS_TO_TICKS(timeout_ms));
+
+                		if(isTransferComplete())
+                		{
+                    		unlock();
+                    		status = Thor::Definitions::Status::PERIPH_OK;
+                		}
+                        #endif
+            		}
+        		}
+        		else
+        		{
+            		status = Thor::Definitions::Status::NOT_OWNER;
+        		}
+        		
+        		return status;
+    		}
 
             uint32_t SPIClass::getPrescaler(const int &channel, const uint32_t &freq)
             {
@@ -651,7 +793,7 @@ namespace Thor
                 return busFreq;
             }
 
-            Thor::Definitions::Status SPIClass::transfer_blocking(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS)
+            Thor::Definitions::Status SPIClass::transfer_blocking(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS)
             {
                 HAL_StatusTypeDef error = HAL_OK;
                 Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_OK;
@@ -665,8 +807,16 @@ namespace Thor
                 /*------------------------------------------------
                 Ensure the previous transmission has completed
                 -------------------------------------------------*/
-                if (tx_complete)
+                if (isAvailable(ownerID))
 				{
+    				/*------------------------------------------------
+                    Lock the hardware to make sure we don't get interrupted
+                    -------------------------------------------------*/
+    				if(!isExternallyReserved())
+    				{
+        				lock(false);
+    				}
+
                     /*------------------------------------------------
                     Activate the chip select line?
                     -------------------------------------------------*/
@@ -680,7 +830,12 @@ namespace Thor
                     -------------------------------------------------*/
 					if (txBuffer && !rxBuffer)
 					{
-						error = HAL_SPI_Transmit(&spi_handle, txBuffer, length, timeout);
+    					/*------------------------------------------------
+    					The HAL operation doesn't modify the transmit buffer, but for some reason the 
+    					designers did not add const to the function signature. This feels nasty, but it
+    					must be done.
+    					-------------------------------------------------*/
+						error = HAL_SPI_Transmit(&spi_handle, const_cast<uint8_t*>(txBuffer), length, timeout);
 					}
 					else if (txBuffer && rxBuffer)
 					{
@@ -693,7 +848,12 @@ namespace Thor
                             setMode(SubPeripheral::RX, txMode);
                         }
 
-						error = HAL_SPI_TransmitReceive(&spi_handle, txBuffer, rxBuffer, length, timeout);
+    					/*------------------------------------------------
+    					The HAL operation doesn't modify the transmit buffer, but for some reason the 
+    					designers did not add const to the function signature. This feels nasty, but it
+    					must be done.
+    					-------------------------------------------------*/
+						error = HAL_SPI_TransmitReceive(&spi_handle, const_cast<uint8_t*>(txBuffer), const_cast<uint8_t*>(rxBuffer), length, timeout);
 					}
                     else
                     {
@@ -707,6 +867,14 @@ namespace Thor
                     {
                         setChipSelect(LogicLevel::HIGH);
                     }
+
+    				/*------------------------------------------------
+    				Immediately unlock since we are done with the hardware
+    				-------------------------------------------------*/
+    				if(!isExternallyReserved())
+    				{
+        				unlock();
+    				}
 
                     /*------------------------------------------------
                     Handle any errors and exit gracefully
@@ -725,7 +893,7 @@ namespace Thor
 
             }   /* transfer_blocking() */
 
-            Thor::Definitions::Status SPIClass::transfer_interrupt(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS)
+            Thor::Definitions::Status SPIClass::transfer_interrupt(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS)
             {
                 HAL_StatusTypeDef error = HAL_OK;
                 Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_OK;
@@ -753,7 +921,12 @@ namespace Thor
                     -------------------------------------------------*/
 					if (txBuffer && !rxBuffer)
                     {
-                        error = HAL_SPI_Transmit_IT(&spi_handle, txBuffer, length);
+                        /*------------------------------------------------
+                        The HAL operation doesn't modify the transmit buffer, but for some reason the 
+                        designers did not add const to the function signature. This feels nasty, but it
+                        must be done.
+                        -------------------------------------------------*/
+                        error = HAL_SPI_Transmit_IT(&spi_handle, const_cast<uint8_t*>(txBuffer), length);
                         status = Thor::Definitions::Status::PERIPH_TX_IN_PROGRESS;
                     }
 					else if (txBuffer && rxBuffer)
@@ -768,7 +941,13 @@ namespace Thor
                         }
 
                         status = Thor::Definitions::Status::PERIPH_TXRX_IN_PROGRESS;
-						error = HAL_SPI_TransmitReceive_IT(&spi_handle, txBuffer, rxBuffer, length);
+
+    					/*------------------------------------------------
+    					The HAL operation doesn't modify the transmit buffer, but for some reason the 
+    					designers did not add const to the function signature. This feels nasty, but it
+    					must be done.
+    					-------------------------------------------------*/
+						error = HAL_SPI_TransmitReceive_IT(&spi_handle, const_cast<uint8_t*>(txBuffer), const_cast<uint8_t*>(rxBuffer), length);
 					}
 		            else
                     {
@@ -797,7 +976,7 @@ namespace Thor
 
             }   /* transfer_interrupt() */
 
-            Thor::Definitions::Status SPIClass::transfer_dma(uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS)
+            Thor::Definitions::Status SPIClass::transfer_dma(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS)
             {
                 HAL_StatusTypeDef error = HAL_OK;
                 Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_OK;
@@ -827,7 +1006,13 @@ namespace Thor
                     if (txBuffer && !rxBuffer)
                     {
                         status = Thor::Definitions::Status::PERIPH_TX_IN_PROGRESS;
-                        error = HAL_SPI_Transmit_DMA(&spi_handle, txBuffer, length);
+
+                        /*------------------------------------------------
+                        The HAL operation doesn't modify the transmit buffer, but for some reason the 
+                        designers did not add const to the function signature. This feels nasty, but it
+                        must be done.
+                        -------------------------------------------------*/
+                        error = HAL_SPI_Transmit_DMA(&spi_handle, const_cast<uint8_t*>(txBuffer), length);
                     }
 					else if (txBuffer && rxBuffer)
 					{
@@ -841,7 +1026,13 @@ namespace Thor
                         }
 
                         status = Thor::Definitions::Status::PERIPH_TXRX_IN_PROGRESS;
-						error = HAL_SPI_TransmitReceive_DMA(&spi_handle, txBuffer, rxBuffer, length);
+
+    					/*------------------------------------------------
+    					The HAL operation doesn't modify the transmit buffer, but for some reason the 
+    					designers did not add const to the function signature. This feels nasty, but it
+    					must be done.
+    					-------------------------------------------------*/
+						error = HAL_SPI_TransmitReceive_DMA(&spi_handle, const_cast<uint8_t*>(txBuffer), const_cast<uint8_t*>(rxBuffer), length);
 					}
                     else
                     {
@@ -870,6 +1061,87 @@ namespace Thor
 
             }   /* transfer_dma() */
 
+    		bool SPIClass::isAvailable(const uint32_t &ownerID)
+    		{
+        		return (!isLocked() || isOwner(ownerID));
+    		}
+
+    		bool SPIClass::isLocked()
+    		{
+        		if(spi_channel < NUM_CHANNELS)
+        		{
+            		return channelState[spi_channel].lock;
+        		}
+        		else
+        		{
+            		return true;
+        		}
+    		}
+
+    		bool SPIClass::isOwner(const uint32_t &ownerID)
+    		{
+        		if((spi_channel < NUM_CHANNELS) && (ownerID != NO_OWNER_ID))
+        		{
+            		return (ownerID == channelState[spi_channel].owner);
+        		}
+        		else
+        		{
+            		return false;
+        		}
+    		}
+
+    		bool SPIClass::isTransferComplete()
+    		{
+        		if(spi_channel < NUM_CHANNELS)
+        		{
+            		return channelState[spi_channel].transfer_complete;
+        		}
+        		else
+        		{
+                    //TODO: error out?
+            		return true;
+        		}
+    		}
+
+    		bool SPIClass::isExternallyReserved()
+    		{
+        		if(spi_channel < NUM_CHANNELS)
+        		{
+            		return channelState[spi_channel].externally_reserved;
+        		}
+        		else
+        		{
+                    //TODO: I might want to throw an error instead of returning true/false?
+                    //There could be some very unintended consequences for this.
+            		return true;
+        		}
+    		}
+
+    		void SPIClass::lock(const bool &external_lock)
+    		{
+        		if(spi_channel < NUM_CHANNELS)
+        		{
+            		channelState[spi_channel].lock = true;
+            		channelState[spi_channel].owner = rand();
+
+              		ownerID = channelState[spi_channel].owner;
+
+            		if(external_lock)
+            		{
+                		channelState[spi_channel].externally_reserved = true;
+            		}
+        		}
+    		}
+
+    		void SPIClass::unlock()
+    		{
+        		if(spi_channel < NUM_CHANNELS)
+        		{
+            		channelState[spi_channel].lock = false;
+            		channelState[spi_channel].owner = NO_OWNER_ID;
+            		channelState[spi_channel].externally_reserved = false;
+        		}
+    		}
 
 			void SPIClass::SPI_GPIO_Init()
 			{
@@ -882,13 +1154,33 @@ namespace Thor
 					MOSI->mode(spi_cfg[spi_channel].MOSI.Mode, spi_cfg[spi_channel].MOSI.Pull);
 					SCK->mode(spi_cfg[spi_channel].SCK.Mode, spi_cfg[spi_channel].SCK.Pull);
 
-                    if (extChipSelect)
+    				/*------------------------------------------------
+    				Decide how to initialize the CS pin. There are a few options.
+    				-------------------------------------------------*/
+    				if(externalCS)
+    				{
+        				/*------------------------------------------------
+        				User supplied pre-initialized GPIOClass_sPtr object. This is
+                        an externally created object we don't own.
+        				-------------------------------------------------*/
+        				externalCS->mode(Thor::Definitions::GPIO::PinMode::OUTPUT_PP, Thor::Definitions::GPIO::PinPull::NOPULL);
+        				externalCS->write(LogicLevel::HIGH);
+    				}
+    				else if(alternateCS)
                     {
-                        extChipSelect->mode(Thor::Definitions::GPIO::PinMode::OUTPUT_PP, Thor::Definitions::GPIO::PinPull::NOPULL);
-                        extChipSelect->write(LogicLevel::HIGH);
+                        /*------------------------------------------------
+                        User supplied description of the GPIO pin to be initialized. This 
+                        is a private class object.
+                        -------------------------------------------------*/
+                        CS->mode(Thor::Definitions::GPIO::PinMode::OUTPUT_PP, Thor::Definitions::GPIO::PinPull::NOPULL);
+                        CS->write(LogicLevel::HIGH);
                     }
                     else
                     {
+                        /*------------------------------------------------
+                        User supplied nothing. This is the pin described in defaults.cpp.
+                        This is a private class object.
+                        -------------------------------------------------*/
                         CS->mode(spi_cfg[spi_channel].NSS.Mode, spi_cfg[spi_channel].NSS.Pull);
                     }
 				}
@@ -902,7 +1194,15 @@ namespace Thor
 
 			void SPIClass::SPI_GPIO_DeInit()
 			{
-				//If there ever is a Thor::Peripheral::GPIO::GPIOClass deinit function, use it.
+    			SCK.reset(nullptr);
+    			MOSI.reset(nullptr);
+    			MISO.reset(nullptr);
+    			CS.reset(nullptr);
+
+    			if(externalCS)
+    			{
+        			externalCS.reset();
+    			}
 			}
 
 			void SPIClass::SPI_Init()
@@ -1295,83 +1595,110 @@ namespace Thor
 
             Chimera::SPI::Status ChimeraSPI::setChipSelect(const Chimera::GPIO::State &value)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
 
             Chimera::SPI::Status ChimeraSPI::setChipSelectControlMode(const Chimera::SPI::ChipSelectMode &mode)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
 
             Chimera::SPI::Status ChimeraSPI::writeBytes(const uint8_t *const txBuffer, size_t length, const bool &disableCS)
             {
-                return Chimera::SPI::Status::OK;
+                Chimera::SPI::Status status = Chimera::SPI::Status::OK;
+
+                if(spi->writeBytes(txBuffer, length, disableCS) != Thor::Definitions::Status::PERIPH_OK)
+                {
+                    status = Chimera::SPI::Status::ERROR;
+                }
+
+                return status;
             }
 
             Chimera::SPI::Status ChimeraSPI::readBytes(uint8_t *const rxBuffer, size_t length, const bool &disableCS)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
 
             Chimera::SPI::Status ChimeraSPI::readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool& disableCS)
             {
-                //spi->write(txBuffer, rxBuffer, length, disableCS);
-                return Chimera::SPI::Status::OK;
+                Chimera::SPI::Status status = Chimera::SPI::Status::OK;
+
+                if(spi->readWriteBytes(txBuffer, rxBuffer, length, disableCS) != Thor::Definitions::Status::PERIPH_OK)
+                {
+                    status = Chimera::SPI::Status::ERROR;
+                }
+
+                return status;
             }
 
             Chimera::SPI::Status ChimeraSPI::setPeripheralMode(const Chimera::SPI::SubPeripheral &periph, const Chimera::SPI::SubPeripheralMode &mode)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
 
             Chimera::SPI::Status ChimeraSPI::setClockFrequency(const uint32_t &freq)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
 
             Chimera::SPI::Status ChimeraSPI::getClockFrequency(uint32_t *const freq)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
 
             Chimera::SPI::Status ChimeraSPI::reserve(const uint32_t &timeout_ms)
             {
-                return Chimera::SPI::Status::OK;
+                Chimera::SPI::Status status = Chimera::SPI::Status::FAILED_LOCK;
+
+                if(spi->reserve(timeout_ms) == Thor::Definitions::Status::PERIPH_OK)
+                {
+                    status = Chimera::SPI::Status::OK;
+                }
+
+                return status;
             }
 
             Chimera::SPI::Status ChimeraSPI::release(const uint32_t &timeout_ms)
             {
-                return Chimera::SPI::Status::OK;
+                Chimera::SPI::Status status = Chimera::SPI::Status::FAILED_RELEASE;
+
+                if(spi->release(timeout_ms) == Thor::Definitions::Status::PERIPH_OK)
+                {
+                    status = Chimera::SPI::Status::OK;
+                }
+
+                return status;
             }
 
             Chimera::SPI::Status ChimeraSPI::onWriteCompleteCallback(const Chimera::void_func_void func)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
 
             Chimera::SPI::Status ChimeraSPI::onReadCompleteCallback(const Chimera::void_func_void func)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
 
             Chimera::SPI::Status ChimeraSPI::onReadWriteCompleteCallback(const Chimera::void_func_void func)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
 
             Chimera::SPI::Status ChimeraSPI::onErrorCallback(const Chimera::void_func_uint32_t func)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
 
             Chimera::SPI::Status ChimeraSPI::attachEventWakeup(const Chimera::FreeRTOS::SPIEvent &event, const SemaphoreHandle_t *const semphr)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
 
             Chimera::SPI::Status ChimeraSPI::removeEventWakeup(const SemaphoreHandle_t *const semphr)
             {
-                return Chimera::SPI::Status::OK;
+                return Chimera::SPI::Status::ERROR;
             }
         }
 	}
@@ -1384,18 +1711,27 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
     -------------------------------------------------*/
 	const SPIClass_sPtr& spi = getSPIClassRef(hspi->Instance);
 
-	if (spi && spi->hardwareStatus.spi_enabled)
-	{
-        spi->tx_complete = true;
+    const bool enabled = spi->hardwareStatus.spi_enabled;
+    const bool validChannel = (spi->spi_channel < NUM_CHANNELS);
+    const int channel = spi->spi_channel;
 
+    if(spi && enabled && validChannel)
+    {
+        channelState[channel].transfer_error = false;
+        channelState[channel].transfer_complete = true;
 
-		#if defined(USING_FREERTOS)
+        if(channelState[channel].auto_unlock)
+        {
+            spi->unlock();
+        }
+
         /*------------------------------------------------
         Notify event occurred
         -------------------------------------------------*/
-		spiTaskTrigger.logEvent(TX_COMPLETE, &spiTaskTrigger);
-		#endif
-	}
+		#if defined(USING_FREERTOS)
+        spiTaskTrigger.logEvent(TX_COMPLETE, &spiTaskTrigger);
+        #endif
+    }
 }
 
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
@@ -1409,15 +1745,24 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
     -------------------------------------------------*/
 	const SPIClass_sPtr& spi = getSPIClassRef(hspi->Instance);
 
-	if (spi && spi->hardwareStatus.spi_enabled)
-	{
-		spi->tx_complete = true;
+    const bool enabled = spi->hardwareStatus.spi_enabled;
+    const bool validChannel = (spi->spi_channel < NUM_CHANNELS);
+    const int channel = spi->spi_channel;
 
+    if(spi && enabled && validChannel)
+    {
+        channelState[channel].transfer_error = false;
+        channelState[channel].transfer_complete = true;
 
-		#if defined(USING_FREERTOS)
-        /*------------------------------------------------
+        if(channelState[channel].auto_unlock)
+        {
+            spi->unlock();
+        }
+
+    	/*------------------------------------------------
         Notify event occurred
         -------------------------------------------------*/
+		#if defined(USING_FREERTOS)
 		spiTaskTrigger.logEvent(TXRX_COMPLETE, &spiTaskTrigger);
 		#endif
 	}
@@ -1437,6 +1782,32 @@ void HAL_SPI_TxRxHalfCpltCallback(SPI_HandleTypeDef *hspi)
 
 void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
 {
+    /*------------------------------------------------
+    Determine which object actually triggered this callback
+    -------------------------------------------------*/
+    const SPIClass_sPtr& spi = getSPIClassRef(hspi->Instance);
+
+    const bool enabled = spi->hardwareStatus.spi_enabled;
+    const bool validChannel = (spi->spi_channel < NUM_CHANNELS);
+    const int channel = spi->spi_channel;
+
+    if(spi && enabled && validChannel)
+    {
+        channelState[channel].transfer_error = true;
+        channelState[channel].transfer_complete = true;
+
+        if(channelState[channel].auto_unlock)
+        {
+            spi->unlock();
+        }
+
+        /*------------------------------------------------
+        Notify event occurred
+        -------------------------------------------------*/
+		#if defined(USING_FREERTOS)
+        spiTaskTrigger.logEvent(TRANSFER_ERROR, &spiTaskTrigger);
+        #endif
+    }
 }
 
 void SPI1_IRQHandler()
