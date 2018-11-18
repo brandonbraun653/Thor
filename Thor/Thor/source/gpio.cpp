@@ -295,7 +295,7 @@ namespace Thor
 
                 cfg.GPIOx = convertPort(pin.port);
                 cfg.mode = convertDrive(pin.mode);
-                cfg.pinNum = convertPinNum(pin.number);
+                cfg.pinNum = convertPinNum(pin.pin);
                 cfg.pull = convertPull(pin.pull);
                 cfg.alternate = pin.alternate;
 

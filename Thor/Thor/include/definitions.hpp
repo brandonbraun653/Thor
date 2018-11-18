@@ -170,7 +170,7 @@ namespace Thor
 			};
 
 
-        } // namespace GPIO
+        }
 
         /** @namespace Thor::Definitions::TIMER */
 		namespace TIMER
@@ -312,7 +312,15 @@ namespace Thor
 			constexpr uint8_t SPI_BUFFER_SIZE = 32;
 			constexpr uint32_t BLOCKING_TIMEOUT_MS = 10;
 
+            enum class ChipSelectMode : uint8_t
+            {
+                MANUAL,                         /**< Manually control the state of the chip select line */
+                AUTO_BETWEEN_TRANSFER,          /**< Automatically twiddle the chip select between transfers */
+                AUTO_AFTER_TRANSFER,            /**< Automatically disable the chip select after all transfers complete */
 
+                NUM_CS_MODES,
+                UNKNOWN_CS_MODE
+            };
         }
 
         /** @namespace Thor::Definitions::DMA */

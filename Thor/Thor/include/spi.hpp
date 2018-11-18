@@ -7,8 +7,10 @@
 #include <stdint.h>
 #include <string.h>
 #include <limits>
+#include <type_traits>
 
 /* Boost Includes */
+#include <boost/static_assert.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/move/unique_ptr.hpp>
@@ -33,8 +35,6 @@
 #include <Chimera/interface.hpp>
 #endif
 
-extern void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi);
-
 namespace Thor
 {
 	namespace Peripheral
@@ -43,6 +43,9 @@ namespace Thor
 		{
             class SPIClass;
             class ChimeraSPI;
+
+            typedef boost::shared_ptr<SPIClass> SPIClass_sPtr;
+			typedef boost::movelib::unique_ptr<SPIClass> SPIClass_uPtr;
 
             struct Config
             {
@@ -70,10 +73,7 @@ namespace Thor
 				 *	@param[in] channel Hardware SPI peripheral channel number (i.e. 1 for SPI1, 2 for SPI2, etc)
 				 *	@return const boost::shared_ptr<SPIClass>&
 				 **/
-				static const boost::shared_ptr<SPIClass>& create(const int channel);
-				SPIClass() = default;
-				~SPIClass() = default;
-
+                static const SPIClass_sPtr create(const uint8_t &channel);
 
                 /**
                  *  @brief Configure the SPI channel to the given settings.
@@ -92,9 +92,31 @@ namespace Thor
                  *
                  *  If this is the last reference to the channel, the entire channel will be destroyed at the hardware level
 				 *
-				 *  @return void
+				 *  @return Thor::Definitions::Status
 				 */
-				void end();
+				Thor::Definitions::Status end();
+
+                /**
+				 *  @brief Attempts to reserve the hardware this SPIClass is tied to.
+                 *
+                 *  Assuming a lock is achieved, the class will hold complete ownership of the hardware until it explicitly
+                 *  released it or the auto-unlock feature is used.
+				 *
+                 *  @param[in]  timeout_ms  The number of milliseconds to wait to achieve a lock
+				 *  @return Thor::Definitions::Status
+				 */
+                Thor::Definitions::Status reserve(const uint32_t &timeout_ms = 0u);
+
+                /**
+				 *  @brief Attempts to release the hardware this SPIClass is tied to
+                 *
+                 *  This will only work if the class instance holds ownership of the hardware and the previous transfer signals
+                 *  that it has completed. It cannot be used to force a release of another instance's lock.
+				 *
+                 *  @param[in]  timeout_ms  The number of milliseconds to achieve successful release
+				 *  @return Thor::Definitions::Status
+				 */
+    			Thor::Definitions::Status release(const uint32_t &timeout_ms = 0u);
 
 				/**
 				 *  @brief Writes a buffer of data
@@ -104,7 +126,8 @@ namespace Thor
 				 *  @param[in]	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
 				 *  @return Thor::Definitions::Status
 				 */
-                Thor::Definitions::Status writeBytes(const uint8_t *const txBuffer, size_t length = 0, const bool &autoDisableCS = true);
+                Thor::Definitions::Status writeBytes(const uint8_t *const txBuffer, size_t length = 0,
+                    const bool &autoDisableCS = true, const bool &autoRelease = false);
 
                 /**
 				 *  @brief Simultaneously writes and reads data
@@ -115,55 +138,73 @@ namespace Thor
 				 *  @param[in] 	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
 				 *  @return Thor::Definitions::Status
 				 */
-                Thor::Definitions::Status readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length = 0, const bool &autoDisableCS = true);
-
-
+                Thor::Definitions::Status readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length = 0,
+                    const bool &autoDisableCS = true, const bool &autoRelease = false);
 
 				/**
 				 *  @brief Writes the device slave select line high or low
 				 *
 				 *  @param[in]	state 	The state to drive the chip select line to
-				 *  @return void
+				 *  @return Thor::Definitions::Status
 				 */
-				void setChipSelect(Thor::Definitions::GPIO::LogicLevel state);
+				Thor::Definitions::Status setChipSelect(const Thor::Definitions::GPIO::LogicLevel &state);
 
-				/**
+                /**
+				 *  @brief Sets the behavior of the chip select line
+				 *
+				 *  @param[in]	mode    The desired operating mode
+				 *  @return Thor::Definitions::Status
+				 */
+                Thor::Definitions::Status setChipSelectControlMode(const Thor::Definitions::SPI::ChipSelectMode &mode);
+
+                /**
 				 *  @brief Attaches an external pin to be used as the slave select
 				 *
 				 *  @param[in] 	slave_select 	Reference to the initialized GPIO pin
-				 *  @return void
+				 *  @return Thor::Definitions::Status
 				 */
-                void attachChipSelect(const Thor::Peripheral::GPIO::GPIOClass_sPtr &slave_select);
+                Thor::Definitions::Status attachChipSelect(const Thor::Peripheral::GPIO::GPIOClass_sPtr &chipSelect);
 
                 /**
 				 *  @brief Removes any previous pin that was attached as the slave select
 				 *
-				 *  @return void
+				 *  @return Thor::Definitions::Status
 				 */
-				void detachChipSelect();
-
-    			Thor::Definitions::Status reserve(const uint32_t &timeout_ms = 0u);
-
-    			Thor::Definitions::Status release(const uint32_t &timeout_ms = 0u);
+				Thor::Definitions::Status detachChipSelect();
 
 				/**
 				 * 	@brief Place the specified peripheral into a given mode
 				 *
-				 *	@param[in]	periph	Explicitly state which peripheral subsystem (TX or RX) to set from Thor::Peripheral::SPI::SubPeripheral
-				 *	@param[in] 	mode	The corresponding mode for the peripheral to enter, from Thor::Peripheral::SPI::Modes
+				 *	@param[in]	periph	Explicitly state which peripheral subsystem (TX or RX) to set
+				 *	@param[in] 	mode	The corresponding mode for the peripheral to enter
 				 *	@return Thor::Definitions::Status
 				 **/
-				Thor::Definitions::Status setMode(const Thor::Definitions::SubPeripheral& periph, const Thor::Definitions::Modes& mode);
+                Thor::Definitions::Status setMode(const Thor::Definitions::SubPeripheral &periph, const Thor::Definitions::Modes &mode);
 
-				/**
+                /**
+				 * 	@brief Get the current mode of a subperipheral
+				 *
+				 *	@param[in]	periph	The subperipheral to be checked
+				 *	@param[out] mode	The current mode this peripheral is in
+				 *	@return Thor::Definitions::Status
+				 **/
+                Thor::Definitions::Status getMode(const Thor::Definitions::SubPeripheral &periph, Thor::Definitions::Modes *const mode);
+
+                /**
 				 *  @brief Updates the clock frequency of an already initialized SPI object
 				 *
 				 *	@param[in] freq		Desired clock frequency in Hz
 				 *	@return Thor::Definitions::Status
 				 **/
-				Thor::Definitions::Status updateClockFrequency(uint32_t freq);
+				Thor::Definitions::Status setClockFrequency(const uint32_t &freq);
 
-                uint32_t getClockFrequency();
+                /**
+				 *  @brief Gets the output clock frequency setting
+				 *
+				 *	@param[out] freq    The current clock frequency in Hz
+				 *	@return Thor::Definitions::Status
+				 **/
+                Thor::Definitions::Status getClockFrequency(uint32_t *const freq);
 
 				/**
 				 *  @brief Normal interrupt based ISR handler
@@ -192,8 +233,9 @@ namespace Thor
                 void removeThreadTrigger(const SemaphoreHandle_t *const semphr);
                 #endif
 
-    			
 
+                SPIClass() = default;
+				~SPIClass() = default;
 
               protected:
                 friend void(::HAL_SPI_TxCpltCallback)(SPI_HandleTypeDef *hspi);
@@ -204,16 +246,19 @@ namespace Thor
 
                 static uint32_t getFrequency(const int &channel, const uint32_t &prescaler);
 
-                Thor::Definitions::Status transfer_blocking(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
+                Thor::Definitions::Status transfer_blocking(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
+                    const bool &autoDisableCS, const bool &autoRelease = false);
 
-                Thor::Definitions::Status transfer_interrupt(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
+                Thor::Definitions::Status transfer_interrupt(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
+                    const bool &autoDisableCS, const bool &autoRelease = false);
 
-                Thor::Definitions::Status transfer_dma(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS);
+                Thor::Definitions::Status transfer_dma(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
+                    const bool &autoDisableCS, const bool &autoRelease = false);
 
     			bool isAvailable(const uint32_t &ownerID);
 
     			bool isLocked();
-                
+
     			bool isOwner(const uint32_t &ownerID = std::numeric_limits<uint32_t>::max());
 
     			bool isTransferComplete();
@@ -230,15 +275,16 @@ namespace Thor
 				 *
 				 *  @param[in]	channel 	Which hardware peripheral to control with the class
 				 */
-                SPIClass(const int& channel);
+                SPIClass(const uint8_t& channel);
 
-                volatile bool tx_complete = true;
-                volatile bool isr_disable_chip_select;
-
+                bool alternateCS;
     			uint32_t ownerID;
+                uint8_t spi_channel;
 
-                int spi_channel;
-				uint32_t actualClockFrequency = 0;
+                Thor::Definitions::SPI::ChipSelectMode chipSelectMode = Thor::Definitions::SPI::ChipSelectMode::MANUAL;
+                Thor::Definitions::Modes txMode = Thor::Definitions::Modes::MODE_UNDEFINED;
+                Thor::Definitions::Modes rxMode = Thor::Definitions::Modes::MODE_UNDEFINED;
+
 				struct SPIClassStatus
 				{
 					bool gpio_enabled = false;
@@ -250,21 +296,17 @@ namespace Thor
 					bool dma_interrupts_enabled_rx = false;
 				} hardwareStatus;
 
-                Thor::Definitions::Modes txMode = Thor::Definitions::Modes::MODE_UNDEFINED;
-                Thor::Definitions::Modes rxMode = Thor::Definitions::Modes::MODE_UNDEFINED;
-
 				SPI_HandleTypeDef spi_handle;
 				DMA_HandleTypeDef hdma_spi_tx;
 				DMA_HandleTypeDef hdma_spi_rx;
 
 				IT_Initializer ITSettingsHW, ITSettings_DMA_TX, ITSettings_DMA_RX;
 
-				bool alternateCS;
-
 				Thor::Peripheral::GPIO::GPIOClass_sPtr externalCS;
                 Thor::Peripheral::GPIO::GPIOClass_uPtr MOSI, MISO, SCK, CS;
 
-    			void lock(const bool &external_lock = false);
+                void resetISRFlags();
+                void lock(const bool &external_lock = false);
     			void unlock();
 
 				void SPI_GPIO_Init();
@@ -283,8 +325,7 @@ namespace Thor
 				void SPI_DMA_EnableInterrupts(const Thor::Definitions::SubPeripheral& periph);
 				void SPI_DMA_DisableInterrupts(const Thor::Definitions::SubPeripheral& periph);
 			};
-			typedef boost::shared_ptr<SPIClass> SPIClass_sPtr;
-			typedef boost::movelib::unique_ptr<SPIClass> SPIClass_uPtr;
+
 
 
             class ChimeraSPI : public Chimera::SPI::Interface
@@ -300,11 +341,14 @@ namespace Thor
 
                 Chimera::SPI::Status setChipSelectControlMode(const Chimera::SPI::ChipSelectMode &mode) override;
 
-                Chimera::SPI::Status writeBytes(const uint8_t *const txBuffer, size_t length, const bool &disableCS = true) override;
+                Chimera::SPI::Status writeBytes(const uint8_t *const txBuffer, size_t length,
+                    const bool &disableCS = true, const bool &autoRelease = false) override;
 
-                Chimera::SPI::Status readBytes(uint8_t *const rxBuffer, size_t length, const bool &disableCS = true) override;
+                Chimera::SPI::Status readBytes(uint8_t *const rxBuffer, size_t length,
+                    const bool &disableCS = true, const bool &autoRelease = false) override;
 
-                Chimera::SPI::Status readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length, const bool& disableCS = true) override;
+                Chimera::SPI::Status readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
+                    const bool &disableCS = true, const bool &autoRelease = false) override;
 
                 Chimera::SPI::Status setPeripheralMode(const Chimera::SPI::SubPeripheral &periph, const Chimera::SPI::SubPeripheralMode &mode) override;
 
@@ -337,6 +381,8 @@ namespace Thor
                 static uint32_t convertClockPhase(const Chimera::SPI::ClockMode &mode, bool *const error);
                 static uint32_t convertClockPolarity(const Chimera::SPI::ClockMode &mode, bool *const error);
                 static uint32_t convertBaudRatePrescaler(const int &channel, const uint32_t &freq, bool *const error);
+
+                static Thor::Definitions::SPI::ChipSelectMode convertChipSelectMode(const Chimera::SPI::ChipSelectMode &mode, bool *const error);
 
               private:
                 bool conversionError;
