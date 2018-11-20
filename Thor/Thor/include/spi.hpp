@@ -340,8 +340,9 @@ namespace Thor
 				void SPI_DMA_DeInit(const Thor::Definitions::SubPeripheral& periph);
 				void SPI_DMA_EnableInterrupts(const Thor::Definitions::SubPeripheral& periph);
 				void SPI_DMA_DisableInterrupts(const Thor::Definitions::SubPeripheral& periph);
-			};
 
+
+			};
 
 
             class ChimeraSPI : public Chimera::SPI::Interface
@@ -351,43 +352,43 @@ namespace Thor
 
                 ~ChimeraSPI() = default;
 
-                Chimera::SPI::Status init(const Chimera::SPI::Setup& setupStruct) override;
+                Chimera::SPI::Status init(const Chimera::SPI::Setup& setupStruct) final override;
 
-                Chimera::SPI::Status setChipSelect(const Chimera::GPIO::State &value) override;
+                Chimera::SPI::Status setChipSelect(const Chimera::GPIO::State &value) final override;
 
-                Chimera::SPI::Status setChipSelectControlMode(const Chimera::SPI::ChipSelectMode &mode) override;
+                Chimera::SPI::Status setChipSelectControlMode(const Chimera::SPI::ChipSelectMode &mode) final override;
 
                 Chimera::SPI::Status writeBytes(const uint8_t *const txBuffer, size_t length,
-                    const bool &disableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10) override;
+                    const bool &disableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10) final override;
 
                 Chimera::SPI::Status readBytes(uint8_t *const rxBuffer, size_t length,
-                    const bool &disableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10) override;
+                    const bool &disableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10) final override;
 
                 Chimera::SPI::Status readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
-                    const bool &disableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10) override;
+                    const bool &disableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10) final override;
 
-                Chimera::SPI::Status setPeripheralMode(const Chimera::SPI::SubPeripheral &periph, const Chimera::SPI::SubPeripheralMode &mode) override;
+                Chimera::SPI::Status setPeripheralMode(const Chimera::SPI::SubPeripheral &periph, const Chimera::SPI::SubPeripheralMode &mode) final override;
 
-                Chimera::SPI::Status setClockFrequency(const uint32_t &freq) override;
+                Chimera::SPI::Status setClockFrequency(const uint32_t &freq) final override;
 
-                Chimera::SPI::Status getClockFrequency(uint32_t *const freq) override;
+                Chimera::SPI::Status getClockFrequency(uint32_t *const freq) final override;
 
-                Chimera::SPI::Status reserve(const uint32_t &timeout_ms = 0u) override;
+                Chimera::SPI::Status reserve(const uint32_t &timeout_ms = 0u) final override;
 
-                Chimera::SPI::Status release(const uint32_t &timeout_ms = 0u) override;
+                Chimera::SPI::Status release(const uint32_t &timeout_ms = 0u) final override;
 
-                Chimera::SPI::Status onWriteCompleteCallback(const Chimera::void_func_void func) override;
+                Chimera::SPI::Status onWriteCompleteCallback(const Chimera::void_func_void func) final override;
 
-                Chimera::SPI::Status onReadCompleteCallback(const Chimera::void_func_void func) override;
+                Chimera::SPI::Status onReadCompleteCallback(const Chimera::void_func_void func) final override;
 
-                Chimera::SPI::Status onReadWriteCompleteCallback(const Chimera::void_func_void func) override;
+                Chimera::SPI::Status onReadWriteCompleteCallback(const Chimera::void_func_void func) final override;
 
-                Chimera::SPI::Status onErrorCallback(const Chimera::void_func_uint32_t func) override;
+                Chimera::SPI::Status onErrorCallback(const Chimera::void_func_uint32_t func) final override;
 
                 #if defined(USING_FREERTOS)
-                Chimera::SPI::Status attachEventWakeup(const Chimera::FreeRTOS::SPIEvent &event, const SemaphoreHandle_t *const semphr) override;
+                Chimera::SPI::Status attachEventWakeup(const Chimera::FreeRTOS::SPIEvent &event, const SemaphoreHandle_t *const semphr) final override;
 
-                Chimera::SPI::Status removeEventWakeup(const SemaphoreHandle_t *const semphr) override;
+                Chimera::SPI::Status removeEventWakeup(const SemaphoreHandle_t *const semphr) final override;
                 #endif
 
                 Thor::Peripheral::SPI::Config convertInitSettings(const Chimera::SPI::Setup &setup);

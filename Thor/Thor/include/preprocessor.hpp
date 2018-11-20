@@ -10,8 +10,8 @@ https://clang.llvm.org/docs/LanguageExtensions.html
     #error FATAL ERROR: Please use a compiler that supports __has_include(), such as Clang or MSVC 2015 Update 2 or higher
 #endif
 
-#if !__cpp_exceptions
-    #error FATAL ERROR: Please enable exceptions. This is required for some of the Boost libraries.
+#if __cpp_exceptions
+    #error FATAL ERROR: Please disable exceptions.
 #endif
 
 /*-----------------------------------------------------
@@ -44,7 +44,14 @@ STM32
 #endif
 
 #ifndef USE_FULL_LL_DRIVER
-    #error Please define USE_FULL_LL_DRIVER in the project properties preprocessor tab.
+    #error Please define USE_FULL_LL_DRIVER in the compiler preprocessor
+#endif
+
+/*-------------------------------------------
+Boost
+-------------------------------------------*/
+#ifndef BOOST_NO_EXCEPTIONS
+    #error Please define BOOST_NO_EXCEPTIONS in the compiler preprocessor
 #endif
 
 /*-------------------------------------------
