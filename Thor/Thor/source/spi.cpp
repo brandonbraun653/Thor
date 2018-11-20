@@ -463,13 +463,19 @@ namespace Thor
             }
 
             Thor::Definitions::Status SPIClass::writeBytes(const uint8_t *const txBuffer, size_t length,
-                const bool &autoDisableCS, const bool &autoRelease)
+                                                           const bool &autoDisableCS, const bool &autoRelease, uint32_t timeoutMS)
             {
-                return readWriteBytes(txBuffer, nullptr, length, autoDisableCS, autoRelease);
+                return readWriteBytes(txBuffer, nullptr, length, autoDisableCS, autoRelease, timeoutMS);
+            }
+
+            Thor::Definitions::Status SPIClass::readBytes(uint8_t *const rxBuffer, size_t length,
+                                                          const bool &autoDisableCS, const bool &autoRelease, uint32_t timeoutMS)
+            {
+                return readWriteBytes(nullptr, rxBuffer, length, autoDisableCS, autoRelease, timeoutMS);
             }
 
             Thor::Definitions::Status SPIClass::readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
-                const bool &autoDisableCS, const bool &autoRelease)
+                                                               const bool &autoDisableCS, const bool &autoRelease, uint32_t timeoutMS)
             {
                 /*------------------------------------------------
                 Verify hardware is initialized and function inputs are ok
@@ -489,7 +495,7 @@ namespace Thor
                 switch (txMode)
                 {
                 case Modes::BLOCKING:
-                    return transfer_blocking(txBuffer, rxBuffer, length, autoDisableCS, autoRelease);
+                    return transfer_blocking(txBuffer, rxBuffer, length, autoDisableCS, autoRelease, timeoutMS);
                     break;
 
                 case Modes::INTERRUPT:
@@ -825,15 +831,13 @@ namespace Thor
             }
 
             Thor::Definitions::Status SPIClass::transfer_blocking(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
-                const bool &autoDisableCS, const bool &autoRelease)
+                const bool &autoDisableCS, const bool &autoRelease, uint32_t timeoutMS)
             {
                 HAL_StatusTypeDef error = HAL_OK;
                 Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_OK;
 
-                uint32_t timeout = BLOCKING_TIMEOUT_MS;
-
                 #if defined(USING_FREERTOS)
-                timeout = pdMS_TO_TICKS(BLOCKING_TIMEOUT_MS);
+                timeoutMS = pdMS_TO_TICKS(timeoutMS);
                 #endif
 
                 /*------------------------------------------------
@@ -861,17 +865,17 @@ namespace Thor
                     /*------------------------------------------------
                     Execute the transfer
                     -------------------------------------------------*/
-					if (txBuffer && !rxBuffer)
-					{
-    					/*------------------------------------------------
+                    if (txBuffer && !rxBuffer)
+                    {
+                        /*------------------------------------------------
     					The HAL operation doesn't modify the transmit buffer, but for some reason the
     					designers did not add const to the function signature. This feels nasty, but it
     					must be done.
     					-------------------------------------------------*/
-						error = HAL_SPI_Transmit(&spi_handle, const_cast<uint8_t*>(txBuffer), length, timeout);
-					}
-					else if (txBuffer && rxBuffer)
-					{
+                        error = HAL_SPI_Transmit(&spi_handle, const_cast<uint8_t *>(txBuffer), length, timeoutMS);
+                    }
+                    else if (rxBuffer && !txBuffer)
+                    {
                         /*------------------------------------------------
                         In order for TransmitReceive to work, both subperipherals must be in the same mode.
                         This will silently clobber whatever settings were previously there.
@@ -881,13 +885,31 @@ namespace Thor
                             setMode(SubPeripheral::RX, txMode);
                         }
 
-    					/*------------------------------------------------
+                        /*------------------------------------------------
     					The HAL operation doesn't modify the transmit buffer, but for some reason the
     					designers did not add const to the function signature. This feels nasty, but it
     					must be done.
     					-------------------------------------------------*/
-						error = HAL_SPI_TransmitReceive(&spi_handle, const_cast<uint8_t*>(txBuffer), const_cast<uint8_t*>(rxBuffer), length, timeout);
-					}
+                        error = HAL_SPI_TransmitReceive(&spi_handle, const_cast<uint8_t *>(rxBuffer), const_cast<uint8_t *>(rxBuffer), length, timeoutMS);
+                    }
+                    else if (txBuffer && rxBuffer)
+                    {
+                        /*------------------------------------------------
+                        In order for TransmitReceive to work, both subperipherals must be in the same mode.
+                        This will silently clobber whatever settings were previously there.
+                        -------------------------------------------------*/
+                        if (rxMode != txMode)
+                        {
+                            setMode(SubPeripheral::RX, txMode);
+                        }
+
+                        /*------------------------------------------------
+    					The HAL operation doesn't modify the transmit buffer, but for some reason the
+    					designers did not add const to the function signature. This feels nasty, but it
+    					must be done.
+    					-------------------------------------------------*/
+                        error = HAL_SPI_TransmitReceive(&spi_handle, const_cast<uint8_t *>(txBuffer), const_cast<uint8_t *>(rxBuffer), length, timeoutMS);
+                    }
                     else
                     {
                         status = Thor::Definitions::Status::PERIPH_INVALID_PARAM;
@@ -961,37 +983,41 @@ namespace Thor
                     channelState[spi_channel].auto_unlock = autoRelease;
                     channelState[spi_channel].auto_disable_cs = autoDisableCS;
 
-					if (txBuffer && !rxBuffer)
+                    if (txBuffer && !rxBuffer)
                     {
                         /*------------------------------------------------
                         The HAL operation doesn't modify the transmit buffer, but for some reason the
                         designers did not add const to the function signature. This feels nasty, but it
                         must be done.
                         -------------------------------------------------*/
-                        error = HAL_SPI_Transmit_IT(&spi_handle, const_cast<uint8_t*>(txBuffer), length);
+                        error = HAL_SPI_Transmit_IT(&spi_handle, const_cast<uint8_t *>(txBuffer), length);
                         status = Thor::Definitions::Status::PERIPH_TX_IN_PROGRESS;
                     }
-					else if (txBuffer && rxBuffer)
-					{
-						/*------------------------------------------------
+                    else if (txBuffer && rxBuffer)
+                    {
+                        /*------------------------------------------------
                         In order for TransmitReceive to work, both subperipherals must be in the same mode.
                         This will silently clobber whatever settings were previously there.
                         -------------------------------------------------*/
-						if (rxMode != txMode)
+                        if (rxMode != txMode)
                         {
                             setMode(SubPeripheral::RX, txMode);
                         }
 
                         status = Thor::Definitions::Status::PERIPH_TXRX_IN_PROGRESS;
 
-    					/*------------------------------------------------
+                        /*------------------------------------------------
     					The HAL operation doesn't modify the transmit buffer, but for some reason the
     					designers did not add const to the function signature. This feels nasty, but it
     					must be done.
     					-------------------------------------------------*/
-						error = HAL_SPI_TransmitReceive_IT(&spi_handle, const_cast<uint8_t*>(txBuffer), const_cast<uint8_t*>(rxBuffer), length);
-					}
-		            else
+                        error = HAL_SPI_TransmitReceive_IT(&spi_handle, const_cast<uint8_t *>(txBuffer), const_cast<uint8_t *>(rxBuffer), length);
+                    }
+                    else if (rxBuffer && !txBuffer)
+                    {
+                        status = Thor::Definitions::Status::PERIPH_ERROR;
+                    }
+                    else
                     {
                         resetISRFlags();
                         status = Thor::Definitions::Status::PERIPH_INVALID_PARAM;
@@ -1070,6 +1096,10 @@ namespace Thor
                         must be done.
                         -------------------------------------------------*/
                         error = HAL_SPI_Transmit_DMA(&spi_handle, const_cast<uint8_t*>(txBuffer), length);
+                    }
+                    else if (rxBuffer && !txBuffer)
+                    {
+                        status = Thor::Definitions::Status::PERIPH_ERROR;
                     }
 					else if (txBuffer && rxBuffer)
 					{
@@ -1225,9 +1255,9 @@ namespace Thor
                     /*------------------------------------------------
                     Setup GPIO. Mode must be ALT_PP rather than Input for reads to work.
                     -------------------------------------------------*/
-					MISO->mode(spi_cfg[spi_channel].MISO.Mode, spi_cfg[spi_channel].MISO.Pull);
-					MOSI->mode(spi_cfg[spi_channel].MOSI.Mode, spi_cfg[spi_channel].MOSI.Pull);
-					SCK->mode(spi_cfg[spi_channel].SCK.Mode, spi_cfg[spi_channel].SCK.Pull);
+					MISO->mode(PinMode::ALT_PP, PinPull::PULLUP);
+					MOSI->mode(PinMode::ALT_PP, PinPull::PULLUP);
+					SCK->mode(PinMode::ALT_PP, PinPull::PULLUP);
 
     				/*------------------------------------------------
     				Decide how to initialize the CS pin. There are a few options.
@@ -1244,8 +1274,7 @@ namespace Thor
     				else if(alternateCS)
                     {
                         /*------------------------------------------------
-                        User supplied description of the GPIO pin to be initialized. This
-                        is a private class object.
+                        User supplied description of the GPIO pin to be initialized
                         -------------------------------------------------*/
                         CS->mode(Thor::Definitions::GPIO::PinMode::OUTPUT_PP, Thor::Definitions::GPIO::PinPull::NOPULL);
                         CS->write(LogicLevel::HIGH);
@@ -1253,23 +1282,15 @@ namespace Thor
                     else
                     {
                         /*------------------------------------------------
-                        User supplied nothing. This is the pin described in defaults.cpp.
-                        This is a private class object.
+                        User supplied nothing. This is the pin described in defaults.cpp
                         -------------------------------------------------*/
-                        CS->mode(spi_cfg[spi_channel].NSS.Mode, spi_cfg[spi_channel].NSS.Pull);
+                        CS->mode(PinMode::ALT_PP, PinPull::PULLUP);
                     }
 
                     hardwareStatus.gpio_enabled = true;
 				}
 				else
 				{
-					/*
-                    MISO: AF_PP for driving data out
-                    MOSI: AF_OD for input
-                    SCK:  AF_OD
-                    NSS:  AF_OD
-                    */
-
                     MISO->mode(PinMode::ALT_PP, PinPull::PULLUP);
                     MOSI->mode(PinMode::ALT_OD, PinPull::PULLUP);
                     SCK->mode(PinMode::ALT_OD, PinPull::PULLUP);
@@ -1277,8 +1298,6 @@ namespace Thor
 
                     hardwareStatus.gpio_enabled = true;
 				}
-
-
 			}
 
 			void SPIClass::SPI_GPIO_DeInit()
@@ -1730,11 +1749,11 @@ namespace Thor
             }
 
             Chimera::SPI::Status ChimeraSPI::writeBytes(const uint8_t *const txBuffer, size_t length,
-                const bool &disableCS, const bool &autoRelease)
+                const bool &disableCS, const bool &autoRelease, uint32_t timeoutMS)
             {
                 Chimera::SPI::Status status = Chimera::SPI::Status::OK;
 
-                if(spi->writeBytes(txBuffer, length, disableCS, autoRelease) != Thor::Definitions::Status::PERIPH_OK)
+                if(spi->writeBytes(txBuffer, length, disableCS, autoRelease, timeoutMS) != Thor::Definitions::Status::PERIPH_OK)
                 {
                     status = Chimera::SPI::Status::ERROR;
                 }
@@ -1743,17 +1762,24 @@ namespace Thor
             }
 
             Chimera::SPI::Status ChimeraSPI::readBytes(uint8_t *const rxBuffer, size_t length,
-                const bool &disableCS, const bool &autoRelease)
-            {
-                return Chimera::SPI::Status::ERROR;
-            }
-
-            Chimera::SPI::Status ChimeraSPI::readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
-                const bool &disableCS, const bool &autoRelease)
+                const bool &disableCS, const bool &autoRelease, uint32_t timeoutMS)
             {
                 Chimera::SPI::Status status = Chimera::SPI::Status::OK;
 
-                if(spi->readWriteBytes(txBuffer, rxBuffer, length, disableCS, autoRelease) != Thor::Definitions::Status::PERIPH_OK)
+                if(spi->readBytes(rxBuffer, length, disableCS, autoRelease, timeoutMS) != Thor::Definitions::Status::PERIPH_OK)
+                {
+                    status = Chimera::SPI::Status::ERROR;
+                }
+
+                return status;
+            }
+
+            Chimera::SPI::Status ChimeraSPI::readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
+                const bool &disableCS, const bool &autoRelease, uint32_t timeoutMS)
+            {
+                Chimera::SPI::Status status = Chimera::SPI::Status::OK;
+
+                if(spi->readWriteBytes(txBuffer, rxBuffer, length, disableCS, autoRelease, timeoutMS) != Thor::Definitions::Status::PERIPH_OK)
                 {
                     status = Chimera::SPI::Status::ERROR;
                 }

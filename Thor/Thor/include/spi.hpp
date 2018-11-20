@@ -124,22 +124,38 @@ namespace Thor
 				 *  @param[in] 	txBuffer 		Input data buffer that will be written to MOSI
 				 *  @param[in] 	length 			Number of bytes to be transfered
 				 *  @param[in]	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
+                 *  @param[in]  timeoutMS       When in blocking mode, this is how long to wait for transfer complete. Interrupt/DMA ignores this value.
 				 *  @return Thor::Definitions::Status
 				 */
                 Thor::Definitions::Status writeBytes(const uint8_t *const txBuffer, size_t length = 0,
-                    const bool &autoDisableCS = true, const bool &autoRelease = false);
+                    const bool &autoDisableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10);
+
+                /**
+				 *  @brief Reads a buffer of data
+                 *
+                 *  use paragraphs for documenting master vs slave behavior
+				 *
+				 *  @param[in] 	txBuffer 		Input data buffer that will be written to MOSI
+				 *  @param[in] 	length 			Number of bytes to be transfered
+				 *  @param[in]	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
+                 *  @param[in]  timeoutMS       When in blocking mode, this is how long to wait for transfer complete. Interrupt/DMA ignores this value.
+				 *  @return Thor::Definitions::Status
+				 */
+                Thor::Definitions::Status readBytes(uint8_t *const rxBuffer, size_t length = 0,
+                    const bool &autoDisableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10);
 
                 /**
 				 *  @brief Simultaneously writes and reads data
 				 *
 				 *  @param[in] 	txBuffer	    Data buffer that will be written to MOSI
-				 *  @param[out] 	rxBuffer 		Data buffer that will have MISO written to it
+				 *  @param[out] rxBuffer 		Data buffer that will have MISO written to it
 				 *  @param[in] 	length 			Number of bytes to be transfered
 				 *  @param[in] 	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
+                 *  @param[in]  timeoutMS       When in blocking mode, this is how long to wait for transfer complete. Interrupt/DMA ignores this value.
 				 *  @return Thor::Definitions::Status
 				 */
                 Thor::Definitions::Status readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length = 0,
-                    const bool &autoDisableCS = true, const bool &autoRelease = false);
+                    const bool &autoDisableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10);
 
 				/**
 				 *  @brief Writes the device slave select line high or low
@@ -247,13 +263,13 @@ namespace Thor
                 static uint32_t getFrequency(const int &channel, const uint32_t &prescaler);
 
                 Thor::Definitions::Status transfer_blocking(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
-                    const bool &autoDisableCS, const bool &autoRelease = false);
+                    const bool &autoDisableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10);
 
                 Thor::Definitions::Status transfer_interrupt(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
-                    const bool &autoDisableCS, const bool &autoRelease = false);
+                    const bool &autoDisableCS = true, const bool &autoRelease = false);
 
                 Thor::Definitions::Status transfer_dma(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
-                    const bool &autoDisableCS, const bool &autoRelease = false);
+                    const bool &autoDisableCS = true, const bool &autoRelease = false);
 
     			bool isAvailable(const uint32_t &ownerID);
 
@@ -342,13 +358,13 @@ namespace Thor
                 Chimera::SPI::Status setChipSelectControlMode(const Chimera::SPI::ChipSelectMode &mode) override;
 
                 Chimera::SPI::Status writeBytes(const uint8_t *const txBuffer, size_t length,
-                    const bool &disableCS = true, const bool &autoRelease = false) override;
+                    const bool &disableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10) override;
 
                 Chimera::SPI::Status readBytes(uint8_t *const rxBuffer, size_t length,
-                    const bool &disableCS = true, const bool &autoRelease = false) override;
+                    const bool &disableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10) override;
 
                 Chimera::SPI::Status readWriteBytes(const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
-                    const bool &disableCS = true, const bool &autoRelease = false) override;
+                    const bool &disableCS = true, const bool &autoRelease = false, uint32_t timeoutMS = 10) override;
 
                 Chimera::SPI::Status setPeripheralMode(const Chimera::SPI::SubPeripheral &periph, const Chimera::SPI::SubPeripheralMode &mode) override;
 

@@ -7,7 +7,7 @@ spi.speed = '1MHz'
 
 # send two bytes and receive answer
 spi.cs = True
-data = spi.transfer([0x82])
+data = spi.transfer([0x82, 0x83, 0x84, 0x85, 0x86])
 spi.cs = False
 
 # Make this a loop so we can transfer data back and forth

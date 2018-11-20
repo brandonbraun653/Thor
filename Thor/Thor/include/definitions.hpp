@@ -168,8 +168,6 @@ namespace Thor
                 NUM_PULL,
                 UNKNOWN_PULL
 			};
-
-
         }
 
         /** @namespace Thor::Definitions::TIMER */
@@ -310,7 +308,7 @@ namespace Thor
 		{
 			constexpr uint8_t MAX_SPI_CHANNELS = 6;
 			constexpr uint8_t SPI_BUFFER_SIZE = 32;
-			constexpr uint32_t BLOCKING_TIMEOUT_MS = 10;
+			constexpr uint32_t BLOCKING_TIMEOUT_MS = 100;
 
             enum class ChipSelectMode : uint8_t
             {
