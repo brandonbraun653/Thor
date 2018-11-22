@@ -55,6 +55,15 @@ Boost
 #endif
 
 /*-------------------------------------------
+CppUTest
+-------------------------------------------*/
+#if __has_include("CppUTest/CommandLineTestRunner.h")
+    #if !defined(CPPUTEST_MEM_LEAK_DETECTION_DISABLED)
+    #error Please define CPPUTEST_MEM_LEAK_DETECTION_DISABLED in the compiler preprocessor. Thor cannnot handle Unit Testing with leak detection.
+    #endif
+#endif
+
+/*-------------------------------------------
 FreeRTOS
 -------------------------------------------*/
 #if __has_include("FreeRTOS.h")

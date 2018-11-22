@@ -64,6 +64,7 @@ extern "C" {
 		__asm("BKPT #0\n"); // Break into the debugger
 	}
 
+    #if defined(USING_FREERTOS)
 	void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 	{
 		/* If you get here, check the task name and call stack to see what caused the issue. */
@@ -85,6 +86,7 @@ extern "C" {
 
 		}
 	}
+    #endif
 
 #pragma GCC diagnostic pop
 

@@ -124,6 +124,8 @@ namespace Thor
 			/* These values can safely take on the full range of the priority grouping bits (0-15) with 0 as the highest priority. */
 			const uint32_t UART_IT_PREEMPT_PRIORITY = 2;
 			const uint32_t UART_DMA_PREEMPT_PRIORITY = 2;
+            const uint32_t USART_IT_PREEMPT_PRIORITY = UART_IT_PREEMPT_PRIORITY;
+            const uint32_t USART_DMA_PREEMPT_PRIORITY = UART_DMA_PREEMPT_PRIORITY;
 
 			#endif
 		}

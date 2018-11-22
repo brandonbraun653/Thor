@@ -373,7 +373,7 @@ namespace Thor
 					#if defined(USING_FREERTOS)
 					halCode = HAL_UART_Transmit(&uart_handle, val, length, pdMS_TO_TICKS(BLOCKING_TIMEOUT_MS));
 					#else
-					halCode = HAL_UART_Transmit(&uart_handle, val, length, BLOCKING_TIMEOUT_MS));
+					halCode = HAL_UART_Transmit(&uart_handle, val, length, BLOCKING_TIMEOUT_MS);
 					#endif
 
 					if (halCode == HAL_TIMEOUT)
@@ -465,7 +465,7 @@ namespace Thor
 						statusCode = Status::PERIPH_OK;
 					#else
 					if (HAL_UART_Receive(&uart_handle, buff, length, BLOCKING_TIMEOUT_MS) == HAL_OK)
-						statusCode = PERIPH_OK;
+						statusCode = Status::PERIPH_OK;
 					#endif
 					break;
 

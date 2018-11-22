@@ -1846,6 +1846,7 @@ namespace Thor
                 return Chimera::SPI::Status::ERROR;
             }
 
+            #if defined(USING_FREERTOS)
             Chimera::SPI::Status ChimeraSPI::attachEventWakeup(const Chimera::FreeRTOS::SPIEvent &event, const SemaphoreHandle_t *const semphr)
             {
                 return Chimera::SPI::Status::ERROR;
@@ -1855,6 +1856,7 @@ namespace Thor
             {
                 return Chimera::SPI::Status::ERROR;
             }
+            #endif 
         }
 	}
 }
