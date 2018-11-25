@@ -1257,7 +1257,16 @@ namespace Thor
                     -------------------------------------------------*/
 					MISO->mode(PinMode::ALT_PP, PinPull::PULLUP);
 					MOSI->mode(PinMode::ALT_PP, PinPull::PULLUP);
-					SCK->mode(PinMode::ALT_PP, PinPull::PULLUP);
+
+    				if(spi_handle.Init.CLKPolarity)
+    				{
+        				SCK->mode(PinMode::ALT_PP, PinPull::PULLUP);
+    				}
+    				else
+    				{
+        				SCK->mode(PinMode::ALT_PP, PinPull::PULLDN);
+    				}
+					
 
     				/*------------------------------------------------
     				Decide how to initialize the CS pin. There are a few options.
