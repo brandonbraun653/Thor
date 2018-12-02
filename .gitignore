@@ -7,3 +7,5 @@
 **/.DS_Store
 **.obj
 **/build
+**/html
+**/rtf
