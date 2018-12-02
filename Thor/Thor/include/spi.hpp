@@ -344,7 +344,7 @@ namespace Thor
 
 			};
 
-
+            #if defined(USING_CHIMERA)
             class ChimeraSPI : public Chimera::SPI::Interface
             {
             public:
@@ -406,6 +406,7 @@ namespace Thor
                 int channel;
                 SPIClass_sPtr spi;
             };
+            #endif /* !USING_CHIMERA */
 		}
 	}
 }

@@ -1508,6 +1508,7 @@ namespace Thor
 			}
 			#endif
 
+            #if defined(USING_CHIMERA)
             ChimeraSPI::ChimeraSPI(const int& channel)
             {
                 this->channel = channel;
@@ -1866,6 +1867,8 @@ namespace Thor
                 return Chimera::SPI::Status::ERROR;
             }
             #endif 
+
+            #endif /* !USING_CHIMERA*/
         }
 	}
 }
