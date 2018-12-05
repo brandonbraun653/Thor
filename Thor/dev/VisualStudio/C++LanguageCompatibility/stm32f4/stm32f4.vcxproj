@@ -1,28 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug-C++11|VisualGDB">
-      <Configuration>Debug-C++11</Configuration>
+    <ProjectConfiguration Include="F4-Debug-C++11|VisualGDB">
+      <Configuration>F4-Debug-C++11</Configuration>
       <Platform>VisualGDB</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug-C++14|VisualGDB">
-      <Configuration>Debug-C++14</Configuration>
+    <ProjectConfiguration Include="F4-Debug-C++14|VisualGDB">
+      <Configuration>F4-Debug-C++14</Configuration>
       <Platform>VisualGDB</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug-C++17|VisualGDB">
-      <Configuration>Debug-C++17</Configuration>
+    <ProjectConfiguration Include="F4-Debug-C++17|VisualGDB">
+      <Configuration>F4-Debug-C++17</Configuration>
       <Platform>VisualGDB</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-C++11|VisualGDB">
-      <Configuration>Release-C++11</Configuration>
+    <ProjectConfiguration Include="F4-Release-C++11|VisualGDB">
+      <Configuration>F4-Release-C++11</Configuration>
       <Platform>VisualGDB</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-C++14|VisualGDB">
-      <Configuration>Release-C++14</Configuration>
+    <ProjectConfiguration Include="F4-Release-C++14|VisualGDB">
+      <Configuration>F4-Release-C++14</Configuration>
       <Platform>VisualGDB</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release-C++17|VisualGDB">
-      <Configuration>Release-C++17</Configuration>
+    <ProjectConfiguration Include="F4-Release-C++17|VisualGDB">
+      <Configuration>F4-Release-C++17</Configuration>
       <Platform>VisualGDB</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -34,24 +34,38 @@
     <InPlaceBSPSubdir />
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-C++11|VisualGDB'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Debug-C++11|VisualGDB'" Label="Configuration">
     <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-C++17|VisualGDB'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'" Label="Configuration">
     <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-C++14|VisualGDB'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Debug-C++17|VisualGDB'" Label="Configuration">
     <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
   </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release-C++11|VisualGDB'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++14|VisualGDB'" Label="Configuration">
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Debug-C++14|VisualGDB'" Label="Configuration">
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++17|VisualGDB'" Label="Configuration">
     <PlatformToolset />
     <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-C++17|VisualGDB'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'" Label="Configuration">
     <PlatformToolset />
     <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-C++14|VisualGDB'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'" Label="Configuration">
+    <PlatformToolset />
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'" Label="Configuration">
+    <PlatformToolset />
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'" Label="Configuration">
     <PlatformToolset />
     <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
   </PropertyGroup>
@@ -61,95 +75,234 @@
   <ImportGroup Label="Shared">
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-C++11|VisualGDB'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Debug-C++11|VisualGDB'">
     <GNUConfigurationType>Debug</GNUConfigurationType>
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
     <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-C++17|VisualGDB'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
     <GNUConfigurationType>Debug</GNUConfigurationType>
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
     <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-C++14|VisualGDB'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Debug-C++17|VisualGDB'">
     <GNUConfigurationType>Debug</GNUConfigurationType>
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
     <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-C++11|VisualGDB'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++14|VisualGDB'">
+    <GNUConfigurationType>Debug</GNUConfigurationType>
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
     <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-C++17|VisualGDB'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Debug-C++14|VisualGDB'">
+    <GNUConfigurationType>Debug</GNUConfigurationType>
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
     <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-C++14|VisualGDB'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++17|VisualGDB'">
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
     <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-C++11|VisualGDB'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Debug-C++11|VisualGDB'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\cmsis\CMSIS\Core\Include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\conf;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;D:\ProgramFiles\boost\boost_1_68_0;D:\git\Microcontrollers\Thor_STM32\Thor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(THOR_ROOT)/Thor;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\include;$(THOR_ROOT)\Thor\lib\cmsis\CMSIS\Core\Include;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\conf;$(BOOST_ROOT)\boost_1_68_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;STM32F446xx;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CPPLanguageStandard>CPP11</CPPLanguageStandard>
+      <CLanguageStandard>C99</CLanguageStandard>
+      <Optimization>Og</Optimization>
+      <LinkTimeOptimization>false</LinkTimeOptimization>
+    </ClCompile>
+    <Link>
+      <LinkerScript>$(THOR_ROOT)/Thor\lib\stm32hal_f4\Device\ld\STM32F446RE_flash.lds</LinkerScript>
+      <GenerateMapFile>
+      </GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(THOR_ROOT)/Thor;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\include;$(THOR_ROOT)\Thor\lib\cmsis\CMSIS\Core\Include;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\conf;$(BOOST_ROOT)\boost_1_68_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;STM32F446xx;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CPPLanguageStandard>CPP11</CPPLanguageStandard>
       <CLanguageStandard>C99</CLanguageStandard>
     </ClCompile>
+    <Link>
+      <LinkerScript>$(THOR_ROOT)/Thor\lib\stm32hal_f4\Device\ld\STM32F446RE_flash.lds</LinkerScript>
+      <GenerateMapFile>
+      </GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+    </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-C++17|VisualGDB'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Debug-C++17|VisualGDB'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\cmsis\CMSIS\Core\Include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\conf;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;D:\ProgramFiles\boost\boost_1_68_0;D:\git\Microcontrollers\Thor_STM32\Thor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(THOR_ROOT)/Thor;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\include;$(THOR_ROOT)\Thor\lib\cmsis\CMSIS\Core\Include;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\conf;$(BOOST_ROOT)\boost_1_68_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;STM32F446xx;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
       <CLanguageStandard>C99</CLanguageStandard>
+      <Optimization>Og</Optimization>
+      <LinkTimeOptimization>false</LinkTimeOptimization>
     </ClCompile>
+    <Link>
+      <LinkerScript>$(THOR_ROOT)/Thor\lib\stm32hal_f4\Device\ld\STM32F446RE_flash.lds</LinkerScript>
+      <GenerateMapFile>
+      </GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+    </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-C++14|VisualGDB'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++14|VisualGDB'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\cmsis\CMSIS\Core\Include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\conf;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;D:\ProgramFiles\boost\boost_1_68_0;D:\git\Microcontrollers\Thor_STM32\Thor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(THOR_ROOT)/Thor;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\include;$(THOR_ROOT)\Thor\lib\cmsis\CMSIS\Core\Include;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\conf;$(BOOST_ROOT)\boost_1_68_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1;USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;STM32F446xx;</PreprocessorDefinitions>
+      <CPPLanguageStandard>CPP14</CPPLanguageStandard>
+      <CLanguageStandard>C99</CLanguageStandard>
+      <Optimization>O3</Optimization>
+      <LinkTimeOptimization>true</LinkTimeOptimization>
+    </ClCompile>
+    <Link>
+      <LinkerScript>$(THOR_ROOT)/Thor\lib\stm32hal_f4\Device\ld\STM32F446RE_flash.lds</LinkerScript>
+      <GenerateMapFile>
+      </GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Debug-C++14|VisualGDB'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(THOR_ROOT)/Thor;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\include;$(THOR_ROOT)\Thor\lib\cmsis\CMSIS\Core\Include;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\conf;$(BOOST_ROOT)\boost_1_68_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;STM32F446xx;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CPPLanguageStandard>CPP14</CPPLanguageStandard>
       <CLanguageStandard>C99</CLanguageStandard>
+      <Optimization>Og</Optimization>
+      <LinkTimeOptimization>false</LinkTimeOptimization>
     </ClCompile>
+    <Link>
+      <LinkerScript>$(THOR_ROOT)/Thor\lib\stm32hal_f4\Device\ld\STM32F446RE_flash.lds</LinkerScript>
+      <GenerateMapFile>
+      </GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+    </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-C++11|VisualGDB'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++17|VisualGDB'">
     <ClCompile>
       <CLanguageStandard>C99</CLanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-C++17|VisualGDB'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
     <ClCompile>
       <CLanguageStandard>C99</CLanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-C++14|VisualGDB'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
     <ClCompile>
       <CLanguageStandard>C99</CLanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-C++11|VisualGDB'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
     <ClCompile>
-      <CPPLanguageStandard>CPP11</CPPLanguageStandard>
-      <PreprocessorDefinitions>%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1;USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;STM32F446xx;</PreprocessorDefinitions>
-      <LinkTimeOptimization>true</LinkTimeOptimization>
-      <AdditionalIncludeDirectories>D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\cmsis\CMSIS\Core\Include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\conf;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;D:\ProgramFiles\boost\boost_1_68_0;D:\git\Microcontrollers\Thor_STM32\Thor;</AdditionalIncludeDirectories>
+      <CLanguageStandard>C99</CLanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-C++17|VisualGDB'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
+    <ClCompile>
+      <CLanguageStandard>C99</CLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++17|VisualGDB'">
     <ClCompile>
       <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
       <PreprocessorDefinitions>%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1;USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;STM32F446xx;</PreprocessorDefinitions>
       <LinkTimeOptimization>true</LinkTimeOptimization>
-      <AdditionalIncludeDirectories>D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\cmsis\CMSIS\Core\Include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\conf;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;D:\ProgramFiles\boost\boost_1_68_0;D:\git\Microcontrollers\Thor_STM32\Thor;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(THOR_ROOT)/Thor;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\include;$(THOR_ROOT)\Thor\lib\cmsis\CMSIS\Core\Include;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\conf;$(BOOST_ROOT)\boost_1_68_0;</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <LinkerScript>$(THOR_ROOT)/Thor\lib\stm32hal_f4\Device\ld\STM32F446RE_flash.lds</LinkerScript>
+      <GenerateMapFile>
+      </GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+    </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-C++14|VisualGDB'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
+    <ClCompile>
+      <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
+      <PreprocessorDefinitions>%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1;USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;STM32F446xx;</PreprocessorDefinitions>
+      <LinkTimeOptimization>true</LinkTimeOptimization>
+      <AdditionalIncludeDirectories>$(THOR_ROOT)/Thor;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\include;$(THOR_ROOT)\Thor\lib\cmsis\CMSIS\Core\Include;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\conf;$(BOOST_ROOT)\boost_1_68_0;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <LinkerScript>$(THOR_ROOT)/Thor\lib\stm32hal_f4\Device\ld\STM32F446RE_flash.lds</LinkerScript>
+      <GenerateMapFile>
+      </GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
+    <ClCompile>
+      <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
+      <PreprocessorDefinitions>%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1;USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;STM32F446xx;</PreprocessorDefinitions>
+      <LinkTimeOptimization>true</LinkTimeOptimization>
+      <AdditionalIncludeDirectories>$(THOR_ROOT)/Thor;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\include;$(THOR_ROOT)\Thor\lib\cmsis\CMSIS\Core\Include;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\conf;$(BOOST_ROOT)\boost_1_68_0;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <LinkerScript>$(THOR_ROOT)/Thor\lib\stm32hal_f4\Device\ld\STM32F446RE_flash.lds</LinkerScript>
+      <GenerateMapFile>
+      </GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
+    <ClCompile>
+      <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
+      <PreprocessorDefinitions>%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1;USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;STM32F446xx;</PreprocessorDefinitions>
+      <LinkTimeOptimization>true</LinkTimeOptimization>
+      <AdditionalIncludeDirectories>$(THOR_ROOT)/Thor;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\include;$(THOR_ROOT)\Thor\lib\cmsis\CMSIS\Core\Include;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\conf;$(BOOST_ROOT)\boost_1_68_0;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <LinkerScript>$(THOR_ROOT)/Thor\lib\stm32hal_f4\Device\ld\STM32F446RE_flash.lds</LinkerScript>
+      <GenerateMapFile>
+      </GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='F4-Release-C++11|VisualGDB'">
     <ClCompile>
       <CPPLanguageStandard>CPP14</CPPLanguageStandard>
       <PreprocessorDefinitions>%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1;USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;STM32F446xx;</PreprocessorDefinitions>
       <LinkTimeOptimization>true</LinkTimeOptimization>
-      <AdditionalIncludeDirectories>D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\cmsis\CMSIS\Core\Include;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\Device\conf;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;D:\git\Microcontrollers\Thor_STM32\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;D:\ProgramFiles\boost\boost_1_68_0;D:\git\Microcontrollers\Thor_STM32\Thor;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(THOR_ROOT)/Thor;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc;$(THOR_ROOT)\Thor\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\include;$(THOR_ROOT)\Thor\lib\cmsis\CMSIS\Core\Include;$(THOR_ROOT)\Thor\lib\stm32hal_f4\Device\conf;$(BOOST_ROOT)\boost_1_68_0;</AdditionalIncludeDirectories>
+      <Optimization>O3</Optimization>
     </ClCompile>
+    <Link>
+      <LinkerScript>$(THOR_ROOT)/Thor\lib\stm32hal_f4\Device\ld\STM32F446RE_flash.lds</LinkerScript>
+      <GenerateMapFile>
+      </GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
   </ItemGroup>
@@ -245,14 +398,10 @@
     <ClCompile Include="..\..\..\..\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usb.c" />
     <ClCompile Include="..\..\..\..\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_utils.c" />
     <ClCompile Include="..\..\..\main.cpp" />
-    <None Include="stm32.props" />
-    <None Include="stm32f4-Debug-C++11.vgdbsettings" />
-    <None Include="stm32f4-Debug-C++14.vgdbsettings" />
-    <None Include="stm32f4-Debug-C++17.vgdbsettings" />
+    <None Include="stm32.props">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="stm32.xml" />
-    <None Include="stm32f4-Release-C++11.vgdbsettings" />
-    <None Include="stm32f4-Release-C++14.vgdbsettings" />
-    <None Include="stm32f4-Release-C++17.vgdbsettings" />
     <ClInclude Include="..\..\..\..\lib\stm32hal_f4\Device\conf\stm32f4xx_hal_conf.h" />
     <ClInclude Include="..\..\..\..\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy\stm32f4xx_hal_can_legacy.h" />
     <ClInclude Include="..\..\..\..\lib\stm32hal_f4\STM32F4xx_HAL_Driver\Inc\Legacy\stm32_hal_legacy.h" />
@@ -406,5 +555,11 @@
     <ClCompile Include="..\..\..\..\Thor\source\timer.cpp" />
     <ClCompile Include="..\..\..\..\Thor\source\uart.cpp" />
     <ClCompile Include="..\..\..\..\Thor\source\usart.cpp" />
+    <None Include="stm32f4-F4-Debug-C++11.vgdbsettings" />
+    <None Include="stm32f4-F4-Debug-C++14.vgdbsettings" />
+    <None Include="stm32f4-F4-Debug-C++17.vgdbsettings" />
+    <None Include="stm32f4-F4-Release-C++11.vgdbsettings" />
+    <None Include="stm32f4-F4-Release-C++14.vgdbsettings" />
+    <None Include="stm32f4-F4-Release-C++17.vgdbsettings" />
   </ItemGroup>
 </Project>

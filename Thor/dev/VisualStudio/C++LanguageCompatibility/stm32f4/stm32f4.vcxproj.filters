@@ -63,24 +63,6 @@
     <None Include="stm32.xml">
       <Filter>VisualGDB settings</Filter>
     </None>
-    <None Include="stm32f4-Debug-C++11.vgdbsettings">
-      <Filter>VisualGDB settings</Filter>
-    </None>
-    <None Include="stm32f4-Debug-C++14.vgdbsettings">
-      <Filter>VisualGDB settings</Filter>
-    </None>
-    <None Include="stm32f4-Debug-C++17.vgdbsettings">
-      <Filter>VisualGDB settings</Filter>
-    </None>
-    <None Include="stm32f4-Release-C++11.vgdbsettings">
-      <Filter>VisualGDB settings</Filter>
-    </None>
-    <None Include="stm32f4-Release-C++14.vgdbsettings">
-      <Filter>VisualGDB settings</Filter>
-    </None>
-    <None Include="stm32f4-Release-C++17.vgdbsettings">
-      <Filter>VisualGDB settings</Filter>
-    </None>
     <ClInclude Include="..\..\..\..\Thor\include\boostStub.hpp">
       <Filter>Thor\include</Filter>
     </ClInclude>
@@ -255,6 +237,24 @@
     <ClCompile Include="..\..\..\..\Thor\source\usart.cpp">
       <Filter>Thor\source</Filter>
     </ClCompile>
+    <None Include="stm32f4-F4-Debug-C++17.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="stm32f4-F4-Release-C++11.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="stm32f4-F4-Release-C++14.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="stm32f4-F4-Release-C++17.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="stm32f4-F4-Debug-C++11.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="stm32f4-F4-Debug-C++14.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\main.cpp">

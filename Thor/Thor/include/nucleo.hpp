@@ -17,20 +17,20 @@ namespace Thor
 	namespace Nucleo
 	{
 		using PinNum = Thor::Peripheral::GPIO::PinNum;
-		
+
 		#if defined(STM32F7)
 		static GPIO_TypeDef* RED_LED_PORT = GPIOB;
 		static GPIO_TypeDef* GREEN_LED_PORT	= GPIOB;
 		static GPIO_TypeDef* BLUE_LED_PORT = GPIOB;
-		
-		static const PinNum RED_LED_PIN = Thor::Peripheral::GPIO::PIN_14;
-		static const PinNum GREEN_LED_PIN = Thor::Peripheral::GPIO::PIN_0;
-		static const PinNum BLUE_LED_PIN = Thor::Peripheral::GPIO::PIN_7;
+
+		static const PinNum RED_LED_PIN = PinNum::PIN_14;
+		static const PinNum GREEN_LED_PIN = PinNum::PIN_0;
+		static const PinNum BLUE_LED_PIN = PinNum::PIN_7;
 		#endif
-		
+
 		#if defined(STM32F4)
 		static GPIO_TypeDef* GREEN_LED_PORT = GPIOA;
-        static const PinNum GREEN_LED_PIN = Thor::Peripheral::GPIO::PinNum::PIN_5;
+        static const PinNum GREEN_LED_PIN = PinNum::PIN_5;
 		#endif
 	}
 }

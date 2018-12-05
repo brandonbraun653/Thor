@@ -351,7 +351,7 @@ namespace Thor
 
 			#if defined(STM32F7)
 			const USART_InitTypeDef dflt_USART_Init = {
-				SERIAL_BAUD_115200,				/* BaudRate */
+				static_cast<uint32_t>(BaudRate::SERIAL_BAUD_115200),				/* BaudRate */
 				USART_WORDLENGTH_8B,			/* WordLength */
 				USART_STOPBITS_1,				/* StopBits */
 				USART_PARITY_NONE,				/* Parity */
@@ -363,7 +363,7 @@ namespace Thor
 			};
 
 			const UART_InitTypeDef dflt_UART_Init = {
-				SERIAL_BAUD_115200,				/* BaudRate */
+				static_cast<uint32_t>(BaudRate::SERIAL_BAUD_115200),				/* BaudRate */
 				UART_WORDLENGTH_8B,				/* WordLength */
 				UART_STOPBITS_1,				/* StopBits */
 				UART_PARITY_NONE,				/* Parity */
