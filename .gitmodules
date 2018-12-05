@@ -13,3 +13,7 @@
 [submodule "stm32-cmake"]
 	path = stm32-cmake
 	url = git@github.com:brandonbraun653/stm32-cmake.git
+[submodule "Thor/lib/cmsis"]
+	path = Thor/lib/cmsis
+	url = git@github.com:ARM-software/CMSIS_5.git
+	branch = master

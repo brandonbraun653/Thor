@@ -28,7 +28,7 @@ void BasicErrorHandler(std::string err_msg)
 
 #ifdef __cplusplus
 extern "C" {
-#endif 
+#endif
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
@@ -92,7 +92,7 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif 
+#endif
 
 
 void HardFault_Handler()
@@ -112,7 +112,7 @@ void HardFault_Handler()
 		" b HardFault_HandlerC	\n"
 		" bkpt #0				\n"
 	);
-	
+
 	while (1)
 	{
 	}

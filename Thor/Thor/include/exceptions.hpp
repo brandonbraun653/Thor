@@ -16,9 +16,10 @@ extern void BasicErrorHandler(std::string err_msg);
 #ifdef __cplusplus
 extern "C" {
 #endif
-	
+
 	void HardFault_Handler();
-	
+    void HardFault_HandlerC(unsigned long *hardfault_args) __attribute__((used));
+
 #ifdef __cplusplus
 }
 #endif
