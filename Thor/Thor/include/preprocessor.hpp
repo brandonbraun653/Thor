@@ -93,7 +93,7 @@ ERPC
 /*-------------------------------------------
 Visual GDB
 -------------------------------------------*/
-#if __has_include("FastSemihosting.cpp") || __has_include("InstrumentingProfiler.cpp") || __has_include("SamplingProfiler.cpp")
+#if __has_include("FastSemihosting.cpp") && __has_include("InstrumentingProfiler.cpp") && __has_include("SamplingProfiler.cpp") && __has_include("ProfilerDriver_STM32_HAL.cpp")
     #ifndef USING_VISUALGDB_PROFILER
         #define USING_VISUALGDB_PROFILER
     #endif
