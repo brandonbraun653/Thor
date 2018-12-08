@@ -417,10 +417,6 @@ namespace Thor
                     case Chimera::GPIO::Port::PORTK:
                         pinPort = GPIOK;
                         break;
-
-                    case Chimera::GPIO::Port::PORTL:
-                        pinPort = GPIOL;
-                        break;
                 #endif
 
                     default:
