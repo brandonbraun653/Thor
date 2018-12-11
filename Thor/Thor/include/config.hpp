@@ -42,4 +42,55 @@
  */
 #define WRITE_BUFFERING_DISABLED		0
 
+
+/**
+*   Keep track of which modules are currently supported for each chipset
+*/
+#if defined(TARGET_STM32F4)
+
+/*----------------------------------------------
+Library Support
+----------------------------------------------*/
+#define THOR_LIB_GPIO       1
+#define THOR_LIB_CAN        0
+#define THOR_LIB_EXTI       0
+#define THOR_LIB_DMA        0
+#define THOR_LIB_NVIC       0
+#define THOR_LIB_DAC        0
+#define THOR_LIB_ADC        1
+#define THOR_LIB_RNG        0
+#define THOR_LIB_HASH       0
+#define THOR_LIB_CRYPTO     0
+#define THOR_LIB_SPI        1
+#define THOR_LIB_QSPI       0
+#define THOR_LIB_I2C        0
+#define THOR_LIB_I2S        0
+#define THOR_LIB_RTC        0
+#define THOR_LIB_UART       1
+#define THOR_LIB_USART      1
+#define THOR_LIB_SERIAL     1
+#define THOR_LIB_TIMER      0
+#define THOR_LIB_PWM        0
+#define THOR_LIB_USB        0
+#define THOR_LIB_SDMMC      0
+#define THOR_LIB_ETHR       0
+#define THOR_LIB_FLASH      0
+
+/*----------------------------------------------
+Hardware Support
+----------------------------------------------*/
+#define THOR_HW_SFPU        1
+#define THOR_HW_DFPU        0
+#define THOR_HW_CRYPTO      0
+#define THOR_HW_HASH        0
+#define THOR_HW_HDMI        0
+#define THOR_HW_DCMI        0
+#define THOR_HW_TFT_LCD     0
+#define THOR_HW_SPI         1
+
+
+#elif defined(TARGET_STM32F7)
+
+#endif
+
 #endif /* !THOR_CONFIG_HPP */
