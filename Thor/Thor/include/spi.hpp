@@ -49,10 +49,10 @@ namespace Thor
 
             struct Config
             {
-                GPIO::PinConfig SCK;
-                GPIO::PinConfig MOSI;
-                GPIO::PinConfig MISO;
-                GPIO::PinConfig CS;
+                Thor::Definitions::GPIO::PinConfig SCK;
+                Thor::Definitions::GPIO::PinConfig MOSI;
+                Thor::Definitions::GPIO::PinConfig MISO;
+                Thor::Definitions::GPIO::PinConfig CS;
 
                 SPI_InitTypeDef settings;
             };

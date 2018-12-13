@@ -16,7 +16,6 @@ using namespace Thor::Definitions::Serial;
 using namespace Thor::Definitions::USART;
 using namespace Thor::Definitions::Interrupt;
 using namespace Thor::Peripheral::USART;
-using namespace Thor::Peripheral::GPIO;
 using namespace Thor::Defaults::Serial;
 
 
@@ -152,7 +151,9 @@ namespace Thor
 	{
 		namespace USART
 		{
-			inline void USART_ClearIT_IDLE(USART_HandleTypeDef *UsartHandle)
+            using namespace Thor::Definitions::GPIO;
+
+            inline void USART_ClearIT_IDLE(USART_HandleTypeDef *UsartHandle)
 			{
 				#if defined(STM32F7)
 				__HAL_USART_CLEAR_IT(UsartHandle, USART_CLEAR_IDLEF);
@@ -654,13 +655,15 @@ namespace Thor
 				/* Set up the GPIO pins */
 				if (pinConfig)
 				{
-					tx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+					tx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>();
+                    tx_pin->initAdvanced(
 						pinConfig->TX_GPIOx,
 						pinConfig->TX_Pin,
 						PinSpeed::ULTRA_SPD,
 						pinConfig->TX_AltFuncCode);
 
-					rx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+					rx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>();
+                    rx_pin->initAdvanced(
 						pinConfig->RX_GPIOx,
 						pinConfig->RX_Pin,
 						PinSpeed::ULTRA_SPD,
@@ -668,13 +671,15 @@ namespace Thor
 				}
 				else
 				{
-					tx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+					tx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>();
+                    tx_pin->initAdvanced(
 						srl_cfg[usartChannel].txPin.GPIOx,
 						srl_cfg[usartChannel].txPin.PinNum,
 						srl_cfg[usartChannel].txPin.Speed,
 						srl_cfg[usartChannel].txPin.Alternate);
 
-					rx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+					rx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>();
+                    rx_pin->initAdvanced(
 						srl_cfg[usartChannel].rxPin.GPIOx,
 						srl_cfg[usartChannel].rxPin.PinNum,
 						srl_cfg[usartChannel].rxPin.Speed,
@@ -688,7 +693,7 @@ namespace Thor
 
 				#if defined(USING_FREERTOS)
 				usartSemphrs[usartChannel] = xSemaphoreCreateCounting(USART_QUEUE_SIZE, USART_QUEUE_SIZE);
-				#endif 
+				#endif
 			}
 
 			USARTClass::~USARTClass()

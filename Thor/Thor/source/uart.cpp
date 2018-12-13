@@ -8,7 +8,6 @@ using namespace Thor::Definitions::Serial;
 using namespace Thor::Definitions::UART;
 using namespace Thor::Definitions::Interrupt;
 using namespace Thor::Peripheral::UART;
-using namespace Thor::Peripheral::GPIO;
 using namespace Thor::Defaults::Serial;
 
 #if defined(USING_FREERTOS)
@@ -114,6 +113,8 @@ namespace Thor
 	{
 		namespace UART
 		{
+            using namespace Thor::Definitions::GPIO;
+
 			inline void UART_ClearIT_IDLE(UART_HandleTypeDef *UartHandle)
 			{
 				#if defined(STM32F7)
@@ -153,13 +154,15 @@ namespace Thor
 				/* Create the output GPIO pin objects */
 				if (pinConfig)
 				{
-					tx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+					tx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>();
+                    tx_pin->initAdvanced(
 						pinConfig->TX_GPIOx,
 						pinConfig->TX_Pin,
 						PinSpeed::ULTRA_SPD,
 						pinConfig->TX_AltFuncCode);
 
-					rx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+					rx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>();
+                    rx_pin->initAdvanced(
 						pinConfig->RX_GPIOx,
 						pinConfig->RX_Pin,
 						PinSpeed::ULTRA_SPD,
@@ -167,13 +170,15 @@ namespace Thor
 				}
 				else
 				{
-					tx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+					tx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>();
+                    tx_pin->initAdvanced(
 						srl_cfg[uart_channel].txPin.GPIOx,
 						srl_cfg[uart_channel].txPin.PinNum,
 						srl_cfg[uart_channel].txPin.Speed,
 						srl_cfg[uart_channel].txPin.Alternate);
 
-					rx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>(
+					rx_pin = boost::make_shared<Thor::Peripheral::GPIO::GPIOClass>();
+                    rx_pin->initAdvanced(
 						srl_cfg[uart_channel].rxPin.GPIOx,
 						srl_cfg[uart_channel].rxPin.PinNum,
 						srl_cfg[uart_channel].rxPin.Speed,

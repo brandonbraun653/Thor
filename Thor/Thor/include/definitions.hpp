@@ -93,7 +93,11 @@ namespace Thor
 		/** @namespace Thor::Definitions::GPIO */
 		namespace GPIO
 		{
-			enum class LogicLevel : bool
+            typedef GPIO_TypeDef * PinPort;
+
+            constexpr uint32_t NOALTERNATE = (0x08000CC8);	//Default value for the alternate configuration var
+
+            enum class LogicLevel : bool
 			{
 				LOW      = false,
 				OFF      = false,
@@ -167,6 +171,16 @@ namespace Thor
 
                 NUM_PULL,
                 UNKNOWN_PULL
+			};
+
+            struct PinConfig
+			{
+				PinPort	GPIOx		= GPIOA;
+				PinSpeed speed		= PinSpeed::MEDIUM_SPD;
+				PinMode	mode		= PinMode::INPUT;
+                PinNum pinNum		= PinNum::NOT_A_PIN;
+				PinPull pull		= PinPull::NOPULL;
+				uint32_t alternate	= NOALTERNATE;
 			};
         }
 

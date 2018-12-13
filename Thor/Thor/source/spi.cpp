@@ -287,77 +287,85 @@ namespace Thor
     			if (settings.MOSI.pinNum == PinNum::NOT_A_PIN)
     			{
                     /* Default pin as described in defaults.cpp for this channel */
-        			MOSI = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+        			MOSI = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass());
+                    MOSI->initAdvanced(
                         spi_cfg[spi_channel].MOSI.GPIOx,
             			spi_cfg[spi_channel].MOSI.PinNum,
             			spi_cfg[spi_channel].MOSI.Speed,
-            			spi_cfg[spi_channel].MOSI.Alternate));
+            			spi_cfg[spi_channel].MOSI.Alternate);
     			}
     			else
     			{
                     /* User supplied pin */
-        			MOSI = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+        			MOSI = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass());
+                    MOSI->initAdvanced(
                         settings.MOSI.GPIOx,
                         settings.MOSI.pinNum,
                         settings.MOSI.speed,
-                        settings.MOSI.alternate));
+                        settings.MOSI.alternate);
     			}
 
     			if(settings.MISO.pinNum == PinNum::NOT_A_PIN)
     			{
         			/* Default pin as described in defaults.cpp for this channel */
-        			MISO = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+        			MISO = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass());
+                    MISO->initAdvanced(
     				    spi_cfg[spi_channel].MISO.GPIOx,
             			spi_cfg[spi_channel].MISO.PinNum,
             			spi_cfg[spi_channel].MISO.Speed,
-            			spi_cfg[spi_channel].MISO.Alternate));
+            			spi_cfg[spi_channel].MISO.Alternate);
     			}
     			else
     			{
         			/* User supplied pin */
-        			MISO = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+        			MISO = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass());
+                    MISO->initAdvanced(
                         settings.MISO.GPIOx,
             			settings.MISO.pinNum,
             			settings.MISO.speed,
-            			settings.MISO.alternate));
+            			settings.MISO.alternate);
     			}
 
     			if(settings.SCK.pinNum == PinNum::NOT_A_PIN)
     			{
         			/* Default pin as described in defaults.cpp for this channel */
-        			SCK = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+        			SCK = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass());
+                    SCK->initAdvanced(
     				    spi_cfg[spi_channel].SCK.GPIOx,
             			spi_cfg[spi_channel].SCK.PinNum,
             			spi_cfg[spi_channel].SCK.Speed,
-            			spi_cfg[spi_channel].SCK.Alternate));
+            			spi_cfg[spi_channel].SCK.Alternate);
     			}
     			else
     			{
         			/* User supplied pin */
-        			SCK = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+        			SCK = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass());
+                    SCK->initAdvanced(
                         settings.SCK.GPIOx,
             			settings.SCK.pinNum,
             			settings.SCK.speed,
-            			settings.SCK.alternate));
+            			settings.SCK.alternate);
     			}
 
     			if(settings.CS.pinNum == PinNum::NOT_A_PIN)
     			{
                     /* Default pin as described in defaults.cpp for this channel */
-        			CS = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+        			CS = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass());
+                    CS->initAdvanced(
     				    spi_cfg[spi_channel].NSS.GPIOx,
             			spi_cfg[spi_channel].NSS.PinNum,
             			spi_cfg[spi_channel].NSS.Speed,
-            			spi_cfg[spi_channel].NSS.Alternate));
+            			spi_cfg[spi_channel].NSS.Alternate);
     			}
     			else
     			{
         			/* User supplied pin */
-        			CS = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass(
+        			CS = boost::movelib::unique_ptr<GPIOClass>(new GPIOClass());
+                    CS->initAdvanced(
                         settings.CS.GPIOx,
             			settings.CS.pinNum,
             			settings.CS.speed,
-            			settings.CS.alternate));
+            			settings.CS.alternate);
 
         			alternateCS = true;
     			}
@@ -1266,7 +1274,7 @@ namespace Thor
     				{
         				SCK->mode(PinMode::ALT_PP, PinPull::PULLDN);
     				}
-					
+
 
     				/*------------------------------------------------
     				Decide how to initialize the CS pin. There are a few options.
@@ -1741,7 +1749,7 @@ namespace Thor
             {
                 Chimera::SPI::Status status = Chimera::SPI::Status::OK;
 
-                if(spi->setChipSelect(static_cast<Thor::Peripheral::GPIO::LogicLevel>(value)) != Thor::Definitions::Status::PERIPH_OK)
+                if(spi->setChipSelect(static_cast<Thor::Definitions::GPIO::LogicLevel>(value)) != Thor::Definitions::Status::PERIPH_OK)
                 {
                     status = Chimera::SPI::Status::ERROR;
                 }
@@ -1866,7 +1874,7 @@ namespace Thor
             {
                 return Chimera::SPI::Status::ERROR;
             }
-            #endif 
+            #endif
 
             #endif /* !USING_CHIMERA*/
         }
