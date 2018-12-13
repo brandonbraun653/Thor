@@ -209,6 +209,10 @@ namespace Thor
 				}
 
 			private:
+                
+    			friend void(::HAL_USART_TxCpltCallback)(USART_HandleTypeDef *UsartHandle);
+    			friend void(::HAL_USART_RxCpltCallback)(USART_HandleTypeDef *UsartHandle);
+                
 
 				int usartChannel;											/* Which peripheral hardware channel this class is mapped to (ie USART1, USART2, etc ...) */
 				bool tx_complete = true;									/**< Indicates if a transmission has been completed */
@@ -275,9 +279,6 @@ namespace Thor
 				}
 
 
-				/*-------------------------------
-				 * Low Level Setup/Teardown Functions
-				 *------------------------------*/
 				void USART_GPIO_Init();
 				void USART_GPIO_DeInit();
 
@@ -294,9 +295,6 @@ namespace Thor
 				void USART_DMA_EnableIT(const Thor::Definitions::SubPeripheral& periph);
 				void USART_DMA_DisableIT(const Thor::Definitions::SubPeripheral& periph);
 
-				/*-------------------------------
-				 * Error Handler Functions
-				 *------------------------------*/
 				void USART_OverrunHandler();
 			};
 			typedef boost::shared_ptr<USARTClass> USARTClass_sPtr;
