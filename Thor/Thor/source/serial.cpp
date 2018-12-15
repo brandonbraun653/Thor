@@ -1,26 +1,25 @@
-/* Boost Includes */
-#include <boost/container/static_vector.hpp>
-#include <boost/make_shared.hpp>
+
 
 /* Project Includes */
 #include <Thor/include/serial.hpp>
+#include <Thor/include/utilities.hpp>
 
 using namespace Thor::Definitions;
 using namespace Thor::Definitions::Serial;
 using namespace Thor::Peripheral::UART;
 using namespace Thor::Peripheral::USART;
 
-using ThorStatus = Thor::Definitions::Status;
-using ThorMode = Thor::Definitions::Modes;
-using ThorSubPeriph = Thor::Definitions::SubPeripheral;
-using ThorBaud = Thor::Definitions::Serial::BaudRate;
+//using ThorStatus = Thor::Definitions::Status;
+//using ThorMode = Thor::Definitions::Modes;
+//using ThorSubPeriph = Thor::Definitions::SubPeripheral;
+//using ThorBaud = Thor::Definitions::Serial::BaudRate;
 
 #if defined(USING_CHIMERA)
-using ChimStatus = Chimera::Serial::Status;
-using ChimBaud = Chimera::Serial::BaudRate;
-using ChimMode = Chimera::Serial::Modes;
-using ChimSubPeriph = Chimera::Serial::SubPeripheral;
-#endif 
+//using ChimStatus = Chimera::Serial::Status;
+//using ChimBaud = Chimera::Serial::BaudRate;
+//using ChimMode = Chimera::Serial::Modes;
+//using ChimSubPeriph = Chimera::Serial::SubPeripheral;
+#endif
 
 namespace Thor
 {
@@ -28,7 +27,7 @@ namespace Thor
 	{
 		namespace Serial
 		{
-			#if defined(USING_CHIMERA)
+			#if 0
 			Chimera::Serial::Status SerialClass::convertStatus(ThorStatus status)
 			{
 				switch (status)
@@ -207,12 +206,9 @@ namespace Thor
 
 			#endif
 
-			/* This maps various UART and USART peripherals into the higher level Serial class. The purpose
-			 * is to allow the user to only call 'Serial(1)' or 'Serial(5)' and not have to worry about 
-			 * whether or not it is a UART or USART type. This mapping will however need to be updated for
-			 * each type of chip.*/
-			boost::container::static_vector<HardwareClassMapping, MAX_SERIAL_CHANNELS + 1> serialPeripheralMap =
-			{ 
+
+			static HardwareClassMapping serialPeripheralMap[MAX_SERIAL_CHANNELS + 1] =
+			{
 				#if defined(STM32F767xx) || defined(STM32F446xx)
 				{false, 0},		/* Not actually a UART instance */
 				{false, 1},		/* USART 1	*/
@@ -223,98 +219,116 @@ namespace Thor
 				{false, 6},		/* USART 6	*/
 				{true,  7},		/* UART  7	*/
 				{true,	8}		/* UART	 8	*/
-				#endif 
+				#endif
 			};
-			
-			SerialClass::SerialClass(const int& channel, SerialPins* config)
+            static_assert(COUNT_OF_ARRAY(serialPeripheralMap) == (MAX_SERIAL_CHANNELS + 1), "Invalid array size");
+
+            SerialClass::SerialClass(const uint8_t channel)
+            {
+
+            }
+
+            SerialClass::SerialClass(const uint8_t channel, const SerialPins &config)
 			{
-				//TODO: Add an assert here for checking the channel boundary...exceptions?
-				this->serialChannel = channel;
-				if (serialPeripheralMap[channel].ON_UART)
-				{
-					auto tmp = UARTClass::create(serialPeripheralMap[channel].peripheral_number, config);
-					this->serialObject = boost::dynamic_pointer_cast<SerialBase, UARTClass>(tmp);
-				}
-				else
-				{
-					auto tmp = USARTClass::create(serialPeripheralMap[channel].peripheral_number, config);
-					this->serialObject = boost::dynamic_pointer_cast<SerialBase, USARTClass>(tmp);
-				}
+                if (channel && (channel < MAX_SERIAL_CHANNELS))
+                {
+                    serialChannel = channel;
+
+                    /*------------------------------------------------
+                    Decide which instance to create
+                    -------------------------------------------------*/
+                    if (serialPeripheralMap[channel].ON_UART)
+                    {
+                        auto tmp = UARTClass::create(serialPeripheralMap[channel].peripheral_number, config);
+                        serialObject = std::static_pointer_cast<SerialInterface, UARTClass>(tmp);
+                    }
+                    else
+                    {
+                        auto tmp = USARTClass::create(serialPeripheralMap[channel].peripheral_number, config);
+                        serialObject = std::static_pointer_cast<SerialInterface, USARTClass>(tmp);
+                    }
+                }
+                else
+                {
+                    serialObject = nullptr;
+                }
+            }
+
+			Status SerialClass::begin(const BaudRate baud, const Modes tx_mode, const Modes rx_mode)
+			{
+                assert(serialObject);
+                return serialObject->begin(baud, tx_mode, rx_mode);
 			}
 
-			ThorStatus SerialClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
+			Status SerialClass::setMode(const SubPeripheral periph, const Modes mode)
 			{
-				return this->serialObject->begin(baud, tx_mode, rx_mode);
-			}
-			
-			Status SerialClass::setMode(const SubPeripheral& periph, const Modes& mode)
-			{
-				return this->serialObject->setMode(periph, mode);
-			}
-			
-			Status SerialClass::setBaud(const BaudRate& baud)
-			{
-				return this->serialObject->setBaud(baud);
+                assert(serialObject);
+				return serialObject->setMode(periph, mode);
 			}
 
-			Status SerialClass::write(uint8_t* val, size_t length)
+            Status SerialClass::setBaud(const uint32_t baud)
 			{
-				return this->serialObject->write(val, length);
+                assert(serialObject);
+				return serialObject->setBaud(baud);
 			}
-			
-			Status SerialClass::write(char* string, size_t length)
+
+			Status SerialClass::setBaud(const BaudRate baud)
 			{
-				return this->serialObject->write(string, length);
+                assert(serialObject);
+				return serialObject->setBaud(baud);
 			}
-			
-			Status SerialClass::write(const char* string)
+
+			Status SerialClass::write(const uint8_t *const val, const size_t length)
 			{
-				return this->serialObject->write(string);
+                assert(serialObject);
+				return serialObject->write(val, length);
 			}
-			
-			Status SerialClass::write(const char* string, size_t length)
+
+			Status SerialClass::write(char *const string, const size_t length)
 			{
-				return this->serialObject->write(string, length);
+                assert(serialObject);
+				return serialObject->write(string, length);
 			}
-			
-			Status SerialClass::readSync(uint8_t* buff, size_t length)
+
+			Status SerialClass::write(const char *const string)
 			{
-				return this->serialObject->readSync(buff, length);
+                assert(serialObject);
+				return serialObject->write(string);
 			}
-			
-			Status SerialClass::readPacket(uint8_t* buff, size_t buff_length)
+
+			Status SerialClass::write(const char *const string, const size_t length)
 			{
-				return this->serialObject->readPacket(buff, buff_length);
+                assert(serialObject);
+				return serialObject->write(string, length);
 			}
-	
-			uint32_t SerialClass::availablePackets()
+
+			Status SerialClass::read(uint8_t *const buffer, size_t length)
 			{
-				return this->serialObject->availablePackets();
+                assert(serialObject);
+				return serialObject->read(buffer, length);
 			}
-			
-			size_t SerialClass::nextPacketSize()
-			{
-				return this->serialObject->nextPacketSize();
-			}
-			
+
 			void SerialClass::end()
 			{
-				this->serialObject->end();
+                assert(serialObject);
+				serialObject->end();
 			}
-			
-			#if defined(USING_FREERTOS)
-			void SerialClass::attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr)
-			{
-				this->serialObject->attachThreadTrigger(trig, semphr);
-			}
-			
-			void SerialClass::removeThreadTrigger(Trigger trig)
-			{
-				this->serialObject->removeThreadTrigger(trig);
-			}
-			#endif 
 
-			 
+			#if defined(USING_FREERTOS)
+			void SerialClass::attachThreadTrigger(const Trigger trig, SemaphoreHandle_t *const semphr)
+			{
+                assert(serialObject);
+				serialObject->attachThreadTrigger(trig, semphr);
+			}
+
+			void SerialClass::removeThreadTrigger(const Trigger trig)
+			{
+                assert(serialObject);
+				serialObject->removeThreadTrigger(trig);
+			}
+			#endif
+
+
 		}
 	}
 }

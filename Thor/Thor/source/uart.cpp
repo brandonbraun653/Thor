@@ -113,6 +113,7 @@ namespace Thor
 	{
 		namespace UART
 		{
+            #if 0
             using namespace Thor::Definitions::GPIO;
 
 			inline void UART_ClearIT_IDLE(UART_HandleTypeDef *UartHandle)
@@ -1031,12 +1032,15 @@ namespace Thor
 
 				return txCurrentQueueAddr();
 			}
+
+            #endif
 		}
 	}
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
+    #if 0
 	/* Deduce at runtime which class object triggered this interrupt */
 	auto uart = getUARTClassRef(UartHandle->Instance);
 
@@ -1062,10 +1066,14 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 	#if defined(USING_FREERTOS)
 	uartTaskTrigger.logEvent(TX_COMPLETE, &uartTaskTrigger);
 	#endif
+
+    #endif
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 {
+    #if 0
+
 	/* Deduce at runtime which class object triggered this interrupt */
 	auto uart = getUARTClassRef(UartHandle->Instance);
 
@@ -1104,6 +1112,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	#if defined(USING_FREERTOS)
 	uartTaskTrigger.logEvent(RX_COMPLETE, &uartTaskTrigger);
 	#endif
+        #endif
 }
 
 void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *UartHandle)
@@ -1122,7 +1131,7 @@ void UART1_IRQHandler(void)
 {
 	if (uartObjects[1])
 	{
-		uartObjects[1]->IRQHandler();
+		//uartObjects[1]->IRQHandler();
 	}
 }
 
@@ -1130,7 +1139,7 @@ void UART2_IRQHandler(void)
 {
 	if (uartObjects[2])
 	{
-		uartObjects[2]->IRQHandler();
+		//uartObjects[2]->IRQHandler();
 	}
 }
 
@@ -1138,7 +1147,7 @@ void UART3_IRQHandler(void)
 {
 	if (uartObjects[3])
 	{
-		uartObjects[3]->IRQHandler();
+		//uartObjects[3]->IRQHandler();
 	}
 }
 
@@ -1146,7 +1155,7 @@ void UART4_IRQHandler(void)
 {
 	if (uartObjects[4])
 	{
-		uartObjects[4]->IRQHandler();
+		//uartObjects[4]->IRQHandler();
 	}
 }
 
@@ -1154,7 +1163,7 @@ void UART5_IRQHandler(void)
 {
 	if (uartObjects[5])
 	{
-		uartObjects[5]->IRQHandler();
+		//uartObjects[5]->IRQHandler();
 	}
 }
 
@@ -1162,7 +1171,7 @@ void UART6_IRQHandler(void)
 {
 	if (uartObjects[6])
 	{
-		uartObjects[6]->IRQHandler();
+		//uartObjects[6]->IRQHandler();
 	}
 }
 
@@ -1170,7 +1179,7 @@ void UART7_IRQHandler(void)
 {
 	if (uartObjects[7])
 	{
-		uartObjects[7]->IRQHandler();
+		//uartObjects[7]->IRQHandler();
 	}
 }
 
@@ -1178,6 +1187,6 @@ void UART8_IRQHandler(void)
 {
 	if (uartObjects[8])
 	{
-		uartObjects[8]->IRQHandler();
+		//uartObjects[8]->IRQHandler();
 	}
 }

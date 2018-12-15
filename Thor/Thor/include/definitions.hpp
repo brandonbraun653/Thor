@@ -531,30 +531,35 @@ namespace Thor
 				uint8_t RX_AltFuncCode;		/**< Alternate function for the pin peripheral. See device datasheet for details on the mapping. */
 			};
 
-			class SerialBase
+			class SerialInterface
 			{
 			public:
-				virtual Status begin(const BaudRate&, const Modes&, const Modes&) = 0;
-				virtual Status setMode(const SubPeripheral&, const Modes&) = 0;
-				virtual Status setBaud(const BaudRate&) = 0;
-				virtual Status setBaud(const uint32_t&) = 0;
-				virtual Status write(uint8_t*, size_t) = 0;
-				virtual Status write(char*, size_t) = 0;
-				virtual Status write(const char*) = 0;
-				virtual Status write(const char*, size_t) = 0;
-				virtual Status readSync(uint8_t*, size_t) = 0;
-				virtual Status readPacket(uint8_t*, size_t) = 0;
-				virtual uint32_t availablePackets() = 0;
-				virtual size_t nextPacketSize() = 0;
+                typedef struct
+                {
+                    bool rxOverrun = false;
+                } State;
+
+                virtual Thor::Definitions::Status begin(const BaudRate, const Modes, const Modes) = 0;
+                virtual Thor::Definitions::Status setMode(const SubPeripheral, const Modes) = 0;
+                virtual Thor::Definitions::Status setBaud(const BaudRate) = 0;
+                virtual Thor::Definitions::Status setBaud(const uint32_t) = 0;
+                virtual Thor::Definitions::Status write(const uint8_t *const, const size_t) = 0;
+                virtual Thor::Definitions::Status write(char *const, const size_t) = 0;
+                virtual Thor::Definitions::Status write(const char *const) = 0;
+                virtual Thor::Definitions::Status write(const char *const, const size_t) = 0;
+                virtual Thor::Definitions::Status read(uint8_t *const, const size_t) = 0;
+                virtual bool available(size_t&, const uint32_t timeout_mS) = 0;
 				virtual void end() = 0;
 
-				#if defined(USING_FREERTOS)
-				virtual void attachThreadTrigger(Thor::Definitions::Interrupt::Trigger, SemaphoreHandle_t*) = 0;
-				virtual void removeThreadTrigger(Thor::Definitions::Interrupt::Trigger) = 0;
+                virtual State report();
+
+                #if defined(USING_FREERTOS)
+				virtual void attachThreadTrigger(const Thor::Definitions::Interrupt::Trigger, SemaphoreHandle_t *const) = 0;
+				virtual void removeThreadTrigger(const Thor::Definitions::Interrupt::Trigger) = 0;
 				#endif
 
-			private:
-			};
+                virtual ~SerialInterface() = default;
+            };
 		}
 
 		/** @namespace Thor::Definitions::Threading */

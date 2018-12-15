@@ -1888,12 +1888,10 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
     -------------------------------------------------*/
 	const SPIClass_sPtr& spi = getSPIClassRef(hspi->Instance);
 
-    const bool enabled = spi->hardwareStatus.spi_enabled;
-    const bool validChannel = (spi->spi_channel < NUM_CHANNELS);
-    const int channel = spi->spi_channel;
-
-    if(spi && enabled && validChannel)
+    if(spi && spi->hardwareStatus.spi_enabled && (spi->spi_channel < NUM_CHANNELS))
     {
+        const int channel = spi->spi_channel;
+
         channelState[channel].transfer_error = false;
         channelState[channel].transfer_complete = true;
 
@@ -1927,12 +1925,10 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
     -------------------------------------------------*/
 	const SPIClass_sPtr& spi = getSPIClassRef(hspi->Instance);
 
-    const bool enabled = spi->hardwareStatus.spi_enabled;
-    const bool validChannel = (spi->spi_channel < NUM_CHANNELS);
-    const int channel = spi->spi_channel;
-
-    if(spi && enabled && validChannel)
+    if(spi && spi->hardwareStatus.spi_enabled && (spi->spi_channel < NUM_CHANNELS))
     {
+        const int channel = spi->spi_channel;
+
         channelState[channel].transfer_error = false;
         channelState[channel].transfer_complete = true;
 

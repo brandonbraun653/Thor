@@ -1,8 +1,39 @@
 #pragma once
 #ifndef THOR_THREADING_HPP
 #define THOR_THREADING_HPP
-	
+
+/* C++ Includes */
+#include <atomic>
+
 #include <Thor/include/thor.hpp>
+
+namespace Thor
+{
+    namespace Threading
+    {
+        class Lockable
+        {
+        public:
+            virtual bool reserve(const uint32_t timeout_mS) = 0;
+
+            virtual bool release(const uint32_t timeout_mS) = 0;
+
+            bool isLocked();
+
+            Lockable() = default;
+            ~Lockable() = default;
+
+        protected:
+            void lock();
+
+            void unlock();
+
+        private:
+            std::atomic<bool> mutex;
+        };
+    }
+}
+
 
 #ifdef USING_FREERTOS
 #include "FreeRTOS.h"
@@ -27,7 +58,7 @@ namespace Thor
 			TaskHandle_t handle;	/**< FreeRTOS generated handle for reference elsewhere */
 		};
 
-		/** Starts the FreeRTOS scheduler and initializes execution of all registered threads. This implementation extends the basic 
+		/** Starts the FreeRTOS scheduler and initializes execution of all registered threads. This implementation extends the basic
 		 *  FreeRTOS vTaskStartScheduler() function by automatically supporting user setup code in each thread.
 		 *
 		 *	@param[in] useSetupCallbacks	Enables or disables the use of setup callbacks for proper thread initialization. Defaults to true.
@@ -38,8 +69,8 @@ namespace Thor
 		/** Adds a new thread to the FreeRTOS kernel. If the scheduler has been started already, the
 		 *	correct initialization sequence will be followed. Otherwise, the thread will be suspended
 		 *	until startScheduler() has been called.
-		 * 
-		 *  @param[in]	 func			Function pointer to the thread to be executed 
+		 *
+		 *  @param[in]	 func			Function pointer to the thread to be executed
 		 *	@param[in]   name			User friendly name for the thread
 		 *  @param[in]   stackDepth		Size of the thread stack, in multiples of **WORDS** (x4 bytes), ie stack of 150 == 600 bytes
 		 *  @param[in]   funcParams		Thread parameters to be passed in upon creation
@@ -51,29 +82,29 @@ namespace Thor
 		extern BaseType_t addThread(TaskFunction_t func, const char* name, const uint16_t stackDepth, void* const funcParams,
 			UBaseType_t priority, TaskHandle_t handle);
 
-		/** Performs the same operation as the more verbose version, but uses the more compact Thread_t struct to pass in parameters 
-		 *	@param[in]	thread	Thread parameters from the Thread_t struct 
+		/** Performs the same operation as the more verbose version, but uses the more compact Thread_t struct to pass in parameters
+		 *	@param[in]	thread	Thread parameters from the Thread_t struct
 		 *
 		 *	@return pdPASS if successful, pdFAIL if not
 		 **/
 		extern BaseType_t addThread(Thread_t& thread);
 
-		/** Safely removes a thread from existence 
+		/** Safely removes a thread from existence
 		 *	@param[in]	task	The handle of the thread to be deleted
 		 *	@return void
 		 **/
 		extern void deleteThread(TaskHandle_t task);
 
-		/** During creation of a thread, there is usually some setup code and an infinite loop. This function is a way to halt 
+		/** During creation of a thread, there is usually some setup code and an infinite loop. This function is a way to halt
 		 *	execution of a new thread after the setup code and wait for other threads to initialize before continuing. This assumes
 		 *	that the scheduler was just started. If already running, the halting is ignored and return pdFAIL because the internal
 		 *	initialization thread has been destroyed.
-		 *	
+		 *
 		 *	@return pdPASS if successful, pdFAIL if not
 		 **/
 		extern BaseType_t signalThreadSetupComplete();
 
-		/** Send a simple message to a thread if the task handle is known 
+		/** Send a simple message to a thread if the task handle is known
 		 *	@param[in] task	Handle of the thread to send a message to
 		 *	@param[in] msg	The message
 		 *
@@ -85,4 +116,5 @@ namespace Thor
 	}
 }
 #endif /* !USING_FREERTOS */
+
 #endif /* !THOR_THREADING_HPP */

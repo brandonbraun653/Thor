@@ -1,3 +1,6 @@
+/* C++ Includes */
+#include <math.h>
+
 /* Project Includes */
 #include <Thor/include/config.hpp>
 #include <Thor/include/usart.hpp>
@@ -17,6 +20,18 @@ using namespace Thor::Definitions::USART;
 using namespace Thor::Definitions::Interrupt;
 using namespace Thor::Peripheral::USART;
 using namespace Thor::Defaults::Serial;
+
+
+typedef struct
+{
+    USARTClass_sPtr instance;
+
+
+    #if defined(USING_FREERTOS)
+    SemaphoreHandle_t semphr;
+    #endif
+
+} USARTObj;
 
 
 static USARTClass_sPtr usartObjects[MAX_SERIAL_CHANNELS + 1];
@@ -151,6 +166,7 @@ namespace Thor
 	{
 		namespace USART
 		{
+            #if 0
             using namespace Thor::Definitions::GPIO;
 
             inline void USART_ClearIT_IDLE(USART_HandleTypeDef *UsartHandle)
@@ -172,7 +188,7 @@ namespace Thor
 				__HAL_USART_DISABLE_IT(UsartHandle, USART_IT_IDLE);
 			}
 
-			Status USARTClass::begin(const BaudRate& baud, const Modes& tx_mode, const Modes& rx_mode)
+			Status USARTClass::begin(const BaudRate baud, const Modes tx_mode, const Modes rx_mode)
 			{
 				USART_GPIO_Init();
 
@@ -185,7 +201,7 @@ namespace Thor
 				return Status::PERIPH_OK;
 			}
 
-			Status USARTClass::setMode(const SubPeripheral& periph, const Modes& mode)
+			Status USARTClass::setMode(const SubPeripheral periph, const Modes mode)
 			{
 				if (periph == SubPeripheral::TX)
 				{
@@ -268,7 +284,7 @@ namespace Thor
 				}
 			}
 
-			Status USARTClass::setBaud(const uint32_t& baud)
+			Status USARTClass::setBaud(const uint32_t baud)
 			{
 				/* Copy, modify, write */
 				USART_InitTypeDef init = usartHandle.Init;
@@ -282,7 +298,7 @@ namespace Thor
 				return Status::PERIPH_OK;
 			}
 
-			Status USARTClass::setBaud(const BaudRate& baud)
+			Status USARTClass::setBaud(const BaudRate baud)
 			{
 				/* Copy, modify, write */
 				USART_InitTypeDef init = usartHandle.Init;
@@ -296,7 +312,7 @@ namespace Thor
 				return Status::PERIPH_OK;
 			}
 
-			Status USARTClass::write(uint8_t* val, size_t length)
+			Status USARTClass::write(const uint8_t *const val, const size_t length)
 			{
 				if (!USARTPeriphState.gpio_enabled || !USARTPeriphState.usart_enabled)
 					return Status::PERIPH_NOT_INITIALIZED;
@@ -381,59 +397,24 @@ namespace Thor
 				return statusCode;
 			}
 
-			Status USARTClass::write(char* string, size_t length)
+			Status USARTClass::write(char *const string, const size_t length)
 			{
 				return write((uint8_t*)string, length);
 			}
 
-			Status USARTClass::write(const char* string)
+			Status USARTClass::write(const char *const string)
 			{
 				return write((uint8_t*)string, strlen(string));
 			}
 
-			Status USARTClass::write(const char* string, size_t length)
+			Status USARTClass::write(const char *const string, size_t length)
 			{
 				return write((uint8_t*)string, length);
 			}
 
-			Status USARTClass::readPacket(uint8_t* buff, size_t length)
+            Status USARTClass::read(uint8_t *const buff, const size_t length)
 			{
-				Status error = Status::PERIPH_ERROR;
-				USARTPacket packet = RXPacketBuffer.front();
-
-				/* First make sure we have a valid address */
-				if (packet.data_ptr)
-				{
-					//Note: Could return an error code here on (true), but that screws up the eRPC library
-					size_t readLength = packet.length - packet.bytesRead;
-					if (readLength > length)
-						readLength = length;
-
-					memcpy(buff, packet.data_ptr + packet.bytesRead, readLength);
-
-					/* Check if this read operation will completely empty the
-					 * stored packet data. If so, we are free to pop it off the buffer */
-					if (length + packet.bytesRead >= packet.length)
-					{
-						RXPacketBuffer.pop_front();
-						totalUnreadPackets--;
-					}
-					else /* Reinsert the modified packet since we aren't done yet */
-					{
-						packet.bytesRead += length;
-						RXPacketBuffer.pop_front();
-						RXPacketBuffer.push_front(packet);
-					}
-
-					error = Status::PERIPH_OK;
-				}
-
-				return error;
-			}
-
-			Status USARTClass::readSync(uint8_t* buff, size_t length)
-			{
-				if (!USARTPeriphState.gpio_enabled || !USARTPeriphState.usart_enabled)
+				if (!periphState.gpio_enabled || !periphState.usart_enabled)
 					return Status::PERIPH_NOT_INITIALIZED;
 
 				auto statusCode = Status::PERIPH_ERROR;
@@ -476,19 +457,6 @@ namespace Thor
 				}
 
 				return statusCode;
-			}
-
-			uint32_t USARTClass::availablePackets()
-			{
-				return totalUnreadPackets;
-			}
-
-			size_t USARTClass::nextPacketSize()
-			{
-				if (RXPacketBuffer.empty())
-					return (size_t)0;
-				else
-					return RXPacketBuffer.front().length;
 			}
 
 			void USARTClass::end()
@@ -934,12 +902,15 @@ namespace Thor
 				usartHandle.Instance->RDR;
 				#endif
 			}
+
+            #endif
 		}
 	}
 }
 
 void HAL_USART_TxCpltCallback(USART_HandleTypeDef *UsartHandle)
 {
+    #if 0
 	/* Deduce at runtime which class object triggered this interrupt */
 	auto usart = getUSARTClassRef(UsartHandle->Instance);
 
@@ -965,48 +936,64 @@ void HAL_USART_TxCpltCallback(USART_HandleTypeDef *UsartHandle)
 	#if defined(USING_FREERTOS)
 	usartTaskTrigger.logEvent(TX_COMPLETE, &usartTaskTrigger);
 	#endif
+
+    #endif
 }
 
 void HAL_USART_RxCpltCallback(USART_HandleTypeDef *UsartHandle)
 {
-	/* Deduce at runtime which class object triggered this interrupt */
-	auto usart = getUSARTClassRef(UsartHandle->Instance);
+    #if 0
+    /*------------------------------------------------
+    Deduce at runtime which class object triggered this interrupt
+    -------------------------------------------------*/
+	const USARTClass_sPtr& usart = getUSARTClassRef(UsartHandle->Instance);
 
-	if (usart && (usart->_getRxMode() == Modes::DMA))
-	{
-		usart->_setRxComplete();
+    if(usart)
+    {
+        if (usart->rxMode == Modes::DMA)
+	    {
+		    usart->rx_complete = true;
 
-		/* Calculate how many bytes were received by looking at remaining RX buffer space
-		* num_received = bufferMaxSize - bufferSizeRemaining */
-		size_t num_received = (size_t)(UsartHandle->RxXferSize - UsartHandle->hdmarx->Instance->NDTR);
+            /*------------------------------------------------
+            Fill the user's buffer with received data
+            -------------------------------------------------*/
+            if(usart->userRxBuffer)
+            {
+                size_t numReceived = static_cast<size_t>(UsartHandle->RxXferSize - UsartHandle->hdmarx->Instance->NDTR);
+                size_t cpyLen = std::min(numReceived, USART_QUEUE_BUFFER_SIZE);
 
-		/* Construct the received packet and push into the receive queue */
-		Thor::Peripheral::USART::USARTClass::USARTPacket tempPacket;
-		tempPacket.data_ptr = usart->_rxCurrentQueueAddr();
-		tempPacket.length = num_received;
-		usart->_rxBufferPushBack(tempPacket);
+                memcpy(usart->userRxBuffer, usart->rxBuffer, cpyLen);
 
-		/* Increment the queue address pointer so we don't overwrite data */
-		usart->_rxIncrQueueIdx();
+                if(numReceived > USART_QUEUE_BUFFER_SIZE)
+                {
+                    usart->periphState.rxOverrun = true;
+                }
+            }
 
-		/* Start the listening process again for a new packet */
-		USART_EnableIT_IDLE(UsartHandle);
-		HAL_USART_Receive_DMA(UsartHandle, usart->_rxCurrentQueueAddr(), USART_QUEUE_BUFFER_SIZE);
-	}
+            /*------------------------------------------------
+            Start the listening process again for a new packet
+            -------------------------------------------------*/
+		    USART_EnableIT_IDLE(UsartHandle);
+		    HAL_USART_Receive_DMA(UsartHandle, usart->rxBuffer, USART_QUEUE_BUFFER_SIZE);
+	    }
+	    else if(!usart->rx_complete)
+	    {
+		    usart->rx_complete = true;
 
-	/* Only runs if the user explicitly requests RX in blocking or interrupt mode */
-	else if (usart && !usart->_getRxComplete())
-	{
-		usart->_setRxComplete();
+		    if (usart->rxMode == Modes::INTERRUPT)
+            {
+                usart->RX_ASYNC = true;
+            }
+	    }
+    }
 
-		if (usart->_getRxMode() == Modes::INTERRUPT)
-			usart->_setRxAsync();
-	}
 
 	/* Signal any waiting threads  */
 	#if defined(USING_FREERTOS)
 	usartTaskTrigger.logEvent(RX_COMPLETE, &usartTaskTrigger);
 	#endif
+
+    #endif
 }
 
 void HAL_USART_TxHalfCpltCallback(USART_HandleTypeDef *UsartHandle)
@@ -1025,7 +1012,7 @@ void USART1_IRQHandler(void)
 {
 	if (usartObjects[1])
 	{
-		usartObjects[1]->IRQHandler();
+		//usartObjects[1]->IRQHandler();
 	}
 }
 
@@ -1033,7 +1020,7 @@ void USART2_IRQHandler(void)
 {
 	if (usartObjects[2])
 	{
-		usartObjects[2]->IRQHandler();
+		//usartObjects[2]->IRQHandler();
 	}
 }
 
@@ -1041,46 +1028,46 @@ void USART3_IRQHandler(void)
 {
 	if (usartObjects[3])
 	{
-		usartObjects[3]->IRQHandler();
+		//usartObjects[3]->IRQHandler();
 	}
 }
 
-void USART4_IRQHandler(void)
-{
-	if (usartObjects[4])
-	{
-		usartObjects[4]->IRQHandler();
-	}
-}
-
-void USART5_IRQHandler(void)
-{
-	if (usartObjects[5])
-	{
-		usartObjects[5]->IRQHandler();
-	}
-}
+//void USART4_IRQHandler(void)
+//{
+//	if (usartObjects[4])
+//	{
+//		usartObjects[4]->IRQHandler();
+//	}
+//}
+//
+//void USART5_IRQHandler(void)
+//{
+//	if (usartObjects[5])
+//	{
+//		usartObjects[5]->IRQHandler();
+//	}
+//}
 
 void USART6_IRQHandler(void)
 {
 	if (usartObjects[6])
 	{
-		usartObjects[6]->IRQHandler();
+		//usartObjects[6]->IRQHandler();
 	}
 }
 
-void USART7_IRQHandler(void)
-{
-	if (usartObjects[7])
-	{
-		usartObjects[7]->IRQHandler();
-	}
-}
-
-void USART8_IRQHandler(void)
-{
-	if (usartObjects[8])
-	{
-		usartObjects[8]->IRQHandler();
-	}
-}
+//void USART7_IRQHandler(void)
+//{
+//	if (usartObjects[7])
+//	{
+//		usartObjects[7]->IRQHandler();
+//	}
+//}
+//
+//void USART8_IRQHandler(void)
+//{
+//	if (usartObjects[8])
+//	{
+//		usartObjects[8]->IRQHandler();
+//	}
+//}
