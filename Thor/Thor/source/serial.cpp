@@ -9,204 +9,12 @@ using namespace Thor::Definitions::Serial;
 using namespace Thor::Peripheral::UART;
 using namespace Thor::Peripheral::USART;
 
-//using ThorStatus = Thor::Definitions::Status;
-//using ThorMode = Thor::Definitions::Modes;
-//using ThorSubPeriph = Thor::Definitions::SubPeripheral;
-//using ThorBaud = Thor::Definitions::Serial::BaudRate;
-
-#if defined(USING_CHIMERA)
-//using ChimStatus = Chimera::Serial::Status;
-//using ChimBaud = Chimera::Serial::BaudRate;
-//using ChimMode = Chimera::Serial::Modes;
-//using ChimSubPeriph = Chimera::Serial::SubPeripheral;
-#endif
-
 namespace Thor
 {
 	namespace Peripheral
 	{
 		namespace Serial
 		{
-			#if 0
-			Chimera::Serial::Status SerialClass::convertStatus(ThorStatus status)
-			{
-				switch (status)
-				{
-				case ThorStatus::PERIPH_OK:								return ChimStatus::OK;
-				case ThorStatus::PERIPH_LOCKED:							return ChimStatus::LOCKED;
-				case ThorStatus::PERIPH_NOT_INITIALIZED:				return ChimStatus::NOT_INITIALIZED;
-				case ThorStatus::PERIPH_ERROR:							return ChimStatus::ERROR;
-				case ThorStatus::PERIPH_BUSY:						    return ChimStatus::NOT_READY;
-				case ThorStatus::PERIPH_TX_IN_PROGRESS:					return ChimStatus::TX_IN_PROGRESS;
-				case ThorStatus::PERIPH_RX_IN_PROGRESS:					return ChimStatus::RX_IN_PROGRESS;
-				case ThorStatus::PERIPH_PACKET_TOO_LARGE_FOR_BUFFER:	return ChimStatus::PACKET_TOO_LARGE_FOR_BUFFER;
-				case ThorStatus::PERIPH_TIMEOUT:						return ChimStatus::TIMEOUT;
-				default:												return ChimStatus::UNKNOWN_ERROR;
-				}
-			}
-
-			ThorBaud convertBaud(ChimBaud baud)
-			{
-				switch (baud)
-				{
-				case ChimBaud::SERIAL_BAUD_110:			return ThorBaud::SERIAL_BAUD_110;
-				case ChimBaud::SERIAL_BAUD_150:			return ThorBaud::SERIAL_BAUD_150;
-				case ChimBaud::SERIAL_BAUD_300:			return ThorBaud::SERIAL_BAUD_300;
-				case ChimBaud::SERIAL_BAUD_1200:		return ThorBaud::SERIAL_BAUD_1200;
-				case ChimBaud::SERIAL_BAUD_2400:		return ThorBaud::SERIAL_BAUD_2400;
-				case ChimBaud::SERIAL_BAUD_4800:		return ThorBaud::SERIAL_BAUD_4800;
-				case ChimBaud::SERIAL_BAUD_9600:		return ThorBaud::SERIAL_BAUD_9600;
-				case ChimBaud::SERIAL_BAUD_19200:		return ThorBaud::SERIAL_BAUD_19200;
-				case ChimBaud::SERIAL_BAUD_38400:		return ThorBaud::SERIAL_BAUD_38400;
-				case ChimBaud::SERIAL_BAUD_57600:		return ThorBaud::SERIAL_BAUD_57600;
-				case ChimBaud::SERIAL_BAUD_115200:		return ThorBaud::SERIAL_BAUD_115200;
-				case ChimBaud::SERIAL_BAUD_230400:		return ThorBaud::SERIAL_BAUD_230400;
-				case ChimBaud::SERIAL_BAUD_460800:		return ThorBaud::SERIAL_BAUD_460800;
-				case ChimBaud::SERIAL_BAUD_921600:		return ThorBaud::SERIAL_BAUD_921600;
-				default:								return ThorBaud::SERIAL_BAUD_9600;
-				}
-			}
-
-			ChimStatus SerialClass::cbegin(uint32_t baud, ChimMode tx_mode, ChimMode rx_mode)
-			{
-				auto chimera_error = ChimStatus::OK;
-				auto thor_error = begin(static_cast<ThorBaud>(baud), static_cast<ThorMode>(tx_mode), static_cast<ThorMode>(rx_mode));
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = ChimStatus::ERROR;
-				}
-
-				return chimera_error;
-			}
-
-			ChimStatus SerialClass::csetMode(ChimSubPeriph periph, ChimMode mode)
-			{
-				if (periph == ChimSubPeriph::TX)
-				{
-					switch (mode)
-					{
-					case Chimera::Serial::Modes::BLOCKING:
-						serialObject->setMode(ThorSubPeriph::TX, ThorMode::BLOCKING);
-						break;
-
-					case Chimera::Serial::Modes::INTERRUPT:
-						serialObject->setMode(ThorSubPeriph::TX, ThorMode::INTERRUPT);
-						break;
-
-					case Chimera::Serial::Modes::DMA:
-						serialObject->setMode(ThorSubPeriph::TX, ThorMode::DMA);
-						break;
-
-					default: break;
-					}
-				}
-				else if (periph == ChimSubPeriph::RX)
-				{
-					switch (mode)
-					{
-					case Chimera::Serial::Modes::BLOCKING:
-						serialObject->setMode(ThorSubPeriph::RX, ThorMode::BLOCKING);
-						break;
-
-					case Chimera::Serial::Modes::INTERRUPT:
-						serialObject->setMode(ThorSubPeriph::RX, ThorMode::INTERRUPT);
-						break;
-
-					case Chimera::Serial::Modes::DMA:
-						serialObject->setMode(ThorSubPeriph::RX, ThorMode::DMA);
-						break;
-
-					default: break;
-					}
-				}
-
-				return ChimStatus::OK;
-			}
-
-			Chimera::Serial::Status SerialClass::csetBaud(uint32_t baud)
-			{
-				auto chimera_error = ChimStatus::OK;
-
-				//TODO: Need to convert between Thor/Chimera bauds...or just allow numbers??
-				auto thor_error = this->serialObject->setBaud(baud);
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = convertStatus(thor_error);
-				}
-
-				return chimera_error;
-			}
-
-			ChimStatus SerialClass::cwrite(uint8_t* val, size_t length)
-			{
-				auto chimera_error = ChimStatus::OK;
-				auto thor_error = write(val, length);
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = convertStatus(thor_error);
-				}
-
-				return chimera_error;
-			}
-
-			ChimStatus SerialClass::cwrite(char* string, size_t length)
-			{
-				auto chimera_error = ChimStatus::OK;
-				auto thor_error = write(string, length);
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = convertStatus(thor_error);
-				}
-
-				return chimera_error;
-			}
-
-			ChimStatus SerialClass::cwrite(const char* string)
-			{
-				auto chimera_error = ChimStatus::OK;
-				auto thor_error = write(string);
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = convertStatus(thor_error);
-				}
-
-				return chimera_error;
-			}
-
-			ChimStatus SerialClass::cwrite(const char* string, size_t length)
-			{
-				auto chimera_error = ChimStatus::OK;
-				auto thor_error = write(string, length);
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = convertStatus(thor_error);
-				}
-
-				return chimera_error;
-			}
-
-			ChimStatus SerialClass::creadPacket(uint8_t* buff, size_t buff_length)
-			{
-				auto chimera_error = ChimStatus::OK;
-				auto thor_error = readPacket(buff, buff_length);
-
-				if (thor_error != ThorStatus::PERIPH_OK)
-				{
-					chimera_error = convertStatus(thor_error);
-				}
-
-				return chimera_error;
-			}
-
-			#endif
-
-
 			static HardwareClassMapping serialPeripheralMap[MAX_SERIAL_CHANNELS + 1] =
 			{
 				#if defined(STM32F767xx) || defined(STM32F446xx)
@@ -254,7 +62,7 @@ namespace Thor
                 }
             }
 
-			Status SerialClass::begin(const BaudRate baud, const Modes tx_mode, const Modes rx_mode)
+			Status SerialClass::begin(const uint32_t baud, const Modes tx_mode, const Modes rx_mode)
 			{
                 assert(serialObject);
                 return serialObject->begin(baud, tx_mode, rx_mode);
@@ -272,34 +80,10 @@ namespace Thor
 				return serialObject->setBaud(baud);
 			}
 
-			Status SerialClass::setBaud(const BaudRate baud)
-			{
-                assert(serialObject);
-				return serialObject->setBaud(baud);
-			}
-
 			Status SerialClass::write(const uint8_t *const val, const size_t length)
 			{
                 assert(serialObject);
 				return serialObject->write(val, length);
-			}
-
-			Status SerialClass::write(char *const string, const size_t length)
-			{
-                assert(serialObject);
-				return serialObject->write(string, length);
-			}
-
-			Status SerialClass::write(const char *const string)
-			{
-                assert(serialObject);
-				return serialObject->write(string);
-			}
-
-			Status SerialClass::write(const char *const string, const size_t length)
-			{
-                assert(serialObject);
-				return serialObject->write(string, length);
 			}
 
 			Status SerialClass::read(uint8_t *const buffer, size_t length)
@@ -329,6 +113,178 @@ namespace Thor
 			#endif
 
 
+            #if defined(USING_CHIMERA)
+    		static constexpr Thor::Definitions::Modes convertMode(const Chimera::Serial::Modes mode)
+    		{
+        		switch (mode)
+        		{
+        		case Chimera::Serial::Modes::BLOCKING: 
+                    return Thor::Definitions::Modes::BLOCKING;
+            		break;
+
+        		case Chimera::Serial::Modes::INTERRUPT:
+            		return Thor::Definitions::Modes::INTERRUPT;
+            		break;
+
+        		case Chimera::Serial::Modes::DMA:
+            		return Thor::Definitions::Modes::DMA;
+            		break;
+
+        		default:
+            		return Thor::Definitions::Modes::MODE_UNDEFINED;
+            		break;
+        		}
+    		}
+
+    		static constexpr Thor::Definitions::SubPeripheral convertPeriph(const Chimera::Serial::SubPeripheral periph)
+    		{
+        		switch (periph)
+        		{
+        		case Chimera::Serial::SubPeripheral::TX:
+            		return Thor::Definitions::SubPeripheral::TX;
+            		break;
+
+        		case Chimera::Serial::SubPeripheral::RX:
+            		return Thor::Definitions::SubPeripheral::RX;
+            		break;
+            		
+        		default:
+            		return Thor::Definitions::SubPeripheral::UNKNOWN_SUB_PERIPHERAL;
+            		break;
+        		}
+    		}
+
+
+    		ChimeraSerial::ChimeraSerial(const uint8_t channel)
+    		{
+        		serial = std::make_shared<SerialClass>(channel);
+    		}
+
+    		Chimera::Serial::Status ChimeraSerial::begin(const uint32_t baud, 
+        		const Chimera::Serial::Modes txMode,
+        		const Chimera::Serial::Modes rxMode)
+    		{
+        		assert(serial);
+        		auto chimeraError = Chimera::Serial::Status::OK;
+
+        		auto thorError = serial->begin(baud, convertMode(txMode), convertMode(rxMode));
+
+        		if (thorError != Thor::Definitions::Status::PERIPH_OK)
+        		{
+            		chimeraError = Chimera::Serial::Status::ERROR;
+        		}
+
+        		return chimeraError;
+    		}
+
+    		Chimera::Serial::Status ChimeraSerial::setMode(Chimera::Serial::SubPeripheral periph, Chimera::Serial::Modes mode)
+    		{
+        		assert(serial);
+        		auto chimeraError = Chimera::Serial::Status::OK;
+        		auto thorError = serial->setMode(convertPeriph(periph), convertMode(mode));
+
+        		if (thorError != Thor::Definitions::Status::PERIPH_OK)
+        		{
+            		chimeraError = Chimera::Serial::Status::ERROR;
+        		}
+
+        		return chimeraError;
+    		}
+
+    		Chimera::Serial::Status ChimeraSerial::setBaud(const uint32_t baud)
+    		{
+        		assert(serial);
+        		auto chimeraError = Chimera::Serial::Status::OK;
+        		auto thorError = serial->setBaud(baud);
+
+        		if (thorError != Thor::Definitions::Status::PERIPH_OK)
+        		{
+            		chimeraError = Chimera::Serial::Status::ERROR;
+        		}
+
+        		return chimeraError;
+    		}
+
+    		Chimera::Serial::Status ChimeraSerial::write(const uint8_t *const buffer, const size_t length)
+    		{
+        		assert(serial);
+        		auto chimeraError = Chimera::Serial::Status::OK;
+        		auto thorError = serial->write(buffer, length);
+
+        		if (thorError != Thor::Definitions::Status::PERIPH_OK)
+        		{
+            		chimeraError = Chimera::Serial::Status::ERROR;
+        		}
+
+        		return chimeraError;
+    		}
+
+    		Chimera::Serial::Status read(uint8_t *const buffer, const size_t length)
+    		{
+        		return Chimera::Serial::Status::FEATURE_NOT_ENABLED;
+    		}
+
+    		Chimera::Serial::Status readAsync(uint8_t *const buffer, const size_t maxLen)
+    		{
+        		return Chimera::Serial::Status::FEATURE_NOT_ENABLED;
+    		}
+
+    		Chimera::Serial::Status enableDoubleBuffering(const Chimera::Serial::SubPeripheral periph,
+        		volatile uint8_t *const bufferOne,
+        		volatile uint8_t *const bufferTwo,
+        		const size_t length)
+    		{
+        		return Chimera::Serial::Status::FEATURE_NOT_ENABLED;
+    		}
+
+    		Chimera::Serial::Status disableDoubleBuffering()
+    		{
+        		return Chimera::Serial::Status::FEATURE_NOT_ENABLED;
+    		}
+
+    		Chimera::Serial::Status attachEventNotifier(const Chimera::Serial::Event event, volatile bool *const notifier)
+    		{
+        		return Chimera::Serial::Status::FEATURE_NOT_ENABLED;
+    		}
+
+    		Chimera::Serial::Status removeEventNotifier(const Chimera::Serial::Event event, volatile bool *const notifier)
+    		{
+        		return Chimera::Serial::Status::FEATURE_NOT_ENABLED;
+    		}
+
+    		#if defined(USING_FREERTOS)
+    		Chimera::Serial::Status attachEventNotifier(const Event event, SemaphoreHandle_t *const semphr)
+    		{
+        		return Chimera::Serial::Status::FEATURE_NOT_ENABLED;
+    		}
+
+    		Chimera::Serial::Status removeEventNotifier(const Event event, SempahoreHandle_t *const semphr)
+    		{
+        		return Chimera::Serial::Status::FEATURE_NOT_ENABLED;
+    		}
+    		#endif
+
+    		void status(Chimera::Serial::HardwareStatus &status)
+    		{
+        		
+    		}
+
+    		bool available(size_t *const bytes = nullptr)
+    		{
+        		return false;
+    		}
+
+    		bool reserve(const uint32_t timeout_mS)
+    		{
+        		return false;
+    		}
+
+    		bool release(const uint32_t timeout_mS)
+    		{
+        		return false;
+    		}
+
+            #endif /* !USING_CHIMERA */
 		}
 	}
 }

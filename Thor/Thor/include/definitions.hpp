@@ -49,7 +49,8 @@ namespace Thor
 		{
 			RX,
 			TX,
-			TXRX
+			TXRX,
+            UNKNOWN_SUB_PERIPHERAL
 		};
 
 		enum class Modes : uint8_t
@@ -539,16 +540,11 @@ namespace Thor
                     bool rxOverrun = false;
                 } State;
 
-                virtual Thor::Definitions::Status begin(const BaudRate, const Modes, const Modes) = 0;
+                virtual Thor::Definitions::Status begin(const uint32_t, const Modes, const Modes) = 0;
                 virtual Thor::Definitions::Status setMode(const SubPeripheral, const Modes) = 0;
-                virtual Thor::Definitions::Status setBaud(const BaudRate) = 0;
                 virtual Thor::Definitions::Status setBaud(const uint32_t) = 0;
                 virtual Thor::Definitions::Status write(const uint8_t *const, const size_t) = 0;
-                virtual Thor::Definitions::Status write(char *const, const size_t) = 0;
-                virtual Thor::Definitions::Status write(const char *const) = 0;
-                virtual Thor::Definitions::Status write(const char *const, const size_t) = 0;
                 virtual Thor::Definitions::Status read(uint8_t *const, const size_t) = 0;
-                virtual bool available(size_t&, const uint32_t timeout_mS) = 0;
 				virtual void end() = 0;
 
                 virtual State report();

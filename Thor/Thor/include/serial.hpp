@@ -49,7 +49,8 @@ namespace Thor
 				*	@param[in]  rx_mode	    Sets the RX mode to Blocking, Interrupt, or DMA from Thor::Definitions::Serial::Modes
 				*	@return	Thor::Definitions::Status
 				*/
-                Thor::Definitions::Status begin(const Thor::Definitions::Serial::BaudRate baud, const Thor::Definitions::Modes tx_mode,
+                Thor::Definitions::Status begin(const uint32_t baud, 
+                    const Thor::Definitions::Modes tx_mode,
                     const Thor::Definitions::Modes rx_mode) override;
 
 				/**
@@ -72,14 +73,6 @@ namespace Thor
 				Thor::Definitions::Status setBaud(const uint32_t baud) override;
 
 				/**
-				*   Sets a new baud rate
-                *
-                *   @param[in]  baud        Buad rate to be set
-                *   @return Thor::Definitions::Status
-				*/
-				Thor::Definitions::Status setBaud(const Thor::Definitions::Serial::BaudRate baud) override;
-
-				/**
                 *   Writes data to the serial output gpio
                 *
 				*	@param[in]  val		    Pointer to an array of data to be sent out
@@ -87,32 +80,6 @@ namespace Thor
 				*	@return	Thor::Definitions::Status
 				*/
 				Thor::Definitions::Status write(const uint8_t *const val, const size_t length) override;
-
-				/**
-                *   Writes data to the serial output gpio
-				*
-                *   @param[in]  string	    Pointer to a mutable character array
-				*	@param[in]  length	    The length of data to be sent out
-				*	@return	Thor::Definitions::Status
-				*/
-				Thor::Definitions::Status write(char *const string, const size_t length) override;
-
-				/**
-                *   Writes data to the serial output gpio
-                *
-				*	@param[in]  string	    Pointer to a immutable character array. The length is internally calculated with strlen()
-				*	@return	Thor::Definitions::Status
-				*/
-				Thor::Definitions::Status write(const char *const string) override;
-
-				/**
-                *   Writes data to the serial output gpio
-                *
-				*	@param[in]  string	    Pointer to an immutable character array
-				*	@param[in]  length	    The length of data to be sent out
-				*	@return	Thor::Definitions::Status
-				*/
-				Thor::Definitions::Status write(const char *const string, const size_t length) override;
 
 				/**
                 *   Commands the RX peripheral to read a single transmission of known length into the provided buffer.
@@ -123,7 +90,7 @@ namespace Thor
 				*	@note Only use this for receptions that have a fixed, known length. For transmissions that last longer than
 				*		  the given 'length' value, it will simply be ignored and lost forever. Poor data.
 				*/
-				Thor::Definitions::Status read(uint8_t *const buffer, size_t length) override;
+				Thor::Definitions::Status read(uint8_t *const buffer, const size_t length) override;
 
 
 
@@ -161,10 +128,59 @@ namespace Thor
 			};
 
 
+            /**
+            *   For documentation, see the Chimera::Serial::Interface class
+            */
             #if defined(USING_CHIMERA)
             class ChimeraSerial : public Chimera::Serial::Interface
             {
+            public:
+                
+                ChimeraSerial(const uint8_t channel);
+                ~ChimeraSerial() = default;
 
+                Chimera::Serial::Status begin(const uint32_t baud, 
+                    const Chimera::Serial::Modes txMode, const Chimera::Serial::Modes rxMode) final override;
+
+                Chimera::Serial::Status setBaud(const uint32_t baud) final override;
+
+                Chimera::Serial::Status setMode(const Chimera::Serial::SubPeripheral periph, const Chimera::Serial::Modes mode) final override;
+
+                Chimera::Serial::Status write(const uint8_t *const buffer, const size_t length) final override;
+
+                Chimera::Serial::Status read(uint8_t *const buffer, const size_t length) final override;
+
+                Chimera::Serial::Status readAsync(uint8_t *const buffer, const size_t maxLen) final override;
+
+                Chimera::Serial::Status enableDoubleBuffering(const Chimera::Serial::SubPeripheral periph,
+                    volatile uint8_t *const bufferOne,
+                    volatile uint8_t *const bufferTwo,
+                    const size_t length) final override;
+
+                Chimera::Serial::Status disableDoubleBuffering() final override;
+
+                Chimera::Serial::Status attachEventNotifier(const Chimera::Serial::Event event, volatile bool *const notifier) final override;
+
+                Chimera::Serial::Status removeEventNotifier(const Chimera::Serial::Event event, volatile bool *const notifier) final override;
+
+                #if defined(USING_FREERTOS)
+                Chimera::Serial::Status attachEventNotifier(const Event event, SemaphoreHandle_t *const semphr) final override;
+
+                Chimera::Serial::Status removeEventNotifier(const Event event, SempahoreHandle_t *const semphr) final override;
+                #endif
+
+                void status(Chimera::Serial::HardwareStatus &status) final override;
+
+                bool available(size_t *const bytes = nullptr) final override;
+
+                bool reserve(const uint32_t timeout_mS) final override;
+
+                bool release(const uint32_t timeout_mS) final override;
+
+            private:
+                ChimeraSerial() = default;
+                
+                SerialClass_sPtr serial;
             };
 
             #endif /* !USING_CHIMERA */

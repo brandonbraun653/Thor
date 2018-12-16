@@ -48,7 +48,7 @@ namespace Thor
 				*	@param[in]  rx_mode	    Sets the RX mode to Blocking, Interrupt, or DMA from Thor::Definitions::Serial::Modes
 				*	@return	Thor::Definitions::Status
 				*/
-                Thor::Definitions::Status begin(const Thor::Definitions::Serial::BaudRate baud = Thor::Definitions::Serial::BaudRate::SERIAL_BAUD_115200,
+                Thor::Definitions::Status begin(const uint32_t baud = 115200u,
 					                            const Thor::Definitions::Modes tx_mode = Thor::Definitions::Modes::BLOCKING,
 					                            const Thor::Definitions::Modes rx_mode = Thor::Definitions::Modes::BLOCKING) override;
 
@@ -72,14 +72,6 @@ namespace Thor
 				Thor::Definitions::Status setBaud(const uint32_t baud) override;
 
 				/**
-				*   Sets a new baud rate
-                *
-                *   @param[in]  baud        Buad rate to be set
-                *   @return Thor::Definitions::Status
-				*/
-				Thor::Definitions::Status setBaud(const Thor::Definitions::Serial::BaudRate baud) override;
-
-				/**
                 *   Writes data to the serial output gpio
                 *
 				*	@param[in]  val		    Pointer to an array of data to be sent out
@@ -87,32 +79,6 @@ namespace Thor
 				*	@return	Thor::Definitions::Status
 				*/
 				Thor::Definitions::Status write(const uint8_t *const val, const size_t length) override;
-
-				/**
-                *   Writes data to the serial output gpio
-				*
-                *   @param[in]  string	    Pointer to a mutable character array
-				*	@param[in]  length	    The length of data to be sent out
-				*	@return	Thor::Definitions::Status
-				*/
-				Thor::Definitions::Status write(char *const string, const size_t length) override;
-
-				/**
-                *   Writes data to the serial output gpio
-                *
-				*	@param[in]  string	    Pointer to a immutable character array. The length is internally calculated with strlen()
-				*	@return	Thor::Definitions::Status
-				*/
-				Thor::Definitions::Status write(const char *const string) override;
-
-				/**
-                *   Writes data to the serial output gpio
-                *
-				*	@param[in]  string	    Pointer to an immutable character array
-				*	@param[in]  length	    The length of data to be sent out
-				*	@return	Thor::Definitions::Status
-				*/
-				Thor::Definitions::Status write(const char *const string, const size_t length) override;
 
 				/**
                 *   Commands the RX peripheral to read a single transmission of known length into the provided buffer.
