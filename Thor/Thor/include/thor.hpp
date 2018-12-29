@@ -10,13 +10,14 @@ extern void ThorInit();
 
 #if defined(USING_CHIMERA)
 /** A function Chimera expects to exist in order to initialize the host system properly */
-extern void cSystemInit();	
-#endif 
+extern void cSystemInit();
+#endif
 
 /** @namespace Thor */
 namespace Thor
 {
-	void delayMilliseconds(uint32_t ms);
+    uint32_t millis();
+    void delayMilliseconds(uint32_t ms);
 	void delayMicroseconds(uint32_t us);
 }
 

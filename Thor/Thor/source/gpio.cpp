@@ -277,6 +277,12 @@ namespace Thor
                 return Chimera::GPIO::Status::OK;
             }
 
+            Chimera::GPIO::Status ChimeraGPIO::toggle()
+            {
+                gpioPin.toggle();
+                return Chimera::GPIO::Status::OK;
+            }
+
             const PinNum ChimeraGPIO::convertPinNum(const uint8_t num)
             {
                 PinNum pinNum = PinNum::NOT_A_PIN;

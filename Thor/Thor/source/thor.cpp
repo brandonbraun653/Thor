@@ -7,7 +7,7 @@
 #if defined(USING_FREERTOS)
 #include "FreeRTOS.h"
 #include "task.h"
-#endif 
+#endif
 
 void ThorInit()
 {
@@ -16,10 +16,10 @@ void ThorInit()
 
 	/* Set the clock and peripheral settings to max performance */
 	ThorSystemClockConfig();
-	
+
 	/* Enforce the system interrupt priority structure */
 	HAL_NVIC_SetPriorityGrouping(Thor::Defaults::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING);
-	
+
 
 	#if WRITE_BUFFERING_DISABLED
 	DISABLE_WRITE_BUFFERING;
@@ -42,16 +42,21 @@ void cSystemInit()
 {
 	ThorInit();
 }
-#endif 
+#endif
 
 namespace Thor
 {
-	void delayMilliseconds(uint32_t ms)
+    uint32_t millis()
+    {
+        return HAL_GetTick();
+    }
+
+    void delayMilliseconds(uint32_t ms)
 	{
 		#if defined(USING_FREERTOS)
-		vTaskDelay(pdMS_TO_TICKS(ms)); //Non-blocking
+		vTaskDelay(pdMS_TO_TICKS(ms));
 		#else
-		HAL_Delay(ms); //Blocking
+		HAL_Delay(ms);
 		#endif
 	}
 
@@ -60,5 +65,5 @@ namespace Thor
 	{
 
 	}
-	
+
 }
