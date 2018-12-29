@@ -118,7 +118,7 @@ namespace Thor
     		{
         		switch (mode)
         		{
-        		case Chimera::Serial::Modes::BLOCKING: 
+        		case Chimera::Serial::Modes::BLOCKING:
                     return Thor::Definitions::Modes::BLOCKING;
             		break;
 
@@ -147,7 +147,7 @@ namespace Thor
         		case Chimera::Serial::SubPeripheral::RX:
             		return Thor::Definitions::SubPeripheral::RX;
             		break;
-            		
+
         		default:
             		return Thor::Definitions::SubPeripheral::UNKNOWN_SUB_PERIPHERAL;
             		break;
@@ -160,7 +160,7 @@ namespace Thor
         		serial = std::make_shared<SerialClass>(channel);
     		}
 
-    		Chimera::Serial::Status ChimeraSerial::begin(const uint32_t baud, 
+    		Chimera::Serial::Status ChimeraSerial::begin(const uint32_t baud,
         		const Chimera::Serial::Modes txMode,
         		const Chimera::Serial::Modes rxMode)
     		{
@@ -253,12 +253,12 @@ namespace Thor
     		}
 
     		#if defined(USING_FREERTOS)
-    		Chimera::Serial::Status attachEventNotifier(const Event event, SemaphoreHandle_t *const semphr)
+    		Chimera::Serial::Status attachEventNotifier(const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr)
     		{
         		return Chimera::Serial::Status::FEATURE_NOT_ENABLED;
     		}
 
-    		Chimera::Serial::Status removeEventNotifier(const Event event, SempahoreHandle_t *const semphr)
+    		Chimera::Serial::Status removeEventNotifier(const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr)
     		{
         		return Chimera::Serial::Status::FEATURE_NOT_ENABLED;
     		}
@@ -266,7 +266,7 @@ namespace Thor
 
     		void status(Chimera::Serial::HardwareStatus &status)
     		{
-        		
+
     		}
 
     		bool available(size_t *const bytes = nullptr)

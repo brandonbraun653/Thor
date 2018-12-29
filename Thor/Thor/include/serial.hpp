@@ -49,7 +49,7 @@ namespace Thor
 				*	@param[in]  rx_mode	    Sets the RX mode to Blocking, Interrupt, or DMA from Thor::Definitions::Serial::Modes
 				*	@return	Thor::Definitions::Status
 				*/
-                Thor::Definitions::Status begin(const uint32_t baud, 
+                Thor::Definitions::Status begin(const uint32_t baud,
                     const Thor::Definitions::Modes tx_mode,
                     const Thor::Definitions::Modes rx_mode) override;
 
@@ -135,11 +135,11 @@ namespace Thor
             class ChimeraSerial : public Chimera::Serial::Interface
             {
             public:
-                
+
                 ChimeraSerial(const uint8_t channel);
                 ~ChimeraSerial() = default;
 
-                Chimera::Serial::Status begin(const uint32_t baud, 
+                Chimera::Serial::Status begin(const uint32_t baud,
                     const Chimera::Serial::Modes txMode, const Chimera::Serial::Modes rxMode) final override;
 
                 Chimera::Serial::Status setBaud(const uint32_t baud) final override;
@@ -164,9 +164,9 @@ namespace Thor
                 Chimera::Serial::Status removeEventNotifier(const Chimera::Serial::Event event, volatile bool *const notifier) final override;
 
                 #if defined(USING_FREERTOS)
-                Chimera::Serial::Status attachEventNotifier(const Event event, SemaphoreHandle_t *const semphr) final override;
+                Chimera::Serial::Status attachEventNotifier(const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr) final override;
 
-                Chimera::Serial::Status removeEventNotifier(const Event event, SempahoreHandle_t *const semphr) final override;
+                Chimera::Serial::Status removeEventNotifier(const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr) final override;
                 #endif
 
                 void status(Chimera::Serial::HardwareStatus &status) final override;
@@ -179,7 +179,7 @@ namespace Thor
 
             private:
                 ChimeraSerial() = default;
-                
+
                 SerialClass_sPtr serial;
             };
 
