@@ -21,9 +21,9 @@ namespace Thor
 		static GPIO_TypeDef* GREEN_LED_PORT	= GPIOB;
 		static GPIO_TypeDef* BLUE_LED_PORT = GPIOB;
 
-        static const Thor::Definitions::GPIO::PinNum RED_LED_PIN = PinNum::PIN_14;
-        static const Thor::Definitions::GPIO::PinNum GREEN_LED_PIN = PinNum::PIN_0;
-        static const Thor::Definitions::GPIO::PinNum BLUE_LED_PIN = PinNum::PIN_7;
+        static const Thor::Definitions::GPIO::PinNum RED_LED_PIN = Thor::Definitions::GPIO::PinNum::PIN_14;
+        static const Thor::Definitions::GPIO::PinNum GREEN_LED_PIN = Thor::Definitions::GPIO::PinNum::PIN_0;
+        static const Thor::Definitions::GPIO::PinNum BLUE_LED_PIN = Thor::Definitions::GPIO::PinNum::PIN_7;
 		#endif
 
 		#if defined(STM32F4)
