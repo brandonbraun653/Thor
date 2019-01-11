@@ -34,7 +34,10 @@ extern "C" {
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 	void HardFault_HandlerC(unsigned long *hardfault_args) {
-		#if defined(TARGET_STM32F4)
+		#if defined(TARGET_STM32F4) || defined(TARGET_STM32F7)
+    	/*------------------------------------------------
+        Common Registers Between Cortex M4 & M7
+    	------------------------------------------------*/
 		volatile unsigned long stacked_r0;				// General Purpose Register
 		volatile unsigned long stacked_r1;				// General Purpose Register
 		volatile unsigned long stacked_r2;				// General Purpose Register
@@ -45,10 +48,13 @@ extern "C" {
 		volatile unsigned long stacked_psr;				// Program Status Register:	A set of flags describing the program state
 		volatile unsigned long _CFSR = *SCB_REG_CFSR;	// Configurable Fault Status Register
 		volatile unsigned long _HFSR = *SCB_REG_HFSR;	// Hard Fault Status Register
-		volatile unsigned long _DFSR = *SCB_REG_DFSR;	// Debug Fault Status Register
 		volatile unsigned long _AFSR = *SCB_REG_AFSR;	// Auxiliary Fault Status Register
 		volatile unsigned long _BFAR = *SCB_REG_BFAR;	// Bus Fault Address Register
 		volatile unsigned long _MMAR = *SCB_REG_MMAR;	// MemManage Fault Address Register
+
+        #if defined(TARGET_STM32F4)
+		volatile unsigned long _DFSR = *SCB_REG_DFSR; 	// Debug Fault Status Register
+        #endif 
 
 		stacked_r0 = ((unsigned long)hardfault_args[0]);
 		stacked_r1 = ((unsigned long)hardfault_args[1]);
