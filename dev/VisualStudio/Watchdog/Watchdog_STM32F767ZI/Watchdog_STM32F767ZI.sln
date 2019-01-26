@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Watchdog_STM32F767ZI", "Watchdog_STM32F767ZI\Watchdog_STM32F767ZI.vcxproj", "{4EE14693-726F-4AFB-88CD-CAD0E869CF04}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|VisualGDB = Debug|VisualGDB
+		Release|VisualGDB = Release|VisualGDB
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4EE14693-726F-4AFB-88CD-CAD0E869CF04}.Debug|VisualGDB.ActiveCfg = Debug|VisualGDB
+		{4EE14693-726F-4AFB-88CD-CAD0E869CF04}.Debug|VisualGDB.Build.0 = Debug|VisualGDB
+		{4EE14693-726F-4AFB-88CD-CAD0E869CF04}.Release|VisualGDB.ActiveCfg = Release|VisualGDB
+		{4EE14693-726F-4AFB-88CD-CAD0E869CF04}.Release|VisualGDB.Build.0 = Release|VisualGDB
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D940D86F-0A10-4F13-9FB6-C9B276A0163E}
+	EndGlobalSection
+EndGlobal
