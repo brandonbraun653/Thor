@@ -19,10 +19,12 @@
 #include "SysprogsProfiler.h"
 
 using namespace Thor::Peripheral;
+using namespace Thor::Threading;
 using namespace Thor::Definitions::GPIO;
 
-void ledThread(void *argument);
-void watchdogThread(void *argument);
+void heartBeatThread(void *argument);
+void windowWatchdogThread(void *argument);
+void independentWatchdogThread(void *argument);
 
 int main(void)
 {
@@ -30,37 +32,26 @@ int main(void)
 
     InitializeInstrumentingProfiler();
 
-    //Thor::Threading::addThread(ledThread, "led", 300, NULL, 2, NULL);
-    Thor::Threading::addThread(watchdogThread, "wd", 300, NULL, 2, NULL);
-    
-    Thor::Threading::startScheduler(true);
+    addThread(heartBeatThread, "led", 300, NULL, 2, NULL);
+    addThread(windowWatchdogThread, "wwd", 300, NULL, 2, NULL);
+    addThread(independentWatchdogThread, "iwd", 300, NULL, 2, NULL);
+    startScheduler(true);
 
     while (1)
     {
         
     }
-
-//    const char *p = "";
-//    CommandLineTestRunner::RunAllTests(0, &p);
     return 0;
 }
 
-void ledThread(void *argument)
+void heartBeatThread(void *argument)
 {
     Thor::Peripheral::GPIO::GPIOClass led;
-    led.init(Thor::Nucleo::BLUE_LED_PORT, Thor::Nucleo::BLUE_LED_PIN);
+    led.init(Thor::Nucleo::RED_LED_PORT, Thor::Nucleo::RED_LED_PIN);
     led.mode(PinMode::OUTPUT_PP, PinPull::NOPULL);
     led.write(LogicLevel::LOW);
 
-    uint8_t count = 0;
-    while (count < 6)
-    {
-        led.toggle();
-        count++;
-        Thor::delayMilliseconds(50);
-    }
-
-    Thor::Threading::signalThreadSetupComplete();
+    signalThreadSetupComplete();
 
     for (;;)
     {
@@ -69,9 +60,9 @@ void ledThread(void *argument)
     }
 }
 
-void watchdogThread(void *argument)
+void windowWatchdogThread(void *argument)
 {   
-    auto dog = Thor::Peripheral::Watchdog::WindowWatchdog();
+    auto dog = Thor::Peripheral::Watchdog::IndependentWatchdog();
 
     Thor::Peripheral::GPIO::GPIOClass blueLed;
     blueLed.init(Thor::Nucleo::BLUE_LED_PORT, Thor::Nucleo::BLUE_LED_PIN);
@@ -91,9 +82,10 @@ void watchdogThread(void *argument)
         count++;
         Thor::delayMilliseconds(50);
     }
-    Thor::Threading::signalThreadSetupComplete();
+    
+    signalThreadSetupComplete();
 
-    dog.initialize(25);
+    dog.initialize(35);
     dog.pauseOnDebugHalt(true);
     dog.start();
     
@@ -101,6 +93,23 @@ void watchdogThread(void *argument)
     {
         dog.kick();
         greenLed.toggle();
-        Thor::delayMilliseconds(20);
+        Thor::delayMilliseconds(30);
+    }
+}
+
+void independentWatchdogThread(void *argument)
+{   
+    auto dog = Thor::Peripheral::Watchdog::IndependentWatchdog();
+    
+    signalThreadSetupComplete();
+
+    dog.initialize(1500);
+    dog.pauseOnDebugHalt(true);
+    dog.start();
+    
+    for (;;)
+    {
+        dog.kick();
+        Thor::delayMilliseconds(1400);
     }
 }

@@ -44,6 +44,7 @@
       <CPPLanguageStandard>CPP14</CPPLanguageStandard>
       <AdditionalIncludeDirectories>$(BOOST_ROOT)\boost_1_68_0;$(THOR_ROOT)\Thor;$(THOR_ROOT)\Thor\lib\FreeRTOS\include;$(THOR_ROOT)\Thor\lib\FreeRTOS\portable\GCC\ARM_CM7\r0p1;$(THOR_ROOT)\Thor\lib\FreeRTOS\config\stm32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>%(ClCompile.PreprocessorDefinitions);DEBUG=1;USE_FULL_LL_DRIVER;BOOST_NO_EXCEPTIONS;CPPUTEST_MEM_LEAK_DETECTION_DISABLED;USING_FREERTOS;USE_FREERTOS;DEBUG_DEFAULT_INTERRUPT_HANDLERS</PreprocessorDefinitions>
+      <Optimization>Og</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">

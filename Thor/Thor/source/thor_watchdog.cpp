@@ -25,6 +25,7 @@ namespace Thor
     {
         namespace Watchdog
         {
+            #if defined(WWDG)
             WindowWatchdog::WindowWatchdog() : actualTimeout_mS(0)
             {
                 
@@ -43,8 +44,8 @@ namespace Thor
                 counter.fill(0u);
                 error.fill(std::numeric_limits<float>::max());
 
-                uint32_t wdWindow = 0x7F;
-                uint32_t wdCounter = 0x7F;
+                uint32_t wdWindow = counterMax;
+                uint32_t wdCounter = counterMax;
                 uint32_t wdPrescaler = WWDG_PRESCALER_8;
                 
                 /*------------------------------------------------
@@ -185,7 +186,141 @@ namespace Thor
                 float calculatedTimeout = (1000.0f / pclk1) * 4096.0f * (1u << prescaler) * ((counter & counterMask) + 1);
                 return static_cast<uint32_t>(calculatedTimeout);
             }
+            #endif /* !WWDG */
 
+            #if defined(IWDG)
+            IndependentWatchdog::IndependentWatchdog()
+                : actualTimeout_mS(0)
+            {
+                
+            }
+
+            Status IndependentWatchdog::initialize(const uint32_t timeout_mS)
+            {
+                std::array<float, numPrescalers> error;
+                std::array<uint32_t, numPrescalers> counter;
+                std::array<uint32_t, numPrescalers> prescalerRegVals = { IWDG_PRESCALER_4, IWDG_PRESCALER_8, IWDG_PRESCALER_16, IWDG_PRESCALER_32, 
+                                                                         IWDG_PRESCALER_64, IWDG_PRESCALER_128, IWDG_PRESCALER_256 };
+                std::array<uint32_t, numPrescalers> prescalerActVals = { 4, 8, 16, 32, 64, 128, 256 };
+
+                /*------------------------------------------------
+                Initialize the algorithm variables
+                ------------------------------------------------*/
+                counter.fill(0u);
+                error.fill(std::numeric_limits<float>::max());
+
+                uint32_t wdReload = counterMax;
+                uint32_t wdPrescaler = IWDG_PRESCALER_256;
+                
+                /*------------------------------------------------
+                Calculates the best performing values for each prescaler
+                ------------------------------------------------*/
+                for (uint8_t i = 0; i < prescalerActVals.size(); i++)
+                {
+                    /*------------------------------------------------
+                    This is part of the equation found in the datasheet
+                    ------------------------------------------------*/
+                    float clockPeriod_mS = (1000.0f / clockFreqHz) * prescalerActVals[i];
+
+                    /*------------------------------------------------
+                    Iterate through all counter values to figure out which one 
+                    produces the closest timeout
+                    ------------------------------------------------*/
+                    for (uint16_t testVal = counterMin; testVal <= counterMax; testVal++)
+                    {
+                        float calcTimeout_mS = clockPeriod_mS * testVal;
+                        float absError = fabs(timeout_mS - calcTimeout_mS);
+
+                        if (absError < error[i]) 
+                        {
+                            error[i] = absError;
+                            counter[i] = testVal;
+                        }
+                    }
+                }
+
+                /*------------------------------------------------
+                Use the best performing prescaler and counter vars
+                ------------------------------------------------*/
+                uint8_t bestIdx = 0;
+                float min_err = std::numeric_limits<float>::max();
+
+                for (uint8_t i = 0; i < prescalerActVals.size(); i++)
+                {
+                    if (error[i] < min_err)
+                    {
+                        min_err = error[i];
+                        bestIdx = i;
+                    }
+                }
+                
+                wdReload = counter[bestIdx];
+                wdPrescaler = prescalerRegVals[bestIdx];
+                actualTimeout_mS = ((1000.0f / clockFreqHz) * prescalerActVals[bestIdx]) * wdReload;
+
+                /*------------------------------------------------
+                Initialize the device handle, allowing the user to reset whenever
+                ------------------------------------------------*/
+                handle.Instance = IWDG;
+                handle.Init.Prescaler = wdPrescaler;
+                handle.Init.Window = wdReload; 
+                handle.Init.Reload = wdReload;
+                
+                return Status::PERIPH_OK;
+            }
+            
+            Status IndependentWatchdog::start()
+            {
+                auto status = Status::PERIPH_OK;
+
+                if (HAL_IWDG_Init(&handle) != HAL_OK)
+                {
+                    status = Status::PERIPH_ERROR;
+                }
+
+                return status;
+            }
+            
+            Status IndependentWatchdog::stop()
+            {
+                /*------------------------------------------------
+                Once enabled, the watchdog cannot be stopped except by a system reset
+                ------------------------------------------------*/
+                return Status::PERIPH_LOCKED;
+            }
+
+            Status IndependentWatchdog::kick()
+            {
+                auto status = Status::PERIPH_OK;
+
+                if (HAL_IWDG_Refresh(&handle) != HAL_OK)
+                {
+                    status = Status::PERIPH_ERROR;
+                }
+
+                return status;
+            }
+
+            Status IndependentWatchdog::getTimeout(uint32_t &timeout_mS)
+            {
+                timeout_mS = actualTimeout_mS;
+                return Status::PERIPH_OK;
+            }
+
+            Status IndependentWatchdog::pauseOnDebugHalt(const bool enable)
+            {
+                if (enable)
+                {
+                    __HAL_DBGMCU_FREEZE_IWDG();
+                }
+                else
+                {
+                    __HAL_DBGMCU_UNFREEZE_IWDG();
+                }
+
+                return Status::PERIPH_OK;
+            }
+            #endif /* !IWDG */
 
             #if defined(USING_CHIMERA)
 
