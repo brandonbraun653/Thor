@@ -216,7 +216,7 @@ namespace Thor
                 ~ChimeraWatchdog() = default;
 
             private:
-                WatchdogClass watchdog;
+                IndependentWatchdog watchdog;
             };
 
             #endif 
