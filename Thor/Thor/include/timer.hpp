@@ -8,7 +8,7 @@
 #include <Thor/include/definitions.hpp>
 
 
-extern void TIMER_EnableClock(int timerNumber);
-extern void TIMER_DisableClock(int timerNumber);
+extern void TIMER_EnableClock( int timerNumber );
+extern void TIMER_DisableClock( int timerNumber );
 
 #endif

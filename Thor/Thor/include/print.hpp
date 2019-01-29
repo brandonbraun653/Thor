@@ -8,9 +8,9 @@
 #include <Thor/include/config.hpp>
 
 
-extern std::string float2String(float number);
+extern std::string float2String( float number );
 
-#if USE_SERIAL_DEBUG_OUTPUT && !defined(USING_VISUALGDB_PROFILER)
+#if USE_SERIAL_DEBUG_OUTPUT && !defined( USING_VISUALGDB_PROFILER )
 extern void setupSTDIO();
 #endif
 

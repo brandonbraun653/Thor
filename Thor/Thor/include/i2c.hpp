@@ -28,7 +28,7 @@
 // #include <Thor/include/ringbuffer.hpp>
 // #include <Thor/include/exceptions.hpp>
 
-// namespace Thor 
+// namespace Thor
 // {
 //     namespace Peripheral
 //     {
@@ -77,7 +77,7 @@
 //                         rxComplete = value;
 //                     }
 
-//                     bool getTxComplete() 
+//                     bool getTxComplete()
 //                     {
 //                         return txComplete;
 //                     }

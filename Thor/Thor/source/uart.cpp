@@ -10,117 +10,117 @@ using namespace Thor::Definitions::Interrupt;
 using namespace Thor::Peripheral::UART;
 using namespace Thor::Defaults::Serial;
 
-#if defined(USING_FREERTOS)
-static SemaphoreHandle_t uartSemphrs[MAX_SERIAL_CHANNELS + 1];
+#if defined( USING_FREERTOS )
+static SemaphoreHandle_t uartSemphrs[ MAX_SERIAL_CHANNELS + 1 ];
 TaskTrigger uartTaskTrigger;
 #endif
 
-static UARTClass_sPtr uartObjects[MAX_SERIAL_CHANNELS + 1];
+static UARTClass_sPtr uartObjects[ MAX_SERIAL_CHANNELS + 1 ];
 
-static const UARTClass_sPtr& getUARTClassRef(USART_TypeDef* instance)
+static const UARTClass_sPtr &getUARTClassRef( USART_TypeDef *instance )
 {
-	/* Simply converts the pointer into the raw numerical address value, which be compared against
-	   the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
-	auto i = reinterpret_cast<std::uintptr_t>(instance);
-	switch (i)
-	{
-		#if defined(UART1)
-	case UART1_BASE:
-		return uartObjects[1];
-		break;
-		#endif
-		#if defined(UART2)
-	case UART2_BASE:
-		return uartObjects[2];
-		break;
-		#endif
-		#if defined(UART3)
-	case UART3_BASE:
-		return uartObjects[3];
-		break;
-		#endif
-		#if defined(UART4)
-	case UART4_BASE:
-		return uartObjects[4];
-		break;
-		#endif
-		#if defined(UART5)
-	case UART5_BASE:
-		return uartObjects[5];
-		break;
-		#endif
-		#if defined(UART6)
-	case UART6_BASE:
-		return uartObjects[6];
-		break;
-		#endif
-		#if defined(UART7)
-	case UART7_BASE:
-		return uartObjects[7];
-		break;
-		#endif
-		#if defined(UART8)
-	case UART8_BASE:
-		return uartObjects[8];
-		break;
-		#endif
+  /* Simply converts the pointer into the raw numerical address value, which be compared against
+     the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
+  auto i = reinterpret_cast<std::uintptr_t>( instance );
+  switch ( i )
+  {
+#if defined( UART1 )
+    case UART1_BASE:
+      return uartObjects[ 1 ];
+      break;
+#endif
+#if defined( UART2 )
+    case UART2_BASE:
+      return uartObjects[ 2 ];
+      break;
+#endif
+#if defined( UART3 )
+    case UART3_BASE:
+      return uartObjects[ 3 ];
+      break;
+#endif
+#if defined( UART4 )
+    case UART4_BASE:
+      return uartObjects[ 4 ];
+      break;
+#endif
+#if defined( UART5 )
+    case UART5_BASE:
+      return uartObjects[ 5 ];
+      break;
+#endif
+#if defined( UART6 )
+    case UART6_BASE:
+      return uartObjects[ 6 ];
+      break;
+#endif
+#if defined( UART7 )
+    case UART7_BASE:
+      return uartObjects[ 7 ];
+      break;
+#endif
+#if defined( UART8 )
+    case UART8_BASE:
+      return uartObjects[ 8 ];
+      break;
+#endif
 
-	default:
-		return uartObjects[0];
-		break;
-	};
+    default:
+      return uartObjects[ 0 ];
+      break;
+  };
 };
 
-static uint32_t uartClockMask(USART_TypeDef* instance)
+static uint32_t uartClockMask( USART_TypeDef *instance )
 {
-	/* Simply converts the pointer into the raw numerical address value, which be compared against
-	the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
-	auto i = reinterpret_cast<std::uintptr_t>(instance);
-	switch (i)
-	{
-		#if defined(STM32F446xx) || defined(STM32F767xx)
-		#if defined(UART4)
-	case UART4_BASE:
-		return RCC_APB1ENR_UART4EN;
-		break;
-		#endif
-		#if defined(UART5)
-	case UART5_BASE:
-		return RCC_APB1ENR_UART5EN;
-		break;
-		#endif
-		#if defined(UART7)
-	case UART7_BASE:
-		return RCC_APB1ENR_UART7EN;
-		break;
-		#endif
-		#if defined(UART8)
-	case UART8_BASE:
-		return RCC_APB1ENR_UART8EN;
-		break;
-		#endif
-		#endif /* !STM32F446xx  !STM32F767xx */
+  /* Simply converts the pointer into the raw numerical address value, which be compared against
+  the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
+  auto i = reinterpret_cast<std::uintptr_t>( instance );
+  switch ( i )
+  {
+#if defined( STM32F446xx ) || defined( STM32F767xx )
+#if defined( UART4 )
+    case UART4_BASE:
+      return RCC_APB1ENR_UART4EN;
+      break;
+#endif
+#if defined( UART5 )
+    case UART5_BASE:
+      return RCC_APB1ENR_UART5EN;
+      break;
+#endif
+#if defined( UART7 )
+    case UART7_BASE:
+      return RCC_APB1ENR_UART7EN;
+      break;
+#endif
+#if defined( UART8 )
+    case UART8_BASE:
+      return RCC_APB1ENR_UART8EN;
+      break;
+#endif
+#endif /* !STM32F446xx  !STM32F767xx */
 
-	default:
-		return 0u;
-		break;
-	};
+    default:
+      return 0u;
+      break;
+  };
 };
 
 namespace Thor
 {
-	namespace Peripheral
-	{
-		namespace UART
-		{
-            #if 0
+  namespace Peripheral
+  {
+    namespace UART
+    {
+#if 0
             using namespace Thor::Definitions::GPIO;
 
 			inline void UART_ClearIT_IDLE(UART_HandleTypeDef *UartHandle)
 			{
-				#if defined(STM32F7)
+#if defined( STM32F7 )
 				__HAL_UART_CLEAR_IT(UartHandle, UART_CLEAR_IDLEF);
-				#endif
+#endif
 			}
 
 			inline void UART_EnableIT_IDLE(UART_HandleTypeDef *UartHandle)
@@ -143,9 +143,9 @@ namespace Thor
 				uart_handle.Init = Defaults::Serial::dflt_UART_Init;
 				uart_handle.Instance = srl_cfg[uart_channel].instance;
 
-				#if defined(STM32F7)
+#if defined( STM32F7 )
 				uart_handle.AdvancedInit = Defaults::Serial::dflt_UART_AdvInit;
-				#endif
+#endif
 
 				/* Copy over the interrupt settings information */
 				ITSettings_HW = srl_cfg[uart_channel].IT_HW;
@@ -203,9 +203,9 @@ namespace Thor
 				//Should reset the begin/end pointers?
 				RXPacketBuffer.clear();
 
-				#if defined(USING_FREERTOS)
+#if defined( USING_FREERTOS )
 				uartSemphrs[uart_channel] = xSemaphoreCreateCounting(UART_QUEUE_SIZE, UART_QUEUE_SIZE);
-				#endif
+#endif
 			}
 
 			UARTClass::~UARTClass()
@@ -376,11 +376,11 @@ namespace Thor
 				switch (txMode)
 				{
 				case Modes::BLOCKING:
-					#if defined(USING_FREERTOS)
+#if defined( USING_FREERTOS )
 					halCode = HAL_UART_Transmit(&uart_handle, val, length, pdMS_TO_TICKS(BLOCKING_TIMEOUT_MS));
-					#else
+#else
 					halCode = HAL_UART_Transmit(&uart_handle, val, length, BLOCKING_TIMEOUT_MS);
-					#endif
+#endif
 
 					if (halCode == HAL_TIMEOUT)
 						statusCode = Status::PERIPH_TIMEOUT;
@@ -400,13 +400,13 @@ namespace Thor
 					{
 						statusCode = Status::PERIPH_BUSY;
 
-						#if defined(USING_FREERTOS)
+#if defined( USING_FREERTOS )
 						if (xSemaphoreTakeFromISR(uartSemphrs[uart_channel], NULL) != pdPASS)
 						{
 							statusCode = Status::PERIPH_LOCKED;
 							break;
 						}
-						#endif
+#endif
 
 						/* A previous IT transmission is still going. Queue the data */
 						TX_tempPacket.data_ptr = assignTXBuffer(val, length);
@@ -427,13 +427,13 @@ namespace Thor
 					{
 						statusCode = Status::PERIPH_BUSY;
 
-						#if defined(USING_FREERTOS)
+#if defined( USING_FREERTOS )
 						if (xSemaphoreTakeFromISR(uartSemphrs[uart_channel], NULL) != pdPASS)
 						{
 							statusCode = Status::PERIPH_LOCKED;
 							break;
 						}
-						#endif
+#endif
 
 						/* A previous DMA transmission is still going. Queue the data */
 						TX_tempPacket.data_ptr = assignTXBuffer(val, length);
@@ -466,13 +466,13 @@ namespace Thor
 					 **/
 					UART_OverrunHandler();
 
-					#if defined(USING_FREERTOS)
+#if defined( USING_FREERTOS )
 					if (HAL_UART_Receive(&uart_handle, buff, length, pdMS_TO_TICKS(BLOCKING_TIMEOUT_MS)) == HAL_OK)
 						statusCode = Status::PERIPH_OK;
-					#else
+#else
 					if (HAL_UART_Receive(&uart_handle, buff, length, BLOCKING_TIMEOUT_MS) == HAL_OK)
 						statusCode = Status::PERIPH_OK;
-					#endif
+#endif
 					break;
 
 				case Modes::INTERRUPT:
@@ -575,7 +575,7 @@ namespace Thor
 				 *	easier to structure the code in such a way that it only runs exactly when certain conditions are met.
 				 **/
 
-				#if defined(STM32F7)
+#if defined( STM32F7 )
 				bool RX_DATA_READY = __HAL_UART_GET_FLAG(&uart_handle, UART_FLAG_RXNE);
 				bool RX_LINE_IDLE = __HAL_UART_GET_FLAG(&uart_handle, UART_FLAG_IDLE);
 				bool RX_LINE_IDLE_EN = __HAL_UART_GET_IT_SOURCE(&uart_handle, UART_IT_IDLE);
@@ -676,9 +676,9 @@ namespace Thor
 				{
 					HAL_UART_IRQHandler(&uart_handle);
 				}
-				#endif
+#endif
 
-				#if defined(STM32F4)
+#if defined( STM32F4 )
 				/** Reading these two in the order of SR then DR ends up clearing all flags, so it's best to store the returned
 				 *	contents for further processing. See uart clearing procedure in device datasheet in the Registers section.
 				 **/
@@ -779,7 +779,7 @@ namespace Thor
 				*------------------------------------*/
 				if (!RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX)
 					HAL_UART_IRQHandler(&uart_handle);
-				#endif
+#endif
 			}
 
 			void UARTClass::IRQHandler_TXDMA()
@@ -792,7 +792,7 @@ namespace Thor
 				HAL_DMA_IRQHandler(uart_handle.hdmarx);
 			}
 
-			#if defined(USING_FREERTOS)
+#if defined( USING_FREERTOS )
 			void UARTClass::attachThreadTrigger(Trigger trig, SemaphoreHandle_t* semphr)
 			{
 				uartTaskTrigger.attachEventConsumer(trig, semphr);
@@ -802,7 +802,7 @@ namespace Thor
 			{
 				uartTaskTrigger.removeEventConsumer(trig);
 			}
-			#endif
+#endif
 
 			void UARTClass::UART_Init()
 			{
@@ -827,18 +827,18 @@ namespace Thor
 			{
 				using namespace Thor::Definitions::Serial;
 
-				#if defined(TARGET_STM32F7) || defined(TARGET_STM32F4)
+#if defined( TARGET_STM32F7 ) || defined( TARGET_STM32F4 )
 				RCC->APB1ENR |= (uartClockMask(uart_handle.Instance));
-				#endif
+#endif
 			}
 
 			void UARTClass::UART_DisableClock()
 			{
 				using namespace Thor::Definitions::Serial;
 
-				#if defined(TARGET_STM32F7) || defined(TARGET_STM32F4)
+#if defined( TARGET_STM32F7 ) || defined( TARGET_STM32F4 )
 				RCC->APB1ENR &= ~(uartClockMask(uart_handle.Instance));
-				#endif
+#endif
 			}
 
 			void UARTClass::UART_DMA_EnableClock()
@@ -1015,10 +1015,10 @@ namespace Thor
 
 			void UARTClass::UART_OverrunHandler()
 			{
-				#if defined(STM32F7)
+#if defined( STM32F7 )
 				__HAL_UART_CLEAR_IT(&uart_handle, UART_CLEAR_OREF);
 				uart_handle.Instance->RDR;
-				#endif
+#endif
 			}
 
 			uint8_t* UARTClass::assignTXBuffer(const uint8_t* data, const size_t length)
@@ -1033,14 +1033,14 @@ namespace Thor
 				return txCurrentQueueAddr();
 			}
 
-            #endif
-		}
-	}
-}
+#endif
+    }    // namespace UART
+  }      // namespace Peripheral
+}    // namespace Thor
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
+void HAL_UART_TxCpltCallback( UART_HandleTypeDef *UartHandle )
 {
-    #if 0
+#if 0
 	/* Deduce at runtime which class object triggered this interrupt */
 	auto uart = getUARTClassRef(UartHandle->Instance);
 
@@ -1056,23 +1056,23 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 
 			/* Release the resource used for buffering */
 			uart->_txBufferRemoveFrontPacket();
-			#if defined(USING_FREERTOS)
+#if defined( USING_FREERTOS )
 			xSemaphoreGiveFromISR(uartSemphrs[uart->_getChannel()], NULL);
-			#endif
+#endif
 		}
 	}
 
 	/* Signal any waiting threads */
-	#if defined(USING_FREERTOS)
+#if defined( USING_FREERTOS )
 	uartTaskTrigger.logEvent(TX_COMPLETE, &uartTaskTrigger);
-	#endif
+#endif
 
-    #endif
+#endif
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
+void HAL_UART_RxCpltCallback( UART_HandleTypeDef *UartHandle )
 {
-    #if 0
+#if 0
 
 	/* Deduce at runtime which class object triggered this interrupt */
 	auto uart = getUARTClassRef(UartHandle->Instance);
@@ -1109,84 +1109,84 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle)
 	}
 
 	/* Signal any waiting threads  */
-	#if defined(USING_FREERTOS)
+#if defined( USING_FREERTOS )
 	uartTaskTrigger.logEvent(RX_COMPLETE, &uartTaskTrigger);
-	#endif
-        #endif
+#endif
+#endif
 }
 
-void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *UartHandle)
+void HAL_UART_TxHalfCpltCallback( UART_HandleTypeDef *UartHandle )
 {
 }
 
-void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *UartHandle)
+void HAL_UART_RxHalfCpltCallback( UART_HandleTypeDef *UartHandle )
 {
 }
 
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle)
+void HAL_UART_ErrorCallback( UART_HandleTypeDef *UartHandle )
 {
 }
 
-void UART1_IRQHandler(void)
+void UART1_IRQHandler( void )
 {
-	if (uartObjects[1])
-	{
-		//uartObjects[1]->IRQHandler();
-	}
+  if ( uartObjects[ 1 ] )
+  {
+    // uartObjects[1]->IRQHandler();
+  }
 }
 
-void UART2_IRQHandler(void)
+void UART2_IRQHandler( void )
 {
-	if (uartObjects[2])
-	{
-		//uartObjects[2]->IRQHandler();
-	}
+  if ( uartObjects[ 2 ] )
+  {
+    // uartObjects[2]->IRQHandler();
+  }
 }
 
-void UART3_IRQHandler(void)
+void UART3_IRQHandler( void )
 {
-	if (uartObjects[3])
-	{
-		//uartObjects[3]->IRQHandler();
-	}
+  if ( uartObjects[ 3 ] )
+  {
+    // uartObjects[3]->IRQHandler();
+  }
 }
 
-void UART4_IRQHandler(void)
+void UART4_IRQHandler( void )
 {
-	if (uartObjects[4])
-	{
-		//uartObjects[4]->IRQHandler();
-	}
+  if ( uartObjects[ 4 ] )
+  {
+    // uartObjects[4]->IRQHandler();
+  }
 }
 
-void UART5_IRQHandler(void)
+void UART5_IRQHandler( void )
 {
-	if (uartObjects[5])
-	{
-		//uartObjects[5]->IRQHandler();
-	}
+  if ( uartObjects[ 5 ] )
+  {
+    // uartObjects[5]->IRQHandler();
+  }
 }
 
-void UART6_IRQHandler(void)
+void UART6_IRQHandler( void )
 {
-	if (uartObjects[6])
-	{
-		//uartObjects[6]->IRQHandler();
-	}
+  if ( uartObjects[ 6 ] )
+  {
+    // uartObjects[6]->IRQHandler();
+  }
 }
 
-void UART7_IRQHandler(void)
+void UART7_IRQHandler( void )
 {
-	if (uartObjects[7])
-	{
-		//uartObjects[7]->IRQHandler();
-	}
+  if ( uartObjects[ 7 ] )
+  {
+    // uartObjects[7]->IRQHandler();
+  }
 }
 
-void UART8_IRQHandler(void)
+void UART8_IRQHandler( void )
 {
-	if (uartObjects[8])
-	{
-		//uartObjects[8]->IRQHandler();
-	}
+  if ( uartObjects[ 8 ] )
+  {
+    // uartObjects[8]->IRQHandler();
+  }
 }

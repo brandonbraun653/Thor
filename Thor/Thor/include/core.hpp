@@ -4,13 +4,14 @@
 #include <Thor/include/preprocessor.hpp>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-	void SysTick_Handler();
-	
-	#if defined(USING_FREERTOS)
-	void vApplicationTickHook(void);
-	#endif 
+  void SysTick_Handler();
+
+#if defined( USING_FREERTOS )
+  void vApplicationTickHook( void );
+#endif
 #ifdef __cplusplus
 }
 #endif
