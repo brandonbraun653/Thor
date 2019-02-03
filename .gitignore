@@ -9,3 +9,6 @@
 **/build
 **/html
 **/rtf
+**.dump
+
+cppcheck/*

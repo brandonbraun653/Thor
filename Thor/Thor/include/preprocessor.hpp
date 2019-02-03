@@ -39,7 +39,7 @@ STM32
 #error Please include the HAL driver for STM32F4
 #endif
 
-#else
+#elif !defined( EXECUTING_CPPCHECK )
 #error Target Device Not Supported Yet
 #endif
 

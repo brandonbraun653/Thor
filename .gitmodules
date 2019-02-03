@@ -17,3 +17,6 @@
 	path = Thor/lib/cmsis
 	url = git@github.com:ARM-software/CMSIS_5.git
 	branch = master
+[submodule "dev/tools/swqa"]
+	path = dev/tools/swqa
+	url = git@github.com:brandonbraun653/SWQA.git

@@ -61,8 +61,8 @@ namespace Thor
     /** Starts the FreeRTOS scheduler and initializes execution of all registered threads. This implementation extends the basic
      *  FreeRTOS vTaskStartScheduler() function by automatically supporting user setup code in each thread.
      *
-     *	@param[in] useSetupCallbacks	Enables or disables the use of setup callbacks for proper thread initialization. Defaults
-     *to true.
+     *	@param[in] useSetupCallbacks	Enables or disables the use of setup callbacks for proper thread initialization.
+     *Defaults to true.
      *	@return void
      **/
     extern void startScheduler( bool useSetupCallbacks = true );

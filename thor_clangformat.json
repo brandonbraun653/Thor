@@ -1,0 +1,19 @@
+{
+  "inplace": true,
+  "style": "file",
+  "files":[
+
+  ],
+  "directories":[
+    {
+      "path": "Thor/Thor/include",
+      "recursive": false,
+      "extensions": ["*.hpp"]
+    },
+    {
+      "path": "Thor/Thor/source",
+      "recursive": false,
+      "extensions": ["*.cpp"]
+    }
+  ]
+}
