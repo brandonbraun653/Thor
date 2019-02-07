@@ -1,0 +1,13 @@
+
+
+use-project STM32F7 : lib/stm32hal_f7 ;
+
+
+lib STM32F7_HAL : /STM32F7//HAL_DRIVER ;
+explicit STM32F7_HAL ;
+
+lib STM32F7_LL : /STM32F7//LL_DRIVER ;
+explicit STM32F7_LL ;
+
+lib STM32F7_CORE : STM32F7_HAL STM32F7_LL ;
+explicit STM32F7_CORE ;

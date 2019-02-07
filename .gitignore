@@ -12,3 +12,6 @@
 **.dump
 
 cppcheck/*
+
+bin/*
+Thor/bin/*
