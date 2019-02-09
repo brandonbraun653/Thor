@@ -24,16 +24,14 @@ STM32
 #if __has_include( "stm32f7xx.h" ) /* STM32F7 SERIES DEVICES */
 #if __has_include( "stm32f7xx_hal.h" )
 #define TARGET_STM32F7
-#define HAL_AVAILABLE
 #define CORTEX_M7
 #else
 #error Please include the HAL driver for STM32F7
-#endif
+#endif /* __has_include( "stm32f7xx_hal.h" ) */
 
 #elif __has_include( "stm32f4xx.h" ) /* STM32F4 SERIES DEVICES */
 #if __has_include( "stm32f4xx_hal.h" )
 #define TARGET_STM32F4
-#define HAL_AVAILABLE
 #define CORTEX_M4
 #else
 #error Please include the HAL driver for STM32F4

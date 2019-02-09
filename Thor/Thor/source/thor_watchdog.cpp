@@ -111,7 +111,7 @@ namespace Thor
         handle.Init.Window    = wdWindow;  /** The counter can only be refreshed if below this value. [Max: 0x7F, Min: 0x40] */
         handle.Init.Counter   = wdCounter; /** Starting counter value, also the refresh value. [Max: 0x7F, Min: 0x40] */
         handle.Init.EWIMode   = WWDG_EWI_DISABLE; /** Enable or disable the Early Wakeup Interrupt */
-
+        
         /*------------------------------------------------
         Turn on the peripheral clock
         ------------------------------------------------*/
@@ -262,8 +262,11 @@ namespace Thor
         ------------------------------------------------*/
         handle.Instance       = IWDG;
         handle.Init.Prescaler = wdPrescaler;
-        handle.Init.Window    = wdReload;
         handle.Init.Reload    = wdReload;
+
+        #if defined(STM32F7)
+        handle.Init.Window    = wdReload;
+        #endif 
 
         return Status::PERIPH_OK;
       }

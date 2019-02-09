@@ -1,13 +1,130 @@
+import os ;
+import feature ;
+
+# ------------------------------------------
+# All supported microcontrollers targets. These feature specifications
+# will be propagated to the appropriate STM32HAL lib targets.
+# ------------------------------------------
+feature.feature ThorMCU 
+    :   STM32Fxxx
+        STM32F4xx
+        STM32F446
+        STM32F7xx
+        STM32F767 
+    : propagated symmetric composite ;
+
+# ------------------------------------------
+# All supported microcontroller families. These feature specifications
+# are only used to figure out which Thor lib target should be built.
+# ------------------------------------------
+feature.feature ThorFamily
+    :   STM32Fx
+        STM32F4
+        STM32F7
+    : propagated symmetric composite ;
+
+# ------------------------------------------
+# Build Target Specific Options 
+# ------------------------------------------
+thor_dbg_defs = DEBUG ;
+thor_dbg_cflags = -ggdb -Og ;
+
+thor_rel_defs = NDEBUG ;
+thor_rel_cflags = -O3 ;
 
 
-use-project STM32F7 : lib/stm32hal_f7 ;
+# ------------------------------------------
+# Thor CFlags
+# ------------------------------------------
+# Applies to all Thor targets, but not propagated to dependents.
+thor_requirements_cxxflags = 
+    -fno-common
+    -fmessage-length=0
+    -fno-exceptions
+    -ffunction-sections
+    -fdata-sections
+    -Wall
+    ;
+
+# Applies to all Thor targets and IS propagated to dependents.
+thor_usage_requirements_cxxflags =
+    ;
+
+all_thor_cxxflags = 
+    $(thor_requirements_cxxflags)
+    $(thor_usage_requirements_cxxflags)
+    ;
+
+# ------------------------------------------
+# Thor CFlags
+# ------------------------------------------
+# Applies to all Thor targets, but not propagated to dependents.
+thor_requirements_link_flags =
+    ;
+
+# Applies to all Thor targets and IS propagated to dependents.
+thor_usage_requirements_link_flags =
+    ;
+
+all_thor_link_flags =
+    $(thor_requirements_link_flags)
+    $(thor_usage_requirements_link_flags)
+    ;
+
+# ------------------------------------------
+# Source/Include Directories 
+# ------------------------------------------
+thor_inc_dir = . ;
+thor_src_dir = Thor/source ;
+
+local boost_install_dir = [ os.environ BOOST_ROOT ] ;
+local boost_inc = $(boost_install_dir)/boost_1_68_0 ;
+
+thor_freertos_inc_dir = Thor/config ;
+
+# ------------------------------------------
+# Source Files
+# ------------------------------------------
+thor_src = [ glob $(thor_src_dir)/*.cpp ] ;
+
+project ThorHAL : usage-requirements <include>$(thor_inc_dir) ;
 
 
-lib STM32F7_HAL : /STM32F7//HAL_DRIVER ;
-explicit STM32F7_HAL ;
+# ------------------------------------------
+# Thor Library Components:
+#   These are intented to be consumed by the user
+# -----------------------------------------
+explicit_alias PUB : : : : <include>$(thor_inc_dir) ;
 
-lib STM32F7_LL : /STM32F7//LL_DRIVER ;
-explicit STM32F7_LL ;
+lib LIB : InvalidThorConfig.cpp : <ThorFamily>STM32Fx : <link>static ;
 
-lib STM32F7_CORE : STM32F7_HAL STM32F7_LL ;
-explicit STM32F7_CORE ;
+# STM32F4 Target
+lib LIB
+    :   $(thor_src)
+        /STM32F4//F4_LIB
+    :   <ThorFamily>STM32F4
+        <define>BOOST_NO_EXCEPTIONS
+        <include>$(boost_inc)
+        <include>$(thor_inc_dir)
+        <cxxflags>$(thor_requirements_cxxflags)
+    :   <link>static
+    :   <use>PUB
+        <use>/STM32F4//F4_TARGET_MCU
+    ;
+
+# STM32F7 Target
+lib LIB
+    :   $(thor_src) 
+        /STM32F7//F7_LIB
+    :   <ThorFamily>STM32F7
+        <define>BOOST_NO_EXCEPTIONS
+        <include>$(boost_inc)
+        <include>$(thor_inc_dir)
+        <cxxflags>$(thor_requirements_cxxflags)
+    :   <link>static
+    :   <use>PUB
+        <use>/STM32F7//F7_TARGET_MCU
+    ;
+
+explicit LIB ;
+
