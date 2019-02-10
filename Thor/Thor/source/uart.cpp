@@ -11,101 +11,102 @@ using namespace Thor::Peripheral::UART;
 using namespace Thor::Defaults::Serial;
 
 #if defined( USING_FREERTOS )
-static SemaphoreHandle_t uartSemphrs[ MAX_SERIAL_CHANNELS + 1 ];
-TaskTrigger uartTaskTrigger;
+//static SemaphoreHandle_t uartSemphrs[ MAX_SERIAL_CHANNELS + 1 ];
+//TaskTrigger uartTaskTrigger;
 #endif
 
 static UARTClass_sPtr uartObjects[ MAX_SERIAL_CHANNELS + 1 ];
 
-static const UARTClass_sPtr &getUARTClassRef( USART_TypeDef *instance )
-{
-  /* Simply converts the pointer into the raw numerical address value, which be compared against
-     the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
-  auto i = reinterpret_cast<std::uintptr_t>( instance );
-  switch ( i )
-  {
-#if defined( UART1 )
-    case UART1_BASE:
-      return uartObjects[ 1 ];
-      break;
-#endif
-#if defined( UART2 )
-    case UART2_BASE:
-      return uartObjects[ 2 ];
-      break;
-#endif
-#if defined( UART3 )
-    case UART3_BASE:
-      return uartObjects[ 3 ];
-      break;
-#endif
-#if defined( UART4 )
-    case UART4_BASE:
-      return uartObjects[ 4 ];
-      break;
-#endif
-#if defined( UART5 )
-    case UART5_BASE:
-      return uartObjects[ 5 ];
-      break;
-#endif
-#if defined( UART6 )
-    case UART6_BASE:
-      return uartObjects[ 6 ];
-      break;
-#endif
-#if defined( UART7 )
-    case UART7_BASE:
-      return uartObjects[ 7 ];
-      break;
-#endif
-#if defined( UART8 )
-    case UART8_BASE:
-      return uartObjects[ 8 ];
-      break;
-#endif
+//static const UARTClass_sPtr &getUARTClassRef( USART_TypeDef *instance )
+//{
+//  /* Simply converts the pointer into the raw numerical address value, which be compared against
+//     the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
+//  auto i = reinterpret_cast<std::uintptr_t>( instance );
+//  switch ( i )
+//  {
+//#if defined( UART1 )
+//    case UART1_BASE:
+//      return uartObjects[ 1 ];
+//      break;
+//#endif
+//#if defined( UART2 )
+//    case UART2_BASE:
+//      return uartObjects[ 2 ];
+//      break;
+//#endif
+//#if defined( UART3 )
+//    case UART3_BASE:
+//      return uartObjects[ 3 ];
+//      break;
+//#endif
+//#if defined( UART4 )
+//    case UART4_BASE:
+//      return uartObjects[ 4 ];
+//      break;
+//#endif
+//#if defined( UART5 )
+//    case UART5_BASE:
+//      return uartObjects[ 5 ];
+//      break;
+//#endif
+//#if defined( UART6 )
+//    case UART6_BASE:
+//      return uartObjects[ 6 ];
+//      break;
+//#endif
+//#if defined( UART7 )
+//    case UART7_BASE:
+//      return uartObjects[ 7 ];
+//      break;
+//#endif
+//#if defined( UART8 )
+//    case UART8_BASE:
+//      return uartObjects[ 8 ];
+//      break;
+//#endif
+//
+//    default:
+//      return uartObjects[ 0 ];
+//      break;
+//  };
+//};
 
-    default:
-      return uartObjects[ 0 ];
-      break;
-  };
-};
 
-static uint32_t uartClockMask( USART_TypeDef *instance )
-{
-  /* Simply converts the pointer into the raw numerical address value, which be compared against
-  the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
-  auto i = reinterpret_cast<std::uintptr_t>( instance );
-  switch ( i )
-  {
-#if defined( STM32F446xx ) || defined( STM32F767xx )
-#if defined( UART4 )
-    case UART4_BASE:
-      return RCC_APB1ENR_UART4EN;
-      break;
-#endif
-#if defined( UART5 )
-    case UART5_BASE:
-      return RCC_APB1ENR_UART5EN;
-      break;
-#endif
-#if defined( UART7 )
-    case UART7_BASE:
-      return RCC_APB1ENR_UART7EN;
-      break;
-#endif
-#if defined( UART8 )
-    case UART8_BASE:
-      return RCC_APB1ENR_UART8EN;
-      break;
-#endif
-#endif /* !STM32F446xx  !STM32F767xx */
-
-    default:
-      return 0u;
-      break;
-  };
-};
+//static uint32_t uartClockMask( USART_TypeDef *instance )
+//{
+//  /* Simply converts the pointer into the raw numerical address value, which be compared against
+//  the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
+//  auto i = reinterpret_cast<std::uintptr_t>( instance );
+//  switch ( i )
+//  {
+//#if defined( STM32F446xx ) || defined( STM32F767xx )
+//#if defined( UART4 )
+//    case UART4_BASE:
+//      return RCC_APB1ENR_UART4EN;
+//      break;
+//#endif
+//#if defined( UART5 )
+//    case UART5_BASE:
+//      return RCC_APB1ENR_UART5EN;
+//      break;
+//#endif
+//#if defined( UART7 )
+//    case UART7_BASE:
+//      return RCC_APB1ENR_UART7EN;
+//      break;
+//#endif
+//#if defined( UART8 )
+//    case UART8_BASE:
+//      return RCC_APB1ENR_UART8EN;
+//      break;
+//#endif
+//#endif /* !STM32F446xx  !STM32F767xx */
+//
+//    default:
+//      return 0u;
+//      break;
+//  };
+//};
 
 namespace Thor
 {

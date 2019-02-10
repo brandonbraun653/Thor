@@ -692,7 +692,7 @@ again when unblocked.
       clock
       -------------------------------------------------*/
         int clockError[ numPrescalers ];
-        memset( clockError, INT_MAX, numPrescalers );
+        memset( clockError, INT_MAX, numPrescalers*sizeof(clockError) );
 
         for ( int i = 0; i < numPrescalers; i++ )
         {

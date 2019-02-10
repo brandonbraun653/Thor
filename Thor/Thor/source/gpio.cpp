@@ -149,64 +149,64 @@ namespace Thor
 
 
 #if defined( USING_CHIMERA )
-      static const GPIO_TypeDef *const portMap( const Chimera::GPIO::Port port )
-      {
-        switch ( port )
-        {
-#if defined( TARGET_STM32F7 ) || defined( TARGET_STM32F4 )
-          case Chimera::GPIO::Port::PORTA:
-            return GPIOA;
-            break;
-
-          case Chimera::GPIO::Port::PORTB:
-            return GPIOB;
-            break;
-
-          case Chimera::GPIO::Port::PORTC:
-            return GPIOC;
-            break;
-
-          case Chimera::GPIO::Port::PORTD:
-            return GPIOD;
-            break;
-
-          case Chimera::GPIO::Port::PORTE:
-            return GPIOE;
-            break;
-
-          case Chimera::GPIO::Port::PORTF:
-            return GPIOF;
-            break;
-
-          case Chimera::GPIO::Port::PORTG:
-            return GPIOG;
-            break;
-
-          case Chimera::GPIO::Port::PORTH:
-            return GPIOH;
-            break;
-#endif
-
-#if defined( TARGET_STM32F7 )
-          case Chimera::GPIO::Port::PORTI:
-            return GPIOI;
-            break;
-
-          case Chimera::GPIO::Port::PORTJ:
-            return GPIOJ;
-            break;
-
-          case Chimera::GPIO::Port::PORTK:
-            return GPIOK;
-            break;
-#endif
-
-          /* If we get here, something is wrong */
-          default:
-            return GPIOA;
-            break;
-        };
-      }
+//      static const GPIO_TypeDef *const portMap( const Chimera::GPIO::Port port )
+//      {
+//        switch ( port )
+//        {
+//#if defined( TARGET_STM32F7 ) || defined( TARGET_STM32F4 )
+//          case Chimera::GPIO::Port::PORTA:
+//            return GPIOA;
+//            break;
+//
+//          case Chimera::GPIO::Port::PORTB:
+//            return GPIOB;
+//            break;
+//
+//          case Chimera::GPIO::Port::PORTC:
+//            return GPIOC;
+//            break;
+//
+//          case Chimera::GPIO::Port::PORTD:
+//            return GPIOD;
+//            break;
+//
+//          case Chimera::GPIO::Port::PORTE:
+//            return GPIOE;
+//            break;
+//
+//          case Chimera::GPIO::Port::PORTF:
+//            return GPIOF;
+//            break;
+//
+//          case Chimera::GPIO::Port::PORTG:
+//            return GPIOG;
+//            break;
+//
+//          case Chimera::GPIO::Port::PORTH:
+//            return GPIOH;
+//            break;
+//#endif
+//
+//#if defined( TARGET_STM32F7 )
+//          case Chimera::GPIO::Port::PORTI:
+//            return GPIOI;
+//            break;
+//
+//          case Chimera::GPIO::Port::PORTJ:
+//            return GPIOJ;
+//            break;
+//
+//          case Chimera::GPIO::Port::PORTK:
+//            return GPIOK;
+//            break;
+//#endif
+//
+//          /* If we get here, something is wrong */
+//          default:
+//            return GPIOA;
+//            break;
+//        };
+//      }
 
       static const PinMode modeMap( Chimera::GPIO::Drive mode )
       {

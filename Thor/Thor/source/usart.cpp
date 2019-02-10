@@ -8,9 +8,9 @@
 #include <Thor/include/interrupt.hpp>
 
 #if defined( USING_FREERTOS )
-#include <Thor/include/exti.hpp>
-static SemaphoreHandle_t usartSemphrs[ Thor::Definitions::Serial::MAX_SERIAL_CHANNELS + 1 ];
-TaskTrigger usartTaskTrigger;
+//#include <Thor/include/exti.hpp>
+//static SemaphoreHandle_t usartSemphrs[ Thor::Definitions::Serial::MAX_SERIAL_CHANNELS + 1 ];
+//TaskTrigger usartTaskTrigger;
 #endif
 
 
@@ -36,128 +36,128 @@ typedef struct
 
 static USARTClass_sPtr usartObjects[ MAX_SERIAL_CHANNELS + 1 ];
 
-static const USARTClass_sPtr &getUSARTClassRef( USART_TypeDef *instance )
-{
-  /* Simply converts the pointer into the raw numerical address value, which be compared against
-  the peripheral base address. USARTx is simply (USART_TypeDef*)USARTx_Base. */
-  auto i = reinterpret_cast<std::uintptr_t>( instance );
-  switch ( i )
-  {
-#if defined( USART1 )
-    case USART1_BASE:
-      return usartObjects[ 1 ];
-      break;
-#endif
-#if defined( USART2 )
-    case USART2_BASE:
-      return usartObjects[ 2 ];
-      break;
-#endif
-#if defined( USART3 )
-    case USART3_BASE:
-      return usartObjects[ 3 ];
-      break;
-#endif
-#if defined( USART4 )
-    case USART4_BASE:
-      return usartObjects[ 4 ];
-      break;
-#endif
-#if defined( USART5 )
-    case USART5_BASE:
-      return usartObjects[ 5 ];
-      break;
-#endif
-#if defined( USART6 )
-    case USART6_BASE:
-      return usartObjects[ 6 ];
-      break;
-#endif
-#if defined( USART7 )
-    case USART7_BASE:
-      return usartObjects[ 7 ];
-      break;
-#endif
-#if defined( USART8 )
-    case USART8_BASE:
-      return usartObjects[ 8 ];
-      break;
-#endif
+//static const USARTClass_sPtr &getUSARTClassRef( USART_TypeDef *instance )
+//{
+//  /* Simply converts the pointer into the raw numerical address value, which be compared against
+//  the peripheral base address. USARTx is simply (USART_TypeDef*)USARTx_Base. */
+//  auto i = reinterpret_cast<std::uintptr_t>( instance );
+//  switch ( i )
+//  {
+//#if defined( USART1 )
+//    case USART1_BASE:
+//      return usartObjects[ 1 ];
+//      break;
+//#endif
+//#if defined( USART2 )
+//    case USART2_BASE:
+//      return usartObjects[ 2 ];
+//      break;
+//#endif
+//#if defined( USART3 )
+//    case USART3_BASE:
+//      return usartObjects[ 3 ];
+//      break;
+//#endif
+//#if defined( USART4 )
+//    case USART4_BASE:
+//      return usartObjects[ 4 ];
+//      break;
+//#endif
+//#if defined( USART5 )
+//    case USART5_BASE:
+//      return usartObjects[ 5 ];
+//      break;
+//#endif
+//#if defined( USART6 )
+//    case USART6_BASE:
+//      return usartObjects[ 6 ];
+//      break;
+//#endif
+//#if defined( USART7 )
+//    case USART7_BASE:
+//      return usartObjects[ 7 ];
+//      break;
+//#endif
+//#if defined( USART8 )
+//    case USART8_BASE:
+//      return usartObjects[ 8 ];
+//      break;
+//#endif
+//
+//    default:
+//      return usartObjects[ 0 ];
+//      break;
+//  };
+//};
 
-    default:
-      return usartObjects[ 0 ];
-      break;
-  };
-};
 
+//static volatile uint32_t *getUsartClockReg( USART_TypeDef *instance )
+//{
+//  auto i = reinterpret_cast<std::uintptr_t>( instance );
+//  switch ( i )
+//  {
+//#if defined( STM32F446xx ) || defined( STM32F767xx )
+//#if defined( USART1 )
+//    case USART1_BASE:
+//      return &( RCC->APB2ENR );
+//      break;
+//#endif
+//#if defined( USART2 )
+//    case USART2_BASE:
+//      return &( RCC->APB1ENR );
+//      break;
+//#endif
+//#if defined( USART3 )
+//    case USART3_BASE:
+//      return &( RCC->APB1ENR );
+//      break;
+//#endif
+//#if defined( USART6 )
+//    case USART6_BASE:
+//      return &( RCC->APB2ENR );
+//      break;
+//#endif
+//#endif /* !STM32F446xx  !STM32F767xx */
+//
+//    default:
+//      return nullptr;
+//      break;
+//  };
+//}
 
-static volatile uint32_t *getUsartClockReg( USART_TypeDef *instance )
-{
-  auto i = reinterpret_cast<std::uintptr_t>( instance );
-  switch ( i )
-  {
-#if defined( STM32F446xx ) || defined( STM32F767xx )
-#if defined( USART1 )
-    case USART1_BASE:
-      return &( RCC->APB2ENR );
-      break;
-#endif
-#if defined( USART2 )
-    case USART2_BASE:
-      return &( RCC->APB1ENR );
-      break;
-#endif
-#if defined( USART3 )
-    case USART3_BASE:
-      return &( RCC->APB1ENR );
-      break;
-#endif
-#if defined( USART6 )
-    case USART6_BASE:
-      return &( RCC->APB2ENR );
-      break;
-#endif
-#endif /* !STM32F446xx  !STM32F767xx */
-
-    default:
-      return nullptr;
-      break;
-  };
-}
-
-static uint32_t usartClockMask( USART_TypeDef *instance )
-{
-  auto i = reinterpret_cast<std::uintptr_t>( instance );
-  switch ( i )
-  {
-#if defined( STM32F446xx ) || defined( STM32F767xx )
-#if defined( USART1 )
-    case USART1_BASE:
-      return RCC_APB2ENR_USART1EN;
-      break;
-#endif
-#if defined( USART2 )
-    case USART2_BASE:
-      return RCC_APB1ENR_USART2EN;
-      break;
-#endif
-#if defined( USART3 )
-    case USART3_BASE:
-      return RCC_APB1ENR_USART3EN;
-      break;
-#endif
-#if defined( USART6 )
-    case USART6_BASE:
-      return RCC_APB2ENR_USART6EN;
-      break;
-#endif
-#endif /* !STM32F446xx  !STM32F767xx */
-
-    default:
-      return 0u;
-      break;
-  };
-};
+//static uint32_t usartClockMask( USART_TypeDef *instance )
+//{
+//  auto i = reinterpret_cast<std::uintptr_t>( instance );
+//  switch ( i )
+//  {
+//#if defined( STM32F446xx ) || defined( STM32F767xx )
+//#if defined( USART1 )
+//    case USART1_BASE:
+//      return RCC_APB2ENR_USART1EN;
+//      break;
+//#endif
+//#if defined( USART2 )
+//    case USART2_BASE:
+//      return RCC_APB1ENR_USART2EN;
+//      break;
+//#endif
+//#if defined( USART3 )
+//    case USART3_BASE:
+//      return RCC_APB1ENR_USART3EN;
+//      break;
+//#endif
+//#if defined( USART6 )
+//    case USART6_BASE:
+//      return RCC_APB2ENR_USART6EN;
+//      break;
+//#endif
+//#endif /* !STM32F446xx  !STM32F767xx */
+//
+//    default:
+//      return 0u;
+//      break;
+//  };
+//};
 
 
 namespace Thor
