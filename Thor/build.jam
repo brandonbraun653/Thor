@@ -146,7 +146,8 @@ alias _CORE_PUB : : <ThorFamily>STM32F4 :
 # STM32F7 Target
 lib _CORE
     :   $(thor_src) 
-        /STM32F7//F7_LIB
+        /STM32F7//HAL_DRIVER
+        /STM32F7//LL_DRIVER
 
     :   <ThorFamily>STM32F7
         <include>$(thor_inc_dir)
@@ -155,6 +156,7 @@ lib _CORE
         <FreeRTOS>enabled:<use>RTOS
         <Chimera>enabled:<use>CHIMERA
 
+        <use>/STM32F7//PUB
         <use>/PRJ//BOOST    # User defined alias to boost include dir
 
     :   <link>static
