@@ -157,7 +157,9 @@ alias CORE_PUB : : <ThorFamily>STM32F4 :
 # STM32F7 Target
 lib CORE
     :   $(thor_src) 
-        /STM32F7//F7_LIB
+        /STM32F7//F7_LL
+        /STM32F7//F7_HAL
+        /FREERTOS//CORE
 
     :   <ThorFamily>STM32F7
         <include>$(thor_inc_dir)
