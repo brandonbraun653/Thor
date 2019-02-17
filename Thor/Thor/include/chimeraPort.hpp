@@ -34,14 +34,14 @@ on and off by the #defines inside of <Chimera/config.hpp>
 typedef Thor::Peripheral::GPIO::ChimeraGPIO CHIMERA_INHERITED_GPIO;
 #endif
 
-//#if ( CHIMERA_HWM_SPI )
-//typedef Thor::Peripheral::SPI::ChimeraSPI CHIMERA_INHERITED_SPI;
-//#endif
-//
-//#if ( CHIMERA_HWM_WATCHDOG )
-//typedef Thor::Peripheral::Watchdog::ChimeraWatchdog CHIMERA_INHERITED_WATCHDOG;
-//#endif
-//
+#if ( CHIMERA_HWM_SPI )
+typedef Thor::Peripheral::SPI::ChimeraSPI CHIMERA_INHERITED_SPI;
+#endif
+
+#if ( CHIMERA_HWM_WATCHDOG )
+typedef Thor::Peripheral::Watchdog::ChimeraWatchdog CHIMERA_INHERITED_WATCHDOG;
+#endif
+
 //#if ( CHIMERA_MOD_SERIAL )
 //typedef Thor::Peripheral::Serial::SerialClass CHIMERA_INHERITED_SERIAL;
 //#endif
