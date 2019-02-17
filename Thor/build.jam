@@ -1,26 +1,39 @@
 import feature ;
 
 # ------------------------------------------
-# All supported microcontrollers targets. These feature specifications
-# will be propagated to the appropriate STM32HAL lib targets.
+# All supported microcontroller families. This is the highest possible
+# description level of an STM32 series microcontroller.
 # ------------------------------------------
-feature.feature ThorMCU 
-    :   STM32Fxxx
+feature.feature ThorFamily
+    :   STM32Fx     # The default error family
+        STM32F4
+        STM32F7
+    :   propagated optional 
+    ;
+
+# ------------------------------------------
+# All supported family specific chip types. This is the middle tier
+# description of an STM32 series microcontroller.
+# ------------------------------------------
+feature.feature ThorChip 
+    :   STM32Fxxx   # The default error chip
         STM32F4xx
         STM32F446
         STM32F7xx
         STM32F767 
-    : propagated optional ;
+    :   propagated optional 
+    ;
 
 # ------------------------------------------
-# All supported microcontroller families. These feature specifications
-# are only used to figure out which Thor lib target should be built.
+# All supported chip variant post-fixes. This is the lowest possible
+# description of an STM32 series microcontroller.
 # ------------------------------------------
-feature.feature ThorFamily
-    :   STM32Fx
-        STM32F4
-        STM32F7
-    : propagated optional ;
+feature.feature ThorVariant
+    :   xx  # The default error variant
+        RE
+        ZI
+    :   propagated optional
+    ;
 
 # ------------------------------------------
 # Build Target Specific Options 
@@ -101,7 +114,7 @@ explicit_alias CHIMERA : : <Chimera>enabled :
     ;
 
 # ------------------------------------------
-# Public Thor Library Components
+# Thor Library Components
 # -----------------------------------------
 # Pulls in headers needed for a standalone Thor
 explicit_alias PUB : : : 
@@ -113,10 +126,10 @@ explicit_alias CHIMERA_PORT : : :
     ;
 
 # Default target to let the user know they screwed up their configuration
-lib _CORE : InvalidThorConfig.cpp : <ThorFamily>STM32Fx : <link>static ;
+lib CORE : InvalidThorConfig.cpp : <ThorFamily>STM32Fx ;
 
 # STM32F4 Target
-lib _CORE
+lib CORE
     :   $(thor_src)
         /STM32F4//F4_LIB
 
@@ -128,14 +141,12 @@ lib _CORE
         <Chimera>enabled:<use>CHIMERA
 
         <use>/PRJ//BOOST    # User defined alias to boost include dir
-
-    :   <link>static
-
     :
-    ;
+    :   <use>/STM32F4//F4_TARGET_MCU
+    ;   
 
 # Pulls in the STM32F4 Thor variant of common headers and compiler flags
-alias _CORE_PUB : : <ThorFamily>STM32F4 :
+alias CORE_PUB : : <ThorFamily>STM32F4 :
     :   <use>PUB
         <use>/PRJ//BOOST
         <use>/STM32F4//F4_TARGET_MCU
@@ -144,10 +155,9 @@ alias _CORE_PUB : : <ThorFamily>STM32F4 :
     ;
 
 # STM32F7 Target
-lib _CORE
+lib CORE
     :   $(thor_src) 
-        /STM32F7//HAL_DRIVER
-        /STM32F7//LL_DRIVER
+        /STM32F7//F7_LIB
 
     :   <ThorFamily>STM32F7
         <include>$(thor_inc_dir)
@@ -156,16 +166,13 @@ lib _CORE
         <FreeRTOS>enabled:<use>RTOS
         <Chimera>enabled:<use>CHIMERA
 
-        <use>/STM32F7//PUB
         <use>/PRJ//BOOST    # User defined alias to boost include dir
-
-    :   <link>static
-
-    : 
+    :
+    :   <use>/STM32F7//F7_TARGET_MCU 
     ;
 
 # Pulls in the STM32F7 Thor variant of common headers and compiler flags
-alias _CORE_PUB : : <ThorFamily>STM32F7 :
+alias CORE_PUB : : <ThorFamily>STM32F7 :
     :   <use>PUB
         <use>/PRJ//BOOST
         <use>/STM32F7//F7_TARGET_MCU
@@ -174,12 +181,8 @@ alias _CORE_PUB : : <ThorFamily>STM32F7 :
     ;
 
 
-explicit _CORE ;
-explicit _CORE_PUB ;
+explicit CORE ;
+explicit CORE_PUB ;
 
-# This alias automatically builds the chip specific target and also
-# propagates any usage requirements associated with it.
-#
-# TODO: Might want to try collapsing the _core_pub target into the _core 
-#       target usage requirements. It would be more concise?
-explicit_alias CORE : _CORE : : <ThorFamily>STM32Fx : <use>_CORE_PUB ;
+
+explicit_alias THOR_CORE : CORE : : <ThorFamily>STM32Fx : <use>CORE_PUB ;
