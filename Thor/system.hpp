@@ -2,7 +2,7 @@
 #ifndef THOR_SYSTEM_HPP
 #define THOR_SYSTEM_HPP
 #include <stdint.h>
-#include <Thor/include/preprocessor.hpp>
+#include <Thor/preprocessor.hpp>
 
 // Definitions taken from section 4.3 System Control Block in the Cortex-M4 Devices Generic User Guide
 #if defined( CORTEX_M4 )

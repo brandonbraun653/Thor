@@ -20,13 +20,13 @@
 // #endif
 
 // /* Thor Includes */
-// #include <Thor/include/config.hpp>
-// #include <Thor/include/definitions.hpp>
-// #include <Thor/include/defaults.hpp>
-// #include <Thor/include/interrupt.hpp>
-// #include <Thor/include/gpio.hpp>
-// #include <Thor/include/ringbuffer.hpp>
-// #include <Thor/include/exceptions.hpp>
+// #include <Thor/config.hpp>
+// #include <Thor/definitions.hpp>
+// #include <Thor/defaults.hpp>
+// #include <Thor/interrupt.hpp>
+// #include <Thor/gpio.hpp>
+// #include <Thor/ringbuffer.hpp>
+// #include <Thor/exceptions.hpp>
 
 // namespace Thor
 // {
@@ -34,7 +34,7 @@
 //     {
 //         namespace I2C
 //         {
-//             using namespace Thor::Definitions;
+//             using namespace Thor;
 
 //             class I2CClass
 //             {

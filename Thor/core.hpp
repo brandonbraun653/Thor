@@ -1,7 +1,7 @@
 #ifndef CORE_H_
 #define CORE_H_
 
-#include <Thor/include/preprocessor.hpp>
+#include <Thor/preprocessor.hpp>
 
 #ifdef __cplusplus
 extern "C"

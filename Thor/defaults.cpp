@@ -1,10 +1,10 @@
-#include <Thor/include/defaults.hpp>
+#include <Thor/defaults.hpp>
 
-using namespace Thor::Definitions::DMA;
-using namespace Thor::Definitions::GPIO;
-using namespace Thor::Definitions::SPI;
-using namespace Thor::Definitions::TIMER;
-using namespace Thor::Definitions::Serial;
+using namespace Thor::DMA;
+using namespace Thor::GPIO;
+using namespace Thor::SPI;
+using namespace Thor::TIMER;
+using namespace Thor::Serial;
 using namespace Thor::Peripheral::GPIO;
 using namespace Thor::Defaults::Interrupt;
 
@@ -14,7 +14,7 @@ namespace Thor
   {
     namespace Serial
     {
-      const SerialConfig srl_cfg[ Thor::Definitions::Serial::MAX_SERIAL_CHANNELS + 1 ] = {
+      const SerialConfig srl_cfg[ Thor::Serial::MAX_SERIAL_CHANNELS + 1 ] = {
         /* SERIAL 0: Doesn't exist. Only used for easy index alignment. */
         { // TX Pin
           {},
@@ -45,12 +45,12 @@ namespace Thor
 #if defined( USART1 )
 #if defined( STM32F767xx ) || defined( STM32F446xx )
             // TX pin
-            { GPIOB, Thor::Definitions::GPIO::PinNum::PIN_6, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF7_USART1 },
+            { GPIOB, Thor::GPIO::PinNum::PIN_6, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF7_USART1 },
 
             // RX Pin
-            { GPIOB, Thor::Definitions::GPIO::PinNum::PIN_7, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF7_USART1 },
+            { GPIOB, Thor::GPIO::PinNum::PIN_7, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF7_USART1 },
 
             // Instance Ptr
             USART1,
@@ -78,12 +78,12 @@ namespace Thor
 #if defined( USART2 )
 #if defined( STM32F767xx ) || defined( STM32F446xx )
             // TX pin
-            { GPIOD, Thor::Definitions::GPIO::PinNum::PIN_5, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF7_USART2 },
+            { GPIOD, Thor::GPIO::PinNum::PIN_5, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF7_USART2 },
 
             // RX Pin
-            { GPIOD, Thor::Definitions::GPIO::PinNum::PIN_6, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF7_USART2 },
+            { GPIOD, Thor::GPIO::PinNum::PIN_6, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF7_USART2 },
 
             // Instance Ptr
             USART2,
@@ -111,12 +111,12 @@ namespace Thor
 #if defined( USART3 )
 #if defined( STM32F767xx ) || defined( STM32F446xx )
             // TX Pin
-            { GPIOB, Thor::Definitions::GPIO::PinNum::PIN_10, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF7_USART3 },
+            { GPIOB, Thor::GPIO::PinNum::PIN_10, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF7_USART3 },
 
             // RX Pin
-            { GPIOB, Thor::Definitions::GPIO::PinNum::PIN_11, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF7_USART3 },
+            { GPIOB, Thor::GPIO::PinNum::PIN_11, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF7_USART3 },
 
             // Instance Ptr
             USART3,
@@ -145,13 +145,13 @@ namespace Thor
 #if defined( STM32F767xx ) || defined( STM32F446xx )
 
             // TX Pin
-            { GPIOA, Thor::Definitions::GPIO::PinNum::PIN_0, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP,
+            { GPIOA, Thor::GPIO::PinNum::PIN_0, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP,
               GPIO_AF8_UART4 },    // Normally C10, changed for VFCS
 
             // RX Pin
-            { GPIOA, Thor::Definitions::GPIO::PinNum::PIN_1, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP,
+            { GPIOA, Thor::GPIO::PinNum::PIN_1, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP,
               GPIO_AF8_UART4 },    // Normally C11, changed for VFCS
 
             // Instance Ptr
@@ -181,12 +181,12 @@ namespace Thor
 #if defined( STM32F767xx ) || defined( STM32F446xx )
 
             // TX Pin
-            { GPIOC, Thor::Definitions::GPIO::PinNum::PIN_12, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF8_UART5 },
+            { GPIOC, Thor::GPIO::PinNum::PIN_12, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF8_UART5 },
 
             // RX Pin
-            { GPIOD, Thor::Definitions::GPIO::PinNum::PIN_2, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF8_UART5 },
+            { GPIOD, Thor::GPIO::PinNum::PIN_2, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF8_UART5 },
 
             // Instance Ptr
             UART5,
@@ -214,12 +214,12 @@ namespace Thor
 #if defined( USART6 )
 #if defined( STM32F767xx ) || defined( STM32F446xx )
             // TX Pin
-            { GPIOG, Thor::Definitions::GPIO::PinNum::PIN_14, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF8_USART6 },
+            { GPIOG, Thor::GPIO::PinNum::PIN_14, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF8_USART6 },
 
             // RX Pin
-            { GPIOG, Thor::Definitions::GPIO::PinNum::PIN_9, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF8_USART6 },
+            { GPIOG, Thor::GPIO::PinNum::PIN_9, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF8_USART6 },
 
             // Instance Ptr
             USART6,
@@ -247,12 +247,12 @@ namespace Thor
 #if defined( UART7 )
 #if defined( STM32F767xx )
             // TX Pin
-            { GPIOE, Thor::Definitions::GPIO::PinNum::PIN_8, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF8_UART7 },
+            { GPIOE, Thor::GPIO::PinNum::PIN_8, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF8_UART7 },
 
             // RX pin
-            { GPIOE, Thor::Definitions::GPIO::PinNum::PIN_7, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF8_UART7 },
+            { GPIOE, Thor::GPIO::PinNum::PIN_7, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF8_UART7 },
 
             // Instance Ptr
             UART7,
@@ -280,12 +280,12 @@ namespace Thor
 #if defined( UART8 )
 #if defined( STM32F767xx )
             // TX Pin
-            { GPIOE, Thor::Definitions::GPIO::PinNum::PIN_1, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF8_UART8 },
+            { GPIOE, Thor::GPIO::PinNum::PIN_1, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF8_UART8 },
 
             // RX pin
-            { GPIOE, Thor::Definitions::GPIO::PinNum::PIN_0, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF8_UART8 },
+            { GPIOE, Thor::GPIO::PinNum::PIN_0, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF8_UART8 },
 
             // Instance Ptr
             UART8,
@@ -405,7 +405,7 @@ namespace Thor
 
     namespace SPI
     {
-      const SPIConfig spi_cfg[ Thor::Definitions::SPI::MAX_SPI_CHANNELS + 1 ] = {
+      const SPIConfig spi_cfg[ Thor::SPI::MAX_SPI_CHANNELS + 1 ] = {
         /* SPI 0: Doesn't exist. Only used for easy index alignment to peripheral names */
         {
             // MOSI Pin
@@ -448,20 +448,20 @@ namespace Thor
 
 #if ( defined( STM32F446xx ) || defined( STM32F767xx ) )
             // MOSI Pin
-            { GPIOA, Thor::Definitions::GPIO::PinNum::PIN_7, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI1 },
+            { GPIOA, Thor::GPIO::PinNum::PIN_7, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI1 },
 
             // MISO Pin
-            { GPIOA, Thor::Definitions::GPIO::PinNum::PIN_6, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI1 },
+            { GPIOA, Thor::GPIO::PinNum::PIN_6, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI1 },
 
             // SCK Pin
-            { GPIOA, Thor::Definitions::GPIO::PinNum::PIN_5, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI1 },
+            { GPIOA, Thor::GPIO::PinNum::PIN_5, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI1 },
 
             // NSS Pin
-            { GPIOA, Thor::Definitions::GPIO::PinNum::PIN_4, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI1 },
+            { GPIOA, Thor::GPIO::PinNum::PIN_4, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI1 },
 
             // SPI Instance Ptr
             SPI1,
@@ -482,7 +482,7 @@ namespace Thor
             { DMA2_Stream0, DMA_CHANNEL_3, DMA_PERIPH_TO_MEMORY },
 
             // Clock Bus
-            Thor::Definitions::ClockBus::APB2_PERIPH
+            Thor::ClockBus::APB2_PERIPH
 #endif
 
 #endif /* ENABLE_SPI1 */
@@ -494,41 +494,41 @@ namespace Thor
 
 #if defined( STM32F767xx )
             // MOSI Pin
-            { GPIOC, Thor::Definitions::GPIO::PinNum::PIN_3, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI2 },
+            { GPIOC, Thor::GPIO::PinNum::PIN_3, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI2 },
 
             // MISO Pin
-            { GPIOC, Thor::Definitions::GPIO::PinNum::PIN_2, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI2 },
+            { GPIOC, Thor::GPIO::PinNum::PIN_2, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI2 },
 
             // SCK Pin
-            { GPIOB, Thor::Definitions::GPIO::PinNum::PIN_10, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI2 },
+            { GPIOB, Thor::GPIO::PinNum::PIN_10, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI2 },
 
             // NSS Pin
-            { GPIOB, Thor::Definitions::GPIO::PinNum::PIN_12, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI2 },
+            { GPIOB, Thor::GPIO::PinNum::PIN_12, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI2 },
 #endif
 
 #if defined( STM32F446xx )
             // MOSI Pin
-            { GPIOC, Thor::Definitions::GPIO::PinNum::PIN_1, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP,
+            { GPIOC, Thor::GPIO::PinNum::PIN_1, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP,
               GPIO_AF7_SPI2 },    // Nucleo was B15 AF5
 
             // MISO Pin
-            { GPIOC, Thor::Definitions::GPIO::PinNum::PIN_2, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP,
+            { GPIOC, Thor::GPIO::PinNum::PIN_2, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP,
               GPIO_AF5_SPI2 },    // Nucleo was B14 AF5
 
             // SCK Pin
-            { GPIOB, Thor::Definitions::GPIO::PinNum::PIN_10, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP,
+            { GPIOB, Thor::GPIO::PinNum::PIN_10, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP,
               GPIO_AF5_SPI2 },    // Nucleo was B3 AF5
 
             // NSS Pin
-            { GPIOB, Thor::Definitions::GPIO::PinNum::PIN_12, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI2 },
+            { GPIOB, Thor::GPIO::PinNum::PIN_12, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI2 },
 #endif
 
 #if ( defined( STM32F446xx ) || defined( STM32F767xx ) )
@@ -551,7 +551,7 @@ namespace Thor
             { DMA1_Stream3, DMA_CHANNEL_0, DMA_PERIPH_TO_MEMORY },
 
             // Clock Bus
-            Thor::Definitions::ClockBus::APB1_PERIPH
+            Thor::ClockBus::APB1_PERIPH
 #endif
 
 #endif /* ENABLE_SPI2 */
@@ -562,41 +562,41 @@ namespace Thor
 #if defined( SPI3 )
 #if defined( STM32F767xx )
             // MOSI Pin
-            { GPIOC, Thor::Definitions::GPIO::PinNum::PIN_12, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF6_SPI3 },
+            { GPIOC, Thor::GPIO::PinNum::PIN_12, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF6_SPI3 },
 
             // MISO Pin
-            { GPIOC, Thor::Definitions::GPIO::PinNum::PIN_11, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF6_SPI3 },
+            { GPIOC, Thor::GPIO::PinNum::PIN_11, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF6_SPI3 },
 
             // SCK Pin
-            { GPIOC, Thor::Definitions::GPIO::PinNum::PIN_10, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF6_SPI3 },
+            { GPIOC, Thor::GPIO::PinNum::PIN_10, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF6_SPI3 },
 
             // NSS Pin
-            { GPIOA, Thor::Definitions::GPIO::PinNum::PIN_15, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF6_SPI3 },
+            { GPIOA, Thor::GPIO::PinNum::PIN_15, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF6_SPI3 },
 #endif
 
 #if defined( STM32F446xx )
             // MOSI Pin
-            { GPIOB, Thor::Definitions::GPIO::PinNum::PIN_0, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP,
+            { GPIOB, Thor::GPIO::PinNum::PIN_0, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP,
               GPIO_AF7_SPI3 },    // nucleo was B5 AF6
 
             // MISO Pin
-            { GPIOC, Thor::Definitions::GPIO::PinNum::PIN_11, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP,
+            { GPIOC, Thor::GPIO::PinNum::PIN_11, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP,
               GPIO_AF6_SPI3 },    // nucleo was B4
 
             // SCK Pin
-            { GPIOC, Thor::Definitions::GPIO::PinNum::PIN_10, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP,
+            { GPIOC, Thor::GPIO::PinNum::PIN_10, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP,
               GPIO_AF6_SPI3 },    // nucleo was B3
 
             // NSS Pin
-            { GPIOA, Thor::Definitions::GPIO::PinNum::PIN_15, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF6_SPI3 },
+            { GPIOA, Thor::GPIO::PinNum::PIN_15, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF6_SPI3 },
 #endif
 
 #if defined( STM32F767xx ) || defined( STM32F446xx )
@@ -619,7 +619,7 @@ namespace Thor
             { DMA1_Stream2, DMA_CHANNEL_0, DMA_PERIPH_TO_MEMORY },
 
             // Clock Bus
-            Thor::Definitions::ClockBus::APB1_PERIPH
+            Thor::ClockBus::APB1_PERIPH
 #endif
 #endif /* ENABLE_SPI3 */
         },
@@ -629,20 +629,20 @@ namespace Thor
 #if defined( SPI4 )
 #if defined( STM32F767xx ) || defined( STM32F446xx )
             // MOSI Pin
-            { GPIOE, Thor::Definitions::GPIO::PinNum::PIN_6, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI4 },
+            { GPIOE, Thor::GPIO::PinNum::PIN_6, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI4 },
 
             // MISO Pin
-            { GPIOE, Thor::Definitions::GPIO::PinNum::PIN_5, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI4 },
+            { GPIOE, Thor::GPIO::PinNum::PIN_5, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI4 },
 
             // SCK Pin
-            { GPIOE, Thor::Definitions::GPIO::PinNum::PIN_2, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI4 },
+            { GPIOE, Thor::GPIO::PinNum::PIN_2, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI4 },
 
             // NSS Pin
-            { GPIOE, Thor::Definitions::GPIO::PinNum::PIN_4, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI4 },
+            { GPIOE, Thor::GPIO::PinNum::PIN_4, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI4 },
 
             // SPI Instance Ptr
             SPI4,
@@ -663,7 +663,7 @@ namespace Thor
             { DMA2_Stream0, DMA_CHANNEL_4, DMA_PERIPH_TO_MEMORY },
 
             // Clock Bus
-            Thor::Definitions::ClockBus::APB2_PERIPH
+            Thor::ClockBus::APB2_PERIPH
 #endif
 #endif /* ENABLE_SPI4 */
         },
@@ -673,20 +673,20 @@ namespace Thor
 #if defined( SPI5 )
 #if defined( STM32F767xx )
             // MOSI Pin
-            { GPIOF, Thor::Definitions::GPIO::PinNum::PIN_9, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI5 },
+            { GPIOF, Thor::GPIO::PinNum::PIN_9, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI5 },
 
             // MISO Pin
-            { GPIOF, Thor::Definitions::GPIO::PinNum::PIN_8, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI5 },
+            { GPIOF, Thor::GPIO::PinNum::PIN_8, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI5 },
 
             // SCK Pin
-            { GPIOF, Thor::Definitions::GPIO::PinNum::PIN_7, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI5 },
+            { GPIOF, Thor::GPIO::PinNum::PIN_7, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI5 },
 
             // NSS Pin
-            { GPIOF, Thor::Definitions::GPIO::PinNum::PIN_6, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI5 },
+            { GPIOF, Thor::GPIO::PinNum::PIN_6, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI5 },
 
             // SPI Instance Ptr
             SPI5,
@@ -707,7 +707,7 @@ namespace Thor
             { DMA2_Stream3, DMA_CHANNEL_2, DMA_PERIPH_TO_MEMORY },
 
             // Clock Bus
-            Thor::Definitions::ClockBus::APB2_PERIPH
+            Thor::ClockBus::APB2_PERIPH
 #endif
 #endif /* ENABLE_SPI5 */
 
@@ -719,20 +719,20 @@ namespace Thor
 #if defined( SPI6 )
 #if defined( STM32F767xx )
             // MOSI Pin
-            { GPIOG, Thor::Definitions::GPIO::PinNum::PIN_14, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI6 },
+            { GPIOG, Thor::GPIO::PinNum::PIN_14, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI6 },
 
             // MISO Pin
-            { GPIOG, Thor::Definitions::GPIO::PinNum::PIN_12, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI6 },
+            { GPIOG, Thor::GPIO::PinNum::PIN_12, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI6 },
 
             // SCK Pin
-            { GPIOG, Thor::Definitions::GPIO::PinNum::PIN_13, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI6 },
+            { GPIOG, Thor::GPIO::PinNum::PIN_13, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI6 },
 
             // NSS Pin
-            { GPIOG, Thor::Definitions::GPIO::PinNum::PIN_8, Thor::Definitions::GPIO::PinMode::ALT_PP,
-              Thor::Definitions::GPIO::PinSpeed::ULTRA_SPD, Thor::Definitions::GPIO::PinPull::PULLUP, GPIO_AF5_SPI6 },
+            { GPIOG, Thor::GPIO::PinNum::PIN_8, Thor::GPIO::PinMode::ALT_PP,
+              Thor::GPIO::PinSpeed::ULTRA_SPD, Thor::GPIO::PinPull::PULLUP, GPIO_AF5_SPI6 },
 
             // SPI Instance Ptr
             SPI6,
@@ -753,7 +753,7 @@ namespace Thor
             { DMA2_Stream6, DMA_CHANNEL_1, DMA_PERIPH_TO_MEMORY },
 
             // Clock Bus
-            Thor::Definitions::ClockBus::APB2_PERIPH
+            Thor::ClockBus::APB2_PERIPH
 #endif
 #endif /* ENABLE_SPI6 */
         }

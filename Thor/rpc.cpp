@@ -1,4 +1,4 @@
-#include <Thor/include/rpc.hpp>
+#include <Thor/rpc.hpp>
 
 
 // namespace Thor

@@ -1,4 +1,4 @@
-#include <Thor/include/interrupt.hpp>
+#include <Thor/interrupt.hpp>
 
 /* This macro becomes a problem if a chip doesn't have some of these SPI channels.... */
 #if defined( STM32F767xx )
@@ -47,19 +47,19 @@ namespace Thor
         switch ( ( ( REG_DMA_SxCR & DMA_SxCR_DIR_Msk ) >> DMA_SxCR_DIR_Pos ) )
         {
           case 0u:
-            output.direction = Thor::Definitions::DMA::PERIPH_TO_MEM;
+            output.direction = Thor::DMA::PERIPH_TO_MEM;
             break;
 
           case 1u:
-            output.direction = Thor::Definitions::DMA::MEM_TO_PERIPH;
+            output.direction = Thor::DMA::MEM_TO_PERIPH;
             break;
 
           case 2u:
-            output.direction = Thor::Definitions::DMA::MEM_TO_MEM;
+            output.direction = Thor::DMA::MEM_TO_MEM;
             break;
 
           default:
-            output.direction = Thor::Definitions::DMA::TRANSFER_DIRECTION_UNDEFINED;
+            output.direction = Thor::DMA::TRANSFER_DIRECTION_UNDEFINED;
             source_found     = false;
             break;
         }
@@ -258,11 +258,11 @@ namespace Thor
         {
 #if defined( USART1 )
           case Thor::Interrupt::SRC_USART1:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 1 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 1 );
             }
@@ -271,11 +271,11 @@ namespace Thor
 
 #if defined( USART2 )
           case Thor::Interrupt::SRC_USART2:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 2 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 2 );
             }
@@ -284,11 +284,11 @@ namespace Thor
 
 #if defined( USART3 )
           case Thor::Interrupt::SRC_USART3:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 3 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 3 );
             }
@@ -297,11 +297,11 @@ namespace Thor
 
 #if defined( UART4 )
           case Thor::Interrupt::SRC_UART4:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 4 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 4 );
             }
@@ -310,11 +310,11 @@ namespace Thor
 
 #if defined( UART5 )
           case Thor::Interrupt::SRC_UART5:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 5 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 5 );
             }
@@ -323,11 +323,11 @@ namespace Thor
 
 #if defined( USART6 )
           case Thor::Interrupt::SRC_USART6:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 6 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 6 );
             }
@@ -336,11 +336,11 @@ namespace Thor
 
 #if defined( UART7 )
           case Thor::Interrupt::SRC_UART7:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 7 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 7 );
             }
@@ -349,11 +349,11 @@ namespace Thor
 
 #if defined( UART8 )
           case Thor::Interrupt::SRC_UART8:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 8 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 8 );
             }
@@ -374,11 +374,11 @@ namespace Thor
         {
 #if defined( SPI1 )
           case Thor::Interrupt::SRC_SPI1:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 1 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 1 );
             }
@@ -387,11 +387,11 @@ namespace Thor
 
 #if defined( SPI2 )
           case Thor::Interrupt::SRC_SPI2:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 2 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 2 );
             }
@@ -400,11 +400,11 @@ namespace Thor
 
 #if defined( SPI3 )
           case Thor::Interrupt::SRC_SPI3:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 3 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 3 );
             }
@@ -413,11 +413,11 @@ namespace Thor
 
 #if defined( SPI4 )
           case Thor::Interrupt::SRC_SPI4:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 4 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 4 );
             }
@@ -426,11 +426,11 @@ namespace Thor
 
 #if defined( SPI5 )
           case Thor::Interrupt::SRC_SPI5:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 5 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 5 );
             }
@@ -439,11 +439,11 @@ namespace Thor
 
 #if defined( SPI6 )
           case Thor::Interrupt::SRC_SPI6:
-            if ( pConfig.direction == Thor::Definitions::DMA::MEM_TO_PERIPH )
+            if ( pConfig.direction == Thor::DMA::MEM_TO_PERIPH )
             {
               executeCallback_TXDMA( 6 );
             }
-            else if ( pConfig.direction == Thor::Definitions::DMA::PERIPH_TO_MEM )
+            else if ( pConfig.direction == Thor::DMA::PERIPH_TO_MEM )
             {
               executeCallback_RXDMA( 6 );
             }

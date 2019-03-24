@@ -2,8 +2,8 @@
 // #include <boost/bind.hpp>
 
 // /* Thor Includes */
-// #include <Thor/include/spi.hpp>
-// #include <Thor/include/exti.hpp>
+// #include <Thor/spi.hpp>
+// #include <Thor/exti.hpp>
 
 // #ifdef TARGET_STM32F7
 // #include <stm32f7xx_hal_dma.h>
@@ -17,18 +17,18 @@
 // #include <stm32f4xx_hal_rcc.h>
 // #endif
 
-// using namespace Thor::Definitions;
-// using namespace Thor::Definitions::SPI;
-// using namespace Thor::Definitions::GPIO;
-// using namespace Thor::Definitions::Interrupt;
+// using namespace Thor;
+// using namespace Thor::SPI;
+// using namespace Thor::GPIO;
+// using namespace Thor::Interrupt;
 // using namespace Thor::Defaults::SPI;
 
 // using namespace Thor::Peripheral::SPI;
 // using namespace Thor::Peripheral::GPIO;
 
-// using Status = Thor::Definitions::Status;
-// using Modes = Thor::Definitions::Modes;
-// using Options = Thor::Definitions::SPI::Options;
+// using Status = Thor::Status;
+// using Modes = Thor::Modes;
+// using Options = Thor::SPI::Options;
 
 // #if defined(USING_FREERTOS)
 // static SemaphoreHandle_t spiSemphrs[MAX_SPI_CHANNELS + 1];

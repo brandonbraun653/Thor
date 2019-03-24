@@ -1,12 +1,12 @@
 /* Thor Includes */
-#include <Thor/include/uart.hpp>
-#include <Thor/include/exceptions.hpp>
-#include <Thor/include/interrupt.hpp>
+#include <Thor/uart.hpp>
+#include <Thor/exceptions.hpp>
+#include <Thor/interrupt.hpp>
 
-using namespace Thor::Definitions;
-using namespace Thor::Definitions::Serial;
-using namespace Thor::Definitions::UART;
-using namespace Thor::Definitions::Interrupt;
+using namespace Thor;
+using namespace Thor::Serial;
+using namespace Thor::UART;
+using namespace Thor::Interrupt;
 using namespace Thor::Peripheral::UART;
 using namespace Thor::Defaults::Serial;
 
@@ -115,7 +115,7 @@ namespace Thor
     namespace UART
     {
 #if 0
-            using namespace Thor::Definitions::GPIO;
+            using namespace Thor::GPIO;
 
 			inline void UART_ClearIT_IDLE(UART_HandleTypeDef *UartHandle)
 			{
@@ -136,7 +136,7 @@ namespace Thor
 				__HAL_UART_DISABLE_IT(UartHandle, UART_IT_IDLE);
 			}
 
-			UARTClass::UARTClass(const int& channel, Thor::Definitions::Serial::SerialPins* pinConfig)
+			UARTClass::UARTClass(const int& channel, Thor::Serial::SerialPins* pinConfig)
 			{
 				uart_channel = channel;
 
@@ -214,7 +214,7 @@ namespace Thor
 				end();
 			}
 
-			boost::shared_ptr<UARTClass> UARTClass::create(const int channel, Thor::Definitions::Serial::SerialPins* pinConfig)
+			boost::shared_ptr<UARTClass> UARTClass::create(const int channel, Thor::Serial::SerialPins* pinConfig)
 			{
 				//TODO: Put runtime assertion here and gracefully fail if channel outside bounds
 
@@ -826,7 +826,7 @@ namespace Thor
 
 			void UARTClass::UART_EnableClock()
 			{
-				using namespace Thor::Definitions::Serial;
+				using namespace Thor::Serial;
 
 #if defined( TARGET_STM32F7 ) || defined( TARGET_STM32F4 )
 				RCC->APB1ENR |= (uartClockMask(uart_handle.Instance));
@@ -835,7 +835,7 @@ namespace Thor
 
 			void UARTClass::UART_DisableClock()
 			{
-				using namespace Thor::Definitions::Serial;
+				using namespace Thor::Serial;
 
 #if defined( TARGET_STM32F7 ) || defined( TARGET_STM32F4 )
 				RCC->APB1ENR &= ~(uartClockMask(uart_handle.Instance));

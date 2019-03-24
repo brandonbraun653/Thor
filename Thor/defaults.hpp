@@ -2,9 +2,9 @@
 #ifndef DEFAULTS_H_
 #define DEFAULTS_H_
 
-#include <Thor/include/config.hpp>
-#include <Thor/include/definitions.hpp>
-#include <Thor/include/types.hpp>
+#include <Thor/config.hpp>
+#include <Thor/definitions.hpp>
+#include <Thor/types.hpp>
 
 #if defined( USING_FREERTOS )
 #include "FreeRTOSConfig.h"
@@ -94,7 +94,7 @@ namespace Thor
         DMA_Initializer dmaRX;
 
         /* Clock Bus */
-        Thor::Definitions::ClockBus clockBus;
+        Thor::ClockBus clockBus;
       };
       extern const SPIConfig spi_cfg[];
 

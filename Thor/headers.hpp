@@ -2,7 +2,7 @@
 #ifndef THOR_HEADERS_HPP
 #define THOR_HEADERS_HPP
 
-#include <Thor/include/preprocessor.hpp>
+#include <Thor/preprocessor.hpp>
 
 #if defined( USING_CHIMERA )
 #include <Chimera/chimera.hpp>

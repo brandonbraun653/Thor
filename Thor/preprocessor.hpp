@@ -33,9 +33,14 @@ STM32
 #if __has_include( "stm32f4xx_hal.h" )
 #define TARGET_STM32F4
 #define CORTEX_M4
+
+#if !defined( STM32F446xx )
+#error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)
+#endif
+
 #else
 #error Please include the HAL driver for STM32F4
-#endif
+#endif  /* STM32 */
 
 #elif !defined( EXECUTING_CPPCHECK )
 #error Target Device Not Supported Yet

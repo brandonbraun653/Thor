@@ -1,9 +1,9 @@
-#include <Thor/include/exti.hpp>
-#include <Thor/include/definitions.hpp>
+#include <Thor/exti.hpp>
+#include <Thor/definitions.hpp>
 
-using namespace Thor::Definitions::Serial;
-using namespace Thor::Definitions::SPI;
-using namespace Thor::Definitions::Interrupt;
+using namespace Thor::Serial;
+using namespace Thor::SPI;
+using namespace Thor::Interrupt;
 using namespace Thor::Interrupt;
 
 

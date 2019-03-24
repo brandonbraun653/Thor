@@ -12,8 +12,8 @@
 #include <cstdint>
 
 /* Thor Includes */
-#include <Thor/include/thor.hpp>
-#include <Thor/include/definitions.hpp>
+#include <Thor/thor.hpp>
+#include <Thor/definitions.hpp>
 
 /* Chimera Includes */
 #if defined( USING_CHIMERA )
@@ -49,7 +49,7 @@ namespace Thor
          *   @param[in]  windowPercent   Percentage (integer) away from timeout expiring before the dog can be kicked
          *   @return Status::PERIPH_OK if the initialization was a success, Status::PERIPH_ERROR if not
          */
-        Thor::Definitions::Status initialize( const uint32_t timeout_mS, const uint8_t windowPercent = 100 );
+        Thor::Status initialize( const uint32_t timeout_mS, const uint8_t windowPercent = 100 );
 
         /**
          *   Starts the watchdog timer. If successful, Interface::kick() must
@@ -57,28 +57,28 @@ namespace Thor
          *
          *   @return True if the watchdog was started, false if not
          */
-        Thor::Definitions::Status start();
+        Thor::Status start();
 
         /**
          *   Stops the watchdog timer.
          *
          *   @return True if the watchdog was stopped, false if not
          */
-        Thor::Definitions::Status stop();
+        Thor::Status stop();
 
         /**
          *   Kicks the watchdog timer, starting a new countdown cycle.
          *
          *   @return void
          */
-        Thor::Definitions::Status kick();
+        Thor::Status kick();
 
         /**
          *   Gets the actual timeout value achieved by the hardware
          *
          *   @return Timeout value in milliseconds
          */
-        Thor::Definitions::Status getTimeout( uint32_t &timeout_mS );
+        Thor::Status getTimeout( uint32_t &timeout_mS );
 
         /**
          *   Configures the watchdog to stop on connection to a debugger
@@ -86,7 +86,7 @@ namespace Thor
          *   @param[in]  enable      If true, allows the watchdog to stop. Otherwise, it continues running
          *   @return Peripheral status
          */
-        Thor::Definitions::Status pauseOnDebugHalt( const bool enable );
+        Thor::Status pauseOnDebugHalt( const bool enable );
 
         WindowWatchdog();
         ~WindowWatchdog() = default;
@@ -133,7 +133,7 @@ namespace Thor
          *   @param[in]  timeout_mS      How many milliseconds can elapse before watchdog expires
          *   @return Status::PERIPH_OK if the initialization was a success, Status::PERIPH_ERROR if not
          */
-        Thor::Definitions::Status initialize( const uint32_t timeout_mS );
+        Thor::Status initialize( const uint32_t timeout_mS );
 
         /**
          *   Starts the watchdog timer. If successful, Interface::kick() must
@@ -141,28 +141,28 @@ namespace Thor
          *
          *   @return True if the watchdog was started, false if not
          */
-        Thor::Definitions::Status start();
+        Thor::Status start();
 
         /**
          *   Stops the watchdog timer.
          *
          *   @return True if the watchdog was stopped, false if not
          */
-        Thor::Definitions::Status stop();
+        Thor::Status stop();
 
         /**
          *   Kicks the watchdog timer, starting a new countdown cycle.
          *
          *   @return void
          */
-        Thor::Definitions::Status kick();
+        Thor::Status kick();
 
         /**
          *   Gets the actual timeout value achieved by the hardware
          *
          *   @return Timeout value in milliseconds
          */
-        Thor::Definitions::Status getTimeout( uint32_t &timeout_mS );
+        Thor::Status getTimeout( uint32_t &timeout_mS );
 
         /**
          *   Configures the watchdog to stop on connection to a debugger
@@ -170,7 +170,7 @@ namespace Thor
          *   @param[in]  enable      If true, allows the watchdog to stop. Otherwise, it continues running
          *   @return Peripheral status
          */
-        Thor::Definitions::Status pauseOnDebugHalt( const bool enable );
+        Thor::Status pauseOnDebugHalt( const bool enable );
 
         IndependentWatchdog();
         ~IndependentWatchdog() = default;

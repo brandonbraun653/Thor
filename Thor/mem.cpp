@@ -1,4 +1,4 @@
-#include <Thor/include/mem.hpp>
+#include <Thor/mem.hpp>
 
 #if defined( USING_FREERTOS ) && !defined( USING_ERPC ) && defined __cplusplus
 #include "FreeRTOS.h"

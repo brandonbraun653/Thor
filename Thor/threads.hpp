@@ -5,7 +5,7 @@
 /* C++ Includes */
 #include <atomic>
 
-#include <Thor/include/thor.hpp>
+#include <Thor/thor.hpp>
 
 namespace Thor
 {

@@ -1,6 +1,6 @@
-#include <Thor/include/thor.hpp>
-#include <Thor/include/exceptions.hpp>
-#include <Thor/include/system.hpp>
+#include <Thor/thor.hpp>
+#include <Thor/exceptions.hpp>
+#include <Thor/system.hpp>
 
 
 void BasicErrorHandler( std::string err_msg )

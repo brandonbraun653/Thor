@@ -17,11 +17,11 @@
 #include <Chimera/config.hpp>
 
 /* Thor Includes */
-#include <Thor/include/thor.hpp>
-#include <Thor/include/spi.hpp>
-#include <Thor/include/gpio.hpp>
-#include <Thor/include/serial.hpp>
-#include <Thor/include/watchdog.hpp>
+#include <Thor/thor.hpp>
+#include <Thor/spi.hpp>
+#include <Thor/gpio.hpp>
+#include <Thor/serial.hpp>
+#include <Thor/watchdog.hpp>
 
 
 #define BACKEND_NAMESPACE Thor

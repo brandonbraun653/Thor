@@ -1,8 +1,8 @@
-#include <Thor/include/thor.hpp>
-#include <Thor/include/macro.hpp>
-#include <Thor/include/defaults.hpp>
-#include <Thor/include/exti.hpp>
-#include <Thor/include/print.hpp>
+#include <Thor/thor.hpp>
+#include <Thor/macro.hpp>
+#include <Thor/defaults.hpp>
+#include <Thor/exti.hpp>
+#include <Thor/print.hpp>
 
 #if defined( USING_FREERTOS )
 #include "FreeRTOS.h"

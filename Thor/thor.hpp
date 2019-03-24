@@ -1,10 +1,10 @@
 #ifndef THOR_H_
 #define THOR_H_
 
-#include <Thor/include/headers.hpp>
-#include <Thor/include/config.hpp>
-#include <Thor/include/core.hpp>
-#include <Thor/include/definitions.hpp>
+#include <Thor/headers.hpp>
+#include <Thor/config.hpp>
+#include <Thor/core.hpp>
+#include <Thor/definitions.hpp>
 
 extern void ThorInit();
 

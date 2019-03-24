@@ -2,22 +2,22 @@
 #include <math.h>
 
 /* Project Includes */
-#include <Thor/include/config.hpp>
-#include <Thor/include/usart.hpp>
-#include <Thor/include/exceptions.hpp>
-#include <Thor/include/interrupt.hpp>
+#include <Thor/config.hpp>
+#include <Thor/usart.hpp>
+#include <Thor/exceptions.hpp>
+#include <Thor/interrupt.hpp>
 
 #if defined( USING_FREERTOS )
-//#include <Thor/include/exti.hpp>
-//static SemaphoreHandle_t usartSemphrs[ Thor::Definitions::Serial::MAX_SERIAL_CHANNELS + 1 ];
+//#include <Thor/exti.hpp>
+//static SemaphoreHandle_t usartSemphrs[ Thor::Serial::MAX_SERIAL_CHANNELS + 1 ];
 //TaskTrigger usartTaskTrigger;
 #endif
 
 
-using namespace Thor::Definitions;
-using namespace Thor::Definitions::Serial;
-using namespace Thor::Definitions::USART;
-using namespace Thor::Definitions::Interrupt;
+using namespace Thor;
+using namespace Thor::Serial;
+using namespace Thor::USART;
+using namespace Thor::Interrupt;
 using namespace Thor::Peripheral::USART;
 using namespace Thor::Defaults::Serial;
 
@@ -167,7 +167,7 @@ namespace Thor
     namespace USART
     {
 #if 0
-            using namespace Thor::Definitions::GPIO;
+            using namespace Thor::GPIO;
 
             inline void USART_ClearIT_IDLE(USART_HandleTypeDef *UsartHandle)
 			{
@@ -695,11 +695,11 @@ namespace Thor
 
 			void USARTClass::USART_GPIO_Init()
 			{
-				/* These should be configured as Thor::Definitions::GPIO::PinMode::ALT_PP with Thor::Definitions::GPIO::PinPull::PULLUP in order to work properly. Ignore srl_cfg settings. */
+				/* These should be configured as Thor::GPIO::PinMode::ALT_PP with Thor::GPIO::PinPull::PULLUP in order to work properly. Ignore srl_cfg settings. */
 				if (tx_pin && rx_pin)
 				{
-					tx_pin->mode(Thor::Definitions::GPIO::PinMode::ALT_PP, Thor::Definitions::GPIO::PinPull::PULLUP);
-					rx_pin->mode(Thor::Definitions::GPIO::PinMode::ALT_PP, Thor::Definitions::GPIO::PinPull::PULLUP);
+					tx_pin->mode(Thor::GPIO::PinMode::ALT_PP, Thor::GPIO::PinPull::PULLUP);
+					rx_pin->mode(Thor::GPIO::PinMode::ALT_PP, Thor::GPIO::PinPull::PULLUP);
 					USARTPeriphState.gpio_enabled = true;
 				}
 				else

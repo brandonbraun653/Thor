@@ -9,9 +9,9 @@
 #include <boost/make_shared.hpp>
 
 /* Thor Includes */
-#include <Thor/include/config.hpp>
-#include <Thor/include/definitions.hpp>
-#include <Thor/include/interrupt.hpp>
+#include <Thor/config.hpp>
+#include <Thor/definitions.hpp>
+#include <Thor/interrupt.hpp>
 
 /* Additional includes not provided in Thor config */
 #if defined( TARGET_STM32F4 )
@@ -25,7 +25,7 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 
-using namespace Thor::Definitions::Interrupt;
+using namespace Thor::Interrupt;
 
 class TaskTrigger;
 extern boost::circular_buffer<TaskTrigger *> TriggerBuffer;
@@ -35,7 +35,7 @@ class TaskTrigger
 {
 public:
   /** Informs TaskTrigger that an event has occured. Typically this is called from an ISR routine.
-   *	@param[in] trig		The source trigger from which the event was generated, of type Thor::Definitions::Interrupt::Trigger
+   *	@param[in] trig		The source trigger from which the event was generated, of type Thor::Interrupt::Trigger
    *	@param[in] objAddr	The address of a valid TaskTrigger object that holds the semaphores logged with attachEventConsumer
    **/
   void logEvent( Trigger trig, TaskTrigger *objAddr )
@@ -60,7 +60,7 @@ public:
    *	per trigger is allowed.
    *
    *	@param[in] trig		The source trigger from which events will be generated, of type
-   *Thor::Definitions::Interrupt::Trigger
+   *Thor::Interrupt::Trigger
    *	@param[in] semphr	Address of the semaphore object to be 'given' to upon triggering
    **/
   void attachEventConsumer( Trigger trig, SemaphoreHandle_t *semphr )
@@ -69,7 +69,7 @@ public:
   }
 
   /** Self-explanatory. It removes the trigger as an event consumer.
-   *	@param[in] trig	The source trigger to remove, of type Thor::Definitions::Interrupt::Trigger
+   *	@param[in] trig	The source trigger to remove, of type Thor::Interrupt::Trigger
    **/
   void removeEventConsumer( Trigger trig )
   {

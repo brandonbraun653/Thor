@@ -5,7 +5,7 @@
  *  Author: Brandon
  */
 
-#include <Thor/include/ringbuffer.hpp>
+#include <Thor/ringbuffer.hpp>
 
 
 // Constructor -- Unused except for friend classes

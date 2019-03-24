@@ -1,9 +1,9 @@
-#include <Thor/include/threads.hpp>
+#include <Thor/threads.hpp>
 
 #include <boost/container/static_vector.hpp>
 
 #ifdef USING_FREERTOS
-using namespace Thor::Definitions::Threading;
+using namespace Thor::Threading;
 
 namespace Thor
 {

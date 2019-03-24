@@ -9,9 +9,9 @@
 #include <boost/function.hpp>
 
 /* Thor Includes */
-#include <Thor/include/config.hpp>
-#include <Thor/include/definitions.hpp>
-#include <Thor/include/gpio.hpp>
+#include <Thor/config.hpp>
+#include <Thor/definitions.hpp>
+#include <Thor/gpio.hpp>
 
 
 typedef boost::function<void()> func_void;
@@ -23,10 +23,10 @@ typedef void ( *func_ptr_uart_t )( UART_HandleTypeDef *UartHandle );
 struct GPIO_Initializer
 {
   GPIO_TypeDef *GPIOx;
-  Thor::Definitions::GPIO::PinNum PinNum;
-  Thor::Definitions::GPIO::PinMode Mode;
-  Thor::Definitions::GPIO::PinSpeed Speed;
-  Thor::Definitions::GPIO::PinPull Pull;
+  Thor::GPIO::PinNum PinNum;
+  Thor::GPIO::PinMode Mode;
+  Thor::GPIO::PinSpeed Speed;
+  Thor::GPIO::PinPull Pull;
   uint8_t Alternate;
 };
 

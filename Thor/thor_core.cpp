@@ -1,7 +1,7 @@
 
-#include <Thor/include/headers.hpp>
-#include <Thor/include/macro.hpp>
-#include <Thor/include/core.hpp>
+#include <Thor/headers.hpp>
+#include <Thor/macro.hpp>
+#include <Thor/core.hpp>
 
 #if !defined( USING_FREERTOS )
 void SysTick_Handler( void )

@@ -1,11 +1,11 @@
 
 
 /* Project Includes */
-#include <Thor/include/serial.hpp>
-#include <Thor/include/utilities.hpp>
+#include <Thor/serial.hpp>
+#include <Thor/utilities.hpp>
 
-using namespace Thor::Definitions;
-using namespace Thor::Definitions::Serial;
+using namespace Thor;
+using namespace Thor::Serial;
 using namespace Thor::Peripheral::UART;
 using namespace Thor::Peripheral::USART;
 
@@ -112,42 +112,42 @@ namespace Thor
 
 
 #if defined( USING_CHIMERA )
-      static constexpr Thor::Definitions::Modes convertMode( const Chimera::Serial::Modes mode )
+      static constexpr Thor::Modes convertMode( const Chimera::Serial::Modes mode )
       {
         switch ( mode )
         {
           case Chimera::Serial::Modes::BLOCKING:
-            return Thor::Definitions::Modes::BLOCKING;
+            return Thor::Modes::BLOCKING;
             break;
 
           case Chimera::Serial::Modes::INTERRUPT:
-            return Thor::Definitions::Modes::INTERRUPT;
+            return Thor::Modes::INTERRUPT;
             break;
 
           case Chimera::Serial::Modes::DMA:
-            return Thor::Definitions::Modes::DMA;
+            return Thor::Modes::DMA;
             break;
 
           default:
-            return Thor::Definitions::Modes::MODE_UNDEFINED;
+            return Thor::Modes::MODE_UNDEFINED;
             break;
         }
       }
 
-      static constexpr Thor::Definitions::SubPeripheral convertPeriph( const Chimera::Serial::SubPeripheral periph )
+      static constexpr Thor::SubPeripheral convertPeriph( const Chimera::Serial::SubPeripheral periph )
       {
         switch ( periph )
         {
           case Chimera::Serial::SubPeripheral::TX:
-            return Thor::Definitions::SubPeripheral::TX;
+            return Thor::SubPeripheral::TX;
             break;
 
           case Chimera::Serial::SubPeripheral::RX:
-            return Thor::Definitions::SubPeripheral::RX;
+            return Thor::SubPeripheral::RX;
             break;
 
           default:
-            return Thor::Definitions::SubPeripheral::UNKNOWN_SUB_PERIPHERAL;
+            return Thor::SubPeripheral::UNKNOWN_SUB_PERIPHERAL;
             break;
         }
       }
@@ -166,7 +166,7 @@ namespace Thor
 
         auto thorError = serial->begin( baud, convertMode( txMode ), convertMode( rxMode ) );
 
-        if ( thorError != Thor::Definitions::Status::PERIPH_OK )
+        if ( thorError != Thor::Status::PERIPH_OK )
         {
           chimeraError = Chimera::Serial::Status::ERROR;
         }
@@ -180,7 +180,7 @@ namespace Thor
         auto chimeraError = Chimera::Serial::Status::OK;
         auto thorError    = serial->setMode( convertPeriph( periph ), convertMode( mode ) );
 
-        if ( thorError != Thor::Definitions::Status::PERIPH_OK )
+        if ( thorError != Thor::Status::PERIPH_OK )
         {
           chimeraError = Chimera::Serial::Status::ERROR;
         }
@@ -194,7 +194,7 @@ namespace Thor
         auto chimeraError = Chimera::Serial::Status::OK;
         auto thorError    = serial->setBaud( baud );
 
-        if ( thorError != Thor::Definitions::Status::PERIPH_OK )
+        if ( thorError != Thor::Status::PERIPH_OK )
         {
           chimeraError = Chimera::Serial::Status::ERROR;
         }
@@ -208,7 +208,7 @@ namespace Thor
         auto chimeraError = Chimera::Serial::Status::OK;
         auto thorError    = serial->write( buffer, length );
 
-        if ( thorError != Thor::Definitions::Status::PERIPH_OK )
+        if ( thorError != Thor::Status::PERIPH_OK )
         {
           chimeraError = Chimera::Serial::Status::ERROR;
         }

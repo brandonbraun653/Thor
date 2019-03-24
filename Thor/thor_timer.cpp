@@ -1,4 +1,4 @@
-#include <Thor/include/timer.hpp>
+#include <Thor/timer.hpp>
 
 
 void TIMER_EnableClock( int timerNumber )

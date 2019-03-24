@@ -15,9 +15,9 @@
 #include <cassert>
 
 /* Thor Includes */
-#include <Thor/include/watchdog.hpp>
+#include <Thor/watchdog.hpp>
 
-using namespace Thor::Definitions;
+using namespace Thor;
 
 namespace Thor
 {
@@ -111,7 +111,7 @@ namespace Thor
         handle.Init.Window    = wdWindow;  /** The counter can only be refreshed if below this value. [Max: 0x7F, Min: 0x40] */
         handle.Init.Counter   = wdCounter; /** Starting counter value, also the refresh value. [Max: 0x7F, Min: 0x40] */
         handle.Init.EWIMode   = WWDG_EWI_DISABLE; /** Enable or disable the Early Wakeup Interrupt */
-        
+
         /*------------------------------------------------
         Turn on the peripheral clock
         ------------------------------------------------*/
@@ -266,7 +266,7 @@ namespace Thor
 
         #if defined(STM32F7)
         handle.Init.Window    = wdReload;
-        #endif 
+        #endif
 
         return Status::PERIPH_OK;
       }

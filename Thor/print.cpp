@@ -1,6 +1,6 @@
-#include <Thor/include/config.hpp>
-#include <Thor/include/macro.hpp>
-#include <Thor/include/print.hpp>
+#include <Thor/config.hpp>
+#include <Thor/macro.hpp>
+#include <Thor/print.hpp>
 
 /* VERY basic float->string with 4 decimal places of precision */
 std::string float2String( float number )
@@ -30,10 +30,10 @@ std::string float2String( float number )
  *	the VGDB Embedded Project Settings tab is set to "Minimal (no semihosting)".
  */
 #if USE_SERIAL_DEBUG_OUTPUT && !defined( USING_VISUALGDB_PROFILER )
-#include <Thor/include/serial.hpp>
+#include <Thor/serial.hpp>
 using namespace Thor::Peripheral::Serial;
-using namespace Thor::Definitions::Serial;
-using namespace Thor::Definitions::GPIO;
+using namespace Thor::Serial;
+using namespace Thor::GPIO;
 
 static SerialClass_uPtr serial;
 

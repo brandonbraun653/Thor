@@ -1,8 +1,8 @@
 #ifndef THOR_NUCLEO_HPP
 #define THOR_NUCLEO_HPP
 
-#include <Thor/include/thor.hpp>
-#include <Thor/include/gpio.hpp>
+#include <Thor/thor.hpp>
+#include <Thor/gpio.hpp>
 
 /*
 Blue Led: PB7
@@ -21,14 +21,14 @@ namespace Thor
     static GPIO_TypeDef *GREEN_LED_PORT = GPIOB;
     static GPIO_TypeDef *BLUE_LED_PORT  = GPIOB;
 
-    static const Thor::Definitions::GPIO::PinNum RED_LED_PIN   = Thor::Definitions::GPIO::PinNum::PIN_14;
-    static const Thor::Definitions::GPIO::PinNum GREEN_LED_PIN = Thor::Definitions::GPIO::PinNum::PIN_0;
-    static const Thor::Definitions::GPIO::PinNum BLUE_LED_PIN  = Thor::Definitions::GPIO::PinNum::PIN_7;
+    static const Thor::GPIO::PinNum RED_LED_PIN   = Thor::GPIO::PinNum::PIN_14;
+    static const Thor::GPIO::PinNum GREEN_LED_PIN = Thor::GPIO::PinNum::PIN_0;
+    static const Thor::GPIO::PinNum BLUE_LED_PIN  = Thor::GPIO::PinNum::PIN_7;
 #endif
 
 #if defined( STM32F4 )
     static GPIO_TypeDef *GREEN_LED_PORT                        = GPIOA;
-    static const Thor::Definitions::GPIO::PinNum GREEN_LED_PIN = Thor::Definitions::GPIO::PinNum::PIN_5;
+    static const Thor::GPIO::PinNum GREEN_LED_PIN = Thor::GPIO::PinNum::PIN_5;
 #endif
   }    // namespace Nucleo
 }    // namespace Thor

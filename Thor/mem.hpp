@@ -2,7 +2,7 @@
 #ifndef THOR_MEM_HPP
 #define THOR_MEM_HPP
 
-#include <Thor/include/config.hpp>
+#include <Thor/config.hpp>
 
 /* Globally overload the new/delete operators to use the FreeRTOS mem management functions. Without this, all hell will break
  * loose. If using the Embedded Remote Procedural Call library (eRPC), it provides the necessary overload definitions and thus

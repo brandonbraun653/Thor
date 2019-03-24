@@ -7,10 +7,10 @@
 #include <boost/container/vector.hpp>
 
 /* Thor Includes */
-#include <Thor/include/macro.hpp>
-#include <Thor/include/config.hpp>
-#include <Thor/include/definitions.hpp>
-#include <Thor/include/types.hpp>
+#include <Thor/macro.hpp>
+#include <Thor/config.hpp>
+#include <Thor/definitions.hpp>
+#include <Thor/types.hpp>
 
 #ifdef USING_FREERTOS
 #include "FreeRTOS.h"
@@ -83,8 +83,8 @@ namespace Thor
       {
         TriggerSource peripheral_type     = TRIGGER_SOURCE_UNKNOWN;
         TriggerSource peripheral_instance = TRIGGER_SOURCE_UNKNOWN;
-        Thor::Definitions::DMA::TransferDirection direction =
-            Thor::Definitions::DMA::TransferDirection::TRANSFER_DIRECTION_UNDEFINED;
+        Thor::DMA::TransferDirection direction =
+            Thor::DMA::TransferDirection::TRANSFER_DIRECTION_UNDEFINED;
         uint32_t channel_selection = 0u;
       };
 
@@ -135,7 +135,7 @@ namespace Thor
       public:
         void requestCallback( Interrupt::DMA::PeriphConfig pConfig ) override;
 
-        Serial_DMAHandlerManager() : DMAManagerBase( Thor::Definitions::Serial::MAX_SERIAL_CHANNELS + 1 ){};
+        Serial_DMAHandlerManager() : DMAManagerBase( Thor::Serial::MAX_SERIAL_CHANNELS + 1 ){};
         ~Serial_DMAHandlerManager() = default;
 
       private:
@@ -149,7 +149,7 @@ namespace Thor
       public:
         void requestCallback( Interrupt::DMA::PeriphConfig pConfig ) override;
 
-        SPI_DMAHandlerManager() : DMAManagerBase( Thor::Definitions::SPI::MAX_SPI_CHANNELS + 1 ){};
+        SPI_DMAHandlerManager() : DMAManagerBase( Thor::SPI::MAX_SPI_CHANNELS + 1 ){};
         ~SPI_DMAHandlerManager() = default;
 
       private:

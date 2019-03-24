@@ -1,7 +1,7 @@
 #pragma once
 #ifndef THOR_MACRO_HPP
 #define THOR_MACRO_HPP
-#include <Thor/include/system.hpp>
+#include <Thor/system.hpp>
 
 /*! @def DISABLE_WRITE_BUFFERING
  *	@brief Instructs the processor to disable the write buffer, thus linearizing code execution
