@@ -33,7 +33,7 @@ void ThorInit()
 #endif
 
 #if USE_SERIAL_DEBUG_OUTPUT && !defined( USING_VISUALGDB_PROFILER )
-  setupSTDIO();
+//  setupSTDIO();
 #endif
 }
 

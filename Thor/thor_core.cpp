@@ -11,7 +11,7 @@ void SysTick_Handler( void )
 }
 #endif
 
-#if defined( USING_FREERTOS )
+#if defined( USING_FREERTOS ) && !defined( USING_CHIMERA )
 void vApplicationTickHook( void )
 {
   HAL_IncTick();

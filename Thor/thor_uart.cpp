@@ -1,3 +1,13 @@
+/********************************************************************************
+* File Name:
+*   thor_uart.cpp
+*
+* Description:
+*   Implements the UART interface for Thor
+*
+* 2019 | Brandon Braun | brandonbraun653@gmail.com
+********************************************************************************/
+
 /* Thor Includes */
 #include <Thor/uart.hpp>
 #include <Thor/exceptions.hpp>
@@ -7,9 +17,9 @@ using namespace Thor;
 using namespace Thor::Serial;
 using namespace Thor::UART;
 using namespace Thor::Interrupt;
-using namespace Thor::Peripheral::UART;
 using namespace Thor::Defaults::Serial;
 
+#if 0
 #if defined( USING_FREERTOS )
 //static SemaphoreHandle_t uartSemphrs[ MAX_SERIAL_CHANNELS + 1 ];
 //TaskTrigger uartTaskTrigger;
@@ -110,11 +120,9 @@ static UARTClass_sPtr uartObjects[ MAX_SERIAL_CHANNELS + 1 ];
 
 namespace Thor
 {
-  namespace Peripheral
+  namespace UART
   {
-    namespace UART
-    {
-#if 0
+
             using namespace Thor::GPIO;
 
 			inline void UART_ClearIT_IDLE(UART_HandleTypeDef *UartHandle)
@@ -1034,9 +1042,8 @@ namespace Thor
 				return txCurrentQueueAddr();
 			}
 
-#endif
-    }    // namespace UART
-  }      // namespace Peripheral
+
+  }    // namespace UART
 }    // namespace Thor
 
 void HAL_UART_TxCpltCallback( UART_HandleTypeDef *UartHandle )
@@ -1191,3 +1198,5 @@ void UART8_IRQHandler( void )
     // uartObjects[8]->IRQHandler();
   }
 }
+
+#endif

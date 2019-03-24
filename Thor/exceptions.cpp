@@ -73,27 +73,6 @@ extern "C"
     __asm( "BKPT #0\n" );    // Break into the debugger
   }
 
-#if defined( USING_FREERTOS )
-  void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
-  {
-    /* If you get here, check the task name and call stack to see what caused the issue. */
-    volatile size_t bytesRemaining = xPortGetFreeHeapSize();
-    volatile char *task            = pcTaskName;
-    for ( ;; )
-    {
-      printf( "CRITICAL FAILURE: Stack overflow in %s\r\n", pcTaskName );
-      vTaskDelay( pdMS_TO_TICKS( 1000 ) );
-    }
-  }
-
-  void vApplicationMallocFailedHook()
-  {
-    /* If you get here, a task tried to create but ran out of heap space. */
-    volatile size_t bytesRemaining = xPortGetFreeHeapSize();
-    for ( ;; ) {}
-  }
-#endif
-
 #pragma GCC diagnostic pop
 
 #ifdef __cplusplus

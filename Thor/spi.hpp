@@ -35,6 +35,7 @@
 #include <Chimera/interface.hpp>
 #endif
 
+#if 0
 namespace Thor
 {
   namespace Peripheral
@@ -418,5 +419,6 @@ namespace Thor
     }    // namespace SPI
   }      // namespace Peripheral
 }    // namespace Thor
+#endif
 
 #endif /* SPI_H_*/

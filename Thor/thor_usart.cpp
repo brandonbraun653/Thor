@@ -13,6 +13,7 @@
 //TaskTrigger usartTaskTrigger;
 #endif
 
+#if 0
 
 using namespace Thor;
 using namespace Thor::Serial;
@@ -166,7 +167,7 @@ namespace Thor
   {
     namespace USART
     {
-#if 0
+
             using namespace Thor::GPIO;
 
             inline void USART_ClearIT_IDLE(USART_HandleTypeDef *UsartHandle)
@@ -903,7 +904,7 @@ namespace Thor
 #endif
 			}
 
-#endif
+
     }    // namespace USART
   }      // namespace Peripheral
 }    // namespace Thor
@@ -1071,3 +1072,4 @@ void USART6_IRQHandler( void )
 //		usartObjects[8]->IRQHandler();
 //	}
 //}
+#endif

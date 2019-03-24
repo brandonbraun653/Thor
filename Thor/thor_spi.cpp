@@ -21,6 +21,7 @@
 #include <stm32f4xx_hal_spi.h>
 #endif
 
+#if 0
 using namespace Thor;
 using namespace Thor::SPI;
 using namespace Thor::GPIO;
@@ -2033,3 +2034,5 @@ void SPI6_IRQHandler()
     spiObjects[ 6 ]->IRQHandler();
   }
 }
+
+#endif

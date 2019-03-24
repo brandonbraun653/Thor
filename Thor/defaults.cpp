@@ -5,7 +5,6 @@ using namespace Thor::GPIO;
 using namespace Thor::SPI;
 using namespace Thor::TIMER;
 using namespace Thor::Serial;
-using namespace Thor::Peripheral::GPIO;
 using namespace Thor::Defaults::Interrupt;
 
 namespace Thor

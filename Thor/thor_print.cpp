@@ -2,6 +2,7 @@
 #include <Thor/macro.hpp>
 #include <Thor/print.hpp>
 
+#if 0
 /* VERY basic float->string with 4 decimal places of precision */
 std::string float2String( float number )
 {
@@ -88,6 +89,8 @@ extern "C"
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif

@@ -31,15 +31,15 @@ Define the classes for Chimera to inherit from. These modules are turned
 on and off by the #defines inside of <Chimera/config.hpp>
 ------------------------------------------------*/
 #if ( CHIMERA_HWM_GPIO )
-typedef Thor::Peripheral::GPIO::ChimeraGPIO CHIMERA_INHERITED_GPIO;
+#define CHIMERA_INHERITED_GPIO Thor::GPIO::GPIOClass
 #endif
 
 #if ( CHIMERA_HWM_SPI )
-typedef Thor::Peripheral::SPI::ChimeraSPI CHIMERA_INHERITED_SPI;
+//typedef Thor::Peripheral::SPI::ChimeraSPI CHIMERA_INHERITED_SPI;
 #endif
 
 #if ( CHIMERA_HWM_WATCHDOG )
-typedef Thor::Peripheral::Watchdog::ChimeraWatchdog CHIMERA_INHERITED_WATCHDOG;
+//typedef Thor::Peripheral::Watchdog::ChimeraWatchdog CHIMERA_INHERITED_WATCHDOG;
 #endif
 
 //#if ( CHIMERA_MOD_SERIAL )
