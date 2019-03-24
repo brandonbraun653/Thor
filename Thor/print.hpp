@@ -5,7 +5,7 @@
 #include <cmath>
 #include <string>
 
-#include <Thor/include/config.hpp>
+#include <Thor/config.hpp>
 
 
 extern std::string float2String( float number );

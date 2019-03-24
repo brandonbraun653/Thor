@@ -1,12 +1,21 @@
-#include <Thor/include/thor.hpp>
-#include <Thor/include/macro.hpp>
-#include <Thor/include/defaults.hpp>
-#include <Thor/include/exti.hpp>
-#include <Thor/include/print.hpp>
+#include <Thor/thor.hpp>
+#include <Thor/macro.hpp>
+#include <Thor/defaults.hpp>
+//#include <Thor/exti.hpp>
+#include <Thor/print.hpp>
 
 #if defined( USING_FREERTOS )
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "FreeRTOS.h"
 #include "task.h"
+
+#ifdef __cplusplus
+}
+#endif
 #endif
 
 void ThorInit()
@@ -18,7 +27,7 @@ void ThorInit()
   ThorSystemClockConfig();
 
   /* Enforce the system interrupt priority structure */
-  HAL_NVIC_SetPriorityGrouping( Thor::Defaults::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
+  HAL_NVIC_SetPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
 
 
 #if WRITE_BUFFERING_DISABLED
@@ -29,20 +38,18 @@ void ThorInit()
 /* Set up the EXTI handler for passing messages from
  * from high priority to low priority interrupts. */
 #ifdef USING_FREERTOS
-  setupEXTI0_Interrupt();
+  // setupEXTI0_Interrupt();
 #endif
 
 #if USE_SERIAL_DEBUG_OUTPUT && !defined( USING_VISUALGDB_PROFILER )
-  setupSTDIO();
+//  setupSTDIO();
 #endif
 }
 
-#if defined( USING_CHIMERA )
 void cSystemInit()
 {
   ThorInit();
 }
-#endif
 
 namespace Thor
 {

@@ -1,6 +1,6 @@
-#include <Thor/include/thor.hpp>
-#include <Thor/include/exceptions.hpp>
-#include <Thor/include/system.hpp>
+#include <Thor/thor.hpp>
+#include <Thor/exceptions.hpp>
+#include <Thor/system.hpp>
 
 
 void BasicErrorHandler( std::string err_msg )
@@ -30,10 +30,12 @@ void BasicErrorHandler( std::string err_msg )
 extern "C"
 {
 #endif
-
+#if defined( __GNUC__ )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+
   void HardFault_HandlerC( unsigned long *hardfault_args )
   {
 #if defined( TARGET_STM32F4 ) || defined( TARGET_STM32F7 )
@@ -70,31 +72,14 @@ extern "C"
 #endif
 
 
+#if defined( __GNUC__ )
     __asm( "BKPT #0\n" );    // Break into the debugger
-  }
-
-#if defined( USING_FREERTOS )
-  void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
-  {
-    /* If you get here, check the task name and call stack to see what caused the issue. */
-    volatile size_t bytesRemaining = xPortGetFreeHeapSize();
-    volatile char *task            = pcTaskName;
-    for ( ;; )
-    {
-      printf( "CRITICAL FAILURE: Stack overflow in %s\r\n", pcTaskName );
-      vTaskDelay( pdMS_TO_TICKS( 1000 ) );
-    }
-  }
-
-  void vApplicationMallocFailedHook()
-  {
-    /* If you get here, a task tried to create but ran out of heap space. */
-    volatile size_t bytesRemaining = xPortGetFreeHeapSize();
-    for ( ;; ) {}
-  }
 #endif
+  }
 
+#if defined( __GNUC__ )
 #pragma GCC diagnostic pop
+#endif
 
 #ifdef __cplusplus
 }
@@ -104,6 +89,8 @@ extern "C"
 void HardFault_Handler()
 {
   /* Well you broke SOMETHING Jim Bob */
+
+#if defined( __GNUC__ )
   __asm volatile( " movs r0,#4			\n"
                   " movs r1, lr			\n"
                   " tst r0, r1			\n"
@@ -116,6 +103,7 @@ void HardFault_Handler()
                   " ldr r1,[r0,#20]		\n"
                   " b HardFault_HandlerC	\n"
                   " bkpt #0				\n" );
+#endif
 
   while ( 1 ) {}
 }

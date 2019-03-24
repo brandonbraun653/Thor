@@ -1,3 +1,14 @@
+/********************************************************************************
+ * File Name:
+ *   preprocessor.hpp
+ *
+ * Description:
+ *   Performs some preprocessor goodness to help with automatic configuration of
+ *   the Thor library.
+ *
+ * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
 #pragma once
 #ifndef THOR_PREPROCESSOR_HPP
 #define THOR_PREPROCESSOR_HPP
@@ -10,7 +21,7 @@ https://clang.llvm.org/docs/LanguageExtensions.html
 #error FATAL ERROR: Please use a compiler that supports __has_include(), such as Clang or MSVC 2015 Update 2 or higher
 #endif
 
-#if __cpp_exceptions
+#if __cpp_exceptions && ( !defined( _WIN32 ) && !defined( _WIN64 ) )
 #error FATAL ERROR: Please disable exceptions.
 #endif
 
@@ -33,15 +44,20 @@ STM32
 #if __has_include( "stm32f4xx_hal.h" )
 #define TARGET_STM32F4
 #define CORTEX_M4
+
+#if !defined( STM32F446xx )
+#error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)
+#endif
+
 #else
 #error Please include the HAL driver for STM32F4
-#endif
+#endif /* STM32 */
 
 #elif !defined( EXECUTING_CPPCHECK )
 #error Target Device Not Supported Yet
 #endif
 
-#ifndef USE_FULL_LL_DRIVER
+#if !defined( USE_FULL_LL_DRIVER ) && !defined( GMOCK_TEST )
 #error Please define USE_FULL_LL_DRIVER in the compiler preprocessor
 #endif
 

@@ -1,7 +1,7 @@
 #pragma once
 #ifndef THOR_MACRO_HPP
 #define THOR_MACRO_HPP
-#include <Thor/include/system.hpp>
+#include <Thor/system.hpp>
 
 /*! @def DISABLE_WRITE_BUFFERING
  *	@brief Instructs the processor to disable the write buffer, thus linearizing code execution
@@ -17,7 +17,7 @@
 /*! @def INSERT_BREAKPOINT
  *	@brief Manually instructs the CPU to break and go into debug mode for debugger.
  */
-#ifndef INSERT_BREAKPOINT
+#if defined( __GNUC__ )
 #define INSERT_BREAKPOINT __asm( "BKPT #0\n" )
 #endif
 

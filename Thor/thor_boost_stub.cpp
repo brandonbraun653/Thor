@@ -1,5 +1,5 @@
-#include <Thor/include/boostStub.hpp>
-#include <Thor/include/exceptions.hpp>
+#include <Thor/boostStub.hpp>
+#include <Thor/exceptions.hpp>
 
 namespace boost
 {

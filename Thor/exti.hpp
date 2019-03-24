@@ -1,6 +1,6 @@
 #pragma once
-#ifndef EXTI_H_
-#define EXTI_H_
+#ifndef THOR_EXTI_HPP
+#define THOR_EXTI_HPP
 
 /* Boost Includes */
 #include <boost/circular_buffer.hpp>
@@ -9,11 +9,16 @@
 #include <boost/make_shared.hpp>
 
 /* Thor Includes */
-#include <Thor/include/config.hpp>
-#include <Thor/include/definitions.hpp>
-#include <Thor/include/interrupt.hpp>
+#include <Thor/config.hpp>
+#include <Thor/definitions.hpp>
+
 
 /* Additional includes not provided in Thor config */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #if defined( TARGET_STM32F4 )
 #include "stm32f4xx_ll_exti.h"
 
@@ -21,11 +26,26 @@
 #include "stm32f7xx_ll_exti.h"
 #endif
 
+#ifdef __cplusplus
+}
+#endif
+
+
 #if defined( USING_FREERTOS )
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "FreeRTOS.h"
 #include "semphr.h"
 
-using namespace Thor::Definitions::Interrupt;
+#ifdef __cplusplus
+}
+#endif
+
+using namespace Thor::Interrupt;
 
 class TaskTrigger;
 extern boost::circular_buffer<TaskTrigger *> TriggerBuffer;
@@ -35,7 +55,7 @@ class TaskTrigger
 {
 public:
   /** Informs TaskTrigger that an event has occured. Typically this is called from an ISR routine.
-   *	@param[in] trig		The source trigger from which the event was generated, of type Thor::Definitions::Interrupt::Trigger
+   *	@param[in] trig		The source trigger from which the event was generated, of type Thor::Interrupt::Trigger
    *	@param[in] objAddr	The address of a valid TaskTrigger object that holds the semaphores logged with attachEventConsumer
    **/
   void logEvent( Trigger trig, TaskTrigger *objAddr )
@@ -60,7 +80,7 @@ public:
    *	per trigger is allowed.
    *
    *	@param[in] trig		The source trigger from which events will be generated, of type
-   *Thor::Definitions::Interrupt::Trigger
+   *Thor::Interrupt::Trigger
    *	@param[in] semphr	Address of the semaphore object to be 'given' to upon triggering
    **/
   void attachEventConsumer( Trigger trig, SemaphoreHandle_t *semphr )
@@ -69,7 +89,7 @@ public:
   }
 
   /** Self-explanatory. It removes the trigger as an event consumer.
-   *	@param[in] trig	The source trigger to remove, of type Thor::Definitions::Interrupt::Trigger
+   *	@param[in] trig	The source trigger to remove, of type Thor::Interrupt::Trigger
    **/
   void removeEventConsumer( Trigger trig )
   {
@@ -114,15 +134,15 @@ extern void setupEXTI0_Interrupt();
 extern "C"
 {
 #endif
-  void EXTI0_IRQHandler();
-  void EXTI1_IRQHandler();
-  void EXTI2_IRQHandler();
-  void EXTI3_IRQHandler();
-  void EXTI4_IRQHandler();
-  void EXTI9_5_IRQHandler();
-  void EXTI15_10_IRQHandler();
+  extern void EXTI0_IRQHandler();
+  extern void EXTI1_IRQHandler();
+  extern void EXTI2_IRQHandler();
+  extern void EXTI3_IRQHandler();
+  extern void EXTI4_IRQHandler();
+  extern void EXTI9_5_IRQHandler();
+  extern void EXTI15_10_IRQHandler();
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* THOR_EXTI_HPP */

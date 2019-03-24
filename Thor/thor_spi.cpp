@@ -6,8 +6,8 @@
 #include <boost/bind.hpp>
 
 /* Thor Includes */
-#include <Thor/include/exti.hpp>
-#include <Thor/include/spi.hpp>
+//#include <Thor/exti.hpp>
+#include <Thor/spi.hpp>
 
 #ifdef TARGET_STM32F7
 #include <stm32f7xx_hal_dma.h>
@@ -21,17 +21,15 @@
 #include <stm32f4xx_hal_spi.h>
 #endif
 
-using namespace Thor::Definitions;
-using namespace Thor::Definitions::SPI;
-using namespace Thor::Definitions::GPIO;
-using namespace Thor::Definitions::Interrupt;
+#if 0
+using namespace Thor;
+using namespace Thor::SPI;
+using namespace Thor::GPIO;
+using namespace Thor::Interrupt;
 using namespace Thor::Defaults::SPI;
 
 using namespace Thor::Peripheral::SPI;
 using namespace Thor::Peripheral::GPIO;
-
-using Status = Thor::Definitions::Status;
-using Modes  = Thor::Definitions::Modes;
 
 #if defined( USING_FREERTOS )
 TaskTrigger spiTaskTrigger;
@@ -279,7 +277,7 @@ namespace Thor
         return spiObjects[ channel ];
       }
 
-      Thor::Definitions::Status SPIClass::begin( const Config &settings, const bool &force )
+      Thor::Status SPIClass::begin( const Config &settings, const bool &force )
       {
         /*------------------------------------
       Create the GPIO instances depending on what the user supplied
@@ -350,10 +348,10 @@ namespace Thor
         setMode( SubPeripheral::TX, Modes::BLOCKING );
         setMode( SubPeripheral::RX, Modes::BLOCKING );
 
-        return Thor::Definitions::Status::PERIPH_OK;
+        return Thor::Status::PERIPH_OK;
       }
 
-      Thor::Definitions::Status SPIClass::end()
+      Thor::Status SPIClass::end()
       {
         SPI_GPIO_DeInit();
         SPI_DisableInterrupts();
@@ -363,12 +361,12 @@ namespace Thor
         txMode = Modes::MODE_UNDEFINED;
         rxMode = Modes::MODE_UNDEFINED;
 
-        return Thor::Definitions::Status::PERIPH_OK;
+        return Thor::Status::PERIPH_OK;
       }
 
-      Thor::Definitions::Status SPIClass::reserve( const uint32_t &timeout_ms )
+      Thor::Status SPIClass::reserve( const uint32_t &timeout_ms )
       {
-        Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_LOCKED;
+        Thor::Status status = Thor::Status::PERIPH_LOCKED;
 
         /*------------------------------------------------
       If not locked, grab immediately
@@ -376,7 +374,7 @@ namespace Thor
         if ( !isLocked() )
         {
           lock( true );
-          status = Thor::Definitions::Status::PERIPH_OK;
+          status = Thor::Status::PERIPH_OK;
         }
         else if ( timeout_ms )
         {
@@ -390,7 +388,7 @@ again when unblocked.
           if ( !isLocked() )
           {
             lock( true );
-            status = Thor::Definitions::Status::PERIPH_OK;
+            status = Thor::Status::PERIPH_OK;
           }
 #endif
         }
@@ -398,16 +396,16 @@ again when unblocked.
         return status;
       }
 
-      Thor::Definitions::Status SPIClass::release( const uint32_t &timeout_ms )
+      Thor::Status SPIClass::release( const uint32_t &timeout_ms )
       {
-        Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_TIMEOUT;
+        Thor::Status status = Thor::Status::PERIPH_TIMEOUT;
 
         if ( isOwner( ownerID ) )
         {
           if ( isTransferComplete() )
           {
             unlock();
-            status = Thor::Definitions::Status::PERIPH_OK;
+            status = Thor::Status::PERIPH_OK;
           }
           else if ( timeout_ms )
           {
@@ -417,44 +415,44 @@ again when unblocked.
             if ( isTransferComplete() )
             {
               unlock();
-              status = Thor::Definitions::Status::PERIPH_OK;
+              status = Thor::Status::PERIPH_OK;
             }
 #endif
           }
         }
         else
         {
-          status = Thor::Definitions::Status::NOT_OWNER;
+          status = Thor::Status::NOT_OWNER;
         }
 
         return status;
       }
 
-      Thor::Definitions::Status SPIClass::attachChipSelect( const Thor::Peripheral::GPIO::GPIOClass_sPtr &chipSelect )
+      Thor::Status SPIClass::attachChipSelect( const Thor::Peripheral::GPIO::GPIOClass_sPtr &chipSelect )
       {
         externalCS = chipSelect;
-        return Thor::Definitions::Status::PERIPH_OK;
+        return Thor::Status::PERIPH_OK;
       }
 
-      Thor::Definitions::Status SPIClass::detachChipSelect()
+      Thor::Status SPIClass::detachChipSelect()
       {
         externalCS = nullptr;
-        return Thor::Definitions::Status::PERIPH_OK;
+        return Thor::Status::PERIPH_OK;
       }
 
-      Thor::Definitions::Status SPIClass::writeBytes( const uint8_t *const txBuffer, size_t length, const bool &autoDisableCS,
+      Thor::Status SPIClass::writeBytes( const uint8_t *const txBuffer, size_t length, const bool &autoDisableCS,
                                                       const bool &autoRelease, uint32_t timeoutMS )
       {
         return readWriteBytes( txBuffer, nullptr, length, autoDisableCS, autoRelease, timeoutMS );
       }
 
-      Thor::Definitions::Status SPIClass::readBytes( uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS,
+      Thor::Status SPIClass::readBytes( uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS,
                                                      const bool &autoRelease, uint32_t timeoutMS )
       {
         return readWriteBytes( nullptr, rxBuffer, length, autoDisableCS, autoRelease, timeoutMS );
       }
 
-      Thor::Definitions::Status SPIClass::readWriteBytes( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
+      Thor::Status SPIClass::readWriteBytes( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
                                                           const bool &autoDisableCS, const bool &autoRelease,
                                                           uint32_t timeoutMS )
       {
@@ -463,11 +461,11 @@ again when unblocked.
       -------------------------------------------------*/
         if ( !hardwareStatus.gpio_enabled || !hardwareStatus.spi_enabled )
         {
-          return Thor::Definitions::Status::PERIPH_NOT_INITIALIZED;
+          return Thor::Status::PERIPH_NOT_INITIALIZED;
         }
         else if ( !length )
         {
-          return Thor::Definitions::Status::PERIPH_INVALID_PARAM;
+          return Thor::Status::PERIPH_INVALID_PARAM;
         }
 
         /*------------------------------------------------
@@ -488,12 +486,12 @@ again when unblocked.
             break;
 
           default:
-            return Thor::Definitions::Status::PERIPH_ERROR;
+            return Thor::Status::PERIPH_ERROR;
             break;
         }
       }
 
-      Thor::Definitions::Status SPIClass::setMode( const SubPeripheral &periph, const Modes &mode )
+      Thor::Status SPIClass::setMode( const SubPeripheral &periph, const Modes &mode )
       {
         if ( ( periph == SubPeripheral::TXRX ) || ( periph == SubPeripheral::TX ) )
         {
@@ -573,10 +571,10 @@ again when unblocked.
           }
         }
 
-        return Thor::Definitions::Status::PERIPH_OK;
+        return Thor::Status::PERIPH_OK;
       }
 
-      Thor::Definitions::Status SPIClass::setChipSelect( const LogicLevel &state )
+      Thor::Status SPIClass::setChipSelect( const LogicLevel &state )
       {
         if ( externalCS )
         {
@@ -616,20 +614,20 @@ again when unblocked.
           }
         }
 
-        return Thor::Definitions::Status::PERIPH_OK;
+        return Thor::Status::PERIPH_OK;
       }
 
-      Thor::Definitions::Status SPIClass::setChipSelectControlMode( const Thor::Definitions::SPI::ChipSelectMode &mode )
+      Thor::Status SPIClass::setChipSelectControlMode( const Thor::SPI::ChipSelectMode &mode )
       {
         chipSelectMode = mode;
-        return Thor::Definitions::Status::PERIPH_OK;
+        return Thor::Status::PERIPH_OK;
       }
 
-      Thor::Definitions::Status SPIClass::setClockFrequency( const uint32_t &freq )
+      Thor::Status SPIClass::setClockFrequency( const uint32_t &freq )
       {
-        Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_ERROR;
+        Thor::Status status = Thor::Status::PERIPH_ERROR;
 
-        if ( isTransferComplete() && isAvailable( ownerID ) && ( reserve() == Thor::Definitions::Status::PERIPH_OK ) )
+        if ( isTransferComplete() && isAvailable( ownerID ) && ( reserve() == Thor::Status::PERIPH_OK ) )
         {
           // TODO: Figure out how to do this without resetting the channel
           // spi_handle.Init.BaudRatePrescaler = getPrescaler(spi_channel, freq);
@@ -638,16 +636,16 @@ again when unblocked.
         }
         else
         {
-          status = Thor::Definitions::Status::PERIPH_BUSY;
+          status = Thor::Status::PERIPH_BUSY;
         }
 
         return status;
       }
 
-      Thor::Definitions::Status SPIClass::getClockFrequency( uint32_t *const freq )
+      Thor::Status SPIClass::getClockFrequency( uint32_t *const freq )
       {
         *freq = getFrequency( spi_channel, spi_handle.Init.BaudRatePrescaler );
-        return Thor::Definitions::Status::PERIPH_OK;
+        return Thor::Status::PERIPH_OK;
       }
 
       void SPIClass::IRQHandler()
@@ -674,11 +672,11 @@ again when unblocked.
         /*------------------------------------------------
       Figure out the APB bus frequency for this channel
       -------------------------------------------------*/
-        if ( spi_cfg[ channel ].clockBus == Thor::Definitions::ClockBus::APB1_PERIPH )
+        if ( spi_cfg[ channel ].clockBus == Thor::ClockBus::APB1_PERIPH )
         {
           busFreq = HAL_RCC_GetPCLK1Freq();
         }
-        else if ( spi_cfg[ channel ].clockBus == Thor::Definitions::ClockBus::APB2_PERIPH )
+        else if ( spi_cfg[ channel ].clockBus == Thor::ClockBus::APB2_PERIPH )
         {
           busFreq = HAL_RCC_GetPCLK2Freq();
         }
@@ -757,11 +755,11 @@ again when unblocked.
         /*------------------------------------------------
       Figure out the APB bus frequency for this channel
       -------------------------------------------------*/
-        if ( spi_cfg[ channel ].clockBus == Thor::Definitions::ClockBus::APB1_PERIPH )
+        if ( spi_cfg[ channel ].clockBus == Thor::ClockBus::APB1_PERIPH )
         {
           apbFreq = HAL_RCC_GetPCLK1Freq();
         }
-        else if ( spi_cfg[ channel ].clockBus == Thor::Definitions::ClockBus::APB2_PERIPH )
+        else if ( spi_cfg[ channel ].clockBus == Thor::ClockBus::APB2_PERIPH )
         {
           apbFreq = HAL_RCC_GetPCLK2Freq();
         }
@@ -814,12 +812,12 @@ again when unblocked.
         return busFreq;
       }
 
-      Thor::Definitions::Status SPIClass::transfer_blocking( const uint8_t *const txBuffer, uint8_t *const rxBuffer,
+      Thor::Status SPIClass::transfer_blocking( const uint8_t *const txBuffer, uint8_t *const rxBuffer,
                                                              size_t length, const bool &autoDisableCS, const bool &autoRelease,
                                                              uint32_t timeoutMS )
       {
         HAL_StatusTypeDef error          = HAL_OK;
-        Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_OK;
+        Thor::Status status = Thor::Status::PERIPH_OK;
 
 #if defined( USING_FREERTOS )
         timeoutMS = pdMS_TO_TICKS( timeoutMS );
@@ -841,8 +839,8 @@ again when unblocked.
           /*------------------------------------------------
       Activate the chip select line?
       -------------------------------------------------*/
-          if ( ( chipSelectMode < Thor::Definitions::SPI::ChipSelectMode::NUM_CS_MODES ) &&
-               ( chipSelectMode != Thor::Definitions::SPI::ChipSelectMode::MANUAL ) )
+          if ( ( chipSelectMode < Thor::SPI::ChipSelectMode::NUM_CS_MODES ) &&
+               ( chipSelectMode != Thor::SPI::ChipSelectMode::MANUAL ) )
           {
             setChipSelect( LogicLevel::LOW );
           }
@@ -901,7 +899,7 @@ again when unblocked.
           }
           else
           {
-            status = Thor::Definitions::Status::PERIPH_INVALID_PARAM;
+            status = Thor::Status::PERIPH_INVALID_PARAM;
           }
 
           /*------------------------------------------------
@@ -925,23 +923,23 @@ again when unblocked.
       -------------------------------------------------*/
           if ( error != HAL_OK )
           {
-            status = Thor::Definitions::Status::PERIPH_ERROR;
+            status = Thor::Status::PERIPH_ERROR;
           }
         }
         else
         {
-          status = Thor::Definitions::Status::PERIPH_BUSY;
+          status = Thor::Status::PERIPH_BUSY;
         }
 
         return status;
       }
 
-      Thor::Definitions::Status SPIClass::transfer_interrupt( const uint8_t *const txBuffer, uint8_t *const rxBuffer,
+      Thor::Status SPIClass::transfer_interrupt( const uint8_t *const txBuffer, uint8_t *const rxBuffer,
                                                               size_t length, const bool &autoDisableCS,
                                                               const bool &autoRelease )
       {
         HAL_StatusTypeDef error          = HAL_OK;
-        Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_OK;
+        Thor::Status status = Thor::Status::PERIPH_OK;
 
         /*------------------------------------------------
       Ensure the previous transmission has completed
@@ -959,8 +957,8 @@ again when unblocked.
           /*------------------------------------------------
       Activate the chip select line?
       -------------------------------------------------*/
-          if ( ( chipSelectMode < Thor::Definitions::SPI::ChipSelectMode::NUM_CS_MODES ) &&
-               ( chipSelectMode != Thor::Definitions::SPI::ChipSelectMode::MANUAL ) )
+          if ( ( chipSelectMode < Thor::SPI::ChipSelectMode::NUM_CS_MODES ) &&
+               ( chipSelectMode != Thor::SPI::ChipSelectMode::MANUAL ) )
           {
             setChipSelect( LogicLevel::LOW );
           }
@@ -980,7 +978,7 @@ again when unblocked.
       nasty, but it must be done.
       -------------------------------------------------*/
             error  = HAL_SPI_Transmit_IT( &spi_handle, const_cast<uint8_t *>( txBuffer ), length );
-            status = Thor::Definitions::Status::PERIPH_TX_IN_PROGRESS;
+            status = Thor::Status::PERIPH_TX_IN_PROGRESS;
           }
           else if ( txBuffer && rxBuffer )
           {
@@ -994,7 +992,7 @@ again when unblocked.
               setMode( SubPeripheral::RX, txMode );
             }
 
-            status = Thor::Definitions::Status::PERIPH_TXRX_IN_PROGRESS;
+            status = Thor::Status::PERIPH_TXRX_IN_PROGRESS;
 
             /*------------------------------------------------
               The HAL operation doesn't modify the transmit buffer, but
@@ -1006,12 +1004,12 @@ again when unblocked.
           }
           else if ( rxBuffer && !txBuffer )
           {
-            status = Thor::Definitions::Status::PERIPH_ERROR;
+            status = Thor::Status::PERIPH_ERROR;
           }
           else
           {
             resetISRFlags();
-            status = Thor::Definitions::Status::PERIPH_INVALID_PARAM;
+            status = Thor::Status::PERIPH_INVALID_PARAM;
           }
 
           /*------------------------------------------------
@@ -1020,7 +1018,7 @@ again when unblocked.
           if ( error != HAL_OK )
           {
             resetISRFlags();
-            status = Thor::Definitions::Status::PERIPH_ERROR;
+            status = Thor::Status::PERIPH_ERROR;
 
             if ( autoDisableCS )
             {
@@ -1035,17 +1033,17 @@ again when unblocked.
         }
         else
         {
-          status = Thor::Definitions::Status::PERIPH_BUSY;
+          status = Thor::Status::PERIPH_BUSY;
         }
 
         return status;
       }
 
-      Thor::Definitions::Status SPIClass::transfer_dma( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
+      Thor::Status SPIClass::transfer_dma( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
                                                         const bool &autoDisableCS, const bool &autoRelease )
       {
         HAL_StatusTypeDef error          = HAL_OK;
-        Thor::Definitions::Status status = Thor::Definitions::Status::PERIPH_OK;
+        Thor::Status status = Thor::Status::PERIPH_OK;
 
         /*------------------------------------------------
       Ensure the previous transmission has completed
@@ -1063,8 +1061,8 @@ again when unblocked.
           /*------------------------------------------------
       Activate the chip select line?
       -------------------------------------------------*/
-          if ( ( chipSelectMode < Thor::Definitions::SPI::ChipSelectMode::NUM_CS_MODES ) &&
-               ( chipSelectMode != Thor::Definitions::SPI::ChipSelectMode::MANUAL ) )
+          if ( ( chipSelectMode < Thor::SPI::ChipSelectMode::NUM_CS_MODES ) &&
+               ( chipSelectMode != Thor::SPI::ChipSelectMode::MANUAL ) )
           {
             setChipSelect( LogicLevel::LOW );
           }
@@ -1078,7 +1076,7 @@ again when unblocked.
 
           if ( txBuffer && !rxBuffer )
           {
-            status = Thor::Definitions::Status::PERIPH_TX_IN_PROGRESS;
+            status = Thor::Status::PERIPH_TX_IN_PROGRESS;
 
             /*------------------------------------------------
       The HAL operation doesn't modify the transmit buffer, but for some reason
@@ -1089,7 +1087,7 @@ again when unblocked.
           }
           else if ( rxBuffer && !txBuffer )
           {
-            status = Thor::Definitions::Status::PERIPH_ERROR;
+            status = Thor::Status::PERIPH_ERROR;
           }
           else if ( txBuffer && rxBuffer )
           {
@@ -1103,7 +1101,7 @@ again when unblocked.
               setMode( SubPeripheral::RX, txMode );
             }
 
-            status = Thor::Definitions::Status::PERIPH_TXRX_IN_PROGRESS;
+            status = Thor::Status::PERIPH_TXRX_IN_PROGRESS;
 
             /*------------------------------------------------
       The HAL operation doesn't modify the transmit buffer, but for some reason
@@ -1116,7 +1114,7 @@ again when unblocked.
           else
           {
             resetISRFlags();
-            status = Thor::Definitions::Status::PERIPH_INVALID_PARAM;
+            status = Thor::Status::PERIPH_INVALID_PARAM;
           }
 
           /*------------------------------------------------
@@ -1125,7 +1123,7 @@ again when unblocked.
           if ( error != HAL_OK )
           {
             resetISRFlags();
-            status = Thor::Definitions::Status::PERIPH_ERROR;
+            status = Thor::Status::PERIPH_ERROR;
 
             if ( autoDisableCS )
             {
@@ -1140,7 +1138,7 @@ again when unblocked.
         }
         else
         {
-          status = Thor::Definitions::Status::PERIPH_BUSY;
+          status = Thor::Status::PERIPH_BUSY;
         }
 
         return status;
@@ -1267,7 +1265,7 @@ again when unblocked.
       User supplied pre-initialized GPIOClass_sPtr object. This is
       an externally created object we don't own.
       -------------------------------------------------*/
-            externalCS->mode( Thor::Definitions::GPIO::PinMode::OUTPUT_PP, Thor::Definitions::GPIO::PinPull::NOPULL );
+            externalCS->mode( Thor::GPIO::PinMode::OUTPUT_PP, Thor::GPIO::PinPull::NOPULL );
             externalCS->write( LogicLevel::HIGH );
           }
           else if ( alternateCS )
@@ -1275,7 +1273,7 @@ again when unblocked.
             /*------------------------------------------------
       User supplied description of the GPIO pin to be initialized
       -------------------------------------------------*/
-            CS->mode( Thor::Definitions::GPIO::PinMode::OUTPUT_PP, Thor::Definitions::GPIO::PinPull::NOPULL );
+            CS->mode( Thor::GPIO::PinMode::OUTPUT_PP, Thor::GPIO::PinPull::NOPULL );
             CS->write( LogicLevel::HIGH );
           }
           else
@@ -1487,7 +1485,7 @@ again when unblocked.
       }
 
 #ifdef USING_FREERTOS
-      void SPIClass::attachThreadTrigger( const Thor::Definitions::Interrupt::Trigger &trig,
+      void SPIClass::attachThreadTrigger( const Thor::Interrupt::Trigger &trig,
                                           const SemaphoreHandle_t *const semphr )
       {
         // spiTaskTrigger.attachEventConsumer(trig, semphr);
@@ -1521,7 +1519,7 @@ again when unblocked.
         {
           initResult = Chimera::SPI::Status::FAILED_CONVERSION;
         }
-        else if ( spi->begin( cfg, false ) == Thor::Definitions::Status::PERIPH_OK )
+        else if ( spi->begin( cfg, false ) == Thor::Status::PERIPH_OK )
         {
           initResult = Chimera::SPI::Status::OK;
         }
@@ -1701,27 +1699,27 @@ again when unblocked.
         return SPIClass::getPrescaler( channel, freq );
       }
 
-      Thor::Definitions::SPI::ChipSelectMode ChimeraSPI::convertChipSelectMode( const Chimera::SPI::ChipSelectMode &mode,
+      Thor::SPI::ChipSelectMode ChimeraSPI::convertChipSelectMode( const Chimera::SPI::ChipSelectMode &mode,
                                                                                 bool *const error )
       {
-        Thor::Definitions::SPI::ChipSelectMode result = Thor::Definitions::SPI::ChipSelectMode::UNKNOWN_CS_MODE;
+        Thor::SPI::ChipSelectMode result = Thor::SPI::ChipSelectMode::UNKNOWN_CS_MODE;
 
         switch ( mode )
         {
           case Chimera::SPI::ChipSelectMode::MANUAL:
-            result = Thor::Definitions::SPI::ChipSelectMode::MANUAL;
+            result = Thor::SPI::ChipSelectMode::MANUAL;
             break;
 
           case Chimera::SPI::ChipSelectMode::AUTO_AFTER_TRANSFER:
-            result = Thor::Definitions::SPI::ChipSelectMode::AUTO_AFTER_TRANSFER;
+            result = Thor::SPI::ChipSelectMode::AUTO_AFTER_TRANSFER;
             break;
 
           case Chimera::SPI::ChipSelectMode::AUTO_BETWEEN_TRANSFER:
-            result = Thor::Definitions::SPI::ChipSelectMode::AUTO_BETWEEN_TRANSFER;
+            result = Thor::SPI::ChipSelectMode::AUTO_BETWEEN_TRANSFER;
             break;
 
           default:
-            result = Thor::Definitions::SPI::ChipSelectMode::UNKNOWN_CS_MODE;
+            result = Thor::SPI::ChipSelectMode::UNKNOWN_CS_MODE;
             *error = true;
             break;
         };
@@ -1733,8 +1731,8 @@ again when unblocked.
       {
         Chimera::SPI::Status status = Chimera::SPI::Status::OK;
 
-        if ( spi->setChipSelect( static_cast<Thor::Definitions::GPIO::LogicLevel>( value ) ) !=
-             Thor::Definitions::Status::PERIPH_OK )
+        if ( spi->setChipSelect( static_cast<Thor::GPIO::LogicLevel>( value ) ) !=
+             Thor::Status::PERIPH_OK )
         {
           status = Chimera::SPI::Status::ERROR;
         }
@@ -1756,7 +1754,7 @@ again when unblocked.
       {
         Chimera::SPI::Status status = Chimera::SPI::Status::OK;
 
-        if ( spi->writeBytes( txBuffer, length, disableCS, autoRelease, timeoutMS ) != Thor::Definitions::Status::PERIPH_OK )
+        if ( spi->writeBytes( txBuffer, length, disableCS, autoRelease, timeoutMS ) != Thor::Status::PERIPH_OK )
         {
           status = Chimera::SPI::Status::ERROR;
         }
@@ -1769,7 +1767,7 @@ again when unblocked.
       {
         Chimera::SPI::Status status = Chimera::SPI::Status::OK;
 
-        if ( spi->readBytes( rxBuffer, length, disableCS, autoRelease, timeoutMS ) != Thor::Definitions::Status::PERIPH_OK )
+        if ( spi->readBytes( rxBuffer, length, disableCS, autoRelease, timeoutMS ) != Thor::Status::PERIPH_OK )
         {
           status = Chimera::SPI::Status::ERROR;
         }
@@ -1783,7 +1781,7 @@ again when unblocked.
         Chimera::SPI::Status status = Chimera::SPI::Status::OK;
 
         if ( spi->readWriteBytes( txBuffer, rxBuffer, length, disableCS, autoRelease, timeoutMS ) !=
-             Thor::Definitions::Status::PERIPH_OK )
+             Thor::Status::PERIPH_OK )
         {
           status = Chimera::SPI::Status::ERROR;
         }
@@ -1811,7 +1809,7 @@ again when unblocked.
       {
         Chimera::SPI::Status status = Chimera::SPI::Status::FAILED_LOCK;
 
-        if ( spi->reserve( timeout_ms ) == Thor::Definitions::Status::PERIPH_OK )
+        if ( spi->reserve( timeout_ms ) == Thor::Status::PERIPH_OK )
         {
           status = Chimera::SPI::Status::OK;
         }
@@ -1823,7 +1821,7 @@ again when unblocked.
       {
         Chimera::SPI::Status status = Chimera::SPI::Status::FAILED_RELEASE;
 
-        if ( spi->release( timeout_ms ) == Thor::Definitions::Status::PERIPH_OK )
+        if ( spi->release( timeout_ms ) == Thor::Status::PERIPH_OK )
         {
           status = Chimera::SPI::Status::OK;
         }
@@ -1864,7 +1862,7 @@ again when unblocked.
       }
 #endif
 
-#endif   /* !USING_CHIMERA*/
+#endif /* !USING_CHIMERA*/
     }    // namespace SPI
   }      // namespace Peripheral
 }    // namespace Thor
@@ -2033,3 +2031,5 @@ void SPI6_IRQHandler()
     spiObjects[ 6 ]->IRQHandler();
   }
 }
+
+#endif

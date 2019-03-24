@@ -1,137 +1,77 @@
+/********************************************************************************
+ * File Name:
+ *   gpio.hpp
+ *
+ * Description:
+ *   Implements the Thor GPIO driver
+ *
+ * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
 #pragma once
 #ifndef THOR_GPIO_H_
 #define THOR_GPIO_H_
 
 /* C++ Includes */
-#include <cstdlib>
 #include <cstdint>
-#include <string>
-
-/* Boost Includes */
-#include <boost/shared_ptr.hpp>
-#include <boost/move/unique_ptr.hpp>
-
-/* Thor Includes */
-#include <Thor/include/config.hpp>
-#include <Thor/include/definitions.hpp>
-#include <Thor/include/utilities.hpp>
 
 /* Chimera Includes */
-#if defined( USING_CHIMERA )
 #include <Chimera/interface.hpp>
-#endif
+
+/* Thor Includes */
+#include <Thor/definitions.hpp>
 
 namespace Thor
 {
-  namespace Peripheral
+  namespace GPIO
   {
-    namespace GPIO
+    class GPIOClass;
+    using GPIOClass_sPtr = std::shared_ptr<GPIOClass>;
+    using GPIOClass_uPtr = std::unique_ptr<GPIOClass>;
+
+    class GPIOClass : public Chimera::GPIO::Interface
     {
-      class GPIOClass;
-      class ChimeraGPIO;
+    public:
+      GPIOClass()  = default;
+      ~GPIOClass() = default;
 
-      typedef boost::shared_ptr<Thor::Peripheral::GPIO::GPIOClass> GPIOClass_sPtr;
-      typedef boost::movelib::unique_ptr<Thor::Peripheral::GPIO::GPIOClass> GPIOClass_uPtr;
+      Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin ) final override;
 
-      class GPIOClass
-      {
-        friend class ChimeraGPIO;
+      Chimera::Status_t setMode( const Chimera::GPIO::Drive drive, const bool pullup ) final override;
 
-      public:
-        /**
-         *   A basic initialization function to open a port and pin with default settings
-         *
-         *   @param[in]  port    The port to use
-         *   @param[in]  pin     The pin to use
-         *   @return void
-         */
-        void init( const Thor::Definitions::GPIO::PinPort port, const Thor::Definitions::GPIO::PinNum pin );
+      Chimera::Status_t setState( const Chimera::GPIO::State state ) final override;
 
-        /**
-         *   A more advanced initialization function that allows full configuration of a pin's behavior
-         *
-         *   @param[in]  port    The port to use
-         *   @param[in]  pin     The pin to use
-         *   @param[in]  speed   How "fast" you want the pin to switch. This is effectively drive strength.
-         *   @param[in]  alt     Alternate function parameter as defined in the STM32 HAL to remap the GPIO to a peripheral
-         *   @return void
-         */
-        void initAdvanced( const Thor::Definitions::GPIO::PinPort port, const Thor::Definitions::GPIO::PinNum pin,
-                           const Thor::Definitions::GPIO::PinSpeed speed = Thor::Definitions::GPIO::PinSpeed::HIGH_SPD,
-                           const uint32_t alt                            = Thor::Definitions::GPIO::NOALTERNATE );
+      Chimera::Status_t getState( Chimera::GPIO::State &state ) final override;
 
-        /**
-         *   Set the pin mode and pull up/down resistor behavior
-         *
-         *   @param[in]  mode    The mode to drive the pin as
-         *   @param[in]  pull    Pin pullup/dn resistor behavior
-         *   @return void
-         */
-        void mode( const Thor::Definitions::GPIO::PinMode mode, const Thor::Definitions::GPIO::PinPull pull );
+      Chimera::Status_t toggle() final override;
 
-        /**
-         *   Set the pin to a given logic level
-         *
-         *   @param[in]  state    Logic level to drive the pin to
-         *   @return void
-         */
-        void write( const Thor::Definitions::GPIO::LogicLevel state );
+      /**
+       *  A more advanced initialization function that allows full configuration of a pin's behavior in one go
+       *
+       *  @param[in]  port    The port to use
+       *  @param[in]  pin     The pin to use
+       *  @param[in]  speed   How "fast" you want the pin to switch. This is effectively drive strength.
+       *  @param[in]  alt     Alternate function parameter as defined in the STM32 HAL to remap the GPIO to a peripheral
+       *  @return void
+       */
+      void initAdvanced( const Thor::GPIO::PinPort port, const Thor::GPIO::PinNum pin, const Thor::GPIO::PinSpeed speed,
+                         const uint32_t alt );
 
-        /**
-         *   Toggles the logic level of the pin
-         *
-         *   @return void
-         */
-        void toggle();
+      static GPIO_InitTypeDef getHALInit( const Thor::GPIO::Initializer &config );
 
-        /**
-         *   Returns back the logic level of the pin
-         *
-         *   @return true if high, false if low
-         */
-        bool read();
+    private:
+      Thor::GPIO::Initializer pinConfig;
 
-        GPIOClass()  = default;
-        ~GPIOClass() = default;
+      void GPIO_Init( Thor::GPIO::PinPort port, GPIO_InitTypeDef *initStruct );
+      void GPIO_ClockEnable( Thor::GPIO::PinPort port );
+      void GPIO_ClockDisable( Thor::GPIO::PinPort port );
+    };
 
-        static GPIO_InitTypeDef getHALInit( const Thor::Definitions::GPIO::PinConfig &config );
-
-      private:
-        Thor::Definitions::GPIO::PinConfig pinConfig;
-
-        void GPIO_Init( Thor::Definitions::GPIO::PinPort port, GPIO_InitTypeDef *initStruct );
-        void GPIO_ClockEnable( Thor::Definitions::GPIO::PinPort port );
-        void GPIO_ClockDisable( Thor::Definitions::GPIO::PinPort port );
-      };
-
-
-#if defined( USING_CHIMERA )
-      class ChimeraGPIO : public Chimera::GPIO::Interface
-      {
-      public:
-        Chimera::GPIO::Status init( const Chimera::GPIO::Port port, const uint8_t pin ) override;
-
-        Chimera::GPIO::Status setMode( const Chimera::GPIO::Drive drive, const bool pullup ) override;
-
-        Chimera::GPIO::Status setState( const Chimera::GPIO::State state ) override;
-
-        Chimera::GPIO::Status getState( Chimera::GPIO::State &state ) override;
-
-        Chimera::GPIO::Status toggle() override;
-
-        static const Thor::Definitions::GPIO::PinNum convertPinNum( const uint8_t num );
-        static const Thor::Definitions::GPIO::PinPort convertPort( const Chimera::GPIO::Port port );
-        static const Thor::Definitions::GPIO::PinMode convertDrive( const Chimera::GPIO::Drive drive );
-        static const Thor::Definitions::GPIO::PinPull convertPull( const Chimera::GPIO::Pull pull );
-        static const Thor::Definitions::GPIO::PinConfig convertPinInit( const Chimera::GPIO::PinInit &pin );
-
-      private:
-        Thor::Peripheral::GPIO::GPIOClass gpioPin = Thor::Peripheral::GPIO::GPIOClass();
-      };
-
-#endif   /* !USING_CHIMERA */
-    }    // namespace GPIO
-  }      // namespace Peripheral
+    extern const PinNum convertPinNum( const uint8_t num );
+    extern const PinPort convertPort( const Chimera::GPIO::Port port );
+    extern const PinMode convertDrive( const Chimera::GPIO::Drive drive );
+    extern const PinPull convertPull( const Chimera::GPIO::Pull pull );
+    extern const Initializer convertPinInit( const Chimera::GPIO::PinInit &pin );
+  }    // namespace GPIO
 }    // namespace Thor
 
 

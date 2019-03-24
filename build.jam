@@ -87,8 +87,8 @@ all_thor_link_flags =
 # Source/Include Directories 
 # ------------------------------------------
 local thor_inc_dir = . ;
-local thor_hdr_dir = Thor/include ; 
-local thor_src_dir = Thor/source ;
+local thor_hdr_dir = Thor ; 
+local thor_src_dir = Thor ;
 
 # ------------------------------------------
 # Source Files
@@ -122,7 +122,7 @@ explicit_alias PUB : : :
     ;
 
 explicit_alias CHIMERA_PORT : : :
-    :   <include>$(thor_hdr_dir)
+    :   <include>$(thor_hdr_dir)/config/chimera
     ;
 
 # Default target to let the user know they screwed up their configuration

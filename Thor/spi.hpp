@@ -9,20 +9,13 @@
 #include <limits>
 #include <type_traits>
 
-/* Boost Includes */
-#include <boost/static_assert.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/move/unique_ptr.hpp>
-
 /* Thor Includes */
-#include <Thor/include/config.hpp>
-#include <Thor/include/definitions.hpp>
-#include <Thor/include/defaults.hpp>
-#include <Thor/include/interrupt.hpp>
-#include <Thor/include/gpio.hpp>
-#include <Thor/include/ringbuffer.hpp>
-#include <Thor/include/exceptions.hpp>
+#include <Thor/config.hpp>
+#include <Thor/definitions.hpp>
+#include <Thor/defaults.hpp>
+
+#include <Thor/gpio.hpp>
+#include <Thor/exceptions.hpp>
 
 /* FreeRTOS Includes */
 #if defined( USING_FREERTOS )
@@ -34,6 +27,24 @@
 #if defined( USING_CHIMERA )
 #include <Chimera/interface.hpp>
 #endif
+
+#if 0
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+extern void SPI1_IRQHandler();
+extern void SPI2_IRQHandler();
+extern void SPI3_IRQHandler();
+extern void SPI4_IRQHandler();
+extern void SPI5_IRQHandler();
+extern void SPI6_IRQHandler();
+#ifdef __cplusplus
+}
+#endif
+
+
 
 namespace Thor
 {
@@ -49,10 +60,10 @@ namespace Thor
 
       struct Config
       {
-        Thor::Definitions::GPIO::PinConfig SCK;
-        Thor::Definitions::GPIO::PinConfig MOSI;
-        Thor::Definitions::GPIO::PinConfig MISO;
-        Thor::Definitions::GPIO::PinConfig CS;
+        Thor::GPIO::PinConfig SCK;
+        Thor::GPIO::PinConfig MOSI;
+        Thor::GPIO::PinConfig MISO;
+        Thor::GPIO::PinConfig CS;
 
         SPI_InitTypeDef settings;
       };
@@ -82,18 +93,18 @@ namespace Thor
          *
          *  @param[in]  settings    Configuration options for the SPI channel
          *  @param[in]  force       Forcefully override any existing SPI channel settings
-         *  @return Thor::Definitions::Status
+         *  @return Thor::Status
          */
-        Thor::Definitions::Status begin( const Config &settings, const bool &force = false );
+        Thor::Status begin( const Config &settings, const bool &force = false );
 
         /**
          *  @brief De-initializes the SPI peripheral
          *
          *  If this is the last reference to the channel, the entire channel will be destroyed at the hardware level
          *
-         *  @return Thor::Definitions::Status
+         *  @return Thor::Status
          */
-        Thor::Definitions::Status end();
+        Thor::Status end();
 
         /**
          *  @brief Attempts to reserve the hardware this SPIClass is tied to.
@@ -102,9 +113,9 @@ namespace Thor
          *  released it or the auto-unlock feature is used.
          *
          *  @param[in]  timeout_ms  The number of milliseconds to wait to achieve a lock
-         *  @return Thor::Definitions::Status
+         *  @return Thor::Status
          */
-        Thor::Definitions::Status reserve( const uint32_t &timeout_ms = 0u );
+        Thor::Status reserve( const uint32_t &timeout_ms = 0u );
 
         /**
          *  @brief Attempts to release the hardware this SPIClass is tied to
@@ -113,9 +124,9 @@ namespace Thor
          *  that it has completed. It cannot be used to force a release of another instance's lock.
          *
          *  @param[in]  timeout_ms  The number of milliseconds to achieve successful release
-         *  @return Thor::Definitions::Status
+         *  @return Thor::Status
          */
-        Thor::Definitions::Status release( const uint32_t &timeout_ms = 0u );
+        Thor::Status release( const uint32_t &timeout_ms = 0u );
 
         /**
          *  @brief Writes a buffer of data
@@ -125,9 +136,9 @@ namespace Thor
          *  @param[in]	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
          *  @param[in]  timeoutMS       When in blocking mode, this is how long to wait for transfer complete. Interrupt/DMA
          * ignores this value.
-         *  @return Thor::Definitions::Status
+         *  @return Thor::Status
          */
-        Thor::Definitions::Status writeBytes( const uint8_t *const txBuffer, size_t length = 0,
+        Thor::Status writeBytes( const uint8_t *const txBuffer, size_t length = 0,
                                               const bool &autoDisableCS = true, const bool &autoRelease = false,
                                               uint32_t timeoutMS = 10 );
 
@@ -141,9 +152,9 @@ namespace Thor
          *  @param[in]	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
          *  @param[in]  timeoutMS       When in blocking mode, this is how long to wait for transfer complete. Interrupt/DMA
          * ignores this value.
-         *  @return Thor::Definitions::Status
+         *  @return Thor::Status
          */
-        Thor::Definitions::Status readBytes( uint8_t *const rxBuffer, size_t length = 0, const bool &autoDisableCS = true,
+        Thor::Status readBytes( uint8_t *const rxBuffer, size_t length = 0, const bool &autoDisableCS = true,
                                              const bool &autoRelease = false, uint32_t timeoutMS = 10 );
 
         /**
@@ -155,9 +166,9 @@ namespace Thor
          *  @param[in] 	autoDisableCS 	Optionally disable the chip select line after the transmition is complete
          *  @param[in]  timeoutMS       When in blocking mode, this is how long to wait for transfer complete. Interrupt/DMA
          * ignores this value.
-         *  @return Thor::Definitions::Status
+         *  @return Thor::Status
          */
-        Thor::Definitions::Status readWriteBytes( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length = 0,
+        Thor::Status readWriteBytes( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length = 0,
                                                   const bool &autoDisableCS = true, const bool &autoRelease = false,
                                                   uint32_t timeoutMS = 10 );
 
@@ -165,68 +176,68 @@ namespace Thor
          *  @brief Writes the device slave select line high or low
          *
          *  @param[in]	state 	The state to drive the chip select line to
-         *  @return Thor::Definitions::Status
+         *  @return Thor::Status
          */
-        Thor::Definitions::Status setChipSelect( const Thor::Definitions::GPIO::LogicLevel &state );
+        Thor::Status setChipSelect( const Thor::GPIO::LogicLevel &state );
 
         /**
          *  @brief Sets the behavior of the chip select line
          *
          *  @param[in]	mode    The desired operating mode
-         *  @return Thor::Definitions::Status
+         *  @return Thor::Status
          */
-        Thor::Definitions::Status setChipSelectControlMode( const Thor::Definitions::SPI::ChipSelectMode &mode );
+        Thor::Status setChipSelectControlMode( const Thor::SPI::ChipSelectMode &mode );
 
         /**
          *  @brief Attaches an external pin to be used as the slave select
          *
          *  @param[in] 	slave_select 	Reference to the initialized GPIO pin
-         *  @return Thor::Definitions::Status
+         *  @return Thor::Status
          */
-        Thor::Definitions::Status attachChipSelect( const Thor::Peripheral::GPIO::GPIOClass_sPtr &chipSelect );
+        Thor::Status attachChipSelect( const Thor::Peripheral::GPIO::GPIOClass_sPtr &chipSelect );
 
         /**
          *  @brief Removes any previous pin that was attached as the slave select
          *
-         *  @return Thor::Definitions::Status
+         *  @return Thor::Status
          */
-        Thor::Definitions::Status detachChipSelect();
+        Thor::Status detachChipSelect();
 
         /**
          * 	@brief Place the specified peripheral into a given mode
          *
          *	@param[in]	periph	Explicitly state which peripheral subsystem (TX or RX) to set
          *	@param[in] 	mode	The corresponding mode for the peripheral to enter
-         *	@return Thor::Definitions::Status
+         *	@return Thor::Status
          **/
-        Thor::Definitions::Status setMode( const Thor::Definitions::SubPeripheral &periph,
-                                           const Thor::Definitions::Modes &mode );
+        Thor::Status setMode( const Thor::SubPeripheral &periph,
+                                           const Thor::Modes &mode );
 
         /**
          * 	@brief Get the current mode of a subperipheral
          *
          *	@param[in]	periph	The subperipheral to be checked
          *	@param[out] mode	The current mode this peripheral is in
-         *	@return Thor::Definitions::Status
+         *	@return Thor::Status
          **/
-        Thor::Definitions::Status getMode( const Thor::Definitions::SubPeripheral &periph,
-                                           Thor::Definitions::Modes *const mode );
+        Thor::Status getMode( const Thor::SubPeripheral &periph,
+                                           Thor::Modes *const mode );
 
         /**
          *  @brief Updates the clock frequency of an already initialized SPI object
          *
          *	@param[in] freq		Desired clock frequency in Hz
-         *	@return Thor::Definitions::Status
+         *	@return Thor::Status
          **/
-        Thor::Definitions::Status setClockFrequency( const uint32_t &freq );
+        Thor::Status setClockFrequency( const uint32_t &freq );
 
         /**
          *  @brief Gets the output clock frequency setting
          *
          *	@param[out] freq    The current clock frequency in Hz
-         *	@return Thor::Definitions::Status
+         *	@return Thor::Status
          **/
-        Thor::Definitions::Status getClockFrequency( uint32_t *const freq );
+        Thor::Status getClockFrequency( uint32_t *const freq );
 
         /**
          *  @brief Normal interrupt based ISR handler
@@ -250,7 +261,7 @@ namespace Thor
         void IRQHandler_RXDMA();
 
 #ifdef USING_FREERTOS
-        void attachThreadTrigger( const Thor::Definitions::Interrupt::Trigger &trig, const SemaphoreHandle_t *const semphr );
+        void attachThreadTrigger( const Thor::Interrupt::Trigger &trig, const SemaphoreHandle_t *const semphr );
 
         void removeThreadTrigger( const SemaphoreHandle_t *const semphr );
 #endif
@@ -267,14 +278,14 @@ namespace Thor
 
         static uint32_t getFrequency( const int &channel, const uint32_t &prescaler );
 
-        Thor::Definitions::Status transfer_blocking( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
+        Thor::Status transfer_blocking( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
                                                      const bool &autoDisableCS = true, const bool &autoRelease = false,
                                                      uint32_t timeoutMS = 10 );
 
-        Thor::Definitions::Status transfer_interrupt( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
+        Thor::Status transfer_interrupt( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
                                                       const bool &autoDisableCS = true, const bool &autoRelease = false );
 
-        Thor::Definitions::Status transfer_dma( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
+        Thor::Status transfer_dma( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
                                                 const bool &autoDisableCS = true, const bool &autoRelease = false );
 
         bool isAvailable( const uint32_t &ownerID );
@@ -303,9 +314,9 @@ namespace Thor
         uint32_t ownerID;
         uint8_t spi_channel;
 
-        Thor::Definitions::SPI::ChipSelectMode chipSelectMode = Thor::Definitions::SPI::ChipSelectMode::MANUAL;
-        Thor::Definitions::Modes txMode                       = Thor::Definitions::Modes::MODE_UNDEFINED;
-        Thor::Definitions::Modes rxMode                       = Thor::Definitions::Modes::MODE_UNDEFINED;
+        Thor::SPI::ChipSelectMode chipSelectMode = Thor::SPI::ChipSelectMode::MANUAL;
+        Thor::Modes txMode                       = Thor::Modes::MODE_UNDEFINED;
+        Thor::Modes rxMode                       = Thor::Modes::MODE_UNDEFINED;
 
         struct SPIClassStatus
         {
@@ -342,10 +353,10 @@ namespace Thor
         void SPI_EnableInterrupts();
         void SPI_DisableInterrupts();
 
-        void SPI_DMA_Init( const Thor::Definitions::SubPeripheral &periph );
-        void SPI_DMA_DeInit( const Thor::Definitions::SubPeripheral &periph );
-        void SPI_DMA_EnableInterrupts( const Thor::Definitions::SubPeripheral &periph );
-        void SPI_DMA_DisableInterrupts( const Thor::Definitions::SubPeripheral &periph );
+        void SPI_DMA_Init( const Thor::SubPeripheral &periph );
+        void SPI_DMA_DeInit( const Thor::SubPeripheral &periph );
+        void SPI_DMA_EnableInterrupts( const Thor::SubPeripheral &periph );
+        void SPI_DMA_DisableInterrupts( const Thor::SubPeripheral &periph );
       };
 
 #if defined( USING_CHIMERA )
@@ -406,7 +417,7 @@ namespace Thor
         static uint32_t convertClockPolarity( const Chimera::SPI::ClockMode &mode, bool *const error );
         static uint32_t convertBaudRatePrescaler( const int &channel, const uint32_t &freq, bool *const error );
 
-        static Thor::Definitions::SPI::ChipSelectMode convertChipSelectMode( const Chimera::SPI::ChipSelectMode &mode,
+        static Thor::SPI::ChipSelectMode convertChipSelectMode( const Chimera::SPI::ChipSelectMode &mode,
                                                                              bool *const error );
 
       private:
@@ -414,9 +425,10 @@ namespace Thor
         int channel;
         SPIClass_sPtr spi;
       };
-#endif   /* !USING_CHIMERA */
+#endif /* !USING_CHIMERA */
     }    // namespace SPI
   }      // namespace Peripheral
 }    // namespace Thor
+#endif
 
 #endif /* SPI_H_*/

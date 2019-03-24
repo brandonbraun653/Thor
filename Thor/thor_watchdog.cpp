@@ -15,9 +15,9 @@
 #include <cassert>
 
 /* Thor Includes */
-#include <Thor/include/watchdog.hpp>
+#include <Thor/watchdog.hpp>
 
-using namespace Thor::Definitions;
+using namespace Thor;
 
 namespace Thor
 {
@@ -30,7 +30,7 @@ namespace Thor
       {
       }
 
-      Status WindowWatchdog::initialize( const uint32_t timeout_mS, const uint8_t windowPercent )
+      Chimera::Status_t WindowWatchdog::initialize( const uint32_t timeout_mS, const uint8_t windowPercent )
       {
         std::array<float, numPrescalers> error;
         std::array<uint32_t, numPrescalers> counter;
@@ -111,54 +111,54 @@ namespace Thor
         handle.Init.Window    = wdWindow;  /** The counter can only be refreshed if below this value. [Max: 0x7F, Min: 0x40] */
         handle.Init.Counter   = wdCounter; /** Starting counter value, also the refresh value. [Max: 0x7F, Min: 0x40] */
         handle.Init.EWIMode   = WWDG_EWI_DISABLE; /** Enable or disable the Early Wakeup Interrupt */
-        
+
         /*------------------------------------------------
         Turn on the peripheral clock
         ------------------------------------------------*/
         __HAL_RCC_WWDG_CLK_ENABLE();
 
-        return Status::PERIPH_OK;
+        return Chimera::CommonStatusCodes::OK;
       }
 
-      Status WindowWatchdog::start()
+      Chimera::Status_t WindowWatchdog::start()
       {
-        auto status = Status::PERIPH_OK;
+        auto status = Chimera::CommonStatusCodes::OK;
 
         if ( HAL_WWDG_Init( &handle ) != HAL_OK )
         {
-          status = Status::PERIPH_ERROR;
+          status = Chimera::CommonStatusCodes::FAIL;
         }
 
         return status;
       }
 
-      Status WindowWatchdog::stop()
+      Chimera::Status_t WindowWatchdog::stop()
       {
         /*------------------------------------------------
         Once enabled, the watchdog cannot be stopped except by a system reset
         ------------------------------------------------*/
-        return Status::PERIPH_LOCKED;
+        return Chimera::CommonStatusCodes::LOCKED;
       }
 
-      Status WindowWatchdog::kick()
+      Chimera::Status_t WindowWatchdog::kick()
       {
-        auto status = Status::PERIPH_OK;
+        auto status = Chimera::CommonStatusCodes::OK;
 
         if ( HAL_WWDG_Refresh( &handle ) != HAL_OK )
         {
-          status = Status::PERIPH_ERROR;
+          status = Chimera::CommonStatusCodes::FAIL;
         }
 
         return status;
       }
 
-      Status WindowWatchdog::getTimeout( uint32_t &timeout_mS )
+      Chimera::Status_t WindowWatchdog::getTimeout( uint32_t &timeout_mS )
       {
         timeout_mS = actualTimeout_mS;
-        return Status::PERIPH_OK;
+        return Chimera::CommonStatusCodes::OK;
       }
 
-      Status WindowWatchdog::pauseOnDebugHalt( const bool enable )
+      Chimera::Status_t WindowWatchdog::pauseOnDebugHalt( const bool enable )
       {
         if ( enable )
         {
@@ -169,7 +169,7 @@ namespace Thor
           __HAL_DBGMCU_UNFREEZE_WWDG();
         }
 
-        return Status::PERIPH_OK;
+        return Chimera::CommonStatusCodes::OK;
       }
 
       uint32_t WindowWatchdog::calculateTimeout_mS( const uint32_t pclk1, const uint8_t prescaler, const uint8_t counter )
@@ -193,7 +193,7 @@ namespace Thor
       {
       }
 
-      Status IndependentWatchdog::initialize( const uint32_t timeout_mS )
+      Chimera::Status_t IndependentWatchdog::initialize( const uint32_t timeout_mS )
       {
         std::array<float, numPrescalers> error;
         std::array<uint32_t, numPrescalers> counter;
@@ -264,52 +264,52 @@ namespace Thor
         handle.Init.Prescaler = wdPrescaler;
         handle.Init.Reload    = wdReload;
 
-        #if defined(STM32F7)
-        handle.Init.Window    = wdReload;
-        #endif 
+#if defined( STM32F7 )
+        handle.Init.Window = wdReload;
+#endif
 
-        return Status::PERIPH_OK;
+        return Chimera::CommonStatusCodes::OK;
       }
 
-      Status IndependentWatchdog::start()
+      Chimera::Status_t IndependentWatchdog::start()
       {
-        auto status = Status::PERIPH_OK;
+        auto status = Chimera::CommonStatusCodes::OK;
 
         if ( HAL_IWDG_Init( &handle ) != HAL_OK )
         {
-          status = Status::PERIPH_ERROR;
+          status = Chimera::CommonStatusCodes::FAIL;
         }
 
         return status;
       }
 
-      Status IndependentWatchdog::stop()
+      Chimera::Status_t IndependentWatchdog::stop()
       {
         /*------------------------------------------------
         Once enabled, the watchdog cannot be stopped except by a system reset
         ------------------------------------------------*/
-        return Status::PERIPH_LOCKED;
+        return Chimera::CommonStatusCodes::LOCKED;
       }
 
-      Status IndependentWatchdog::kick()
+      Chimera::Status_t IndependentWatchdog::kick()
       {
-        auto status = Status::PERIPH_OK;
+        auto status = Chimera::CommonStatusCodes::OK;
 
         if ( HAL_IWDG_Refresh( &handle ) != HAL_OK )
         {
-          status = Status::PERIPH_ERROR;
+          status = Chimera::CommonStatusCodes::FAIL;
         }
 
         return status;
       }
 
-      Status IndependentWatchdog::getTimeout( uint32_t &timeout_mS )
+      Chimera::Status_t IndependentWatchdog::getTimeout( uint32_t &timeout_mS )
       {
         timeout_mS = actualTimeout_mS;
-        return Status::PERIPH_OK;
+        return Chimera::CommonStatusCodes::OK;
       }
 
-      Status IndependentWatchdog::pauseOnDebugHalt( const bool enable )
+      Chimera::Status_t IndependentWatchdog::pauseOnDebugHalt( const bool enable )
       {
         if ( enable )
         {
@@ -320,85 +320,9 @@ namespace Thor
           __HAL_DBGMCU_UNFREEZE_IWDG();
         }
 
-        return Status::PERIPH_OK;
+        return Chimera::CommonStatusCodes::OK;
       }
 #endif /* !IWDG */
-
-#if defined( USING_CHIMERA )
-
-      Chimera::Watchdog::Status ChimeraWatchdog::initialize( const uint32_t timeout_mS )
-      {
-        auto result = Chimera::Watchdog::Status::OK;
-
-        if ( watchdog.initialize( timeout_mS ) != Status::PERIPH_OK )
-        {
-          result = Chimera::Watchdog::Status::FAIL;
-        }
-
-        return result;
-      }
-
-      Chimera::Watchdog::Status ChimeraWatchdog::start()
-      {
-        auto result = Chimera::Watchdog::Status::OK;
-
-        if ( watchdog.start() != Status::PERIPH_OK )
-        {
-          result = Chimera::Watchdog::Status::FAIL;
-        }
-
-        return result;
-      }
-
-      Chimera::Watchdog::Status ChimeraWatchdog::stop()
-      {
-        auto result = Chimera::Watchdog::Status::OK;
-
-        if ( watchdog.stop() != Status::PERIPH_OK )
-        {
-          result = Chimera::Watchdog::Status::FAIL;
-        }
-
-        return result;
-      }
-
-      Chimera::Watchdog::Status ChimeraWatchdog::kick()
-      {
-        auto result = Chimera::Watchdog::Status::OK;
-
-        if ( watchdog.kick() != Status::PERIPH_OK )
-        {
-          result = Chimera::Watchdog::Status::FAIL;
-        }
-
-        return result;
-      }
-
-      Chimera::Watchdog::Status ChimeraWatchdog::getTimeout( uint32_t &timeout )
-      {
-        auto result = Chimera::Watchdog::Status::OK;
-
-        if ( watchdog.getTimeout( timeout ) != Status::PERIPH_OK )
-        {
-          result = Chimera::Watchdog::Status::FAIL;
-        }
-
-        return result;
-      }
-
-      Chimera::Watchdog::Status ChimeraWatchdog::pauseOnDebugHalt( const bool enable )
-      {
-        auto result = Chimera::Watchdog::Status::OK;
-
-        if ( watchdog.pauseOnDebugHalt( enable ) != Status::PERIPH_OK )
-        {
-          result = Chimera::Watchdog::Status::FAIL;
-        }
-
-        return result;
-      }
-
-#endif
 
     }    // namespace Watchdog
   }      // namespace Peripheral
