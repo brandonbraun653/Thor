@@ -1,0 +1,190 @@
+import feature ;
+
+# ------------------------------------------
+# All supported microcontroller families. This is the highest possible
+# description level of an STM32 series microcontroller.
+# ------------------------------------------
+feature.feature ThorFamily
+    :   STM32Fx     # The default error family
+        STM32F4
+        STM32F7
+    :   propagated optional 
+    ;
+
+# ------------------------------------------
+# All supported family specific chip types. This is the middle tier
+# description of an STM32 series microcontroller.
+# ------------------------------------------
+feature.feature ThorChip 
+    :   STM32Fxxx   # The default error chip
+        STM32F4xx
+        STM32F446
+        STM32F7xx
+        STM32F767 
+    :   propagated optional 
+    ;
+
+# ------------------------------------------
+# All supported chip variant post-fixes. This is the lowest possible
+# description of an STM32 series microcontroller.
+# ------------------------------------------
+feature.feature ThorVariant
+    :   xx  # The default error variant
+        RE
+        ZI
+    :   propagated optional
+    ;
+
+# ------------------------------------------
+# Build Target Specific Options 
+# ------------------------------------------
+thor_dbg_defs = DEBUG ;
+thor_dbg_cflags = -ggdb -Og ;
+
+thor_rel_defs = NDEBUG ;
+thor_rel_cflags = -O3 ;
+
+# ------------------------------------------
+# Thor CFlags
+# ------------------------------------------
+# Applies to all Thor targets, but not propagated to dependents.
+thor_requirements_cxxflags = 
+    -fno-common
+    -fmessage-length=0
+    -fno-exceptions
+    -ffunction-sections
+    -fdata-sections
+    -Wall
+    ;
+
+# Applies to all Thor targets and IS propagated to dependents.
+thor_usage_requirements_cxxflags =
+    -fno-exceptions
+    ;
+
+all_thor_cxxflags = 
+    $(thor_requirements_cxxflags)
+    $(thor_usage_requirements_cxxflags)
+    ;
+
+# ------------------------------------------
+# Thor CFlags
+# ------------------------------------------
+# Applies to all Thor targets, but not propagated to dependents.
+thor_requirements_link_flags =
+    ;
+
+# Applies to all Thor targets and IS propagated to dependents.
+thor_usage_requirements_link_flags =
+    ;
+
+all_thor_link_flags =
+    $(thor_requirements_link_flags)
+    $(thor_usage_requirements_link_flags)
+    ;
+
+# ------------------------------------------
+# Source/Include Directories 
+# ------------------------------------------
+local thor_inc_dir = . ;
+local thor_hdr_dir = Thor/include ; 
+local thor_src_dir = Thor/source ;
+
+# ------------------------------------------
+# Source Files
+# ------------------------------------------
+thor_src = [ glob $(thor_src_dir)/*.cpp ] ;
+
+project ThorHAL : usage-requirements <include>$(thor_inc_dir) ;
+
+# ------------------------------------------
+# Private Thor Library Components (only used locally)
+# -----------------------------------------
+# Pulls in necessary headers for Thor to compile with FreeRTOS
+explicit_alias RTOS : : <FreeRTOS>enabled : 
+    :   <define>USING_FREERTOS
+        <use>/FreeRTOS//PUB
+        <use>/PRJ//FreeRTOS_CFG
+    ;
+
+# Pulls in necessary headers for Thor to compile with Chimera
+explicit_alias CHIMERA : : <Chimera>enabled :
+    :   <define>USING_CHIMERA
+        <use>/CHIMERA//PUB
+    ;
+
+# ------------------------------------------
+# Thor Library Components
+# -----------------------------------------
+# Pulls in headers needed for a standalone Thor
+explicit_alias PUB : : : 
+    :   <include>$(thor_inc_dir)
+    ;
+
+explicit_alias CHIMERA_PORT : : :
+    :   <include>$(thor_hdr_dir)
+    ;
+
+# Default target to let the user know they screwed up their configuration
+lib CORE : InvalidThorConfig.cpp : <ThorFamily>STM32Fx ;
+
+# STM32F4 Target
+lib CORE
+    :   $(thor_src)
+        /STM32F4//F4_LIB
+
+    :   <ThorFamily>STM32F4
+        <include>$(thor_inc_dir)
+        <cxxflags>$(thor_requirements_cxxflags)
+        <define>BOOST_NO_EXCEPTIONS
+        <FreeRTOS>enabled:<use>RTOS
+        <Chimera>enabled:<use>CHIMERA
+
+        <use>/PRJ//BOOST    # User defined alias to boost include dir
+    :
+    :   <use>/STM32F4//F4_TARGET_MCU
+    ;   
+
+# Pulls in the STM32F4 Thor variant of common headers and compiler flags
+alias CORE_PUB : : <ThorFamily>STM32F4 :
+    :   <use>PUB
+        <use>/PRJ//BOOST
+        <use>/STM32F4//F4_TARGET_MCU
+        <define>BOOST_NO_EXCEPTIONS
+        <cxxflags>$(thor_usage_requirements_cxxflags)
+    ;
+
+# STM32F7 Target
+lib CORE
+    :   $(thor_src) 
+        /STM32F7//F7_LL
+        /STM32F7//F7_HAL
+        /FREERTOS//CORE
+
+    :   <ThorFamily>STM32F7
+        <include>$(thor_inc_dir)
+        <cxxflags>$(thor_requirements_cxxflags)
+        <define>BOOST_NO_EXCEPTIONS
+        <FreeRTOS>enabled:<use>RTOS
+        <Chimera>enabled:<use>CHIMERA
+
+        <use>/PRJ//BOOST    # User defined alias to boost include dir
+    :
+    :   <use>/STM32F7//F7_TARGET_MCU 
+    ;
+
+# Pulls in the STM32F7 Thor variant of common headers and compiler flags
+alias CORE_PUB : : <ThorFamily>STM32F7 :
+    :   <use>PUB
+        <use>/PRJ//BOOST
+        <use>/STM32F7//F7_TARGET_MCU
+        <define>BOOST_NO_EXCEPTIONS
+        <cxxflags>$(thor_usage_requirements_cxxflags)
+    ;
+
+
+explicit CORE ;
+explicit CORE_PUB ;
+
+
+explicit_alias THOR_CORE : CORE : : <ThorFamily>STM32Fx : <use>CORE_PUB ;
