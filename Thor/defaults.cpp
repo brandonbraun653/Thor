@@ -1,4 +1,5 @@
 #include <Thor/defaults.hpp>
+#include <Chimera/types.hpp>
 
 using namespace Thor::DMA;
 using namespace Thor::GPIO;
@@ -342,7 +343,7 @@ namespace Thor
 
 #if defined( STM32F4 )
       const USART_InitTypeDef dflt_USART_Init = {
-        static_cast<uint32_t>( BaudRate::SERIAL_BAUD_115200 ), /* BaudRate */
+        static_cast<uint32_t>( Chimera::Serial::BaudRate::SERIAL_BAUD_115200 ), /* BaudRate */
         USART_WORDLENGTH_8B,                                   /* WordLength */
         USART_STOPBITS_1,                                      /* StopBits */
         USART_PARITY_NONE,                                     /* Parity */
@@ -353,7 +354,7 @@ namespace Thor
       };
 
       const UART_InitTypeDef dflt_UART_Init = {
-        static_cast<uint32_t>( BaudRate::SERIAL_BAUD_115200 ), /* BaudRate */
+        static_cast<uint32_t>(Chimera::Serial::BaudRate::SERIAL_BAUD_115200), /* BaudRate */
         UART_WORDLENGTH_8B,                                    /* WordLength */
         UART_STOPBITS_1,                                       /* StopBits */
         UART_PARITY_NONE,                                      /* Parity */

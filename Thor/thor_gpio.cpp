@@ -78,12 +78,7 @@ namespace Thor
       };
     }
 
-    static const PinNum convertPinNum( const uint8_t num );
-    static const PinPort convertPort( const Chimera::GPIO::Port port );
-    static const PinMode convertDrive( const Chimera::GPIO::Drive drive );
-    static const PinPull convertPull( const Chimera::GPIO::Pull pull );
-    static const PinConfig convertPinInit( const Chimera::GPIO::PinInit &pin );
-    static const GPIO_TypeDef *const portMap( const Chimera::GPIO::Port port );
+    
 
     Chimera::Status_t GPIOClass::init( const Chimera::GPIO::Port port, const uint8_t pin )
     {
@@ -149,7 +144,18 @@ namespace Thor
       return Chimera::CommonStatusCodes::OK;
     }
 
-    static const PinNum convertPinNum( const uint8_t num )
+    void GPIOClass::initAdvanced(const PinPort port, const PinNum pin, const PinSpeed speed, const uint32_t alt)
+    {
+      pinConfig.GPIOx     = port;
+      pinConfig.pinNum    = pin;
+      pinConfig.speed     = speed;
+      pinConfig.alternate = alt;
+
+      auto cfg = getHALInit(pinConfig);
+      GPIO_Init(pinConfig.GPIOx, &cfg);
+    }
+
+    const PinNum convertPinNum( const uint8_t num )
     {
       PinNum pinNum = PinNum::NOT_A_PIN;
 
@@ -212,7 +218,7 @@ namespace Thor
       return pinNum;
     }
 
-    static const PinPort convertPort( const Chimera::GPIO::Port port )
+    const PinPort convertPort( const Chimera::GPIO::Port port )
     {
       PinPort pinPort = nullptr;
 
@@ -274,7 +280,7 @@ namespace Thor
       return pinPort;
     }
 
-    static const PinMode convertDrive( const Chimera::GPIO::Drive drive )
+    const PinMode convertDrive( const Chimera::GPIO::Drive drive )
     {
       PinMode mode = PinMode::UNKNOWN_MODE;
 
@@ -316,7 +322,7 @@ namespace Thor
       return mode;
     }
 
-    static const PinPull convertPull( const Chimera::GPIO::Pull pull )
+    const PinPull convertPull( const Chimera::GPIO::Pull pull )
     {
       PinPull pinPull = PinPull::UNKNOWN_PULL;
 
@@ -342,7 +348,7 @@ namespace Thor
       return pinPull;
     }
 
-    static const PinConfig convertPinInit( const Chimera::GPIO::PinInit &pin )
+    const PinConfig convertPinInit( const Chimera::GPIO::PinInit &pin )
     {
       PinConfig cfg;
 
@@ -355,7 +361,7 @@ namespace Thor
       return cfg;
     }
 
-    static const GPIO_TypeDef *const portMap( const Chimera::GPIO::Port port )
+    const GPIO_TypeDef *const portMap( const Chimera::GPIO::Port port )
     {
       switch ( port )
       {

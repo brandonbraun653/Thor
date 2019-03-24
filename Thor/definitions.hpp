@@ -20,44 +20,8 @@
 #define UNUSED( x ) ( void )x
 #endif
 
-/** @namespace Thor */
 namespace Thor
 {
-  enum class Status : int
-  {
-    NOT_OWNER              = -6,
-    PERIPH_TIMEOUT         = -5,
-    PERIPH_LOCKED          = -4,
-    PERIPH_NOT_INITIALIZED = -3,
-    PERIPH_ERROR           = -2,
-    PERIPH_BUSY            = -1,
-    PERIPH_OK              = 0,
-    PERIPH_READY,
-    PERIPH_INVALID_PARAM,
-    PERIPH_TX_IN_PROGRESS,
-    PERIPH_RX_IN_PROGRESS,
-    PERIPH_TXRX_IN_PROGRESS,
-    PERIPH_PACKET_TOO_LARGE_FOR_BUFFER,
-    PERIPH_PACKET_NONE_AVAILABLE,
-
-  };
-
-  enum class SubPeripheral : uint8_t
-  {
-    RX,
-    TX,
-    TXRX,
-    UNKNOWN_SUB_PERIPHERAL
-  };
-
-  enum class Modes : uint8_t
-  {
-    MODE_UNDEFINED,
-    BLOCKING,
-    INTERRUPT,
-    DMA
-  };
-
   enum class ClockBus : uint8_t
   {
     APB1_PERIPH,
@@ -66,8 +30,32 @@ namespace Thor
     APB2_TIMER
   };
 
+  static inline constexpr Chimera::Status_t convertHALStatus(const HAL_StatusTypeDef status)
+  {
+    switch (status)
+    {
+    case HAL_ERROR:
+      return Chimera::CommonStatusCodes::FAIL;
+      break;
 
-  /** @namespace Thor::Interrupt */
+    case HAL_BUSY:
+      return Chimera::CommonStatusCodes::BUSY;
+      break;
+
+    case HAL_OK:
+      return Chimera::CommonStatusCodes::OK;
+      break;
+
+    case HAL_TIMEOUT:
+      return Chimera::CommonStatusCodes::TIMEOUT;
+      break;
+
+    default:
+      return Chimera::CommonStatusCodes::UNKNOWN_ERROR;
+      break;
+    }
+  }
+
   namespace Interrupt
   {
 #if defined( USING_FREERTOS )
@@ -88,24 +76,11 @@ namespace Thor
 #endif
   }    // namespace Interrupt
 
-  /** @namespace Thor::GPIO */
   namespace GPIO
   {
     typedef GPIO_TypeDef *PinPort;
 
     constexpr uint32_t NOALTERNATE = ( 0x08000CC8 );    // Default value for the alternate configuration var
-
-    enum class LogicLevel : bool
-    {
-      LOW      = false,
-      OFF      = false,
-      ZERO     = false,
-      DISABLED = false,
-      HIGH     = true,
-      ON       = true,
-      ONE      = true,
-      ENABLED  = true
-    };
 
     enum class PinNum : uint32_t
     {
@@ -182,7 +157,6 @@ namespace Thor
     };
   }    // namespace GPIO
 
-  /** @namespace Thor::TIMER */
   namespace TIMER
   {
     const unsigned int MAX_CHANNELS     = 16;
@@ -303,7 +277,6 @@ namespace Thor
     };
   }    // namespace TIMER
 
-  /** @namespace Thor::SPI */
   namespace SPI
   {
     constexpr uint8_t MAX_SPI_CHANNELS     = 6;
@@ -482,25 +455,6 @@ namespace Thor
         USART::MAX_USART_CHANNELS;               /**< Total possible UART or USART channels for any supported STM32 chip. */
     constexpr uint32_t BLOCKING_TIMEOUT_MS = 10; /**< Time in mS before a TX or RX in blocking mode will timeout */
 
-    /** Supported communication baudrates */
-    enum class BaudRate : uint32_t
-    {
-      SERIAL_BAUD_110    = 100u,
-      SERIAL_BAUD_150    = 150u,
-      SERIAL_BAUD_300    = 300u,
-      SERIAL_BAUD_1200   = 1200u,
-      SERIAL_BAUD_2400   = 2400u,
-      SERIAL_BAUD_4800   = 4800u,
-      SERIAL_BAUD_9600   = 9600u,
-      SERIAL_BAUD_19200  = 19200u,
-      SERIAL_BAUD_38400  = 38400u,
-      SERIAL_BAUD_57600  = 57600u,
-      SERIAL_BAUD_115200 = 115200u,
-      SERIAL_BAUD_230400 = 230400u,
-      SERIAL_BAUD_460800 = 460800u,
-      SERIAL_BAUD_921600 = 921600u
-    };
-
     /** Allows mapping of either a USART or UART peripheral to the serial class. This is intended to be internal use only. */
     struct HardwareClassMapping
     {
@@ -508,45 +462,6 @@ namespace Thor
       uint8_t peripheral_number;
     };
 
-    /** A description of specific TX/RX pins to use for USART. This comes in handy when the Thor default channel options are
-     *not acceptable and an alternate pin configuration must be used.
-     **/
-    struct SerialPins
-    {
-      GPIO_TypeDef *TX_GPIOx; /**< Port assignment for the TX line */
-      GPIO_TypeDef *RX_GPIOx; /**< Port assignment for the RX line */
-      GPIO::PinNum TX_Pin;    /**< Pin assignment for the TX line */
-      GPIO::PinNum RX_Pin;    /**< Pin assignment for the RX line */
-      uint8_t
-          TX_AltFuncCode; /**< Alternate function for the pin peripheral. See device datasheet for details on the mapping. */
-      uint8_t
-          RX_AltFuncCode; /**< Alternate function for the pin peripheral. See device datasheet for details on the mapping. */
-    };
-
-    class SerialInterface
-    {
-    public:
-      typedef struct
-      {
-        bool rxOverrun = false;
-      } State;
-
-      virtual Thor::Status begin( const uint32_t, const Modes, const Modes ) = 0;
-      virtual Thor::Status setMode( const SubPeripheral, const Modes )       = 0;
-      virtual Thor::Status setBaud( const uint32_t )                         = 0;
-      virtual Thor::Status write( const uint8_t *const, const size_t )       = 0;
-      virtual Thor::Status read( uint8_t *const, const size_t )              = 0;
-      virtual void end()                                                                  = 0;
-
-      virtual State report();
-
-#if defined( USING_FREERTOS )
-      virtual void attachThreadTrigger( const Thor::Interrupt::Trigger, SemaphoreHandle_t *const ) = 0;
-      virtual void removeThreadTrigger( const Thor::Interrupt::Trigger )                           = 0;
-#endif
-
-      virtual ~SerialInterface() = default;
-    };
   }    // namespace Serial
 
   /** @namespace Thor::Threading */

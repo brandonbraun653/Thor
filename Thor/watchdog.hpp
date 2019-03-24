@@ -16,10 +16,8 @@
 #include <Thor/definitions.hpp>
 
 /* Chimera Includes */
-#if defined( USING_CHIMERA )
 #include <Chimera/chimera.hpp>
 #include <Chimera/interface.hpp>
-#endif
 
 namespace Thor
 {
@@ -49,7 +47,7 @@ namespace Thor
          *   @param[in]  windowPercent   Percentage (integer) away from timeout expiring before the dog can be kicked
          *   @return Status::PERIPH_OK if the initialization was a success, Status::PERIPH_ERROR if not
          */
-        Thor::Status initialize( const uint32_t timeout_mS, const uint8_t windowPercent = 100 );
+        Chimera::Status_t initialize( const uint32_t timeout_mS, const uint8_t windowPercent = 100 );
 
         /**
          *   Starts the watchdog timer. If successful, Interface::kick() must
@@ -57,28 +55,28 @@ namespace Thor
          *
          *   @return True if the watchdog was started, false if not
          */
-        Thor::Status start();
+        Chimera::Status_t start();
 
         /**
          *   Stops the watchdog timer.
          *
          *   @return True if the watchdog was stopped, false if not
          */
-        Thor::Status stop();
+        Chimera::Status_t stop();
 
         /**
          *   Kicks the watchdog timer, starting a new countdown cycle.
          *
          *   @return void
          */
-        Thor::Status kick();
+        Chimera::Status_t kick();
 
         /**
          *   Gets the actual timeout value achieved by the hardware
          *
          *   @return Timeout value in milliseconds
          */
-        Thor::Status getTimeout( uint32_t &timeout_mS );
+        Chimera::Status_t getTimeout( uint32_t &timeout_mS );
 
         /**
          *   Configures the watchdog to stop on connection to a debugger
@@ -86,7 +84,7 @@ namespace Thor
          *   @param[in]  enable      If true, allows the watchdog to stop. Otherwise, it continues running
          *   @return Peripheral status
          */
-        Thor::Status pauseOnDebugHalt( const bool enable );
+        Chimera::Status_t pauseOnDebugHalt( const bool enable );
 
         WindowWatchdog();
         ~WindowWatchdog() = default;
@@ -133,7 +131,7 @@ namespace Thor
          *   @param[in]  timeout_mS      How many milliseconds can elapse before watchdog expires
          *   @return Status::PERIPH_OK if the initialization was a success, Status::PERIPH_ERROR if not
          */
-        Thor::Status initialize( const uint32_t timeout_mS );
+        Chimera::Status_t initialize( const uint32_t timeout_mS );
 
         /**
          *   Starts the watchdog timer. If successful, Interface::kick() must
@@ -141,28 +139,28 @@ namespace Thor
          *
          *   @return True if the watchdog was started, false if not
          */
-        Thor::Status start();
+        Chimera::Status_t start();
 
         /**
          *   Stops the watchdog timer.
          *
          *   @return True if the watchdog was stopped, false if not
          */
-        Thor::Status stop();
+        Chimera::Status_t stop();
 
         /**
          *   Kicks the watchdog timer, starting a new countdown cycle.
          *
          *   @return void
          */
-        Thor::Status kick();
+        Chimera::Status_t kick();
 
         /**
          *   Gets the actual timeout value achieved by the hardware
          *
          *   @return Timeout value in milliseconds
          */
-        Thor::Status getTimeout( uint32_t &timeout_mS );
+        Chimera::Status_t getTimeout( uint32_t &timeout_mS );
 
         /**
          *   Configures the watchdog to stop on connection to a debugger
@@ -170,7 +168,7 @@ namespace Thor
          *   @param[in]  enable      If true, allows the watchdog to stop. Otherwise, it continues running
          *   @return Peripheral status
          */
-        Thor::Status pauseOnDebugHalt( const bool enable );
+        Chimera::Status_t pauseOnDebugHalt( const bool enable );
 
         IndependentWatchdog();
         ~IndependentWatchdog() = default;
