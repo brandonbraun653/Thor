@@ -78,7 +78,7 @@ namespace Thor
       };
     }
 
-    
+
 
     Chimera::Status_t GPIOClass::init( const Chimera::GPIO::Port port, const uint8_t pin )
     {
@@ -353,7 +353,7 @@ namespace Thor
       PinConfig cfg;
 
       cfg.GPIOx     = convertPort( pin.port );
-      cfg.mode      = convertDrive( pin.mode );
+      cfg.mode      = convertDrive( pin.drive );
       cfg.pinNum    = convertPinNum( pin.pin );
       cfg.pull      = convertPull( pin.pull );
       cfg.alternate = pin.alternate;

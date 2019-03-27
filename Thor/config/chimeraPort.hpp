@@ -42,9 +42,9 @@ on and off by the #defines inside of <Chimera/config.hpp>
 //typedef Thor::Peripheral::Watchdog::ChimeraWatchdog CHIMERA_INHERITED_WATCHDOG;
 #endif
 
-//#if ( CHIMERA_MOD_SERIAL )
-//typedef Thor::Peripheral::Serial::SerialClass CHIMERA_INHERITED_SERIAL;
-//#endif
+#if ( CHIMERA_MOD_SERIAL )
+#define CHIMERA_INHERITED_SERIAL Thor::Serial::SerialClass
+#endif
 
 
 #endif

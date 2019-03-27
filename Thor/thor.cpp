@@ -37,12 +37,10 @@ void ThorInit()
 #endif
 }
 
-#if defined( USING_CHIMERA )
 void cSystemInit()
 {
   ThorInit();
 }
-#endif
 
 namespace Thor
 {
