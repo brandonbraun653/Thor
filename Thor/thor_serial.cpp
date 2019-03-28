@@ -69,6 +69,8 @@ namespace Thor
         serialObject = nullptr;
         result       = Chimera::CommonStatusCodes::FAIL;
       }
+
+      return result;
     }
 
     Chimera::Status_t SerialClass::begin( const Chimera::Serial::Modes txMode, const Chimera::Serial::Modes rxMode )

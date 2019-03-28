@@ -11,10 +11,18 @@
 
 /* FreeRTOS Includes */
 #if defined( USING_FREERTOS )
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
+
+#ifdef __cplusplus
+}
 #endif
+#endif  /* USING_FREERTOS */
 
 #ifndef UNUSED
 #define UNUSED( x ) ( void )x

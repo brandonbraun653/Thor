@@ -18,12 +18,7 @@
 #include <memory>
 
 /* Boost Includes */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
-#include <boost/bind.hpp>
 #include <boost/circular_buffer.hpp>
-#include <boost/container/static_vector.hpp>
-#pragma GCC diagnostic pop
 
 /* Chimera Includes */
 #include <Chimera/interface.hpp>
@@ -36,10 +31,20 @@
 #include <Thor/interrupt.hpp>
 
 #if defined( USING_FREERTOS )
+#include <Thor/exti.hpp>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "FreeRTOS.h"
 #include "semphr.h"
-#include <Thor/exti.hpp>
+
+#ifdef __cplusplus
+}
 #endif
+#endif /* USING_FREERTOS */
 
 namespace Thor
 {
@@ -48,13 +53,6 @@ namespace Thor
     class UARTClass;
     using UARTClass_sPtr = std::shared_ptr<UARTClass>;
     using UARTClass_uPtr = std::unique_ptr<UARTClass>;
-
-    struct UARTPacket
-    {
-      uint8_t *data_ptr  = nullptr; /**< Contains the buffer address where data is stored */
-      uint16_t bytesRead = 0; /**< Number of bytes already read from the packet (currently used in eRPC calls) */
-      size_t length      = 0; /**< Number of bytes contained in data_ptr */
-    };
 
     class UARTClass : public Chimera::Serial::Interface
     {
@@ -79,7 +77,7 @@ namespace Thor
        */
       static UARTClass_sPtr create( const uint8_t channel, const size_t bufferSize = 1u );
 
-      Chimera::Status_t assignHW(const uint8_t channel, const Chimera::Serial::IOPins &pins) final override;
+      Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 
       Chimera::Status_t begin( const Chimera::Serial::Modes txMode, const Chimera::Serial::Modes rxMode ) final override;
 
@@ -91,7 +89,8 @@ namespace Thor
 
       Chimera::Status_t setBaud( const uint32_t baud ) final override;
 
-      Chimera::Status_t setMode( const Chimera::Serial::SubPeripheral periph, const Chimera::Serial::Modes mode ) final override;
+      Chimera::Status_t setMode( const Chimera::Serial::SubPeripheral periph,
+                                 const Chimera::Serial::Modes mode ) final override;
 
       Chimera::Status_t write( const uint8_t *const buffer, const size_t length,
                                const uint32_t timeout_mS = 500 ) final override;
@@ -103,14 +102,17 @@ namespace Thor
       Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
 
 #if defined( USING_FREERTOS )
-      Chimera::Status_t attachEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr ) final override;
+      Chimera::Status_t attachEventNotifier( const Chimera::Serial::Event event,
+                                             SemaphoreHandle_t *const semphr ) final override;
 
-      Chimera::Status_t removeEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr ) final override;
+      Chimera::Status_t removeEventNotifier( const Chimera::Serial::Event event,
+                                             SemaphoreHandle_t *const semphr ) final override;
 #endif
 
-      Chimera::Status_t enableBuffering(const Chimera::Serial::SubPeripheral periph, boost::circular_buffer<uint8_t> *const buffer) final override;
+      Chimera::Status_t enableBuffering( const Chimera::Serial::SubPeripheral periph,
+                                         boost::circular_buffer<uint8_t> *const buffer ) final override;
 
-      Chimera::Status_t disableBuffering(const Chimera::Serial::SubPeripheral periph) final override;
+      Chimera::Status_t disableBuffering( const Chimera::Serial::SubPeripheral periph ) final override;
 
     private:
       /*------------------------------------------------
@@ -135,14 +137,14 @@ namespace Thor
       friend void(::UART7_IRQHandler )( void );
       friend void(::UART8_IRQHandler )( void );
 
-      int uart_channel;        /**< Numerical representation of the UART instance, zero is invalid */
-      bool tx_complete = true; /**< Indicates if a transmission has been completed */
-      bool rx_complete = true; /**< Indicates if a reception has been completed */
-      bool RX_ASYNC_EXPLICIT    = true; /**< Enables/Disables asynchronous reception of data */
+      int uart_channel;              /**< Numerical representation of the UART instance, zero is invalid */
+      bool tx_complete       = true; /**< Indicates if a transmission has been completed */
+      bool rx_complete       = true; /**< Indicates if a reception has been completed */
+      bool RX_ASYNC_EXPLICIT = true; /**< Enables/Disables asynchronous reception of data */
       bool hardware_assigned = false;
 
       Chimera::Serial::Modes txMode; /**< Logs which mode the TX peripheral is currently in */
-      Chimera::Serial::Modes rxMode;      /**< Logs which mode the RX peripheral is currently in */
+      Chimera::Serial::Modes rxMode; /**< Logs which mode the RX peripheral is currently in */
 
       boost::circular_buffer<uint8_t> *txUserBuffer;
       boost::circular_buffer<uint8_t> *rxUserBuffer;
@@ -202,9 +204,9 @@ namespace Thor
       void UART_DisableInterrupts();
 
       void UART_DMA_Init( const Chimera::Serial::SubPeripheral &periph );
-      void UART_DMA_DeInit(const Chimera::Serial::SubPeripheral &periph);
-      void UART_DMA_EnableIT(const Chimera::Serial::SubPeripheral &periph);
-      void UART_DMA_DisableIT(const Chimera::Serial::SubPeripheral &periph);
+      void UART_DMA_DeInit( const Chimera::Serial::SubPeripheral &periph );
+      void UART_DMA_EnableIT( const Chimera::Serial::SubPeripheral &periph );
+      void UART_DMA_DisableIT( const Chimera::Serial::SubPeripheral &periph );
 
       void UART_OverrunHandler();
     };

@@ -30,10 +30,12 @@ void BasicErrorHandler( std::string err_msg )
 extern "C"
 {
 #endif
-
+#if defined( __GCC__ )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+
   void HardFault_HandlerC( unsigned long *hardfault_args )
   {
 #if defined( TARGET_STM32F4 ) || defined( TARGET_STM32F7 )
@@ -70,10 +72,14 @@ extern "C"
 #endif
 
 
+#if defined( __GNUC__ )
     __asm( "BKPT #0\n" );    // Break into the debugger
+#endif
   }
 
+#if defined( __GCC__ )
 #pragma GCC diagnostic pop
+#endif
 
 #ifdef __cplusplus
 }
@@ -83,6 +89,8 @@ extern "C"
 void HardFault_Handler()
 {
   /* Well you broke SOMETHING Jim Bob */
+
+#if defined( __GNUC__ )
   __asm volatile( " movs r0,#4			\n"
                   " movs r1, lr			\n"
                   " tst r0, r1			\n"
@@ -95,6 +103,7 @@ void HardFault_Handler()
                   " ldr r1,[r0,#20]		\n"
                   " b HardFault_HandlerC	\n"
                   " bkpt #0				\n" );
+#endif
 
   while ( 1 ) {}
 }

@@ -6,7 +6,7 @@
 #include <boost/bind.hpp>
 
 /* Thor Includes */
-#include <Thor/exti.hpp>
+//#include <Thor/exti.hpp>
 #include <Thor/spi.hpp>
 
 #ifdef TARGET_STM32F7

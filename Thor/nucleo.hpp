@@ -9,9 +9,12 @@ Blue Led: PB7
 Red Led: PB14
 Green Led: PB0
 */
+#if defined( __GCC__ )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+
 namespace Thor
 {
   namespace Nucleo
@@ -32,6 +35,9 @@ namespace Thor
 #endif
   }    // namespace Nucleo
 }    // namespace Thor
+
+#if defined( __GCC__ )
 #pragma GCC diagnostic pop
+#endif
 
 #endif

@@ -8,6 +8,10 @@
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+ /* Boost Includes */
+ #include <boost/bind.hpp>
+
+
 /* Thor Includes */
 #include <Thor/uart.hpp>
 #include <Thor/exceptions.hpp>
@@ -228,6 +232,8 @@ namespace Thor
 
       txMode = Modes::MODE_UNDEFINED;
       rxMode = Modes::MODE_UNDEFINED;
+
+      return Chimera::CommonStatusCodes::OK;
     }
 
     Chimera::Status_t UARTClass::configure( const uint32_t baud, const Chimera::Serial::CharWid width,
@@ -645,7 +651,8 @@ namespace Thor
     }
 #endif
 
-    Chimera::Status_t UARTClass::enableBuffering( const SubPeripheral periph, boost::circular_buffer<uint8_t> *const buffer )
+    Chimera::Status_t UARTClass::enableBuffering( const Chimera::Serial::SubPeripheral periph,
+                                         boost::circular_buffer<uint8_t> *const buffer )
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
@@ -1238,6 +1245,7 @@ namespace Thor
   }    // namespace UART
 }    // namespace Thor
 
+#if !defined( GMOCK_TEST )
 void HAL_UART_TxCpltCallback( UART_HandleTypeDef *UartHandle )
 {
   const UARTClass_sPtr& uart = getUARTClassRef(UartHandle->Instance);
@@ -1325,6 +1333,8 @@ void HAL_UART_RxHalfCpltCallback( UART_HandleTypeDef *UartHandle )
 void HAL_UART_ErrorCallback( UART_HandleTypeDef *UartHandle )
 {
 }
+
+#endif /* !GMOCK_TEST */
 
 void UART1_IRQHandler( void )
 {

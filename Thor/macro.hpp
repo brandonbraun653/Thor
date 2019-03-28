@@ -17,7 +17,7 @@
 /*! @def INSERT_BREAKPOINT
  *	@brief Manually instructs the CPU to break and go into debug mode for debugger.
  */
-#ifndef INSERT_BREAKPOINT
+#if defined( __GNUC__ )
 #define INSERT_BREAKPOINT __asm( "BKPT #0\n" )
 #endif
 

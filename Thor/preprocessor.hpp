@@ -10,7 +10,7 @@ https://clang.llvm.org/docs/LanguageExtensions.html
 #error FATAL ERROR: Please use a compiler that supports __has_include(), such as Clang or MSVC 2015 Update 2 or higher
 #endif
 
-#if __cpp_exceptions
+#if __cpp_exceptions && ( !defined( _WIN32 ) && !defined( _WIN64 ))
 #error FATAL ERROR: Please disable exceptions.
 #endif
 
@@ -47,7 +47,7 @@ STM32
 #endif
 
 #ifndef USE_FULL_LL_DRIVER
-#error Please define USE_FULL_LL_DRIVER in the compiler preprocessor
+//#error Please define USE_FULL_LL_DRIVER in the compiler preprocessor
 #endif
 
 /*-------------------------------------------

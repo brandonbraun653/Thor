@@ -1,6 +1,6 @@
 #pragma once
-#ifndef EXTI_H_
-#define EXTI_H_
+#ifndef THOR_EXTI_HPP
+#define THOR_EXTI_HPP
 
 /* Boost Includes */
 #include <boost/circular_buffer.hpp>
@@ -14,6 +14,11 @@
 #include <Thor/interrupt.hpp>
 
 /* Additional includes not provided in Thor config */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #if defined( TARGET_STM32F4 )
 #include "stm32f4xx_ll_exti.h"
 
@@ -21,9 +26,24 @@
 #include "stm32f7xx_ll_exti.h"
 #endif
 
+#ifdef __cplusplus
+}
+#endif
+
+
 #if defined( USING_FREERTOS )
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "FreeRTOS.h"
 #include "semphr.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 using namespace Thor::Interrupt;
 
@@ -114,15 +134,15 @@ extern void setupEXTI0_Interrupt();
 extern "C"
 {
 #endif
-  void EXTI0_IRQHandler();
-  void EXTI1_IRQHandler();
-  void EXTI2_IRQHandler();
-  void EXTI3_IRQHandler();
-  void EXTI4_IRQHandler();
-  void EXTI9_5_IRQHandler();
-  void EXTI15_10_IRQHandler();
+  extern void EXTI0_IRQHandler();
+  extern void EXTI1_IRQHandler();
+  extern void EXTI2_IRQHandler();
+  extern void EXTI3_IRQHandler();
+  extern void EXTI4_IRQHandler();
+  extern void EXTI9_5_IRQHandler();
+  extern void EXTI15_10_IRQHandler();
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif  /* THOR_EXTI_HPP */
