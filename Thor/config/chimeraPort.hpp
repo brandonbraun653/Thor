@@ -13,9 +13,6 @@
 #ifndef CHIMERA_PORT_THOR_HPP_
 #define CHIMERA_PORT_THOR_HPP_
 
-/* Chimera Includes */
-#include <Chimera/config.hpp>
-
 /* Thor Includes */
 #include <Thor/thor.hpp>
 #include <Thor/spi.hpp>
@@ -26,25 +23,12 @@
 
 #define BACKEND_NAMESPACE Thor
 
-/*------------------------------------------------
-Define the classes for Chimera to inherit from. These modules are turned
-on and off by the #defines inside of <Chimera/config.hpp>
-------------------------------------------------*/
-#if ( CHIMERA_HWM_GPIO )
 #define CHIMERA_INHERITED_GPIO Thor::GPIO::GPIOClass
-#endif
-
-#if ( CHIMERA_HWM_SPI )
-//typedef Thor::Peripheral::SPI::ChimeraSPI CHIMERA_INHERITED_SPI;
-#endif
-
-#if ( CHIMERA_HWM_WATCHDOG )
-//typedef Thor::Peripheral::Watchdog::ChimeraWatchdog CHIMERA_INHERITED_WATCHDOG;
-#endif
-
-#if ( CHIMERA_MOD_SERIAL )
 #define CHIMERA_INHERITED_SERIAL Thor::Serial::SerialClass
-#endif
+//#define CHIMERA_INHERITED_DMA Thor::DMA::DMAClass
+
+//typedef Thor::Peripheral::SPI::ChimeraSPI CHIMERA_INHERITED_SPI;
+//typedef Thor::Peripheral::Watchdog::ChimeraWatchdog CHIMERA_INHERITED_WATCHDOG;
 
 
 #endif
