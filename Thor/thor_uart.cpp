@@ -11,7 +11,6 @@
  /* Boost Includes */
  #include <boost/bind.hpp>
 
-
 /* Thor Includes */
 #include <Thor/uart.hpp>
 #include <Thor/exceptions.hpp>
@@ -180,7 +179,7 @@ namespace Thor
       ------------------------------------------------*/
       uart_channel         = channel;
       uart_handle.Init     = Defaults::Serial::dflt_UART_Init;
-      uart_handle.Instance = srl_cfg[ uart_channel ].instance;
+      uart_handle.Instance = const_cast<USART_TypeDef *>( hwConfig[ uart_channel ]->instance );
 
 #if defined( STM32F7 )
       uart_handle.AdvancedInit = Defaults::Serial::dflt_UART_AdvInit;
@@ -189,9 +188,9 @@ namespace Thor
       /*------------------------------------------------
       Copy over the interrupt settings information
       ------------------------------------------------*/
-      ITSettings_HW     = srl_cfg[ uart_channel ].IT_HW;
-      ITSettings_DMA_TX = srl_cfg[ uart_channel ].dmaIT_TX;
-      ITSettings_DMA_RX = srl_cfg[ uart_channel ].dmaIT_RX;
+      ITSettings_HW     = hwConfig[ uart_channel ]->IT_HW;
+      ITSettings_DMA_TX = hwConfig[ uart_channel ]->dmaIT_TX;
+      ITSettings_DMA_RX = hwConfig[ uart_channel ]->dmaIT_RX;
 
       /*------------------------------------------------
       Initialize the GPIO pins
@@ -1118,22 +1117,20 @@ namespace Thor
       // TODO: Implement GPIO DeInit
     }
 
-    void UARTClass::UART_DMA_Init( const SubPeripheral &periph )
+    void UARTClass::UART_DMA_Init( const SubPeripheral periph )
     {
       if ( periph == SubPeripheral::TX )
       {
         UART_DMA_EnableClock();
-        hdma_uart_tx.Instance = srl_cfg[ uart_channel ].dmaTX.Instance;
+        hdma_uart_tx.Instance = const_cast<DMA_Stream_TypeDef *>( hwConfig[ uart_channel ]->dmaTX.Instance );
 
         /* Grab the default init settings and modify for the specific hardware */
-        hdma_uart_tx.Init           = Defaults::Serial::dflt_DMA_Init_TX;
-        hdma_uart_tx.Init.Channel   = Defaults::Serial::srl_cfg[ uart_channel ].dmaTX.channel;
-        hdma_uart_tx.Init.Direction = Defaults::Serial::srl_cfg[ uart_channel ].dmaTX.direction;
+        hdma_uart_tx.Init           = dflt_DMA_Init_TX;
+        hdma_uart_tx.Init.Channel   = hwConfig[ uart_channel ]->dmaTX.channel;
+        hdma_uart_tx.Init.Direction = hwConfig[ uart_channel ]->dmaTX.direction;
 
         /* Hard error if initialization fails. */
-        if ( HAL_DMA_Init( &hdma_uart_tx ) != HAL_OK )
-          BasicErrorHandler( logError( "Failed UART DMA TX Init. Check handle settings." ) );
-
+        assert( HAL_DMA_Init( &hdma_uart_tx ) == HAL_OK );
         __HAL_LINKDMA( &uart_handle, hdmatx, hdma_uart_tx );
 
         serialDMAManager.attachCallback_TXDMA( uart_channel, boost::bind( &UARTClass::IRQHandler_TXDMA, this ) );
@@ -1145,17 +1142,15 @@ namespace Thor
       else
       {
         UART_DMA_EnableClock();
-        hdma_uart_rx.Instance = srl_cfg[ uart_channel ].dmaRX.Instance;
+        hdma_uart_rx.Instance = const_cast<DMA_Stream_TypeDef *>( hwConfig[ uart_channel ]->dmaRX.Instance );
 
         /* Grab the default init settings and modify for the specific hardware */
-        hdma_uart_rx.Init           = Defaults::Serial::dflt_DMA_Init_RX;
-        hdma_uart_rx.Init.Channel   = Defaults::Serial::srl_cfg[ uart_channel ].dmaRX.channel;
-        hdma_uart_rx.Init.Direction = Defaults::Serial::srl_cfg[ uart_channel ].dmaRX.direction;
+        hdma_uart_rx.Init           = dflt_DMA_Init_RX;
+        hdma_uart_rx.Init.Channel   = hwConfig[ uart_channel ]->dmaRX.channel;
+        hdma_uart_rx.Init.Direction = hwConfig[ uart_channel ]->dmaRX.direction;
 
         /* Hard error if initialization fails. */
-        if ( HAL_DMA_Init( &hdma_uart_rx ) != HAL_OK )
-          BasicErrorHandler( logError( "Failed UART DMA TX Init. Check handle settings." ) );
-
+        assert( HAL_DMA_Init( &hdma_uart_rx ) == HAL_OK );
         __HAL_LINKDMA( &uart_handle, hdmarx, hdma_uart_rx );
 
         serialDMAManager.attachCallback_RXDMA( uart_channel, boost::bind( &UARTClass::IRQHandler_RXDMA, this ) );
@@ -1166,7 +1161,7 @@ namespace Thor
       }
     }
 
-    void UARTClass::UART_DMA_DeInit( const SubPeripheral &periph )
+    void UARTClass::UART_DMA_DeInit( const SubPeripheral periph )
     {
       if ( periph == SubPeripheral::TX )
       {
@@ -1194,7 +1189,7 @@ namespace Thor
       }
     }
 
-    void UARTClass::UART_DMA_EnableIT( const SubPeripheral &periph )
+    void UARTClass::UART_DMA_EnableIT( const SubPeripheral periph )
     {
       if ( periph == SubPeripheral::TX )
       {
@@ -1216,7 +1211,7 @@ namespace Thor
       }
     }
 
-    void UARTClass::UART_DMA_DisableIT( const SubPeripheral &periph )
+    void UARTClass::UART_DMA_DisableIT( const SubPeripheral periph )
     {
       if ( periph == SubPeripheral::TX )
       {

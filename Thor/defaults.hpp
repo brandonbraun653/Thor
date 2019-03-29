@@ -35,23 +35,20 @@ namespace Thor
       /** @struct Serial Config */
       struct SerialConfig
       {
-        /* IO Config: */
-        GPIO_Initializer txPin;
-        GPIO_Initializer rxPin;
-
         /* Peripheral Instance */
-        USART_TypeDef *instance;
+        const USART_TypeDef *instance;
 
         /* Interrupt Settings */
-        IT_Initializer IT_HW;
-        IT_Initializer dmaIT_TX;
-        IT_Initializer dmaIT_RX;
+        const IT_Initializer IT_HW;
+        const IT_Initializer dmaIT_TX;
+        const IT_Initializer dmaIT_RX;
 
         /* DMA Settings */
-        DMA_Initializer dmaTX;
-        DMA_Initializer dmaRX;
+        const DMA_Initializer dmaTX;
+        const DMA_Initializer dmaRX;
       };
-      extern const SerialConfig srl_cfg[];
+
+      extern const std::array< const SerialConfig *const, Thor::Serial::MAX_SERIAL_CHANNELS + 1> hwConfig;
 
 #if defined( STM32F7 ) || defined( STM32F4 )
       extern const USART_InitTypeDef dflt_USART_Init;

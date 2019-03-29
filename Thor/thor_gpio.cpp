@@ -78,8 +78,6 @@ namespace Thor
       };
     }
 
-
-
     Chimera::Status_t GPIOClass::init( const Chimera::GPIO::Port port, const uint8_t pin )
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
@@ -159,61 +157,10 @@ namespace Thor
     {
       PinNum pinNum = PinNum::NOT_A_PIN;
 
-      switch ( num )
+      if( num < static_cast<uint8_t>(PinNum::MAX_PINS) )
       {
-        case 0:
-          pinNum = Thor::GPIO::PinNum::PIN_0;
-          break;
-        case 1:
-          pinNum = Thor::GPIO::PinNum::PIN_1;
-          break;
-        case 2:
-          pinNum = Thor::GPIO::PinNum::PIN_2;
-          break;
-        case 3:
-          pinNum = Thor::GPIO::PinNum::PIN_3;
-          break;
-        case 4:
-          pinNum = Thor::GPIO::PinNum::PIN_4;
-          break;
-        case 5:
-          pinNum = Thor::GPIO::PinNum::PIN_5;
-          break;
-        case 6:
-          pinNum = Thor::GPIO::PinNum::PIN_6;
-          break;
-        case 7:
-          pinNum = Thor::GPIO::PinNum::PIN_7;
-          break;
-        case 8:
-          pinNum = Thor::GPIO::PinNum::PIN_8;
-          break;
-        case 9:
-          pinNum = Thor::GPIO::PinNum::PIN_9;
-          break;
-        case 10:
-          pinNum = Thor::GPIO::PinNum::PIN_10;
-          break;
-        case 11:
-          pinNum = Thor::GPIO::PinNum::PIN_11;
-          break;
-        case 12:
-          pinNum = Thor::GPIO::PinNum::PIN_12;
-          break;
-        case 13:
-          pinNum = Thor::GPIO::PinNum::PIN_13;
-          break;
-        case 14:
-          pinNum = Thor::GPIO::PinNum::PIN_14;
-          break;
-        case 15:
-          pinNum = Thor::GPIO::PinNum::PIN_15;
-          break;
-
-        default:
-          pinNum = Thor::GPIO::PinNum::NOT_A_PIN;
-          break;
-      };
+        pinNum = static_cast<PinNum>( 1u << num );
+      }
 
       return pinNum;
     }
@@ -359,65 +306,6 @@ namespace Thor
       cfg.alternate = pin.alternate;
 
       return cfg;
-    }
-
-    const GPIO_TypeDef *const portMap( const Chimera::GPIO::Port port )
-    {
-      switch ( port )
-      {
-#if defined( TARGET_STM32F7 ) || defined( TARGET_STM32F4 )
-        case Chimera::GPIO::Port::PORTA:
-          return GPIOA;
-          break;
-
-        case Chimera::GPIO::Port::PORTB:
-          return GPIOB;
-          break;
-
-        case Chimera::GPIO::Port::PORTC:
-          return GPIOC;
-          break;
-
-        case Chimera::GPIO::Port::PORTD:
-          return GPIOD;
-          break;
-
-        case Chimera::GPIO::Port::PORTE:
-          return GPIOE;
-          break;
-
-        case Chimera::GPIO::Port::PORTF:
-          return GPIOF;
-          break;
-
-        case Chimera::GPIO::Port::PORTG:
-          return GPIOG;
-          break;
-
-        case Chimera::GPIO::Port::PORTH:
-          return GPIOH;
-          break;
-#endif
-
-#if defined( TARGET_STM32F7 )
-        case Chimera::GPIO::Port::PORTI:
-          return GPIOI;
-          break;
-
-        case Chimera::GPIO::Port::PORTJ:
-          return GPIOJ;
-          break;
-
-        case Chimera::GPIO::Port::PORTK:
-          return GPIOK;
-          break;
-#endif
-
-        /* If we get here, something is wrong */
-        default:
-          return GPIOA;
-          break;
-      };
     }
 
     GPIO_InitTypeDef GPIOClass::getHALInit( const PinConfig &config )

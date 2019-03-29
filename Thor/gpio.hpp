@@ -22,7 +22,6 @@
 /* Thor Includes */
 #include <Thor/config.hpp>
 #include <Thor/definitions.hpp>
-#include <Thor/utilities.hpp>
 
 namespace Thor
 {

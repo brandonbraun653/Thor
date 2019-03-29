@@ -166,16 +166,7 @@ extern Thor::Interrupt::SPI::SPI_DMAHandlerManager spiDMAManager;
 extern "C"
 {
 #endif
-/*----------------------------------
- * Handler declarations for all sorts of devices. Note that just because they are declared
- * does NOT mean they exist in hardware. Some just serve as placeholders since generating a large
- * amount of #if statements to handle all device cases would be too cumbersome. There is hardly
- * any code overhead.
- *---------------------------------*/
 
-/*----------------------------------
- * DMA
- *---------------------------------*/
 #if defined( DMA1 )
   void DMA1_Stream0_IRQHandler();
   void DMA1_Stream1_IRQHandler();
@@ -198,10 +189,6 @@ extern "C"
   void DMA2_Stream7_IRQHandler();
 #endif
 
-
-  /*----------------------------------
-   * USART/UART
-   *---------------------------------*/
   void USART1_IRQHandler();
   void USART2_IRQHandler();
   void USART3_IRQHandler();
@@ -216,9 +203,6 @@ extern "C"
   void UART7_IRQHandler();
   void UART8_IRQHandler();
 
-  /*----------------------------------
-   * SPI
-   *---------------------------------*/
   void SPI1_IRQHandler();
   void SPI2_IRQHandler();
   void SPI3_IRQHandler();

@@ -23,7 +23,6 @@
 #include <Thor/definitions.hpp>
 #include <Thor/uart.hpp>
 #include <Thor/usart.hpp>
-#include <Thor/threads.hpp>
 
 namespace Thor
 {

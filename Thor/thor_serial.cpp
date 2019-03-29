@@ -10,7 +10,6 @@
 
 /* Project Includes */
 #include <Thor/serial.hpp>
-#include <Thor/utilities.hpp>
 
 using namespace Thor;
 using namespace Thor::Serial;
@@ -21,7 +20,7 @@ namespace Thor
 {
   namespace Serial
   {
-    static constexpr HardwareClassMapping ch2Periph[ MAX_SERIAL_CHANNELS + 1 ] = {
+    static const std::array<HardwareClassMapping, MAX_SERIAL_CHANNELS + 1> ch2Periph = {{
 #if defined( STM32F767xx ) || defined( STM32F446xx )
       { false, 0 }, /* Not actually a UART instance */
       { false, 1 }, /* USART 1	*/
@@ -33,8 +32,8 @@ namespace Thor
       { true, 7 },  /* UART  7	*/
       { true, 8 }   /* UART	 8	*/
 #endif
-    };
-    static_assert( COUNT_OF_ARRAY( ch2Periph ) == ( MAX_SERIAL_CHANNELS + 1 ), "Invalid array size" );
+    }};
+    static_assert( ch2Periph.size() == ( MAX_SERIAL_CHANNELS + 1 ), "Invalid array size" );
 
     Chimera::Status_t SerialClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
     {

@@ -203,10 +203,10 @@ namespace Thor
       void UART_EnableInterrupts();
       void UART_DisableInterrupts();
 
-      void UART_DMA_Init( const Chimera::Serial::SubPeripheral &periph );
-      void UART_DMA_DeInit( const Chimera::Serial::SubPeripheral &periph );
-      void UART_DMA_EnableIT( const Chimera::Serial::SubPeripheral &periph );
-      void UART_DMA_DisableIT( const Chimera::Serial::SubPeripheral &periph );
+      void UART_DMA_Init( const Chimera::Serial::SubPeripheral periph );
+      void UART_DMA_DeInit( const Chimera::Serial::SubPeripheral periph );
+      void UART_DMA_EnableIT( const Chimera::Serial::SubPeripheral periph );
+      void UART_DMA_DisableIT( const Chimera::Serial::SubPeripheral periph );
 
       void UART_OverrunHandler();
     };

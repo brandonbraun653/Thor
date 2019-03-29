@@ -9,19 +9,12 @@
 #include <limits>
 #include <type_traits>
 
-/* Boost Includes */
-#include <boost/static_assert.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/move/unique_ptr.hpp>
-
 /* Thor Includes */
 #include <Thor/config.hpp>
 #include <Thor/definitions.hpp>
 #include <Thor/defaults.hpp>
 #include <Thor/interrupt.hpp>
 #include <Thor/gpio.hpp>
-#include <Thor/ringbuffer.hpp>
 #include <Thor/exceptions.hpp>
 
 /* FreeRTOS Includes */
