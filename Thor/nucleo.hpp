@@ -9,7 +9,7 @@ Blue Led: PB7
 Red Led: PB14
 Green Led: PB0
 */
-#if defined( __GCC__ )
+#if defined( __GNUC__ )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"

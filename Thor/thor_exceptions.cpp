@@ -30,7 +30,7 @@ void BasicErrorHandler( std::string err_msg )
 extern "C"
 {
 #endif
-#if defined( __GCC__ )
+#if defined( __GNUC__ )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
@@ -77,7 +77,7 @@ extern "C"
 #endif
   }
 
-#if defined( __GCC__ )
+#if defined( __GNUC__ )
 #pragma GCC diagnostic pop
 #endif
 

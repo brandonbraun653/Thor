@@ -122,7 +122,7 @@ explicit_alias PUB : : :
     ;
 
 explicit_alias CHIMERA_PORT : : :
-    :   <include>$(thor_hdr_dir)
+    :   <include>$(thor_hdr_dir)/config/chimera
     ;
 
 # Default target to let the user know they screwed up their configuration

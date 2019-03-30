@@ -595,8 +595,6 @@ namespace Thor
 
     bool UARTClass::setFlowControl( UART_InitTypeDef &initStruct, const Chimera::Serial::FlowControl flow )
     {
-      bool result = true;
-
       switch ( static_cast<uint8_t>( flow ) )
       {
         case static_cast<uint8_t>( FlowControl::FCTRL_HW ):
