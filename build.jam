@@ -87,8 +87,8 @@ all_thor_link_flags =
 # Source/Include Directories 
 # ------------------------------------------
 local thor_inc_dir = . ;
-local thor_hdr_dir = Thor/include ; 
-local thor_src_dir = Thor/source ;
+local thor_hdr_dir = Thor ; 
+local thor_src_dir = Thor ;
 
 # ------------------------------------------
 # Source Files
