@@ -6,14 +6,9 @@
   ],
   "directories":[
     {
-      "path": "Thor/Thor/include",
-      "recursive": false,
-      "extensions": ["*.hpp"]
-    },
-    {
-      "path": "Thor/Thor/source",
-      "recursive": false,
-      "extensions": ["*.cpp"]
+      "path": "Thor/Thor",
+      "recursive": true,
+      "extensions": ["*.hpp", "*.cpp", ".h", "*.c"]
     }
   ]
 }

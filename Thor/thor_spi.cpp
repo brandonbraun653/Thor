@@ -31,9 +31,6 @@ using namespace Thor::Defaults::SPI;
 using namespace Thor::Peripheral::SPI;
 using namespace Thor::Peripheral::GPIO;
 
-using Status = Thor::Status;
-using Modes  = Thor::Modes;
-
 #if defined( USING_FREERTOS )
 TaskTrigger spiTaskTrigger;
 #endif

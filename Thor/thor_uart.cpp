@@ -14,21 +14,19 @@
 /* Thor Includes */
 #include <Thor/uart.hpp>
 #include <Thor/exceptions.hpp>
-#include <Thor/interrupt.hpp>
 
 using namespace Thor;
 using namespace Thor::Serial;
 using namespace Thor::UART;
-using namespace Thor::Interrupt;
 using namespace Thor::Defaults::Serial;
 
 
 #if defined( USING_FREERTOS )
-static SemaphoreHandle_t uartSemphrs[ MAX_SERIAL_CHANNELS + 1 ];
+static std::array<SemaphoreHandle_t,MAX_SERIAL_CHANNELS + 1> uartSemphrs;
 TaskTrigger uartTaskTrigger;
 #endif
 
-static Thor::UART::UARTClass_sPtr uartObjects[ MAX_SERIAL_CHANNELS + 1 ];
+static std::array<Thor::UART::UARTClass_sPtr, MAX_SERIAL_CHANNELS + 1> uartObjects;
 
 static const UARTClass_sPtr &getUARTClassRef( USART_TypeDef *instance )
 {
@@ -146,6 +144,32 @@ namespace Thor
       __HAL_UART_DISABLE_IT( UartHandle, UART_IT_IDLE );
     }
 
+    UARTClass::UARTClass()
+    {
+      /*------------------------------------------------
+      Register the mode change function pointers
+      ------------------------------------------------*/
+      modeChangeFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ] = &UARTClass::setBlockingMode;
+      modeChangeFuncPtrs[ static_cast<uint8_t>( Modes::INTERRUPT ) ] = &UARTClass::setInterruptMode;
+      modeChangeFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ] = &UARTClass::setDMAMode;
+
+      /*------------------------------------------------
+      Register the read function pointers
+      ------------------------------------------------*/
+      readFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ] = &UARTClass::readBlocking;
+      readFuncPtrs[ static_cast<uint8_t>( Modes::INTERRUPT ) ] = &UARTClass::readInterrupt;
+      readFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ] = &UARTClass::readDMA;
+
+      /*------------------------------------------------
+      Register the write function pointers
+      ------------------------------------------------*/
+      writeFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ] = &UARTClass::writeBlocking;
+      writeFuncPtrs[ static_cast<uint8_t>( Modes::INTERRUPT ) ] = &UARTClass::writeInterrupt;
+      writeFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ] = &UARTClass::writeDMA;
+
+      AUTO_ASYNC_RX = false;
+    }
+
     UARTClass::~UARTClass()
     {
       delete[] rxInternalBuffer;
@@ -156,7 +180,7 @@ namespace Thor
     {
       UARTClass_sPtr newClass( new UARTClass() );
 
-      if ( channel <= ( MAX_SERIAL_CHANNELS + 1 ) )
+      if ( channel <= ( Serial::MAX_SERIAL_CHANNELS + 1 ) )
       {
         uartObjects[ channel ] = newClass;
         newClass->assignRXBuffer( new uint8_t[ bufferSize ](), bufferSize );
@@ -191,6 +215,9 @@ namespace Thor
       ITSettings_HW     = hwConfig[ uart_channel ]->IT_HW;
       ITSettings_DMA_TX = hwConfig[ uart_channel ]->dmaIT_TX;
       ITSettings_DMA_RX = hwConfig[ uart_channel ]->dmaIT_RX;
+
+      dmaTXReqSig = Thor::DMA::serialTXReq[uart_channel];
+      dmaRXReqSig = Thor::DMA::serialRXReq[uart_channel];
 
       /*------------------------------------------------
       Initialize the GPIO pins
@@ -300,96 +327,19 @@ namespace Thor
     Chimera::Status_t UARTClass::setMode( const SubPeripheral periph, const Modes mode )
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+      auto iter               = static_cast<uint8_t>( mode );
 
       if ( !hardware_assigned )
       {
         error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
       }
+      else if ( iter >= modeChangeFuncPtrs.size() )
+      {
+        error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      }
       else
       {
-        if ( periph == SubPeripheral::TX )
-        {
-          switch ( mode )
-          {
-            case Modes::BLOCKING:
-              txMode = mode;    // Must be set before the other functions
-
-              /* Make sure RX side isn't using interrupts before disabling */
-              if ( rxMode == Modes::BLOCKING )
-              {
-                UART_DisableInterrupts();
-              }
-
-              UART_DMA_DeInit( periph );
-              break;
-
-            case Modes::INTERRUPT:
-              txMode = mode;    // Must be set before the other functions
-
-              UART_EnableInterrupts();
-              UART_DMA_DeInit( periph );
-              break;
-
-            case Modes::DMA:
-              txMode = mode;    // Must be set before the other functions
-
-              UART_EnableInterrupts();
-              UART_DMA_Init( periph );
-              break;
-
-            default:
-              txMode = Modes::MODE_UNDEFINED;
-              error  = Chimera::CommonStatusCodes::FAIL;
-              break;
-          }
-        }
-        else if ( periph == SubPeripheral::RX )
-        {
-          switch ( mode )
-          {
-            case Modes::BLOCKING:
-              rxMode = mode;    // Must be set before the other functions
-
-              /* Make sure TX side isn't using interrupts before disabling */
-              if ( txMode == Modes::BLOCKING )
-              {
-                UART_DisableInterrupts();
-              }
-
-              UART_DMA_DeInit( periph );
-
-              break;
-
-            case Modes::INTERRUPT:
-              rxMode = mode;    // Must be set before the other functions
-
-              UART_EnableInterrupts();
-              UART_DMA_DeInit( periph );
-              break;
-
-            case Modes::DMA:
-              rxMode = mode;    // Must be set before the other functions
-
-              UART_EnableInterrupts();
-              UART_DMA_Init( periph );
-
-              /* Set the idle line interrupt for asynchronously getting the end of transmission */
-              UART_EnableIT_IDLE( &uart_handle );
-
-              /* Instruct the DMA hardware to start listening for transmissions */
-              HAL_UART_Receive_DMA(&uart_handle, rxInternalBuffer, rxInternalBufferSize );
-              break;
-
-            default:
-              rxMode = Modes::MODE_UNDEFINED;
-              error  = Chimera::CommonStatusCodes::FAIL;
-              break;
-          }
-        }
-        else
-        {
-          error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
-        }
+        (this->*(modeChangeFuncPtrs[iter]))(periph);
       }
 
       return error;
@@ -398,96 +348,19 @@ namespace Thor
     Chimera::Status_t UARTClass::write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+      auto iter               = static_cast<uint8_t>( txMode );
 
       if ( !PeripheralState.gpio_enabled || !PeripheralState.enabled )
       {
         error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
       }
+      else if ( iter >= modeChangeFuncPtrs.size() )
+      {
+        error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      }
       else
       {
-        HAL_StatusTypeDef stm32Error = HAL_OK;
-
-        /*------------------------------------------------
-        Shame on me and my cow for const casting. What am I to do?
-        Differing interface specs are no good...
-        ------------------------------------------------*/
-        switch ( txMode )
-        {
-          case Modes::BLOCKING:
-#if defined( USING_FREERTOS )
-            stm32Error = HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), length,
-                                            pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
-#else
-            stm32Error = HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), length, BLOCKING_TIMEOUT_MS );
-#endif
-            error = convertHALStatus( stm32Error );
-            break;
-
-          case Modes::INTERRUPT:
-            if ( txUserBuffer && PeripheralState.tx_buffering_enabled )
-            {
-              if ( tx_complete )
-              {
-                /*------------------------------------------------
-                Hardware is free. Send the data directly.
-                ------------------------------------------------*/
-                tx_complete = false;
-                stm32Error  = HAL_UART_Transmit_IT( &uart_handle, const_cast<uint8_t *>( buffer ), length );
-                error       = convertHALStatus( stm32Error );
-              }
-              else
-              {
-                /*------------------------------------------------
-                Queue up everything to send later
-                ------------------------------------------------*/
-                error = Chimera::CommonStatusCodes::BUSY;
-                for ( uint32_t x = 0; x < length; x++ )
-                {
-                  txUserBuffer->push_back( *( buffer + x ) );
-                }
-              }
-            }
-            else
-            {
-              error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
-            }
-
-            break;
-
-          case Modes::DMA:
-            if ( txUserBuffer && PeripheralState.tx_buffering_enabled )
-            {
-              if ( tx_complete )
-              {
-                /*------------------------------------------------
-                Hardware is free. Send the data directly.
-                ------------------------------------------------*/
-                tx_complete = false;
-                stm32Error  = HAL_UART_Transmit_DMA( &uart_handle, const_cast<uint8_t *>( buffer ), length );
-                error       = convertHALStatus( stm32Error );
-              }
-              else
-              {
-                /*------------------------------------------------
-                Queue up everything to send later
-                ------------------------------------------------*/
-                error = Chimera::CommonStatusCodes::BUSY;
-                for ( uint32_t x = 0; x < length; x++ )
-                {
-                  txUserBuffer->push_back( *( buffer + x ) );
-                }
-              }
-            }
-            else
-            {
-              error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
-            }
-            break;
-
-          default:
-            error = Chimera::CommonStatusCodes::UNKNOWN_ERROR;
-            break;
-        }
+        error = (this->*(writeFuncPtrs[iter]))(buffer, length, timeout_mS);
       }
 
       return error;
@@ -496,79 +369,19 @@ namespace Thor
     Chimera::Status_t UARTClass::read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+      auto iter               = static_cast<uint8_t>( rxMode );
 
       if ( !PeripheralState.gpio_enabled || !PeripheralState.enabled )
       {
         error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
       }
+      else if ( iter >= readFuncPtrs.size() )
+      {
+        error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      }
       else
       {
-        HAL_StatusTypeDef stm32Error = HAL_OK;
-
-        switch ( rxMode )
-        {
-          case Modes::BLOCKING:
-            /* It's possible to get into the condition where ORE is set before trying to receive some
-             * new data. In the current STM HAL library, all error interrupts for the blocking mode are
-             * disabled by default so the overrun has to be handled manually. This restores normal
-             * operation. A nearly exact condition of this bug is encountered here: https://goo.gl/bKi8Ps
-             **/
-            UART_OverrunHandler();
-
-#if defined( USING_FREERTOS )
-            stm32Error =
-                HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), length, pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
-#else
-            stm32Error = HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), length, BLOCKING_TIMEOUT_MS );
-#endif
-            error = convertHALStatus( stm32Error );
-            break;
-
-          case Modes::INTERRUPT:
-            /*------------------------------------------------
-            Let the ISR handler know that we explicitely asked to receive some data.
-            This will cause a redirect into the correct handling channels.
-            ------------------------------------------------*/
-            RX_ASYNC_EXPLICIT = false;
-
-            stm32Error = HAL_UART_Receive_IT( &uart_handle, const_cast<uint8_t *>( buffer ), length );
-
-            if ( stm32Error == HAL_OK )
-            {
-              error = Chimera::Serial::Status::RX_IN_PROGRESS;
-            }
-            else
-            {
-              error = convertHALStatus( stm32Error );
-            }
-            break;
-
-          case Modes::DMA:
-            /*------------------------------------------------
-            Let the ISR handler know that we explicitely asked to receive some data.
-            This will cause a redirect into the correct handling channels.
-            ------------------------------------------------*/
-            RX_ASYNC_EXPLICIT = false;
-
-            /*------------------------------------------------
-            Stop any background listening for data and restart with the new array
-            ------------------------------------------------*/
-            HAL_UART_DMAStop( &uart_handle );
-            stm32Error = HAL_UART_Receive_DMA( &uart_handle, const_cast<uint8_t *>( buffer ), length );
-
-            if ( stm32Error == HAL_OK )
-            {
-              error = Chimera::Serial::Status::RX_IN_PROGRESS;
-            }
-            else
-            {
-              error = convertHALStatus( stm32Error );
-            }
-            break;
-
-          default:
-            break;
-        }
+        error = (this->*(readFuncPtrs[iter]))(buffer, length, timeout_mS);
       }
 
       return error;
@@ -693,6 +506,22 @@ namespace Thor
       return error;
     }
 
+    bool UARTClass::available(size_t *const bytes)
+    {
+      bool retval = false;
+
+      if (PeripheralState.rx_buffering_enabled && !rxUserBuffer->empty())
+      {
+        retval = true;
+        if (bytes)
+        {
+          *bytes = rxUserBuffer->size();
+        }
+      }
+
+      return retval;
+    }
+
     void UARTClass::assignRXBuffer( uint8_t *const buffer, const size_t size )
     {
       rxInternalBuffer = buffer;
@@ -785,14 +614,254 @@ namespace Thor
       return true;
     }
 
+	  void UARTClass::setBlockingMode( const Chimera::Serial::SubPeripheral periph )
+    {
+      if (periph == SubPeripheral::TX)
+      {
+        txMode = Modes::BLOCKING;    // Must be set before the other functions
+
+        /* Make sure RX side isn't using interrupts before disabling */
+        if ( rxMode == Modes::BLOCKING )
+        {
+          UART_DisableInterrupts();
+        }
+
+        UART_DMA_DeInit( periph );
+      }
+      else
+      {
+        rxMode = Modes::BLOCKING;    // Must be set before the other functions
+
+        /* Make sure TX side isn't using interrupts before disabling */
+        if ( txMode == Modes::BLOCKING )
+        {
+          UART_DisableInterrupts();
+        }
+
+        UART_DMA_DeInit( periph );
+      }
+    }
+
+    void UARTClass::setInterruptMode( const Chimera::Serial::SubPeripheral periph )
+    {
+      if ( periph == SubPeripheral::TX )
+      {
+        txMode = Modes::INTERRUPT;
+
+        UART_EnableInterrupts();
+        UART_DMA_DeInit( periph );
+      }
+      else
+      {
+        rxMode = Modes::INTERRUPT;
+
+        UART_EnableInterrupts();
+        UART_DMA_DeInit( periph );
+      }
+    }
+
+    void UARTClass::setDMAMode( const Chimera::Serial::SubPeripheral periph )
+    {
+      if ( periph == SubPeripheral::TX )
+      {
+        txMode = Modes::DMA;
+
+        UART_EnableInterrupts();
+        UART_DMA_Init( periph );
+      }
+      else
+      {
+        rxMode = Modes::DMA;
+        AUTO_ASYNC_RX = true;
+
+        UART_EnableInterrupts();
+        UART_DMA_Init( periph );
+
+        /* Set the idle line interrupt for asynchronously getting the end of transmission */
+        UART_EnableIT_IDLE( &uart_handle );
+
+        /* Instruct the DMA hardware to start listening for transmissions */
+        memset(rxInternalBuffer, 0, rxInternalBufferSize);
+        HAL_UART_Receive_DMA( &uart_handle, rxInternalBuffer, rxInternalBufferSize );
+      }
+    }
+
+    Chimera::Status_t UARTClass::readBlocking(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    {
+      HAL_StatusTypeDef stm32Error = HAL_OK;
+
+      /*------------------------------------------------
+      It's possible to get into the condition where ORE is set before trying to receive some
+      new data. In the current STM HAL library, all error interrupts for the blocking mode are
+      disabled by default so the overrun has to be handled manually. This restores normal
+      operation. A nearly exact condition of this bug is encountered here: https://goo.gl/bKi8Ps
+      ------------------------------------------------*/
+      UART_OverrunHandler();
+
+#if defined( USING_FREERTOS )
+      stm32Error = HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), length, pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
+#else
+      stm32Error = HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), length, BLOCKING_TIMEOUT_MS );
+#endif
+      return convertHALStatus( stm32Error );
+    }
+
+    Chimera::Status_t UARTClass::readInterrupt(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    {
+      HAL_StatusTypeDef stm32Error = HAL_OK;
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      if (length <= rxInternalBufferSize)
+      {
+        /*------------------------------------------------
+        Let the ISR handler know that we explicitely asked to receive some data.
+        This will cause a redirect into the correct ISR handling control flow.
+        ------------------------------------------------*/
+        AUTO_ASYNC_RX = false;
+        memset(rxInternalBuffer, 0, rxInternalBufferSize);
+        stm32Error = HAL_UART_Receive_IT(&uart_handle, rxInternalBuffer, length);
+
+        if (stm32Error == HAL_OK)
+        {
+          error = Chimera::Serial::Status::RX_IN_PROGRESS;
+        }
+        else
+        {
+          error = convertHALStatus(stm32Error);
+        }
+      }
+      else
+      {
+        error = Chimera::CommonStatusCodes::MEMORY;
+      }
+
+      return error;
+    }
+
+    Chimera::Status_t UARTClass::readDMA(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    {
+      HAL_StatusTypeDef stm32Error = HAL_OK;
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      if (length <= rxInternalBufferSize)
+      {
+        /*------------------------------------------------
+        Let the ISR handler know that we explicitely asked to receive some data.
+        This will cause a redirect into the correct handling channels.
+        ------------------------------------------------*/
+        AUTO_ASYNC_RX = false;
+
+        /*------------------------------------------------
+        Stop any background listening for data and restart with the new transfer
+        ------------------------------------------------*/
+        HAL_UART_DMAStop( &uart_handle );
+        memset(rxInternalBuffer, 0, rxInternalBufferSize);
+        stm32Error = HAL_UART_Receive_DMA( &uart_handle, rxInternalBuffer, length );
+
+        if ( stm32Error == HAL_OK )
+        {
+          error = Chimera::Serial::Status::RX_IN_PROGRESS;
+        }
+        else
+        {
+          error = convertHALStatus( stm32Error );
+        }
+      }
+      else
+      {
+        error = Chimera::CommonStatusCodes::MEMORY;
+      }
+
+      return error;
+    }
+
+    Chimera::Status_t UARTClass::writeBlocking(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    {
+      HAL_StatusTypeDef stm32Error = HAL_OK;
+
+#if defined( USING_FREERTOS )
+      stm32Error = HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), length,
+                                      pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
+#else
+      stm32Error = HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), length, BLOCKING_TIMEOUT_MS );
+#endif
+      return convertHALStatus( stm32Error );
+    }
+
+    Chimera::Status_t UARTClass::writeInterrupt(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    {
+      HAL_StatusTypeDef stm32Error = HAL_OK;
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      if ( txUserBuffer && PeripheralState.tx_buffering_enabled )
+      {
+        if ( tx_complete )
+        {
+          /*------------------------------------------------
+          Hardware is free. Send the data directly.
+          ------------------------------------------------*/
+          tx_complete = false;
+          stm32Error  = HAL_UART_Transmit_IT( &uart_handle, const_cast<uint8_t *>( buffer ), length );
+          error       = convertHALStatus( stm32Error );
+        }
+        else
+        {
+          /*------------------------------------------------
+          Queue up everything to send later
+          ------------------------------------------------*/
+          error = Chimera::CommonStatusCodes::BUSY;
+          for ( uint32_t x = 0; x < length; x++ )
+          {
+            txUserBuffer->push_back( *( buffer + x ) );
+          }
+        }
+      }
+      else
+      {
+        error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      }
+
+      return error;
+    }
+
+    Chimera::Status_t UARTClass::writeDMA(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    {
+      HAL_StatusTypeDef stm32Error = HAL_OK;
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      if ( txUserBuffer && PeripheralState.tx_buffering_enabled )
+      {
+        if ( tx_complete )
+        {
+          /*------------------------------------------------
+          Hardware is free. Send the data directly.
+          ------------------------------------------------*/
+          tx_complete = false;
+          stm32Error  = HAL_UART_Transmit_DMA( &uart_handle, const_cast<uint8_t *>( buffer ), length );
+          error       = convertHALStatus( stm32Error );
+        }
+        else
+        {
+          /*------------------------------------------------
+          Queue up everything to send later
+          ------------------------------------------------*/
+          error = Chimera::CommonStatusCodes::BUSY;
+          for ( uint32_t x = 0; x < length; x++ )
+          {
+            txUserBuffer->push_back( *( buffer + x ) );
+          }
+        }
+      }
+      else
+      {
+        error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      }
+
+      return error;
+    }
+
     void UARTClass::IRQHandler()
     {
-      /** NOTE: The way some of these interrupts are handled may seem weird, but it's to protect against
-       *	instances where the ISR is randomly triggered and there really shouldn't be any processing going on.
-       *	While a few sources of these errant events have been tracked down, not all are found. Thus, it is
-       *	easier to structure the code in such a way that it only runs exactly when certain conditions are met.
-       **/
-
 #if defined( STM32F7 )
       bool RX_DATA_READY   = __HAL_UART_GET_FLAG( &uart_handle, UART_FLAG_RXNE );
       bool RX_LINE_IDLE    = __HAL_UART_GET_FLAG( &uart_handle, UART_FLAG_IDLE );
@@ -897,18 +966,18 @@ namespace Thor
 #endif /* STM32F7 */
 
 #if defined( STM32F4 )
-      /** Reading these two in the order of SR then DR ends up clearing all flags, so it's best to store the returned
-       *	contents for further processing. See uart clearing procedure in device datasheet in the Registers section.
-       **/
-      volatile uint32_t isrflags = READ_REG( uart_handle.Instance->SR );
-      volatile uint32_t data_reg = READ_REG( uart_handle.Instance->DR );
-
       /*------------------------------------------------
-      Handle Asynchronous RX In Interrupt and DMA Mode:
+      Handle Asynchronous RX in Interrupt and DMA Mode:
       The user did not ask for data, but we got some anyways (cause we were listening)
       ------------------------------------------------*/
-      if ( RX_ASYNC_EXPLICIT )
+      if ( AUTO_ASYNC_RX )
       {
+        /*------------------------------------------------
+        Reading these registers in the order of SR then DR ends up clearing all
+        flags, so it's best to store the returned contents for further processing.
+        ------------------------------------------------*/
+        volatile uint32_t isrflags = READ_REG( uart_handle.Instance->SR );
+        volatile uint32_t data_reg = READ_REG( uart_handle.Instance->DR );
         volatile uint32_t cr1 = READ_REG( uart_handle.Instance->CR1 );
 
         /*------------------------------------------------
@@ -959,8 +1028,6 @@ namespace Thor
         ------------------------------------------------*/
         if ( RX_LINE_IDLE && RX_LINE_IDLE_IE )
         {
-          size_t num_received = static_cast<size_t>( uart_handle.RxXferSize - uart_handle.hdmarx->Instance->NDTR );
-
           if ( rxMode == Modes::INTERRUPT )
           {
             /*------------------------------------------------
@@ -975,7 +1042,7 @@ namespace Thor
             ------------------------------------------------*/
             HAL_UART_RxCpltCallback( &uart_handle );
           }
-          else if ( ( rxMode == Modes::DMA ) && num_received )
+          else /* DMA */
           {
             /*------------------------------------------------
             Turn off the idle line interrupt so we aren't interrupted again
@@ -992,10 +1059,12 @@ namespace Thor
       }
 
       /*------------------------------------------------
-      Handle Synchronous RX or Asynchronous TX (Interrupt Mode Only):
-      The user explicitly asked for us to read some data. Allow the normal handlers to run.
+      Handle when the standard IRQHandler is called:
+
+      1. We are TX-ing in IT or DMA mode (getting to this func means we are in those modes)
+      2. We are RX-ing an expected asynchronous transfer that the user started
       ------------------------------------------------*/
-      if ( !RX_ASYNC_EXPLICIT || uart_handle.gState == HAL_UART_STATE_BUSY_TX )
+      if ( !AUTO_ASYNC_RX || uart_handle.gState == HAL_UART_STATE_BUSY_TX )
       {
         HAL_UART_IRQHandler( &uart_handle );
       }
@@ -1076,11 +1145,17 @@ namespace Thor
       HAL_NVIC_SetPriority( ITSettings_HW.IRQn, ITSettings_HW.preemptPriority, ITSettings_HW.subPriority );
       HAL_NVIC_EnableIRQ( ITSettings_HW.IRQn );
 
-      /* Specific interrupts to enable */
+      /*------------------------------------------------
+      Make sure we are able to asynchronously receive some data if it gets sent
+      ------------------------------------------------*/
+      AUTO_ASYNC_RX = true;
       if ( rxMode == Modes::INTERRUPT )
       {
-        RX_ASYNC_EXPLICIT = true;
-        __HAL_UART_ENABLE_IT( &uart_handle, UART_IT_RXNE );    // RX Data Register not Empty
+        /*------------------------------------------------
+        In interrupt mode, we have to handle the RX FIFO on a byte by byte
+        basis otherwise an overrun error is generated.
+        ------------------------------------------------*/
+        __HAL_UART_ENABLE_IT( &uart_handle, UART_IT_RXNE );
       }
 
       PeripheralState.interrupts_enabled = true;
@@ -1133,7 +1208,10 @@ namespace Thor
         assert( HAL_DMA_Init( &hdma_uart_tx ) == HAL_OK );
         __HAL_LINKDMA( &uart_handle, hdmatx, hdma_uart_tx );
 
-        serialDMAManager.attachCallback_TXDMA( uart_channel, boost::bind( &UARTClass::IRQHandler_TXDMA, this ) );
+        /*------------------------------------------------
+        Attach the class specific implementation TX DMA handler
+        ------------------------------------------------*/
+        Thor::DMA::requestHandlers[ dmaTXReqSig ] = boost::bind( &UARTClass::IRQHandler_TXDMA, this );
 
         UART_DMA_EnableIT( periph );
 
@@ -1153,7 +1231,10 @@ namespace Thor
         assert( HAL_DMA_Init( &hdma_uart_rx ) == HAL_OK );
         __HAL_LINKDMA( &uart_handle, hdmarx, hdma_uart_rx );
 
-        serialDMAManager.attachCallback_RXDMA( uart_channel, boost::bind( &UARTClass::IRQHandler_RXDMA, this ) );
+        /*------------------------------------------------
+        Attach the class specific implementation TX DMA handler
+        ------------------------------------------------*/
+        Thor::DMA::requestHandlers[ dmaRXReqSig ] = boost::bind( &UARTClass::IRQHandler_RXDMA, this );
 
         UART_DMA_EnableIT( periph );
 
@@ -1171,7 +1252,7 @@ namespace Thor
         HAL_DMA_Abort( uart_handle.hdmatx );
         HAL_DMA_DeInit( uart_handle.hdmatx );
         UART_DMA_DisableIT( periph );
-        serialDMAManager.removeCallback_TXDMA( uart_channel );
+        Thor::DMA::requestHandlers[ dmaTXReqSig ].clear();
 
         PeripheralState.dma_enabled_tx = false;
       }
@@ -1183,7 +1264,7 @@ namespace Thor
         HAL_DMA_Abort( uart_handle.hdmarx );
         HAL_DMA_DeInit( uart_handle.hdmarx );
         UART_DMA_DisableIT( periph );
-        serialDMAManager.removeCallback_RXDMA( uart_channel );
+        Thor::DMA::requestHandlers[ dmaRXReqSig ].clear();
 
         PeripheralState.dma_enabled_rx = false;
       }
@@ -1272,48 +1353,71 @@ void HAL_UART_RxCpltCallback( UART_HandleTypeDef *UartHandle )
 {
   const UARTClass_sPtr& uart = getUARTClassRef(UartHandle->Instance);
 
-  if ( uart && uart->rxMode == Modes::DMA )
+  if ( uart )
   {
-    uart->rx_complete = true;
-
-    /*------------------------------------------------
-    Calculate how many bytes were received by looking at remaining RX buffer space.
-                num_received = bufferMaxSize - bufferSizeRemaining
-    ------------------------------------------------*/
-    size_t num_received = static_cast<size_t>( UartHandle->RxXferSize - UartHandle->hdmarx->Instance->NDTR );
-
-    /*------------------------------------------------
-    Copy out the data depending on which type of transfer was used
-    ------------------------------------------------*/
-    if( uart->RX_ASYNC_EXPLICIT )
+    if (uart->rxMode == Modes::INTERRUPT)
     {
-      for( size_t x=0; x<num_received; x++ )
+      if (uart->AUTO_ASYNC_RX)
       {
-        uart->rxUserBuffer->push_back( UartHandle->pRxBuffPtr[x] );
+        /*------------------------------------------------
+        We unexpectedly got some data, so dump it into the user's buffer for them
+        to read later. Don't need to check if the buffer is valid as:
+
+        1. ISR routine. We want AFAP.
+        2. The buffer's existence is a requirement for this ISR to even execute.
+        ------------------------------------------------*/
+        for (size_t x = 0; x < uart->asyncRXDataSize; x++)
+        {
+          uart->rxUserBuffer->push_back(uart->rxInternalBuffer[x]);
+        }
+        uart->asyncRXDataSize = 0;
       }
-    }
-    else
-    {
-      for( size_t x=0; x<num_received; x++ )
+      else
       {
-        uart->rxUserBuffer->push_back( uart->rxInternalBuffer[x] );
+        /*------------------------------------------------
+        The user explicitly requested for data to be read
+        ------------------------------------------------*/
+        uint16_t actuallyRead = UartHandle->RxXferSize - UartHandle->RxXferCount;
+        for (uint16_t x = 0; x < actuallyRead; x++)
+        {
+          uart->rxUserBuffer->push_back(uart->rxInternalBuffer[x]);
+        }
       }
+
+      /*------------------------------------------------
+      Go back to async RX listening
+      ------------------------------------------------*/
+      __HAL_UART_ENABLE_IT(UartHandle, UART_IT_RXNE);
+    }
+    else if (uart->rxMode == Modes::DMA)
+    {
+      /*------------------------------------------------
+      Calculate how many bytes were received by looking at remaining RX buffer space.
+                  num_received = bufferMaxSize - bufferSizeRemaining
+      ------------------------------------------------*/
+      auto num_received = static_cast<uint32_t>(UartHandle->RxXferSize - UartHandle->hdmarx->Instance->NDTR);
+
+      /*------------------------------------------------
+      Copy out the data
+      ------------------------------------------------*/
+      for (size_t x = 0; x < num_received; x++)
+      {
+        uart->rxUserBuffer->push_back(uart->rxInternalBuffer[x]);
+      }
+
+      /*------------------------------------------------
+      Go back to async RX listening
+      ------------------------------------------------*/
+      memset(uart->rxInternalBuffer, 0, uart->rxInternalBufferSize);
+      Thor::UART::UART_EnableIT_IDLE(UartHandle);
+      HAL_UART_Receive_DMA( UartHandle, uart->rxInternalBuffer, uart->rxInternalBufferSize );
     }
 
     /*------------------------------------------------
-    Start the listening process again for a new packet
+    Exit the ISR ensuring that we can still receive asynchronous data
     ------------------------------------------------*/
-    Thor::UART::UART_EnableIT_IDLE(UartHandle);
-    HAL_UART_Receive_DMA( UartHandle, uart->rxInternalBuffer, uart->rxInternalBufferSize );
-  }
-  else if( uart && !uart->rx_complete )
-  {
     uart->rx_complete = true;
-
-    if ( uart->rxMode == Modes::INTERRUPT)
-    {
-      uart->RX_ASYNC_EXPLICIT = false;
-    }
+    uart->AUTO_ASYNC_RX = true;
   }
 }
 

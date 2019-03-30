@@ -28,7 +28,7 @@
 #include <Thor/definitions.hpp>
 #include <Thor/defaults.hpp>
 #include <Thor/gpio.hpp>
-#include <Thor/interrupt.hpp>
+#include <Thor/dma.hpp>
 
 #if defined( USING_FREERTOS )
 #include <Thor/exti.hpp>
@@ -45,6 +45,22 @@ extern "C"
 }
 #endif
 #endif /* USING_FREERTOS */
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+extern void UART1_IRQHandler();
+extern void UART2_IRQHandler();
+extern void UART3_IRQHandler();
+extern void UART4_IRQHandler();
+extern void UART5_IRQHandler();
+extern void UART6_IRQHandler();
+extern void UART7_IRQHandler();
+extern void UART8_IRQHandler();
+#ifdef __cplusplus
+}
+#endif
 
 namespace Thor
 {
@@ -66,8 +82,8 @@ namespace Thor
        *	the instance with a private manager that allows runtime deduction of which UART object
        *	triggered an ISR to be called.
        *
-       *	@param[in] N            Size of the internal TX & RX buffer if using Interrupt or DMA mode
-       *	@param[in] channel      Hardware peripheral channel number (i.e. 1 for UART1, 4 for UART4, etc)
+       *	@param[in]  channel         Hardware peripheral channel number (i.e. 1 for UART1, 4 for UART4, etc)
+       *  @param[in]  bufferSize      Size of the internal buffers for queuing up transfer data
        *	@return UARTClass_sPtr
        *
        *  |  Return Value |             Explanation             |
@@ -114,6 +130,8 @@ namespace Thor
 
       Chimera::Status_t disableBuffering( const Chimera::Serial::SubPeripheral periph ) final override;
 
+      bool available(size_t *const bytes = nullptr) final override;
+
     private:
       /*------------------------------------------------
       The constructor is deleted so that object creation is handled by the static 'create' method.
@@ -121,7 +139,7 @@ namespace Thor
       the ISR. This is done by registering each class on creation with a small vector that tracks
       instantiated UART objects. Then a runtime lookup is done via the STM32 HAL UsartHandle ID.
       ------------------------------------------------*/
-      UARTClass() = default;
+      UARTClass();
 
       /*------------------------------------------------
       Allows the C STM32 HAL and ISR functions access this class
@@ -140,7 +158,7 @@ namespace Thor
       int uart_channel;              /**< Numerical representation of the UART instance, zero is invalid */
       bool tx_complete       = true; /**< Indicates if a transmission has been completed */
       bool rx_complete       = true; /**< Indicates if a reception has been completed */
-      bool RX_ASYNC_EXPLICIT = true; /**< Enables/Disables asynchronous reception of data */
+      bool AUTO_ASYNC_RX = true; /**< Enables/Disables asynchronous reception of data */
       bool hardware_assigned = false;
 
       Chimera::Serial::Modes txMode; /**< Logs which mode the TX peripheral is currently in */
@@ -156,6 +174,9 @@ namespace Thor
       size_t txInternalBufferSize;
 
       uint32_t asyncRXDataSize = 0u; /* I think this is used to track when a new unexpected Async RX starts?? */
+
+      uint8_t dmaRXReqSig = Thor::DMA::Source::NONE;
+      uint8_t dmaTXReqSig = Thor::DMA::Source::NONE;
 
       struct UARTClassStatus
       {
@@ -178,7 +199,9 @@ namespace Thor
       Thor::GPIO::GPIOClass_sPtr rx_pin;
 
       /* Local copy of interrupt settings */
-      IT_Initializer ITSettings_HW, ITSettings_DMA_TX, ITSettings_DMA_RX;
+      IT_Initializer ITSettings_HW;
+      IT_Initializer ITSettings_DMA_TX;
+      IT_Initializer ITSettings_DMA_RX;
 
       void assignRXBuffer( uint8_t *const buffer, const size_t size );
       void assignTXBuffer( uint8_t *const buffer, const size_t size );
@@ -187,6 +210,24 @@ namespace Thor
       bool setParity( UART_InitTypeDef &initStruct, const Chimera::Serial::Parity parity );
       bool setStopBits( UART_InitTypeDef &initStruct, const Chimera::Serial::StopBits stopBits );
       bool setFlowControl( UART_InitTypeDef &initStruct, const Chimera::Serial::FlowControl flow );
+
+
+
+      std::array<void ( UARTClass::* )( const Chimera::Serial::SubPeripheral ), 3> modeChangeFuncPtrs;
+	    void setBlockingMode( const Chimera::Serial::SubPeripheral periph );
+      void setInterruptMode( const Chimera::Serial::SubPeripheral periph );
+      void setDMAMode( const Chimera::Serial::SubPeripheral periph );
+
+      std::array<Chimera::Status_t(UARTClass::*)(uint8_t *const, const size_t, const uint32_t), 3> readFuncPtrs;
+      Chimera::Status_t readBlocking(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
+      Chimera::Status_t readInterrupt(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
+      Chimera::Status_t readDMA(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
+
+
+      std::array<Chimera::Status_t(UARTClass::*)(const uint8_t *const, const size_t, const uint32_t), 3> writeFuncPtrs;
+      Chimera::Status_t writeBlocking(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
+      Chimera::Status_t writeInterrupt(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
+      Chimera::Status_t writeDMA(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
 
       void IRQHandler();
       void IRQHandler_TXDMA();
@@ -210,6 +251,8 @@ namespace Thor
 
       void UART_OverrunHandler();
     };
+
+
 
   }    // namespace UART
 

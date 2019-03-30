@@ -73,6 +73,7 @@ namespace Thor
 
       Chimera::Status_t disableBuffering(const Chimera::Serial::SubPeripheral periph) final override;
 
+      bool available(size_t *const bytes = nullptr) final override;
 
     private:
       uint8_t serialChannel = 0;

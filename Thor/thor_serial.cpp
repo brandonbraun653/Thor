@@ -141,5 +141,11 @@ namespace Thor
     {
       return serialObject->disableBuffering( periph );
     }
+
+    bool SerialClass::available(size_t *const bytes)
+    {
+      return serialObject->available(bytes);
+    }
+
   }    // namespace Serial
 }    // namespace Thor
