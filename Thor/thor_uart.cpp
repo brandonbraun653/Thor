@@ -8,8 +8,8 @@
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
- /* Boost Includes */
- #include <boost/bind.hpp>
+/* Boost Includes */
+#include <boost/bind.hpp>
 
 /* Thor Includes */
 #include <Thor/uart.hpp>
@@ -22,7 +22,7 @@ using namespace Thor::Defaults::Serial;
 
 
 #if defined( USING_FREERTOS )
-static std::array<SemaphoreHandle_t,MAX_SERIAL_CHANNELS + 1> uartSemphrs;
+static std::array<SemaphoreHandle_t, MAX_SERIAL_CHANNELS + 1> uartSemphrs;
 TaskTrigger uartTaskTrigger;
 #endif
 
@@ -149,23 +149,23 @@ namespace Thor
       /*------------------------------------------------
       Register the mode change function pointers
       ------------------------------------------------*/
-      modeChangeFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ] = &UARTClass::setBlockingMode;
+      modeChangeFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ]  = &UARTClass::setBlockingMode;
       modeChangeFuncPtrs[ static_cast<uint8_t>( Modes::INTERRUPT ) ] = &UARTClass::setInterruptMode;
-      modeChangeFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ] = &UARTClass::setDMAMode;
+      modeChangeFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ]       = &UARTClass::setDMAMode;
 
       /*------------------------------------------------
       Register the read function pointers
       ------------------------------------------------*/
-      readFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ] = &UARTClass::readBlocking;
+      readFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ]  = &UARTClass::readBlocking;
       readFuncPtrs[ static_cast<uint8_t>( Modes::INTERRUPT ) ] = &UARTClass::readInterrupt;
-      readFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ] = &UARTClass::readDMA;
+      readFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ]       = &UARTClass::readDMA;
 
       /*------------------------------------------------
       Register the write function pointers
       ------------------------------------------------*/
-      writeFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ] = &UARTClass::writeBlocking;
+      writeFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ]  = &UARTClass::writeBlocking;
       writeFuncPtrs[ static_cast<uint8_t>( Modes::INTERRUPT ) ] = &UARTClass::writeInterrupt;
-      writeFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ] = &UARTClass::writeDMA;
+      writeFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ]       = &UARTClass::writeDMA;
 
       AUTO_ASYNC_RX = false;
     }
@@ -216,8 +216,8 @@ namespace Thor
       ITSettings_DMA_TX = hwConfig[ uart_channel ]->dmaIT_TX;
       ITSettings_DMA_RX = hwConfig[ uart_channel ]->dmaIT_RX;
 
-      dmaTXReqSig = Thor::DMA::serialTXReq[uart_channel];
-      dmaRXReqSig = Thor::DMA::serialRXReq[uart_channel];
+      dmaTXReqSig = Thor::DMA::serialTXReq[ uart_channel ];
+      dmaRXReqSig = Thor::DMA::serialRXReq[ uart_channel ];
 
       /*------------------------------------------------
       Initialize the GPIO pins
@@ -284,7 +284,7 @@ namespace Thor
         result |= setStopBits( init, stop );
         result |= setFlowControl( init, flow );
 
-        if( result )
+        if ( result )
         {
           error = UART_Init();
         }
@@ -339,7 +339,7 @@ namespace Thor
       }
       else
       {
-        (this->*(modeChangeFuncPtrs[iter]))(periph);
+        ( this->*( modeChangeFuncPtrs[ iter ] ) )( periph );
       }
 
       return error;
@@ -360,7 +360,7 @@ namespace Thor
       }
       else
       {
-        error = (this->*(writeFuncPtrs[iter]))(buffer, length, timeout_mS);
+        error = ( this->*( writeFuncPtrs[ iter ] ) )( buffer, length, timeout_mS );
       }
 
       return error;
@@ -381,7 +381,7 @@ namespace Thor
       }
       else
       {
-        error = (this->*(readFuncPtrs[iter]))(buffer, length, timeout_mS);
+        error = ( this->*( readFuncPtrs[ iter ] ) )( buffer, length, timeout_mS );
       }
 
       return error;
@@ -391,26 +391,26 @@ namespace Thor
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
-      if( periph == SubPeripheral::TX )
+      if ( periph == SubPeripheral::TX )
       {
-        if( txInternalBuffer )
+        if ( txInternalBuffer )
         {
           memset( txInternalBuffer, 0, txInternalBufferSize );
         }
 
-        if( txUserBuffer )
+        if ( txUserBuffer )
         {
           txUserBuffer->clear();
         }
       }
-      else if( periph == SubPeripheral::RX )
+      else if ( periph == SubPeripheral::RX )
       {
-        if( rxInternalBuffer )
+        if ( rxInternalBuffer )
         {
           memset( rxInternalBuffer, 0, rxInternalBufferSize );
         }
 
-        if( rxUserBuffer )
+        if ( rxUserBuffer )
         {
           rxUserBuffer->clear();
         }
@@ -427,7 +427,7 @@ namespace Thor
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
-      if( !buffer )
+      if ( !buffer )
       {
         error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
       }
@@ -435,14 +435,14 @@ namespace Thor
       {
         size_t bytesRead = 0;
 
-        while( !rxUserBuffer->empty() && ( bytesRead < len ) )
+        while ( !rxUserBuffer->empty() && ( bytesRead < len ) )
         {
           buffer[ bytesRead ] = rxUserBuffer->front();
           rxUserBuffer->pop_front();
           bytesRead++;
         }
 
-        if( bytesRead != len )
+        if ( bytesRead != len )
         {
           error = Chimera::CommonStatusCodes::EMPTY;
         }
@@ -464,18 +464,18 @@ namespace Thor
 #endif
 
     Chimera::Status_t UARTClass::enableBuffering( const Chimera::Serial::SubPeripheral periph,
-                                         boost::circular_buffer<uint8_t> *const buffer )
+                                                  boost::circular_buffer<uint8_t> *const buffer )
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
       if ( periph == SubPeripheral::TX )
       {
-        txUserBuffer                          = buffer;
+        txUserBuffer                         = buffer;
         PeripheralState.tx_buffering_enabled = true;
       }
       else if ( periph == SubPeripheral::RX )
       {
-        rxUserBuffer                          = buffer;
+        rxUserBuffer                         = buffer;
         PeripheralState.rx_buffering_enabled = true;
       }
       else
@@ -506,14 +506,14 @@ namespace Thor
       return error;
     }
 
-    bool UARTClass::available(size_t *const bytes)
+    bool UARTClass::available( size_t *const bytes )
     {
       bool retval = false;
 
-      if (PeripheralState.rx_buffering_enabled && !rxUserBuffer->empty())
+      if ( PeripheralState.rx_buffering_enabled && !rxUserBuffer->empty() )
       {
         retval = true;
-        if (bytes)
+        if ( bytes )
         {
           *bytes = rxUserBuffer->size();
         }
@@ -524,13 +524,13 @@ namespace Thor
 
     void UARTClass::assignRXBuffer( uint8_t *const buffer, const size_t size )
     {
-      rxInternalBuffer = buffer;
+      rxInternalBuffer     = buffer;
       rxInternalBufferSize = size;
     }
 
     void UARTClass::assignTXBuffer( uint8_t *const buffer, const size_t size )
     {
-      txInternalBuffer = buffer;
+      txInternalBuffer     = buffer;
       txInternalBufferSize = size;
     }
 
@@ -540,8 +540,8 @@ namespace Thor
       {
         case static_cast<uint8_t>( CharWid::CW_8BIT ):
         default:
-        initStruct.WordLength = UART_WORDLENGTH_8B;
-        break;
+          initStruct.WordLength = UART_WORDLENGTH_8B;
+          break;
       }
 
       /* All cases are handled, so it will always return true */
@@ -550,20 +550,20 @@ namespace Thor
 
     bool UARTClass::setParity( UART_InitTypeDef &initStruct, const Chimera::Serial::Parity parity )
     {
-      switch( static_cast<uint8_t>( parity ) )
+      switch ( static_cast<uint8_t>( parity ) )
       {
         case static_cast<uint8_t>( Parity::PAR_EVEN ):
-        initStruct.Parity = UART_PARITY_EVEN;
-        break;
+          initStruct.Parity = UART_PARITY_EVEN;
+          break;
 
         case static_cast<uint8_t>( Parity::PAR_ODD ):
-        initStruct.Parity = UART_PARITY_ODD;
-        break;
+          initStruct.Parity = UART_PARITY_ODD;
+          break;
 
         case static_cast<uint8_t>( Parity::PAR_NONE ):
         default:
-        initStruct.Parity = UART_PARITY_NONE;
-        break;
+          initStruct.Parity = UART_PARITY_NONE;
+          break;
       }
 
       /* All cases are handled, so it will always return true */
@@ -574,20 +574,20 @@ namespace Thor
     {
       bool result = true;
 
-      switch( static_cast<uint8_t>( stopBits ) )
+      switch ( static_cast<uint8_t>( stopBits ) )
       {
         case static_cast<uint8_t>( StopBits::SBITS_ONE ):
         default:
-        initStruct.StopBits = UART_STOPBITS_1;
-        break;
+          initStruct.StopBits = UART_STOPBITS_1;
+          break;
 
         case static_cast<uint8_t>( StopBits::SBITS_ONE_POINT_FIVE ):
-        result = false;
-        break;
+          result = false;
+          break;
 
         case static_cast<uint8_t>( StopBits::SBITS_TWO ):
-        initStruct.StopBits = UART_STOPBITS_2;
-        break;
+          initStruct.StopBits = UART_STOPBITS_2;
+          break;
       }
 
       return result;
@@ -597,26 +597,26 @@ namespace Thor
     {
       bool result = true;
 
-      switch( static_cast<uint8_t>( flow ))
+      switch ( static_cast<uint8_t>( flow ) )
       {
         case static_cast<uint8_t>( FlowControl::FCTRL_HW ):
-        initStruct.HwFlowCtl = UART_HWCONTROL_RTS_CTS;
-        break;
+          initStruct.HwFlowCtl = UART_HWCONTROL_RTS_CTS;
+          break;
 
         case static_cast<uint8_t>( FlowControl::FCTRL_NONE ):
         case static_cast<uint8_t>( FlowControl::FCTRL_SW ):
         default:
-        initStruct.HwFlowCtl = UART_HWCONTROL_NONE;
-        break;
+          initStruct.HwFlowCtl = UART_HWCONTROL_NONE;
+          break;
       }
 
       /* All cases are handled, so it will always return true */
       return true;
     }
 
-	  void UARTClass::setBlockingMode( const Chimera::Serial::SubPeripheral periph )
+    void UARTClass::setBlockingMode( const Chimera::Serial::SubPeripheral periph )
     {
-      if (periph == SubPeripheral::TX)
+      if ( periph == SubPeripheral::TX )
       {
         txMode = Modes::BLOCKING;    // Must be set before the other functions
 
@@ -671,7 +671,7 @@ namespace Thor
       }
       else
       {
-        rxMode = Modes::DMA;
+        rxMode        = Modes::DMA;
         AUTO_ASYNC_RX = true;
 
         UART_EnableInterrupts();
@@ -681,12 +681,12 @@ namespace Thor
         UART_EnableIT_IDLE( &uart_handle );
 
         /* Instruct the DMA hardware to start listening for transmissions */
-        memset(rxInternalBuffer, 0, rxInternalBufferSize);
+        memset( rxInternalBuffer, 0, rxInternalBufferSize );
         HAL_UART_Receive_DMA( &uart_handle, rxInternalBuffer, rxInternalBufferSize );
       }
     }
 
-    Chimera::Status_t UARTClass::readBlocking(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    Chimera::Status_t UARTClass::readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
     {
       HAL_StatusTypeDef stm32Error = HAL_OK;
 
@@ -699,35 +699,36 @@ namespace Thor
       UART_OverrunHandler();
 
 #if defined( USING_FREERTOS )
-      stm32Error = HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), length, pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
+      stm32Error =
+          HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), length, pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
 #else
       stm32Error = HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), length, BLOCKING_TIMEOUT_MS );
 #endif
       return convertHALStatus( stm32Error );
     }
 
-    Chimera::Status_t UARTClass::readInterrupt(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    Chimera::Status_t UARTClass::readInterrupt( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
     {
       HAL_StatusTypeDef stm32Error = HAL_OK;
-      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+      Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
 
-      if (length <= rxInternalBufferSize)
+      if ( length <= rxInternalBufferSize )
       {
         /*------------------------------------------------
         Let the ISR handler know that we explicitely asked to receive some data.
         This will cause a redirect into the correct ISR handling control flow.
         ------------------------------------------------*/
         AUTO_ASYNC_RX = false;
-        memset(rxInternalBuffer, 0, rxInternalBufferSize);
-        stm32Error = HAL_UART_Receive_IT(&uart_handle, rxInternalBuffer, length);
+        memset( rxInternalBuffer, 0, rxInternalBufferSize );
+        stm32Error = HAL_UART_Receive_IT( &uart_handle, rxInternalBuffer, length );
 
-        if (stm32Error == HAL_OK)
+        if ( stm32Error == HAL_OK )
         {
           error = Chimera::Serial::Status::RX_IN_PROGRESS;
         }
         else
         {
-          error = convertHALStatus(stm32Error);
+          error = convertHALStatus( stm32Error );
         }
       }
       else
@@ -738,12 +739,12 @@ namespace Thor
       return error;
     }
 
-    Chimera::Status_t UARTClass::readDMA(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    Chimera::Status_t UARTClass::readDMA( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
     {
       HAL_StatusTypeDef stm32Error = HAL_OK;
-      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+      Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
 
-      if (length <= rxInternalBufferSize)
+      if ( length <= rxInternalBufferSize )
       {
         /*------------------------------------------------
         Let the ISR handler know that we explicitely asked to receive some data.
@@ -755,7 +756,7 @@ namespace Thor
         Stop any background listening for data and restart with the new transfer
         ------------------------------------------------*/
         HAL_UART_DMAStop( &uart_handle );
-        memset(rxInternalBuffer, 0, rxInternalBufferSize);
+        memset( rxInternalBuffer, 0, rxInternalBufferSize );
         stm32Error = HAL_UART_Receive_DMA( &uart_handle, rxInternalBuffer, length );
 
         if ( stm32Error == HAL_OK )
@@ -775,23 +776,23 @@ namespace Thor
       return error;
     }
 
-    Chimera::Status_t UARTClass::writeBlocking(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    Chimera::Status_t UARTClass::writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
     {
       HAL_StatusTypeDef stm32Error = HAL_OK;
 
 #if defined( USING_FREERTOS )
-      stm32Error = HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), length,
-                                      pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
+      stm32Error =
+          HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), length, pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
 #else
       stm32Error = HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), length, BLOCKING_TIMEOUT_MS );
 #endif
       return convertHALStatus( stm32Error );
     }
 
-    Chimera::Status_t UARTClass::writeInterrupt(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    Chimera::Status_t UARTClass::writeInterrupt( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
     {
       HAL_StatusTypeDef stm32Error = HAL_OK;
-      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+      Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
 
       if ( txUserBuffer && PeripheralState.tx_buffering_enabled )
       {
@@ -824,10 +825,10 @@ namespace Thor
       return error;
     }
 
-    Chimera::Status_t UARTClass::writeDMA(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS)
+    Chimera::Status_t UARTClass::writeDMA( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
     {
       HAL_StatusTypeDef stm32Error = HAL_OK;
-      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+      Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
 
       if ( txUserBuffer && PeripheralState.tx_buffering_enabled )
       {
@@ -978,7 +979,7 @@ namespace Thor
         ------------------------------------------------*/
         volatile uint32_t isrflags = READ_REG( uart_handle.Instance->SR );
         volatile uint32_t data_reg = READ_REG( uart_handle.Instance->DR );
-        volatile uint32_t cr1 = READ_REG( uart_handle.Instance->CR1 );
+        volatile uint32_t cr1      = READ_REG( uart_handle.Instance->CR1 );
 
         /*------------------------------------------------
         Prepare necessary flags for ISR flow control
@@ -1015,7 +1016,7 @@ namespace Thor
               rxInternalBuffer[ asyncRXDataSize ] = static_cast<uint8_t>( data_reg );
               asyncRXDataSize += 1u;
             }
-            else if( rxMode != Modes::DMA )
+            else if ( rxMode != Modes::DMA )
             {
               // The receive buffer was full!!!! We lost data! Somehow set an error.
               // Probably should set this as Chimera thing.
@@ -1324,7 +1325,7 @@ namespace Thor
 #if !defined( GMOCK_TEST )
 void HAL_UART_TxCpltCallback( UART_HandleTypeDef *UartHandle )
 {
-  const UARTClass_sPtr& uart = getUARTClassRef(UartHandle->Instance);
+  const UARTClass_sPtr &uart = getUARTClassRef( UartHandle->Instance );
 
   if ( uart && uart->PeripheralState.enabled )
   {
@@ -1333,14 +1334,14 @@ void HAL_UART_TxCpltCallback( UART_HandleTypeDef *UartHandle )
     /*------------------------------------------------
     Transmit more data if we have any
     ------------------------------------------------*/
-    if (!uart->txUserBuffer->empty())
+    if ( !uart->txUserBuffer->empty() )
     {
       size_t bytesToWrite = std::min( uart->txUserBuffer->size(), uart->txInternalBufferSize );
       memset( uart->txInternalBuffer, 0, uart->txInternalBufferSize );
 
-      for( uint32_t x=0; x<bytesToWrite; x++ )
+      for ( uint32_t x = 0; x < bytesToWrite; x++ )
       {
-        uart->txInternalBuffer[x] = uart->txUserBuffer->front();
+        uart->txInternalBuffer[ x ] = uart->txUserBuffer->front();
         uart->txUserBuffer->pop_front();
       }
 
@@ -1351,13 +1352,13 @@ void HAL_UART_TxCpltCallback( UART_HandleTypeDef *UartHandle )
 
 void HAL_UART_RxCpltCallback( UART_HandleTypeDef *UartHandle )
 {
-  const UARTClass_sPtr& uart = getUARTClassRef(UartHandle->Instance);
+  const UARTClass_sPtr &uart = getUARTClassRef( UartHandle->Instance );
 
   if ( uart )
   {
-    if (uart->rxMode == Modes::INTERRUPT)
+    if ( uart->rxMode == Modes::INTERRUPT )
     {
-      if (uart->AUTO_ASYNC_RX)
+      if ( uart->AUTO_ASYNC_RX )
       {
         /*------------------------------------------------
         We unexpectedly got some data, so dump it into the user's buffer for them
@@ -1366,9 +1367,9 @@ void HAL_UART_RxCpltCallback( UART_HandleTypeDef *UartHandle )
         1. ISR routine. We want AFAP.
         2. The buffer's existence is a requirement for this ISR to even execute.
         ------------------------------------------------*/
-        for (size_t x = 0; x < uart->asyncRXDataSize; x++)
+        for ( size_t x = 0; x < uart->asyncRXDataSize; x++ )
         {
-          uart->rxUserBuffer->push_back(uart->rxInternalBuffer[x]);
+          uart->rxUserBuffer->push_back( uart->rxInternalBuffer[ x ] );
         }
         uart->asyncRXDataSize = 0;
       }
@@ -1378,45 +1379,45 @@ void HAL_UART_RxCpltCallback( UART_HandleTypeDef *UartHandle )
         The user explicitly requested for data to be read
         ------------------------------------------------*/
         uint16_t actuallyRead = UartHandle->RxXferSize - UartHandle->RxXferCount;
-        for (uint16_t x = 0; x < actuallyRead; x++)
+        for ( uint16_t x = 0; x < actuallyRead; x++ )
         {
-          uart->rxUserBuffer->push_back(uart->rxInternalBuffer[x]);
+          uart->rxUserBuffer->push_back( uart->rxInternalBuffer[ x ] );
         }
       }
 
       /*------------------------------------------------
       Go back to async RX listening
       ------------------------------------------------*/
-      __HAL_UART_ENABLE_IT(UartHandle, UART_IT_RXNE);
+      __HAL_UART_ENABLE_IT( UartHandle, UART_IT_RXNE );
     }
-    else if (uart->rxMode == Modes::DMA)
+    else if ( uart->rxMode == Modes::DMA )
     {
       /*------------------------------------------------
       Calculate how many bytes were received by looking at remaining RX buffer space.
                   num_received = bufferMaxSize - bufferSizeRemaining
       ------------------------------------------------*/
-      auto num_received = static_cast<uint32_t>(UartHandle->RxXferSize - UartHandle->hdmarx->Instance->NDTR);
+      auto num_received = static_cast<uint32_t>( UartHandle->RxXferSize - UartHandle->hdmarx->Instance->NDTR );
 
       /*------------------------------------------------
       Copy out the data
       ------------------------------------------------*/
-      for (size_t x = 0; x < num_received; x++)
+      for ( size_t x = 0; x < num_received; x++ )
       {
-        uart->rxUserBuffer->push_back(uart->rxInternalBuffer[x]);
+        uart->rxUserBuffer->push_back( uart->rxInternalBuffer[ x ] );
       }
 
       /*------------------------------------------------
       Go back to async RX listening
       ------------------------------------------------*/
-      memset(uart->rxInternalBuffer, 0, uart->rxInternalBufferSize);
-      Thor::UART::UART_EnableIT_IDLE(UartHandle);
+      memset( uart->rxInternalBuffer, 0, uart->rxInternalBufferSize );
+      Thor::UART::UART_EnableIT_IDLE( UartHandle );
       HAL_UART_Receive_DMA( UartHandle, uart->rxInternalBuffer, uart->rxInternalBufferSize );
     }
 
     /*------------------------------------------------
     Exit the ISR ensuring that we can still receive asynchronous data
     ------------------------------------------------*/
-    uart->rx_complete = true;
+    uart->rx_complete   = true;
     uart->AUTO_ASYNC_RX = true;
   }
 }

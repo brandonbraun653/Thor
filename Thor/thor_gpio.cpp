@@ -1,12 +1,12 @@
 /********************************************************************************
-* File Name:
-*   thor_gpio.cpp
-*
-* Description:
-*   Implements the Thor GPIO driver
-*
-* 2019 | Brandon Braun | brandonbraun653@gmail.com
-********************************************************************************/
+ * File Name:
+ *   thor_gpio.cpp
+ *
+ * Description:
+ *   Implements the Thor GPIO driver
+ *
+ * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
 
 /* Project Includes */
 #include <Thor/gpio.hpp>
@@ -82,7 +82,7 @@ namespace Thor
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
-      const PinNum stm32_pin = convertPinNum( pin );
+      const PinNum stm32_pin   = convertPinNum( pin );
       const PinPort stm32_port = convertPort( port );
 
       if ( ( stm32_pin == PinNum::NOT_A_PIN ) || !stm32_port )
@@ -132,8 +132,9 @@ namespace Thor
 
     Chimera::Status_t GPIOClass::getState( Chimera::GPIO::State &state )
     {
-     state = static_cast<Chimera::GPIO::State>( HAL_GPIO_ReadPin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ) ) );
-     return Chimera::CommonStatusCodes::OK;
+      state =
+          static_cast<Chimera::GPIO::State>( HAL_GPIO_ReadPin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ) ) );
+      return Chimera::CommonStatusCodes::OK;
     }
 
     Chimera::Status_t GPIOClass::toggle()
@@ -142,22 +143,22 @@ namespace Thor
       return Chimera::CommonStatusCodes::OK;
     }
 
-    void GPIOClass::initAdvanced(const PinPort port, const PinNum pin, const PinSpeed speed, const uint32_t alt)
+    void GPIOClass::initAdvanced( const PinPort port, const PinNum pin, const PinSpeed speed, const uint32_t alt )
     {
       pinConfig.GPIOx     = port;
       pinConfig.pinNum    = pin;
       pinConfig.speed     = speed;
       pinConfig.alternate = alt;
 
-      auto cfg = getHALInit(pinConfig);
-      GPIO_Init(pinConfig.GPIOx, &cfg);
+      auto cfg = getHALInit( pinConfig );
+      GPIO_Init( pinConfig.GPIOx, &cfg );
     }
 
     const PinNum convertPinNum( const uint8_t num )
     {
       PinNum pinNum = PinNum::NOT_A_PIN;
 
-      if( num < static_cast<uint8_t>(PinNum::MAX_PINS) )
+      if ( num < static_cast<uint8_t>( PinNum::MAX_PINS ) )
       {
         pinNum = static_cast<PinNum>( 1u << num );
       }

@@ -50,14 +50,14 @@ extern "C"
 extern "C"
 {
 #endif
-extern void UART1_IRQHandler();
-extern void UART2_IRQHandler();
-extern void UART3_IRQHandler();
-extern void UART4_IRQHandler();
-extern void UART5_IRQHandler();
-extern void UART6_IRQHandler();
-extern void UART7_IRQHandler();
-extern void UART8_IRQHandler();
+  extern void UART1_IRQHandler();
+  extern void UART2_IRQHandler();
+  extern void UART3_IRQHandler();
+  extern void UART4_IRQHandler();
+  extern void UART5_IRQHandler();
+  extern void UART6_IRQHandler();
+  extern void UART7_IRQHandler();
+  extern void UART8_IRQHandler();
 #ifdef __cplusplus
 }
 #endif
@@ -130,7 +130,7 @@ namespace Thor
 
       Chimera::Status_t disableBuffering( const Chimera::Serial::SubPeripheral periph ) final override;
 
-      bool available(size_t *const bytes = nullptr) final override;
+      bool available( size_t *const bytes = nullptr ) final override;
 
     private:
       /*------------------------------------------------
@@ -144,21 +144,21 @@ namespace Thor
       /*------------------------------------------------
       Allows the C STM32 HAL and ISR functions access this class
       ------------------------------------------------*/
-      friend void(::HAL_UART_TxCpltCallback )( UART_HandleTypeDef *UsartHandle );
-      friend void(::HAL_UART_RxCpltCallback )( UART_HandleTypeDef *UsartHandle );
-      friend void(::UART1_IRQHandler )( void );
-      friend void(::UART2_IRQHandler )( void );
-      friend void(::UART3_IRQHandler )( void );
-      friend void(::UART4_IRQHandler )( void );
-      friend void(::UART5_IRQHandler )( void );
-      friend void(::UART6_IRQHandler )( void );
-      friend void(::UART7_IRQHandler )( void );
-      friend void(::UART8_IRQHandler )( void );
+      friend void( ::HAL_UART_TxCpltCallback )( UART_HandleTypeDef *UsartHandle );
+      friend void( ::HAL_UART_RxCpltCallback )( UART_HandleTypeDef *UsartHandle );
+      friend void( ::UART1_IRQHandler )( void );
+      friend void( ::UART2_IRQHandler )( void );
+      friend void( ::UART3_IRQHandler )( void );
+      friend void( ::UART4_IRQHandler )( void );
+      friend void( ::UART5_IRQHandler )( void );
+      friend void( ::UART6_IRQHandler )( void );
+      friend void( ::UART7_IRQHandler )( void );
+      friend void( ::UART8_IRQHandler )( void );
 
       int uart_channel;              /**< Numerical representation of the UART instance, zero is invalid */
       bool tx_complete       = true; /**< Indicates if a transmission has been completed */
       bool rx_complete       = true; /**< Indicates if a reception has been completed */
-      bool AUTO_ASYNC_RX = true; /**< Enables/Disables asynchronous reception of data */
+      bool AUTO_ASYNC_RX     = true; /**< Enables/Disables asynchronous reception of data */
       bool hardware_assigned = false;
 
       Chimera::Serial::Modes txMode; /**< Logs which mode the TX peripheral is currently in */
@@ -212,22 +212,21 @@ namespace Thor
       bool setFlowControl( UART_InitTypeDef &initStruct, const Chimera::Serial::FlowControl flow );
 
 
-
       std::array<void ( UARTClass::* )( const Chimera::Serial::SubPeripheral ), 3> modeChangeFuncPtrs;
-	    void setBlockingMode( const Chimera::Serial::SubPeripheral periph );
+      void setBlockingMode( const Chimera::Serial::SubPeripheral periph );
       void setInterruptMode( const Chimera::Serial::SubPeripheral periph );
       void setDMAMode( const Chimera::Serial::SubPeripheral periph );
 
-      std::array<Chimera::Status_t(UARTClass::*)(uint8_t *const, const size_t, const uint32_t), 3> readFuncPtrs;
-      Chimera::Status_t readBlocking(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
-      Chimera::Status_t readInterrupt(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
-      Chimera::Status_t readDMA(uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
+      std::array<Chimera::Status_t ( UARTClass::* )( uint8_t *const, const size_t, const uint32_t ), 3> readFuncPtrs;
+      Chimera::Status_t readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
+      Chimera::Status_t readInterrupt( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
+      Chimera::Status_t readDMA( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
 
 
-      std::array<Chimera::Status_t(UARTClass::*)(const uint8_t *const, const size_t, const uint32_t), 3> writeFuncPtrs;
-      Chimera::Status_t writeBlocking(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
-      Chimera::Status_t writeInterrupt(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
-      Chimera::Status_t writeDMA(const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS);
+      std::array<Chimera::Status_t ( UARTClass::* )( const uint8_t *const, const size_t, const uint32_t ), 3> writeFuncPtrs;
+      Chimera::Status_t writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
+      Chimera::Status_t writeInterrupt( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
+      Chimera::Status_t writeDMA( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
 
       void IRQHandler();
       void IRQHandler_TXDMA();
@@ -251,7 +250,6 @@ namespace Thor
 
       void UART_OverrunHandler();
     };
-
 
 
   }    // namespace UART

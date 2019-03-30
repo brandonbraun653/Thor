@@ -264,9 +264,9 @@ namespace Thor
         handle.Init.Prescaler = wdPrescaler;
         handle.Init.Reload    = wdReload;
 
-        #if defined(STM32F7)
-        handle.Init.Window    = wdReload;
-        #endif
+#if defined( STM32F7 )
+        handle.Init.Window = wdReload;
+#endif
 
         return Chimera::CommonStatusCodes::OK;
       }

@@ -145,4 +145,4 @@ extern "C"
 }
 #endif
 
-#endif  /* THOR_EXTI_HPP */
+#endif /* THOR_EXTI_HPP */

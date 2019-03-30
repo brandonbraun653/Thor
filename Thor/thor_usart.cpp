@@ -9,8 +9,8 @@
 
 #if defined( USING_FREERTOS )
 //#include <Thor/exti.hpp>
-//static SemaphoreHandle_t usartSemphrs[ Thor::Serial::MAX_SERIAL_CHANNELS + 1 ];
-//TaskTrigger usartTaskTrigger;
+// static SemaphoreHandle_t usartSemphrs[ Thor::Serial::MAX_SERIAL_CHANNELS + 1 ];
+// TaskTrigger usartTaskTrigger;
 #endif
 
 #if 0

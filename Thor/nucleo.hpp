@@ -30,7 +30,7 @@ namespace Thor
 #endif
 
 #if defined( STM32F4 )
-    static GPIO_TypeDef *GREEN_LED_PORT                        = GPIOA;
+    static GPIO_TypeDef *GREEN_LED_PORT           = GPIOA;
     static const Thor::GPIO::PinNum GREEN_LED_PIN = Thor::GPIO::PinNum::PIN_5;
 #endif
   }    // namespace Nucleo

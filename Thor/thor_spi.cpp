@@ -1862,7 +1862,7 @@ again when unblocked.
       }
 #endif
 
-#endif   /* !USING_CHIMERA*/
+#endif /* !USING_CHIMERA*/
     }    // namespace SPI
   }      // namespace Peripheral
 }    // namespace Thor

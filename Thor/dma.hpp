@@ -27,25 +27,25 @@ extern "C"
 #endif
 
 #if defined( DMA1 )
-extern void DMA1_Stream0_IRQHandler();
-extern void DMA1_Stream1_IRQHandler();
-extern void DMA1_Stream2_IRQHandler();
-extern void DMA1_Stream3_IRQHandler();
-extern void DMA1_Stream4_IRQHandler();
-extern void DMA1_Stream5_IRQHandler();
-extern void DMA1_Stream6_IRQHandler();
-extern void DMA1_Stream7_IRQHandler();
+  extern void DMA1_Stream0_IRQHandler();
+  extern void DMA1_Stream1_IRQHandler();
+  extern void DMA1_Stream2_IRQHandler();
+  extern void DMA1_Stream3_IRQHandler();
+  extern void DMA1_Stream4_IRQHandler();
+  extern void DMA1_Stream5_IRQHandler();
+  extern void DMA1_Stream6_IRQHandler();
+  extern void DMA1_Stream7_IRQHandler();
 #endif
 
 #if defined( DMA2 )
-extern void DMA2_Stream0_IRQHandler();
-extern void DMA2_Stream1_IRQHandler();
-extern void DMA2_Stream2_IRQHandler();
-extern void DMA2_Stream3_IRQHandler();
-extern void DMA2_Stream4_IRQHandler();
-extern void DMA2_Stream5_IRQHandler();
-extern void DMA2_Stream6_IRQHandler();
-extern void DMA2_Stream7_IRQHandler();
+  extern void DMA2_Stream0_IRQHandler();
+  extern void DMA2_Stream1_IRQHandler();
+  extern void DMA2_Stream2_IRQHandler();
+  extern void DMA2_Stream3_IRQHandler();
+  extern void DMA2_Stream4_IRQHandler();
+  extern void DMA2_Stream5_IRQHandler();
+  extern void DMA2_Stream6_IRQHandler();
+  extern void DMA2_Stream7_IRQHandler();
 #endif
 
 #ifdef __cplusplus
@@ -56,7 +56,6 @@ namespace Thor
 {
   namespace DMA
   {
-
     namespace Source
     {
       static constexpr uint8_t NONE         = 0;
@@ -141,7 +140,7 @@ namespace Thor
 
       static constexpr uint8_t S_NUM_DMA_REQUESTORS = 79;
 
-      /* clang-format off */
+/* clang-format off */
       #if defined( STM32F4 )
       /*------------------------------------------------
       Taken from tables 28 & 29 on RM0390 datasheet
@@ -172,37 +171,20 @@ namespace Thor
 
     }    // namespace Source
 
-    extern std::array<boost::function<void(void)>, Source::S_NUM_DMA_REQUESTORS> requestHandlers;
+    extern std::array<boost::function<void( void )>, Source::S_NUM_DMA_REQUESTORS> requestHandlers;
 
-    constexpr std::array<uint8_t, Thor::Serial::MAX_SERIAL_CHANNELS + 1> serialRXReq =
-    {
-      Source::NONE,
-      Source::S_USART1_RX,
-      Source::S_USART2_RX,
-      Source::S_USART3_RX,
-      Source::S_UART4_RX,
-      Source::S_UART5_RX,
-      Source::S_USART6_RX,
-      Source::NONE,
-      Source::NONE
+    constexpr std::array<uint8_t, Thor::Serial::MAX_SERIAL_CHANNELS + 1> serialRXReq = {
+      Source::NONE,       Source::S_USART1_RX, Source::S_USART2_RX, Source::S_USART3_RX, Source::S_UART4_RX,
+      Source::S_UART5_RX, Source::S_USART6_RX, Source::NONE,        Source::NONE
     };
 
-    constexpr std::array<uint8_t, Thor::Serial::MAX_SERIAL_CHANNELS + 1> serialTXReq =
-    {
-      Source::NONE,
-      Source::S_USART1_TX,
-      Source::S_USART2_TX,
-      Source::S_USART3_TX,
-      Source::S_UART4_TX,
-      Source::S_UART5_TX,
-      Source::S_USART6_TX,
-      Source::NONE,
-      Source::NONE
+    constexpr std::array<uint8_t, Thor::Serial::MAX_SERIAL_CHANNELS + 1> serialTXReq = {
+      Source::NONE,       Source::S_USART1_TX, Source::S_USART2_TX, Source::S_USART3_TX, Source::S_UART4_TX,
+      Source::S_UART5_TX, Source::S_USART6_TX, Source::NONE,        Source::NONE
     };
 
   }    // namespace DMA
 }    // namespace Thor
-
 
 
 #endif /* !THOR_DMA_HPP */

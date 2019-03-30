@@ -14,10 +14,11 @@
 import os
 import sys
 
-from dev.tools.swqa.cppcheck import CppCheck
+from tools.swqa.cppcheck import CppCheck
 
 this_dir = os.path.dirname(__file__)
-cppcheck_path = os.path.expandvars('$GITHUB_ROOT/cppcheck/bin/cppcheck.exe')
+
+cppcheck = os.path.join(this_dir, 'tools', 'swqa', 'cppcheck', 'cppcheck.exe')
 config_file = os.path.join(this_dir, 'thor_cppcheck.json')
 
 
@@ -28,9 +29,9 @@ def run_cpp_check():
     :return: Process status code
     :rtype: int
     """
-    checker = CppCheck(exe_path=cppcheck_path)
+    checker = CppCheck(exe_path=cppcheck)
     checker.load_config(file=config_file)
-    return checker.execute(config='stm32f767_hal', working_dir=this_dir)
+    return checker.execute(config='all', working_dir=this_dir)
 
 
 if __name__ == "__main__":

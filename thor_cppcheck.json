@@ -4,11 +4,12 @@
 
       ],
       "directories":[
-        "Thor/Thor/include",
-        "Thor/Thor/source"
+        "Thor"
       ],
       "includes":[
-        "Thor/Thor/include"
+        "Thor",
+        "Thor/config/freertos",
+        "Thor/config/chimera"
       ],
       "excludes":[
 
@@ -23,28 +24,33 @@
         "warning",
         "information"
       ],
+      "suppression": [
+      ],
       "add_ons":[
+      ],
+      "options":[
       ],
       "threads":8,
       "output_format":"vs",
+      "output_template": "{file}({line}): {severity} ({id}): {message}",
       "output_dir":"cppcheck",
-      "use_xml":false
+      "use_xml":false,
+      "on_error_exit_code": 10,
+      "platform": "unix32",
+      "standard": "c++14"
    },
    "stm32f767_hal":{
       "files":[
 
       ],
       "directories":[
-        "Thor/Thor/include",
-        "Thor/Thor/source"
+        "Thor",
+        "Thor/config/freertos",
+        "Thor/config/chimera"
       ],
       "includes":[
         "%BOOST_ROOT%/boost_1_68_0",
-        "Thor",
-        "Thor/lib/cmsis/CMSIS/Core/Include",
-        "Thor/lib/stm32hal_f7/Device/conf",
-        "Thor/lib/stm32hal_f7/Device/include",
-        "Thor/lib/stm32hal_f7/STM32F7xx_HAL_Driver/Inc"
+        "Thor"
       ],
       "excludes":[
 

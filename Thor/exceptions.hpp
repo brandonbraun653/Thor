@@ -20,11 +20,11 @@ extern "C"
 
   void HardFault_Handler();
 
-  #if defined( __GCC__ )
+#if defined( __GCC__ )
   void HardFault_HandlerC( unsigned long *hardfault_args ) __attribute__( ( used ) );
-  #else
-  void HardFault_HandlerC( unsigned long *hardfault_args );
-  #endif
+#else
+void HardFault_HandlerC( unsigned long *hardfault_args );
+#endif
 #ifdef __cplusplus
 }
 #endif

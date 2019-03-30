@@ -27,8 +27,8 @@
 #define CHIMERA_INHERITED_SERIAL Thor::Serial::SerialClass
 //#define CHIMERA_INHERITED_DMA Thor::DMA::DMAClass
 
-//typedef Thor::Peripheral::SPI::ChimeraSPI CHIMERA_INHERITED_SPI;
-//typedef Thor::Peripheral::Watchdog::ChimeraWatchdog CHIMERA_INHERITED_WATCHDOG;
+// typedef Thor::Peripheral::SPI::ChimeraSPI CHIMERA_INHERITED_SPI;
+// typedef Thor::Peripheral::Watchdog::ChimeraWatchdog CHIMERA_INHERITED_WATCHDOG;
 
 
 #endif

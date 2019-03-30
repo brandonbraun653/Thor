@@ -1,12 +1,12 @@
 /********************************************************************************
-* File Name:
-*   gpio.hpp
-*
-* Description:
-*   Implements the Thor GPIO driver
-*
-* 2019 | Brandon Braun | brandonbraun653@gmail.com
-********************************************************************************/
+ * File Name:
+ *   gpio.hpp
+ *
+ * Description:
+ *   Implements the Thor GPIO driver
+ *
+ * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
 #pragma once
 #ifndef THOR_GPIO_H_
 #define THOR_GPIO_H_
@@ -50,17 +50,16 @@ namespace Thor
 
       /**
        *  A more advanced initialization function that allows full configuration of a pin's behavior in one go
-       *  
+       *
        *  @param[in]  port    The port to use
        *  @param[in]  pin     The pin to use
        *  @param[in]  speed   How "fast" you want the pin to switch. This is effectively drive strength.
        *  @param[in]  alt     Alternate function parameter as defined in the STM32 HAL to remap the GPIO to a peripheral
        *  @return void
        */
-      void initAdvanced( const Thor::GPIO::PinPort port,
-                         const Thor::GPIO::PinNum pin,
+      void initAdvanced( const Thor::GPIO::PinPort port, const Thor::GPIO::PinNum pin,
                          const Thor::GPIO::PinSpeed speed = Thor::GPIO::PinSpeed::HIGH_SPD,
-                         const uint32_t alt               = Thor::GPIO::NOALTERNATE);
+                         const uint32_t alt               = Thor::GPIO::NOALTERNATE );
 
       static GPIO_InitTypeDef getHALInit( const Thor::GPIO::PinConfig &config );
 
@@ -72,12 +71,12 @@ namespace Thor
       void GPIO_ClockDisable( Thor::GPIO::PinPort port );
     };
 
-    extern const PinNum convertPinNum(const uint8_t num);
-    extern const PinPort convertPort(const Chimera::GPIO::Port port);
-    extern const PinMode convertDrive(const Chimera::GPIO::Drive drive);
-    extern const PinPull convertPull(const Chimera::GPIO::Pull pull);
-    extern const PinConfig convertPinInit(const Chimera::GPIO::PinInit &pin);
-    extern const GPIO_TypeDef *const portMap(const Chimera::GPIO::Port port);
+    extern const PinNum convertPinNum( const uint8_t num );
+    extern const PinPort convertPort( const Chimera::GPIO::Port port );
+    extern const PinMode convertDrive( const Chimera::GPIO::Drive drive );
+    extern const PinPull convertPull( const Chimera::GPIO::Pull pull );
+    extern const PinConfig convertPinInit( const Chimera::GPIO::PinInit &pin );
+    extern const GPIO_TypeDef *const portMap( const Chimera::GPIO::Port port );
   }    // namespace GPIO
 }    // namespace Thor
 

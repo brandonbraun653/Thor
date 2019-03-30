@@ -4,7 +4,5 @@ namespace Thor
 {
   namespace Interrupt
   {
-
-  };      // namespace Interrupt
+  };    // namespace Interrupt
 }    // namespace Thor
-

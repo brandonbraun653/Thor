@@ -6,7 +6,8 @@
 
 #if defined( USING_FREERTOS )
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include "FreeRTOS.h"
@@ -37,7 +38,7 @@ void ThorInit()
 /* Set up the EXTI handler for passing messages from
  * from high priority to low priority interrupts. */
 #ifdef USING_FREERTOS
-  //setupEXTI0_Interrupt();
+  // setupEXTI0_Interrupt();
 #endif
 
 #if USE_SERIAL_DEBUG_OUTPUT && !defined( USING_VISUALGDB_PROFILER )

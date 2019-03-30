@@ -6,9 +6,9 @@
   ],
   "directories":[
     {
-      "path": "Thor/Thor",
+      "path": "Thor",
       "recursive": true,
-      "extensions": ["*.hpp", "*.cpp", ".h", "*.c"]
+      "extensions": ["*.hpp", "*.cpp", "*.h", "*.c"]
     }
   ]
 }

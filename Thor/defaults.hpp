@@ -48,7 +48,7 @@ namespace Thor
         const DMA_Initializer dmaRX;
       };
 
-      extern const std::array< const SerialConfig *const, Thor::Serial::MAX_SERIAL_CHANNELS + 1> hwConfig;
+      extern const std::array<const SerialConfig *const, Thor::Serial::MAX_SERIAL_CHANNELS + 1> hwConfig;
 
 #if defined( STM32F7 ) || defined( STM32F4 )
       extern const USART_InitTypeDef dflt_USART_Init;
