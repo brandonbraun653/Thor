@@ -1,12 +1,26 @@
-#include <Thor/defaults.hpp>
+/********************************************************************************
+ * File Name:
+ *     thor_defaults.cpp
+ *
+ * Description:
+ *     Implements default peripheral configuration options
+ *
+ * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+/* Chimera Includes */
 #include <Chimera/types.hpp>
+
+/* Thor Includes */
+#include <Thor/definitions.hpp>
+#include <Thor/defaults.hpp>
 
 using namespace Thor::DMA;
 using namespace Thor::GPIO;
 using namespace Thor::SPI;
 using namespace Thor::TIMER;
 using namespace Thor::Serial;
-using namespace Thor::Defaults::Interrupt;
+using namespace Thor::Interrupt;
 
 namespace Thor
 {

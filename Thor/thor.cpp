@@ -27,7 +27,7 @@ void ThorInit()
   ThorSystemClockConfig();
 
   /* Enforce the system interrupt priority structure */
-  HAL_NVIC_SetPriorityGrouping( Thor::Defaults::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
+  HAL_NVIC_SetPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
 
 
 #if WRITE_BUFFERING_DISABLED

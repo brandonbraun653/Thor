@@ -1,33 +1,21 @@
-﻿#pragma once
+﻿/********************************************************************************
+ * File Name:
+ *   definitions.hpp
+ *
+ * Description:
+ *   Common definitions for the various Thor modules
+ *
+ * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+#pragma once
 #ifndef THOR_DEFINITIONS_H_
 #define THOR_DEFINITIONS_H_
 
 /* C/C++ Includes */
-#include <limits>
 #include <cstdint>
 
 /* Thor Includes */
 #include <Thor/headers.hpp>
-
-/* FreeRTOS Includes */
-#if defined( USING_FREERTOS )
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include "FreeRTOS.h"
-#include "task.h"
-#include "semphr.h"
-
-#ifdef __cplusplus
-}
-#endif
-#endif /* USING_FREERTOS */
-
-#ifndef UNUSED
-#define UNUSED( x ) ( void )x
-#endif
 
 namespace Thor
 {
@@ -64,26 +52,6 @@ namespace Thor
         break;
     }
   }
-
-  namespace Interrupt
-  {
-#if defined( USING_FREERTOS )
-    const uint32_t EXTI0_MAX_IRQn_PRIORITY   = configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY;
-    const uint32_t MAX_PENDING_TASK_TRIGGERS = 10; /**< The largest number of queued events at any given time */
-
-    /** The various types of triggers that can be used to unlock a FreeRTOS thread */
-    enum Trigger : uint8_t
-    {
-      RX_COMPLETE,
-      TX_COMPLETE,
-      TXRX_COMPLETE,
-      TRANSFER_ERROR,
-      BUFFERED_TX_COMPLETE,
-      BUFFERED_TXRX_COMPLETE,
-      MAX_SOURCES
-    };
-#endif
-  }    // namespace Interrupt
 
   namespace GPIO
   {
@@ -155,155 +123,18 @@ namespace Thor
       UNKNOWN_PULL
     };
 
-    struct PinConfig
+    struct Initializer
     {
       PinPort GPIOx      = GPIOA;
-      PinSpeed speed     = PinSpeed::MEDIUM_SPD;
-      PinMode mode       = PinMode::INPUT;
       PinNum pinNum      = PinNum::NOT_A_PIN;
+      PinMode mode       = PinMode::INPUT;
+      PinSpeed speed     = PinSpeed::MEDIUM_SPD;
       PinPull pull       = PinPull::NOPULL;
       uint32_t alternate = NOALTERNATE;
     };
+
   }    // namespace GPIO
 
-  namespace TIMER
-  {
-    const unsigned int MAX_CHANNELS     = 16;
-    const unsigned int MAX_SUB_CHANNELS = 6;
-    const unsigned int MAX_ALT_PORTS    = 4;
-    const unsigned int MAX_ALT_PINS     = 4;
-
-    /*--------------------------
-     * Hardware Descriptors
-     *--------------------------*/
-    const uint32_t timerBaseAddresses[] = {
-#if defined( STM32F446xx ) || defined( STM32F767xx )
-      0,
-      /* Indexing offset since no TIM0 */
-      TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE, TIM5_BASE, TIM6_BASE, TIM7_BASE, TIM8_BASE, TIM9_BASE, TIM10_BASE, TIM11_BASE,
-      TIM12_BASE, TIM13_BASE, TIM14_BASE
-#endif
-    };
-
-    enum TimerCategory
-    {
-      TIMER_BASIC,
-      TIMER_GENERAL_PURPOSE,
-      TIMER_ADVANCED,
-      TIMER_LOW_POWER
-    };
-
-    enum TimerChannelSize
-    {
-      TIMER_BASIC_CHANNELS     = 2u,
-      TIMER_BASIC_SUB_CHANNELS = 1u,
-
-      TIMER_GENERAL_PURPOSE_CHANNELS     = 10u,
-      TIMER_GENERAL_PURPOSE_SUB_CHANNELS = 4u,
-
-      TIMER_ADVANCED_CHANNELS     = 2u,
-      TIMER_ADVANCED_SUB_CHANNELS = 6u,
-
-      TIMER_LOW_POWER_CHANNELS     = 1u,
-      TIMER_LOW_POWER_SUB_CHANNELS = 1u
-    };
-
-    enum TimerSize
-    {
-      TIMER_16BIT = 1u,
-      TIMER_32BIT = 2u
-    };
-
-    enum TimerDirection
-    {
-      TIMER_UP            = 1u,
-      TIMER_DOWN          = 2u,
-      TIMER_AUTO_RELOAD   = 4u,
-      TIMER_DIRECTION_ALL = ( TIMER_UP | TIMER_DOWN | TIMER_AUTO_RELOAD )
-    };
-
-    enum TimerModes
-    {
-      TIMER_INPUT_CAPTURE  = 1u,
-      TIMER_OUTPUT_COMPARE = 2u,
-      TIMER_PWM            = 4u,
-      TIMER_ONE_PULSE      = 8u,
-      TIMER_ENCODER        = 16u,
-      TIMER_BASE           = 32u,
-      TIMER_MODE_TIER_1 =
-          ( TIMER_INPUT_CAPTURE | TIMER_OUTPUT_COMPARE | TIMER_PWM | TIMER_ONE_PULSE | TIMER_BASE | TIMER_ENCODER ),
-      TIMER_MODE_TIER_2 = ( TIMER_INPUT_CAPTURE | TIMER_OUTPUT_COMPARE | TIMER_PWM | TIMER_ONE_PULSE | TIMER_BASE ),
-      TIMER_MODE_TIER_3 = ( TIMER_PWM | TIMER_ONE_PULSE | TIMER_BASE | TIMER_ENCODER )
-    };
-
-    enum TimerClockSource
-    {
-      ON_APB1,
-      ON_APB2
-    };
-
-    /*--------------------------
-     * Functionality Descriptors
-     *--------------------------*/
-    enum OCModes
-    {
-      OC_TIMING,
-      OC_ACTIVE,
-      OC_INACTIVE,
-      OC_TOGGLE,
-      OC_PWM1,
-      OC_PWM2,
-      OC_FORCED_ACTIVE,
-      OC_FORCED_INACTIVE,
-      OC_RETRIG_OPM1,
-      OC_RETRIG_OPM2,
-      OC_COMBINED_PWM1,
-      OC_COMBINED_PWM2,
-      OC_ASSYM_PWM1,
-      OC_ASSYM_PWM2
-    };
-
-    enum OCPolarity
-    {
-      /* Normal Output Polarity */
-      OC_HIGH,
-      OC_LOW,
-
-      /* Complementary Output Polarity*/
-      OC_NHIGH,
-      OC_NLOW
-    };
-
-    enum OCIdleState
-    {
-      /* Normal Idle State */
-      OC_SET,
-      OC_RESET,
-
-      /* Complementary Idle State*/
-      OC_NSET,
-      OC_NRESET
-    };
-  }    // namespace TIMER
-
-  namespace SPI
-  {
-    constexpr uint8_t MAX_SPI_CHANNELS     = 6;
-    constexpr uint8_t SPI_BUFFER_SIZE      = 32;
-    constexpr uint32_t BLOCKING_TIMEOUT_MS = 100;
-
-    enum class ChipSelectMode : uint8_t
-    {
-      MANUAL,                /**< Manually control the state of the chip select line */
-      AUTO_BETWEEN_TRANSFER, /**< Automatically twiddle the chip select between transfers */
-      AUTO_AFTER_TRANSFER,   /**< Automatically disable the chip select after all transfers complete */
-
-      NUM_CS_MODES,
-      UNKNOWN_CS_MODE
-    };
-  }    // namespace SPI
-
-  /** @namespace Thor::DMA */
   namespace DMA
   {
 /* Useful Macros for Generating DMA Register Addresses*/
@@ -433,7 +264,6 @@ DMA2 Register Address Accessors
 #define DMA2_S6FCR ( *( volatile uint32_t * )( DMA2_BASE + DMA_OFFSET_SxFCR( 6 ) ) )
 #define DMA2_S7FCR ( *( volatile uint32_t * )( DMA2_BASE + DMA_OFFSET_SxFCR( 7 ) ) )
 
-
     /*------------------------------------------------
     DMAx_SxCR Register
     ------------------------------------------------*/
@@ -448,9 +278,242 @@ DMA2 Register Address Accessors
       MEM_TO_MEM,
       TRANSFER_DIRECTION_UNDEFINED
     };
+
+    struct Initializer
+    {
+      DMA_Stream_TypeDef *Instance;
+      uint32_t channel;
+      uint32_t direction;
+    };
   }    // namespace DMA
 
-  /** @namespace Thor::UART */
+  namespace Interrupt
+  {
+    /*------------------------------------------------
+    DO NOT CHANGE: Sets the priority grouping to use all 4 preempt bits with no subpriority bits.
+    ------------------------------------------------*/
+    static constexpr uint32_t SYSTEM_NVIC_PRIORITY_GROUPING = NVIC_PRIORITYGROUP_4;
+
+#if defined( USING_FREERTOS )
+    static constexpr uint32_t MAX_PENDING_TASK_TRIGGERS = 10;
+
+    /*------------------------------------------------
+    These values can utilize the full range of priority grouping bits
+    EXCEPT for peripherals that us the FreeRTOS ISR API calls. Their
+    priority cannot be higher than configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY.
+    ------------------------------------------------*/
+    static constexpr uint32_t EXTI0_MAX_IRQn_PRIORITY = configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY;
+    static_assert( EXTI0_MAX_IRQn_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
+
+    static constexpr uint32_t UART_IT_PREEMPT_PRIORITY = 5;
+    static_assert( UART_IT_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
+
+    static constexpr uint32_t UART_DMA_PREEMPT_PRIORITY = 5;
+    static_assert( UART_DMA_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
+
+    static constexpr uint32_t USART_IT_PREEMPT_PRIORITY = UART_IT_PREEMPT_PRIORITY;
+    static_assert( USART_IT_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
+
+    static constexpr uint32_t USART_DMA_PREEMPT_PRIORITY = UART_DMA_PREEMPT_PRIORITY;
+    static_assert( USART_DMA_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
+
+    /** The various types of triggers that can be used to unlock a FreeRTOS thread */
+    enum Trigger : uint8_t
+    {
+      RX_COMPLETE,
+      TX_COMPLETE,
+      TXRX_COMPLETE,
+      TRANSFER_ERROR,
+      BUFFERED_TX_COMPLETE,
+      BUFFERED_TXRX_COMPLETE,
+      MAX_SOURCES
+    };
+#else
+    /* These values can safely take on the full range of the priority grouping bits (0-15) with 0 as the highest priority. */
+    static constexpr uint32_t UART_IT_PREEMPT_PRIORITY   = 2;
+    static constexpr uint32_t UART_DMA_PREEMPT_PRIORITY  = 2;
+    static constexpr uint32_t USART_IT_PREEMPT_PRIORITY  = UART_IT_PREEMPT_PRIORITY;
+    static constexpr uint32_t USART_DMA_PREEMPT_PRIORITY = UART_DMA_PREEMPT_PRIORITY;
+#endif
+
+    struct Initializer
+    {
+      IRQn_Type IRQn;
+      uint32_t preemptPriority;
+      uint32_t subPriority;
+    };
+  }    // namespace Interrupt
+
+  namespace SPI
+  {
+    constexpr uint8_t MAX_SPI_CHANNELS     = 6;
+    constexpr uint8_t SPI_BUFFER_SIZE      = 32;
+    constexpr uint32_t BLOCKING_TIMEOUT_MS = 100;
+
+    enum class ChipSelectMode : uint8_t
+    {
+      MANUAL, /**< Manually control the state of the chip select line */
+      AUTO_BETWEEN_TRANSFER,
+      /**< Automatically twiddle the chip select between transfers */
+      AUTO_AFTER_TRANSFER, /**< Automatically disable the chip select after all transfers complete */
+
+      NUM_CS_MODES,
+      UNKNOWN_CS_MODE
+    };
+
+    struct SPIConfig
+    {
+      /* IO Config */
+      Thor::GPIO::Initializer MOSI;
+      Thor::GPIO::Initializer MISO;
+      Thor::GPIO::Initializer SCK;
+      Thor::GPIO::Initializer NSS;
+
+      /* Peripheral Instance */
+      SPI_TypeDef *instance;
+
+      /* Interrupt Settings */
+      Thor::Interrupt::Initializer IT_HW;
+      Thor::Interrupt::Initializer dmaIT_TX;
+      Thor::Interrupt::Initializer dmaIT_RX;
+
+      /* DMA Settings */
+      Thor::DMA::Initializer dmaTX;
+      Thor::DMA::Initializer dmaRX;
+
+      /* Clock Bus */
+      Thor::ClockBus clockBus;
+    };
+  }    // namespace SPI
+
+  namespace Threading
+  {
+    constexpr uint8_t maxThreads = 15; /**< Maximum number of threads */
+    constexpr uint32_t threadInitCheckDelay_ms =
+        10; /**< How long to wait during thread initialization before polling to check init complete */
+    constexpr uint32_t maxThreadInitTimeout_ms = 1000; /**< Max time to wait for thread init sequence to complete */
+  }                                                    // namespace Threading
+
+  namespace TIMER
+  {
+    const unsigned int MAX_CHANNELS     = 16;
+    const unsigned int MAX_SUB_CHANNELS = 6;
+    const unsigned int MAX_ALT_PORTS    = 4;
+    const unsigned int MAX_ALT_PINS     = 4;
+
+    /*--------------------------
+     * Hardware Descriptors
+     *--------------------------*/
+    const uint32_t timerBaseAddresses[] = {
+#if defined( STM32F446xx ) || defined( STM32F767xx )
+      0,
+      /* Indexing offset since no TIM0 */
+      TIM1_BASE, TIM2_BASE, TIM3_BASE, TIM4_BASE, TIM5_BASE, TIM6_BASE, TIM7_BASE, TIM8_BASE, TIM9_BASE, TIM10_BASE, TIM11_BASE,
+      TIM12_BASE, TIM13_BASE, TIM14_BASE
+#endif
+    };
+
+    enum TimerCategory
+    {
+      TIMER_BASIC,
+      TIMER_GENERAL_PURPOSE,
+      TIMER_ADVANCED,
+      TIMER_LOW_POWER
+    };
+
+    enum TimerChannelSize
+    {
+      TIMER_BASIC_CHANNELS     = 2u,
+      TIMER_BASIC_SUB_CHANNELS = 1u,
+
+      TIMER_GENERAL_PURPOSE_CHANNELS     = 10u,
+      TIMER_GENERAL_PURPOSE_SUB_CHANNELS = 4u,
+
+      TIMER_ADVANCED_CHANNELS     = 2u,
+      TIMER_ADVANCED_SUB_CHANNELS = 6u,
+
+      TIMER_LOW_POWER_CHANNELS     = 1u,
+      TIMER_LOW_POWER_SUB_CHANNELS = 1u
+    };
+
+    enum TimerSize
+    {
+      TIMER_16BIT = 1u,
+      TIMER_32BIT = 2u
+    };
+
+    enum TimerDirection
+    {
+      TIMER_UP            = 1u,
+      TIMER_DOWN          = 2u,
+      TIMER_AUTO_RELOAD   = 4u,
+      TIMER_DIRECTION_ALL = ( TIMER_UP | TIMER_DOWN | TIMER_AUTO_RELOAD )
+    };
+
+    enum TimerModes
+    {
+      TIMER_INPUT_CAPTURE  = 1u,
+      TIMER_OUTPUT_COMPARE = 2u,
+      TIMER_PWM            = 4u,
+      TIMER_ONE_PULSE      = 8u,
+      TIMER_ENCODER        = 16u,
+      TIMER_BASE           = 32u,
+      TIMER_MODE_TIER_1 =
+          ( TIMER_INPUT_CAPTURE | TIMER_OUTPUT_COMPARE | TIMER_PWM | TIMER_ONE_PULSE | TIMER_BASE | TIMER_ENCODER ),
+      TIMER_MODE_TIER_2 = ( TIMER_INPUT_CAPTURE | TIMER_OUTPUT_COMPARE | TIMER_PWM | TIMER_ONE_PULSE | TIMER_BASE ),
+      TIMER_MODE_TIER_3 = ( TIMER_PWM | TIMER_ONE_PULSE | TIMER_BASE | TIMER_ENCODER )
+    };
+
+    enum TimerClockSource
+    {
+      ON_APB1,
+      ON_APB2
+    };
+
+    /*--------------------------
+     * Functionality Descriptors
+     *--------------------------*/
+    enum OCModes
+    {
+      OC_TIMING,
+      OC_ACTIVE,
+      OC_INACTIVE,
+      OC_TOGGLE,
+      OC_PWM1,
+      OC_PWM2,
+      OC_FORCED_ACTIVE,
+      OC_FORCED_INACTIVE,
+      OC_RETRIG_OPM1,
+      OC_RETRIG_OPM2,
+      OC_COMBINED_PWM1,
+      OC_COMBINED_PWM2,
+      OC_ASSYM_PWM1,
+      OC_ASSYM_PWM2
+    };
+
+    enum OCPolarity
+    {
+      /* Normal Output Polarity */
+      OC_HIGH,
+      OC_LOW,
+
+      /* Complementary Output Polarity*/
+      OC_NHIGH,
+      OC_NLOW
+    };
+
+    enum OCIdleState
+    {
+      /* Normal Idle State */
+      OC_SET,
+      OC_RESET,
+
+      /* Complementary Idle State*/
+      OC_NSET,
+      OC_NRESET
+    };
+  }    // namespace TIMER
+
   namespace UART
   {
     constexpr uint8_t MAX_UART_CHANNELS = 4;  /**< Total possible UART specific channels for any supported STM32 chip. */
@@ -459,7 +522,6 @@ DMA2 Register Address Accessors
         32; /**< The max number of bytes that can be stored from a single continuous transmission. */
   }         // namespace UART
 
-  /** @namespace Thor::USART */
   namespace USART
   {
     constexpr uint8_t MAX_USART_CHANNELS = 4; /**< Total possible USART specific channels for any supported STM32 chip. */
@@ -468,12 +530,12 @@ DMA2 Register Address Accessors
         32; /**< The max number of bytes that can be stored from a single continuous transmission. */
   }         // namespace USART
 
-  /** @namespace Thor::Serial */
+
   namespace Serial
   {
     constexpr uint8_t MAX_SERIAL_CHANNELS =
-        UART::MAX_UART_CHANNELS +
-        USART::MAX_USART_CHANNELS;               /**< Total possible UART or USART channels for any supported STM32 chip. */
+        Thor::UART::MAX_UART_CHANNELS +
+        Thor::USART::MAX_USART_CHANNELS;         /**< Total possible UART or USART channels for any supported STM32 chip. */
     constexpr uint32_t BLOCKING_TIMEOUT_MS = 10; /**< Time in mS before a TX or RX in blocking mode will timeout */
 
     /** Allows mapping of either a USART or UART peripheral to the serial class. This is intended to be internal use only. */
@@ -483,15 +545,22 @@ DMA2 Register Address Accessors
       uint8_t peripheral_number;
     };
 
+    struct SerialConfig
+    {
+      /* Peripheral Instance */
+      const USART_TypeDef *instance;
+
+      /* Interrupt Settings */
+      const Thor::Interrupt::Initializer IT_HW;
+      const Thor::Interrupt::Initializer dmaIT_TX;
+      const Thor::Interrupt::Initializer dmaIT_RX;
+
+      /* DMA Settings */
+      const Thor::DMA::Initializer dmaTX;
+      const Thor::DMA::Initializer dmaRX;
+    };
+
   }    // namespace Serial
 
-  /** @namespace Thor::Threading */
-  namespace Threading
-  {
-    constexpr uint8_t maxThreads = 15; /**< Maximum number of threads */
-    constexpr uint32_t threadInitCheckDelay_ms =
-        10; /**< How long to wait during thread initialization before polling to check init complete */
-    constexpr uint32_t maxThreadInitTimeout_ms = 1000; /**< Max time to wait for thread init sequence to complete */
-  }                                                    // namespace Threading
 }    // namespace Thor
 #endif /* THOR_DEFINITIONS_H_ */

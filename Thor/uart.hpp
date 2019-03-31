@@ -24,27 +24,8 @@
 #include <Chimera/interface.hpp>
 
 /* Thor Includes */
-#include <Thor/config.hpp>
 #include <Thor/definitions.hpp>
-#include <Thor/defaults.hpp>
 #include <Thor/gpio.hpp>
-#include <Thor/dma.hpp>
-
-#if defined( USING_FREERTOS )
-#include <Thor/exti.hpp>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include "FreeRTOS.h"
-#include "semphr.h"
-
-#ifdef __cplusplus
-}
-#endif
-#endif /* USING_FREERTOS */
 
 #ifdef __cplusplus
 extern "C"
@@ -175,8 +156,8 @@ namespace Thor
 
       uint32_t asyncRXDataSize = 0u; /* I think this is used to track when a new unexpected Async RX starts?? */
 
-      uint8_t dmaRXReqSig = Thor::DMA::Source::NONE;
-      uint8_t dmaTXReqSig = Thor::DMA::Source::NONE;
+      uint8_t dmaRXReqSig;
+      uint8_t dmaTXReqSig;
 
       struct UARTClassStatus
       {
@@ -199,9 +180,9 @@ namespace Thor
       Thor::GPIO::GPIOClass_sPtr rx_pin;
 
       /* Local copy of interrupt settings */
-      IT_Initializer ITSettings_HW;
-      IT_Initializer ITSettings_DMA_TX;
-      IT_Initializer ITSettings_DMA_RX;
+      Thor::Interrupt::Initializer ITSettings_HW;
+      Thor::Interrupt::Initializer ITSettings_DMA_TX;
+      Thor::Interrupt::Initializer ITSettings_DMA_RX;
 
       void assignRXBuffer( uint8_t *const buffer, const size_t size );
       void assignTXBuffer( uint8_t *const buffer, const size_t size );
@@ -250,13 +231,6 @@ namespace Thor
 
       void UART_OverrunHandler();
     };
-
-
   }    // namespace UART
-
-  extern void UART_EnableIT_IDLE( UART_HandleTypeDef *UartHandle );
-  extern void UART_DisableIT_IDLE( UART_HandleTypeDef *UartHandle );
-  extern void UART_ClearIT_IDLE( UART_HandleTypeDef *UartHandle );
-
 }    // namespace Thor
 #endif /* !UART_H_ */

@@ -1,54 +1,25 @@
+/********************************************************************************
+ * File Name:
+ *   defaults.hpp
+ *
+ * Description:
+ *   Provides definitions for external hardware configuration data
+ *
+ * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
 #pragma once
-#ifndef DEFAULTS_H_
-#define DEFAULTS_H_
+#ifndef THOR_DEFAULTS_HPP
+#define THOR_DEFAULTS_HPP
 
-#include <Thor/config.hpp>
 #include <Thor/definitions.hpp>
-#include <Thor/types.hpp>
 
-#if defined( USING_FREERTOS )
-#include "FreeRTOSConfig.h"
-
-/** Checks an interrupt's priority value for compatibility with FreeRTOS. If triggered, the priority level
- *	needs to be lowered (lower priorities are higher numeric values for ARM-M). This macro should ONLY be used
- *	to check peripherals that call a FreeRTOS API function from an ISR. Otherwise, this check is pointless.
- *	See for more detail: http://www.freertos.org/RTOS-Cortex-M3-M4.html
- **/
-#define CHECK_IT_PRIO( X ) \
-  static_assert( X >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority for " #X )
-#endif
-
-/** @namespace Thor */
 namespace Thor
 {
-  /** @namespace Thor::Defaults */
   namespace Defaults
   {
-    /** @namespace Thor::Defaults::GPIO */
-    namespace GPIO
-    {
-    }
-
-    /** @namespace Thor::Defaults::Serial */
     namespace Serial
     {
-      /** @struct Serial Config */
-      struct SerialConfig
-      {
-        /* Peripheral Instance */
-        const USART_TypeDef *instance;
-
-        /* Interrupt Settings */
-        const IT_Initializer IT_HW;
-        const IT_Initializer dmaIT_TX;
-        const IT_Initializer dmaIT_RX;
-
-        /* DMA Settings */
-        const DMA_Initializer dmaTX;
-        const DMA_Initializer dmaRX;
-      };
-
-      extern const std::array<const SerialConfig *const, Thor::Serial::MAX_SERIAL_CHANNELS + 1> hwConfig;
+      extern const std::array<const Thor::Serial::SerialConfig *const, Thor::Serial::MAX_SERIAL_CHANNELS + 1> hwConfig;
 
 #if defined( STM32F7 ) || defined( STM32F4 )
       extern const USART_InitTypeDef dflt_USART_Init;
@@ -62,38 +33,9 @@ namespace Thor
 #endif
     }    // namespace Serial
 
-    /** @namespace Thor::Defaults::Timer */
-    namespace Timer
-    {
-    }
-
-    /** @namespace Thor::Defaults::SPI */
     namespace SPI
     {
-      struct SPIConfig
-      {
-        /* IO Config */
-        GPIO_Initializer MOSI;
-        GPIO_Initializer MISO;
-        GPIO_Initializer SCK;
-        GPIO_Initializer NSS;
-
-        /* Peripheral Instance */
-        SPI_TypeDef *instance;
-
-        /* Interrupt Settings */
-        IT_Initializer IT_HW;
-        IT_Initializer dmaIT_TX;
-        IT_Initializer dmaIT_RX;
-
-        /* DMA Settings */
-        DMA_Initializer dmaTX;
-        DMA_Initializer dmaRX;
-
-        /* Clock Bus */
-        Thor::ClockBus clockBus;
-      };
-      extern const SPIConfig spi_cfg[];
+      extern const Thor::SPI::SPIConfig spi_cfg[];
 
 #if defined( STM32F7 ) || defined( STM32F4 )
       extern const SPI_InitTypeDef dflt_SPI_Init;
@@ -102,35 +44,7 @@ namespace Thor
 #endif
     }    // namespace SPI
 
-    /** @namespace Thor::Defaults::Interrupt */
-    namespace Interrupt
-    {
-      const uint32_t SYSTEM_NVIC_PRIORITY_GROUPING = NVIC_PRIORITYGROUP_4; /**< DO NOT CHANGE: Sets the priority grouping to use
-                                                                              all 4 preempt bits with no subpriority bits. */
-
-
-#if defined( USING_FREERTOS )
-      /* These values can utilize the full range of priority grouping bits EXCEPT for peripherals
-       * that us the FreeRTOS ISR API calls. Their priority cannot be higher than
-       * configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY.*/
-      const uint32_t UART_IT_PREEMPT_PRIORITY = 5;
-      CHECK_IT_PRIO( UART_IT_PREEMPT_PRIORITY );
-      const uint32_t UART_DMA_PREEMPT_PRIORITY = 5;
-      CHECK_IT_PRIO( UART_DMA_PREEMPT_PRIORITY );
-      const uint32_t USART_IT_PREEMPT_PRIORITY  = UART_IT_PREEMPT_PRIORITY;
-      const uint32_t USART_DMA_PREEMPT_PRIORITY = UART_DMA_PREEMPT_PRIORITY;
-
-#else
-      /* These values can safely take on the full range of the priority grouping bits (0-15) with 0 as the highest priority. */
-      const uint32_t UART_IT_PREEMPT_PRIORITY   = 2;
-      const uint32_t UART_DMA_PREEMPT_PRIORITY  = 2;
-      const uint32_t USART_IT_PREEMPT_PRIORITY  = UART_IT_PREEMPT_PRIORITY;
-      const uint32_t USART_DMA_PREEMPT_PRIORITY = UART_DMA_PREEMPT_PRIORITY;
-
-#endif
-    }    // namespace Interrupt
-  }      // namespace Defaults
+  }    // namespace Defaults
 }    // namespace Thor
 
-
-#endif    // !DEFAULTS_H_
+#endif /* !THOR_DEFAULTS_HPP */

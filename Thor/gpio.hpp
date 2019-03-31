@@ -12,15 +12,12 @@
 #define THOR_GPIO_H_
 
 /* C++ Includes */
-#include <cstdlib>
 #include <cstdint>
-#include <string>
 
 /* Chimera Includes */
 #include <Chimera/interface.hpp>
 
 /* Thor Includes */
-#include <Thor/config.hpp>
 #include <Thor/definitions.hpp>
 
 namespace Thor
@@ -28,7 +25,6 @@ namespace Thor
   namespace GPIO
   {
     class GPIOClass;
-
     using GPIOClass_sPtr = std::shared_ptr<GPIOClass>;
     using GPIOClass_uPtr = std::unique_ptr<GPIOClass>;
 
@@ -57,14 +53,13 @@ namespace Thor
        *  @param[in]  alt     Alternate function parameter as defined in the STM32 HAL to remap the GPIO to a peripheral
        *  @return void
        */
-      void initAdvanced( const Thor::GPIO::PinPort port, const Thor::GPIO::PinNum pin,
-                         const Thor::GPIO::PinSpeed speed = Thor::GPIO::PinSpeed::HIGH_SPD,
-                         const uint32_t alt               = Thor::GPIO::NOALTERNATE );
+      void initAdvanced( const Thor::GPIO::PinPort port, const Thor::GPIO::PinNum pin, const Thor::GPIO::PinSpeed speed,
+                         const uint32_t alt );
 
-      static GPIO_InitTypeDef getHALInit( const Thor::GPIO::PinConfig &config );
+      static GPIO_InitTypeDef getHALInit( const Thor::GPIO::Initializer &config );
 
     private:
-      Thor::GPIO::PinConfig pinConfig;
+      Thor::GPIO::Initializer pinConfig;
 
       void GPIO_Init( Thor::GPIO::PinPort port, GPIO_InitTypeDef *initStruct );
       void GPIO_ClockEnable( Thor::GPIO::PinPort port );
@@ -75,8 +70,7 @@ namespace Thor
     extern const PinPort convertPort( const Chimera::GPIO::Port port );
     extern const PinMode convertDrive( const Chimera::GPIO::Drive drive );
     extern const PinPull convertPull( const Chimera::GPIO::Pull pull );
-    extern const PinConfig convertPinInit( const Chimera::GPIO::PinInit &pin );
-    extern const GPIO_TypeDef *const portMap( const Chimera::GPIO::Port port );
+    extern const Initializer convertPinInit( const Chimera::GPIO::PinInit &pin );
   }    // namespace GPIO
 }    // namespace Thor
 

@@ -1,3 +1,12 @@
+/********************************************************************************
+ * File Name:
+ *   headers.hpp
+ *
+ * Description:
+ *   Includes critical headers needed for the operation of Thor
+ *
+ * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
 #pragma once
 #ifndef THOR_HEADERS_HPP
 #define THOR_HEADERS_HPP
@@ -15,11 +24,11 @@ extern "C"
 
 #if defined( TARGET_STM32F7 )
 #include "stm32f7xx_hal.h"
-#endif
+#endif /* TARGET_STM32F7 */
 
 #if defined( TARGET_STM32F4 )
 #include "stm32f4xx_hal.h"
-#endif
+#endif /* TARGET_STM32F4 */
 
 #if defined( USING_FREERTOS )
 #include "FreeRTOS.h"

@@ -12,12 +12,33 @@
 #include <boost/bind.hpp>
 
 /* Thor Includes */
+#include <Thor/definitions.hpp>
+#include <Thor/defaults.hpp>
+#include <Thor/dma.hpp>
 #include <Thor/uart.hpp>
 #include <Thor/exceptions.hpp>
+
+#if defined( USING_FREERTOS )
+#include <Thor/exti.hpp>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#include "FreeRTOS.h"
+#include "semphr.h"
+
+#ifdef __cplusplus
+}
+#endif
+#endif /* USING_FREERTOS */
+
 
 using namespace Thor;
 using namespace Thor::Serial;
 using namespace Thor::UART;
+using namespace Thor::Interrupt;
 using namespace Thor::Defaults::Serial;
 
 
@@ -168,6 +189,9 @@ namespace Thor
       writeFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ]       = &UARTClass::writeDMA;
 
       AUTO_ASYNC_RX = false;
+
+      dmaRXReqSig = Thor::DMA::Source::NONE;
+      dmaTXReqSig = Thor::DMA::Source::NONE;
     }
 
     UARTClass::~UARTClass()

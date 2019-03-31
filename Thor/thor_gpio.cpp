@@ -78,82 +78,6 @@ namespace Thor
       };
     }
 
-    Chimera::Status_t GPIOClass::init( const Chimera::GPIO::Port port, const uint8_t pin )
-    {
-      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
-
-      const PinNum stm32_pin   = convertPinNum( pin );
-      const PinPort stm32_port = convertPort( port );
-
-      if ( ( stm32_pin == PinNum::NOT_A_PIN ) || !stm32_port )
-      {
-        return Chimera::GPIO::Status::INVAL_FUNC_PARAM;
-      }
-      else
-      {
-        pinConfig.GPIOx  = stm32_port;
-        pinConfig.pinNum = stm32_pin;
-
-        auto cfg = getHALInit( pinConfig );
-        GPIO_Init( pinConfig.GPIOx, &cfg );
-      }
-
-      return error;
-    }
-
-    Chimera::Status_t GPIOClass::setMode( const Chimera::GPIO::Drive drive, const bool pullup )
-    {
-      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
-
-      const PinMode pinMode = convertDrive( drive );
-      const PinPull pinPull = pullup ? PinPull::PULLUP : PinPull::NOPULL;
-
-      if ( pinMode == PinMode::UNKNOWN_MODE )
-      {
-        error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
-      }
-      else
-      {
-        pinConfig.mode = pinMode;
-        pinConfig.pull = pinPull;
-
-        auto cfg = getHALInit( pinConfig );
-        GPIO_Init( pinConfig.GPIOx, &cfg );
-      }
-
-      return error;
-    }
-
-    Chimera::Status_t GPIOClass::setState( const Chimera::GPIO::State state )
-    {
-      HAL_GPIO_WritePin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ), static_cast<GPIO_PinState>( state ) );
-      return Chimera::CommonStatusCodes::OK;
-    }
-
-    Chimera::Status_t GPIOClass::getState( Chimera::GPIO::State &state )
-    {
-      state =
-          static_cast<Chimera::GPIO::State>( HAL_GPIO_ReadPin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ) ) );
-      return Chimera::CommonStatusCodes::OK;
-    }
-
-    Chimera::Status_t GPIOClass::toggle()
-    {
-      HAL_GPIO_TogglePin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ) );
-      return Chimera::CommonStatusCodes::OK;
-    }
-
-    void GPIOClass::initAdvanced( const PinPort port, const PinNum pin, const PinSpeed speed, const uint32_t alt )
-    {
-      pinConfig.GPIOx     = port;
-      pinConfig.pinNum    = pin;
-      pinConfig.speed     = speed;
-      pinConfig.alternate = alt;
-
-      auto cfg = getHALInit( pinConfig );
-      GPIO_Init( pinConfig.GPIOx, &cfg );
-    }
-
     const PinNum convertPinNum( const uint8_t num )
     {
       PinNum pinNum = PinNum::NOT_A_PIN;
@@ -296,9 +220,9 @@ namespace Thor
       return pinPull;
     }
 
-    const PinConfig convertPinInit( const Chimera::GPIO::PinInit &pin )
+    const Initializer convertPinInit( const Chimera::GPIO::PinInit &pin )
     {
-      PinConfig cfg;
+      Initializer cfg;
 
       cfg.GPIOx     = convertPort( pin.port );
       cfg.mode      = convertDrive( pin.drive );
@@ -309,7 +233,83 @@ namespace Thor
       return cfg;
     }
 
-    GPIO_InitTypeDef GPIOClass::getHALInit( const PinConfig &config )
+    Chimera::Status_t GPIOClass::init( const Chimera::GPIO::Port port, const uint8_t pin )
+    {
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      const PinNum stm32_pin   = convertPinNum( pin );
+      const PinPort stm32_port = convertPort( port );
+
+      if ( ( stm32_pin == PinNum::NOT_A_PIN ) || !stm32_port )
+      {
+        return Chimera::GPIO::Status::INVAL_FUNC_PARAM;
+      }
+      else
+      {
+        pinConfig.GPIOx  = stm32_port;
+        pinConfig.pinNum = stm32_pin;
+
+        auto cfg = getHALInit( pinConfig );
+        GPIO_Init( pinConfig.GPIOx, &cfg );
+      }
+
+      return error;
+    }
+
+    Chimera::Status_t GPIOClass::setMode( const Chimera::GPIO::Drive drive, const bool pullup )
+    {
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      const PinMode pinMode = convertDrive( drive );
+      const PinPull pinPull = pullup ? PinPull::PULLUP : PinPull::NOPULL;
+
+      if ( pinMode == PinMode::UNKNOWN_MODE )
+      {
+        error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      }
+      else
+      {
+        pinConfig.mode = pinMode;
+        pinConfig.pull = pinPull;
+
+        auto cfg = getHALInit( pinConfig );
+        GPIO_Init( pinConfig.GPIOx, &cfg );
+      }
+
+      return error;
+    }
+
+    Chimera::Status_t GPIOClass::setState( const Chimera::GPIO::State state )
+    {
+      HAL_GPIO_WritePin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ), static_cast<GPIO_PinState>( state ) );
+      return Chimera::CommonStatusCodes::OK;
+    }
+
+    Chimera::Status_t GPIOClass::getState( Chimera::GPIO::State &state )
+    {
+      state =
+          static_cast<Chimera::GPIO::State>( HAL_GPIO_ReadPin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ) ) );
+      return Chimera::CommonStatusCodes::OK;
+    }
+
+    Chimera::Status_t GPIOClass::toggle()
+    {
+      HAL_GPIO_TogglePin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ) );
+      return Chimera::CommonStatusCodes::OK;
+    }
+
+    void GPIOClass::initAdvanced( const PinPort port, const PinNum pin, const PinSpeed speed, const uint32_t alt )
+    {
+      pinConfig.GPIOx     = port;
+      pinConfig.pinNum    = pin;
+      pinConfig.speed     = speed;
+      pinConfig.alternate = alt;
+
+      auto cfg = getHALInit( pinConfig );
+      GPIO_Init( pinConfig.GPIOx, &cfg );
+    }
+
+    GPIO_InitTypeDef GPIOClass::getHALInit( const Initializer &config )
     {
       GPIO_InitTypeDef InitStruct;
 

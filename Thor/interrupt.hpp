@@ -6,7 +6,6 @@
 #include <Thor/macro.hpp>
 #include <Thor/config.hpp>
 #include <Thor/definitions.hpp>
-#include <Thor/types.hpp>
 
 #ifdef USING_FREERTOS
 #include "FreeRTOS.h"

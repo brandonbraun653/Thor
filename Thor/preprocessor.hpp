@@ -1,3 +1,14 @@
+/********************************************************************************
+ * File Name:
+ *   preprocessor.hpp
+ *
+ * Description:
+ *   Performs some preprocessor goodness to help with automatic configuration of
+ *   the Thor library.
+ *
+ * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
 #pragma once
 #ifndef THOR_PREPROCESSOR_HPP
 #define THOR_PREPROCESSOR_HPP
@@ -47,7 +58,7 @@ STM32
 #endif
 
 #ifndef USE_FULL_LL_DRIVER
-//#error Please define USE_FULL_LL_DRIVER in the compiler preprocessor
+#error Please define USE_FULL_LL_DRIVER in the compiler preprocessor
 #endif
 
 /*-------------------------------------------
