@@ -3,8 +3,8 @@
  *   serial.hpp
  *
  * Description:
- *   Wrapper around the Thor UART and USART drivers to provide merge the hardware
- *   drivers into a common interface for the Chimera serial library.
+ *   Wrapper around the Thor UART and USART drivers to merge the hardware layer
+ *   into a common interface for the Chimera serial library.
  *
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -19,7 +19,6 @@
 #include <memory>
 
 /* Thor Includes */
-#include <Thor/config.hpp>
 #include <Thor/definitions.hpp>
 #include <Thor/uart.hpp>
 #include <Thor/usart.hpp>
@@ -38,9 +37,7 @@ namespace Thor
       SerialClass()  = default;
       ~SerialClass() = default;
 
-      SerialClass( const size_t bufferSize ) : bSize( bufferSize )
-      {
-      }
+      SerialClass( const size_t bufferSize );
 
       Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 

@@ -32,27 +32,27 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-#endif /* USING_FREERTOS */
 
+static std::array<SemaphoreHandle_t, Thor::Serial::MAX_SERIAL_CHANNELS + 1> uartSemphrs;
+TaskTrigger uartTaskTrigger;
+#endif /* USING_FREERTOS */
 
 using namespace Thor;
 using namespace Thor::Serial;
 using namespace Thor::UART;
+using namespace Thor::GPIO;
 using namespace Thor::Interrupt;
 using namespace Thor::Defaults::Serial;
+using namespace Chimera::Serial;
 
+static std::array<UARTClass_sPtr, MAX_SERIAL_CHANNELS + 1> uartObjects;
 
-#if defined( USING_FREERTOS )
-static std::array<SemaphoreHandle_t, MAX_SERIAL_CHANNELS + 1> uartSemphrs;
-TaskTrigger uartTaskTrigger;
-#endif
-
-static std::array<Thor::UART::UARTClass_sPtr, MAX_SERIAL_CHANNELS + 1> uartObjects;
-
-static const UARTClass_sPtr &getUARTClassRef( USART_TypeDef *instance )
+static const UARTClass_sPtr &getUARTClassRef( USART_TypeDef *const instance )
 {
-  /* Simply converts the pointer into the raw numerical address value, which be compared against
-     the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
+  /*------------------------------------------------
+  Simply converts the pointer into the raw numerical address value, which be compared against
+  the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base.
+  ------------------------------------------------*/
   auto i = reinterpret_cast<std::uintptr_t>( instance );
   switch ( i )
   {
@@ -103,7 +103,7 @@ static const UARTClass_sPtr &getUARTClassRef( USART_TypeDef *instance )
   };
 };
 
-static uint32_t uartClockMask( USART_TypeDef *instance )
+static uint32_t uartClockMask( USART_TypeDef *const instance )
 {
   /* Simply converts the pointer into the raw numerical address value, which be compared against
   the peripheral base address. UARTx is simply (USART_TypeDef*)UARTx_Base. */
@@ -143,23 +143,20 @@ namespace Thor
 {
   namespace UART
   {
-    using namespace Thor::GPIO;
-    using namespace Chimera::Serial;
-
-    inline void UART_ClearIT_IDLE( UART_HandleTypeDef *UartHandle )
+    inline void UART_ClearIT_IDLE( UART_HandleTypeDef *const UartHandle )
     {
 #if defined( STM32F7 )
       __HAL_UART_CLEAR_IT( UartHandle, UART_CLEAR_IDLEF );
 #endif
     }
 
-    inline void UART_EnableIT_IDLE( UART_HandleTypeDef *UartHandle )
+    inline void UART_EnableIT_IDLE( UART_HandleTypeDef *const UartHandle )
     {
       UART_ClearIT_IDLE( UartHandle );
       __HAL_UART_ENABLE_IT( UartHandle, UART_IT_IDLE );
     }
 
-    inline void UART_DisableIT_IDLE( UART_HandleTypeDef *UartHandle )
+    inline void UART_DisableIT_IDLE( UART_HandleTypeDef *const UartHandle )
     {
       UART_ClearIT_IDLE( UartHandle );
       __HAL_UART_DISABLE_IT( UartHandle, UART_IT_IDLE );
@@ -475,18 +472,6 @@ namespace Thor
       return error;
     }
 
-#if defined( USING_FREERTOS )
-    Chimera::Status_t UARTClass::attachEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr )
-    {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-    }
-
-    Chimera::Status_t UARTClass::removeEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr )
-    {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-    }
-#endif
-
     Chimera::Status_t UARTClass::enableBuffering( const Chimera::Serial::SubPeripheral periph,
                                                   boost::circular_buffer<uint8_t> *const buffer )
     {
@@ -529,6 +514,18 @@ namespace Thor
 
       return error;
     }
+
+#if defined( USING_FREERTOS )
+    Chimera::Status_t UARTClass::attachEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr )
+    {
+      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    }
+
+    Chimera::Status_t UARTClass::removeEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr )
+    {
+      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    }
+#endif
 
     bool UARTClass::available( size_t *const bytes )
     {
@@ -1340,7 +1337,6 @@ namespace Thor
       uart_handle.Instance->RDR;
 #endif
     }
-
   }    // namespace UART
 }    // namespace Thor
 

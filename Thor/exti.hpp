@@ -11,7 +11,7 @@
 /* Thor Includes */
 #include <Thor/config.hpp>
 #include <Thor/definitions.hpp>
-#include <Thor/interrupt.hpp>
+
 
 /* Additional includes not provided in Thor config */
 #ifdef __cplusplus

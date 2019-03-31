@@ -154,7 +154,7 @@ namespace Thor
       uint8_t *txInternalBuffer;
       size_t txInternalBufferSize;
 
-      uint32_t asyncRXDataSize = 0u; /* I think this is used to track when a new unexpected Async RX starts?? */
+      uint32_t asyncRXDataSize = 0u;
 
       uint8_t dmaRXReqSig;
       uint8_t dmaTXReqSig;
@@ -202,7 +202,6 @@ namespace Thor
       Chimera::Status_t readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
       Chimera::Status_t readInterrupt( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
       Chimera::Status_t readDMA( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
-
 
       std::array<Chimera::Status_t ( UARTClass::* )( const uint8_t *const, const size_t, const uint32_t ), 3> writeFuncPtrs;
       Chimera::Status_t writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );

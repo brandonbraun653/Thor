@@ -57,7 +57,7 @@ STM32
 #error Target Device Not Supported Yet
 #endif
 
-#ifndef USE_FULL_LL_DRIVER
+#if !defined( USE_FULL_LL_DRIVER ) && !defined( GMOCK_TEST )
 #error Please define USE_FULL_LL_DRIVER in the compiler preprocessor
 #endif
 

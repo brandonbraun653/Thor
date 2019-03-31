@@ -13,7 +13,7 @@
 #include <Thor/config.hpp>
 #include <Thor/definitions.hpp>
 #include <Thor/defaults.hpp>
-#include <Thor/interrupt.hpp>
+
 #include <Thor/gpio.hpp>
 #include <Thor/exceptions.hpp>
 
@@ -29,6 +29,23 @@
 #endif
 
 #if 0
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+extern void SPI1_IRQHandler();
+extern void SPI2_IRQHandler();
+extern void SPI3_IRQHandler();
+extern void SPI4_IRQHandler();
+extern void SPI5_IRQHandler();
+extern void SPI6_IRQHandler();
+#ifdef __cplusplus
+}
+#endif
+
+
+
 namespace Thor
 {
   namespace Peripheral

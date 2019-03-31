@@ -33,7 +33,10 @@ namespace Thor
         { true, 8 }   /* UART	 8	*/
 #endif
     } };
-    static_assert( ch2Periph.size() == ( MAX_SERIAL_CHANNELS + 1 ), "Invalid array size" );
+
+    SerialClass::SerialClass( const size_t bufferSize ) : bSize( bufferSize )
+    {
+    }
 
     Chimera::Status_t SerialClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
     {
@@ -53,9 +56,8 @@ namespace Thor
         }
         else
         {
-          serialObject = nullptr;
-          // auto tmp     = USARTClass::create( serialPeripheralMap[ channel ].peripheral_number, config );
-          // serialObject = std::static_pointer_cast<Chimera::Serial::Interface, USARTClass>( tmp );
+          auto tmp     = USARTClass::create( ch2Periph[ channel ].peripheral_number, bSize );
+          serialObject = std::static_pointer_cast<Chimera::Serial::Interface, USARTClass>( tmp );
         }
 
         /*------------------------------------------------
