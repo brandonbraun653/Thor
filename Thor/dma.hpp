@@ -140,7 +140,7 @@ namespace Thor
 
       static constexpr uint8_t S_NUM_DMA_REQUESTORS = 79;
 
-      /* clang-format off */
+/* clang-format off */
       #if defined( STM32F4 )
       /*------------------------------------------------
       Taken from tables 28 & 29 on RM0390 datasheet

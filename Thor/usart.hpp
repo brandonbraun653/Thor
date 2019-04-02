@@ -65,7 +65,7 @@ namespace Thor
        *  |  Empty Object | The channel given was out of range  |
        *  | Filled Object | The object was created successfully |
        */
-      static USARTClass_sPtr create( const uint8_t channel, const size_t bufferSize = 1u );
+      static USARTClass_sPtr create( const uint8_t channel, const uint16_t bufferSize = 1u );
 
       Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 
@@ -139,10 +139,10 @@ namespace Thor
       boost::circular_buffer<uint8_t> *rxUserBuffer;
 
       uint8_t *rxInternalBuffer;
-      size_t rxInternalBufferSize;
+      uint16_t rxInternalBufferSize;
 
       uint8_t *txInternalBuffer;
-      size_t txInternalBufferSize;
+      uint16_t txInternalBufferSize;
 
       uint32_t asyncRXDataSize = 0u;
 
@@ -176,8 +176,8 @@ namespace Thor
       Thor::Interrupt::Initializer ITSettings_DMA_TX;
       Thor::Interrupt::Initializer ITSettings_DMA_RX;
 
-      void assignRXBuffer( uint8_t *const buffer, const size_t size );
-      void assignTXBuffer( uint8_t *const buffer, const size_t size );
+      void assignRXBuffer( uint8_t *const buffer, const uint16_t size );
+      void assignTXBuffer( uint8_t *const buffer, const uint16_t size );
 
       bool setWordLength( USART_InitTypeDef &initStruct, const Chimera::Serial::CharWid width );
       bool setParity( USART_InitTypeDef &initStruct, const Chimera::Serial::Parity parity );

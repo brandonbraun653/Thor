@@ -94,7 +94,7 @@ namespace Thor
 
         wdCounter        = counter[ bestIdx ];
         wdPrescaler      = prescalerRegVals[ bestIdx ];
-        actualTimeout_mS = calculateTimeout_mS( pclk1, bestIdx, wdCounter );
+        actualTimeout_mS = calculateTimeout_mS( static_cast<uint32_t>( pclk1 ), bestIdx, wdCounter );
 
         /*------------------------------------------------
         Calculate the window in which the watchdog is allowed to be kicked
@@ -255,7 +255,7 @@ namespace Thor
 
         wdReload         = counter[ bestIdx ];
         wdPrescaler      = prescalerRegVals[ bestIdx ];
-        actualTimeout_mS = ( ( 1000.0f / clockFreqHz ) * prescalerActVals[ bestIdx ] ) * wdReload;
+        actualTimeout_mS = static_cast<uint32_t>( ( ( 1000.0f / clockFreqHz ) * prescalerActVals[ bestIdx ] ) * wdReload );
 
         /*------------------------------------------------
         Initialize the device handle, allowing the user to reset whenever

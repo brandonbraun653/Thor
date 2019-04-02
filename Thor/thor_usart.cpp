@@ -229,7 +229,7 @@ namespace Thor
       delete[] txInternalBuffer;
     }
 
-    USARTClass_sPtr USARTClass::create( const uint8_t channel, const size_t bufferSize )
+    USARTClass_sPtr USARTClass::create( const uint8_t channel, const uint16_t bufferSize )
     {
       USARTClass_sPtr newClass( new USARTClass() );
 
@@ -574,13 +574,13 @@ namespace Thor
       return retval;
     }
 
-    void USARTClass::assignRXBuffer( uint8_t *const buffer, const size_t size )
+    void USARTClass::assignRXBuffer( uint8_t *const buffer, const uint16_t size )
     {
       rxInternalBuffer     = buffer;
       rxInternalBufferSize = size;
     }
 
-    void USARTClass::assignTXBuffer( uint8_t *const buffer, const size_t size )
+    void USARTClass::assignTXBuffer( uint8_t *const buffer, const uint16_t size )
     {
       txInternalBuffer     = buffer;
       txInternalBufferSize = size;
@@ -730,10 +730,11 @@ namespace Thor
       USART_OverrunHandler();
 
 #if defined( USING_FREERTOS )
-      stm32Error =
-          HAL_USART_Receive( &usart_handle, const_cast<uint8_t *>( buffer ), length, pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
+      stm32Error = HAL_USART_Receive( &usart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
+                                      pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
 #else
-      stm32Error = HAL_USART_Receive( &usart_handle, const_cast<uint8_t *>( buffer ), length, BLOCKING_TIMEOUT_MS );
+      stm32Error = HAL_USART_Receive( &usart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
+                                      BLOCKING_TIMEOUT_MS );
 #endif
       return convertHALStatus( stm32Error );
     }
@@ -751,7 +752,7 @@ namespace Thor
         ------------------------------------------------*/
         AUTO_ASYNC_RX = false;
         memset( rxInternalBuffer, 0, rxInternalBufferSize );
-        stm32Error = HAL_USART_Receive_IT( &usart_handle, rxInternalBuffer, length );
+        stm32Error = HAL_USART_Receive_IT( &usart_handle, rxInternalBuffer, static_cast<uint16_t>( length ) );
 
         if ( stm32Error == HAL_OK )
         {
@@ -788,7 +789,7 @@ namespace Thor
         ------------------------------------------------*/
         HAL_USART_DMAStop( &usart_handle );
         memset( rxInternalBuffer, 0, rxInternalBufferSize );
-        stm32Error = HAL_USART_Receive_DMA( &usart_handle, rxInternalBuffer, length );
+        stm32Error = HAL_USART_Receive_DMA( &usart_handle, rxInternalBuffer, static_cast<uint16_t>( length ) );
 
         if ( stm32Error == HAL_OK )
         {
@@ -812,10 +813,11 @@ namespace Thor
       HAL_StatusTypeDef stm32Error = HAL_OK;
 
 #if defined( USING_FREERTOS )
-      stm32Error =
-          HAL_USART_Transmit( &usart_handle, const_cast<uint8_t *>( buffer ), length, pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
+      stm32Error = HAL_USART_Transmit( &usart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
+                                       pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
 #else
-      stm32Error = HAL_USART_Transmit( &usart_handle, const_cast<uint8_t *>( buffer ), length, BLOCKING_TIMEOUT_MS );
+      stm32Error = HAL_USART_Transmit( &usart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
+                                       BLOCKING_TIMEOUT_MS );
 #endif
       return convertHALStatus( stm32Error );
     }
@@ -833,8 +835,8 @@ namespace Thor
           Hardware is free. Send the data directly.
           ------------------------------------------------*/
           tx_complete = false;
-          stm32Error  = HAL_USART_Transmit_IT( &usart_handle, const_cast<uint8_t *>( buffer ), length );
-          error       = convertHALStatus( stm32Error );
+          stm32Error = HAL_USART_Transmit_IT( &usart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ) );
+          error      = convertHALStatus( stm32Error );
         }
         else
         {
@@ -869,8 +871,9 @@ namespace Thor
           Hardware is free. Send the data directly.
           ------------------------------------------------*/
           tx_complete = false;
-          stm32Error  = HAL_USART_Transmit_DMA( &usart_handle, const_cast<uint8_t *>( buffer ), length );
-          error       = convertHALStatus( stm32Error );
+          stm32Error =
+              HAL_USART_Transmit_DMA( &usart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ) );
+          error = convertHALStatus( stm32Error );
         }
         else
         {
@@ -1259,7 +1262,7 @@ void HAL_USART_TxCpltCallback( USART_HandleTypeDef *UsartHandle )
     ------------------------------------------------*/
     if ( !usart->txUserBuffer->empty() )
     {
-      size_t bytesToWrite = std::min( usart->txUserBuffer->size(), usart->txInternalBufferSize );
+      size_t bytesToWrite = std::min( usart->txUserBuffer->size(), static_cast<size_t>( usart->txInternalBufferSize ) );
       memset( usart->txInternalBuffer, 0, usart->txInternalBufferSize );
 
       for ( uint32_t x = 0; x < bytesToWrite; x++ )

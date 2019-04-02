@@ -34,7 +34,7 @@ namespace Thor
 #endif
     } };
 
-    SerialClass::SerialClass( const size_t bufferSize ) : bSize( bufferSize )
+    SerialClass::SerialClass( const uint16_t bufferSize ) : bSize( bufferSize )
     {
     }
 

@@ -197,7 +197,7 @@ namespace Thor
       delete[] txInternalBuffer;
     }
 
-    UARTClass_sPtr UARTClass::create( const uint8_t channel, const size_t bufferSize )
+    UARTClass_sPtr UARTClass::create( const uint8_t channel, const uint16_t bufferSize )
     {
       UARTClass_sPtr newClass( new UARTClass() );
 
@@ -543,13 +543,13 @@ namespace Thor
       return retval;
     }
 
-    void UARTClass::assignRXBuffer( uint8_t *const buffer, const size_t size )
+    void UARTClass::assignRXBuffer( uint8_t *const buffer, const uint16_t size )
     {
       rxInternalBuffer     = buffer;
       rxInternalBufferSize = size;
     }
 
-    void UARTClass::assignTXBuffer( uint8_t *const buffer, const size_t size )
+    void UARTClass::assignTXBuffer( uint8_t *const buffer, const uint16_t size )
     {
       txInternalBuffer     = buffer;
       txInternalBufferSize = size;
@@ -718,10 +718,11 @@ namespace Thor
       UART_OverrunHandler();
 
 #if defined( USING_FREERTOS )
-      stm32Error =
-          HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), length, pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
+      stm32Error = HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
+                                     pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
 #else
-      stm32Error = HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), length, BLOCKING_TIMEOUT_MS );
+      stm32Error = HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
+                                     BLOCKING_TIMEOUT_MS );
 #endif
       return convertHALStatus( stm32Error );
     }
@@ -739,7 +740,7 @@ namespace Thor
         ------------------------------------------------*/
         AUTO_ASYNC_RX = false;
         memset( rxInternalBuffer, 0, rxInternalBufferSize );
-        stm32Error = HAL_UART_Receive_IT( &uart_handle, rxInternalBuffer, length );
+        stm32Error = HAL_UART_Receive_IT( &uart_handle, rxInternalBuffer, static_cast<uint16_t>( length ) );
 
         if ( stm32Error == HAL_OK )
         {
@@ -776,7 +777,7 @@ namespace Thor
         ------------------------------------------------*/
         HAL_UART_DMAStop( &uart_handle );
         memset( rxInternalBuffer, 0, rxInternalBufferSize );
-        stm32Error = HAL_UART_Receive_DMA( &uart_handle, rxInternalBuffer, length );
+        stm32Error = HAL_UART_Receive_DMA( &uart_handle, rxInternalBuffer, static_cast<uint16_t>( length ) );
 
         if ( stm32Error == HAL_OK )
         {
@@ -800,10 +801,11 @@ namespace Thor
       HAL_StatusTypeDef stm32Error = HAL_OK;
 
 #if defined( USING_FREERTOS )
-      stm32Error =
-          HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), length, pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
+      stm32Error = HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
+                                      pdMS_TO_TICKS( BLOCKING_TIMEOUT_MS ) );
 #else
-      stm32Error = HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), length, BLOCKING_TIMEOUT_MS );
+      stm32Error = HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
+                                      BLOCKING_TIMEOUT_MS );
 #endif
       return convertHALStatus( stm32Error );
     }
@@ -821,7 +823,7 @@ namespace Thor
           Hardware is free. Send the data directly.
           ------------------------------------------------*/
           tx_complete = false;
-          stm32Error  = HAL_UART_Transmit_IT( &uart_handle, const_cast<uint8_t *>( buffer ), length );
+          stm32Error  = HAL_UART_Transmit_IT( &uart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ) );
           error       = convertHALStatus( stm32Error );
         }
         else
@@ -857,7 +859,7 @@ namespace Thor
           Hardware is free. Send the data directly.
           ------------------------------------------------*/
           tx_complete = false;
-          stm32Error  = HAL_UART_Transmit_DMA( &uart_handle, const_cast<uint8_t *>( buffer ), length );
+          stm32Error  = HAL_UART_Transmit_DMA( &uart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ) );
           error       = convertHALStatus( stm32Error );
         }
         else
@@ -1354,7 +1356,7 @@ void HAL_UART_TxCpltCallback( UART_HandleTypeDef *UartHandle )
     ------------------------------------------------*/
     if ( !uart->txUserBuffer->empty() )
     {
-      size_t bytesToWrite = std::min( uart->txUserBuffer->size(), uart->txInternalBufferSize );
+      size_t bytesToWrite = std::min( uart->txUserBuffer->size(), static_cast<size_t>( uart->txInternalBufferSize ) );
       memset( uart->txInternalBuffer, 0, uart->txInternalBufferSize );
 
       for ( uint32_t x = 0; x < bytesToWrite; x++ )

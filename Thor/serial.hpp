@@ -37,7 +37,7 @@ namespace Thor
       SerialClass()  = default;
       ~SerialClass() = default;
 
-      SerialClass( const size_t bufferSize );
+      SerialClass( const uint16_t bufferSize );
 
       Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 
@@ -80,7 +80,7 @@ namespace Thor
 
     private:
       uint8_t serialChannel = 0;
-      size_t bSize          = 1;
+      uint16_t bSize        = 1;
 
       Chimera::Serial::Interface_sPtr serialObject;
     };
