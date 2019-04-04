@@ -149,6 +149,11 @@ namespace Thor
       uint8_t dmaRXReqSig;
       uint8_t dmaTXReqSig;
 
+#if defined( USING_FREERTOS )
+      SemaphoreHandle_t *rxCompleteWakeup;
+      SemaphoreHandle_t *txCompleteWakeup;
+#endif
+
       struct USARTClassStatus
       {
         bool gpio_enabled              = false;

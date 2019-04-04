@@ -533,7 +533,7 @@ namespace Thor
         error = Chimera::CommonStatusCodes::NOT_SUPPORTED;
       }
 
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return error;
     }
 
     Chimera::Status_t UARTClass::removeEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr )
@@ -553,7 +553,7 @@ namespace Thor
         error = Chimera::CommonStatusCodes::NOT_SUPPORTED;
       }
 
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return error;
     }
 #endif
 

@@ -33,8 +33,6 @@ extern "C"
 }
 #endif
 
-static std::array<SemaphoreHandle_t, Thor::Serial::MAX_SERIAL_CHANNELS + 1> usartSemphrs;
-TaskTrigger usartTaskTrigger;
 #endif /* USING_FREERTOS */
 
 using namespace Thor;
@@ -219,8 +217,10 @@ namespace Thor
 
       AUTO_ASYNC_RX = false;
 
-      dmaRXReqSig = Thor::DMA::Source::NONE;
-      dmaTXReqSig = Thor::DMA::Source::NONE;
+      dmaRXReqSig      = Thor::DMA::Source::NONE;
+      dmaTXReqSig      = Thor::DMA::Source::NONE;
+      rxCompleteWakeup = nullptr;
+      txCompleteWakeup = nullptr;
     }
 
     USARTClass::~USARTClass()
@@ -284,10 +284,6 @@ namespace Thor
                             PinSpeed::ULTRA_SPD, pins.rx.alternate );
 
       USART_GPIO_Init();
-
-#if defined( USING_FREERTOS )
-      usartSemphrs[ usart_channel ] = xSemaphoreCreateCounting( USART_QUEUE_SIZE, USART_QUEUE_SIZE );
-#endif
 
       hardware_assigned = true;
       return Chimera::CommonStatusCodes::OK;
@@ -549,12 +545,46 @@ namespace Thor
 #if defined( USING_FREERTOS )
     Chimera::Status_t USARTClass::attachEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      if ( !semphr )
+      {
+        error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      }
+      else if ( event == Chimera::Serial::Event::READ_COMPLETE )
+      {
+        rxCompleteWakeup = semphr;
+      }
+      else if ( event == Chimera::Serial::Event::WRITE_COMPLETE )
+      {
+        txCompleteWakeup = semphr;
+      }
+      else
+      {
+        error = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      }
+
+      return error;
     }
 
     Chimera::Status_t USARTClass::removeEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      if ( event == Chimera::Serial::Event::READ_COMPLETE )
+      {
+        rxCompleteWakeup = nullptr;
+      }
+      else if ( event == Chimera::Serial::Event::WRITE_COMPLETE )
+      {
+        txCompleteWakeup = nullptr;
+      }
+      else
+      {
+        error = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      }
+
+      return error;
     }
 #endif
 
@@ -1274,6 +1304,20 @@ void HAL_USART_TxCpltCallback( USART_HandleTypeDef *UsartHandle )
       usart->write( usart->txInternalBuffer, bytesToWrite );
     }
   }
+  else
+  {
+#if defined( USING_FREERTOS )
+    /*------------------------------------------------
+    Let user threads know the transfer completed
+    ------------------------------------------------*/
+    if ( usart->txCompleteWakeup )
+    {
+      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+      xSemaphoreGiveFromISR( *usart->txCompleteWakeup, &xHigherPriorityTaskWoken );
+      portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+    }
+#endif
+  }
 }
 
 void HAL_USART_RxCpltCallback( USART_HandleTypeDef *UsartHandle )
@@ -1345,6 +1389,18 @@ void HAL_USART_RxCpltCallback( USART_HandleTypeDef *UsartHandle )
     ------------------------------------------------*/
     usart->rx_complete   = true;
     usart->AUTO_ASYNC_RX = true;
+
+#if defined( USING_FREERTOS )
+    /*------------------------------------------------
+    Let user threads know the transfer completed
+    ------------------------------------------------*/
+    if ( usart->rxCompleteWakeup )
+    {
+      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+      xSemaphoreGiveFromISR( *usart->rxCompleteWakeup, &xHigherPriorityTaskWoken );
+      portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+    }
+#endif
   }
 }
 
