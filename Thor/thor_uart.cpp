@@ -33,8 +33,6 @@ extern "C"
 }
 #endif
 
-static std::array<SemaphoreHandle_t, Thor::Serial::MAX_SERIAL_CHANNELS + 1> uartSemphrs;
-TaskTrigger uartTaskTrigger;
 #endif /* USING_FREERTOS */
 
 using namespace Thor;
@@ -189,6 +187,8 @@ namespace Thor
 
       dmaRXReqSig = Thor::DMA::Source::NONE;
       dmaTXReqSig = Thor::DMA::Source::NONE;
+      rxCompleteWakeup = nullptr;
+      txCompleteWakeup = nullptr;
     }
 
     UARTClass::~UARTClass()
@@ -252,10 +252,6 @@ namespace Thor
                             PinSpeed::ULTRA_SPD, pins.rx.alternate );
 
       UART_GPIO_Init();
-
-#if defined( USING_FREERTOS )
-      uartSemphrs[ uart_channel ] = xSemaphoreCreateCounting( UART_QUEUE_SIZE, UART_QUEUE_SIZE );
-#endif
 
       hardware_assigned = true;
       return Chimera::CommonStatusCodes::OK;
@@ -518,11 +514,45 @@ namespace Thor
 #if defined( USING_FREERTOS )
     Chimera::Status_t UARTClass::attachEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr )
     {
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      if ( !semphr )
+      {
+        error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      }
+      else if ( event == Chimera::Serial::Event::READ_COMPLETE )
+      {
+        rxCompleteWakeup = semphr;
+      }
+      else if ( event == Chimera::Serial::Event::WRITE_COMPLETE )
+      {
+        txCompleteWakeup = semphr;
+      }
+      else
+      {
+        error = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      }
+
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
 
     Chimera::Status_t UARTClass::removeEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr )
     {
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      if ( event == Chimera::Serial::Event::READ_COMPLETE )
+      {
+        rxCompleteWakeup = nullptr;
+      }
+      else if ( event == Chimera::Serial::Event::WRITE_COMPLETE )
+      {
+        txCompleteWakeup = nullptr;
+      }
+      else
+      {
+        error = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      }
+
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
 #endif
@@ -1367,6 +1397,20 @@ void HAL_UART_TxCpltCallback( UART_HandleTypeDef *UartHandle )
 
       uart->write( uart->txInternalBuffer, bytesToWrite );
     }
+    else
+    {
+#if defined( USING_FREERTOS )
+      /*------------------------------------------------
+      Let user threads know the transfer completed
+      ------------------------------------------------*/
+      if ( uart->txCompleteWakeup )
+      {
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        xSemaphoreGiveFromISR( *uart->txCompleteWakeup, &xHigherPriorityTaskWoken );
+        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+      }
+#endif
+    }
   }
 }
 
@@ -1439,6 +1483,18 @@ void HAL_UART_RxCpltCallback( UART_HandleTypeDef *UartHandle )
     ------------------------------------------------*/
     uart->rx_complete   = true;
     uart->AUTO_ASYNC_RX = true;
+
+#if defined( USING_FREERTOS )
+    /*------------------------------------------------
+    Let user threads know the transfer completed
+    ------------------------------------------------*/
+    if ( uart->rxCompleteWakeup )
+    {
+      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+      xSemaphoreGiveFromISR( *uart->rxCompleteWakeup, &xHigherPriorityTaskWoken );
+      portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+    }
+#endif
   }
 }
 
@@ -1456,30 +1512,6 @@ void HAL_UART_ErrorCallback( UART_HandleTypeDef *UartHandle )
 
 #endif /* !GMOCK_TEST */
 
-void UART1_IRQHandler( void )
-{
-  if ( uartObjects[ 1 ] )
-  {
-    uartObjects[ 1 ]->IRQHandler();
-  }
-}
-
-void UART2_IRQHandler( void )
-{
-  if ( uartObjects[ 2 ] )
-  {
-    uartObjects[ 2 ]->IRQHandler();
-  }
-}
-
-void UART3_IRQHandler( void )
-{
-  if ( uartObjects[ 3 ] )
-  {
-    uartObjects[ 3 ]->IRQHandler();
-  }
-}
-
 void UART4_IRQHandler( void )
 {
   if ( uartObjects[ 4 ] )
@@ -1493,14 +1525,6 @@ void UART5_IRQHandler( void )
   if ( uartObjects[ 5 ] )
   {
     uartObjects[ 5 ]->IRQHandler();
-  }
-}
-
-void UART6_IRQHandler( void )
-{
-  if ( uartObjects[ 6 ] )
-  {
-    uartObjects[ 6 ]->IRQHandler();
   }
 }
 

@@ -31,12 +31,8 @@
 extern "C"
 {
 #endif
-  extern void UART1_IRQHandler();
-  extern void UART2_IRQHandler();
-  extern void UART3_IRQHandler();
   extern void UART4_IRQHandler();
   extern void UART5_IRQHandler();
-  extern void UART6_IRQHandler();
   extern void UART7_IRQHandler();
   extern void UART8_IRQHandler();
 #ifdef __cplusplus
@@ -127,12 +123,8 @@ namespace Thor
       ------------------------------------------------*/
       friend void( ::HAL_UART_TxCpltCallback )( UART_HandleTypeDef *UsartHandle );
       friend void( ::HAL_UART_RxCpltCallback )( UART_HandleTypeDef *UsartHandle );
-      friend void( ::UART1_IRQHandler )( void );
-      friend void( ::UART2_IRQHandler )( void );
-      friend void( ::UART3_IRQHandler )( void );
       friend void( ::UART4_IRQHandler )( void );
       friend void( ::UART5_IRQHandler )( void );
-      friend void( ::UART6_IRQHandler )( void );
       friend void( ::UART7_IRQHandler )( void );
       friend void( ::UART8_IRQHandler )( void );
 
@@ -158,6 +150,11 @@ namespace Thor
 
       uint8_t dmaRXReqSig;
       uint8_t dmaTXReqSig;
+
+#if defined( USING_FREERTOS )
+      SemaphoreHandle_t *rxCompleteWakeup;
+      SemaphoreHandle_t *txCompleteWakeup;
+#endif
 
       struct UARTClassStatus
       {
