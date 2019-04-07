@@ -18,6 +18,7 @@
 #include <Thor/spi.hpp>
 #include <Thor/gpio.hpp>
 #include <Thor/serial.hpp>
+#include <Thor/system.hpp>
 #include <Thor/watchdog.hpp>
 
 
@@ -25,10 +26,7 @@
 
 #define CHIMERA_INHERITED_GPIO Thor::GPIO::GPIOClass
 #define CHIMERA_INHERITED_SERIAL Thor::Serial::SerialClass
-//#define CHIMERA_INHERITED_DMA Thor::DMA::DMAClass
 
-// typedef Thor::Peripheral::SPI::ChimeraSPI CHIMERA_INHERITED_SPI;
-// typedef Thor::Peripheral::Watchdog::ChimeraWatchdog CHIMERA_INHERITED_WATCHDOG;
-
+#define CHIMERA_INHERITED_SYSTEM_IDENTIFIER Thor::System::Identifier
 
 #endif

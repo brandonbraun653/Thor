@@ -1,8 +1,44 @@
+/********************************************************************************
+ *  File Name:
+ *    system.hpp
+ *
+ *  Description:
+ *    Implements system interface functionality for Thor
+ *
+ *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
 #pragma once
 #ifndef THOR_SYSTEM_HPP
 #define THOR_SYSTEM_HPP
-#include <stdint.h>
+
+/* C++ Includes */
+#include <cstdint>
+
+/* Chimera Includes */
+#include <Chimera/interface.hpp>
+
+/* Thor Includes */
 #include <Thor/preprocessor.hpp>
+
+
+namespace Thor
+{
+  namespace System
+  {
+    class Identifier : public Chimera::System::IdentifierInterface
+    {
+    public:
+      Identifier();
+      ~Identifier();
+
+      uint32_t deviceID() final override;
+
+      uint32_t uniqueID() final override;
+    };
+  }
+}
+
 
 // Definitions taken from section 4.3 System Control Block in the Cortex-M4 Devices Generic User Guide
 #if defined( CORTEX_M4 )
