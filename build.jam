@@ -123,6 +123,7 @@ explicit_alias PUB : : :
 
 explicit_alias CHIMERA_PORT : : :
     :   <include>$(thor_hdr_dir)/config/chimera
+        <define>CHIMERA_LITTLE_ENDIAN
     ;
 
 # Default target to let the user know they screwed up their configuration
