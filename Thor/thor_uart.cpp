@@ -19,8 +19,6 @@
 #include <Thor/exceptions.hpp>
 
 #if defined( USING_FREERTOS )
-#include <Thor/exti.hpp>
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -187,8 +185,11 @@ namespace Thor
 
       dmaRXReqSig = Thor::DMA::Source::NONE;
       dmaTXReqSig = Thor::DMA::Source::NONE;
+
+      #if defined( USING_FREERTOS )
       rxCompleteWakeup = nullptr;
       txCompleteWakeup = nullptr;
+      #endif 
     }
 
     UARTClass::~UARTClass()

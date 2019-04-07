@@ -25,10 +25,6 @@ https://clang.llvm.org/docs/LanguageExtensions.html
 #error FATAL ERROR: Please disable exceptions.
 #endif
 
-/*-----------------------------------------------------
-Check for Project Libraries
------------------------------------------------------*/
-
 /*-------------------------------------------
 STM32
 -------------------------------------------*/
@@ -69,15 +65,6 @@ Boost
 #endif
 
 /*-------------------------------------------
-CppUTest
--------------------------------------------*/
-#if __has_include( "CppUTest/CommandLineTestRunner.h" )
-#if !defined( CPPUTEST_MEM_LEAK_DETECTION_DISABLED )
-#error Please define CPPUTEST_MEM_LEAK_DETECTION_DISABLED in the compiler preprocessor. Thor cannnot handle Unit Testing with leak detection.
-#endif
-#endif
-
-/*-------------------------------------------
 FreeRTOS
 -------------------------------------------*/
 #if __has_include( "FreeRTOS.h" ) && __has_include( "tasks.c" )
@@ -90,17 +77,8 @@ FreeRTOS
 Chimera
 -------------------------------------------*/
 #if __has_include( "Chimera/chimera.hpp" )
-#ifndef USING_CHIMERA
+#if !defined( USING_CHIMERA )
 #define USING_CHIMERA
-#endif
-#endif
-
-/*-------------------------------------------
-ERPC
--------------------------------------------*/
-#if __has_include( "Thor/erpc/config/erpc_config.h" )
-#ifndef USING_ERPC
-#define USING_ERPC
 #endif
 #endif
 
@@ -118,6 +96,32 @@ Visual GDB
 #define VISUALGDB_PROJECT
 #endif
 #endif
+
+/*-------------------------------------------
+GTest & GMock:
+  It was discovered when upgrading the project to VS2019, something broke in the MSVC toolchain that caused some new compiler
+  errors on previously working Thor code. There were missing definitions for several Windows types, despite the offending files
+  not actually using anything related to Windows. Eventually, the fix was found on the great SOF and applied here.
+
+  https://stackoverflow.com/questions/257134/weird-compile-error-dealing-with-winnt-h
+-------------------------------------------*/
+#if defined( GTEST_TEST ) || defined( GMOCK_TEST )
+#ifndef __wtypes_h__
+#include <wtypes.h>
+#endif
+
+#ifndef __WINDEF_
+#include <windef.h>
+#endif
+
+#ifndef _WINUSER_
+#include <winuser.h>
+#endif
+
+#ifndef __RPC_H__
+#include <rpc.h>
+#endif
+#endif /* GTEST_TEST || GMOCK_TEST */
 
 
 #endif

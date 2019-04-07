@@ -1,7 +1,16 @@
+/********************************************************************************
+ *  File Name:
+ *    thor.cpp
+ *
+ *  Description:
+ *    Implements core common functions to Thor
+ *
+ * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
 #include <Thor/thor.hpp>
 #include <Thor/macro.hpp>
 #include <Thor/defaults.hpp>
-//#include <Thor/exti.hpp>
 #include <Thor/print.hpp>
 
 #if defined( USING_FREERTOS )
