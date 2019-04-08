@@ -21,309 +21,306 @@ using namespace Thor;
 
 namespace Thor
 {
-  namespace Peripheral
+  namespace Watchdog
   {
-    namespace Watchdog
-    {
 #if defined( WWDG )
-      WindowWatchdog::WindowWatchdog() : actualTimeout_mS( 0 )
-      {
-      }
+    WindowWatchdog::WindowWatchdog() : actualTimeout_mS( 0 )
+    {
+    }
 
-      Chimera::Status_t WindowWatchdog::initialize( const uint32_t timeout_mS, const uint8_t windowPercent )
+    Chimera::Status_t WindowWatchdog::initialize( const uint32_t timeout_mS, const uint8_t windowPercent )
+    {
+      std::array<float, numPrescalers> error;
+      std::array<uint32_t, numPrescalers> counter;
+      std::array<uint32_t, numPrescalers> prescalerRegVals = { WWDG_PRESCALER_1, WWDG_PRESCALER_2, WWDG_PRESCALER_4,
+                                                                WWDG_PRESCALER_8 };
+      std::array<uint32_t, numPrescalers> prescalerActVals = { 1u, 2u, 4u, 8u };
+
+      /*------------------------------------------------
+      Initialize the algorithm variables
+      ------------------------------------------------*/
+      counter.fill( 0u );
+      error.fill( std::numeric_limits<float>::max() );
+
+      uint32_t wdWindow    = counterMax;
+      uint32_t wdCounter   = counterMax;
+      uint32_t wdPrescaler = WWDG_PRESCALER_8;
+
+      /*------------------------------------------------
+      Calculates the best performing values for each prescaler
+      ------------------------------------------------*/
+      float pclk1 = static_cast<float>( HAL_RCC_GetPCLK1Freq() );
+
+      for ( uint8_t i = 0; i < prescalerActVals.size(); i++ )
       {
-        std::array<float, numPrescalers> error;
-        std::array<uint32_t, numPrescalers> counter;
-        std::array<uint32_t, numPrescalers> prescalerRegVals = { WWDG_PRESCALER_1, WWDG_PRESCALER_2, WWDG_PRESCALER_4,
-                                                                 WWDG_PRESCALER_8 };
-        std::array<uint32_t, numPrescalers> prescalerActVals = { 1u, 2u, 4u, 8u };
+        /*------------------------------------------------
+        This is part of the equation found in the datasheet
+        ------------------------------------------------*/
+        float clockPeriod_mS = ( 1000.0f / pclk1 ) * 4096.0f * ( 1u << i );
 
         /*------------------------------------------------
-        Initialize the algorithm variables
+        Iterate through all counter values to figure out which one
+        produces the closest timeout
         ------------------------------------------------*/
-        counter.fill( 0u );
-        error.fill( std::numeric_limits<float>::max() );
-
-        uint32_t wdWindow    = counterMax;
-        uint32_t wdCounter   = counterMax;
-        uint32_t wdPrescaler = WWDG_PRESCALER_8;
-
-        /*------------------------------------------------
-        Calculates the best performing values for each prescaler
-        ------------------------------------------------*/
-        float pclk1 = static_cast<float>( HAL_RCC_GetPCLK1Freq() );
-
-        for ( uint8_t i = 0; i < prescalerActVals.size(); i++ )
+        for ( uint8_t testVal = counterMin; testVal <= counterMax; testVal++ )
         {
-          /*------------------------------------------------
-          This is part of the equation found in the datasheet
-          ------------------------------------------------*/
-          float clockPeriod_mS = ( 1000.0f / pclk1 ) * 4096.0f * ( 1u << i );
+          float calcTimeout_mS = clockPeriod_mS * ( ( testVal & counterMask ) + 1 );
+          float absError       = fabs( timeout_mS - calcTimeout_mS );
 
-          /*------------------------------------------------
-          Iterate through all counter values to figure out which one
-          produces the closest timeout
-          ------------------------------------------------*/
-          for ( uint8_t testVal = counterMin; testVal <= counterMax; testVal++ )
+          if ( absError < error[ i ] )
           {
-            float calcTimeout_mS = clockPeriod_mS * ( ( testVal & counterMask ) + 1 );
-            float absError       = fabs( timeout_mS - calcTimeout_mS );
-
-            if ( absError < error[ i ] )
-            {
-              error[ i ]   = absError;
-              counter[ i ] = testVal;
-            }
+            error[ i ]   = absError;
+            counter[ i ] = testVal;
           }
         }
+      }
 
-        /*------------------------------------------------
-        Use the best performing prescaler and counter vars
-        ------------------------------------------------*/
-        uint8_t bestIdx = 0;
-        float min_err   = std::numeric_limits<float>::max();
+      /*------------------------------------------------
+      Use the best performing prescaler and counter vars
+      ------------------------------------------------*/
+      uint8_t bestIdx = 0;
+      float min_err   = std::numeric_limits<float>::max();
 
-        for ( uint8_t i = 0; i < prescalerActVals.size(); i++ )
+      for ( uint8_t i = 0; i < prescalerActVals.size(); i++ )
+      {
+        if ( error[ i ] < min_err )
         {
-          if ( error[ i ] < min_err )
-          {
-            min_err = error[ i ];
-            bestIdx = i;
-          }
+          min_err = error[ i ];
+          bestIdx = i;
         }
-
-        wdCounter        = counter[ bestIdx ];
-        wdPrescaler      = prescalerRegVals[ bestIdx ];
-        actualTimeout_mS = calculateTimeout_mS( static_cast<uint32_t>( pclk1 ), bestIdx, wdCounter );
-
-        /*------------------------------------------------
-        Calculate the window in which the watchdog is allowed to be kicked
-        ------------------------------------------------*/
-        auto userPercent = static_cast<float>( std::min<uint8_t>( 100, windowPercent ) ) / 100.0f;
-        auto minOffset   = static_cast<float>( counterRange ) * userPercent;
-        wdWindow         = static_cast<uint32_t>( minOffset ) + counterMin;
-
-        /*------------------------------------------------
-        Initialize the device handle
-        ------------------------------------------------*/
-        handle.Instance       = WWDG;        /** The only instance of WWDG */
-        handle.Init.Prescaler = wdPrescaler; /** Clock counter prescaler */
-        handle.Init.Window    = wdWindow;  /** The counter can only be refreshed if below this value. [Max: 0x7F, Min: 0x40] */
-        handle.Init.Counter   = wdCounter; /** Starting counter value, also the refresh value. [Max: 0x7F, Min: 0x40] */
-        handle.Init.EWIMode   = WWDG_EWI_DISABLE; /** Enable or disable the Early Wakeup Interrupt */
-
-        /*------------------------------------------------
-        Turn on the peripheral clock
-        ------------------------------------------------*/
-        __HAL_RCC_WWDG_CLK_ENABLE();
-
-        return Chimera::CommonStatusCodes::OK;
       }
 
-      Chimera::Status_t WindowWatchdog::start()
+      wdCounter        = counter[ bestIdx ];
+      wdPrescaler      = prescalerRegVals[ bestIdx ];
+      actualTimeout_mS = calculateTimeout_mS( static_cast<uint32_t>( pclk1 ), bestIdx, wdCounter );
+
+      /*------------------------------------------------
+      Calculate the window in which the watchdog is allowed to be kicked
+      ------------------------------------------------*/
+      auto userPercent = static_cast<float>( std::min<uint8_t>( 100, windowPercent ) ) / 100.0f;
+      auto minOffset   = static_cast<float>( counterRange ) * userPercent;
+      wdWindow         = static_cast<uint32_t>( minOffset ) + counterMin;
+
+      /*------------------------------------------------
+      Initialize the device handle
+      ------------------------------------------------*/
+      handle.Instance       = WWDG;        /** The only instance of WWDG */
+      handle.Init.Prescaler = wdPrescaler; /** Clock counter prescaler */
+      handle.Init.Window    = wdWindow;  /** The counter can only be refreshed if below this value. [Max: 0x7F, Min: 0x40] */
+      handle.Init.Counter   = wdCounter; /** Starting counter value, also the refresh value. [Max: 0x7F, Min: 0x40] */
+      handle.Init.EWIMode   = WWDG_EWI_DISABLE; /** Enable or disable the Early Wakeup Interrupt */
+
+      /*------------------------------------------------
+      Turn on the peripheral clock
+      ------------------------------------------------*/
+      __HAL_RCC_WWDG_CLK_ENABLE();
+
+      return Chimera::CommonStatusCodes::OK;
+    }
+
+    Chimera::Status_t WindowWatchdog::start()
+    {
+      auto status = Chimera::CommonStatusCodes::OK;
+
+      if ( HAL_WWDG_Init( &handle ) != HAL_OK )
       {
-        auto status = Chimera::CommonStatusCodes::OK;
-
-        if ( HAL_WWDG_Init( &handle ) != HAL_OK )
-        {
-          status = Chimera::CommonStatusCodes::FAIL;
-        }
-
-        return status;
+        status = Chimera::CommonStatusCodes::FAIL;
       }
 
-      Chimera::Status_t WindowWatchdog::stop()
+      return status;
+    }
+
+    Chimera::Status_t WindowWatchdog::stop()
+    {
+      /*------------------------------------------------
+      Once enabled, the watchdog cannot be stopped except by a system reset
+      ------------------------------------------------*/
+      return Chimera::CommonStatusCodes::LOCKED;
+    }
+
+    Chimera::Status_t WindowWatchdog::kick()
+    {
+      auto status = Chimera::CommonStatusCodes::OK;
+
+      if ( HAL_WWDG_Refresh( &handle ) != HAL_OK )
       {
-        /*------------------------------------------------
-        Once enabled, the watchdog cannot be stopped except by a system reset
-        ------------------------------------------------*/
-        return Chimera::CommonStatusCodes::LOCKED;
+        status = Chimera::CommonStatusCodes::FAIL;
       }
 
-      Chimera::Status_t WindowWatchdog::kick()
+      return status;
+    }
+
+    Chimera::Status_t WindowWatchdog::getTimeout( uint32_t &timeout_mS )
+    {
+      timeout_mS = actualTimeout_mS;
+      return Chimera::CommonStatusCodes::OK;
+    }
+
+    Chimera::Status_t WindowWatchdog::pauseOnDebugHalt( const bool enable )
+    {
+      if ( enable )
       {
-        auto status = Chimera::CommonStatusCodes::OK;
-
-        if ( HAL_WWDG_Refresh( &handle ) != HAL_OK )
-        {
-          status = Chimera::CommonStatusCodes::FAIL;
-        }
-
-        return status;
+        __HAL_DBGMCU_FREEZE_WWDG();
       }
-
-      Chimera::Status_t WindowWatchdog::getTimeout( uint32_t &timeout_mS )
+      else
       {
-        timeout_mS = actualTimeout_mS;
-        return Chimera::CommonStatusCodes::OK;
+        __HAL_DBGMCU_UNFREEZE_WWDG();
       }
 
-      Chimera::Status_t WindowWatchdog::pauseOnDebugHalt( const bool enable )
-      {
-        if ( enable )
-        {
-          __HAL_DBGMCU_FREEZE_WWDG();
-        }
-        else
-        {
-          __HAL_DBGMCU_UNFREEZE_WWDG();
-        }
+      return Chimera::CommonStatusCodes::OK;
+    }
 
-        return Chimera::CommonStatusCodes::OK;
-      }
+    uint32_t WindowWatchdog::calculateTimeout_mS( const uint32_t pclk1, const uint8_t prescaler, const uint8_t counter )
+    {
+      assert( pclk1 != 0 );
+      assert( prescaler < numPrescalers );
+      assert( counter < ( counterMax + 1 ) );
+      assert( counter > ( counterMin - 1 ) );
 
-      uint32_t WindowWatchdog::calculateTimeout_mS( const uint32_t pclk1, const uint8_t prescaler, const uint8_t counter )
-      {
-        assert( pclk1 != 0 );
-        assert( prescaler < numPrescalers );
-        assert( counter < ( counterMax + 1 ) );
-        assert( counter > ( counterMin - 1 ) );
-
-        /*------------------------------------------------
-        Out of sheer laziness, I'm not documenting this function's equation. Look in the initialization function
-        or the device datasheet for a more useful explanation of what is going on.
-        ------------------------------------------------*/
-        float calculatedTimeout = ( 1000.0f / pclk1 ) * 4096.0f * ( 1u << prescaler ) * ( ( counter & counterMask ) + 1 );
-        return static_cast<uint32_t>( calculatedTimeout );
-      }
+      /*------------------------------------------------
+      Out of sheer laziness, I'm not documenting this function's equation. Look in the initialization function
+      or the device datasheet for a more useful explanation of what is going on.
+      ------------------------------------------------*/
+      float calculatedTimeout = ( 1000.0f / pclk1 ) * 4096.0f * ( 1u << prescaler ) * ( ( counter & counterMask ) + 1 );
+      return static_cast<uint32_t>( calculatedTimeout );
+    }
 #endif /* !WWDG */
 
 #if defined( IWDG )
-      IndependentWatchdog::IndependentWatchdog() : actualTimeout_mS( 0 )
+    IndependentWatchdog::IndependentWatchdog() : actualTimeout_mS( 0 )
+    {
+    }
+
+    Chimera::Status_t IndependentWatchdog::initialize( const uint32_t timeout_mS, const uint8_t windowPercent )
+    {
+      std::array<float, numPrescalers> error;
+      std::array<uint32_t, numPrescalers> counter;
+      std::array<uint32_t, numPrescalers> prescalerRegVals = { IWDG_PRESCALER_4,  IWDG_PRESCALER_8,  IWDG_PRESCALER_16,
+                                                                IWDG_PRESCALER_32, IWDG_PRESCALER_64, IWDG_PRESCALER_128,
+                                                                IWDG_PRESCALER_256 };
+      std::array<uint32_t, numPrescalers> prescalerActVals = { 4, 8, 16, 32, 64, 128, 256 };
+
+      /*------------------------------------------------
+      Initialize the algorithm variables
+      ------------------------------------------------*/
+      counter.fill( 0u );
+      error.fill( std::numeric_limits<float>::max() );
+
+      uint32_t wdReload    = counterMax;
+      uint32_t wdPrescaler = IWDG_PRESCALER_256;
+
+      /*------------------------------------------------
+      Calculates the best performing values for each prescaler
+      ------------------------------------------------*/
+      for ( uint8_t i = 0; i < prescalerActVals.size(); i++ )
       {
+        /*------------------------------------------------
+        This is part of the equation found in the datasheet
+        ------------------------------------------------*/
+        float clockPeriod_mS = ( 1000.0f / clockFreqHz ) * prescalerActVals[ i ];
+
+        /*------------------------------------------------
+        Iterate through all counter values to figure out which one
+        produces the closest timeout
+        ------------------------------------------------*/
+        for ( uint16_t testVal = counterMin; testVal <= counterMax; testVal++ )
+        {
+          float calcTimeout_mS = clockPeriod_mS * testVal;
+          float absError       = fabs( timeout_mS - calcTimeout_mS );
+
+          if ( absError < error[ i ] )
+          {
+            error[ i ]   = absError;
+            counter[ i ] = testVal;
+          }
+        }
       }
 
-      Chimera::Status_t IndependentWatchdog::initialize( const uint32_t timeout_mS )
+      /*------------------------------------------------
+      Use the best performing prescaler and counter vars
+      ------------------------------------------------*/
+      uint8_t bestIdx = 0;
+      float min_err   = std::numeric_limits<float>::max();
+
+      for ( uint8_t i = 0; i < prescalerActVals.size(); i++ )
       {
-        std::array<float, numPrescalers> error;
-        std::array<uint32_t, numPrescalers> counter;
-        std::array<uint32_t, numPrescalers> prescalerRegVals = { IWDG_PRESCALER_4,  IWDG_PRESCALER_8,  IWDG_PRESCALER_16,
-                                                                 IWDG_PRESCALER_32, IWDG_PRESCALER_64, IWDG_PRESCALER_128,
-                                                                 IWDG_PRESCALER_256 };
-        std::array<uint32_t, numPrescalers> prescalerActVals = { 4, 8, 16, 32, 64, 128, 256 };
-
-        /*------------------------------------------------
-        Initialize the algorithm variables
-        ------------------------------------------------*/
-        counter.fill( 0u );
-        error.fill( std::numeric_limits<float>::max() );
-
-        uint32_t wdReload    = counterMax;
-        uint32_t wdPrescaler = IWDG_PRESCALER_256;
-
-        /*------------------------------------------------
-        Calculates the best performing values for each prescaler
-        ------------------------------------------------*/
-        for ( uint8_t i = 0; i < prescalerActVals.size(); i++ )
+        if ( error[ i ] < min_err )
         {
-          /*------------------------------------------------
-          This is part of the equation found in the datasheet
-          ------------------------------------------------*/
-          float clockPeriod_mS = ( 1000.0f / clockFreqHz ) * prescalerActVals[ i ];
-
-          /*------------------------------------------------
-          Iterate through all counter values to figure out which one
-          produces the closest timeout
-          ------------------------------------------------*/
-          for ( uint16_t testVal = counterMin; testVal <= counterMax; testVal++ )
-          {
-            float calcTimeout_mS = clockPeriod_mS * testVal;
-            float absError       = fabs( timeout_mS - calcTimeout_mS );
-
-            if ( absError < error[ i ] )
-            {
-              error[ i ]   = absError;
-              counter[ i ] = testVal;
-            }
-          }
+          min_err = error[ i ];
+          bestIdx = i;
         }
+      }
 
-        /*------------------------------------------------
-        Use the best performing prescaler and counter vars
-        ------------------------------------------------*/
-        uint8_t bestIdx = 0;
-        float min_err   = std::numeric_limits<float>::max();
+      wdReload         = counter[ bestIdx ];
+      wdPrescaler      = prescalerRegVals[ bestIdx ];
+      actualTimeout_mS = static_cast<uint32_t>( ( ( 1000.0f / clockFreqHz ) * prescalerActVals[ bestIdx ] ) * wdReload );
 
-        for ( uint8_t i = 0; i < prescalerActVals.size(); i++ )
-        {
-          if ( error[ i ] < min_err )
-          {
-            min_err = error[ i ];
-            bestIdx = i;
-          }
-        }
-
-        wdReload         = counter[ bestIdx ];
-        wdPrescaler      = prescalerRegVals[ bestIdx ];
-        actualTimeout_mS = static_cast<uint32_t>( ( ( 1000.0f / clockFreqHz ) * prescalerActVals[ bestIdx ] ) * wdReload );
-
-        /*------------------------------------------------
-        Initialize the device handle, allowing the user to reset whenever
-        ------------------------------------------------*/
-        handle.Instance       = IWDG;
-        handle.Init.Prescaler = wdPrescaler;
-        handle.Init.Reload    = wdReload;
+      /*------------------------------------------------
+      Initialize the device handle, allowing the user to reset whenever
+      ------------------------------------------------*/
+      handle.Instance       = IWDG;
+      handle.Init.Prescaler = wdPrescaler;
+      handle.Init.Reload    = wdReload;
 
 #if defined( STM32F7 )
-        handle.Init.Window = wdReload;
+      handle.Init.Window = wdReload;
 #endif
 
-        return Chimera::CommonStatusCodes::OK;
-      }
+      return Chimera::CommonStatusCodes::OK;
+    }
 
-      Chimera::Status_t IndependentWatchdog::start()
+    Chimera::Status_t IndependentWatchdog::start()
+    {
+      auto status = Chimera::CommonStatusCodes::OK;
+
+      if ( HAL_IWDG_Init( &handle ) != HAL_OK )
       {
-        auto status = Chimera::CommonStatusCodes::OK;
-
-        if ( HAL_IWDG_Init( &handle ) != HAL_OK )
-        {
-          status = Chimera::CommonStatusCodes::FAIL;
-        }
-
-        return status;
+        status = Chimera::CommonStatusCodes::FAIL;
       }
 
-      Chimera::Status_t IndependentWatchdog::stop()
+      return status;
+    }
+
+    Chimera::Status_t IndependentWatchdog::stop()
+    {
+      /*------------------------------------------------
+      Once enabled, the watchdog cannot be stopped except by a system reset
+      ------------------------------------------------*/
+      return Chimera::CommonStatusCodes::LOCKED;
+    }
+
+    Chimera::Status_t IndependentWatchdog::kick()
+    {
+      auto status = Chimera::CommonStatusCodes::OK;
+
+      if ( HAL_IWDG_Refresh( &handle ) != HAL_OK )
       {
-        /*------------------------------------------------
-        Once enabled, the watchdog cannot be stopped except by a system reset
-        ------------------------------------------------*/
-        return Chimera::CommonStatusCodes::LOCKED;
+        status = Chimera::CommonStatusCodes::FAIL;
       }
 
-      Chimera::Status_t IndependentWatchdog::kick()
+      return status;
+    }
+
+    Chimera::Status_t IndependentWatchdog::getTimeout( uint32_t &timeout_mS )
+    {
+      timeout_mS = actualTimeout_mS;
+      return Chimera::CommonStatusCodes::OK;
+    }
+
+    Chimera::Status_t IndependentWatchdog::pauseOnDebugHalt( const bool enable )
+    {
+      if ( enable )
       {
-        auto status = Chimera::CommonStatusCodes::OK;
-
-        if ( HAL_IWDG_Refresh( &handle ) != HAL_OK )
-        {
-          status = Chimera::CommonStatusCodes::FAIL;
-        }
-
-        return status;
+        __HAL_DBGMCU_FREEZE_IWDG();
       }
-
-      Chimera::Status_t IndependentWatchdog::getTimeout( uint32_t &timeout_mS )
+      else
       {
-        timeout_mS = actualTimeout_mS;
-        return Chimera::CommonStatusCodes::OK;
+        __HAL_DBGMCU_UNFREEZE_IWDG();
       }
 
-      Chimera::Status_t IndependentWatchdog::pauseOnDebugHalt( const bool enable )
-      {
-        if ( enable )
-        {
-          __HAL_DBGMCU_FREEZE_IWDG();
-        }
-        else
-        {
-          __HAL_DBGMCU_UNFREEZE_IWDG();
-        }
-
-        return Chimera::CommonStatusCodes::OK;
-      }
+      return Chimera::CommonStatusCodes::OK;
+    }
 #endif /* !IWDG */
 
-    }    // namespace Watchdog
-  }      // namespace Peripheral
+  }    // namespace Watchdog
 }    // namespace Thor

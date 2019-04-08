@@ -26,6 +26,7 @@
 
 #define CHIMERA_INHERITED_GPIO Thor::GPIO::GPIOClass
 #define CHIMERA_INHERITED_SERIAL Thor::Serial::SerialClass
+#define CHIMERA_INHERITED_WATCHDOG Thor::Watchdog::WindowWatchdog
 
 #define CHIMERA_INHERITED_SYSTEM_IDENTIFIER Thor::System::Identifier
 
