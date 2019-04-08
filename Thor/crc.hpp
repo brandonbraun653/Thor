@@ -36,9 +36,11 @@ namespace Thor
       uint32_t accumulate( const uint32_t *const buffer, const uint32_t length ) final override;
 
       uint32_t calculate( const uint32_t *const buffer, const uint32_t length ) final override;
-    
+
+      uint32_t getPolynomial() final override;
+
     private:
-      CRC_HandleTypeDef crc;
+      CRC_HandleTypeDef crcHandle;
     };
   }    // namespace CRC
 }    // namespace Thor
