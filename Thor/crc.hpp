@@ -25,7 +25,7 @@ namespace Thor
 {
   namespace HWCRC
   {
-    class HW : public Chimera::HWCRC::HWInterface
+    class HW : public Chimera::AlgCRC::Interface
     {
     public:
       HW();
