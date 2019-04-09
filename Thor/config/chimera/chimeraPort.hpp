@@ -16,9 +16,11 @@
 /* Thor Includes */
 #include <Thor/thor.hpp>
 #include <Thor/crc.hpp>
-#include <Thor/spi.hpp>
+#include <Thor/flash.hpp>
 #include <Thor/gpio.hpp>
 #include <Thor/serial.hpp>
+#include <Thor/spi.hpp>
+#include <Thor/sram.hpp>
 #include <Thor/system.hpp>
 #include <Thor/watchdog.hpp>
 
@@ -28,6 +30,8 @@
 #define CHIMERA_INHERITED_CRC Thor::HWCRC::HW
 #define CHIMERA_INHERITED_GPIO Thor::GPIO::GPIOClass
 #define CHIMERA_INHERITED_SERIAL Thor::Serial::SerialClass
+#define CHIMERA_INHERITED_SYSTEM_FLASH Thor::Memory::InternalFlash
+#define CHIMERA_INHERITED_SYSTEM_SRAM Thor::Memory::InternalSRAM
 #define CHIMERA_INHERITED_WATCHDOG Thor::Watchdog::WindowWatchdog
 
 #define CHIMERA_INHERITED_SYSTEM_IDENTIFIER Thor::System::Identifier

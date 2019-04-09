@@ -1,8 +1,18 @@
-#include <Thor/mem.hpp>
+/********************************************************************************
+ * File Name:
+ *	  thor_allocator.cpp
+ *
+ * Description:
+ *	  Provides overloads for common memory allocators and deleters
+ *
+ * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
 
-#if defined( USING_FREERTOS ) && !defined( USING_ERPC ) && defined __cplusplus
+#include <Thor/allocator.hpp>
+
+#if defined( USING_FREERTOS ) && defined( __cplusplus )
 #include "FreeRTOS.h"
-#include "new"
+#include "portable.h"
 
 void *operator new( size_t size )
 {
