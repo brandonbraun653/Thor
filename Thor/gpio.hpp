@@ -31,8 +31,8 @@ namespace Thor
     class GPIOClass : public Chimera::GPIO::Interface
     {
     public:
-      GPIOClass()  = default;
-      ~GPIOClass() = default;
+      GPIOClass();
+      ~GPIOClass();
 
       Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin ) final override;
 
@@ -59,6 +59,7 @@ namespace Thor
       static GPIO_InitTypeDef getHALInit( const Thor::GPIO::Initializer &config );
 
     private:
+      bool initialized = false;
       Thor::GPIO::Initializer pinConfig;
 
       void GPIO_Init( Thor::GPIO::PinPort port, GPIO_InitTypeDef *initStruct );

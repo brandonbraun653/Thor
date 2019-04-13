@@ -11,6 +11,11 @@
 /* Project Includes */
 #include <Thor/gpio.hpp>
 
+/* Mock Includes */
+#if defined( GMOCK_TEST )
+#include "mock_stm32_hal_gpio.hpp"
+#endif 
+
 namespace Thor
 {
   namespace GPIO
@@ -233,6 +238,22 @@ namespace Thor
       return cfg;
     }
 
+    GPIOClass::GPIOClass()
+    {
+      initialized = false;
+
+#if defined( GMOCK_TEST )
+      STM32_HAL_GPIO_MockObj = new ::testing::NiceMock<STM32_HAL_GPIO_Mock>();
+#endif /* GMOCK_TEST */
+    }
+
+    GPIOClass::~GPIOClass()
+    {
+#if defined( GMOCK_TEST )
+      delete STM32_HAL_GPIO_MockObj;
+#endif /* GMOCK_TEST */
+    }
+
     Chimera::Status_t GPIOClass::init( const Chimera::GPIO::Port port, const uint8_t pin )
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
@@ -242,7 +263,8 @@ namespace Thor
 
       if ( ( stm32_pin == PinNum::NOT_A_PIN ) || !stm32_port )
       {
-        return Chimera::GPIO::Status::INVAL_FUNC_PARAM;
+        error = Chimera::GPIO::Status::INVAL_FUNC_PARAM;
+        initialized = false;
       }
       else
       {
@@ -251,6 +273,7 @@ namespace Thor
 
         auto cfg = getHALInit( pinConfig );
         GPIO_Init( pinConfig.GPIOx, &cfg );
+        initialized = true;
       }
 
       return error;
@@ -263,7 +286,11 @@ namespace Thor
       const PinMode pinMode = convertDrive( drive );
       const PinPull pinPull = pullup ? PinPull::PULLUP : PinPull::NOPULL;
 
-      if ( pinMode == PinMode::UNKNOWN_MODE )
+      if ( !initialized )
+      {
+        error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      }
+      else if ( pinMode == PinMode::UNKNOWN_MODE )
       {
         error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
       }
@@ -281,21 +308,50 @@ namespace Thor
 
     Chimera::Status_t GPIOClass::setState( const Chimera::GPIO::State state )
     {
-      HAL_GPIO_WritePin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ), static_cast<GPIO_PinState>( state ) );
-      return Chimera::CommonStatusCodes::OK;
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      if ( !initialized )
+      {
+        error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      }
+      else
+      {
+        HAL_GPIO_WritePin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ), static_cast<GPIO_PinState>( state ) );
+      }
+      
+      return error;
     }
 
     Chimera::Status_t GPIOClass::getState( Chimera::GPIO::State &state )
     {
-      state =
-          static_cast<Chimera::GPIO::State>( HAL_GPIO_ReadPin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ) ) );
-      return Chimera::CommonStatusCodes::OK;
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      if ( !initialized )
+      {
+        error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      }
+      else
+      {
+        state = static_cast<Chimera::GPIO::State>( HAL_GPIO_ReadPin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ) ) );
+      }
+
+      return error;
     }
 
     Chimera::Status_t GPIOClass::toggle()
     {
-      HAL_GPIO_TogglePin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ) );
-      return Chimera::CommonStatusCodes::OK;
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+      if ( !initialized )
+      {
+        error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      }
+      else
+      {
+        HAL_GPIO_TogglePin( pinConfig.GPIOx, static_cast<uint16_t>( pinConfig.pinNum ) );
+      }
+
+      return error;
     }
 
     void GPIOClass::initAdvanced( const PinPort port, const PinNum pin, const PinSpeed speed, const uint32_t alt )
@@ -330,16 +386,20 @@ namespace Thor
 
     void GPIOClass::GPIO_ClockEnable( PinPort port )
     {
+#if !defined(GMOCK_TEST)
 #if defined( TARGET_STM32F7 ) || defined( TARGET_STM32F4 )
       SET_BIT( RCC->AHB1ENR, getRCCGPIOMask( port ) );
 #endif
+#endif /* !GMOCK_TEST */
     }
 
     void GPIOClass::GPIO_ClockDisable( PinPort port )
     {
+#if !defined( GMOCK_TEST )
 #if defined( TARGET_STM32F7 ) || defined( TARGET_STM32F4 )
       CLEAR_BIT( RCC->AHB1ENR, getRCCGPIOMask( port ) );
 #endif
+#endif /* !GMOCK_TEST */
     }
   }    // namespace GPIO
 }    // namespace Thor
