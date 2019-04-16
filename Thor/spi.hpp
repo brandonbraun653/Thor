@@ -28,6 +28,9 @@
 #include <Chimera/interface.hpp>
 #endif
 
+// When you uncomment, make sure to add the GMOCK test pointer initializers.
+// Look at GPIO for an example.
+
 #if 0
 
 #ifdef __cplusplus
