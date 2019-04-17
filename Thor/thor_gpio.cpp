@@ -8,7 +8,7 @@
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* Project Includes */
+/* Thor Includes */
 #include <Thor/gpio.hpp>
 
 /* Mock Includes */

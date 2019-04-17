@@ -18,6 +18,11 @@
 #include <Thor/uart.hpp>
 #include <Thor/exceptions.hpp>
 
+/* Mock Includes */
+#if defined( GMOCK_TEST )
+#include "mock_stm32_hal_uart.hpp"
+#endif
+
 #if defined( USING_FREERTOS )
 #ifdef __cplusplus
 extern "C"
@@ -189,13 +194,21 @@ namespace Thor
       #if defined( USING_FREERTOS )
       rxCompleteWakeup = nullptr;
       txCompleteWakeup = nullptr;
-      #endif 
+      #endif
+
+#if defined( GMOCK_TEST )
+      STM32_HAL_UART_MockObj = new ::testing::NiceMock<STM32_HAL_UART_Mock>();
+#endif /* GMOCK_TEST */
     }
 
     UARTClass::~UARTClass()
     {
       delete[] rxInternalBuffer;
       delete[] txInternalBuffer;
+
+#if defined( GMOCK_TEST )
+      delete STM32_HAL_UART_MockObj;
+#endif /* GMOCK_TEST */
     }
 
     UARTClass_sPtr UARTClass::create( const uint8_t channel, const uint16_t bufferSize )

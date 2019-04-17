@@ -18,6 +18,11 @@
 #include <Thor/usart.hpp>
 #include <Thor/exceptions.hpp>
 
+/* Mock Includes */
+#if defined( GMOCK_TEST )
+#include "mock_stm32_hal_usart.hpp"
+#endif
+
 #if defined( USING_FREERTOS )
 #ifdef __cplusplus
 extern "C"
@@ -215,19 +220,27 @@ namespace Thor
 
       AUTO_ASYNC_RX = false;
 
-      dmaRXReqSig      = Thor::DMA::Source::NONE;
-      dmaTXReqSig      = Thor::DMA::Source::NONE;
+      dmaRXReqSig = Thor::DMA::Source::NONE;
+      dmaTXReqSig = Thor::DMA::Source::NONE;
 
-      #if defined( USING_FREERTOS )
+#if defined( USING_FREERTOS )
       rxCompleteWakeup = nullptr;
       txCompleteWakeup = nullptr;
-      #endif
+#endif /* USING_FREERTOS */
+
+#if defined( GMOCK_TEST )
+      STM32_HAL_USART_MockObj = new ::testing::NiceMock<STM32_HAL_USART_Mock>();
+#endif /* GMOCK_TEST */
     }
 
     USARTClass::~USARTClass()
     {
       delete[] rxInternalBuffer;
       delete[] txInternalBuffer;
+
+#if defined( GMOCK_TEST )
+      delete STM32_HAL_USART_MockObj;
+#endif /* GMOCK_TEST */
     }
 
     USARTClass_sPtr USARTClass::create( const uint8_t channel, const uint16_t bufferSize )
@@ -771,7 +784,7 @@ namespace Thor
 #endif
         release();
       }
-      
+
       return convertHALStatus( stm32Error );
     }
 
@@ -779,7 +792,7 @@ namespace Thor
     {
       HAL_StatusTypeDef stm32Error = HAL_OK;
       Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
-      
+
       /* clang-format off */
       if ( length <= rxInternalBufferSize 
         && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
