@@ -243,15 +243,15 @@ namespace Thor
       initialized = false;
 
 #if defined( GMOCK_TEST )
-      STM32_HAL_GPIO_MockObj = new ::testing::NiceMock<STM32_HAL_GPIO_Mock>();
+      if ( !STM32HAL_Mock::gpioMockObj ) 
+      {
+        STM32HAL_Mock::gpioMockObj = std::make_shared<STM32HAL_Mock::GPIONiceMock>();
+      }
 #endif /* GMOCK_TEST */
     }
 
     GPIOClass::~GPIOClass()
     {
-#if defined( GMOCK_TEST )
-      delete STM32_HAL_GPIO_MockObj;
-#endif /* GMOCK_TEST */
     }
 
     Chimera::Status_t GPIOClass::init( const Chimera::GPIO::Port port, const uint8_t pin )

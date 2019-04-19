@@ -237,10 +237,6 @@ namespace Thor
     {
       delete[] rxInternalBuffer;
       delete[] txInternalBuffer;
-
-#if defined( GMOCK_TEST )
-      delete STM32_HAL_USART_MockObj;
-#endif /* GMOCK_TEST */
     }
 
     USARTClass_sPtr USARTClass::create( const uint8_t channel, const uint16_t bufferSize )
@@ -263,6 +259,8 @@ namespace Thor
 
     Chimera::Status_t USARTClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
     {
+      Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
       asyncRXDataSize = 0;
 
       /*------------------------------------------------
@@ -289,18 +287,36 @@ namespace Thor
       /*------------------------------------------------
       Initialize the GPIO pins
       ------------------------------------------------*/
-      tx_pin = std::make_shared<Thor::GPIO::GPIOClass>();
-      tx_pin->initAdvanced( Thor::GPIO::convertPort( pins.tx.port ), Thor::GPIO::convertPinNum( pins.tx.pin ),
-                            PinSpeed::ULTRA_SPD, pins.tx.alternate );
+      const auto tx_port    = Thor::GPIO::convertPort( pins.tx.port );
+      const auto tx_pin_num = Thor::GPIO::convertPinNum( pins.tx.pin );
 
-      rx_pin = std::make_shared<Thor::GPIO::GPIOClass>();
-      rx_pin->initAdvanced( Thor::GPIO::convertPort( pins.rx.port ), Thor::GPIO::convertPinNum( pins.rx.pin ),
-                            PinSpeed::ULTRA_SPD, pins.rx.alternate );
+      if ( !tx_port || ( tx_pin_num == PinNum::NOT_A_PIN ) )
+      {
+        error = Chimera::CommonStatusCodes::FAIL;
+      }
+      else
+      {
+        tx_pin = std::make_shared<Thor::GPIO::GPIOClass>();
+        tx_pin->initAdvanced( tx_port, tx_pin_num, PinSpeed::ULTRA_SPD, pins.tx.alternate );
+      }
+
+      const auto rx_port = Thor::GPIO::convertPort( pins.rx.port );
+      const auto rx_pin_num = Thor::GPIO::convertPinNum( pins.rx.pin );
+
+      if ( !rx_port || ( rx_pin_num == PinNum::NOT_A_PIN ) )
+      {
+        error = Chimera::CommonStatusCodes::FAIL;
+      }
+      else
+      {
+        rx_pin = std::make_shared<Thor::GPIO::GPIOClass>();
+        rx_pin->initAdvanced( rx_port, rx_pin_num, PinSpeed::ULTRA_SPD, pins.rx.alternate );
+      }
 
       USART_GPIO_Init();
 
       hardware_assigned = true;
-      return Chimera::CommonStatusCodes::OK;
+      return error;
     }
 
     Chimera::Status_t USARTClass::begin( const Modes txMode, const Modes rxMode )
