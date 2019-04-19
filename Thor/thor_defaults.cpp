@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 /* Chimera Includes */
-#include <Chimera/types.hpp>
+#include <Chimera/types/serial_types.hpp>
 
 /* Thor Includes */
 #include <Thor/definitions.hpp>

@@ -18,6 +18,7 @@
 #include <Thor/crc.hpp>
 #include <Thor/flash.hpp>
 #include <Thor/gpio.hpp>
+#include <Thor/power.hpp>
 #include <Thor/serial.hpp>
 #include <Thor/spi.hpp>
 #include <Thor/sram.hpp>
@@ -27,13 +28,14 @@
 
 #define BACKEND_NAMESPACE Thor
 
-#define CHIMERA_INHERITED_CRC Thor::HWCRC::HW
-#define CHIMERA_INHERITED_GPIO Thor::GPIO::GPIOClass
-#define CHIMERA_INHERITED_SERIAL Thor::Serial::SerialClass
-#define CHIMERA_INHERITED_SYSTEM_FLASH Thor::Memory::InternalFlash
-#define CHIMERA_INHERITED_SYSTEM_SRAM Thor::Memory::InternalSRAM
-#define CHIMERA_INHERITED_WATCHDOG Thor::Watchdog::WindowWatchdog
+#define CHIMERA_INHERITED_HW_CRC              Thor::HWCRC::HW
+#define CHIMERA_INHERITED_GPIO                Thor::GPIO::GPIOClass
+#define CHIMERA_INHERITED_POWER_INFO          Thor::Power::SystemPower
+#define CHIMERA_INHERITED_SERIAL              Thor::Serial::SerialClass
+#define CHIMERA_INHERITED_SYSTEM_FLASH        Thor::Memory::InternalFlash
+#define CHIMERA_INHERITED_SYSTEM_SRAM         Thor::Memory::InternalSRAM
+#define CHIMERA_INHERITED_WATCHDOG            Thor::Watchdog::WindowWatchdog
 
-#define CHIMERA_INHERITED_SYSTEM_IDENTIFIER Thor::System::Identifier
+#define CHIMERA_INHERITED_SYSTEM_IDENTIFIER   Thor::System::Identifier
 
 #endif

@@ -16,7 +16,7 @@
 #include <cstdint>
 
 /* Chimera Includes */
-#include <Chimera/modules/memory/flash.hpp>
+#include <Chimera/modules/memory/device.hpp>
 
 /* Thor Includes */
 #include <Thor/headers.hpp>

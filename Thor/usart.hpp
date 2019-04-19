@@ -17,8 +17,12 @@
 #include <cstdint>
 #include <memory>
 
+/* Chimera Includes */
+#include <Chimera/interface/serial_intf.hpp>
+#include <Chimera/types/serial_types.hpp>
+
 /* Boost Includes */
-#include <boost/circular_buffer.hpp>
+#include <boost/circular_buffer_fwd.hpp>
 
 /* Thor Includes */
 #include <Thor/definitions.hpp>

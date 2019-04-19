@@ -17,7 +17,7 @@
 
 /* Chimera Includes */
 #include <Chimera/chimera.hpp>
-#include <Chimera/interface.hpp>
+#include <Chimera/interface/watchdog_intf.hpp>
 
 namespace Thor
 {

@@ -18,10 +18,10 @@
 #include <memory>
 
 /* Boost Includes */
-#include <boost/circular_buffer.hpp>
+#include <boost/circular_buffer_fwd.hpp>
 
 /* Chimera Includes */
-#include <Chimera/interface.hpp>
+#include <Chimera/interface/serial_intf.hpp>
 
 /* Thor Includes */
 #include <Thor/definitions.hpp>

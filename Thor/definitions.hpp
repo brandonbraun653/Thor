@@ -7,12 +7,16 @@
  *
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
+
 #pragma once
 #ifndef THOR_DEFINITIONS_H_
 #define THOR_DEFINITIONS_H_
 
-/* C/C++ Includes */
+/* C++ Includes */
 #include <cstdint>
+
+/* Chimera Includes */
+#include <Chimera/types/common_types.hpp>
 
 /* Thor Includes */
 #include <Thor/headers.hpp>

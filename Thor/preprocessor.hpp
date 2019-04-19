@@ -105,7 +105,7 @@ GTest & GMock:
 
   https://stackoverflow.com/questions/257134/weird-compile-error-dealing-with-winnt-h
 -------------------------------------------*/
-#if defined( GTEST_TEST ) || defined( GMOCK_TEST )
+#if defined( SIM ) || defined( GMOCK_TEST )
 #ifndef __wtypes_h__
 #include <wtypes.h>
 #endif

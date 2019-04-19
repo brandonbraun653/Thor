@@ -15,7 +15,7 @@
 #include <cstdint>
 
 /* Chimera Includes */
-#include <Chimera/interface.hpp>
+#include <Chimera/interface/gpio_intf.hpp>
 
 /* Thor Includes */
 #include <Thor/definitions.hpp>

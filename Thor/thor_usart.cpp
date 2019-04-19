@@ -10,6 +10,7 @@
 
 /* Boost Includes */
 #include <boost/bind.hpp>
+#include <boost/circular_buffer.hpp>
 
 /* Thor Includes */
 #include <Thor/definitions.hpp>

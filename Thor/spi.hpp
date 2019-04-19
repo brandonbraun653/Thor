@@ -13,7 +13,6 @@
 #include <Thor/config.hpp>
 #include <Thor/definitions.hpp>
 #include <Thor/defaults.hpp>
-
 #include <Thor/gpio.hpp>
 #include <Thor/exceptions.hpp>
 
@@ -24,9 +23,7 @@
 #endif
 
 /* Chimera Includes */
-#if defined( USING_CHIMERA )
-#include <Chimera/interface.hpp>
-#endif
+#include <Chimera/interface/spi_intf.hpp>
 
 // When you uncomment, make sure to add the GMOCK test pointer initializers.
 // Look at GPIO for an example.
