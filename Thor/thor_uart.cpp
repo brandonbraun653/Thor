@@ -197,7 +197,10 @@ namespace Thor
       #endif
 
 #if defined( GMOCK_TEST )
-      STM32_HAL_UART_MockObj = new ::testing::NiceMock<STM32_HAL_UART_Mock>();
+      if ( !STM32HAL_Mock::uartMockObj )
+      {
+        STM32HAL_Mock::uartMockObj = std::make_shared<STM32HAL_Mock::UARTNiceMock>();
+      }
 #endif /* GMOCK_TEST */
     }
 
@@ -205,10 +208,6 @@ namespace Thor
     {
       delete[] rxInternalBuffer;
       delete[] txInternalBuffer;
-
-#if defined( GMOCK_TEST )
-      delete STM32_HAL_UART_MockObj;
-#endif /* GMOCK_TEST */
     }
 
     UARTClass_sPtr UARTClass::create( const uint8_t channel, const uint16_t bufferSize )

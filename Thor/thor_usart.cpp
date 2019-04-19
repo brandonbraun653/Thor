@@ -229,7 +229,10 @@ namespace Thor
 #endif /* USING_FREERTOS */
 
 #if defined( GMOCK_TEST )
-      STM32_HAL_USART_MockObj = new ::testing::NiceMock<STM32_HAL_USART_Mock>();
+      if ( !STM32HAL_Mock::usartMockObj )
+      {
+        STM32HAL_Mock::usartMockObj = std::make_shared<STM32HAL_Mock::USARTNiceMock>();
+      }
 #endif /* GMOCK_TEST */
     }
 
