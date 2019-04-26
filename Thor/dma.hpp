@@ -19,7 +19,7 @@
 #include <boost/function.hpp>
 
 /* Thor Includes */
-#include <Thor/definitions.hpp>
+#include <Thor/definitions/serial_definitions.hpp>
 
 #ifdef __cplusplus
 extern "C"

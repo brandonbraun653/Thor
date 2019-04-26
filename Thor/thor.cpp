@@ -10,8 +10,8 @@
 
 #include <Thor/thor.hpp>
 #include <Thor/macro.hpp>
-#include <Thor/defaults.hpp>
 #include <Thor/print.hpp>
+#include <Thor/definitions/interrupt_definitions.hpp>
 
 #if defined( USING_FREERTOS )
 #ifdef __cplusplus

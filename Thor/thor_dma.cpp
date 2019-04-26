@@ -12,6 +12,8 @@
 #include <Thor/thor.hpp>
 #include <Thor/dma.hpp>
 
+#include <Thor/definitions/dma_definitions.hpp>
+
 namespace Thor
 {
   namespace DMA

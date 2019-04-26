@@ -24,8 +24,8 @@
 #include <Chimera/interface/serial_intf.hpp>
 
 /* Thor Includes */
-#include <Thor/definitions.hpp>
 #include <Thor/gpio.hpp>
+#include <Thor/types/interrupt_types.hpp>
 
 #ifdef __cplusplus
 extern "C"

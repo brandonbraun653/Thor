@@ -1,8 +1,5 @@
 #include <Thor/exti.hpp>
-#include <Thor/definitions.hpp>
 
-using namespace Thor::Serial;
-using namespace Thor::SPI;
 using namespace Thor::Interrupt;
 
 

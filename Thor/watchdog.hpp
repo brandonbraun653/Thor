@@ -13,7 +13,6 @@
 
 /* Thor Includes */
 #include <Thor/thor.hpp>
-#include <Thor/definitions.hpp>
 
 /* Chimera Includes */
 #include <Chimera/chimera.hpp>

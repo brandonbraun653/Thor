@@ -4,7 +4,6 @@
 #include <Thor/headers.hpp>
 #include <Thor/config.hpp>
 #include <Thor/core.hpp>
-#include <Thor/definitions.hpp>
 
 extern void ThorInit();
 

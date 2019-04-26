@@ -13,11 +13,14 @@
 #include <boost/circular_buffer.hpp>
 
 /* Thor Includes */
-#include <Thor/definitions.hpp>
-#include <Thor/defaults.hpp>
+#include <Thor/core.hpp>
 #include <Thor/dma.hpp>
+#include <Thor/headers.hpp>
 #include <Thor/uart.hpp>
 #include <Thor/exceptions.hpp>
+
+#include <Thor/defaults/serial_defaults.hpp>
+#include <Thor/definitions/serial_definitions.hpp>
 
 /* Mock Includes */
 #if defined( GMOCK_TEST )
@@ -44,7 +47,6 @@ using namespace Thor::Serial;
 using namespace Thor::UART;
 using namespace Thor::GPIO;
 using namespace Thor::Interrupt;
-using namespace Thor::Defaults::Serial;
 using namespace Chimera::Serial;
 
 static std::array<UARTClass_sPtr, MAX_SERIAL_CHANNELS + 1> uartObjects;
@@ -237,7 +239,7 @@ namespace Thor
       Assign the default handle settings
       ------------------------------------------------*/
       uart_channel         = channel;
-      uart_handle.Init     = Defaults::Serial::dflt_UART_Init;
+      uart_handle.Init     = dflt_UART_Init;
       uart_handle.Instance = const_cast<USART_TypeDef *>( hwConfig[ uart_channel ]->instance );
 
 #if defined( STM32F7 )

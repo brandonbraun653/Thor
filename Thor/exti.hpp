@@ -10,7 +10,7 @@
 
 /* Thor Includes */
 #include <Thor/config.hpp>
-#include <Thor/definitions.hpp>
+#include <Thor/definitions/interrupt_definitions.hpp>
 
 
 /* Additional includes not provided in Thor config */

@@ -8,8 +8,10 @@
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* Project Includes */
+/* Thor Includes */
 #include <Thor/serial.hpp>
+#include <Thor/types/serial_types.hpp>
+#include <Thor/definitions/serial_definitions.hpp>
 
 using namespace Thor;
 using namespace Thor::Serial;
