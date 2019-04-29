@@ -21,6 +21,7 @@
 #include <boost/circular_buffer_fwd.hpp>
 
 /* Chimera Includes */
+#include <Chimera/buffer.hpp>
 #include <Chimera/interface/serial_intf.hpp>
 
 /* Thor Includes */
@@ -50,25 +51,8 @@ namespace Thor
     class UARTClass : public Chimera::Serial::Interface
     {
     public:
+      UARTClass();
       ~UARTClass();
-
-      /**
-       *  A factory method used to dynamically create a new UARTClass object.
-       *
-       *	This method intentionally replaces the typical constructor due to the need to register
-       *	the instance with a private manager that allows runtime deduction of which UART object
-       *	triggered an ISR to be called.
-       *
-       *	@param[in]  channel         Hardware peripheral channel number (i.e. 1 for UART1, 4 for UART4, etc)
-       *  @param[in]  bufferSize      Size of the internal buffers for queuing up transfer data
-       *	@return UARTClass_sPtr
-       *
-       *  |  Return Value |             Explanation             |
-       *  |:-------------:|:-----------------------------------:|
-       *  |  Empty Object | The channel given was out of range  |
-       *  | Filled Object | The object was created successfully |
-       */
-      static UARTClass_sPtr create( const uint8_t channel, const uint16_t bufferSize = 1u );
 
       Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 
@@ -82,7 +66,7 @@ namespace Thor
 
       Chimera::Status_t setBaud( const uint32_t baud ) final override;
 
-      Chimera::Status_t setMode( const Chimera::Serial::SubPeripheral periph,
+      Chimera::Status_t setMode( const Chimera::Hardware::SubPeripheral periph,
                                  const Chimera::Serial::Modes mode ) final override;
 
       Chimera::Status_t write( const uint8_t *const buffer, const size_t length,
@@ -90,34 +74,27 @@ namespace Thor
 
       Chimera::Status_t read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS = 500 ) final override;
 
-      Chimera::Status_t flush( const Chimera::Serial::SubPeripheral periph ) final override;
+      Chimera::Status_t flush( const Chimera::Hardware::SubPeripheral periph ) final override;
+
+      void postISRProcessing() final override;
 
       Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
 
-#if defined( USING_FREERTOS )
-      Chimera::Status_t attachEventNotifier( const Chimera::Serial::Event event,
+      Chimera::Status_t attachNotifier( const Chimera::Event::Trigger_t event,
                                              SemaphoreHandle_t *const semphr ) final override;
 
-      Chimera::Status_t removeEventNotifier( const Chimera::Serial::Event event,
+      Chimera::Status_t detachNotifier( const Chimera::Event::Trigger_t event,
                                              SemaphoreHandle_t *const semphr ) final override;
-#endif
 
-      Chimera::Status_t enableBuffering( const Chimera::Serial::SubPeripheral periph,
-                                         boost::circular_buffer<uint8_t> *const buffer ) final override;
+      Chimera::Status_t enableBuffering( const Chimera::Hardware::SubPeripheral periph,
+                                         boost::circular_buffer<uint8_t> *const userBuffer,
+                                         uint8_t *const hwBuffer, const uint32_t hwBufferSize ) final override;
 
-      Chimera::Status_t disableBuffering( const Chimera::Serial::SubPeripheral periph ) final override;
+      Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph ) final override;
 
       bool available( size_t *const bytes = nullptr ) final override;
 
     private:
-      /*------------------------------------------------
-      The constructor is deleted so that object creation is handled by the static 'create' method.
-      In order write generic ISR handlers, there needs to be a way to determine which object fired
-      the ISR. This is done by registering each class on creation with a small vector that tracks
-      instantiated UART objects. Then a runtime lookup is done via the STM32 HAL UsartHandle ID.
-      ------------------------------------------------*/
-      UARTClass();
-
       /*------------------------------------------------
       Allows the C STM32 HAL and ISR functions access this class
       ------------------------------------------------*/
@@ -134,28 +111,37 @@ namespace Thor
       bool AUTO_ASYNC_RX     = true; /**< Enables/Disables asynchronous reception of data */
       bool hardware_assigned = false;
 
+      volatile uint32_t event_bits = 0u;  /* Tracks ISR events so we can respond to them */
+
       Chimera::Serial::Modes txMode; /**< Logs which mode the TX peripheral is currently in */
       Chimera::Serial::Modes rxMode; /**< Logs which mode the RX peripheral is currently in */
 
-      boost::circular_buffer<uint8_t> *txUserBuffer;
-      boost::circular_buffer<uint8_t> *rxUserBuffer;
-
-      uint8_t *rxInternalBuffer;
-      uint16_t rxInternalBufferSize;
-
-      uint8_t *txInternalBuffer;
-      uint16_t txInternalBufferSize;
+      Chimera::Buffer::DoubleBuffer<UARTClass> txBuffers;
+      Chimera::Buffer::DoubleBuffer<UARTClass> rxBuffers;
 
       uint32_t asyncRXDataSize = 0u;
 
       uint8_t dmaRXReqSig;
       uint8_t dmaTXReqSig;
 
-#if defined( USING_FREERTOS )
       SemaphoreHandle_t *rxCompleteWakeup;
       SemaphoreHandle_t *txCompleteWakeup;
-#endif
+      
 
+      UART_HandleTypeDef uart_handle;
+      DMA_HandleTypeDef hdma_uart_tx;
+      DMA_HandleTypeDef hdma_uart_rx;
+      Thor::GPIO::GPIOClass_sPtr tx_pin;
+      Thor::GPIO::GPIOClass_sPtr rx_pin;
+
+      /* Local copy of interrupt settings */
+      Thor::Interrupt::Initializer ITSettings_HW;
+      Thor::Interrupt::Initializer ITSettings_DMA_TX;
+      Thor::Interrupt::Initializer ITSettings_DMA_RX;
+
+      /*------------------------------------------------
+      Track states of the hardware to allow/disallow functionality
+      ------------------------------------------------*/
       struct UARTClassStatus
       {
         bool gpio_enabled              = false;
@@ -169,42 +155,38 @@ namespace Thor
         bool dma_interrupts_enabled_rx = false;
       } PeripheralState;
 
+      /*------------------------------------------------
+      Mode Change Function Pointers 
+      ------------------------------------------------*/
+      std::array<void ( UARTClass::* )( const Chimera::Hardware::SubPeripheral ), 3> modeChangeFuncPtrs;
+      void setBlockingMode( const Chimera::Hardware::SubPeripheral periph );
+      void setInterruptMode( const Chimera::Hardware::SubPeripheral periph );
+      void setDMAMode( const Chimera::Hardware::SubPeripheral periph );
 
-      UART_HandleTypeDef uart_handle;
-      DMA_HandleTypeDef hdma_uart_tx;
-      DMA_HandleTypeDef hdma_uart_rx;
-      Thor::GPIO::GPIOClass_sPtr tx_pin;
-      Thor::GPIO::GPIOClass_sPtr rx_pin;
-
-      /* Local copy of interrupt settings */
-      Thor::Interrupt::Initializer ITSettings_HW;
-      Thor::Interrupt::Initializer ITSettings_DMA_TX;
-      Thor::Interrupt::Initializer ITSettings_DMA_RX;
-
-      void assignRXBuffer( uint8_t *const buffer, const uint16_t size );
-      void assignTXBuffer( uint8_t *const buffer, const uint16_t size );
-
-      bool setWordLength( UART_InitTypeDef &initStruct, const Chimera::Serial::CharWid width );
-      bool setParity( UART_InitTypeDef &initStruct, const Chimera::Serial::Parity parity );
-      bool setStopBits( UART_InitTypeDef &initStruct, const Chimera::Serial::StopBits stopBits );
-      bool setFlowControl( UART_InitTypeDef &initStruct, const Chimera::Serial::FlowControl flow );
-
-
-      std::array<void ( UARTClass::* )( const Chimera::Serial::SubPeripheral ), 3> modeChangeFuncPtrs;
-      void setBlockingMode( const Chimera::Serial::SubPeripheral periph );
-      void setInterruptMode( const Chimera::Serial::SubPeripheral periph );
-      void setDMAMode( const Chimera::Serial::SubPeripheral periph );
-
+      /*------------------------------------------------
+      Read Type Function Pointers  
+      ------------------------------------------------*/
       std::array<Chimera::Status_t ( UARTClass::* )( uint8_t *const, const size_t, const uint32_t ), 3> readFuncPtrs;
       Chimera::Status_t readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
       Chimera::Status_t readInterrupt( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
       Chimera::Status_t readDMA( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
 
+      /*------------------------------------------------
+      Write Type Function Pointers 
+      ------------------------------------------------*/
       std::array<Chimera::Status_t ( UARTClass::* )( const uint8_t *const, const size_t, const uint32_t ), 3> writeFuncPtrs;
       Chimera::Status_t writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
       Chimera::Status_t writeInterrupt( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
       Chimera::Status_t writeDMA( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
 
+      /*------------------------------------------------
+      Low Level Hardware Configuration Functions
+      ------------------------------------------------*/
+      bool setWordLength( UART_InitTypeDef &initStruct, const Chimera::Serial::CharWid width );
+      bool setParity( UART_InitTypeDef &initStruct, const Chimera::Serial::Parity parity );
+      bool setStopBits( UART_InitTypeDef &initStruct, const Chimera::Serial::StopBits stopBits );
+      bool setFlowControl( UART_InitTypeDef &initStruct, const Chimera::Serial::FlowControl flow );
+      
       void IRQHandler();
       void IRQHandler_TXDMA();
       void IRQHandler_RXDMA();
@@ -220,10 +202,10 @@ namespace Thor
       void UART_EnableInterrupts();
       void UART_DisableInterrupts();
 
-      void UART_DMA_Init( const Chimera::Serial::SubPeripheral periph );
-      void UART_DMA_DeInit( const Chimera::Serial::SubPeripheral periph );
-      void UART_DMA_EnableIT( const Chimera::Serial::SubPeripheral periph );
-      void UART_DMA_DisableIT( const Chimera::Serial::SubPeripheral periph );
+      void UART_DMA_Init( const Chimera::Hardware::SubPeripheral periph );
+      void UART_DMA_DeInit( const Chimera::Hardware::SubPeripheral periph );
+      void UART_DMA_EnableIT( const Chimera::Hardware::SubPeripheral periph );
+      void UART_DMA_DisableIT( const Chimera::Hardware::SubPeripheral periph );
 
       void UART_OverrunHandler();
     };

@@ -13,6 +13,7 @@
 #define THOR_SPI_DEFAULTS_HPP
 
 /* Thor Includes */
+#include <Thor/definitions/dma_definitions.hpp>
 #include <Thor/definitions/spi_definitions.hpp>
 #include <Thor/types/spi_types.hpp>
 
@@ -25,6 +26,19 @@ namespace Thor::SPI
   extern const DMA_InitTypeDef dflt_DMA_Init_TX;
   extern const DMA_InitTypeDef dflt_DMA_Init_RX;
 #endif
+  
+  /*------------------------------------------------
+  DMA Request Signals
+  ------------------------------------------------*/
+  constexpr std::array<uint8_t, Thor::SPI::MAX_SPI_CHANNELS + 1> DMARXRequestSignal = {
+    DMA::Source::NONE,      DMA::Source::S_SPI1_RX, DMA::Source::S_SPI2_RX, DMA::Source::S_SPI3_RX,
+    DMA::Source::S_SPI4_RX, DMA::Source::NONE,      DMA::Source::NONE
+  };
+
+  constexpr std::array<uint8_t, Thor::SPI::MAX_SPI_CHANNELS + 1> DMATXRequestSignal = {
+    DMA::Source::NONE,      DMA::Source::S_SPI1_TX, DMA::Source::S_SPI2_TX, DMA::Source::S_SPI3_TX,
+    DMA::Source::S_SPI4_TX, DMA::Source::NONE,      DMA::Source::NONE
+  };
 }
 
 #endif /* !THOR_DEFAULTS_HPP */

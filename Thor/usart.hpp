@@ -82,7 +82,7 @@ namespace Thor
 
       Chimera::Status_t setBaud( const uint32_t baud ) final override;
 
-      Chimera::Status_t setMode( const Chimera::Serial::SubPeripheral periph,
+      Chimera::Status_t setMode( const Chimera::Hardware::SubPeripheral periph,
                                  const Chimera::Serial::Modes mode ) final override;
 
       Chimera::Status_t write( const uint8_t *const buffer, const size_t length,
@@ -90,24 +90,24 @@ namespace Thor
 
       Chimera::Status_t read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS = 500 ) final override;
 
-      Chimera::Status_t flush( const Chimera::Serial::SubPeripheral periph ) final override;
+      Chimera::Status_t flush( const Chimera::Hardware::SubPeripheral periph ) final override;
 
-      Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
+//      Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
 
-#if defined( USING_FREERTOS )
-      Chimera::Status_t attachEventNotifier( const Chimera::Serial::Event event,
-                                             SemaphoreHandle_t *const semphr ) final override;
-
-      Chimera::Status_t removeEventNotifier( const Chimera::Serial::Event event,
-                                             SemaphoreHandle_t *const semphr ) final override;
-#endif
-
-      Chimera::Status_t enableBuffering( const Chimera::Serial::SubPeripheral periph,
-                                         boost::circular_buffer<uint8_t> *const buffer ) final override;
-
-      Chimera::Status_t disableBuffering( const Chimera::Serial::SubPeripheral periph ) final override;
-
-      bool available( size_t *const bytes = nullptr ) final override;
+//#if defined( USING_FREERTOS )
+//      Chimera::Status_t attachEventNotifier( const Chimera::Serial::Event event,
+//                                             SemaphoreHandle_t *const semphr ) final override;
+//
+//      Chimera::Status_t removeEventNotifier( const Chimera::Serial::Event event,
+//                                             SemaphoreHandle_t *const semphr ) final override;
+//#endif
+//
+//      Chimera::Status_t enableBuffering( const Chimera::Hardware::SubPeripheral periph,
+//                                         boost::circular_buffer<uint8_t> *const buffer ) final override;
+//
+//      Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph ) final override;
+//
+//      bool available( size_t *const bytes = nullptr ) final override;
 
 
     private:
@@ -191,10 +191,10 @@ namespace Thor
       bool setParity( USART_InitTypeDef &initStruct, const Chimera::Serial::Parity parity );
       bool setStopBits( USART_InitTypeDef &initStruct, const Chimera::Serial::StopBits stopBits );
 
-      std::array<void ( USARTClass::* )( const Chimera::Serial::SubPeripheral ), 3> modeChangeFuncPtrs;
-      void setBlockingMode( const Chimera::Serial::SubPeripheral periph );
-      void setInterruptMode( const Chimera::Serial::SubPeripheral periph );
-      void setDMAMode( const Chimera::Serial::SubPeripheral periph );
+      std::array<void ( USARTClass::* )( const Chimera::Hardware::SubPeripheral ), 3> modeChangeFuncPtrs;
+      void setBlockingMode( const Chimera::Hardware::SubPeripheral periph );
+      void setInterruptMode( const Chimera::Hardware::SubPeripheral periph );
+      void setDMAMode( const Chimera::Hardware::SubPeripheral periph );
 
       std::array<Chimera::Status_t ( USARTClass::* )( uint8_t *const, const size_t, const uint32_t ), 3> readFuncPtrs;
       Chimera::Status_t readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
@@ -221,10 +221,10 @@ namespace Thor
       void USART_EnableInterrupts();
       void USART_DisableInterrupts();
 
-      void USART_DMA_Init( const Chimera::Serial::SubPeripheral periph );
-      void USART_DMA_DeInit( const Chimera::Serial::SubPeripheral periph );
-      void USART_DMA_EnableIT( const Chimera::Serial::SubPeripheral periph );
-      void USART_DMA_DisableIT( const Chimera::Serial::SubPeripheral periph );
+      void USART_DMA_Init( const Chimera::Hardware::SubPeripheral periph );
+      void USART_DMA_DeInit( const Chimera::Hardware::SubPeripheral periph );
+      void USART_DMA_EnableIT( const Chimera::Hardware::SubPeripheral periph );
+      void USART_DMA_DisableIT( const Chimera::Hardware::SubPeripheral periph );
 
       void USART_OverrunHandler();
     };

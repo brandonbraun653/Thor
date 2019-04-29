@@ -10,17 +10,20 @@
 
 /* C/C++ Includes */
 #include <cstdlib>
-#include <math.h>
+#include <cstring>
+#include <cmath>
 
 /* Boost Includes */
 #include <boost/bind.hpp>
+#include <boost/circular_buffer.hpp>
 
 /* Thor Includes */
+#include <Thor/core.hpp>
+#include <Thor/dma.hpp>
+#include <Thor/gpio.hpp>
 #include <Thor/spi.hpp>
 #include <Thor/defaults/spi_defaults.hpp>
 #include <Thor/definitions/spi_definitions.hpp>
-
-
 
 /* Mock Includes */
 #if defined( GMOCK_TEST )
@@ -41,20 +44,16 @@ extern "C"
 #endif
 #endif
 
-using namespace Thor;
-using namespace Thor::SPI;
-using namespace Thor::GPIO;
-using namespace Thor::Interrupt;
-
 /*------------------------------------------------
 Stores references to available SPIClass objects
 -------------------------------------------------*/
-static SPIClass_sPtr spiObjects[ MAX_SPI_CHANNELS + 1 ];
+//static Thor::SPI::SPIClass_sPtr spiObjects[ Thor::SPI::MAX_SPI_CHANNELS + 1 ];
+static Thor::SPI::SPIClass* spiObjects[ Thor::SPI::MAX_SPI_CHANNELS + 1 ];
 
 /*------------------------------------------------
 Directly maps the HAL SPI Instance pointer to a possible SPIClass object
 -------------------------------------------------*/
-static const SPIClass_sPtr &getSPIClassRef( SPI_TypeDef *instance )
+static auto getSPIClassRef( SPI_TypeDef *instance )
 {
   auto i = reinterpret_cast<std::uintptr_t>( instance );
 
@@ -204,44 +203,105 @@ static volatile uint32_t *spiClockRegister( SPI_TypeDef *instance )
   };
 }
 
-#if 0
+/*------------------------------------------------
+Functions for converting Chimera parameters into STM32HAL
+-------------------------------------------------*/
+static inline uint32_t convertMode( const Chimera::SPI::Mode mode )
+{
+  uint32_t result = SPI_MODE_MASTER;
+
+  if ( mode == Chimera::SPI::Mode::SLAVE )
+  {
+    result = SPI_MODE_SLAVE;
+  }
+
+  return result;
+}
+
+static inline uint32_t convertDataSize( const Chimera::SPI::DataSize size )
+{
+  uint32_t result = 0u;
+
+  if ( size == Chimera::SPI::DataSize::SZ_8BIT )
+  {
+    result = SPI_DATASIZE_8BIT;
+  }
+  else if ( size == Chimera::SPI::DataSize::SZ_16BIT )
+  {
+    result = SPI_DATASIZE_16BIT;
+  }
+
+  return result;
+}
+
+static inline uint32_t convertBitOrder( const Chimera::SPI::BitOrder order )
+{
+  uint32_t result = 0u;
+
+  if ( order == Chimera::SPI::BitOrder::LSB_FIRST )
+  {
+    result = SPI_FIRSTBIT_LSB;
+  }
+  else if ( order == Chimera::SPI::BitOrder::MSB_FIRST )
+  {
+    result = SPI_FIRSTBIT_MSB;
+  }
+
+  return result;
+}
+
+static inline uint32_t convertClockPhase( const Chimera::SPI::ClockMode mode )
+{
+  uint32_t result = 0u;
+
+  if ( ( mode == Chimera::SPI::ClockMode::MODE0 ) || ( mode == Chimera::SPI::ClockMode::MODE2 ) )
+  {
+    result = SPI_PHASE_1EDGE;
+  }
+  else if ( ( mode == Chimera::SPI::ClockMode::MODE1 ) || ( mode == Chimera::SPI::ClockMode::MODE3 ) )
+  {
+    result = SPI_PHASE_2EDGE;
+  }
+
+  return result;
+}
+
+static inline uint32_t convertClockPolarity( const Chimera::SPI::ClockMode mode )
+{
+  uint32_t result = 0u;
+
+  if ( ( mode == Chimera::SPI::ClockMode::MODE0 ) || ( mode == Chimera::SPI::ClockMode::MODE2 ) )
+  {
+    result = SPI_POLARITY_LOW;
+  }
+  else if ( ( mode == Chimera::SPI::ClockMode::MODE1 ) || ( mode == Chimera::SPI::ClockMode::MODE3 ) )
+  {
+    result = SPI_POLARITY_HIGH;
+  }
+
+  return result;
+}
+
+
 namespace Thor::SPI
 {
-  SPIClass::SPIClass( const uint8_t channel )
+  SPIClass::SPIClass( SPIClass *var )
   {
-    alternateCS = false;
+    
+  }
 
-    spi_channel         = channel;
-    spi_handle.Instance = hwConfig[ spi_channel ]->instance;
+  SPIClass::SPIClass()
+  {
+    hardwareChipSelect  = false;
+    transfer_complete   = true;
     spi_handle.Init     = dflt_SPI_Init;
-
-    /*------------------------------------
-    Interrupt
-    ------------------------------------*/
-    ITSettingsHW.IRQn            = hwConfig[ spi_channel ]->IT_HW.IRQn;
-    ITSettingsHW.preemptPriority = hwConfig[ spi_channel ]->IT_HW.preemptPriority;
-    ITSettingsHW.subPriority     = hwConfig[ spi_channel ]->IT_HW.subPriority;
-
-    ITSettings_DMA_TX.IRQn            = hwConfig[ spi_channel ]->dmaIT_TX.IRQn;
-    ITSettings_DMA_TX.preemptPriority = hwConfig[ spi_channel ]->dmaIT_TX.preemptPriority;
-    ITSettings_DMA_TX.subPriority     = hwConfig[ spi_channel ]->dmaIT_TX.subPriority;
-
-    ITSettings_DMA_RX.IRQn            = hwConfig[ spi_channel ]->dmaIT_RX.IRQn;
-    ITSettings_DMA_RX.preemptPriority = hwConfig[ spi_channel ]->dmaIT_RX.preemptPriority;
-    ITSettings_DMA_RX.subPriority     = hwConfig[ spi_channel ]->dmaIT_RX.subPriority;
-
-    /*------------------------------------
-    DMA
-    ------------------------------------*/
+    
     hdma_spi_tx.Init = dflt_DMA_Init_TX;
     hdma_spi_rx.Init = dflt_DMA_Init_RX;
 
-    hdma_spi_tx.Init.Channel = hwConfig[ spi_channel ]->dmaTX.channel;
-    hdma_spi_rx.Init.Channel = hwConfig[ spi_channel ]->dmaRX.channel;
-                               
-    hdma_spi_tx.Instance = hwConfig[ spi_channel ]->dmaTX.Instance;
-    hdma_spi_rx.Instance = hwConfig[ spi_channel ]->dmaRX.Instance;
-    
+    dmaRXReqSig = Thor::DMA::Source::NONE;
+    dmaTXReqSig = Thor::DMA::Source::NONE;
+
 #if defined( GMOCK_TEST )
     if ( !STM32HAL_Mock::spiMockObj )
     {
@@ -250,43 +310,199 @@ namespace Thor::SPI
 #endif /* GMOCK_TEST */
   }
 
-  const SPIClass_sPtr SPIClass::create( const uint8_t channel )
+  SPIClass::~SPIClass()
   {
-    /*------------------------------------------------
-  Create a new object if none already there
-  -------------------------------------------------*/
-    if ( !spiObjects[ channel ] )
-    {
-      /*------------------------------------------------
-  Forced to create the new object in this manner due to the
-  private constructor not being accessible by Boost
-  -------------------------------------------------*/
-      boost::shared_ptr<SPIClass> newClass( new SPIClass( channel ) );
-      spiObjects[ channel ] = newClass;
-    }
-
-    /*------------------------------------------------
-  Intentionally force the shared_ptr reference count to be incremented.
-  The internally managed object shall not be deleted!
-  -------------------------------------------------*/
-    return spiObjects[ channel ];
+    spiObjects[ spi_channel ] = nullptr;
   }
 
-  Chimera::Status_t SPIClass::init( const Chimera::SPI::Setup &setupStruct )
+  Chimera::Status_t SPIClass::init( const Chimera::SPI::Setup &setup )
   {
-    
+    using namespace Thor::GPIO;
+    using namespace Chimera::SPI;
+    using namespace Chimera::Hardware;
+
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+    if ( setup.channel > MAX_SPI_CHANNELS )
+    {
+      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+    else
+    {
+      spi_channel = setup.channel;
+
+      /*------------------------------------------------
+      MOSI
+      ------------------------------------------------*/
+      auto pin  = convertPinNum( setup.MOSI.pin );
+      auto port = convertPort( setup.MOSI.port );
+
+      if ( ( pin != PinNum::NOT_A_PIN ) && port )
+      {
+        MOSI = std::unique_ptr<Thor::GPIO::GPIOClass>( new Thor::GPIO::GPIOClass() );
+        MOSI->initAdvanced( port, pin, PinSpeed::ULTRA_SPD, setup.MOSI.alternate );
+      }
+      else
+      {
+        MOSI.reset( nullptr );
+      }
+
+      /*------------------------------------------------
+      MISO
+      ------------------------------------------------*/
+      pin  = convertPinNum( setup.MISO.pin );
+      port = convertPort( setup.MISO.port );
+
+      if ( ( pin != PinNum::NOT_A_PIN ) && port )
+      {
+        MISO = std::unique_ptr<Thor::GPIO::GPIOClass>( new Thor::GPIO::GPIOClass() );
+        MISO->initAdvanced( port, pin, PinSpeed::ULTRA_SPD, setup.MISO.alternate );
+      }
+      else
+      {
+        MISO.reset( nullptr );
+      }
+
+      /*------------------------------------------------
+      SCK
+      ------------------------------------------------*/
+      pin  = convertPinNum( setup.SCK.pin );
+      port = convertPort( setup.SCK.port );
+
+      if ( ( pin != PinNum::NOT_A_PIN ) && port )
+      {
+        SCK = std::unique_ptr<Thor::GPIO::GPIOClass>( new Thor::GPIO::GPIOClass() );
+        SCK->initAdvanced( port, pin, PinSpeed::ULTRA_SPD, setup.SCK.alternate );
+      }
+      else
+      {
+        SCK.reset( nullptr );
+      }
+
+      /*------------------------------------------------
+      CS
+      ------------------------------------------------*/
+      pin  = convertPinNum( setup.CS.pin );
+      port = convertPort( setup.CS.port );
+
+      if ( ( pin != PinNum::NOT_A_PIN ) && port )
+      {
+        CS = std::unique_ptr<Thor::GPIO::GPIOClass>( new Thor::GPIO::GPIOClass() );
+        CS->initAdvanced( port, pin, PinSpeed::ULTRA_SPD, setup.CS.alternate );
+
+        if ( setup.CS.alternate )
+        {
+          hardwareChipSelect = true;
+        }
+      }
+      else
+      {
+        CS.reset( nullptr );
+      }
+
+      /*------------------------------------------------
+      Initialize all the GPIO to the proper states
+      ------------------------------------------------*/
+      SPI_GPIO_Init();
+
+      /*------------------------------------------------
+      Initialize the SPI peripheral
+      ------------------------------------------------*/
+      /* Interrupt Control Blocks */
+      ITSettingsHW      = hwConfig[ spi_channel ]->IT_HW;
+      ITSettings_DMA_TX = hwConfig[ spi_channel ]->dmaIT_TX;
+      ITSettings_DMA_RX = hwConfig[ spi_channel ]->dmaIT_RX;
+
+      /* DMA Control Blocks */
+      hdma_spi_tx.Init.Channel = hwConfig[ spi_channel ]->dmaTX.channel;
+      hdma_spi_rx.Init.Channel = hwConfig[ spi_channel ]->dmaRX.channel;
+      hdma_spi_tx.Instance     = hwConfig[ spi_channel ]->dmaTX.Instance;
+      hdma_spi_rx.Instance     = hwConfig[ spi_channel ]->dmaRX.Instance;
+
+      /* Hardware Initialization */
+      spi_handle.Instance               = hwConfig[ spi_channel ]->instance;
+      spi_handle.Init.BaudRatePrescaler = getPrescaler( spi_channel, setup.clockFrequency );
+      spi_handle.Init.CLKPhase          = convertClockPhase( setup.clockMode );
+      spi_handle.Init.CLKPolarity       = convertClockPolarity( setup.clockMode );
+      spi_handle.Init.DataSize          = convertDataSize( setup.dataSize );
+      spi_handle.Init.FirstBit          = convertBitOrder( setup.bitOrder );
+      spi_handle.Init.Mode              = convertMode( setup.mode );
+
+      SPI_Init();
+      setPeripheralMode( SubPeripheral::TX, SubPeripheralMode::BLOCKING );
+      setPeripheralMode( SubPeripheral::RX, SubPeripheralMode::BLOCKING );
+
+      /*------------------------------------------------
+      Figure out what DMA signals we are using
+      ------------------------------------------------*/
+      dmaTXReqSig = Thor::SPI::DMATXRequestSignal[ spi_channel ];
+      dmaRXReqSig = Thor::SPI::DMARXRequestSignal[ spi_channel ];
+
+      /*------------------------------------------------
+      Register this instance so we can figure out ISR information at runtime
+      ------------------------------------------------*/
+      spiObjects[ spi_channel ] = this;
+    }
+
+    return error;
   }
 
   Chimera::Status_t SPIClass::deInit()
   {
+    using namespace Chimera::SPI;
+    using namespace Chimera::Hardware;
+
+    SPI_GPIO_DeInit();
+    SPI_DisableInterrupts();
+    SPI_DMA_DeInit( SubPeripheral::TX );
+    SPI_DMA_DeInit( SubPeripheral::RX );
+
+    txMode = SubPeripheralMode::UNKNOWN_MODE;
+    rxMode = SubPeripheralMode::UNKNOWN_MODE;
+
+    spiObjects[ spi_channel ] = nullptr;
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
-
-  Chimera::Status_t SPIClass::setChipSelect( const Chimera::GPIO::State &value )
+  Chimera::Status_t SPIClass::setChipSelect( const Chimera::GPIO::State value )
   {
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+    if ( !periphStatus.gpio_initialized )
+    {
+      error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+    }
+    else
+    {
+      if ( !hardwareChipSelect )
+      {
+        error = CS->setState( value );
+      }
+      else
+      {
+        /**
+         *  This is only useful when the peripheral's dedicated NSS pin is used,
+         *  configured for hardware management, and the SSOE bit in CR1 is set. (By
+         *  default this is how Thor is set up) In this configuration, the NSS pin is
+         *  automatically driven low upon transmission start and will STAY low until
+         *  the SPI hardware is disabled. Rather quirky...
+         *
+         *  Note:   Don't bother trying to use software NSS management as described
+         *          in the datasheet. It will cause a nasty mode fault if you are in
+         *          master mode.
+         */
+        if ( static_cast<bool>( value ) )
+        {
+          __HAL_SPI_DISABLE( &spi_handle );
+        }
+      }
+    }
+
+    return error;
   }
 
-  Chimera::Status_t SPIClass::setChipSelectControlMode( const Chimera::SPI::ChipSelectMode &mode )
+  Chimera::Status_t SPIClass::setChipSelectControlMode( const Chimera::SPI::ChipSelectMode mode )
   {
     chipSelectMode = mode;
     return Chimera::CommonStatusCodes::OK;
@@ -294,22 +510,24 @@ namespace Thor::SPI
 
   Chimera::Status_t SPIClass::writeBytes( const uint8_t *const txBuffer, const size_t length, const uint32_t timeoutMS )
   {
+    return readWriteBytes( txBuffer, nullptr, length, timeoutMS );
   }
 
   Chimera::Status_t SPIClass::readBytes( uint8_t *const rxBuffer, const size_t length, const uint32_t timeoutMS )
   {
+    return readWriteBytes( nullptr, rxBuffer, length, timeoutMS );
   }
 
   Chimera::Status_t SPIClass::readWriteBytes( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length,
-                                    const uint32_t timeoutMS )
+                                              const uint32_t timeoutMS )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
-    if ( !hardwareStatus.gpio_enabled || !hardwareStatus.spi_enabled )
+    if ( !periphStatus.gpio_initialized || !periphStatus.spi_initialized )
     {
       error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
     }
-    else if ( !length )
+    else if ( !length || ( !txBuffer && !rxBuffer ) )
     {
       error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
     }
@@ -317,16 +535,16 @@ namespace Thor::SPI
     {
       switch ( txMode )
       {
-        case Chimera::SPI::SubPeripheralMode::BLOCKING:
+        case Chimera::Hardware::SubPeripheralMode::BLOCKING:
           error = transfer_blocking( txBuffer, rxBuffer, length, timeoutMS );
           break;
 
-        case Chimera::SPI::SubPeripheralMode::INTERRUPT:
-          error = transfer_interrupt( txBuffer, rxBuffer, length);
+        case Chimera::Hardware::SubPeripheralMode::INTERRUPT:
+          error = transfer_interrupt( txBuffer, rxBuffer, length, timeoutMS );
           break;
 
-        case Chimera::SPI::SubPeripheralMode::DMA:
-          error = transfer_dma( txBuffer, rxBuffer, length );
+        case Chimera::Hardware::SubPeripheralMode::DMA:
+          error = transfer_dma( txBuffer, rxBuffer, length, timeoutMS );
           break;
 
         default:
@@ -338,382 +556,366 @@ namespace Thor::SPI
     return error;
   }
 
-  Chimera::Status_t SPIClass::setPeripheralMode( const Chimera::SPI::SubPeripheral periph, const Chimera::SPI::SubPeripheralMode mode )
+  Chimera::Status_t SPIClass::setPeripheralMode( const Chimera::Hardware::SubPeripheral periph,
+                                                 const Chimera::Hardware::SubPeripheralMode mode )
   {
+    using namespace Chimera::SPI;
+    using namespace Chimera::Hardware;
+
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+    if ( !periphStatus.spi_initialized )
+    {
+      error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+    }
+    else
+    {
+      if ( ( periph == SubPeripheral::TXRX ) || ( periph == SubPeripheral::TX ) )
+      {
+        switch ( mode )
+        {
+          case SubPeripheralMode::BLOCKING:
+            txMode = mode;
+
+            /*------------------------------------------------
+            Disable interrupts as both periphs are now in blocking mode
+            -------------------------------------------------*/
+            if ( rxMode == SubPeripheralMode::BLOCKING )
+            {
+              SPI_DisableInterrupts();
+            }
+
+            SPI_DMA_DeInit( SubPeripheral::TX );
+            break;
+
+          case SubPeripheralMode::INTERRUPT:
+            txMode = mode;
+
+            SPI_EnableInterrupts();
+            SPI_DMA_DeInit( SubPeripheral::TX );
+            break;
+
+          case SubPeripheralMode::DMA:
+            txMode = mode;
+
+            SPI_EnableInterrupts();
+            SPI_DMA_Init( SubPeripheral::TX );
+            break;
+
+          default:
+            txMode = SubPeripheralMode::UNKNOWN_MODE;
+            error  = Chimera::CommonStatusCodes::FAIL;
+            break;
+        }
+      }
+
+      if ( ( periph == SubPeripheral::TXRX ) || ( periph == SubPeripheral::RX ) )
+      {
+        switch ( mode )
+        {
+          case SubPeripheralMode::BLOCKING:
+            rxMode = mode;
+
+            /*------------------------------------------------
+            Disable interrupts as both periphs are now in blocking mode
+            -------------------------------------------------*/
+            if ( txMode == SubPeripheralMode::BLOCKING )
+            {
+              SPI_DisableInterrupts();
+            }
+
+            SPI_DMA_DeInit( SubPeripheral::RX );
+            break;
+
+          case SubPeripheralMode::INTERRUPT:
+            rxMode = mode;
+
+            SPI_EnableInterrupts();
+            SPI_DMA_DeInit( SubPeripheral::RX );
+            break;
+
+          case SubPeripheralMode::DMA:
+            rxMode = mode;
+
+            SPI_EnableInterrupts();
+            SPI_DMA_Init( SubPeripheral::RX );
+            break;
+
+          default:
+            rxMode = SubPeripheralMode::UNKNOWN_MODE;
+            error  = Chimera::CommonStatusCodes::FAIL;
+            break;
+        }
+      }
+    }
+
+    return error;
   }
 
   Chimera::Status_t SPIClass::setClockFrequency( const uint32_t freq, const uint32_t tolerance )
   {
+    // TODO
   }
 
   Chimera::Status_t SPIClass::getClockFrequency( uint32_t &freq )
   {
+    freq = getFrequency( spi_channel, spi_handle.Init.BaudRatePrescaler );
+    return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t SPIClass::onWriteCompleteCallback( const Chimera::Function::void_func_uint32_t func )
+  Chimera::Status_t SPIClass::attachNotifier( const Chimera::Event::Trigger_t event, volatile uint8_t *const notifier )
   {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t SPIClass::onReadCompleteCallback( const Chimera::Function::void_func_uint32_t func )
+  Chimera::Status_t SPIClass::detachNotifier( const Chimera::Event::Trigger_t event, volatile uint8_t *const notifier )
   {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t SPIClass::onReadWriteCompleteCallback( const Chimera::Function::void_func_uint32_t func )
+  Chimera::Status_t SPIClass::attachCallback( const Chimera::Event::Trigger_t trigger,
+                                              const Chimera::Function::void_func_void func )
   {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t SPIClass::onErrorCallback( const Chimera::Function::void_func_uint32_t func )
+  Chimera::Status_t SPIClass::detachCallback( const Chimera::Event::Trigger_t trigger )
   {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
+
+#if defined( USING_FREERTOS )
+  Chimera::Status_t SPIClass::attachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t SPIClass::detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+#endif
 
   Chimera::Status_t SPIClass::transfer_blocking( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length,
                                                  const uint32_t timeoutMS )
   {
-  }
+    using namespace Chimera::SPI;
+    using namespace Chimera::GPIO;
+    using namespace Chimera::Hardware;
 
-  Chimera::Status_t SPIClass::transfer_interrupt( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length )
-  {
-  }
+    HAL_StatusTypeDef stm32Error = HAL_BUSY;
+    Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
 
-  Chimera::Status_t SPIClass::transfer_dma( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length )
-  {
-  }
-
-
-  Thor::Status SPIClass::begin( const Config &settings, const bool &force )
-  {
-    /*------------------------------------
-  Create the GPIO instances depending on what the user supplied
-  ------------------------------------*/
-    if ( settings.MOSI.pinNum == PinNum::NOT_A_PIN )
+    if ( reserve( timeoutMS ) == Chimera::CommonStatusCodes::OK )
     {
-      /* Default pin as described in defaults.cpp for this channel */
-      MOSI = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass() );
-      MOSI->initAdvanced( spi_cfg[ spi_channel ].MOSI.GPIOx, spi_cfg[ spi_channel ].MOSI.PinNum,
-                          spi_cfg[ spi_channel ].MOSI.Speed, spi_cfg[ spi_channel ].MOSI.Alternate );
-    }
-    else
-    {
-      /* User supplied pin */
-      MOSI = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass() );
-      MOSI->initAdvanced( settings.MOSI.GPIOx, settings.MOSI.pinNum, settings.MOSI.speed, settings.MOSI.alternate );
-    }
-
-    if ( settings.MISO.pinNum == PinNum::NOT_A_PIN )
-    {
-      /* Default pin as described in defaults.cpp for this channel */
-      MISO = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass() );
-      MISO->initAdvanced( spi_cfg[ spi_channel ].MISO.GPIOx, spi_cfg[ spi_channel ].MISO.PinNum,
-                          spi_cfg[ spi_channel ].MISO.Speed, spi_cfg[ spi_channel ].MISO.Alternate );
-    }
-    else
-    {
-      /* User supplied pin */
-      MISO = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass() );
-      MISO->initAdvanced( settings.MISO.GPIOx, settings.MISO.pinNum, settings.MISO.speed, settings.MISO.alternate );
-    }
-
-    if ( settings.SCK.pinNum == PinNum::NOT_A_PIN )
-    {
-      /* Default pin as described in defaults.cpp for this channel */
-      SCK = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass() );
-      SCK->initAdvanced( spi_cfg[ spi_channel ].SCK.GPIOx, spi_cfg[ spi_channel ].SCK.PinNum, spi_cfg[ spi_channel ].SCK.Speed,
-                         spi_cfg[ spi_channel ].SCK.Alternate );
-    }
-    else
-    {
-      /* User supplied pin */
-      SCK = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass() );
-      SCK->initAdvanced( settings.SCK.GPIOx, settings.SCK.pinNum, settings.SCK.speed, settings.SCK.alternate );
-    }
-
-    if ( settings.CS.pinNum == PinNum::NOT_A_PIN )
-    {
-      /* Default pin as described in defaults.cpp for this channel */
-      CS = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass() );
-      CS->initAdvanced( spi_cfg[ spi_channel ].NSS.GPIOx, spi_cfg[ spi_channel ].NSS.PinNum, spi_cfg[ spi_channel ].NSS.Speed,
-                        spi_cfg[ spi_channel ].NSS.Alternate );
-    }
-    else
-    {
-      /* User supplied pin */
-      CS = boost::movelib::unique_ptr<GPIOClass>( new GPIOClass() );
-      CS->initAdvanced( settings.CS.GPIOx, settings.CS.pinNum, settings.CS.speed, settings.CS.alternate );
-
-      alternateCS = true;
-    }
-
-    spi_handle.Init = settings.settings;
-
-    SPI_GPIO_Init();
-    SPI_Init();
-
-    setMode( SubPeripheral::TX, Modes::BLOCKING );
-    setMode( SubPeripheral::RX, Modes::BLOCKING );
-
-    return Thor::Status::PERIPH_OK;
-  }
-
-  Thor::Status SPIClass::end()
-  {
-    SPI_GPIO_DeInit();
-    SPI_DisableInterrupts();
-    SPI_DMA_DeInit( SubPeripheral::TX );
-    SPI_DMA_DeInit( SubPeripheral::RX );
-
-    txMode = Modes::MODE_UNDEFINED;
-    rxMode = Modes::MODE_UNDEFINED;
-
-    return Thor::Status::PERIPH_OK;
-  }
-
-  Thor::Status SPIClass::reserve( const uint32_t &timeout_ms )
-  {
-    Thor::Status status = Thor::Status::PERIPH_LOCKED;
-
-    /*------------------------------------------------
-  If not locked, grab immediately
-  -------------------------------------------------*/
-    if ( !isLocked() )
-    {
-      lock( true );
-      status = Thor::Status::PERIPH_OK;
-    }
-    else if ( timeout_ms )
-    {
-/*------------------------------------------------
-Otherwise, block the current task for a bit and check
-again when unblocked.
--------------------------------------------------*/
-#if defined( USING_FREERTOS )
-      vTaskDelay( pdMS_TO_TICKS( timeout_ms ) );
-
-      if ( !isLocked() )
+      /*------------------------------------------------
+      Activate the chip select line?
+      -------------------------------------------------*/
+      if ( chipSelectMode != Chimera::SPI::ChipSelectMode::MANUAL )
       {
-        lock( true );
-        status = Thor::Status::PERIPH_OK;
+        setChipSelect( State::LOW );
       }
-#endif
-    }
 
-    return status;
-  }
-
-  Thor::Status SPIClass::release( const uint32_t &timeout_ms )
-  {
-    Thor::Status status = Thor::Status::PERIPH_TIMEOUT;
-
-    if ( isOwner( ownerID ) )
-    {
-      if ( isTransferComplete() )
+      /*------------------------------------------------
+      Execute the transfer. Nullptr is protected by readWriteBytes()
+      -------------------------------------------------*/
+      if ( txBuffer && !rxBuffer )
       {
-        unlock();
-        status = Thor::Status::PERIPH_OK;
+        stm32Error = HAL_SPI_Transmit( &spi_handle, const_cast<uint8_t *>( txBuffer ), length, timeoutMS );
       }
-      else if ( timeout_ms )
+      else if ( rxBuffer && !txBuffer )
       {
-#if defined( USING_FREERTOS )
-        vTaskDelay( pdMS_TO_TICKS( timeout_ms ) );
-
-        if ( isTransferComplete() )
+        if ( rxMode != txMode )
         {
-          unlock();
-          status = Thor::Status::PERIPH_OK;
+          /*------------------------------------------------
+          In order for TransmitReceive to work, both subperipherals must be in the
+          same mode. This will silently clobber previous settings.
+          -------------------------------------------------*/
+          setPeripheralMode( SubPeripheral::RX, txMode );
         }
-#endif
+        
+        stm32Error = HAL_SPI_TransmitReceive( &spi_handle, const_cast<uint8_t *>( rxBuffer ), const_cast<uint8_t *>( rxBuffer ),
+                                              length, timeoutMS );
       }
-    }
-    else
-    {
-      status = Thor::Status::NOT_OWNER;
-    }
-
-    return status;
-  }
-
-  Thor::Status SPIClass::attachChipSelect( const Thor::Peripheral::GPIO::GPIOClass_sPtr &chipSelect )
-  {
-    externalCS = chipSelect;
-    return Thor::Status::PERIPH_OK;
-  }
-
-  Thor::Status SPIClass::detachChipSelect()
-  {
-    externalCS = nullptr;
-    return Thor::Status::PERIPH_OK;
-  }
-
-  Thor::Status SPIClass::writeBytes( const uint8_t *const txBuffer, size_t length, const bool &autoDisableCS,
-                                     const bool &autoRelease, uint32_t timeoutMS )
-  {
-    return readWriteBytes( txBuffer, nullptr, length, autoDisableCS, autoRelease, timeoutMS );
-  }
-
-  Thor::Status SPIClass::readBytes( uint8_t *const rxBuffer, size_t length, const bool &autoDisableCS, const bool &autoRelease,
-                                    uint32_t timeoutMS )
-  {
-    return readWriteBytes( nullptr, rxBuffer, length, autoDisableCS, autoRelease, timeoutMS );
-  }
-
-
-  Thor::Status SPIClass::setMode( const SubPeripheral &periph, const Modes &mode )
-  {
-    if ( ( periph == SubPeripheral::TXRX ) || ( periph == SubPeripheral::TX ) )
-    {
-      switch ( mode )
+      else
       {
-        case Modes::BLOCKING:
-          txMode = mode;
-
+        if ( rxMode != txMode )
+        {
           /*------------------------------------------------
-    Disable interrupts as both periphs are now in blocking mode
-    -------------------------------------------------*/
-          if ( rxMode == Modes::BLOCKING )
-          {
-            SPI_DisableInterrupts();
-          }
+          In order for TransmitReceive to work, both subperipherals must be in the
+          same mode. This will silently clobber previous settings.
+          -------------------------------------------------*/
+          setPeripheralMode( SubPeripheral::RX, txMode );
+        }
 
-          SPI_DMA_DeInit( SubPeripheral::TX );
-          break;
-
-        case Modes::INTERRUPT:
-          txMode = mode;
-
-          SPI_EnableInterrupts();
-          SPI_DMA_DeInit( SubPeripheral::TX );
-          break;
-
-        case Modes::DMA:
-          txMode = mode;
-
-          SPI_EnableInterrupts();
-          SPI_DMA_Init( SubPeripheral::TX );
-          break;
-
-        default:
-          txMode = Modes::MODE_UNDEFINED;
-          return Status::PERIPH_ERROR;
-          break;
+        stm32Error = HAL_SPI_TransmitReceive( &spi_handle, const_cast<uint8_t *>( txBuffer ), const_cast<uint8_t *>( rxBuffer ),
+                                              length, timeoutMS );
       }
-    }
 
-    if ( ( periph == SubPeripheral::TXRX ) || ( periph == SubPeripheral::RX ) )
-    {
-      switch ( mode )
+      /*------------------------------------------------
+      De-activate the chip select line?
+      -------------------------------------------------*/
+      if ( chipSelectMode != Chimera::SPI::ChipSelectMode::MANUAL )
       {
-        case Modes::BLOCKING:
-          rxMode = mode;
-
-          /*------------------------------------------------
-    Disable interrupts as both periphs are now in blocking mode
-    -------------------------------------------------*/
-          if ( txMode == Modes::BLOCKING )
-          {
-            SPI_DisableInterrupts();
-          }
-
-          SPI_DMA_DeInit( SubPeripheral::RX );
-          break;
-
-        case Modes::INTERRUPT:
-          rxMode = mode;
-
-          SPI_EnableInterrupts();
-          SPI_DMA_DeInit( SubPeripheral::RX );
-          break;
-
-        case Modes::DMA:
-          rxMode = mode;
-
-          SPI_EnableInterrupts();
-          SPI_DMA_Init( SubPeripheral::RX );
-          break;
-
-        default:
-          rxMode = Modes::MODE_UNDEFINED;
-          return Status::PERIPH_ERROR;
-          break;
+        setChipSelect( State::HIGH );
       }
-    }
 
-    return Thor::Status::PERIPH_OK;
-  }
-
-  Thor::Status SPIClass::setChipSelect( const LogicLevel &state )
-  {
-    if ( externalCS )
-    {
-      /*------------------------------------
-  External GPIOClass object supplied by the user
-  ------------------------------------*/
-      externalCS->write( state );
-    }
-    else if ( alternateCS )
-    {
-      /*------------------------------------
-  Internal GPIOClass object that has different settings than
-  the default for this channel.
-  ------------------------------------*/
-      CS->write( state );
-    }
-    else
-    {
-      /*------------------------------------
-  Default pin for this channel. We can only control setting it HIGH.
-  ------------------------------------*/
-
-      /**
-       *  This is only useful when the peripheral's dedicated NSS pin is used,
-       *configured for hardware management, and the SSOE bit in CR1 is set. (By
-       *default this is how Thor is set up) In this configuration, the NSS pin is
-       *automatically driven low upon transmission start and will STAY low until
-       *the SPI hardware is disabled. Rather quirky...
-       *
-       *  Note:   Don't bother trying to use software NSS management as described
-       *in the datasheet. It will cause a nasty mode fault if you are in master
-       *mode.
-       */
-      if ( static_cast<bool>( state ) )
+      /*------------------------------------------------
+      Handle any errors and exit gracefully
+      -------------------------------------------------*/
+      if ( error != HAL_OK )
       {
-        __HAL_SPI_DISABLE( &spi_handle );
+        error = convertHALStatus( stm32Error );
       }
-    }
-
-    return Thor::Status::PERIPH_OK;
-  }
-
-
-  Thor::Status SPIClass::setClockFrequency( const uint32_t &freq )
-  {
-    Thor::Status status = Thor::Status::PERIPH_ERROR;
-
-    if ( isTransferComplete() && isAvailable( ownerID ) && ( reserve() == Thor::Status::PERIPH_OK ) )
-    {
-      // TODO: Figure out how to do this without resetting the channel
-      // spi_handle.Init.BaudRatePrescaler = getPrescaler(spi_channel, freq);
 
       release();
     }
     else
     {
-      status = Thor::Status::PERIPH_BUSY;
+      error = Chimera::CommonStatusCodes::LOCKED;
     }
 
-    return status;
+    return error;
   }
 
-  Thor::Status SPIClass::getClockFrequency( uint32_t *const freq )
+  Chimera::Status_t SPIClass::transfer_interrupt( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length, const uint32_t timeoutMS )
   {
-    *freq = getFrequency( spi_channel, spi_handle.Init.BaudRatePrescaler );
-    return Thor::Status::PERIPH_OK;
+    using namespace Chimera::SPI;
+    using namespace Chimera::GPIO;
+    using namespace Chimera::Hardware;
+
+    HAL_StatusTypeDef stm32Error = HAL_OK;
+    Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
+
+    if ( transfer_complete && ( reserve( timeoutMS ) == Chimera::CommonStatusCodes::OK ) )
+    {
+      /*------------------------------------------------
+      Activate the chip select line?
+      -------------------------------------------------*/
+      if ( chipSelectMode != Chimera::SPI::ChipSelectMode::MANUAL )
+      {
+        setChipSelect( State::LOW );
+      }
+
+      /*------------------------------------------------
+      Execute the transfer. Apologies for the const_cast-ing.
+      The underlying HAL does not modify the buffers.
+      -------------------------------------------------*/
+      if ( txBuffer && !rxBuffer )
+      {
+        stm32Error = HAL_SPI_Transmit_IT( &spi_handle, const_cast<uint8_t *>( txBuffer ), length );
+      }
+      else if ( rxBuffer && !txBuffer )
+      {
+        /* Technically this would be an Asynchronous Slave Mode operation */
+        error = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      }
+      else
+      {
+        if ( rxMode != txMode )
+        { 
+          /*------------------------------------------------
+          In order for TransmitReceive to work, both subperipherals must be in the
+          same mode. This will silently clobber previous settings.
+          -------------------------------------------------*/
+          setPeripheralMode( SubPeripheral::RX, txMode );
+        }
+
+        stm32Error = HAL_SPI_TransmitReceive_IT( &spi_handle, const_cast<uint8_t *>( txBuffer ),
+                                                  const_cast<uint8_t *>( rxBuffer ), length );
+      }
+
+      /*------------------------------------------------
+      Catch any errors and exit gracefully
+      -------------------------------------------------*/
+      if ( stm32Error != HAL_OK )
+      {
+        /*------------------------------------------------
+        The ISR will no longer reset the chipselect, so it is handled here
+        -------------------------------------------------*/
+        if ( chipSelectMode != Chimera::SPI::ChipSelectMode::MANUAL )
+        {
+          setChipSelect( State::HIGH );
+        }
+      }
+
+      release();
+    }
+    else
+    {
+      error = Chimera::CommonStatusCodes::LOCKED;
+    }
+
+    return error;
   }
 
-  
-  
-  
-  
-  
-  
+  Chimera::Status_t SPIClass::transfer_dma( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length, const uint32_t timeoutMS )
+  {
+    using namespace Chimera::SPI;
+    using namespace Chimera::GPIO;
+    using namespace Chimera::Hardware;
+
+    HAL_StatusTypeDef stm32Error = HAL_OK;
+    Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
+
+    if ( transfer_complete && ( reserve( timeoutMS ) == Chimera::CommonStatusCodes::OK ) )
+    {
+      /*------------------------------------------------
+      Activate the chip select line?
+      -------------------------------------------------*/
+      if ( chipSelectMode != Chimera::SPI::ChipSelectMode::MANUAL )
+      {
+        setChipSelect( State::LOW );
+      }
+
+      if ( txBuffer && !rxBuffer )
+      {
+        stm32Error = HAL_SPI_Transmit_DMA( &spi_handle, const_cast<uint8_t *>( txBuffer ), length );
+      }
+      else if ( rxBuffer && !txBuffer )
+      {
+        /* Technically this would be an Asynchronous Slave Mode operation */
+        error = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      }
+      else
+      {
+        if ( rxMode != txMode )
+        {
+          /*------------------------------------------------
+          In order for TransmitReceive to work, both subperipherals must be in the
+          same mode. This will silently clobber previous settings.
+          -------------------------------------------------*/
+          setPeripheralMode( SubPeripheral::RX, txMode );
+        }
+
+        stm32Error = HAL_SPI_TransmitReceive_DMA( &spi_handle, const_cast<uint8_t *>( txBuffer ),
+                                                  const_cast<uint8_t *>( rxBuffer ), length );
+      }
+
+      /*------------------------------------------------
+      Catch any errors and exit gracefully
+      -------------------------------------------------*/
+      if ( stm32Error != HAL_OK )
+      {
+        /*------------------------------------------------
+        The ISR will no longer reset the chipselect, so it is handled here
+        -------------------------------------------------*/
+        if ( chipSelectMode != Chimera::SPI::ChipSelectMode::MANUAL )
+        {
+          setChipSelect( State::HIGH );
+        }
+      }
+
+      release();
+    }
+    else
+    {
+      error = Chimera::CommonStatusCodes::LOCKED;
+    }
+
+    return error;
+  }
+
   void SPIClass::IRQHandler()
   {
     HAL_SPI_IRQHandler( &spi_handle );
@@ -731,84 +933,90 @@ again when unblocked.
 
   uint32_t SPIClass::getPrescaler( const int &channel, const uint32_t &freq )
   {
-    uint32_t busFreq            = 0u;
-    uint32_t prescaler          = 0u;
-    const uint8_t numPrescalers = 8;
+    static constexpr uint8_t numPrescalers = 8;
+
+    uint32_t apbFreq   = 0u;
+    uint32_t prescaler = 0u;
 
     /*------------------------------------------------
-  Figure out the APB bus frequency for this channel
-  -------------------------------------------------*/
-    if ( spi_cfg[ channel ].clockBus == Thor::ClockBus::APB1_PERIPH )
+    Figure out the APB bus frequency for this channel
+    -------------------------------------------------*/
+    if ( hwConfig[ channel ]->clockBus == Thor::CLK::ClockBus::APB1_PERIPH )
     {
-      busFreq = HAL_RCC_GetPCLK1Freq();
+      apbFreq = HAL_RCC_GetPCLK1Freq();
     }
-    else if ( spi_cfg[ channel ].clockBus == Thor::ClockBus::APB2_PERIPH )
+    else if ( hwConfig[ channel ]->clockBus == Thor::CLK::ClockBus::APB2_PERIPH )
     {
-      busFreq = HAL_RCC_GetPCLK2Freq();
+      apbFreq = HAL_RCC_GetPCLK2Freq();
+    }
+
+    /*------------------------------------------------
+    Calculate the prescaler if the APB bus frequency was found
+    -------------------------------------------------*/
+    if ( apbFreq )
+    {
+      /*------------------------------------------------
+      Calculate the error between the pre-scaled clock and the desired clock
+      -------------------------------------------------*/
+      int clockError[ numPrescalers ];
+      memset( clockError, std::numeric_limits<int>::max(), numPrescalers );
+
+      for ( int i = 0; i < numPrescalers; i++ )
+      {
+        clockError[ i ] = abs( static_cast<int>( ( apbFreq / ( 1 << ( i + 1 ) ) - freq ) ) );
+      }
+
+      /*------------------------------------------------
+      Find the index of the element with lowest error
+      -------------------------------------------------*/
+      auto idx = std::distance( clockError, std::min_element( clockError, clockError + numPrescalers - 1 ) );
+
+      /*------------------------------------------------
+      Grab the correct prescaler
+      -------------------------------------------------*/
+      switch ( idx )
+      {
+        case 0:
+          prescaler = SPI_BAUDRATEPRESCALER_2;
+          break;
+
+        case 1:
+          prescaler = SPI_BAUDRATEPRESCALER_4;
+          break;
+
+        case 2:
+          prescaler = SPI_BAUDRATEPRESCALER_8;
+          break;
+
+        case 3:
+          prescaler = SPI_BAUDRATEPRESCALER_16;
+          break;
+
+        case 4:
+          prescaler = SPI_BAUDRATEPRESCALER_32;
+          break;
+
+        case 5:
+          prescaler = SPI_BAUDRATEPRESCALER_64;
+          break;
+
+        case 6:
+          prescaler = SPI_BAUDRATEPRESCALER_128;
+          break;
+
+        case 7:
+          prescaler = SPI_BAUDRATEPRESCALER_256;
+          break;
+
+        default:
+          prescaler = Thor::SPI::dflt_SPI_Init.BaudRatePrescaler;
+          break;
+      };
     }
     else
     {
-      return Thor::Defaults::SPI::dflt_SPI_Init.BaudRatePrescaler;
+      prescaler = Thor::SPI::dflt_SPI_Init.BaudRatePrescaler;
     }
-
-    /*------------------------------------------------
-  Calculate the error between the resultant pre-scaled clock and the desired
-  clock
-  -------------------------------------------------*/
-    int clockError[ numPrescalers ];
-    memset( clockError, INT_MAX, numPrescalers * sizeof( clockError ) );
-
-    for ( int i = 0; i < numPrescalers; i++ )
-    {
-      clockError[ i ] = abs( static_cast<int>( ( busFreq / ( 1 << ( i + 1 ) ) - freq ) ) );
-    }
-
-    /*------------------------------------------------
-  Find the index of the element with lowest error
-  -------------------------------------------------*/
-    auto idx = std::distance( clockError, std::min_element( clockError, clockError + numPrescalers - 1 ) );
-
-    /*------------------------------------------------
-  Grab the correct prescaler
-  -------------------------------------------------*/
-    switch ( idx )
-    {
-      case 0:
-        prescaler = SPI_BAUDRATEPRESCALER_2;
-        break;
-
-      case 1:
-        prescaler = SPI_BAUDRATEPRESCALER_4;
-        break;
-
-      case 2:
-        prescaler = SPI_BAUDRATEPRESCALER_8;
-        break;
-
-      case 3:
-        prescaler = SPI_BAUDRATEPRESCALER_16;
-        break;
-
-      case 4:
-        prescaler = SPI_BAUDRATEPRESCALER_32;
-        break;
-
-      case 5:
-        prescaler = SPI_BAUDRATEPRESCALER_64;
-        break;
-
-      case 6:
-        prescaler = SPI_BAUDRATEPRESCALER_128;
-        break;
-
-      case 7:
-        prescaler = SPI_BAUDRATEPRESCALER_256;
-        break;
-
-      default:
-        prescaler = Thor::Defaults::SPI::dflt_SPI_Init.BaudRatePrescaler;
-        break;
-    };
 
     return prescaler;
   }
@@ -819,546 +1027,111 @@ again when unblocked.
     uint32_t busFreq = 0u;
 
     /*------------------------------------------------
-  Figure out the APB bus frequency for this channel
-  -------------------------------------------------*/
-    if ( spi_cfg[ channel ].clockBus == Thor::ClockBus::APB1_PERIPH )
+    Figure out the APB bus frequency for this channel
+    -------------------------------------------------*/
+    if ( hwConfig[ channel ]->clockBus == Thor::CLK::ClockBus::APB1_PERIPH )
     {
       apbFreq = HAL_RCC_GetPCLK1Freq();
     }
-    else if ( spi_cfg[ channel ].clockBus == Thor::ClockBus::APB2_PERIPH )
+    else if ( hwConfig[ channel ]->clockBus == Thor::CLK::ClockBus::APB2_PERIPH )
     {
       apbFreq = HAL_RCC_GetPCLK2Freq();
     }
-    else
-    {
-      return 0u;
-    }
 
     /*------------------------------------------------
-  Now get the SPI clock frequency
-  -------------------------------------------------*/
-    switch ( prescaler )
+    Now get the SPI clock frequency
+    -------------------------------------------------*/
+    if ( apbFreq )
     {
-      case SPI_BAUDRATEPRESCALER_2:
-        busFreq = apbFreq / 2;
-        break;
+      switch ( prescaler )
+      {
+        case SPI_BAUDRATEPRESCALER_2:
+          busFreq = apbFreq / 2;
+          break;
 
-      case SPI_BAUDRATEPRESCALER_4:
-        busFreq = apbFreq / 4;
-        break;
+        case SPI_BAUDRATEPRESCALER_4:
+          busFreq = apbFreq / 4;
+          break;
 
-      case SPI_BAUDRATEPRESCALER_8:
-        busFreq = apbFreq / 8;
-        break;
+        case SPI_BAUDRATEPRESCALER_8:
+          busFreq = apbFreq / 8;
+          break;
 
-      case SPI_BAUDRATEPRESCALER_16:
-        busFreq = apbFreq / 16;
-        break;
+        case SPI_BAUDRATEPRESCALER_16:
+          busFreq = apbFreq / 16;
+          break;
 
-      case SPI_BAUDRATEPRESCALER_32:
-        busFreq = apbFreq / 32;
-        break;
+        case SPI_BAUDRATEPRESCALER_32:
+          busFreq = apbFreq / 32;
+          break;
 
-      case SPI_BAUDRATEPRESCALER_64:
-        busFreq = apbFreq / 64;
-        break;
+        case SPI_BAUDRATEPRESCALER_64:
+          busFreq = apbFreq / 64;
+          break;
 
-      case SPI_BAUDRATEPRESCALER_128:
-        busFreq = apbFreq / 128;
-        break;
+        case SPI_BAUDRATEPRESCALER_128:
+          busFreq = apbFreq / 128;
+          break;
 
-      case SPI_BAUDRATEPRESCALER_256:
-        busFreq = apbFreq / 256;
-        break;
+        case SPI_BAUDRATEPRESCALER_256:
+          busFreq = apbFreq / 256;
+          break;
 
-      default:
-        busFreq = 0u;
-    };
+        default:
+          busFreq = 0u;
+      };
+    }
 
     return busFreq;
   }
 
-  Thor::Status SPIClass::transfer_blocking( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
-                                            const bool &autoDisableCS, const bool &autoRelease, uint32_t timeoutMS )
-  {
-    HAL_StatusTypeDef error = HAL_OK;
-    Thor::Status status     = Thor::Status::PERIPH_OK;
-
-#if defined( USING_FREERTOS )
-    timeoutMS = pdMS_TO_TICKS( timeoutMS );
-#endif
-
-    /*------------------------------------------------
-  Ensure the previous transmission has completed
-  -------------------------------------------------*/
-    if ( isAvailable( ownerID ) )
-    {
-      /*------------------------------------------------
-  Lock the hardware to make sure we don't get interrupted
-  -------------------------------------------------*/
-      if ( !isExternallyReserved() )
-      {
-        lock( false );
-      }
-
-      /*------------------------------------------------
-  Activate the chip select line?
-  -------------------------------------------------*/
-      if ( ( chipSelectMode < Thor::SPI::ChipSelectMode::NUM_CS_MODES ) &&
-           ( chipSelectMode != Thor::SPI::ChipSelectMode::MANUAL ) )
-      {
-        setChipSelect( LogicLevel::LOW );
-      }
-
-      /*------------------------------------------------
-  Execute the transfer
-  -------------------------------------------------*/
-      if ( txBuffer && !rxBuffer )
-      {
-        /*------------------------------------------------
-          The HAL operation doesn't modify the transmit buffer, but
-  for some reason the designers did not add const to the function
-  signature. This feels nasty, but it must be done.
-          -------------------------------------------------*/
-        error = HAL_SPI_Transmit( &spi_handle, const_cast<uint8_t *>( txBuffer ), length, timeoutMS );
-      }
-      else if ( rxBuffer && !txBuffer )
-      {
-        /*------------------------------------------------
-  In order for TransmitReceive to work, both subperipherals must be in the
-  same mode. This will silently clobber whatever settings were previously
-  there.
-  -------------------------------------------------*/
-        if ( rxMode != txMode )
-        {
-          setMode( SubPeripheral::RX, txMode );
-        }
-
-        /*------------------------------------------------
-          The HAL operation doesn't modify the transmit buffer, but
-  for some reason the designers did not add const to the function
-  signature. This feels nasty, but it must be done.
-          -------------------------------------------------*/
-        error = HAL_SPI_TransmitReceive( &spi_handle, const_cast<uint8_t *>( rxBuffer ), const_cast<uint8_t *>( rxBuffer ),
-                                         length, timeoutMS );
-      }
-      else if ( txBuffer && rxBuffer )
-      {
-        /*------------------------------------------------
-  In order for TransmitReceive to work, both subperipherals must be in the
-  same mode. This will silently clobber whatever settings were previously
-  there.
-  -------------------------------------------------*/
-        if ( rxMode != txMode )
-        {
-          setMode( SubPeripheral::RX, txMode );
-        }
-
-        /*------------------------------------------------
-          The HAL operation doesn't modify the transmit buffer, but
-  for some reason the designers did not add const to the function
-  signature. This feels nasty, but it must be done.
-          -------------------------------------------------*/
-        error = HAL_SPI_TransmitReceive( &spi_handle, const_cast<uint8_t *>( txBuffer ), const_cast<uint8_t *>( rxBuffer ),
-                                         length, timeoutMS );
-      }
-      else
-      {
-        status = Thor::Status::PERIPH_INVALID_PARAM;
-      }
-
-      /*------------------------------------------------
-  De-activate the chip select line?
-  -------------------------------------------------*/
-      if ( autoDisableCS )
-      {
-        setChipSelect( LogicLevel::HIGH );
-      }
-
-      /*------------------------------------------------
-  Unlock since we are done with the hardware
-  -------------------------------------------------*/
-      if ( !isExternallyReserved() || autoRelease )
-      {
-        unlock();
-      }
-
-      /*------------------------------------------------
-  Handle any errors and exit gracefully
-  -------------------------------------------------*/
-      if ( error != HAL_OK )
-      {
-        status = Thor::Status::PERIPH_ERROR;
-      }
-    }
-    else
-    {
-      status = Thor::Status::PERIPH_BUSY;
-    }
-
-    return status;
-  }
-
-  Thor::Status SPIClass::transfer_interrupt( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
-                                             const bool &autoDisableCS, const bool &autoRelease )
-  {
-    HAL_StatusTypeDef error = HAL_OK;
-    Thor::Status status     = Thor::Status::PERIPH_OK;
-
-    /*------------------------------------------------
-  Ensure the previous transmission has completed
-  -------------------------------------------------*/
-    if ( isAvailable( ownerID ) )
-    {
-      /*------------------------------------------------
-  Lock the hardware to make sure we don't get interrupted
-  -------------------------------------------------*/
-      if ( !isExternallyReserved() )
-      {
-        lock( false );
-      }
-
-      /*------------------------------------------------
-  Activate the chip select line?
-  -------------------------------------------------*/
-      if ( ( chipSelectMode < Thor::SPI::ChipSelectMode::NUM_CS_MODES ) &&
-           ( chipSelectMode != Thor::SPI::ChipSelectMode::MANUAL ) )
-      {
-        setChipSelect( LogicLevel::LOW );
-      }
-
-      /*------------------------------------------------
-  Start the transfer
-  -------------------------------------------------*/
-      channelState[ spi_channel ].transfer_complete = false;
-      channelState[ spi_channel ].auto_unlock       = autoRelease;
-      channelState[ spi_channel ].auto_disable_cs   = autoDisableCS;
-
-      if ( txBuffer && !rxBuffer )
-      {
-        /*------------------------------------------------
-  The HAL operation doesn't modify the transmit buffer, but for some reason
-  the designers did not add const to the function signature. This feels
-  nasty, but it must be done.
-  -------------------------------------------------*/
-        error  = HAL_SPI_Transmit_IT( &spi_handle, const_cast<uint8_t *>( txBuffer ), length );
-        status = Thor::Status::PERIPH_TX_IN_PROGRESS;
-      }
-      else if ( txBuffer && rxBuffer )
-      {
-        /*------------------------------------------------
-  In order for TransmitReceive to work, both subperipherals must be in the
-  same mode. This will silently clobber whatever settings were previously
-  there.
-  -------------------------------------------------*/
-        if ( rxMode != txMode )
-        {
-          setMode( SubPeripheral::RX, txMode );
-        }
-
-        status = Thor::Status::PERIPH_TXRX_IN_PROGRESS;
-
-        /*------------------------------------------------
-          The HAL operation doesn't modify the transmit buffer, but
-  for some reason the designers did not add const to the function
-  signature. This feels nasty, but it must be done.
-          -------------------------------------------------*/
-        error = HAL_SPI_TransmitReceive_IT( &spi_handle, const_cast<uint8_t *>( txBuffer ), const_cast<uint8_t *>( rxBuffer ),
-                                            length );
-      }
-      else if ( rxBuffer && !txBuffer )
-      {
-        status = Thor::Status::PERIPH_ERROR;
-      }
-      else
-      {
-        resetISRFlags();
-        status = Thor::Status::PERIPH_INVALID_PARAM;
-      }
-
-      /*------------------------------------------------
-  Catch any errors and exit gracefully
-  -------------------------------------------------*/
-      if ( error != HAL_OK )
-      {
-        resetISRFlags();
-        status = Thor::Status::PERIPH_ERROR;
-
-        if ( autoDisableCS )
-        {
-          setChipSelect( LogicLevel::HIGH );
-        }
-
-        if ( !isExternallyReserved() )
-        {
-          unlock();
-        }
-      }
-    }
-    else
-    {
-      status = Thor::Status::PERIPH_BUSY;
-    }
-
-    return status;
-  }
-
-  Thor::Status SPIClass::transfer_dma( const uint8_t *const txBuffer, uint8_t *const rxBuffer, size_t length,
-                                       const bool &autoDisableCS, const bool &autoRelease )
-  {
-    HAL_StatusTypeDef error = HAL_OK;
-    Thor::Status status     = Thor::Status::PERIPH_OK;
-
-    /*------------------------------------------------
-  Ensure the previous transmission has completed
-  -------------------------------------------------*/
-    if ( isAvailable( ownerID ) )
-    {
-      /*------------------------------------------------
-  Lock the hardware to make sure we don't get interrupted
-  -------------------------------------------------*/
-      if ( !isExternallyReserved() )
-      {
-        lock( false );
-      }
-
-      /*------------------------------------------------
-  Activate the chip select line?
-  -------------------------------------------------*/
-      if ( ( chipSelectMode < Thor::SPI::ChipSelectMode::NUM_CS_MODES ) &&
-           ( chipSelectMode != Thor::SPI::ChipSelectMode::MANUAL ) )
-      {
-        setChipSelect( LogicLevel::LOW );
-      }
-
-      /*------------------------------------------------
-  Start the transfer
-  -------------------------------------------------*/
-      channelState[ spi_channel ].transfer_complete = false;
-      channelState[ spi_channel ].auto_unlock       = autoRelease;
-      channelState[ spi_channel ].auto_disable_cs   = autoDisableCS;
-
-      if ( txBuffer && !rxBuffer )
-      {
-        status = Thor::Status::PERIPH_TX_IN_PROGRESS;
-
-        /*------------------------------------------------
-  The HAL operation doesn't modify the transmit buffer, but for some reason
-  the designers did not add const to the function signature. This feels
-  nasty, but it must be done.
-  -------------------------------------------------*/
-        error = HAL_SPI_Transmit_DMA( &spi_handle, const_cast<uint8_t *>( txBuffer ), length );
-      }
-      else if ( rxBuffer && !txBuffer )
-      {
-        status = Thor::Status::PERIPH_ERROR;
-      }
-      else if ( txBuffer && rxBuffer )
-      {
-        /*------------------------------------------------
-  In order for TransmitReceive to work, both subperipherals must be in the
-  same mode. This will silently clobber whatever settings were previously
-  there.
-  -------------------------------------------------*/
-        if ( rxMode != txMode )
-        {
-          setMode( SubPeripheral::RX, txMode );
-        }
-
-        status = Thor::Status::PERIPH_TXRX_IN_PROGRESS;
-
-        /*------------------------------------------------
-  The HAL operation doesn't modify the transmit buffer, but for some reason
-  the designers did not add const to the function signature. This feels
-  nasty, but it must be done.
-  -------------------------------------------------*/
-        error = HAL_SPI_TransmitReceive_DMA( &spi_handle, const_cast<uint8_t *>( txBuffer ), const_cast<uint8_t *>( rxBuffer ),
-                                             length );
-      }
-      else
-      {
-        resetISRFlags();
-        status = Thor::Status::PERIPH_INVALID_PARAM;
-      }
-
-      /*------------------------------------------------
-  Catch any errors and exit gracefully
-  -------------------------------------------------*/
-      if ( error != HAL_OK )
-      {
-        resetISRFlags();
-        status = Thor::Status::PERIPH_ERROR;
-
-        if ( autoDisableCS )
-        {
-          setChipSelect( LogicLevel::HIGH );
-        }
-
-        if ( !isExternallyReserved() )
-        {
-          unlock();
-        }
-      }
-    }
-    else
-    {
-      status = Thor::Status::PERIPH_BUSY;
-    }
-
-    return status;
-  }
-
-  bool SPIClass::isAvailable( const uint32_t &ownerID )
-  {
-    return ( !isLocked() || isOwner( ownerID ) );
-  }
-
-  bool SPIClass::isLocked()
-  {
-    if ( spi_channel < NUM_CHANNELS )
-    {
-      return channelState[ spi_channel ].lock;
-    }
-    else
-    {
-      return true;
-    }
-  }
-
-  bool SPIClass::isOwner( const uint32_t &ownerID )
-  {
-    if ( ( spi_channel < NUM_CHANNELS ) && ( ownerID != NO_OWNER_ID ) )
-    {
-      return ( ownerID == channelState[ spi_channel ].owner );
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-  bool SPIClass::isTransferComplete()
-  {
-    if ( spi_channel < NUM_CHANNELS )
-    {
-      return channelState[ spi_channel ].transfer_complete;
-    }
-    else
-    {
-      // TODO: error out?
-      return true;
-    }
-  }
-
-  bool SPIClass::isExternallyReserved()
-  {
-    if ( spi_channel < NUM_CHANNELS )
-    {
-      return channelState[ spi_channel ].externally_reserved;
-    }
-    else
-    {
-      // TODO: I might want to throw an error instead of returning true/false?
-      // There could be some very unintended consequences for this.
-      return true;
-    }
-  }
-
-  void SPIClass::resetISRFlags()
-  {
-    if ( spi_channel < NUM_CHANNELS )
-    {
-      channelState[ spi_channel ].auto_disable_cs   = false;
-      channelState[ spi_channel ].auto_unlock       = false;
-      channelState[ spi_channel ].transfer_complete = true;
-      channelState[ spi_channel ].transfer_error    = false;
-    }
-  }
-
-  void SPIClass::lock( const bool &external_lock )
-  {
-    if ( spi_channel < NUM_CHANNELS )
-    {
-      channelState[ spi_channel ].lock  = true;
-      channelState[ spi_channel ].owner = rand();
-
-      ownerID = channelState[ spi_channel ].owner;
-
-      if ( external_lock )
-      {
-        channelState[ spi_channel ].externally_reserved = true;
-      }
-    }
-  }
-
-  void SPIClass::unlock()
-  {
-    if ( spi_channel < NUM_CHANNELS )
-    {
-      channelState[ spi_channel ].lock                = false;
-      channelState[ spi_channel ].owner               = NO_OWNER_ID;
-      channelState[ spi_channel ].externally_reserved = false;
-    }
-  }
-
   void SPIClass::SPI_GPIO_Init()
   {
+    using namespace Chimera::GPIO;
+
     if ( spi_handle.Init.Mode == SPI_MODE_MASTER )
     {
       /*------------------------------------------------
-  Setup GPIO. Mode must be ALT_PP rather than Input for reads to work.
-  -------------------------------------------------*/
-      MISO->mode( PinMode::ALT_PP, PinPull::PULLUP );
-      MOSI->mode( PinMode::ALT_PP, PinPull::PULLUP );
+      Setup MISO/MOSI/SCK. Mode must be ALT_PP rather
+      than Input in order for reads to work.
+      -------------------------------------------------*/
+      MISO->setMode( Drive::ALTERNATE_PUSH_PULL, true );
+      MOSI->setMode( Drive::ALTERNATE_PUSH_PULL, true );
 
       if ( spi_handle.Init.CLKPolarity )
       {
-        SCK->mode( PinMode::ALT_PP, PinPull::PULLUP );
+        SCK->setMode( Drive::ALTERNATE_PUSH_PULL, true );
       }
       else
       {
-        SCK->mode( PinMode::ALT_PP, PinPull::PULLDN );
+        SCK->setMode( Drive::ALTERNATE_PUSH_PULL, false );
       }
 
       /*------------------------------------------------
-  Decide how to initialize the CS pin. There are a few options.
-  -------------------------------------------------*/
-      if ( externalCS )
+      Decide how to initialize the CS pin. There are a few options.
+      -------------------------------------------------*/
+      if ( !hardwareChipSelect )
       {
-        /*------------------------------------------------
-  User supplied pre-initialized GPIOClass_sPtr object. This is
-  an externally created object we don't own.
-  -------------------------------------------------*/
-        externalCS->mode( Thor::GPIO::PinMode::OUTPUT_PP, Thor::GPIO::PinPull::NOPULL );
-        externalCS->write( LogicLevel::HIGH );
-      }
-      else if ( alternateCS )
-      {
-        /*------------------------------------------------
-  User supplied description of the GPIO pin to be initialized
-  -------------------------------------------------*/
-        CS->mode( Thor::GPIO::PinMode::OUTPUT_PP, Thor::GPIO::PinPull::NOPULL );
-        CS->write( LogicLevel::HIGH );
+        /* User controlled pin */
+        CS->setMode( Drive::OUTPUT_PUSH_PULL, false );
+        CS->setState( State::HIGH );
       }
       else
       {
-        /*------------------------------------------------
-  User supplied nothing. This is the pin described in defaults.cpp
-  -------------------------------------------------*/
-        CS->mode( PinMode::ALT_PP, PinPull::PULLUP );
+        /* Peripheral controlled pin */
+        CS->setMode( Drive::ALTERNATE_PUSH_PULL, true );
+        CS->setState( State::HIGH );
       }
-
-      hardwareStatus.gpio_enabled = true;
     }
     else
     {
-      MISO->mode( PinMode::ALT_PP, PinPull::PULLUP );
-      MOSI->mode( PinMode::ALT_OD, PinPull::PULLUP );
-      SCK->mode( PinMode::ALT_OD, PinPull::PULLUP );
-      CS->mode( PinMode::ALT_OD, PinPull::PULLUP );
-
-      hardwareStatus.gpio_enabled = true;
+      MISO->setMode( Drive::ALTERNATE_PUSH_PULL, true );
+      MOSI->setMode( Drive::ALTERNATE_OPEN_DRAIN, true );
+      SCK->setMode( Drive::ALTERNATE_OPEN_DRAIN, true );
+      CS->setMode( Drive::ALTERNATE_OPEN_DRAIN, true );
     }
+
+    periphStatus.gpio_initialized = true;
   }
 
   void SPIClass::SPI_GPIO_DeInit()
@@ -1367,35 +1140,22 @@ again when unblocked.
     MOSI.reset( nullptr );
     MISO.reset( nullptr );
     CS.reset( nullptr );
-
-    if ( externalCS )
-    {
-      externalCS.reset();
-    }
   }
 
   void SPIClass::SPI_Init()
   {
     SPI_EnableClock();
+    assert( HAL_SPI_Init( &spi_handle ) == HAL_OK );
 
-    if ( HAL_SPI_Init( &spi_handle ) != HAL_OK )
-    {
-      BasicErrorHandler( logError( "Failed SPI Init" ) );
-    }
-
-    hardwareStatus.spi_enabled = true;
+    periphStatus.spi_initialized = true;
   }
 
   void SPIClass::SPI_DeInit()
   {
-    if ( HAL_SPI_DeInit( &spi_handle ) != HAL_OK )
-    {
-      BasicErrorHandler( logError( "Failed SPI DeInit" ) );
-    }
-
+    assert( HAL_SPI_DeInit( &spi_handle ) == HAL_OK );
     SPI_DisableClock();
 
-    hardwareStatus.spi_enabled = false;
+    periphStatus.spi_initialized = false;
   }
 
   void SPIClass::SPI_EnableClock()
@@ -1420,12 +1180,12 @@ again when unblocked.
     HAL_NVIC_SetPriority( ITSettingsHW.IRQn, ITSettingsHW.preemptPriority, ITSettingsHW.subPriority );
     HAL_NVIC_EnableIRQ( ITSettingsHW.IRQn );
 
-    if ( rxMode == Modes::INTERRUPT )
+    if ( rxMode == Chimera::Hardware::SubPeripheralMode::INTERRUPT )
     {
       __HAL_SPI_ENABLE_IT( &spi_handle, SPI_IT_RXNE );
     }
 
-    hardwareStatus.spi_interrupts_enabled = true;
+    periphStatus.spi_interrupts_enabled = true;
   }
 
   void SPIClass::SPI_DisableInterrupts()
@@ -1435,52 +1195,66 @@ again when unblocked.
     HAL_NVIC_ClearPendingIRQ( ITSettingsHW.IRQn );
     HAL_NVIC_DisableIRQ( ITSettingsHW.IRQn );
 
-    hardwareStatus.spi_interrupts_enabled = false;
+    periphStatus.spi_interrupts_enabled = false;
   }
 
-  void SPIClass::SPI_DMA_Init( const SubPeripheral &periph )
+  void SPIClass::SPI_DMA_Init( const Chimera::Hardware::SubPeripheral periph )
   {
-    if ( periph == SubPeripheral::TX )
+    if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
+      /*------------------------------------------------
+      Perform all the low level initialization
+      ------------------------------------------------*/
       SPI_DMA_EnableClock();
-
-      if ( HAL_DMA_Init( &hdma_spi_tx ) != HAL_OK )
-      {
-        BasicErrorHandler( logError( "Failed TX Modes::DMA Init" ) );
-      }
-
+      assert( HAL_DMA_Init( &hdma_spi_tx ) == HAL_OK );
       __HAL_LINKDMA( &spi_handle, hdmatx, hdma_spi_tx );
 
-      spiDMAManager.attachCallback_TXDMA( spi_channel, boost::bind( &SPIClass::IRQHandler_TXDMA, this ) );
-
-      SPI_DMA_EnableInterrupts( periph );
-
-      hardwareStatus.dma_enabled_tx = true;
-    }
-    else if ( periph == SubPeripheral::RX )
-    {
-      SPI_DMA_EnableClock();
-
-      if ( HAL_DMA_Init( &hdma_spi_rx ) != HAL_OK )
+      /*------------------------------------------------
+      Bind the class specific DMA interrupt handler to the
+      hardware peripheral DMA TX request signal.
+      ------------------------------------------------*/
+      if ( dmaTXReqSig != Thor::DMA::Source::NONE )
       {
-        BasicErrorHandler( logError( "Failed RX Modes::DMA Init. Check Init settings." ) );
+        Thor::DMA::requestHandlers[ dmaTXReqSig ] = boost::bind( &SPIClass::IRQHandler_TXDMA, this );
       }
 
+      /*------------------------------------------------
+      Now that the handler has been bound, we are ready to consume interrupts
+      ------------------------------------------------*/
+      SPI_DMA_EnableInterrupts( periph );
+      periphStatus.dma_enabled_tx = true;
+    }
+    else if ( periph == Chimera::Hardware::SubPeripheral::RX )
+    {
+      /*------------------------------------------------
+      Perform all the low level initialization
+      ------------------------------------------------*/
+      SPI_DMA_EnableClock();
+      assert( HAL_DMA_Init( &hdma_spi_rx ) != HAL_OK );
       __HAL_LINKDMA( &spi_handle, hdmarx, hdma_spi_rx );
 
-      spiDMAManager.attachCallback_RXDMA( spi_channel, boost::bind( &SPIClass::IRQHandler_RXDMA, this ) );
+      /*------------------------------------------------
+      Bind the class specific DMA interrupt handler to the
+      hardware peripheral DMA RX request signal.
+      ------------------------------------------------*/
+      if ( dmaRXReqSig != Thor::DMA::Source::NONE )
+      {
+        Thor::DMA::requestHandlers[ dmaRXReqSig ] = boost::bind( &SPIClass::IRQHandler_RXDMA, this );
+      }
 
+      /*------------------------------------------------
+      Now that the handler has been bound, we are ready to consume interrupts
+      ------------------------------------------------*/
       SPI_DMA_EnableInterrupts( periph );
-
-      hardwareStatus.dma_enabled_rx = true;
+      periphStatus.dma_enabled_rx = true;
     }
   }
 
-  void SPIClass::SPI_DMA_DeInit( const SubPeripheral &periph )
+  void SPIClass::SPI_DMA_DeInit( const Chimera::Hardware::SubPeripheral periph )
   {
-    if ( periph == SubPeripheral::TX )
+    if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
-      if ( !hardwareStatus.dma_enabled_tx )
+      if ( !periphStatus.dma_enabled_tx )
       {
         return;
       }
@@ -1488,13 +1262,13 @@ again when unblocked.
       HAL_DMA_Abort( spi_handle.hdmatx );
       HAL_DMA_DeInit( spi_handle.hdmatx );
       SPI_DMA_DisableInterrupts( periph );
-      spiDMAManager.removeCallback_TXDMA( spi_channel );
+      Thor::DMA::requestHandlers[ dmaTXReqSig ].clear();
 
-      hardwareStatus.dma_enabled_tx = false;
+      periphStatus.dma_enabled_tx = false;
     }
-    else if ( periph == SubPeripheral::RX )
+    else if ( periph == Chimera::Hardware::SubPeripheral::RX )
     {
-      if ( !hardwareStatus.dma_enabled_rx )
+      if ( !periphStatus.dma_enabled_rx )
       {
         return;
       }
@@ -1502,323 +1276,78 @@ again when unblocked.
       HAL_DMA_Abort( spi_handle.hdmarx );
       HAL_DMA_DeInit( spi_handle.hdmarx );
       SPI_DMA_DisableInterrupts( periph );
-      spiDMAManager.removeCallback_RXDMA( spi_channel );
+      Thor::DMA::requestHandlers[ dmaRXReqSig ].clear();
 
-      hardwareStatus.dma_enabled_rx = false;
+      periphStatus.dma_enabled_rx = false;
     }
   }
 
-  void SPIClass::SPI_DMA_EnableInterrupts( const SubPeripheral &periph )
+  void SPIClass::SPI_DMA_EnableInterrupts( const Chimera::Hardware::SubPeripheral periph )
   {
-    if ( periph == SubPeripheral::TX )
+    if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
       HAL_NVIC_DisableIRQ( ITSettings_DMA_TX.IRQn );
       HAL_NVIC_ClearPendingIRQ( ITSettings_DMA_TX.IRQn );
       HAL_NVIC_SetPriority( ITSettings_DMA_TX.IRQn, ITSettings_DMA_TX.preemptPriority, ITSettings_DMA_TX.subPriority );
       HAL_NVIC_EnableIRQ( ITSettings_DMA_TX.IRQn );
 
-      hardwareStatus.dma_interrupts_enabled_tx = true;
+      periphStatus.dma_interrupts_enabled_tx = true;
     }
-    else if ( periph == SubPeripheral::RX )
+    else if ( periph == Chimera::Hardware::SubPeripheral::RX )
     {
       HAL_NVIC_DisableIRQ( ITSettings_DMA_RX.IRQn );
       HAL_NVIC_ClearPendingIRQ( ITSettings_DMA_RX.IRQn );
       HAL_NVIC_SetPriority( ITSettings_DMA_RX.IRQn, ITSettings_DMA_RX.preemptPriority, ITSettings_DMA_RX.subPriority );
       HAL_NVIC_EnableIRQ( ITSettings_DMA_RX.IRQn );
 
-      hardwareStatus.dma_interrupts_enabled_rx = true;
+      periphStatus.dma_interrupts_enabled_rx = true;
     }
   }
 
-  void SPIClass::SPI_DMA_DisableInterrupts( const SubPeripheral &periph )
+  void SPIClass::SPI_DMA_DisableInterrupts( const Chimera::Hardware::SubPeripheral periph )
   {
-    if ( periph == SubPeripheral::TX )
+    if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
       HAL_NVIC_ClearPendingIRQ( ITSettings_DMA_TX.IRQn );
       HAL_NVIC_DisableIRQ( ITSettings_DMA_TX.IRQn );
 
-      hardwareStatus.dma_interrupts_enabled_tx = false;
+      periphStatus.dma_interrupts_enabled_tx = false;
     }
-    else if ( periph == SubPeripheral::RX )
+    else if ( periph == Chimera::Hardware::SubPeripheral::RX )
     {
       HAL_NVIC_ClearPendingIRQ( ITSettings_DMA_RX.IRQn );
       HAL_NVIC_DisableIRQ( ITSettings_DMA_RX.IRQn );
 
-      hardwareStatus.dma_interrupts_enabled_rx = false;
+      periphStatus.dma_interrupts_enabled_rx = false;
     }
-  }
-
-#ifdef USING_FREERTOS
-  void SPIClass::attachThreadTrigger( const Thor::Interrupt::Trigger &trig, const SemaphoreHandle_t *const semphr )
-  {
-    // spiTaskTrigger.attachEventConsumer(trig, semphr);
-  }
-
-  void SPIClass::removeThreadTrigger( const SemaphoreHandle_t *const semphr )
-  {
-    // spiTaskTrigger.removeEventConsumer(trig);
-  }
-#endif
-
-  ChimeraSPI::ChimeraSPI( const int &channel )
-  {
-    this->channel = channel;
-    spi           = SPIClass::create( channel );
-
-    conversionError = false;
-  }
-
-  Chimera::SPI::Status ChimeraSPI::init( const Chimera::SPI::Setup &setupStruct )
-  {
-    Chimera::SPI::Status initResult = Chimera::SPI::Status::ERROR;
-
-    /*------------------------------------------------
-  Convert the setup configuration and attempt to initialize the hardware
-  -------------------------------------------------*/
-    Thor::Peripheral::SPI::Config cfg = convertInitSettings( setupStruct );
-
-    if ( conversionError )
-    {
-      initResult = Chimera::SPI::Status::FAILED_CONVERSION;
-    }
-    else if ( spi->begin( cfg, false ) == Thor::Status::PERIPH_OK )
-    {
-      initResult = Chimera::SPI::Status::OK;
-    }
-    else
-    {
-      initResult = Chimera::SPI::Status::FAILED_INITIALIZATION;
-    }
-
-    return initResult;
-  }
-
-  Thor::Peripheral::SPI::Config ChimeraSPI::convertInitSettings( const Chimera::SPI::Setup &setup )
-  {
-    bool error = false;
-    Thor::Peripheral::SPI::Config cfg;
-
-    /*------------------------------------------------
-  Convert over all the GPIO configuration info
-  -------------------------------------------------*/
-    if ( setup.SCK.port != Chimera::GPIO::Port::UNKNOWN_PORT )
-    {
-      cfg.SCK = ChimeraGPIO::convertPinInit( setup.SCK );
-    }
-
-    if ( setup.MOSI.port != Chimera::GPIO::Port::UNKNOWN_PORT )
-    {
-      cfg.MOSI = ChimeraGPIO::convertPinInit( setup.MOSI );
-    }
-
-    if ( setup.MISO.port != Chimera::GPIO::Port::UNKNOWN_PORT )
-    {
-      cfg.MISO = ChimeraGPIO::convertPinInit( setup.MISO );
-    }
-
-    if ( setup.CS.port != Chimera::GPIO::Port::UNKNOWN_PORT )
-    {
-      cfg.CS = ChimeraGPIO::convertPinInit( setup.CS );
-    }
-
-    /*------------------------------------------------
-  Convert the hardware parameters
-  -------------------------------------------------*/
-    cfg.settings                   = Defaults::SPI::dflt_SPI_Init;
-    cfg.settings.Mode              = convertMode( setup.mode, &error );
-    cfg.settings.DataSize          = convertDataSize( setup.dataSize, &error );
-    cfg.settings.FirstBit          = convertBitOrder( setup.bitOrder, &error );
-    cfg.settings.CLKPhase          = convertClockPhase( setup.clockMode, &error );
-    cfg.settings.CLKPolarity       = convertClockPolarity( setup.clockMode, &error );
-    cfg.settings.BaudRatePrescaler = convertBaudRatePrescaler( channel, setup.clockFrequency, &error );
-
-    conversionError = error;
-
-    return cfg;
-  }
-
-  uint32_t ChimeraSPI::convertMode( const Chimera::SPI::Mode &mode, bool *const error )
-  {
-    uint32_t result = 0u;
-
-    switch ( mode )
-    {
-      case Chimera::SPI::Mode::MASTER:
-        result = SPI_MODE_MASTER;
-        break;
-
-      case Chimera::SPI::Mode::SLAVE:
-        result = SPI_MODE_SLAVE;
-        break;
-
-      default:
-        result = 0u;
-        *error = true;
-        break;
-    };
-
-    return result;
-  }
-
-  uint32_t ChimeraSPI::convertDataSize( const Chimera::SPI::DataSize &size, bool *const error )
-  {
-    uint32_t result = 0u;
-
-    switch ( size )
-    {
-      case Chimera::SPI::DataSize::SZ_8BIT:
-        result = SPI_DATASIZE_8BIT;
-        break;
-
-      case Chimera::SPI::DataSize::SZ_16BIT:
-        result = SPI_DATASIZE_16BIT;
-        break;
-
-      default:
-        result = 0u;
-        *error = true;
-        break;
-    };
-
-    return result;
-  }
-
-  uint32_t ChimeraSPI::convertBitOrder( const Chimera::SPI::BitOrder &order, bool *const error )
-  {
-    uint32_t result = 0u;
-
-    switch ( order )
-    {
-      case Chimera::SPI::BitOrder::LSB_FIRST:
-        result = SPI_FIRSTBIT_LSB;
-        break;
-
-      case Chimera::SPI::BitOrder::MSB_FIRST:
-        result = SPI_FIRSTBIT_MSB;
-        break;
-
-      default:
-        result = 0u;
-        *error = true;
-        break;
-    };
-
-    return result;
-  }
-
-  uint32_t ChimeraSPI::convertClockPhase( const Chimera::SPI::ClockMode &mode, bool *const error )
-  {
-    uint32_t result = 0u;
-
-    switch ( mode )
-    {
-      case Chimera::SPI::ClockMode::MODE0:
-      case Chimera::SPI::ClockMode::MODE2:
-        result = SPI_PHASE_1EDGE;
-        break;
-
-      case Chimera::SPI::ClockMode::MODE1:
-      case Chimera::SPI::ClockMode::MODE3:
-        result = SPI_PHASE_2EDGE;
-        break;
-
-      default:
-        result = 0u;
-        *error = true;
-        break;
-    };
-
-    return result;
-  }
-
-  uint32_t ChimeraSPI::convertClockPolarity( const Chimera::SPI::ClockMode &mode, bool *const error )
-  {
-    uint32_t result = 0u;
-
-    switch ( mode )
-    {
-      case Chimera::SPI::ClockMode::MODE0:
-      case Chimera::SPI::ClockMode::MODE1:
-        result = SPI_POLARITY_LOW;
-        break;
-
-      case Chimera::SPI::ClockMode::MODE2:
-      case Chimera::SPI::ClockMode::MODE3:
-        result = SPI_POLARITY_HIGH;
-        break;
-
-      default:
-        result = 0u;
-        *error = true;
-        break;
-    };
-
-    return result;
-  }
-
-  uint32_t ChimeraSPI::convertBaudRatePrescaler( const int &channel, const uint32_t &freq, bool *const error )
-  {
-    return SPIClass::getPrescaler( channel, freq );
-  }
-
-  Thor::SPI::ChipSelectMode ChimeraSPI::convertChipSelectMode( const Chimera::SPI::ChipSelectMode &mode, bool *const error )
-  {
-    Thor::SPI::ChipSelectMode result = Thor::SPI::ChipSelectMode::UNKNOWN_CS_MODE;
-
-    switch ( mode )
-    {
-      case Chimera::SPI::ChipSelectMode::MANUAL:
-        result = Thor::SPI::ChipSelectMode::MANUAL;
-        break;
-
-      case Chimera::SPI::ChipSelectMode::AUTO_AFTER_TRANSFER:
-        result = Thor::SPI::ChipSelectMode::AUTO_AFTER_TRANSFER;
-        break;
-
-      case Chimera::SPI::ChipSelectMode::AUTO_BETWEEN_TRANSFER:
-        result = Thor::SPI::ChipSelectMode::AUTO_BETWEEN_TRANSFER;
-        break;
-
-      default:
-        result = Thor::SPI::ChipSelectMode::UNKNOWN_CS_MODE;
-        *error = true;
-        break;
-    };
-
-    return result;
   }
 
 }    // namespace Thor::SPI
 
 void HAL_SPI_TxCpltCallback( SPI_HandleTypeDef *hspi )
 {
+  using namespace Chimera::GPIO;
+  using namespace Chimera::SPI;
+  
   /*------------------------------------------------
-Determine which object actually triggered this callback
--------------------------------------------------*/
-  const SPIClass_sPtr &spi = getSPIClassRef( hspi->Instance );
+  Determine which object actually triggered this callback
+  -------------------------------------------------*/
+  auto spi = getSPIClassRef( hspi->Instance );
 
-  if ( spi && spi->hardwareStatus.spi_enabled && ( spi->spi_channel < NUM_CHANNELS ) )
+  if ( spi )
   {
-    const int channel = spi->spi_channel;
+    spi->transfer_complete = true;
 
-    channelState[ channel ].transfer_error    = false;
-    channelState[ channel ].transfer_complete = true;
-
-    if ( channelState[ channel ].auto_disable_cs )
+    if ( spi->chipSelectMode != ChipSelectMode::MANUAL )
     {
-      spi->setChipSelect( LogicLevel::HIGH );
-    }
-
-    if ( channelState[ channel ].auto_unlock )
-    {
-      spi->unlock();
+      spi->setChipSelect( State::HIGH );
     }
 
     /*------------------------------------------------
-Notify event occurred
--------------------------------------------------*/
+    Notify event occurred
+    -------------------------------------------------*/
 #if defined( USING_FREERTOS )
-    spiTaskTrigger.logEvent( TX_COMPLETE, &spiTaskTrigger );
+    //spiTaskTrigger.logEvent( TX_COMPLETE, &spiTaskTrigger );
 #endif
   }
 }
@@ -1829,33 +1358,28 @@ void HAL_SPI_RxCpltCallback( SPI_HandleTypeDef *hspi )
 
 void HAL_SPI_TxRxCpltCallback( SPI_HandleTypeDef *hspi )
 {
+  using namespace Chimera::GPIO;
+  using namespace Chimera::SPI;
+  
   /*------------------------------------------------
-Determine which object actually triggered this callback
--------------------------------------------------*/
-  const SPIClass_sPtr &spi = getSPIClassRef( hspi->Instance );
+  Determine which object actually triggered this callback
+  -------------------------------------------------*/
+  auto spi = getSPIClassRef( hspi->Instance );
 
-  if ( spi && spi->hardwareStatus.spi_enabled && ( spi->spi_channel < NUM_CHANNELS ) )
+  if ( spi )
   {
-    const int channel = spi->spi_channel;
+    spi->transfer_complete = true;
 
-    channelState[ channel ].transfer_error    = false;
-    channelState[ channel ].transfer_complete = true;
-
-    if ( channelState[ channel ].auto_disable_cs )
+    if ( spi->chipSelectMode != ChipSelectMode::MANUAL )
     {
-      spi->setChipSelect( LogicLevel::HIGH );
-    }
-
-    if ( channelState[ channel ].auto_unlock )
-    {
-      spi->unlock();
+      spi->setChipSelect( State::HIGH );
     }
 
     /*------------------------------------------------
-Notify event occurred
--------------------------------------------------*/
+    Notify event occurred
+    -------------------------------------------------*/
 #if defined( USING_FREERTOS )
-    spiTaskTrigger.logEvent( TXRX_COMPLETE, &spiTaskTrigger );
+    //spiTaskTrigger.logEvent( TX_COMPLETE, &spiTaskTrigger );
 #endif
   }
 }
@@ -1874,37 +1398,6 @@ void HAL_SPI_TxRxHalfCpltCallback( SPI_HandleTypeDef *hspi )
 
 void HAL_SPI_ErrorCallback( SPI_HandleTypeDef *hspi )
 {
-  /*------------------------------------------------
-Determine which object actually triggered this callback
--------------------------------------------------*/
-  const SPIClass_sPtr &spi = getSPIClassRef( hspi->Instance );
-
-  const bool enabled      = spi->hardwareStatus.spi_enabled;
-  const bool validChannel = ( spi->spi_channel < NUM_CHANNELS );
-  const int channel       = spi->spi_channel;
-
-  if ( spi && enabled && validChannel )
-  {
-    channelState[ channel ].transfer_error    = true;
-    channelState[ channel ].transfer_complete = true;
-
-    if ( channelState[ channel ].auto_disable_cs )
-    {
-      spi->setChipSelect( LogicLevel::HIGH );
-    }
-
-    if ( channelState[ channel ].auto_unlock )
-    {
-      spi->unlock();
-    }
-
-    /*------------------------------------------------
-Notify event occurred
--------------------------------------------------*/
-#if defined( USING_FREERTOS )
-    spiTaskTrigger.logEvent( TRANSFER_ERROR, &spiTaskTrigger );
-#endif
-  }
 }
 
 void SPI1_IRQHandler()
@@ -1954,5 +1447,3 @@ void SPI6_IRQHandler()
     spiObjects[ 6 ]->IRQHandler();
   }
 }
-
-#endif 

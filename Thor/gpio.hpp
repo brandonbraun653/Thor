@@ -62,11 +62,11 @@ namespace Thor::GPIO
     void GPIO_ClockDisable( Thor::GPIO::PinPort port );
   };
 
-  extern const PinNum convertPinNum( const uint8_t num );
-  extern const PinPort convertPort( const Chimera::GPIO::Port port );
-  extern const PinMode convertDrive( const Chimera::GPIO::Drive drive );
-  extern const PinPull convertPull( const Chimera::GPIO::Pull pull );
-  extern const Initializer convertPinInit( const Chimera::GPIO::PinInit &pin );
+  extern PinNum convertPinNum( const uint8_t num );
+  extern PinPort convertPort( const Chimera::GPIO::Port port );
+  extern PinMode convertDrive( const Chimera::GPIO::Drive drive );
+  extern PinPull convertPull( const Chimera::GPIO::Pull pull );
+  extern Initializer convertPinInit( const Chimera::GPIO::PinInit &pin );
 }    // namespace Thor::GPIO
 
 

@@ -36,10 +36,6 @@ namespace Thor
 #endif
     } };
 
-    SerialClass::SerialClass( const uint16_t bufferSize ) : bSize( bufferSize )
-    {
-    }
-
     Chimera::Status_t SerialClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
@@ -53,13 +49,13 @@ namespace Thor
         -------------------------------------------------*/
         if ( ch2Periph[ channel ].ON_UART )
         {
-          auto tmp     = UARTClass::create( ch2Periph[ channel ].peripheral_number, bSize );
+          auto tmp     = std::make_shared<UARTClass>();
           serialObject = std::static_pointer_cast<Chimera::Serial::Interface, UARTClass>( tmp );
         }
         else
         {
-          auto tmp     = USARTClass::create( ch2Periph[ channel ].peripheral_number, bSize );
-          serialObject = std::static_pointer_cast<Chimera::Serial::Interface, USARTClass>( tmp );
+//          auto tmp     = USARTClass::create( ch2Periph[ channel ].peripheral_number, bSize );
+//          serialObject = std::static_pointer_cast<Chimera::Serial::Interface, USARTClass>( tmp );
         }
 
         /*------------------------------------------------
@@ -98,7 +94,7 @@ namespace Thor
       return serialObject->setBaud( baud );
     }
 
-    Chimera::Status_t SerialClass::setMode( const Chimera::Serial::SubPeripheral periph, const Chimera::Serial::Modes mode )
+    Chimera::Status_t SerialClass::setMode( const Chimera::Hardware::SubPeripheral periph, const Chimera::Serial::Modes mode )
     {
       return serialObject->setMode( periph, mode );
     }
@@ -113,9 +109,14 @@ namespace Thor
       return serialObject->read( buffer, length, timeout_mS );
     }
 
-    Chimera::Status_t SerialClass::flush( const Chimera::Serial::SubPeripheral periph )
+    Chimera::Status_t SerialClass::flush( const Chimera::Hardware::SubPeripheral periph )
     {
       return serialObject->flush( periph );
+    }
+
+    void SerialClass::postISRProcessing()
+    {
+      serialObject->postISRProcessing();
     }
 
     Chimera::Status_t SerialClass::readAsync( uint8_t *const buffer, const size_t len )
@@ -124,24 +125,25 @@ namespace Thor
     }
 
 #if defined( USING_FREERTOS )
-    Chimera::Status_t SerialClass::attachEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr )
+    Chimera::Status_t SerialClass::attachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr )
     {
-      return serialObject->attachEventNotifier( event, semphr );
+      return serialObject->attachNotifier( event, semphr );
     }
 
-    Chimera::Status_t SerialClass::removeEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr )
+    Chimera::Status_t SerialClass::detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr )
     {
-      return serialObject->removeEventNotifier( event, semphr );
+      return serialObject->detachNotifier( event, semphr );
     }
 #endif
 
-    Chimera::Status_t SerialClass::enableBuffering( const Chimera::Serial::SubPeripheral periph,
-                                                    boost::circular_buffer<uint8_t> *const buffer )
+    Chimera::Status_t SerialClass::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
+                                               boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
+                                               const uint32_t hwBufferSize )
     {
-      return serialObject->enableBuffering( periph, buffer );
+      return serialObject->enableBuffering( periph, userBuffer, hwBuffer, hwBufferSize );
     }
 
-    Chimera::Status_t SerialClass::disableBuffering( const Chimera::Serial::SubPeripheral periph )
+    Chimera::Status_t SerialClass::disableBuffering( const Chimera::Hardware::SubPeripheral periph )
     {
       return serialObject->disableBuffering( periph );
     }

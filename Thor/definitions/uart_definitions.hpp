@@ -15,6 +15,11 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Thor Includes */
+#include <Thor/headers.hpp>
+
+
+
 namespace Thor::UART
 {
   constexpr uint8_t MAX_UART_CHANNELS = 4;

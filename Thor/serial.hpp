@@ -34,8 +34,6 @@ namespace Thor::Serial
     SerialClass()  = default;
     ~SerialClass() = default;
 
-    SerialClass( const uint16_t bufferSize );
-
     Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 
     Chimera::Status_t begin( const Chimera::Serial::Modes txMode, const Chimera::Serial::Modes rxMode ) final override;
@@ -48,26 +46,29 @@ namespace Thor::Serial
 
     Chimera::Status_t setBaud( const uint32_t baud ) final override;
 
-    Chimera::Status_t setMode( const Chimera::Serial::SubPeripheral periph, const Chimera::Serial::Modes mode ) final override;
+    Chimera::Status_t setMode( const Chimera::Hardware::SubPeripheral periph, const Chimera::Serial::Modes mode ) final override;
 
     Chimera::Status_t write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS = 500 ) final override;
 
     Chimera::Status_t read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS = 500 ) final override;
 
-    Chimera::Status_t flush( const Chimera::Serial::SubPeripheral periph ) final override;
+    Chimera::Status_t flush( const Chimera::Hardware::SubPeripheral periph ) final override;
+
+    void postISRProcessing() final override;
 
     Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
 
 #if defined( USING_FREERTOS )
-    Chimera::Status_t attachEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr ) final override;
+    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
 
-    Chimera::Status_t removeEventNotifier( const Chimera::Serial::Event event, SemaphoreHandle_t *const semphr ) final override;
+    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
 #endif
 
-    Chimera::Status_t enableBuffering( const Chimera::Serial::SubPeripheral periph,
-                                       boost::circular_buffer<uint8_t> *const buffer ) final override;
+    Chimera::Status_t enableBuffering( const Chimera::Hardware::SubPeripheral periph,
+                                               boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
+                                               const uint32_t hwBufferSize ) final override;
 
-    Chimera::Status_t disableBuffering( const Chimera::Serial::SubPeripheral periph ) final override;
+    Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph ) final override;
 
     bool available( size_t *const bytes = nullptr ) final override;
 

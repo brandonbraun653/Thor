@@ -15,11 +15,13 @@
 #include <Thor/definitions/interrupt_definitions.hpp>
 #include <Thor/defaults/serial_defaults.hpp>
 
-using namespace Thor::DMA;
 using namespace Thor::Interrupt;
 
 namespace Thor::Serial
 {
+  /*------------------------------------------------
+  Peripheral Configuration Defaults
+  ------------------------------------------------*/
 #if defined( USART1 )
 #if defined( STM32F767xx ) || defined( STM32F446xx )
   static const SerialConfig usart1Config = {

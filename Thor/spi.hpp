@@ -36,7 +36,6 @@ extern "C"
 }
 #endif
 
-#if 0
 namespace Thor::SPI
 {
   class SPIClass : public Chimera::SPI::Interface
@@ -44,14 +43,16 @@ namespace Thor::SPI
   public:
     SPIClass();
     ~SPIClass();
+    
+    SPIClass( SPIClass *var );
 
-    Chimera::Status_t init( const Chimera::SPI::Setup &setupStruct ) final override;
+    Chimera::Status_t init( const Chimera::SPI::Setup &setup ) final override;
 
     Chimera::Status_t deInit() final override;
 
-    Chimera::Status_t setChipSelect( const Chimera::GPIO::State &value ) final override;
+    Chimera::Status_t setChipSelect( const Chimera::GPIO::State value ) final override;
 
-    Chimera::Status_t setChipSelectControlMode( const Chimera::SPI::ChipSelectMode &mode ) final override;
+    Chimera::Status_t setChipSelectControlMode( const Chimera::SPI::ChipSelectMode mode ) final override;
 
     Chimera::Status_t writeBytes( const uint8_t *const txBuffer, const size_t length, const uint32_t timeoutMS ) final override;
 
@@ -60,35 +61,28 @@ namespace Thor::SPI
     Chimera::Status_t readWriteBytes( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length,
                                       const uint32_t timeoutMS ) final override;
 
-    Chimera::Status_t setPeripheralMode( const Chimera::SPI::SubPeripheral periph,
-                                         const Chimera::SPI::SubPeripheralMode mode ) final override;
+    Chimera::Status_t setPeripheralMode( const Chimera::Hardware::SubPeripheral periph,
+                                         const Chimera::Hardware::SubPeripheralMode mode ) final override;
 
     Chimera::Status_t setClockFrequency( const uint32_t freq, const uint32_t tolerance ) final override;
 
     Chimera::Status_t getClockFrequency( uint32_t &freq ) final override;
 
-    Chimera::Status_t onWriteCompleteCallback( const Chimera::Function::void_func_uint32_t func ) final override;
+    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger_t event, volatile uint8_t *const notifier ) final override;
 
-    Chimera::Status_t onReadCompleteCallback( const Chimera::Function::void_func_uint32_t func ) final override;
+    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger_t event, volatile uint8_t *const notifier ) final override;
 
-    Chimera::Status_t onReadWriteCompleteCallback( const Chimera::Function::void_func_uint32_t func ) final override;
+    Chimera::Status_t attachCallback( const Chimera::Event::Trigger_t trigger,
+                                      const Chimera::Function::void_func_void func ) final override;
 
-    Chimera::Status_t onErrorCallback( const Chimera::Function::void_func_uint32_t func ) final override;
+    Chimera::Status_t detachCallback( const Chimera::Event::Trigger_t trigger ) final override;
 
+#if defined( USING_FREERTOS )
+    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
 
-    /**
-     *  A factory method to create a new SPIClass object
-     *
-     *	This method intentionally replaces the typical constructor for the purpose of allowing
-     *	the SPI ISR handlers to deduce at runtime which class generated the interrupt. The new
-     *	object is internally registered with a static vector that keeps track of this.
-     *
-     *	@param[in] channel      Hardware SPI peripheral channel number (i.e. 1 for SPI1, 2 for SPI2, etc)
-     *	@return const SPIClass_sPtr&
-     */
-    static const Chimera::SPI::SPIClass_sPtr& create( const uint8_t channel );
-
-
+    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
+#endif
+    
     /**
      *  Normal interrupt based ISR handler
      *
@@ -121,39 +115,34 @@ namespace Thor::SPI
 
     Chimera::Status_t transfer_blocking( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length, const uint32_t timeoutMS );
 
-    Chimera::Status_t transfer_interrupt( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length );
+    Chimera::Status_t transfer_interrupt( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length, const uint32_t timeoutMS );
 
-    Chimera::Status_t transfer_dma( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length );
-
+    Chimera::Status_t transfer_dma( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length, const uint32_t timeoutMS );
+    
   private:
-    /**
-     *  @brief Construct a new SPIClass object
-     *
-     * 	This is kept private so users properly manage the class object with
-     *  shared_ptr instances.
-     * 	The public constructor is Thor::Peripheral::SPI::SPIClass::create.
-     *
-     *  @param[in]	channel 	Which hardware peripheral to control with the class
-     */
-    SPIClass( const uint8_t channel );
 
-    bool alternateCS;
-    uint8_t spi_channel;
+    bool hardwareChipSelect;    /**< If true, the chip select line is controlled by the SPI peripheral */
+    uint8_t spi_channel;        /**< The hardware channel this class is bound to */
+    
+    uint8_t dmaRXReqSig;
+    uint8_t dmaTXReqSig;
 
     Chimera::SPI::ChipSelectMode chipSelectMode;
-    Chimera::SPI::SubPeripheralMode txMode;
-    Chimera::SPI::SubPeripheralMode rxMode;
+    Chimera::Hardware::SubPeripheralMode txMode;
+    Chimera::Hardware::SubPeripheralMode rxMode;
 
-    struct SPIClassStatus
+    volatile bool transfer_complete = false;
+
+    struct SPIStatus
     {
-      bool gpio_enabled              = false;
-      bool spi_enabled               = false;
+      bool gpio_initialized          = false;
+      bool spi_initialized           = false;
       bool spi_interrupts_enabled    = false;
       bool dma_enabled_tx            = false;
       bool dma_enabled_rx            = false;
       bool dma_interrupts_enabled_tx = false;
       bool dma_interrupts_enabled_rx = false;
-    } hardwareStatus;
+    } periphStatus;
 
     SPI_HandleTypeDef spi_handle;
     DMA_HandleTypeDef hdma_spi_tx;
@@ -163,10 +152,10 @@ namespace Thor::SPI
     Thor::Interrupt::Initializer ITSettings_DMA_TX;
     Thor::Interrupt::Initializer ITSettings_DMA_RX;
 
-    Thor::GPIO::GPIOClass_sPtr externalCS;
-    Thor::GPIO::GPIOClass_sPtr MOSI, MISO, SCK, CS;
-
-    void resetISRFlags();
+    Thor::GPIO::GPIOClass_uPtr MOSI;
+    Thor::GPIO::GPIOClass_uPtr MISO;
+    Thor::GPIO::GPIOClass_uPtr SCK;
+    Thor::GPIO::GPIOClass_uPtr CS;
 
     void SPI_GPIO_Init();
     void SPI_GPIO_DeInit();
@@ -179,12 +168,11 @@ namespace Thor::SPI
     void SPI_EnableInterrupts();
     void SPI_DisableInterrupts();
 
-    void SPI_DMA_Init( const Chimera::SPI::SubPeripheral periph );
-    void SPI_DMA_DeInit( const Chimera::SPI::SubPeripheral periph );
-    void SPI_DMA_EnableInterrupts( const Chimera::SPI::SubPeripheral periph );
-    void SPI_DMA_DisableInterrupts( const Chimera::SPI::SubPeripheral periph );
+    void SPI_DMA_Init( const Chimera::Hardware::SubPeripheral periph );
+    void SPI_DMA_DeInit( const Chimera::Hardware::SubPeripheral periph );
+    void SPI_DMA_EnableInterrupts( const Chimera::Hardware::SubPeripheral periph );
+    void SPI_DMA_DisableInterrupts( const Chimera::Hardware::SubPeripheral periph );
   };
 }    // namespace Thor::SPI
-#endif 
 
 #endif /* SPI_H_*/
