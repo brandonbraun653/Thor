@@ -54,6 +54,7 @@ static constexpr uint32_t EVENT_BIT_TX_COMPLETE = 1u << 1;
 /*------------------------------------------------
 Local Functions Declarations
 ------------------------------------------------*/
+static constexpr bool isChannelSupported( const uint8_t channel );
 static void UART4ISRPostProcessor( void *argument );
 static void UART5ISRPostProcessor( void *argument );
 static void UART7ISRPostProcessor( void *argument );
@@ -132,10 +133,8 @@ namespace Thor::UART
     dmaRXReqSig = Thor::DMA::Source::NONE;
     dmaTXReqSig = Thor::DMA::Source::NONE;
 
-#if defined( USING_FREERTOS )
     rxCompleteWakeup = nullptr;
     txCompleteWakeup = nullptr;
-#endif
 
 #if defined( GMOCK_TEST )
     if ( !STM32HAL_Mock::uartMockObj )
@@ -152,45 +151,74 @@ namespace Thor::UART
 
   Chimera::Status_t UARTClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
   {
-    asyncRXDataSize = 0;
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
-    /*------------------------------------------------
-    Assign the default handle settings
-    ------------------------------------------------*/
-    uartObjects[ channel ] = this;
-    uart_channel           = channel;
-    uart_handle.Init       = dflt_UART_Init;
-    uart_handle.Instance   = const_cast<USART_TypeDef *>( hwConfig[ uart_channel ]->instance );
+    if ( !isChannelSupported( channel ) )
+    {
+      error             = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      hardware_assigned = false;
+    }
+    else
+    {
+      asyncRXDataSize = 0;
+
+      /*------------------------------------------------
+      Assign the default handle settings
+      ------------------------------------------------*/
+      uartObjects[ channel ] = this;
+      uart_channel           = channel;
+      uart_handle.Init       = dflt_UART_Init;
+      uart_handle.Instance   = const_cast<USART_TypeDef *>( hwConfig[ uart_channel ]->instance );
 
 #if defined( STM32F7 )
-    uart_handle.AdvancedInit = Defaults::Serial::dflt_UART_AdvInit;
+      uart_handle.AdvancedInit = Defaults::Serial::dflt_UART_AdvInit;
 #endif
 
-    /*------------------------------------------------
-    Copy over the interrupt settings information
-    ------------------------------------------------*/
-    ITSettings_HW     = hwConfig[ uart_channel ]->IT_HW;
-    ITSettings_DMA_TX = hwConfig[ uart_channel ]->dmaIT_TX;
-    ITSettings_DMA_RX = hwConfig[ uart_channel ]->dmaIT_RX;
+      /*------------------------------------------------
+      Copy over the interrupt settings information
+      ------------------------------------------------*/
+      ITSettings_HW     = hwConfig[ uart_channel ]->IT_HW;
+      ITSettings_DMA_TX = hwConfig[ uart_channel ]->dmaIT_TX;
+      ITSettings_DMA_RX = hwConfig[ uart_channel ]->dmaIT_RX;
 
-    dmaTXReqSig = Thor::Serial::DMATXRequestSignal[ uart_channel ];
-    dmaRXReqSig = Thor::Serial::DMARXRequestSignal[ uart_channel ];
+      dmaTXReqSig = Thor::Serial::DMATXRequestSignal[ uart_channel ];
+      dmaRXReqSig = Thor::Serial::DMARXRequestSignal[ uart_channel ];
 
-    /*------------------------------------------------
-    Initialize the GPIO pins
-    ------------------------------------------------*/
-    tx_pin = std::make_shared<Thor::GPIO::GPIOClass>();
-    tx_pin->initAdvanced( Thor::GPIO::convertPort( pins.tx.port ), Thor::GPIO::convertPinNum( pins.tx.pin ),
-                          PinSpeed::ULTRA_SPD, pins.tx.alternate );
+      /*------------------------------------------------
+      Initialize the GPIO pins
+      ------------------------------------------------*/
+      const auto tx_port    = Thor::GPIO::convertPort( pins.tx.port );
+      const auto tx_pin_num = Thor::GPIO::convertPinNum( pins.tx.pin );
 
-    rx_pin = std::make_shared<Thor::GPIO::GPIOClass>();
-    rx_pin->initAdvanced( Thor::GPIO::convertPort( pins.rx.port ), Thor::GPIO::convertPinNum( pins.rx.pin ),
-                          PinSpeed::ULTRA_SPD, pins.rx.alternate );
+      if ( !tx_port || ( tx_pin_num == PinNum::NOT_A_PIN ) )
+      {
+        error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      }
+      else
+      {
+        tx_pin = std::make_shared<Thor::GPIO::GPIOClass>();
+        tx_pin->initAdvanced( tx_port, tx_pin_num, PinSpeed::ULTRA_SPD, pins.tx.alternate );
+      }
 
-    UART_GPIO_Init();
+      const auto rx_port    = Thor::GPIO::convertPort( pins.rx.port );
+      const auto rx_pin_num = Thor::GPIO::convertPinNum( pins.rx.pin );
 
-    hardware_assigned = true;
-    return Chimera::CommonStatusCodes::OK;
+      if ( !rx_port || ( rx_pin_num == PinNum::NOT_A_PIN ) )
+      {
+        error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      }
+      else
+      {
+        rx_pin = std::make_shared<Thor::GPIO::GPIOClass>();
+        rx_pin->initAdvanced( rx_port, rx_pin_num, PinSpeed::ULTRA_SPD, pins.rx.alternate );
+      }
+
+      UART_GPIO_Init();
+
+      hardware_assigned = true;
+    }
+    
+    return error;
   }
 
   Chimera::Status_t UARTClass::begin( const Modes txMode, const Modes rxMode )
@@ -381,7 +409,7 @@ namespace Thor::UART
     if ( cached_event & EVENT_BIT_TX_COMPLETE )
     {
       event_bits &= ~EVENT_BIT_TX_COMPLETE;
-      
+
       tx_complete = true;
 
       /*------------------------------------------------
@@ -416,7 +444,7 @@ namespace Thor::UART
     else if ( cached_event & EVENT_BIT_RX_COMPLETE )
     {
       event_bits &= ~EVENT_BIT_RX_COMPLETE;
-      
+
       if ( rxMode == Modes::INTERRUPT )
       {
         if ( AUTO_ASYNC_RX )
@@ -492,7 +520,6 @@ namespace Thor::UART
       }
     }
   }
-
 
   Chimera::Status_t UARTClass::readAsync( uint8_t *const buffer, const size_t len )
   {
@@ -814,9 +841,9 @@ namespace Thor::UART
     Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
 
     /* clang-format off */
-      if ( ( length <= rxBuffers.internalSize )
-        && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
-      { /* clang-format on */
+    if ( ( length <= rxBuffers.internalSize )
+      && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+    { /* clang-format on */
       /*------------------------------------------------
       Let the ISR handler know that we explicitely asked to receive some data.
       This will cause a redirect into the correct ISR handling control flow.
@@ -850,9 +877,9 @@ namespace Thor::UART
     Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
 
     /* clang-format off */
-      if ( length <= rxBuffers.internalSize 
-        && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
-      { /* clang-format on */
+    if ( ( length <= rxBuffers.internalSize )
+      && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+    { /* clang-format on */
       /*------------------------------------------------
       Let the ISR handler know that we explicitely asked to receive some data.
       This will cause a redirect into the correct handling channels.
@@ -910,10 +937,10 @@ namespace Thor::UART
     Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
 
     /* clang-format off */
-      if ( txBuffers.initialized()
-        && PeripheralState.tx_buffering_enabled 
-        && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
-      { /* clang-format on */
+    if ( txBuffers.initialized()
+      && PeripheralState.tx_buffering_enabled 
+      && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+    { /* clang-format on */
       if ( tx_complete )
       {
         /*------------------------------------------------
@@ -1468,7 +1495,7 @@ void HAL_UART_RxCpltCallback( UART_HandleTypeDef *UartHandle )
   if ( uart )
   {
     uart->event_bits |= EVENT_BIT_RX_COMPLETE;
-    
+
     /*------------------------------------------------
     Wake up and immediately switch to the user-land ISR
     handler thread. Should be a very high priority thread.
@@ -1616,6 +1643,11 @@ static UARTClass *const getUARTClassRef( USART_TypeDef *const instance )
       break;
   };
 };
+
+static constexpr bool isChannelSupported( const uint8_t channel )
+{
+  return ( ( channel == 4 ) || ( channel == 5 ) || ( channel == 7 ) || ( channel == 8 ) );
+}
 
 static void UART4ISRPostProcessor( void *argument )
 {
