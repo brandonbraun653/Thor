@@ -47,8 +47,8 @@ extern "C"
 /*------------------------------------------------
 Stores references to available SPIClass objects
 -------------------------------------------------*/
-//static Thor::SPI::SPIClass_sPtr spiObjects[ Thor::SPI::MAX_SPI_CHANNELS + 1 ];
-static Thor::SPI::SPIClass* spiObjects[ Thor::SPI::MAX_SPI_CHANNELS + 1 ];
+// static Thor::SPI::SPIClass_sPtr spiObjects[ Thor::SPI::MAX_SPI_CHANNELS + 1 ];
+static Thor::SPI::SPIClass *spiObjects[ Thor::SPI::MAX_SPI_CHANNELS + 1 ];
 
 /*------------------------------------------------
 Directly maps the HAL SPI Instance pointer to a possible SPIClass object
@@ -287,15 +287,14 @@ namespace Thor::SPI
 {
   SPIClass::SPIClass( SPIClass *var )
   {
-    
   }
 
   SPIClass::SPIClass()
   {
-    hardwareChipSelect  = false;
-    transfer_complete   = true;
-    spi_handle.Init     = dflt_SPI_Init;
-    
+    hardwareChipSelect = false;
+    transfer_complete  = true;
+    spi_handle.Init    = dflt_SPI_Init;
+
     hdma_spi_tx.Init = dflt_DMA_Init_TX;
     hdma_spi_rx.Init = dflt_DMA_Init_RX;
 
@@ -655,6 +654,7 @@ namespace Thor::SPI
   Chimera::Status_t SPIClass::setClockFrequency( const uint32_t freq, const uint32_t tolerance )
   {
     // TODO
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
   Chimera::Status_t SPIClass::getClockFrequency( uint32_t &freq )
@@ -733,7 +733,7 @@ namespace Thor::SPI
           -------------------------------------------------*/
           setPeripheralMode( SubPeripheral::RX, txMode );
         }
-        
+
         stm32Error = HAL_SPI_TransmitReceive( &spi_handle, const_cast<uint8_t *>( rxBuffer ), const_cast<uint8_t *>( rxBuffer ),
                                               length, timeoutMS );
       }
@@ -778,7 +778,8 @@ namespace Thor::SPI
     return error;
   }
 
-  Chimera::Status_t SPIClass::transfer_interrupt( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length, const uint32_t timeoutMS )
+  Chimera::Status_t SPIClass::transfer_interrupt( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length,
+                                                  const uint32_t timeoutMS )
   {
     using namespace Chimera::SPI;
     using namespace Chimera::GPIO;
@@ -813,7 +814,7 @@ namespace Thor::SPI
       else
       {
         if ( rxMode != txMode )
-        { 
+        {
           /*------------------------------------------------
           In order for TransmitReceive to work, both subperipherals must be in the
           same mode. This will silently clobber previous settings.
@@ -822,7 +823,7 @@ namespace Thor::SPI
         }
 
         stm32Error = HAL_SPI_TransmitReceive_IT( &spi_handle, const_cast<uint8_t *>( txBuffer ),
-                                                  const_cast<uint8_t *>( rxBuffer ), length );
+                                                 const_cast<uint8_t *>( rxBuffer ), length );
       }
 
       /*------------------------------------------------
@@ -849,7 +850,8 @@ namespace Thor::SPI
     return error;
   }
 
-  Chimera::Status_t SPIClass::transfer_dma( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length, const uint32_t timeoutMS )
+  Chimera::Status_t SPIClass::transfer_dma( const uint8_t *const txBuffer, uint8_t *const rxBuffer, const size_t length,
+                                            const uint32_t timeoutMS )
   {
     using namespace Chimera::SPI;
     using namespace Chimera::GPIO;
@@ -1324,11 +1326,12 @@ namespace Thor::SPI
 
 }    // namespace Thor::SPI
 
+#if !defined( GMOCK_TEST )
 void HAL_SPI_TxCpltCallback( SPI_HandleTypeDef *hspi )
 {
   using namespace Chimera::GPIO;
   using namespace Chimera::SPI;
-  
+
   /*------------------------------------------------
   Determine which object actually triggered this callback
   -------------------------------------------------*/
@@ -1347,7 +1350,7 @@ void HAL_SPI_TxCpltCallback( SPI_HandleTypeDef *hspi )
     Notify event occurred
     -------------------------------------------------*/
 #if defined( USING_FREERTOS )
-    //spiTaskTrigger.logEvent( TX_COMPLETE, &spiTaskTrigger );
+    // spiTaskTrigger.logEvent( TX_COMPLETE, &spiTaskTrigger );
 #endif
   }
 }
@@ -1360,7 +1363,7 @@ void HAL_SPI_TxRxCpltCallback( SPI_HandleTypeDef *hspi )
 {
   using namespace Chimera::GPIO;
   using namespace Chimera::SPI;
-  
+
   /*------------------------------------------------
   Determine which object actually triggered this callback
   -------------------------------------------------*/
@@ -1379,7 +1382,7 @@ void HAL_SPI_TxRxCpltCallback( SPI_HandleTypeDef *hspi )
     Notify event occurred
     -------------------------------------------------*/
 #if defined( USING_FREERTOS )
-    //spiTaskTrigger.logEvent( TX_COMPLETE, &spiTaskTrigger );
+    // spiTaskTrigger.logEvent( TX_COMPLETE, &spiTaskTrigger );
 #endif
   }
 }
@@ -1399,6 +1402,7 @@ void HAL_SPI_TxRxHalfCpltCallback( SPI_HandleTypeDef *hspi )
 void HAL_SPI_ErrorCallback( SPI_HandleTypeDef *hspi )
 {
 }
+#endif /* !GMOCK_TEST */
 
 void SPI1_IRQHandler()
 {

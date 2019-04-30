@@ -54,8 +54,8 @@ namespace Thor
         }
         else
         {
-//          auto tmp     = USARTClass::create( ch2Periph[ channel ].peripheral_number, bSize );
-//          serialObject = std::static_pointer_cast<Chimera::Serial::Interface, USARTClass>( tmp );
+          auto tmp     = std::make_shared<USARTClass>();
+          serialObject = std::static_pointer_cast<Chimera::Serial::Interface, USARTClass>( tmp );
         }
 
         /*------------------------------------------------

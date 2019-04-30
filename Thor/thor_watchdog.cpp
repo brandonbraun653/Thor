@@ -309,6 +309,9 @@ namespace Thor
 
     Chimera::Status_t IndependentWatchdog::pauseOnDebugHalt( const bool enable )
     {
+#if defined( SIM )
+
+#else
       if ( enable )
       {
         __HAL_DBGMCU_FREEZE_IWDG();
@@ -317,7 +320,8 @@ namespace Thor
       {
         __HAL_DBGMCU_UNFREEZE_IWDG();
       }
-
+#endif
+      
       return Chimera::CommonStatusCodes::OK;
     }
 #endif /* !IWDG */

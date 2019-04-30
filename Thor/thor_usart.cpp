@@ -33,6 +33,19 @@ extern "C"
 }
 #endif
 
+/* FreeRTOS Includes */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#include "FreeRTOS.h"
+#include "semphr.h"
+
+#ifdef __cplusplus
+}
+#endif
+
 /* Mock Includes */
 #if defined( GMOCK_TEST )
 #include "mock_stm32_hal_usart.hpp"

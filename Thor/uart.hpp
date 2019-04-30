@@ -93,12 +93,12 @@ namespace Thor::UART
     /*------------------------------------------------
     Allows the C STM32 HAL and ISR functions access this class
     ------------------------------------------------*/
-    friend void(::HAL_UART_TxCpltCallback )( UART_HandleTypeDef *UsartHandle );
-    friend void(::HAL_UART_RxCpltCallback )( UART_HandleTypeDef *UsartHandle );
-    friend void(::UART4_IRQHandler )( void );
-    friend void(::UART5_IRQHandler )( void );
-    friend void(::UART7_IRQHandler )( void );
-    friend void(::UART8_IRQHandler )( void );
+    friend void( ::HAL_UART_TxCpltCallback )( UART_HandleTypeDef *UsartHandle );
+    friend void( ::HAL_UART_RxCpltCallback )( UART_HandleTypeDef *UsartHandle );
+    friend void( ::UART4_IRQHandler )( void );
+    friend void( ::UART5_IRQHandler )( void );
+    friend void( ::UART7_IRQHandler )( void );
+    friend void( ::UART8_IRQHandler )( void );
 
     int uart_channel;              /**< Numerical representation of the UART instance, zero is invalid */
     bool tx_complete       = true; /**< Indicates if a transmission has been completed */
