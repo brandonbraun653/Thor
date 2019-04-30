@@ -36,6 +36,17 @@ namespace Thor
 #endif
     } };
 
+    SerialClass::SerialClass()
+    {
+      serialChannel = 0u;
+
+      /*------------------------------------------------
+      Make sure the behavior is disabled until the user calls assignHW()
+      ------------------------------------------------*/
+      auto tmp = std::make_shared<Chimera::Serial::SerialUnsupported>();
+      serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Chimera::Serial::SerialUnsupported>( tmp );
+    }
+
     Chimera::Status_t SerialClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
@@ -65,8 +76,11 @@ namespace Thor
       }
       else
       {
-        serialObject = nullptr;
-        result       = Chimera::CommonStatusCodes::FAIL;
+        /*------------------------------------------------
+        Leave the serialObject as-is since it is initialized
+        to "disabled" in the class ctor
+        ------------------------------------------------*/
+        result = Chimera::CommonStatusCodes::FAIL;
       }
 
       return result;
@@ -137,8 +151,8 @@ namespace Thor
 #endif
 
     Chimera::Status_t SerialClass::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
-                                               boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
-                                               const uint32_t hwBufferSize )
+                                                    boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
+                                                    const uint32_t hwBufferSize )
     {
       return serialObject->enableBuffering( periph, userBuffer, hwBuffer, hwBufferSize );
     }

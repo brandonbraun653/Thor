@@ -166,7 +166,7 @@ namespace Thor::USART
 
     if ( !isChannelSupported( channel ) )
     {
-      error = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      error             = Chimera::CommonStatusCodes::NOT_SUPPORTED;
       hardware_assigned = false;
     }
     else
@@ -233,6 +233,8 @@ namespace Thor::USART
 
   Chimera::Status_t USARTClass::begin( const Modes txMode, const Modes rxMode )
   {
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
     /*------------------------------------------------
     Register the ISR post processor thread
     ------------------------------------------------*/
@@ -247,10 +249,13 @@ namespace Thor::USART
     /*------------------------------------------------
     Transition to the desired user operating mode
     ------------------------------------------------*/
-    setMode( Chimera::Hardware::SubPeripheral::TX, txMode );
-    setMode( Chimera::Hardware::SubPeripheral::RX, rxMode );
+    error = setMode( Chimera::Hardware::SubPeripheral::TX, txMode );
+    if ( error == Chimera::CommonStatusCodes::OK )
+    {
+      error = setMode( Chimera::Hardware::SubPeripheral::RX, rxMode );
+    }
 
-    return Chimera::CommonStatusCodes::OK;
+    return error;
   }
 
   Chimera::Status_t USARTClass::end()
@@ -1044,6 +1049,9 @@ namespace Thor::USART
   {
     /* Global DMA Clock options. Only turn on capability is
     provided due to other peripherals possibly using DMA. */
+
+#if defined( SIM )
+#else
     if ( __DMA1_IS_CLK_DISABLED() )
     {
       __DMA1_CLK_ENABLE();
@@ -1053,6 +1061,7 @@ namespace Thor::USART
     {
       __DMA2_CLK_ENABLE();
     }
+#endif /* SIM */
   }
 
   void USARTClass::USART_EnableInterrupts()
@@ -1072,7 +1081,10 @@ namespace Thor::USART
       In interrupt mode, we have to handle the RX FIFO on a byte by byte
       basis otherwise an overrun error is generated.
       ------------------------------------------------*/
+#if defined( SIM )
+#else
       __HAL_USART_ENABLE_IT( &usart_handle, USART_IT_RXNE );
+#endif /* SIM */
     }
 
     PeripheralState.interrupts_enabled = true;
@@ -1080,8 +1092,11 @@ namespace Thor::USART
 
   void USARTClass::USART_DisableInterrupts()
   {
+#if defined( SIM )
+#else
     __HAL_USART_DISABLE_IT( &usart_handle, USART_IT_IDLE );
     __HAL_USART_DISABLE_IT( &usart_handle, USART_IT_RXNE );
+#endif /* SIM */
 
     HAL_NVIC_DisableIRQ( ITSettings_HW.IRQn );
     HAL_NVIC_ClearPendingIRQ( ITSettings_HW.IRQn );
