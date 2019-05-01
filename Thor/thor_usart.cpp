@@ -107,37 +107,46 @@ namespace Thor::USART
   inline void USART_EnableIT_IDLE( USART_HandleTypeDef *const UsartHandle )
   {
     USART_ClearIT_IDLE( UsartHandle );
+
+#if defined( SIM )
+#else
     __HAL_USART_ENABLE_IT( UsartHandle, USART_IT_IDLE );
+#endif /* SIM */
   }
 
   inline void USART_DisableIT_IDLE( USART_HandleTypeDef *const UsartHandle )
   {
     USART_ClearIT_IDLE( UsartHandle );
+#if defined( SIM )
+#else
     __HAL_USART_DISABLE_IT( UsartHandle, USART_IT_IDLE );
+#endif /* SIM */
   }
 
   USARTClass::USARTClass()
   {
+    using namespace Chimera::Hardware;
+
     /*------------------------------------------------
     Register the mode change function pointers
     ------------------------------------------------*/
-    modeChangeFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ]  = &USARTClass::setBlockingMode;
-    modeChangeFuncPtrs[ static_cast<uint8_t>( Modes::INTERRUPT ) ] = &USARTClass::setInterruptMode;
-    modeChangeFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ]       = &USARTClass::setDMAMode;
+    modeChangeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::BLOCKING ) ]  = &USARTClass::setBlockingMode;
+    modeChangeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::INTERRUPT ) ] = &USARTClass::setInterruptMode;
+    modeChangeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::DMA ) ]       = &USARTClass::setDMAMode;
 
     /*------------------------------------------------
     Register the read function pointers
     ------------------------------------------------*/
-    readFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ]  = &USARTClass::readBlocking;
-    readFuncPtrs[ static_cast<uint8_t>( Modes::INTERRUPT ) ] = &USARTClass::readInterrupt;
-    readFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ]       = &USARTClass::readDMA;
+    readFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::BLOCKING ) ]  = &USARTClass::readBlocking;
+    readFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::INTERRUPT ) ] = &USARTClass::readInterrupt;
+    readFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::DMA ) ]       = &USARTClass::readDMA;
 
     /*------------------------------------------------
     Register the write function pointers
     ------------------------------------------------*/
-    writeFuncPtrs[ static_cast<uint8_t>( Modes::BLOCKING ) ]  = &USARTClass::writeBlocking;
-    writeFuncPtrs[ static_cast<uint8_t>( Modes::INTERRUPT ) ] = &USARTClass::writeInterrupt;
-    writeFuncPtrs[ static_cast<uint8_t>( Modes::DMA ) ]       = &USARTClass::writeDMA;
+    writeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::BLOCKING ) ]  = &USARTClass::writeBlocking;
+    writeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::INTERRUPT ) ] = &USARTClass::writeInterrupt;
+    writeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::DMA ) ]       = &USARTClass::writeDMA;
 
     AUTO_ASYNC_RX = false;
 
@@ -146,6 +155,9 @@ namespace Thor::USART
 
     rxCompleteWakeup = nullptr;
     txCompleteWakeup = nullptr;
+
+    txMode = Chimera::Hardware::SubPeripheralMode::UNKNOWN_MODE;
+    rxMode = Chimera::Hardware::SubPeripheralMode::UNKNOWN_MODE;
 
 #if defined( GMOCK_TEST )
     if ( !STM32HAL_Mock::usartMockObj )
@@ -166,8 +178,8 @@ namespace Thor::USART
 
     if ( !isChannelSupported( channel ) )
     {
-      error             = Chimera::CommonStatusCodes::NOT_SUPPORTED;
-      hardware_assigned = false;
+      error                             = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      PeripheralState.hardware_assigned = false;
     }
     else
     {
@@ -225,26 +237,18 @@ namespace Thor::USART
       }
 
       USART_GPIO_Init();
-      hardware_assigned = true;
+      PeripheralState.hardware_assigned = true;
     }
 
     return error;
   }
 
-  Chimera::Status_t USARTClass::begin( const Modes txMode, const Modes rxMode )
+  Chimera::Status_t USARTClass::begin( const Chimera::Hardware::SubPeripheralMode txMode,
+                                       const Chimera::Hardware::SubPeripheralMode rxMode )
   {
+    using namespace Chimera::Hardware;
+
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
-
-    /*------------------------------------------------
-    Register the ISR post processor thread
-    ------------------------------------------------*/
-    if ( isrPPThread[ usart_channel ] )
-    {
-      isrPPWakeup[ usart_channel ] = xSemaphoreCreateBinary();
-      isrPPHandle[ usart_channel ] = nullptr;
-
-      Chimera::Threading::addThread( isrPPThread[ usart_channel ], "", 500, NULL, 5, &isrPPHandle[ usart_channel ] );
-    }
 
     /*------------------------------------------------
     Transition to the desired user operating mode
@@ -255,19 +259,32 @@ namespace Thor::USART
       error = setMode( Chimera::Hardware::SubPeripheral::RX, rxMode );
     }
 
+    /*------------------------------------------------
+    Register the ISR post processor thread
+    ------------------------------------------------*/
+    if ( ( error == Chimera::CommonStatusCodes::OK ) && isrPPThread[ usart_channel ] )
+    {
+      isrPPWakeup[ usart_channel ] = xSemaphoreCreateBinary();
+      isrPPHandle[ usart_channel ] = nullptr;
+
+      Chimera::Threading::addThread( isrPPThread[ usart_channel ], "", 500, NULL, 5, &isrPPHandle[ usart_channel ] );
+    }
+
     return error;
   }
 
   Chimera::Status_t USARTClass::end()
   {
+    using namespace Chimera::Hardware;
+
     USART_DeInit();
     USART_GPIO_DeInit();
     USART_DisableInterrupts();
     USART_DMA_DeInit( Chimera::Hardware::SubPeripheral::TX );
     USART_DMA_DeInit( Chimera::Hardware::SubPeripheral::RX );
 
-    txMode = Modes::MODE_UNDEFINED;
-    rxMode = Modes::MODE_UNDEFINED;
+    txMode = SubPeripheralMode::UNKNOWN_MODE;
+    rxMode = SubPeripheralMode::UNKNOWN_MODE;
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -278,7 +295,7 @@ namespace Thor::USART
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
-    if ( !hardware_assigned )
+    if ( !PeripheralState.hardware_assigned )
     {
       error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
     }
@@ -310,7 +327,7 @@ namespace Thor::USART
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
-    if ( !hardware_assigned )
+    if ( !PeripheralState.hardware_assigned )
     {
       error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
     }
@@ -333,22 +350,55 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::setMode( const Chimera::Hardware::SubPeripheral periph, const Modes mode )
+  Chimera::Status_t USARTClass::setMode( const Chimera::Hardware::SubPeripheral periph,
+                                         const Chimera::Hardware::SubPeripheralMode mode )
   {
+    using namespace Chimera::Hardware;
+
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
     auto iter               = static_cast<uint8_t>( mode );
 
-    if ( !hardware_assigned )
+    /*------------------------------------------------
+    Only bother changing modes if we currently aren't there
+    ------------------------------------------------*/
+    if ( !( ( ( periph == SubPeripheral::TX ) && ( txMode == mode ) ) ||
+            ( ( periph == SubPeripheral::RX ) && ( rxMode == mode ) ) ) )
     {
-      error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
-    }
-    else if ( iter >= modeChangeFuncPtrs.size() )
-    {
-      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
-    }
-    else
-    {
-      ( this->*( modeChangeFuncPtrs[ iter ] ) )( periph );
+      /*------------------------------------------------
+      No matter what, the hardware must be assigned, configured, and transitioning to a valid mode.
+      ------------------------------------------------*/
+      if ( iter >= modeChangeFuncPtrs.size() )
+      {
+        error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      }
+      else if ( !PeripheralState.hardware_assigned || !PeripheralState.configured )
+      {
+        error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      }
+
+      /*------------------------------------------------
+      Validate the buffering initialization if transitioning to asynchronous mode
+      ------------------------------------------------*/
+      if ( ( periph == SubPeripheral::TX ) &&
+           ( ( mode == SubPeripheralMode::INTERRUPT ) || ( mode == SubPeripheralMode::DMA ) ) &&
+           !PeripheralState.tx_buffering_enabled )
+      {
+        error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      }
+      else if ( ( periph == SubPeripheral::RX ) &&
+                ( ( mode == SubPeripheralMode::INTERRUPT ) || ( mode == SubPeripheralMode::DMA ) ) &&
+                !PeripheralState.rx_buffering_enabled )
+      {
+        error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      }
+
+      /*------------------------------------------------
+      Assuming all our checks "check out", we can switch modes
+      ------------------------------------------------*/
+      if ( error == Chimera::CommonStatusCodes::OK )
+      {
+        ( this->*( modeChangeFuncPtrs[ iter ] ) )( periph );
+      }
     }
 
     return error;
@@ -359,11 +409,11 @@ namespace Thor::USART
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
     auto iter               = static_cast<uint8_t>( txMode );
 
-    if ( !PeripheralState.gpio_enabled || !PeripheralState.enabled )
+    if ( !PeripheralState.gpio_enabled || !PeripheralState.configured )
     {
       error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
     }
-    else if ( iter >= modeChangeFuncPtrs.size() )
+    else if ( iter >= writeFuncPtrs.size() )
     {
       error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
     }
@@ -380,7 +430,7 @@ namespace Thor::USART
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
     auto iter               = static_cast<uint8_t>( rxMode );
 
-    if ( !PeripheralState.gpio_enabled || !PeripheralState.enabled )
+    if ( !PeripheralState.gpio_enabled || !PeripheralState.configured )
     {
       error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
     }
@@ -418,6 +468,8 @@ namespace Thor::USART
 
   void USARTClass::postISRProcessing()
   {
+    using namespace Chimera::Hardware;
+
     const uint32_t cached_event = event_bits;
 
     if ( cached_event & EVENT_BIT_TX_COMPLETE )
@@ -459,7 +511,7 @@ namespace Thor::USART
     {
       event_bits &= ~EVENT_BIT_RX_COMPLETE;
 
-      if ( rxMode == Modes::INTERRUPT )
+      if ( rxMode == SubPeripheralMode::INTERRUPT )
       {
         if ( AUTO_ASYNC_RX )
         {
@@ -493,7 +545,7 @@ namespace Thor::USART
         ------------------------------------------------*/
         __HAL_USART_ENABLE_IT( &usart_handle, USART_IT_RXNE );
       }
-      else if ( rxMode == Modes::DMA )
+      else if ( rxMode == SubPeripheralMode::DMA )
       {
         /*------------------------------------------------
         Calculate how many bytes were received by looking at remaining RX buffer space.
@@ -733,12 +785,14 @@ namespace Thor::USART
 
   void USARTClass::setBlockingMode( const Chimera::Hardware::SubPeripheral periph )
   {
+    using namespace Chimera::Hardware;
+
     if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
-      txMode = Modes::BLOCKING;    // Must be set before the other functions
+      txMode = SubPeripheralMode::BLOCKING;    // Must be set before the other functions
 
       /* Make sure RX side isn't using interrupts before disabling */
-      if ( rxMode == Modes::BLOCKING )
+      if ( rxMode == SubPeripheralMode::BLOCKING )
       {
         USART_DisableInterrupts();
       }
@@ -747,10 +801,10 @@ namespace Thor::USART
     }
     else
     {
-      rxMode = Modes::BLOCKING;    // Must be set before the other functions
+      rxMode = SubPeripheralMode::BLOCKING;    // Must be set before the other functions
 
       /* Make sure TX side isn't using interrupts before disabling */
-      if ( txMode == Modes::BLOCKING )
+      if ( txMode == SubPeripheralMode::BLOCKING )
       {
         USART_DisableInterrupts();
       }
@@ -761,16 +815,18 @@ namespace Thor::USART
 
   void USARTClass::setInterruptMode( const Chimera::Hardware::SubPeripheral periph )
   {
+    using namespace Chimera::Hardware;
+
     if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
-      txMode = Modes::INTERRUPT;
+      txMode = SubPeripheralMode::INTERRUPT;
 
       USART_EnableInterrupts();
       USART_DMA_DeInit( periph );
     }
     else
     {
-      rxMode = Modes::INTERRUPT;
+      rxMode = SubPeripheralMode::INTERRUPT;
 
       USART_EnableInterrupts();
       USART_DMA_DeInit( periph );
@@ -779,16 +835,18 @@ namespace Thor::USART
 
   void USARTClass::setDMAMode( const Chimera::Hardware::SubPeripheral periph )
   {
+    using namespace Chimera::Hardware;
+
     if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
-      txMode = Modes::DMA;
+      txMode = SubPeripheralMode::DMA;
 
       USART_EnableInterrupts();
       USART_DMA_Init( periph );
     }
     else
     {
-      rxMode        = Modes::DMA;
+      rxMode        = SubPeripheralMode::DMA;
       AUTO_ASYNC_RX = true;
 
       USART_EnableInterrupts();
@@ -1013,36 +1071,48 @@ namespace Thor::USART
 
   Chimera::Status_t USARTClass::USART_Init()
   {
+    using namespace Chimera::Hardware;
+
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
     USART_EnableClock();
 
     if ( HAL_USART_Init( &usart_handle ) != HAL_OK )
     {
-      error = Chimera::CommonStatusCodes::FAIL;
+      error                      = Chimera::CommonStatusCodes::FAIL;
+      PeripheralState.configured = false;
     }
 
-    setMode( Chimera::Hardware::SubPeripheral::TX, Modes::BLOCKING );
-    setMode( Chimera::Hardware::SubPeripheral::RX, Modes::BLOCKING );
+    if ( error == Chimera::CommonStatusCodes::OK )
+    {
+      setMode( Chimera::Hardware::SubPeripheral::TX, SubPeripheralMode::BLOCKING );
+      setMode( Chimera::Hardware::SubPeripheral::RX, SubPeripheralMode::BLOCKING );
 
-    PeripheralState.enabled = true;
+      PeripheralState.configured = true;
+    }
     return error;
   }
 
   void USARTClass::USART_DeInit()
   {
     HAL_USART_DeInit( &usart_handle );
-    PeripheralState.enabled = false;
+    PeripheralState.configured = false;
   }
 
   void USARTClass::USART_EnableClock()
   {
+#if defined( SIM )
+#else
     *getUsartClockReg( usart_handle.Instance ) |= ( usartClockMask( usart_handle.Instance ) );
+#endif /* SIM */
   }
 
   void USARTClass::USART_DisableClock()
   {
+#if defined( SIM )
+#else
     *getUsartClockReg( usart_handle.Instance ) &= ~( usartClockMask( usart_handle.Instance ) );
+#endif /* SIM */
   }
 
   void USARTClass::USART_DMA_EnableClock()
@@ -1066,6 +1136,8 @@ namespace Thor::USART
 
   void USARTClass::USART_EnableInterrupts()
   {
+    using namespace Chimera::Hardware;
+
     HAL_NVIC_DisableIRQ( ITSettings_HW.IRQn );
     HAL_NVIC_ClearPendingIRQ( ITSettings_HW.IRQn );
     HAL_NVIC_SetPriority( ITSettings_HW.IRQn, ITSettings_HW.preemptPriority, ITSettings_HW.subPriority );
@@ -1075,7 +1147,7 @@ namespace Thor::USART
     Make sure we are able to asynchronously receive some data if it gets sent
     ------------------------------------------------*/
     AUTO_ASYNC_RX = true;
-    if ( rxMode == Modes::INTERRUPT )
+    if ( rxMode == SubPeripheralMode::INTERRUPT )
     {
       /*------------------------------------------------
       In interrupt mode, we have to handle the RX FIFO on a byte by byte
@@ -1253,12 +1325,15 @@ namespace Thor::USART
 #if defined( STM32F7 )
   void USARTClass::IRQHandler()
   {
+    using namespace Chimera::Hardware;
   }
 #endif
 
 #if defined( STM32F4 )
   void USARTClass::IRQHandler()
   {
+    using namespace Chimera::Hardware;
+
     /*------------------------------------------------
     Handle Asynchronous RX in Interrupt and DMA Mode:
     The user did not ask for data, but we got some anyways (cause we were listening)
@@ -1303,12 +1378,12 @@ namespace Thor::USART
           /*------------------------------------------------
           Buffer the received byte to our internal buffer
           ------------------------------------------------*/
-          if ( rxMode == Modes::INTERRUPT && ( asyncRXDataSize < rxBuffers.internalSize ) )
+          if ( rxMode == SubPeripheralMode::INTERRUPT && ( asyncRXDataSize < rxBuffers.internalSize ) )
           {
             rxBuffers.internal[ asyncRXDataSize ] = static_cast<uint8_t>( data_reg );
             asyncRXDataSize += 1u;
           }
-          else if ( rxMode != Modes::DMA )
+          else if ( rxMode != SubPeripheralMode::DMA )
           {
             // The receive buffer was full!!!! We lost data! Somehow set an error.
             // Probably should set this as Chimera thing.
@@ -1321,7 +1396,7 @@ namespace Thor::USART
       ------------------------------------------------*/
       if ( RX_LINE_IDLE && RX_LINE_IDLE_IE )
       {
-        if ( rxMode == Modes::INTERRUPT )
+        if ( rxMode == SubPeripheralMode::INTERRUPT )
         {
           /*------------------------------------------------
           Turn off the idle line interrupt so we aren't interrupted again

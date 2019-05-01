@@ -54,7 +54,8 @@ namespace Thor::UART
 
     Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 
-    Chimera::Status_t begin( const Chimera::Serial::Modes txMode, const Chimera::Serial::Modes rxMode ) final override;
+    Chimera::Status_t begin( const Chimera::Hardware::SubPeripheralMode txMode,
+                             const Chimera::Hardware::SubPeripheralMode rxMode ) final override;
 
     Chimera::Status_t end() final override;
 
@@ -65,7 +66,7 @@ namespace Thor::UART
     Chimera::Status_t setBaud( const uint32_t baud ) final override;
 
     Chimera::Status_t setMode( const Chimera::Hardware::SubPeripheral periph,
-                               const Chimera::Serial::Modes mode ) final override;
+                               const Chimera::Hardware::SubPeripheralMode mode ) final override;
 
     Chimera::Status_t write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS = 500 ) final override;
 
@@ -104,12 +105,12 @@ namespace Thor::UART
     bool tx_complete       = true; /**< Indicates if a transmission has been completed */
     bool rx_complete       = true; /**< Indicates if a reception has been completed */
     bool AUTO_ASYNC_RX     = true; /**< Enables/Disables asynchronous reception of data */
-    bool hardware_assigned = false;
+    
 
     volatile uint32_t event_bits = 0u; /* Tracks ISR events so we can respond to them */
 
-    Chimera::Serial::Modes txMode; /**< Logs which mode the TX peripheral is currently in */
-    Chimera::Serial::Modes rxMode; /**< Logs which mode the RX peripheral is currently in */
+    Chimera::Hardware::SubPeripheralMode txMode; /**< Logs which mode the TX peripheral is currently in */
+    Chimera::Hardware::SubPeripheralMode rxMode; /**< Logs which mode the RX peripheral is currently in */
 
     Chimera::Buffer::DoubleBuffer<UARTClass> txBuffers;
     Chimera::Buffer::DoubleBuffer<UARTClass> rxBuffers;
@@ -140,7 +141,8 @@ namespace Thor::UART
     struct UARTClassStatus
     {
       bool gpio_enabled              = false;
-      bool enabled                   = false;
+      bool hardware_assigned         = false;
+      bool configured                = false;
       bool tx_buffering_enabled      = false;
       bool rx_buffering_enabled      = false;
       bool dma_enabled_tx            = false;

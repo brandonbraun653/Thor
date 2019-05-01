@@ -11,11 +11,12 @@
 #ifndef THOR_HEADERS_HPP
 #define THOR_HEADERS_HPP
 
+/* Thor Includes */
 #include <Thor/preprocessor.hpp>
+#include <Thor/definitions/system_checks.hpp>
 
-#if defined( USING_CHIMERA )
+/* Chimera Includes */
 #include <Chimera/chimera.hpp>
-#endif
 
 #ifdef __cplusplus
 extern "C"
