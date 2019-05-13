@@ -25,20 +25,20 @@ namespace Thor
 {
   namespace Memory
   {
-    class InternalFlash : public Chimera::Modules::Memory::GenericInterface
+    class InternalFlash : public Chimera::Modules::Memory::Device
     {
     public:
       InternalFlash();
       ~InternalFlash();
 
-      Chimera::Status_t write( const uint32_t address, const uint8_t *const data, const uint32_t length ) final override;
+      Chimera::Status_t write( const size_t address, const uint8_t *const data, const size_t length ) final override;
 
-      Chimera::Status_t read( const uint32_t address, uint8_t *const data, const uint32_t length ) final override;
+      Chimera::Status_t read( const size_t address, uint8_t *const data, const size_t length ) final override;
 
       /**
        * Function deviates slightly from Chimera specification. See declaration.
        */
-      Chimera::Status_t erase( const uint32_t address, const uint32_t length ) final override;
+      Chimera::Status_t erase( const size_t address, const size_t length ) final override;
 
       Chimera::Status_t writeCompleteCallback( const Chimera::Function::void_func_uint32_t func ) final override;
 

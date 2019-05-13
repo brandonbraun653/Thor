@@ -24,17 +24,17 @@ namespace Thor
     {
     }
 
-    Chimera::Status_t InternalSRAM::write( const uint32_t address, const uint8_t *const data, const uint32_t length )
+    Chimera::Status_t InternalSRAM::write( const size_t address, const uint8_t *const data, const size_t length )
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
 
-    Chimera::Status_t InternalSRAM::read( const uint32_t address, uint8_t *const data, const uint32_t length )
+    Chimera::Status_t InternalSRAM::read( const size_t address, uint8_t *const data, const size_t length )
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
 
-    Chimera::Status_t InternalSRAM::erase( const uint32_t address, const uint32_t length )
+    Chimera::Status_t InternalSRAM::erase( const size_t address, const size_t length )
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }

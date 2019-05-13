@@ -28,7 +28,7 @@ namespace Thor
     {
     }
 
-    Chimera::Status_t InternalFlash::write( const uint32_t address, const uint8_t *const data, const uint32_t length )
+    Chimera::Status_t InternalFlash::write( const size_t address, const uint8_t *const data, const size_t length )
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
@@ -85,7 +85,7 @@ namespace Thor
       return error;
     }
 
-    Chimera::Status_t InternalFlash::read( const uint32_t address, uint8_t *const data, const uint32_t length )
+    Chimera::Status_t InternalFlash::read( const size_t address, uint8_t *const data, const size_t length )
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
@@ -107,8 +107,8 @@ namespace Thor
 
       return error;
     }
-    
-    Chimera::Status_t InternalFlash::erase( const uint32_t address, const uint32_t length )
+
+    Chimera::Status_t InternalFlash::erase( const size_t address, const size_t length )
     {
       /** 
        *  This function deviates from the Chimera spec in that the hardware makes it unwieldly 
