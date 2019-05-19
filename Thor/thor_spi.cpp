@@ -1146,16 +1146,23 @@ namespace Thor::SPI
 
   void SPIClass::SPI_Init()
   {
+    HAL_StatusTypeDef initResult;
+    
     SPI_EnableClock();
-    assert( HAL_SPI_Init( &spi_handle ) == HAL_OK );
+    initResult = HAL_SPI_Init( &spi_handle );
+
+    assert( initResult == HAL_OK );
 
     periphStatus.spi_initialized = true;
   }
 
   void SPIClass::SPI_DeInit()
   {
-    assert( HAL_SPI_DeInit( &spi_handle ) == HAL_OK );
+    HAL_StatusTypeDef deInitResult;
+    deInitResult = HAL_SPI_DeInit( &spi_handle );
     SPI_DisableClock();
+    
+    assert( deInitResult == HAL_OK );
 
     periphStatus.spi_initialized = false;
   }
@@ -1202,13 +1209,16 @@ namespace Thor::SPI
 
   void SPIClass::SPI_DMA_Init( const Chimera::Hardware::SubPeripheral periph )
   {
+    HAL_StatusTypeDef result = HAL_ERROR;
+    
     if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
       /*------------------------------------------------
       Perform all the low level initialization
       ------------------------------------------------*/
       SPI_DMA_EnableClock();
-      assert( HAL_DMA_Init( &hdma_spi_tx ) == HAL_OK );
+      result = HAL_DMA_Init( &hdma_spi_tx );
+      assert( result == HAL_OK );
       __HAL_LINKDMA( &spi_handle, hdmatx, hdma_spi_tx );
 
       /*------------------------------------------------
@@ -1232,7 +1242,8 @@ namespace Thor::SPI
       Perform all the low level initialization
       ------------------------------------------------*/
       SPI_DMA_EnableClock();
-      assert( HAL_DMA_Init( &hdma_spi_rx ) != HAL_OK );
+      result = HAL_DMA_Init( &hdma_spi_rx );
+      assert( result == HAL_OK );
       __HAL_LINKDMA( &spi_handle, hdmarx, hdma_spi_rx );
 
       /*------------------------------------------------

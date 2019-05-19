@@ -11,13 +11,6 @@ void SysTick_Handler( void )
 }
 #endif
 
-#if defined( USING_FREERTOS ) //&& !defined( USING_CHIMERA )
-void vApplicationTickHook( void )
-{
-  HAL_IncTick();
-}
-#endif
-
 /* Sets the clock to 216 MHz and maxes out the peripheral clocks */
 #if defined( STM32F767xx )
 void ThorSystemClockConfig()
