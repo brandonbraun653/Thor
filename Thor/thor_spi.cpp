@@ -289,7 +289,7 @@ namespace Thor::SPI
   {
   }
 
-  SPIClass::SPIClass()
+  SPIClass::SPIClass() : MOSI(nullptr), MISO(nullptr), SCK(nullptr), CS(nullptr)
   {
     hardwareChipSelect = false;
     transfer_complete  = true;
@@ -338,7 +338,7 @@ namespace Thor::SPI
 
       if ( ( pin != PinNum::NOT_A_PIN ) && port )
       {
-        MOSI = std::unique_ptr<Thor::GPIO::GPIOClass>( new Thor::GPIO::GPIOClass() );
+        MOSI = std::make_unique<Thor::GPIO::GPIOClass>();
         MOSI->initAdvanced( port, pin, PinSpeed::ULTRA_SPD, setup.MOSI.alternate );
       }
       else
@@ -354,7 +354,7 @@ namespace Thor::SPI
 
       if ( ( pin != PinNum::NOT_A_PIN ) && port )
       {
-        MISO = std::unique_ptr<Thor::GPIO::GPIOClass>( new Thor::GPIO::GPIOClass() );
+        MISO = std::make_unique<Thor::GPIO::GPIOClass>();
         MISO->initAdvanced( port, pin, PinSpeed::ULTRA_SPD, setup.MISO.alternate );
       }
       else
@@ -370,7 +370,7 @@ namespace Thor::SPI
 
       if ( ( pin != PinNum::NOT_A_PIN ) && port )
       {
-        SCK = std::unique_ptr<Thor::GPIO::GPIOClass>( new Thor::GPIO::GPIOClass() );
+        SCK = std::make_unique<Thor::GPIO::GPIOClass>();
         SCK->initAdvanced( port, pin, PinSpeed::ULTRA_SPD, setup.SCK.alternate );
       }
       else
@@ -386,7 +386,7 @@ namespace Thor::SPI
 
       if ( ( pin != PinNum::NOT_A_PIN ) && port )
       {
-        CS = std::unique_ptr<Thor::GPIO::GPIOClass>( new Thor::GPIO::GPIOClass() );
+        CS = std::make_unique<Thor::GPIO::GPIOClass>();
         CS->initAdvanced( port, pin, PinSpeed::ULTRA_SPD, setup.CS.alternate );
 
         if ( setup.CS.alternate )
