@@ -50,7 +50,7 @@ STM32
 #endif /* STM32 */
 
 #else
-#error Target Device Not Supported Yet
+#error No supported HAL driver found for STM32 devices
 #endif
 
 #if !defined( USE_FULL_LL_DRIVER ) && !defined( GMOCK_TEST )
