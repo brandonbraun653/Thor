@@ -58,10 +58,11 @@ namespace Thor::Serial
 
     Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
 
-
+#if defined( USING_FREERTOS )
     Chimera::Status_t attachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
 
     Chimera::Status_t detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
+#endif 
 
     Chimera::Status_t enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                                boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
