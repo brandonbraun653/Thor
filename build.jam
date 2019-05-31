@@ -88,7 +88,7 @@ project Thor : usage-requirements <include>$(thor_inc_dir) ;
 explicit_alias _RTOS : : <FreeRTOS>enabled : 
     :   <define>USING_FREERTOS
         <use>/FreeRTOS//PUB         # FreeRTOS headers
-        <use>/PRJ//FreeRTOS_CFG     # FreeRTOSConfig.h
+        <use>/PRJ//FREERTOS_CFG     # FreeRTOSConfig.h
     ;
 
 # ------------------------------------------
