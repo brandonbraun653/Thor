@@ -49,6 +49,8 @@ namespace Thor::SPI
     Chimera::Status_t init( const Chimera::SPI::Setup &setup ) final override;
 
     Chimera::Status_t deInit() final override;
+    
+    Chimera::SPI::Setup getInit() final override;
 
     Chimera::Status_t setChipSelect( const Chimera::GPIO::State value ) final override;
 
@@ -82,7 +84,7 @@ namespace Thor::SPI
 
     Chimera::Status_t detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
 #endif
-    
+
     /**
      *  Normal interrupt based ISR handler
      *
@@ -127,6 +129,7 @@ namespace Thor::SPI
     uint8_t dmaRXReqSig;
     uint8_t dmaTXReqSig;
 
+    Chimera::SPI::Setup cachedSetup;
     Chimera::SPI::ChipSelectMode chipSelectMode;
     Chimera::Hardware::SubPeripheralMode txMode;
     Chimera::Hardware::SubPeripheralMode rxMode;

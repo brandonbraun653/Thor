@@ -329,6 +329,7 @@ namespace Thor::SPI
     else
     {
       spi_channel = setup.channel;
+      cachedSetup = setup;
 
       /*------------------------------------------------
       MOSI
@@ -462,6 +463,12 @@ namespace Thor::SPI
     spiObjects[ spi_channel ] = nullptr;
 
     return Chimera::CommonStatusCodes::OK;
+  }
+
+
+  Chimera::SPI::Setup SPIClass::getInit()
+  {
+    return cachedSetup;
   }
 
   Chimera::Status_t SPIClass::setChipSelect( const Chimera::GPIO::State value )
