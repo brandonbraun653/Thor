@@ -36,8 +36,8 @@ STM32
 #error Please include the HAL driver for STM32F7
 #endif /* __has_include( "stm32f7xx_hal.h" ) */
 
-#elif __has_include( "stm32f4xx.h" ) /* STM32F4 SERIES DEVICES */
-#if __has_include( "stm32f4xx_hal.h" )
+#elif __has_include( <stm32f4/Device/include/stm32f4xx.h> ) /* STM32F4 SERIES DEVICES */
+#if __has_include( <stm32f4/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h> )
 #define TARGET_STM32F4
 #define CORTEX_M4
 

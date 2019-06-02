@@ -20,7 +20,7 @@ extern "C"
 #endif
 
 #if defined( TARGET_STM32F4 )
-#include "stm32f4xx_ll_exti.h"
+#include <stm32f4/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_exti.h>
 
 #elif defined( TARGET_STM32F7 )
 #include "stm32f7xx_ll_exti.h"
