@@ -77,7 +77,7 @@ freertos_hooks = $(thor_src_dir)/config/freertos/freertos_hooks_prj.cpp ;
 # ====================================================
 # Project Definition
 # ====================================================
-project Thor : usage-requirements <include>$(thor_inc_dir) ;
+project ThorSource : usage-requirements <include>$(thor_inc_dir) ;
 
 # ====================================================
 # Private Thor Library Components (only used locally)
