@@ -43,7 +43,7 @@ namespace Thor::Serial
   extern const DMA_InitTypeDef dflt_DMA_Init_RX;
 #endif
 
-#ifdef STM32F7
+#if defined( STM32F7 )
   extern const UART_AdvFeatureInitTypeDef dflt_UART_AdvInit;
 #endif
 }    // namespace Thor::Serial

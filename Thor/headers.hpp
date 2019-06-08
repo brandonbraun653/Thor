@@ -24,7 +24,7 @@ extern "C"
 #endif
 
 #if defined( TARGET_STM32F7 )
-#include <stm32f4/STM32F4xx_HAL_Driver/Inc/stm32f7xx_hal.h>
+#include <stm32f7/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h>
 #endif /* TARGET_STM32F7 */
 
 #if defined( TARGET_STM32F4 )

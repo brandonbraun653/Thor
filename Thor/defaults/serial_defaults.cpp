@@ -315,26 +315,26 @@ namespace Thor::Serial
 
 #if defined( STM32F7 )
   const USART_InitTypeDef dflt_USART_Init = {
-    static_cast<uint32_t>( BaudRate::SERIAL_BAUD_115200 ), /* BaudRate */
-    USART_WORDLENGTH_8B,                                   /* WordLength */
-    USART_STOPBITS_1,                                      /* StopBits */
-    USART_PARITY_NONE,                                     /* Parity */
-    USART_MODE_TX_RX,                                      /* Mode */
-    USART_OVERSAMPLING_16,                                 /* OverSampling */
-    USART_POLARITY_LOW,                                    /* CLKPolarity */
-    USART_PHASE_1EDGE,                                     /* CLKPhase */
-    USART_LASTBIT_DISABLE                                  /* CLKLastBit */
+    static_cast<uint32_t>( Chimera::Serial::BaudRate::SERIAL_BAUD_115200 ), /* BaudRate */
+    USART_WORDLENGTH_8B,                                                    /* WordLength */
+    USART_STOPBITS_1,                                                       /* StopBits */
+    USART_PARITY_NONE,                                                      /* Parity */
+    USART_MODE_TX_RX,                                                       /* Mode */
+    USART_OVERSAMPLING_16,                                                  /* OverSampling */
+    USART_POLARITY_LOW,                                                     /* CLKPolarity */
+    USART_PHASE_1EDGE,                                                      /* CLKPhase */
+    USART_LASTBIT_DISABLE                                                   /* CLKLastBit */
   };
 
   const UART_InitTypeDef dflt_UART_Init = {
-    static_cast<uint32_t>( BaudRate::SERIAL_BAUD_115200 ), /* BaudRate */
-    UART_WORDLENGTH_8B,                                    /* WordLength */
-    UART_STOPBITS_1,                                       /* StopBits */
-    UART_PARITY_NONE,                                      /* Parity */
-    UART_MODE_TX_RX,                                       /* Mode */
-    UART_HWCONTROL_NONE,                                   /* HwFlowCtl */
-    UART_OVERSAMPLING_16,                                  /* OverSampling */
-    UART_ONE_BIT_SAMPLE_DISABLE                            /* OneBitSampling */
+    static_cast<uint32_t>( Chimera::Serial::BaudRate::SERIAL_BAUD_115200 ), /* BaudRate */
+    UART_WORDLENGTH_8B,                                                     /* WordLength */
+    UART_STOPBITS_1,                                                        /* StopBits */
+    UART_PARITY_NONE,                                                       /* Parity */
+    UART_MODE_TX_RX,                                                        /* Mode */
+    UART_HWCONTROL_NONE,                                                    /* HwFlowCtl */
+    UART_OVERSAMPLING_16,                                                   /* OverSampling */
+    UART_ONE_BIT_SAMPLE_DISABLE                                             /* OneBitSampling */
   };
 
   const UART_AdvFeatureInitTypeDef dflt_UART_AdvInit = {

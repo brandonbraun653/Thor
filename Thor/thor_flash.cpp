@@ -185,11 +185,13 @@ namespace Thor
         case HAL_FLASH_ERROR_RD:
           convertedError = Chimera::Modules::Memory::Status::ERR_READ_PROTECT;
           break;
-        
+          
+#if defined( STM32F4 )
         case HAL_FLASH_ERROR_PGS:
           convertedError = Chimera::Modules::Memory::Status::ERR_PGM_SEQUENCE;
           break;
-          
+#endif
+
         case HAL_FLASH_ERROR_PGP:
           convertedError = Chimera::Modules::Memory::Status::ERR_PGM_PARALLEL;
           break;

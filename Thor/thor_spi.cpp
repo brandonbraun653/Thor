@@ -1186,8 +1186,8 @@ namespace Thor::SPI
 
   void SPIClass::SPI_DMA_EnableClock()
   {
-    __DMA1_CLK_ENABLE();
-    __DMA2_CLK_ENABLE();
+    __HAL_RCC_DMA1_CLK_ENABLE();
+    __HAL_RCC_DMA2_CLK_ENABLE();
   }
 
   void SPIClass::SPI_EnableInterrupts()

@@ -180,10 +180,6 @@ namespace Thor::USART
       usart_handle.Init       = dflt_USART_Init;
       usart_handle.Instance   = const_cast<USART_TypeDef *>( hwConfig[ usart_channel ]->instance );
 
-#if defined( STM32F7 )
-      usart_handle.AdvancedInit = Defaults::Serial::dflt_USART_AdvInit;
-#endif
-
       /*------------------------------------------------
       Copy over the interrupt settings information
       ------------------------------------------------*/
@@ -1109,14 +1105,14 @@ namespace Thor::USART
 
 #if defined( SIM )
 #else
-    if ( __DMA1_IS_CLK_DISABLED() )
+    if ( __HAL_RCC_DMA1_IS_CLK_DISABLED() )
     {
-      __DMA1_CLK_ENABLE();
+      __HAL_RCC_DMA1_CLK_ENABLE();
     }
 
-    if ( __DMA2_IS_CLK_DISABLED() )
+    if ( __HAL_RCC_DMA2_IS_CLK_DISABLED() )
     {
-      __DMA2_CLK_ENABLE();
+      __HAL_RCC_DMA2_CLK_ENABLE();
     }
 #endif /* SIM */
   }
@@ -1309,12 +1305,6 @@ namespace Thor::USART
 #endif
   }
 
-#if defined( STM32F7 )
-  void USARTClass::IRQHandler()
-  {
-    using namespace Chimera::Hardware;
-  }
-#endif
 
 #if defined( STM32F4 )
   void USARTClass::IRQHandler()
@@ -1424,8 +1414,15 @@ namespace Thor::USART
       HAL_USART_IRQHandler( &usart_handle );
     }
 #endif /* STM32F4 */
-  }    // namespace Thor::USART
-
+    
+    
+#if defined( STM32F7 )
+  void USARTClass::IRQHandler()
+  {
+    using namespace Chimera::Hardware;
+  }
+#endif /* STM32F7 */
+  
 }    // namespace Thor::USART
 
 #if !defined( GMOCK_TEST )

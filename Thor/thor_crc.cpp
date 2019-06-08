@@ -31,7 +31,7 @@ namespace Thor
     {
       Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
-      #if defined( STM32F446xx )
+      #if defined( STM32F446xx ) || defined( STM32F767xx)
       crcHandle.Instance = CRC;
       #else
       #error Unknown CRC instance!

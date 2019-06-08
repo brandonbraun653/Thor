@@ -26,18 +26,19 @@ https://clang.llvm.org/docs/LanguageExtensions.html
 #endif
 
 /*-------------------------------------------
-STM32
+STM32 Devices
 -------------------------------------------*/
-#if __has_include( "stm32f7xx.h" ) /* STM32F7 SERIES DEVICES */
-#if __has_include( "stm32f7xx_hal.h" )
+#if __has_include( "stm32f7/Device/include/stm32f7xx.h" )
 #define TARGET_STM32F7
 #define CORTEX_M7
-#else
-#error Please include the HAL driver for STM32F7
-#endif /* __has_include( "stm32f7xx_hal.h" ) */
 
-#elif __has_include( <stm32f4/Device/include/stm32f4xx.h> ) /* STM32F4 SERIES DEVICES */
-#if __has_include( <stm32f4/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h> )
+#if !defined( STM32F767xx )
+#error Please define a supported STM32F7 series device in the project preprocessor (or add the def for a new one)
+#endif
+
+#endif /* STM32F7 SERIES DEVICES */
+
+#if __has_include( "stm32f4/Device/include/stm32f4xx.h" ) 
 #define TARGET_STM32F4
 #define CORTEX_M4
 
@@ -45,13 +46,11 @@ STM32
 #error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)
 #endif
 
-#else
-#error Please include the HAL driver for STM32F4
-#endif /* STM32 */
+#endif /* STM32F4 SERIES DEVICES */
 
-#else
-#error No supported HAL driver found for STM32 devices
-#endif
+#if !defined( CORTEX_M4 ) && !defined( CORTEX_M7 )
+#error No detected STM32 device. Please add to your project build system.
+#endif /* CORTEX_xx */
 
 #if !defined( USE_FULL_LL_DRIVER ) && !defined( GMOCK_TEST )
 #error Please define USE_FULL_LL_DRIVER in the compiler preprocessor

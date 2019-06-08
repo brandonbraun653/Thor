@@ -183,7 +183,7 @@ namespace Thor::UART
       uart_handle.Instance   = const_cast<USART_TypeDef *>( hwConfig[ uart_channel ]->instance );
 
 #if defined( STM32F7 )
-      uart_handle.AdvancedInit = Defaults::Serial::dflt_UART_AdvInit;
+      uart_handle.AdvancedInit = Thor::Serial::dflt_UART_AdvInit;
 #endif
 
       /*------------------------------------------------
@@ -1124,14 +1124,14 @@ namespace Thor::UART
     provided due to other peripherals possibly using DMA. */
 #if defined( SIM )
 #else
-    if ( __DMA1_IS_CLK_DISABLED() )
+    if ( __HAL_RCC_DMA1_IS_CLK_DISABLED() )
     {
-      __DMA1_CLK_ENABLE();
+      __HAL_RCC_DMA1_CLK_ENABLE();
     }
 
-    if ( __DMA2_IS_CLK_DISABLED() )
+    if ( __HAL_RCC_DMA2_IS_CLK_DISABLED() )
     {
-      __DMA2_CLK_ENABLE();
+      __HAL_RCC_DMA2_CLK_ENABLE();
     }
 #endif /* SIM */
   }
@@ -1433,106 +1433,106 @@ namespace Thor::UART
 #if defined( STM32F7 )
   void UARTClass::IRQHandler()
   {
-    bool RX_DATA_READY   = __HAL_UART_GET_FLAG( &uart_handle, UART_FLAG_RXNE );
-    bool RX_LINE_IDLE    = __HAL_UART_GET_FLAG( &uart_handle, UART_FLAG_IDLE );
-    bool RX_LINE_IDLE_EN = __HAL_UART_GET_IT_SOURCE( &uart_handle, UART_IT_IDLE );
-
-    /*------------------------------------
-     * Handle Asynchronous RX (Interrupt and DMA Mode)
-     *------------------------------------*/
-    /* RX In Progress */
-    if ( RX_ASYNC && RX_DATA_READY && uart_handle.gState != HAL_UART_STATE_BUSY_TX )
-    {
-      uint32_t isrflags   = READ_REG( uart_handle.Instance->ISR );
-      uint32_t errorflags = ( isrflags & ( uint32_t )( USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE ) );
-
-      if ( errorflags == RESET )
-      {
-        /* Detected new RX of unknown size */
-        if ( asyncRXDataSize == 0 )
-        {
-          memset( RX_Queue[ RXQueueIdx ], 0, UART_QUEUE_BUFFER_SIZE );
-
-          /* Enable UART_IT_IDLE to detect transmission end.
-           * Sometimes IDLEF is set before interrupt enable, which will immediately trigger this ISR,
-           * and cause reception of only 1 character. Clear first to ensure accurate idle line trigger. */
-          __HAL_UART_CLEAR_IT( &uart_handle, UART_CLEAR_IDLEF );
-          __HAL_UART_ENABLE_IT( &uart_handle, UART_IT_IDLE );
-        }
-
-        /* Buffer the new data */
-        if ( rxMode == Chimera::Hardware::SubPeripheralMode::INTERRUPT && ( asyncRXDataSize < UART_QUEUE_BUFFER_SIZE ) )
-        {
-          RX_Queue[ RXQueueIdx ][ asyncRXDataSize ] = ( uint8_t )( uart_handle.Instance->RDR & ( uint8_t )0xFF );
-          asyncRXDataSize += 1u;
-        }
-        else
-        {
-          /* Forced to read data without being able to store it.
-           * Really need to put some kind of error thing here...*/
-          uart_handle.Instance->RDR;
-        }
-      }
-      else
-      {
-        // Do something more useful later
-        __HAL_UART_CLEAR_IT( &uart_handle, UART_CLEAR_PEF );
-        __HAL_UART_CLEAR_IT( &uart_handle, UART_CLEAR_FEF );
-        __HAL_UART_CLEAR_IT( &uart_handle, UART_CLEAR_NEF );
-        __HAL_UART_CLEAR_IT( &uart_handle, UART_CLEAR_OREF );
-      }
-    }
-
-    /* RX Complete */
-    if ( RX_ASYNC && RX_LINE_IDLE_EN && RX_LINE_IDLE )
-    {
-      if ( rxMode == Chimera::Hardware::SubPeripheralMode::INTERRUPT )
-      {
-        UART_DisableIT_IDLE( &uart_handle );
-
-        /* Copy data received to the internal buffer */
-        RX_tempPacket.data_ptr = RX_Queue[ RXQueueIdx ];
-        RX_tempPacket.length   = asyncRXDataSize;
-        RXPacketBuffer.push_back( RX_tempPacket );
-
-        /* Clean up the class variables to prepare for a new reception */
-        rx_complete     = true;
-        asyncRXDataSize = 0;
-        totalUnreadPackets++;
-        _rxIncrQueueIdx();
-
-        /* Finally, call this here because the normal HAL_UART_IRQHandler does not get called
-         * due to the asynchronous nature of operation. */
-        HAL_UART_RxCpltCallback( &uart_handle );
-      }
-      else if ( rxMode == Chimera::Hardware::SubPeripheralMode::DMA )
-      {
-        auto num_received = ( size_t )( uart_handle.RxXferSize - uart_handle.hdmarx->Instance->NDTR );
-
-        if ( num_received != 0 )
-        {
-          UART_DisableIT_IDLE( &uart_handle );
-          rx_complete = true;
-          totalUnreadPackets++;
-
-          /* Force DMA hard reset to trigger the DMA RX Complete handler */
-          __HAL_DMA_DISABLE( uart_handle.hdmarx );
-        }
-        else
-        {
-          /* ISR was randomly triggered. Clear any errant flags that might be enabled.*/
-          UART_ClearIT_IDLE( &uart_handle );
-        }
-      }
-    }
-
-    /*------------------------------------
-     * Handle Synchronous RX or Asynchronous TX (Interrupt Mode)
-     *------------------------------------*/
-    if ( !RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX )
-    {
-      HAL_UART_IRQHandler( &uart_handle );
-    }
+//    bool RX_DATA_READY   = __HAL_UART_GET_FLAG( &uart_handle, UART_FLAG_RXNE );
+//    bool RX_LINE_IDLE    = __HAL_UART_GET_FLAG( &uart_handle, UART_FLAG_IDLE );
+//    bool RX_LINE_IDLE_EN = __HAL_UART_GET_IT_SOURCE( &uart_handle, UART_IT_IDLE );
+//
+//    /*------------------------------------
+//     * Handle Asynchronous RX (Interrupt and DMA Mode)
+//     *------------------------------------*/
+//    /* RX In Progress */
+//    if ( RX_ASYNC && RX_DATA_READY && uart_handle.gState != HAL_UART_STATE_BUSY_TX )
+//    {
+//      uint32_t isrflags   = READ_REG( uart_handle.Instance->ISR );
+//      uint32_t errorflags = ( isrflags & ( uint32_t )( USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE ) );
+//
+//      if ( errorflags == RESET )
+//      {
+//        /* Detected new RX of unknown size */
+//        if ( asyncRXDataSize == 0 )
+//        {
+//          memset( RX_Queue[ RXQueueIdx ], 0, UART_QUEUE_BUFFER_SIZE );
+//
+//          /* Enable UART_IT_IDLE to detect transmission end.
+//           * Sometimes IDLEF is set before interrupt enable, which will immediately trigger this ISR,
+//           * and cause reception of only 1 character. Clear first to ensure accurate idle line trigger. */
+//          __HAL_UART_CLEAR_IT( &uart_handle, UART_CLEAR_IDLEF );
+//          __HAL_UART_ENABLE_IT( &uart_handle, UART_IT_IDLE );
+//        }
+//
+//        /* Buffer the new data */
+//        if ( rxMode == Chimera::Hardware::SubPeripheralMode::INTERRUPT && ( asyncRXDataSize < UART_QUEUE_BUFFER_SIZE ) )
+//        {
+//          RX_Queue[ RXQueueIdx ][ asyncRXDataSize ] = ( uint8_t )( uart_handle.Instance->RDR & ( uint8_t )0xFF );
+//          asyncRXDataSize += 1u;
+//        }
+//        else
+//        {
+//          /* Forced to read data without being able to store it.
+//           * Really need to put some kind of error thing here...*/
+//          uart_handle.Instance->RDR;
+//        }
+//      }
+//      else
+//      {
+//        // Do something more useful later
+//        __HAL_UART_CLEAR_IT( &uart_handle, UART_CLEAR_PEF );
+//        __HAL_UART_CLEAR_IT( &uart_handle, UART_CLEAR_FEF );
+//        __HAL_UART_CLEAR_IT( &uart_handle, UART_CLEAR_NEF );
+//        __HAL_UART_CLEAR_IT( &uart_handle, UART_CLEAR_OREF );
+//      }
+//    }
+//
+//    /* RX Complete */
+//    if ( RX_ASYNC && RX_LINE_IDLE_EN && RX_LINE_IDLE )
+//    {
+//      if ( rxMode == Chimera::Hardware::SubPeripheralMode::INTERRUPT )
+//      {
+//        UART_DisableIT_IDLE( &uart_handle );
+//
+//        /* Copy data received to the internal buffer */
+//        RX_tempPacket.data_ptr = RX_Queue[ RXQueueIdx ];
+//        RX_tempPacket.length   = asyncRXDataSize;
+//        RXPacketBuffer.push_back( RX_tempPacket );
+//
+//        /* Clean up the class variables to prepare for a new reception */
+//        rx_complete     = true;
+//        asyncRXDataSize = 0;
+//        totalUnreadPackets++;
+//        _rxIncrQueueIdx();
+//
+//        /* Finally, call this here because the normal HAL_UART_IRQHandler does not get called
+//         * due to the asynchronous nature of operation. */
+//        HAL_UART_RxCpltCallback( &uart_handle );
+//      }
+//      else if ( rxMode == Chimera::Hardware::SubPeripheralMode::DMA )
+//      {
+//        auto num_received = ( size_t )( uart_handle.RxXferSize - uart_handle.hdmarx->Instance->NDTR );
+//
+//        if ( num_received != 0 )
+//        {
+//          UART_DisableIT_IDLE( &uart_handle );
+//          rx_complete = true;
+//          totalUnreadPackets++;
+//
+//          /* Force DMA hard reset to trigger the DMA RX Complete handler */
+//          __HAL_DMA_DISABLE( uart_handle.hdmarx );
+//        }
+//        else
+//        {
+//          /* ISR was randomly triggered. Clear any errant flags that might be enabled.*/
+//          UART_ClearIT_IDLE( &uart_handle );
+//        }
+//      }
+//    }
+//
+//    /*------------------------------------
+//     * Handle Synchronous RX or Asynchronous TX (Interrupt Mode)
+//     *------------------------------------*/
+//    if ( !RX_ASYNC || uart_handle.gState == HAL_UART_STATE_BUSY_TX )
+//    {
+//      HAL_UART_IRQHandler( &uart_handle );
+//    }
   }
 #endif /* STM32F7 */
 }    // namespace Thor::UART

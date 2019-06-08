@@ -243,7 +243,7 @@ DMA2 Register Address Accessors
     static constexpr uint8_t S_NUM_DMA_REQUESTORS = 79;
 
     /* clang-format off */
-    #if defined( STM32F4 )
+    #if defined( STM32F4 ) || defined( STM32F7 )
     /*------------------------------------------------
     Taken from tables 28 & 29 on RM0390 datasheet
     ------------------------------------------------*/

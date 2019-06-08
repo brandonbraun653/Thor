@@ -403,8 +403,8 @@ namespace Thor::SPI
     SPI_NSS_HARD_OUTPUT,         /* NSS */
     SPI_BAUDRATEPRESCALER_8,     /* BaudRatePrescaler */
     SPI_FIRSTBIT_MSB,            /* FirstBit */
-    SPI_TIMODE_DISABLED,         /* TIMode */
-    SPI_CRCCALCULATION_DISABLED, /* CRCCalculation */
+    SPI_TIMODE_DISABLE,          /* TIMode */
+    SPI_CRCCALCULATION_DISABLE,  /* CRCCalculation */
     65535,                       /* CRCPolynomial */
     SPI_CRC_LENGTH_DATASIZE,     /* CRCLength */
     SPI_NSS_PULSE_ENABLE         /* NSSPMode */
