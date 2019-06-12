@@ -1413,6 +1413,7 @@ namespace Thor::USART
     {
       HAL_USART_IRQHandler( &usart_handle );
     }
+  }
 #endif /* STM32F4 */
     
     
