@@ -29,6 +29,8 @@ namespace Thor::GPIO
     GPIOClass();
     ~GPIOClass();
 
+    Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit ) final override;
+
     Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin ) final override;
 
     Chimera::Status_t setMode( const Chimera::GPIO::Drive drive, const bool pullup ) final override;

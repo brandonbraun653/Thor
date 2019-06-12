@@ -250,6 +250,13 @@ namespace Thor::GPIO
   {
   }
 
+  Chimera::Status_t GPIOClass::init( const Chimera::GPIO::PinInit &pinInit )
+  {
+    init( pinInit.port, pinInit.pin );
+    setMode( pinInit.drive, static_cast<bool>( pinInit.pull ) );
+    return setState( pinInit.state );
+  }
+
   Chimera::Status_t GPIOClass::init( const Chimera::GPIO::Port port, const uint8_t pin )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
