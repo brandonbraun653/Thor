@@ -23,6 +23,7 @@
 /* Chimera Includes */
 #include <Chimera/buffer.hpp>
 #include <Chimera/interface/serial_intf.hpp>
+#include <Chimera/types/event_types.hpp>
 
 /* Thor Includes */
 #include <Thor/gpio.hpp>
@@ -79,9 +80,9 @@ namespace Thor::UART
     Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
 
 #if defined( USING_FREERTOS )
-    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
+    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr ) final override;
 
-    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
+    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr ) final override;
 #endif 
 
     Chimera::Status_t enableBuffering( const Chimera::Hardware::SubPeripheral periph,
@@ -91,6 +92,10 @@ namespace Thor::UART
     Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph ) final override;
 
     bool available( size_t *const bytes = nullptr ) final override;
+
+    void await( const Chimera::Event::Trigger event ) final override;
+
+    void await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier ) final override;
 
   private:
     /*------------------------------------------------
@@ -107,9 +112,6 @@ namespace Thor::UART
     bool tx_complete       = true; /**< Indicates if a transmission has been completed */
     bool rx_complete       = true; /**< Indicates if a reception has been completed */
     bool AUTO_ASYNC_RX     = true; /**< Enables/Disables asynchronous reception of data */
-    
-
-    volatile uint32_t event_bits = 0u; /* Tracks ISR events so we can respond to them */
 
     Chimera::Hardware::SubPeripheralMode txMode; /**< Logs which mode the TX peripheral is currently in */
     Chimera::Hardware::SubPeripheralMode rxMode; /**< Logs which mode the RX peripheral is currently in */
@@ -125,6 +127,11 @@ namespace Thor::UART
 #if defined( USING_FREERTOS )
     SemaphoreHandle_t *rxCompleteWakeup;
     SemaphoreHandle_t *txCompleteWakeup;
+    volatile EventBits_t eventBits;
+    volatile bool isrPostProcessingComplete;
+
+    SemaphoreHandle_t awaitEventRXComplete;
+    SemaphoreHandle_t awaitEventTXComplete;
 #endif 
 
     UART_HandleTypeDef uart_handle;

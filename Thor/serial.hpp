@@ -18,9 +18,10 @@
 #include <cstdint>
 #include <memory>
 
-/* Thor Includes */
-#include <Thor/uart.hpp>
-#include <Thor/usart.hpp>
+/* Chimera Includes */
+#include <Chimera/threading.hpp>
+#include <Chimera/interface/serial_intf.hpp>
+#include <Chimera/interface/threading_intf.hpp>
 
 namespace Thor::Serial
 {
@@ -59,9 +60,9 @@ namespace Thor::Serial
     Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
 
 #if defined( USING_FREERTOS )
-    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
+    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr ) final override;
 
-    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
+    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr ) final override;
 #endif 
 
     Chimera::Status_t enableBuffering( const Chimera::Hardware::SubPeripheral periph,
@@ -71,6 +72,10 @@ namespace Thor::Serial
     Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph ) final override;
 
     bool available( size_t *const bytes = nullptr ) final override;
+
+    void await( const Chimera::Event::Trigger event ) final override;
+
+    void await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier ) final override;
 
   private:
     uint8_t serialChannel = 0;

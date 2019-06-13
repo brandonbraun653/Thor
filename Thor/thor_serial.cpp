@@ -10,6 +10,8 @@
 
 /* Thor Includes */
 #include <Thor/serial.hpp>
+#include <Thor/uart.hpp>
+#include <Thor/usart.hpp>
 #include <Thor/types/serial_types.hpp>
 #include <Thor/definitions/serial_definitions.hpp>
 
@@ -137,12 +139,12 @@ namespace Thor::Serial
   }
 
 #if defined( USING_FREERTOS )
-  Chimera::Status_t SerialClass::attachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr )
+  Chimera::Status_t SerialClass::attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
   {
     return serialObject->attachNotifier( event, semphr );
   }
 
-  Chimera::Status_t SerialClass::detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr )
+  Chimera::Status_t SerialClass::detachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
   {
     return serialObject->detachNotifier( event, semphr );
   }
@@ -164,4 +166,15 @@ namespace Thor::Serial
   {
     return serialObject->available( bytes );
   }
+
+  void SerialClass::await( const Chimera::Event::Trigger event )
+  {
+    serialObject->await( event );
+  }
+
+  void SerialClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier )
+  {
+    serialObject->await( event, notifier );
+  }
+
 }    // namespace Thor::Serial

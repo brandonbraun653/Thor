@@ -12,6 +12,9 @@
 #include <boost/bind.hpp>
 #include <boost/circular_buffer.hpp>
 
+/* Chimera Includes */
+#include <Chimera/watchdog.hpp>
+
 /* Thor Includes */
 #include <Thor/core.hpp>
 #include <Thor/defaults/serial_defaults.hpp>
@@ -46,12 +49,6 @@ using namespace Thor::Interrupt;
 using namespace Chimera::Serial;
 
 /*------------------------------------------------
-Local Constants
-------------------------------------------------*/
-static constexpr uint32_t EVENT_BIT_RX_COMPLETE = 1u << 0;
-static constexpr uint32_t EVENT_BIT_TX_COMPLETE = 1u << 1;
-
-/*------------------------------------------------
 Local Functions Declarations
 ------------------------------------------------*/
 static constexpr bool isChannelSupported( const uint8_t channel );
@@ -75,10 +72,18 @@ static std::array<TaskHandle_t, MAX_SERIAL_CHANNELS + 1> isrPPHandle;
 /* Post Processor Thread Wakeup Signals */
 static std::array<SemaphoreHandle_t, MAX_SERIAL_CHANNELS + 1> isrPPWakeup;
 
-/* Post Processor Thread Function Pointers */ /* clang-format off */
+/* Post Processor Thread Function Pointers */ 
+/* clang-format off */
 static std::array<Chimera::Function::void_func_void_ptr, MAX_SERIAL_CHANNELS + 1> isrPPThread = { 
-  nullptr, USART1ISRPostProcessor, USART2ISRPostProcessor, USART3ISRPostProcessor,
-  nullptr, nullptr, USART6ISRPostProcessor, nullptr, nullptr
+  nullptr, 
+  USART1ISRPostProcessor, 
+  USART2ISRPostProcessor, 
+  USART3ISRPostProcessor,
+  nullptr, 
+  nullptr, 
+  USART6ISRPostProcessor, 
+  nullptr, 
+  nullptr
 }; /* clang-format on */
 
 
@@ -142,6 +147,9 @@ namespace Thor::USART
 
     rxCompleteWakeup = nullptr;
     txCompleteWakeup = nullptr;
+
+    awaitEventRXComplete = xSemaphoreCreateBinary();
+    awaitEventTXComplete = xSemaphoreCreateBinary();
 
     txMode = Chimera::Hardware::SubPeripheralMode::UNKNOWN_MODE;
     rxMode = Chimera::Hardware::SubPeripheralMode::UNKNOWN_MODE;
@@ -451,15 +459,10 @@ namespace Thor::USART
 
   void USARTClass::postISRProcessing()
   {
-    using namespace Chimera::Hardware;
-
-    const uint32_t cached_event = event_bits;
-
-    if ( cached_event & EVENT_BIT_TX_COMPLETE )
+    if ( eventBits & Chimera::Event::Flags::BIT_WRITE_COMPLETE )
     {
-      event_bits &= ~EVENT_BIT_TX_COMPLETE;
-
       tx_complete = true;
+      eventBits &= ~Chimera::Event::Flags::BIT_WRITE_COMPLETE;
 
       /*------------------------------------------------
       Transmit more data if we have any
@@ -480,21 +483,22 @@ namespace Thor::USART
       else
       {
         /*------------------------------------------------
-        Let user threads know the transfer completed
+        Wake up any user threads
         ------------------------------------------------*/
         if ( txCompleteWakeup )
         {
-          BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-          xSemaphoreGiveFromISR( *txCompleteWakeup, &xHigherPriorityTaskWoken );
-          portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+          xSemaphoreGive( *txCompleteWakeup );
         }
+
+        /*------------------------------------------------
+        Wake up whatever thread called await()
+        ------------------------------------------------*/
+        xSemaphoreGive( awaitEventTXComplete );
       }
     }
-    else if ( cached_event & EVENT_BIT_RX_COMPLETE )
+    else if ( eventBits & Chimera::Event::Flags::BIT_READ_COMPLETE )
     {
-      event_bits &= ~EVENT_BIT_RX_COMPLETE;
-
-      if ( rxMode == SubPeripheralMode::INTERRUPT )
+      if ( rxMode == Chimera::Hardware::SubPeripheralMode::INTERRUPT )
       {
         if ( AUTO_ASYNC_RX )
         {
@@ -528,7 +532,7 @@ namespace Thor::USART
         ------------------------------------------------*/
         __HAL_USART_ENABLE_IT( &usart_handle, USART_IT_RXNE );
       }
-      else if ( rxMode == SubPeripheralMode::DMA )
+      else if ( rxMode == Chimera::Hardware::SubPeripheralMode::DMA )
       {
         /*------------------------------------------------
         Calculate how many bytes were received by looking at remaining RX buffer space.
@@ -555,6 +559,7 @@ namespace Thor::USART
       /*------------------------------------------------
       Exit the ISR ensuring that we can still receive asynchronous data
       ------------------------------------------------*/
+      eventBits &= ~Chimera::Event::Flags::BIT_READ_COMPLETE;
       rx_complete   = true;
       AUTO_ASYNC_RX = true;
 
@@ -563,11 +568,16 @@ namespace Thor::USART
       ------------------------------------------------*/
       if ( rxCompleteWakeup )
       {
-        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        xSemaphoreGiveFromISR( *rxCompleteWakeup, &xHigherPriorityTaskWoken );
-        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+        xSemaphoreGive( *rxCompleteWakeup );
       }
+
+      /*------------------------------------------------
+      Wake up whatever thread called await()
+      ------------------------------------------------*/
+      xSemaphoreGive( awaitEventRXComplete );
     }
+
+    isrPostProcessingComplete = true;
   }
 
   Chimera::Status_t USARTClass::readAsync( uint8_t *const buffer, const size_t len )
@@ -646,7 +656,7 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::attachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr )
+  Chimera::Status_t USARTClass::attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
@@ -654,11 +664,11 @@ namespace Thor::USART
     {
       error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
     }
-    else if ( event == Chimera::Event::Trigger_t::READ_COMPLETE )
+    else if ( event == Chimera::Event::Trigger::READ_COMPLETE )
     {
       rxCompleteWakeup = semphr;
     }
-    else if ( event == Chimera::Event::Trigger_t::WRITE_COMPLETE )
+    else if ( event == Chimera::Event::Trigger::WRITE_COMPLETE )
     {
       txCompleteWakeup = semphr;
     }
@@ -670,15 +680,15 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr )
+  Chimera::Status_t USARTClass::detachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
-    if ( event == Chimera::Event::Trigger_t::READ_COMPLETE )
+    if ( event == Chimera::Event::Trigger::READ_COMPLETE )
     {
       rxCompleteWakeup = nullptr;
     }
-    else if ( event == Chimera::Event::Trigger_t::WRITE_COMPLETE )
+    else if ( event == Chimera::Event::Trigger::WRITE_COMPLETE )
     {
       txCompleteWakeup = nullptr;
     }
@@ -705,6 +715,28 @@ namespace Thor::USART
     }
 
     return retval;
+  }
+
+  void USARTClass::await( const Chimera::Event::Trigger event )
+  {
+    // TODO: Refactor into arrays keyed off of the event
+    if ( ( event == Chimera::Event::Trigger::READ_COMPLETE ) && ( rxMode != Chimera::Hardware::SubPeripheralMode::BLOCKING ) )
+    {
+      xSemaphoreTake( awaitEventRXComplete, portMAX_DELAY );
+    }
+
+    if ( ( event == Chimera::Event::Trigger::WRITE_COMPLETE ) && ( txMode != Chimera::Hardware::SubPeripheralMode::BLOCKING ) )
+    {
+      xSemaphoreTake( awaitEventTXComplete, portMAX_DELAY );
+    }
+  }
+
+  void USARTClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier )
+  {
+    /*------------------------------------------------
+    Currently not supported
+    ------------------------------------------------*/
+    Chimera::Watchdog::invokeTimeout();
   }
 
   bool USARTClass::setWordLength( USART_InitTypeDef &initStruct, const Chimera::Serial::CharWid width )
@@ -1192,7 +1224,7 @@ namespace Thor::USART
       hdma_usart_tx.Init.Direction = hwConfig[ usart_channel ]->dmaTX.direction;
 
       /* Hard error if initialization fails. */
-      assert( HAL_DMA_Init( &hdma_usart_tx ) == HAL_OK );
+      HAL_DMA_Init( &hdma_usart_tx );
       __HAL_LINKDMA( &usart_handle, hdmatx, hdma_usart_tx );
 
       /*------------------------------------------------
@@ -1215,7 +1247,7 @@ namespace Thor::USART
       hdma_usart_rx.Init.Direction = hwConfig[ usart_channel ]->dmaRX.direction;
 
       /* Hard error if initialization fails. */
-      assert( HAL_DMA_Init( &hdma_usart_rx ) == HAL_OK );
+      HAL_DMA_Init( &hdma_usart_rx );
       __HAL_LINKDMA( &usart_handle, hdmarx, hdma_usart_rx );
 
       /*------------------------------------------------
@@ -1336,7 +1368,9 @@ namespace Thor::USART
       /*------------------------------------------------
       RX In Progress
       ------------------------------------------------*/
-      if ( RX_DATA_READY && RX_DATA_READY_IE && usart_handle.State != HAL_USART_STATE_BUSY_TX )
+      if ( RX_DATA_READY 
+        && RX_DATA_READY_IE 
+        && usart_handle.State != HAL_USART_STATE_BUSY_TX )
       {
         uint32_t error = ( isrflags & ( uint32_t )( USART_SR_PE | USART_SR_FE | USART_SR_ORE | USART_SR_NE ) );
 
@@ -1433,7 +1467,8 @@ void HAL_USART_TxCpltCallback( USART_HandleTypeDef *UsartHandle )
 
   if ( usart )
   {
-    usart->event_bits |= EVENT_BIT_TX_COMPLETE;
+    usart->isrPostProcessingComplete = false;
+    usart->eventBits |= Chimera::Event::Flags::BIT_WRITE_COMPLETE;
 
     /*------------------------------------------------
     Wake up and immediately switch to the user-land ISR
@@ -1451,7 +1486,8 @@ void HAL_USART_RxCpltCallback( USART_HandleTypeDef *UsartHandle )
 
   if ( usart )
   {
-    usart->event_bits |= EVENT_BIT_TX_COMPLETE;
+    usart->isrPostProcessingComplete = false;
+    usart->eventBits |= Chimera::Event::Flags::BIT_READ_COMPLETE;
 
     /*------------------------------------------------
     Wake up and immediately switch to the user-land ISR

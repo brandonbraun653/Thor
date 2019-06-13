@@ -70,19 +70,19 @@ namespace Thor::SPI
 
     Chimera::Status_t getClockFrequency( uint32_t &freq ) final override;
 
-    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger_t event, volatile uint8_t *const notifier ) final override;
+    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger event, volatile uint8_t *const notifier ) final override;
 
-    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger_t event, volatile uint8_t *const notifier ) final override;
+    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger event, volatile uint8_t *const notifier ) final override;
 
-    Chimera::Status_t attachCallback( const Chimera::Event::Trigger_t trigger,
+    Chimera::Status_t attachCallback( const Chimera::Event::Trigger trigger,
                                       const Chimera::Function::void_func_void func ) final override;
 
-    Chimera::Status_t detachCallback( const Chimera::Event::Trigger_t trigger ) final override;
+    Chimera::Status_t detachCallback( const Chimera::Event::Trigger trigger ) final override;
 
 #if defined( USING_FREERTOS )
-    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
+    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr ) final override;
 
-    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr ) final override;
+    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr ) final override;
 #endif
 
     /**

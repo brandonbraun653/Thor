@@ -670,34 +670,34 @@ namespace Thor::SPI
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t SPIClass::attachNotifier( const Chimera::Event::Trigger_t event, volatile uint8_t *const notifier )
+  Chimera::Status_t SPIClass::attachNotifier( const Chimera::Event::Trigger event, volatile uint8_t *const notifier )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t SPIClass::detachNotifier( const Chimera::Event::Trigger_t event, volatile uint8_t *const notifier )
+  Chimera::Status_t SPIClass::detachNotifier( const Chimera::Event::Trigger event, volatile uint8_t *const notifier )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t SPIClass::attachCallback( const Chimera::Event::Trigger_t trigger,
+  Chimera::Status_t SPIClass::attachCallback( const Chimera::Event::Trigger trigger,
                                               const Chimera::Function::void_func_void func )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t SPIClass::detachCallback( const Chimera::Event::Trigger_t trigger )
+  Chimera::Status_t SPIClass::detachCallback( const Chimera::Event::Trigger trigger )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
 #if defined( USING_FREERTOS )
-  Chimera::Status_t SPIClass::attachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr )
+  Chimera::Status_t SPIClass::attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t SPIClass::detachNotifier( const Chimera::Event::Trigger_t event, SemaphoreHandle_t *const semphr )
+  Chimera::Status_t SPIClass::detachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
