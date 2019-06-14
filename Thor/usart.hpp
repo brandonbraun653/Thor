@@ -29,17 +29,6 @@
 #include <Thor/gpio.hpp>
 #include <Thor/types/interrupt_types.hpp>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-  extern void USART1_IRQHandler();
-  extern void USART2_IRQHandler();
-  extern void USART3_IRQHandler();
-  extern void USART6_IRQHandler();
-#ifdef __cplusplus
-}
-#endif
 
 namespace Thor::USART
 {
