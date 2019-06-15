@@ -14,23 +14,69 @@
 
 /* C++ Includes */
 
+/* Boost Includes */
+#include <boost/function.hpp>
+
 /* Chimera Includes */
 #include <Chimera/types/common_types.hpp>
+#include <Chimera/threading.hpp>
 
 /* Driver Includes */
+#include <Thor/drivers/common/types/serial_types.hpp>
+#include <Thor/drivers/f4/common/types.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
+
+#include <Thor/drivers/model/callback_model.hpp>
+#include <Thor/drivers/model/interrupt_model.hpp>
+#include <Thor/drivers/model/serial_model.hpp>
 
 namespace Thor::Driver::USART
 {
-  class Driver
+  class Driver : public Thor::Driver::Serial::Basic,
+                 public Thor::Driver::Serial::Extended,
+                 public Thor::Driver::Signal,
+                 public Thor::Driver::BasicCallback,
+                 public Chimera::Threading::Lockable
   {
   public:
     Driver( RegisterMap *const peripheral );
     ~Driver();
 
-    Chimera::Status_t init( const Config &cfg );
+    Chimera::Status_t init( const Thor::Driver::Serial::Config &cfg ) final override;
 
-    Chimera::Status_t deinit();
+    Chimera::Status_t deinit() final override;
+
+    Chimera::Status_t transmit( const uint8_t *const data, const size_t size, const size_t timeout ) final override;
+
+    Chimera::Status_t receive( uint8_t *const data, const size_t size, const size_t timeout ) final override;
+
+    Chimera::Status_t enableIT( const Chimera::Hardware::SubPeripheral periph ) final override;
+
+    Chimera::Status_t disableIT( const Chimera::Hardware::SubPeripheral periph ) final override;
+
+    Chimera::Status_t transmitIT( uint8_t *const data, const size_t size, const size_t timeout ) final override;
+
+    Chimera::Status_t receiveIT( uint8_t *const data, const size_t size, const size_t timeout ) final override;
+
+    Chimera::Status_t initDMA() final override;
+
+    Chimera::Status_t deinitDMA() final override;
+
+    Chimera::Status_t enableDMA_IT( const Chimera::Hardware::SubPeripheral periph ) final override;
+
+    Chimera::Status_t disableDMA_IT( const Chimera::Hardware::SubPeripheral periph ) final override;
+
+    Chimera::Status_t transmitDMA( uint8_t *const data, const size_t size, const size_t timeout ) final override;
+
+    Chimera::Status_t receiveDMA( uint8_t *const data, const size_t size, const size_t timeout ) final override;
+
+    Chimera::Status_t registerCallback( const CallbackEvent type, const VoidCallback &func ) final override;
+
+    Chimera::Hardware::Status pollTransferStatus() final override;
+
+    Chimera::Status_t enableSignal( const InterruptSignal_t sig ) final override;
+
+    Chimera::Status_t disableSignal( const InterruptSignal_t sig ) final override;
 
   private:
     RegisterMap *const periph;

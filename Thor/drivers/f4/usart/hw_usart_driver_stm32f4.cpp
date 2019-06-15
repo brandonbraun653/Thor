@@ -19,8 +19,102 @@
 
 namespace Thor::Driver::USART
 {
-  Driver::Driver( RegisterMap *const peripheral ) : periph(peripheral)
+  Driver::Driver( RegisterMap *const peripheral ) : periph( peripheral )
   {
-
   }
-}
+
+  Driver::~Driver()
+  {
+  }
+
+  Chimera::Status_t Driver::init( const Thor::Driver::Serial::Config &cfg )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::deinit()
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::transmit( const uint8_t *const data, const size_t size, const size_t timeout )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::receive( uint8_t *const data, const size_t size, const size_t timeout )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::enableIT( const Chimera::Hardware::SubPeripheral periph )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::disableIT( const Chimera::Hardware::SubPeripheral periph )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::transmitIT( uint8_t *const data, const size_t size, const size_t timeout )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::receiveIT( uint8_t *const data, const size_t size, const size_t timeout )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::initDMA()
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::deinitDMA()
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::enableDMA_IT( const Chimera::Hardware::SubPeripheral periph )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::disableDMA_IT( const Chimera::Hardware::SubPeripheral periph )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::transmitDMA( uint8_t *const data, const size_t size, const size_t timeout )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::receiveDMA( uint8_t *const data, const size_t size, const size_t timeout )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::registerCallback( const CallbackEvent type, const VoidCallback &func )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Hardware::Status Driver::pollTransferStatus()
+  {
+    return Chimera::Hardware::Status::PERIPHERAL_FREE;
+  }
+
+  Chimera::Status_t Driver::enableSignal( const InterruptSignal_t sig )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::disableSignal( const InterruptSignal_t sig )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+}    // namespace Thor::Driver::USART

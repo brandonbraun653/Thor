@@ -31,46 +31,10 @@ namespace Thor::Driver::USART
     volatile uint32_t GTPR; /**< USART Guard time and prescaler register, Address offset: 0x18 */
   };
 
-  struct Config
-  {
-    uint32_t BaudRate; /*!< This member configures the Usart communication baud rate.
-                            The baud rate is computed using the following formula:
-                            - IntegerDivider = ((PCLKx) / (8 * (husart->Init.BaudRate)))
-                            - FractionalDivider = ((IntegerDivider - ((uint32_t) IntegerDivider)) * 8) + 0.5 */
-
-    uint32_t WordLength; /*!< Specifies the number of data bits transmitted or received in a frame.
-                              This parameter can be a value of @ref USART_Word_Length */
-
-    uint32_t StopBits; /*!< Specifies the number of stop bits transmitted.
-                            This parameter can be a value of @ref USART_Stop_Bits */
-
-    uint32_t Parity; /*!< Specifies the parity mode.
-                           This parameter can be a value of @ref USART_Parity
-                           @note When parity is enabled, the computed parity is inserted
-                                 at the MSB position of the transmitted data (9th bit when
-                                 the word length is set to 9 data bits; 8th bit when the
-                                 word length is set to 8 data bits). */
-
-    uint32_t Mode; /*!< Specifies whether the Receive or Transmit mode is enabled or disabled.
-                        This parameter can be a value of @ref USART_Mode */
-
-    uint32_t CLKPolarity; /*!< Specifies the steady state of the serial clock.
-                               This parameter can be a value of @ref USART_Clock_Polarity */
-
-    uint32_t CLKPhase; /*!< Specifies the clock transition on which the bit capture is made.
-                            This parameter can be a value of @ref USART_Clock_Phase */
-
-    uint32_t CLKLastBit; /*!< Specifies whether the clock pulse corresponding to the last transmitted
-                              data bit (MSB) has to be output on the SCLK pin in synchronous mode.
-                              This parameter can be a value of @ref USART_Last_Bit */
-  };
-
-  static RegisterMap *const USART1 = reinterpret_cast<RegisterMap *const>( USART1_BASE );
-  static RegisterMap *const USART2 = reinterpret_cast<RegisterMap *const>( USART2_BASE );
-  static RegisterMap *const USART3 = reinterpret_cast<RegisterMap *const>( USART3_BASE );
-  static RegisterMap *const UART4  = reinterpret_cast<RegisterMap *const>( UART4_BASE );
-  static RegisterMap *const UART5  = reinterpret_cast<RegisterMap *const>( UART5_BASE );
-  static RegisterMap *const USART6 = reinterpret_cast<RegisterMap *const>( USART6_BASE );
+  static RegisterMap *const USART1_PERIPH = reinterpret_cast<RegisterMap *const>( USART1_BASE_ADDR );
+  static RegisterMap *const USART2_PERIPH = reinterpret_cast<RegisterMap *const>( USART2_BASE_ADDR );
+  static RegisterMap *const USART3_PERIPH = reinterpret_cast<RegisterMap *const>( USART3_BASE_ADDR );
+  static RegisterMap *const USART6_PERIPH = reinterpret_cast<RegisterMap *const>( USART6_BASE_ADDR );
 
 }    // namespace Thor::Driver::USART
 

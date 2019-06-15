@@ -890,7 +890,7 @@ namespace Thor::UART
   {
     HAL_StatusTypeDef stm32Error = HAL_BUSY;
 
-    if ( reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+    if ( lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
     {
       /*------------------------------------------------
       It's possible to get into the condition where ORE is set before trying to receive some
@@ -907,7 +907,7 @@ namespace Thor::UART
       stm32Error = HAL_UART_Receive( &uart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
                                      BLOCKING_TIMEOUT_MS );
 #endif
-      release();
+      unlock();
     }
 
     return convertHALStatus( stm32Error );
@@ -920,7 +920,7 @@ namespace Thor::UART
 
     /* clang-format off */
     if ( ( length <= rxBuffers.internalSize )
-      && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+      && lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
     { /* clang-format on */
       /*------------------------------------------------
       Let the ISR handler know that we explicitely asked to receive some data.
@@ -939,7 +939,7 @@ namespace Thor::UART
         error = convertHALStatus( stm32Error );
       }
 
-      release();
+      unlock();
     }
     else
     {
@@ -956,7 +956,7 @@ namespace Thor::UART
 
     /* clang-format off */
     if ( ( length <= rxBuffers.internalSize )
-      && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+      && lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
     { /* clang-format on */
       /*------------------------------------------------
       Let the ISR handler know that we explicitely asked to receive some data.
@@ -980,7 +980,7 @@ namespace Thor::UART
         error = convertHALStatus( stm32Error );
       }
 
-      release();
+      unlock();
     }
     else
     {
@@ -994,7 +994,7 @@ namespace Thor::UART
   {
     HAL_StatusTypeDef stm32Error = HAL_BUSY;
 
-    if ( reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+    if ( lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
     {
 #if defined( USING_FREERTOS )
       stm32Error = HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
@@ -1003,7 +1003,7 @@ namespace Thor::UART
       stm32Error = HAL_UART_Transmit( &uart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
                                       BLOCKING_TIMEOUT_MS );
 #endif
-      release();
+      unlock();
     }
 
     return convertHALStatus( stm32Error );
@@ -1017,7 +1017,7 @@ namespace Thor::UART
     /* clang-format off */
     if ( txBuffers.initialized()
       && PeripheralState.tx_buffering_enabled 
-      && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+      && lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
     { /* clang-format on */
       if ( tx_complete )
       {
@@ -1037,7 +1037,7 @@ namespace Thor::UART
         txBuffers.push( buffer, length );
       }
 
-      release();
+      unlock();
     }
     else
     {
@@ -1055,7 +1055,7 @@ namespace Thor::UART
     /* clang-format off */
       if ( txBuffers.initialized()
         && PeripheralState.tx_buffering_enabled 
-        && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+        && lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
       { /* clang-format on */
       if ( tx_complete )
       {
@@ -1075,7 +1075,7 @@ namespace Thor::UART
         txBuffers.push( buffer, length );
       }
 
-      release();
+      unlock();
     }
     else
     {

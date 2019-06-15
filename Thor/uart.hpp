@@ -28,18 +28,7 @@
 /* Thor Includes */
 #include <Thor/gpio.hpp>
 #include <Thor/types/interrupt_types.hpp>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-  extern void UART4_IRQHandler();
-  extern void UART5_IRQHandler();
-  extern void UART7_IRQHandler();
-  extern void UART8_IRQHandler();
-#ifdef __cplusplus
-}
-#endif
+#include <Thor/drivers/Uart.hpp>
 
 namespace Thor::UART
 {

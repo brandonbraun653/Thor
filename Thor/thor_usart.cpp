@@ -13,6 +13,7 @@
 #include <boost/circular_buffer.hpp>
 
 /* Chimera Includes */
+#include <Chimera/threading.hpp>
 #include <Chimera/watchdog.hpp>
 
 /* Thor Includes */
@@ -22,19 +23,6 @@
 #include <Thor/dma.hpp>
 #include <Thor/headers.hpp>
 #include <Thor/usart.hpp>
-
-/* FreeRTOS Includes */
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include "FreeRTOS.h"
-#include "semphr.h"
-
-#ifdef __cplusplus
-}
-#endif
 
 /* Mock Includes */
 #if defined( GMOCK_TEST )
@@ -880,7 +868,7 @@ namespace Thor::USART
   {
     HAL_StatusTypeDef stm32Error = HAL_BUSY;
 
-    if ( reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+    if ( lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
     {
       /*------------------------------------------------
       It's possible to get into the condition where ORE is set before trying to receive some
@@ -897,7 +885,7 @@ namespace Thor::USART
       stm32Error = HAL_USART_Receive( &usart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
                                       BLOCKING_TIMEOUT_MS );
 #endif
-      release();
+      unlock();
     }
 
     return convertHALStatus( stm32Error );
@@ -910,7 +898,7 @@ namespace Thor::USART
 
     /* clang-format off */
     if ( ( length <= rxBuffers.internalSize )
-      && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+      && lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
     { /* clang-format on */
       /*------------------------------------------------
       Let the ISR handler know that we explicitely asked to receive some data.
@@ -929,7 +917,7 @@ namespace Thor::USART
         error = convertHALStatus( stm32Error );
       }
 
-      release();
+      unlock();
     }
     else
     {
@@ -946,7 +934,7 @@ namespace Thor::USART
 
     /* clang-format off */
     if ( ( length <= rxBuffers.internalSize )
-      && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+      && lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
     { /* clang-format on */
       /*------------------------------------------------
       Let the ISR handler know that we explicitely asked to receive some data.
@@ -970,7 +958,7 @@ namespace Thor::USART
         error = convertHALStatus( stm32Error );
       }
 
-      release();
+      unlock();
     }
     else
     {
@@ -984,7 +972,7 @@ namespace Thor::USART
   {
     HAL_StatusTypeDef stm32Error = HAL_BUSY;
 
-    if ( reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+    if ( lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
     {
 #if defined( USING_FREERTOS )
       stm32Error = HAL_USART_Transmit( &usart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
@@ -993,7 +981,7 @@ namespace Thor::USART
       stm32Error = HAL_USART_Transmit( &usart_handle, const_cast<uint8_t *>( buffer ), static_cast<uint16_t>( length ),
                                        BLOCKING_TIMEOUT_MS );
 #endif
-      release();
+      unlock();
     }
     return convertHALStatus( stm32Error );
   }
@@ -1006,7 +994,7 @@ namespace Thor::USART
     /* clang-format off */
     if ( txBuffers.initialized()
       && PeripheralState.tx_buffering_enabled 
-      && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+      && lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
     { /* clang-format on */
       if ( tx_complete )
       {
@@ -1026,7 +1014,7 @@ namespace Thor::USART
         txBuffers.push( buffer, length );
       }
 
-      release();
+      unlock();
     }
     else
     {
@@ -1044,7 +1032,7 @@ namespace Thor::USART
     /* clang-format off */
       if ( txBuffers.initialized() 
         && PeripheralState.tx_buffering_enabled 
-        && reserve( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
+        && lock( Chimera::Threading::TIMEOUT_DONT_WAIT ) == Chimera::CommonStatusCodes::OK )
       { /* clang-format on */
       if ( tx_complete )
       {
@@ -1064,7 +1052,7 @@ namespace Thor::USART
         txBuffers.push( buffer, length );
       }
 
-      release();
+      unlock();
     }
     else
     {

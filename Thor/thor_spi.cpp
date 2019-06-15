@@ -713,7 +713,7 @@ namespace Thor::SPI
     HAL_StatusTypeDef stm32Error = HAL_BUSY;
     Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
 
-    if ( reserve( timeoutMS ) == Chimera::CommonStatusCodes::OK )
+    if ( lock( timeoutMS ) == Chimera::CommonStatusCodes::OK )
     {
       /*------------------------------------------------
       Activate the chip select line?
@@ -775,7 +775,7 @@ namespace Thor::SPI
         error = convertHALStatus( stm32Error );
       }
 
-      release();
+      unlock();
     }
     else
     {
@@ -795,7 +795,7 @@ namespace Thor::SPI
     HAL_StatusTypeDef stm32Error = HAL_OK;
     Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
 
-    if ( transfer_complete && ( reserve( timeoutMS ) == Chimera::CommonStatusCodes::OK ) )
+    if ( transfer_complete && ( lock( timeoutMS ) == Chimera::CommonStatusCodes::OK ) )
     {
       /*------------------------------------------------
       Activate the chip select line?
@@ -847,7 +847,7 @@ namespace Thor::SPI
         }
       }
 
-      release();
+      unlock();
     }
     else
     {
@@ -867,7 +867,7 @@ namespace Thor::SPI
     HAL_StatusTypeDef stm32Error = HAL_OK;
     Chimera::Status_t error      = Chimera::CommonStatusCodes::OK;
 
-    if ( transfer_complete && ( reserve( timeoutMS ) == Chimera::CommonStatusCodes::OK ) )
+    if ( transfer_complete && ( lock( timeoutMS ) == Chimera::CommonStatusCodes::OK ) )
     {
       /*------------------------------------------------
       Activate the chip select line?
@@ -915,7 +915,7 @@ namespace Thor::SPI
         }
       }
 
-      release();
+      unlock();
     }
     else
     {

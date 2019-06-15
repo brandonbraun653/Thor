@@ -28,6 +28,7 @@
 /* Thor Includes */
 #include <Thor/gpio.hpp>
 #include <Thor/types/interrupt_types.hpp>
+#include <Thor/drivers/Usart.hpp>
 
 
 namespace Thor::USART
