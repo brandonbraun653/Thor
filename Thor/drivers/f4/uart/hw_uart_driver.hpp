@@ -43,7 +43,14 @@ namespace Thor::Driver::UART
   };
 }    // namespace Thor::Driver::UART
 
-extern void UART4_IRQHandler();
-extern void UART5_IRQHandler();
+#if defined( __cplusplus )
+extern "C"
+{
+#endif
+  void UART4_IRQHandler();
+  void UART5_IRQHandler();
+#if defined( __cplusplus )
+}
+#endif
 
 #endif /* !THOR_HW_UART_DRIVER_HPP */

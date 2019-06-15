@@ -83,9 +83,18 @@ namespace Thor::Driver::USART
   };
 }    // namespace Thor::Driver::USART
 
-extern void USART1_IRQHandler();
-extern void USART2_IRQHandler();
-extern void USART3_IRQHandler();
-extern void USART6_IRQHandler();
+#if defined( __cplusplus )
+extern "C"
+{
+#endif
+
+  void USART1_IRQHandler();
+  void USART2_IRQHandler();
+  void USART3_IRQHandler();
+  void USART6_IRQHandler();
+
+#if defined( __cplusplus )
+}
+#endif
 
 #endif /* !THOR_HW_USART_DRIVER_HPP */
