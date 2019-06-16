@@ -97,6 +97,7 @@ explicit_alias _RTOS : : <FreeRTOS>enabled :
 explicit_alias _CHIMERA : : <Chimera>enabled :
     :   <define>USING_CHIMERA
         <use>/CHIMERA//PUB          # Chimera Headers
+        <use>/PRJ//CHIMERA_PORT     # Project specific chimeraPort.hpp
     ;
 
 # ====================================================
