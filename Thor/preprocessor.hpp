@@ -26,40 +26,76 @@ https://clang.llvm.org/docs/LanguageExtensions.html
 #endif
 
 /*-------------------------------------------
-STM32 Devices
+Selects the hardware driver implementation. At the moment the possible options are 
+the STM32HAL or a custom driver. If the preprocessor can't find the required
+resources, an error message will be presented to the user when they try to build.
+
+STM32 Driver:     THOR_STM32HAL_DRIVERS=1
+Custom Driver:    THOR_CUSTOM_DRIVERS=1
 -------------------------------------------*/
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
+
+/*-------------------------------------------------
+STM32HAL_F7
+-------------------------------------------------*/
 #if __has_include( "stm32f7/Device/include/stm32f7xx.h" )
 #define TARGET_STM32F7
 #define CORTEX_M7
 
-#if !defined( STM32F767xx )
+#if !defined( STM32F767xx ) // || !defined( <some_other_chip> )
 #error Please define a supported STM32F7 series device in the project preprocessor (or add the def for a new one)
 #endif
 
-#endif /* STM32F7 SERIES DEVICES */
+#endif /* STM32F7 HAL DRIVER */
 
+/*-------------------------------------------------
+STM32HAL_F4
+-------------------------------------------------*/
 #if __has_include( "stm32f4/Device/include/stm32f4xx.h" ) 
 #define TARGET_STM32F4
 #define CORTEX_M4
 
-#if !defined( STM32F446xx )
+#if !defined( STM32F446xx ) // || !defined( <some_other_chip> )
 #error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)
 #endif
 
-#endif /* STM32F4 SERIES DEVICES */
-
-#if !defined( CORTEX_M4 ) && !defined( CORTEX_M7 )
-#error No detected STM32 device. Please add to your project build system.
-#endif /* CORTEX_xx */
+#endif /* STM32F4 HAL DRIVER */
 
 #if !defined( USE_FULL_LL_DRIVER ) && !defined( GMOCK_TEST )
 #error Please define USE_FULL_LL_DRIVER in the compiler preprocessor
+#endif
+
+#elif defined( THOR_CUSTOM_DRIVERS ) && ( THOR_CUSTOM_DRIVERS == 1 )
+
+/*-------------------------------------------------
+Custom STM32F4 Driver
+-------------------------------------------------*/
+#if __has_include( "Thor/drivers/f4/common/definitions.hpp" )
+#define TARGET_STM32F4
+#define CORTEX_M4
+
+#if !defined( STM32F446xx ) // || !defined( <some_other_chip> )
+#error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)
+#endif
+
+#endif /* STM32F4 CUSTOM DRIVER */
+
+/*-------------------------------------------------
+Custom STM32F4 Driver
+-------------------------------------------------*/
+// TODO
+
+#endif /* !THOR_CUSTOM_DRIVERS */
+
+#if !defined( TARGET_STM32F4 ) && !defined( TARGET_STM32F7 )
+#error No detected STM32 device. Please add to your project build system.
 #endif
 
 /*-------------------------------------------
 Boost
 -------------------------------------------*/
 #ifndef BOOST_NO_EXCEPTIONS
+/* Thor does not support exceptions due to cost overhead */
 #error Please define BOOST_NO_EXCEPTIONS in the compiler preprocessor
 #endif
 
@@ -123,4 +159,4 @@ GTest & GMock:
 #endif /* GTEST_TEST || GMOCK_TEST */
 
 
-#endif
+#endif  /* !THOR_PREPROCESSOR_HPP */

@@ -5,6 +5,7 @@
 #include <Thor/preprocessor.hpp>
 #include <Chimera/types/common_types.hpp>
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 #ifdef __cplusplus
 extern "C"
 {
@@ -46,5 +47,6 @@ static inline constexpr Chimera::Status_t convertHALStatus( const HAL_StatusType
       break;
   }
 }
+#endif 
 
 #endif /*! CORE_H_ */

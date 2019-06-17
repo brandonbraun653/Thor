@@ -13,6 +13,7 @@
 #include <Thor/print.hpp>
 #include <Thor/definitions/interrupt_definitions.hpp>
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 #if defined( USING_FREERTOS )
 #ifdef __cplusplus
 extern "C"
@@ -30,7 +31,9 @@ extern "C"
 void ThorInit()
 {
   /* This absolutely must be called first to setup the HAL system properly */
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
   HAL_Init();
+#endif 
 
   /* Set the clock and peripheral settings to max performance */
   ThorSystemClockConfig();
@@ -64,7 +67,8 @@ namespace Thor
 {
   uint32_t millis()
   {
-    return HAL_GetTick();
+    // return HAL_GetTick();
+    return 0;
   }
 
   void delayMilliseconds( uint32_t ms )
@@ -80,5 +84,6 @@ namespace Thor
   void delayMicroseconds( uint32_t us )
   {
   }
-
 }    // namespace Thor
+
+#endif 

@@ -25,7 +25,7 @@ namespace Chimera::Modules::FreeRTOS
 
   void ApplicationTickHook()
   {
-    HAL_IncTick();
+    //HAL_IncTick();
   }
 
   void ApplicationMallocFailedHook()

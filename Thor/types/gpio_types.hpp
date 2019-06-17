@@ -19,6 +19,7 @@
 /* Thor Includes */
 #include <Thor/headers.hpp>
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor::GPIO
 {
   class GPIOClass;
@@ -104,6 +105,6 @@ namespace Thor::GPIO
   };
 
 }    // namespace Thor::GPIO
-
+#endif 
 
 #endif /* !THOR_GPIO_TYPES_HPP */

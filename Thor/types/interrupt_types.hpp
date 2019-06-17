@@ -18,6 +18,7 @@
 /* Thor Includes */
 #include <Thor/headers.hpp>
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor::Interrupt
 {
   struct Initializer
@@ -27,5 +28,6 @@ namespace Thor::Interrupt
     uint32_t subPriority;
   };
 }    // namespace Thor::Interrupt
+#endif 
 
 #endif /* !THOR_IT_TYPES_HPP */

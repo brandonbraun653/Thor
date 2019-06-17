@@ -1,9 +1,10 @@
 /********************************************************************************
  * File Name:
- *   usart.hpp
+ *    usart.hpp
  *
  * Description:
- *   USART interface for Thor
+ *    USART interface for Thor. This file supports the top level interface layer
+ *    that all drivers for the underlying hardware must conform to.
  *
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -26,9 +27,9 @@
 #include <Chimera/types/event_types.hpp>
 
 /* Thor Includes */
+#include <Thor/drivers/Usart.hpp>
 #include <Thor/gpio.hpp>
 #include <Thor/types/interrupt_types.hpp>
-#include <Thor/drivers/Usart.hpp>
 
 
 namespace Thor::USART
@@ -37,6 +38,19 @@ namespace Thor::USART
   using USARTClass_sPtr = std::shared_ptr<USARTClass>;
   using USARTClass_uPtr = std::unique_ptr<USARTClass>;
 
+  /**
+   *  Class that can be used to interact with a USART hardware peripheral on any 
+   *  supported STM32 series devices. The intent is to allow the software engineer
+   *  to easily consume the USART hardware with minimal effort. By default this 
+   *  class is designed to be thread safe, but the actual reality of this depends
+   *  upon whether or not the low level driver takes advantage of the inherited
+   *  RTOS functionality.
+   * 
+   *  @note Documenation for all public functions can be found in the inherited 
+   *        interface class. All low level drivers that implement this class must
+   *        follow the behavior specified in the function documentation in order
+   *        to not break higher level code that builds on this module.
+   */
   class USARTClass : public Chimera::Serial::Interface
   {
   public:
@@ -92,8 +106,11 @@ namespace Thor::USART
     /*------------------------------------------------
     Allows the C STM32 HAL and ISR functions access this class
     ------------------------------------------------*/
+    #if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
     friend void(::HAL_USART_TxCpltCallback )( USART_HandleTypeDef *UsartHandle );
     friend void(::HAL_USART_RxCpltCallback )( USART_HandleTypeDef *UsartHandle );
+    #endif 
+
     friend void(::USART1_IRQHandler )( void );
     friend void(::USART2_IRQHandler )( void );
     friend void(::USART3_IRQHandler )( void );

@@ -23,6 +23,7 @@ extern "C"
 {
 #endif
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 #if defined( TARGET_STM32F7 )
 #include <stm32f7/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h>
 #endif /* TARGET_STM32F7 */
@@ -30,6 +31,7 @@ extern "C"
 #if defined( TARGET_STM32F4 )
 #include <stm32f4/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h>
 #endif /* TARGET_STM32F4 */
+#endif /* THOR_STM32HAL_DRIVERS*/
 
 #if defined( USING_FREERTOS )
 #include "FreeRTOS.h"

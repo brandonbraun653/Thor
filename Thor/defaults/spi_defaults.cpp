@@ -15,6 +15,7 @@
 #include <Thor/defaults/spi_defaults.hpp>
 #include <Thor/types/clock_types.hpp>
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor::SPI
 {
 #if defined( SPI1 )
@@ -413,3 +414,5 @@ namespace Thor::SPI
 
 
 };    // namespace Thor::SPI
+
+#endif 

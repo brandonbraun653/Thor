@@ -20,6 +20,7 @@
 #include <Thor/types/interrupt_types.hpp>
 #include <Thor/types/dma_types.hpp>
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor::Serial
 {
   /** Allows mapping of either a USART or UART peripheral to the serial class. This is intended to be internal use only. */
@@ -44,5 +45,6 @@ namespace Thor::Serial
     const Thor::DMA::Initializer dmaRX;
   };
 }
+#endif 
 
 #endif /* !THOR_SERIAL_TYPES_HPP */

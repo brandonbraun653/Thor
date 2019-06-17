@@ -21,6 +21,7 @@
 /* Thor Includes */
 #include <Thor/types/gpio_types.hpp>
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor::GPIO
 {
   class GPIOClass : public Chimera::GPIO::Interface
@@ -71,5 +72,6 @@ namespace Thor::GPIO
   extern Initializer convertPinInit( const Chimera::GPIO::PinInit &pin );
 }    // namespace Thor::GPIO
 
+#endif 
 
 #endif    // !THOR_GPIO_HPP

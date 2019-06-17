@@ -17,6 +17,7 @@
 
 using namespace Thor::Interrupt;
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor::Serial
 {
   /*------------------------------------------------
@@ -351,3 +352,5 @@ namespace Thor::Serial
   };
 #endif
 }    // namespace Thor::Defaults::Serial
+
+#endif 

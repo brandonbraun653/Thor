@@ -36,6 +36,7 @@ extern "C"
 }
 #endif
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor::SPI
 {
   class SPIClass : public Chimera::SPI::Interface
@@ -177,5 +178,7 @@ namespace Thor::SPI
     void SPI_DMA_DisableInterrupts( const Chimera::Hardware::SubPeripheral periph );
   };
 }    // namespace Thor::SPI
+
+#endif 
 
 #endif /* SPI_H_*/

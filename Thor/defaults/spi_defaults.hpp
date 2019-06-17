@@ -17,6 +17,7 @@
 #include <Thor/definitions/spi_definitions.hpp>
 #include <Thor/types/spi_types.hpp>
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor::SPI
 {
   extern const std::array<const Thor::SPI::SPIConfig *const, Thor::SPI::MAX_SPI_CHANNELS + 1> hwConfig;
@@ -40,5 +41,6 @@ namespace Thor::SPI
     DMA::Source::S_SPI4_TX, DMA::Source::NONE,      DMA::Source::NONE
   };
 }
+#endif 
 
 #endif /* !THOR_DEFAULTS_HPP */

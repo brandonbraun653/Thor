@@ -22,12 +22,12 @@
 #include <Thor/types/dma_types.hpp>
 #include <Thor/types/clock_types.hpp>
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor::SPI
 {
   class SPIClass;
   using SPIClass_sPtr = std::shared_ptr<SPIClass>;
   using SPIClass_uPtr = std::unique_ptr<SPIClass>;
-
 
   struct SPIConfig
   {
@@ -52,5 +52,9 @@ namespace Thor::SPI
     /* Clock Bus */
     Thor::CLK::ClockBus clockBus;
   };
+
 }    // namespace Thor::SPI
+
+
+#endif
 #endif /* !CHIMERA_SPI_TYPES_HPP */
