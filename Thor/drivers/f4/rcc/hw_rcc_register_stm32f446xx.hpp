@@ -1149,6 +1149,21 @@ namespace Thor::Driver::RCC
   static constexpr uint32_t DCKCFGR2_SPDIFRXSEL_Msk = ( 0x1U << DCKCFGR2_SPDIFRXSEL_Pos );
   static constexpr uint32_t DCKCFGR2_SPDIFRXSEL     = DCKCFGR2_SPDIFRXSEL_Msk;
 
+  static constexpr uint32_t PLLCFGR_RST_VALUE    = 0x24003010U;
+  static constexpr uint32_t PLLI2SCFGR_RST_VALUE = 0x24003010U;
+  static constexpr uint32_t PLLSAICFGR_RST_VALUE = 0x04003010U;
+  static constexpr uint32_t MAX_FREQUENCY        = 180000000U; /*!< Max frequency of family in Hz*/
+  static constexpr uint32_t MAX_FREQUENCY_SCALE1 =
+      MAX_FREQUENCY;                                           /*!< Maximum frequency for system clock at power scale1, in Hz */
+  static constexpr uint32_t MAX_FREQUENCY_SCALE2 = 168000000U; /*!< Maximum frequency for system clock at power scale2, in Hz */
+  static constexpr uint32_t MAX_FREQUENCY_SCALE3 = 120000000U; /*!< Maximum frequency for system clock at power scale3, in Hz */
+  static constexpr uint32_t PLLVCO_OUTPUT_MIN    = 100000000U; /*!< Frequency min for PLLVCO output, in Hz */
+  static constexpr uint32_t PLLVCO_INPUT_MIN     = 950000U;    /*!< Frequency min for PLLVCO input, in Hz  */
+  static constexpr uint32_t PLLVCO_INPUT_MAX     = 2100000U;   /*!< Frequency max for PLLVCO input, in Hz  */
+  static constexpr uint32_t PLLVCO_OUTPUT_MAX    = 432000000U; /*!< Frequency max for PLLVCO output, in Hz */
+  static constexpr uint32_t PLLN_MIN_VALUE       = 50U;
+  static constexpr uint32_t PLLN_MAX_VALUE       = 432U;
+
 }    // namespace Thor::Driver::RCC
 
 #endif /* !THOR_HW_RCC_REGISTER_HPP */
