@@ -36,6 +36,9 @@ namespace Thor::System::MemoryMap
   static constexpr uint32_t APB2PERIPH_BASE_ADDR = ( PERIPH_BASE_ADDR + 0x00010000U );
   static constexpr uint32_t AHB1PERIPH_BASE_ADDR = ( PERIPH_BASE_ADDR + 0x00020000U );
   static constexpr uint32_t AHB2PERIPH_BASE_ADDR = ( PERIPH_BASE_ADDR + 0x10000000U );
+
+  static constexpr uint32_t VECT_TAB_OFFSET = 0x00; /*!< Vector Table base offset field. This value must be a multiple of 0x200. */
+
 }    // namespace Thor::System::MemoryMap
 
 #endif /* !THOR_SYSTEM_MEMORY_MAP_HPP */
