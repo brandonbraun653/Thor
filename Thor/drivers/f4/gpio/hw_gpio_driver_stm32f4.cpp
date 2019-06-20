@@ -9,9 +9,11 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/drivers/common/cortex-m4/utilities.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_prj.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_types.hpp>
 
 namespace Thor::Driver::GPIO
 {
+  
 }
