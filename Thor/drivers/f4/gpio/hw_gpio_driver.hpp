@@ -28,63 +28,103 @@
 
 namespace Thor::Driver::GPIO
 {
-  class Driver : public Thor::Driver::GPIOModel,
-                 public Thor::Driver::SignalModel,
-                 public Chimera::Threading::Lockable
+  class DriverBare : public ModelBare
   {
   public:
-    Driver( RegisterMap *const peripheral );
-    ~Driver();
+    DriverBare();
+    ~DriverBare();
 
-    Chimera::Status_t threadedDriveSet( const Chimera::GPIO::Drive drive ) final override;
+    void attach( RegisterMap *const peripheral ) final override;
 
-    Chimera::Status_t threadedSpeedSet( const Thor::Driver::GPIO::Speed speed ) final override;
+    Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive ) final override;
 
-    Chimera::Status_t threadedPullSet( const Chimera::GPIO::Pull pull ) final override;
+    Chimera::Status_t speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed ) final override;
 
-    size_t threadedRead() final override;
+    Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull ) final override;
 
-    Chimera::Status_t threadedWrite( const size_t val ) final override;
+    Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state ) final override;
 
-    Chimera::Status_t threadedAlternateFunctionSet( const size_t val ) final override;
-
-    size_t threadedAlternateFunctionGet() final override;
-
-    Chimera::Status_t atomicDriveSet( const Chimera::GPIO::Drive drive ) final override;
-
-    Chimera::Status_t atomicSpeedSet( const Thor::Driver::GPIO::Speed speed ) final override;
-
-    Chimera::Status_t atomicPullSet( const Chimera::GPIO::Pull pull ) final override;
-
-    Chimera::Status_t atomicWrite( const size_t val ) final override;
-
-    size_t atomicRead() final override;
-
-    Chimera::Status_t atomicAlternateFunctionSet( const size_t val ) final override;
-
-    size_t atomicAlternateFunctionGet() final override;
-
-    Chimera::Status_t driveSet( const Chimera::GPIO::Drive drive ) final override;
-
-    Chimera::Status_t speedSet( const Thor::Driver::GPIO::Speed speed ) final override;
-
-    Chimera::Status_t pullSet( const Chimera::GPIO::Pull pull ) final override;
+    Chimera::Status_t alternateFunctionSet( const uint8_t pin, const size_t val ) final override;
 
     size_t read() final override;
 
-    Chimera::Status_t write( const size_t val ) final override;
+    size_t driveGet( const uint8_t pin ) final override;
 
-    Chimera::Status_t alternateFunctionSet( const size_t val ) final override;
+    size_t speedGet( const uint8_t pin ) final override;
 
-    size_t alternateFunctionGet() final override;
+    size_t pullGet( const uint8_t pin ) final override;
 
-    Chimera::Status_t enableSignal( const InterruptSignal_t sig ) final override;
-
-    Chimera::Status_t disableSignal( const InterruptSignal_t sig ) final override;
+    size_t alternateFunctionGet( const uint8_t pin ) final override;
 
   private:
-    RegisterMap *const periph;
+    RegisterMap *periph;
+  };
+
+
+  class DriverThreaded : public ModelThreaded,
+                         public Chimera::Threading::Lockable
+  {
+  public:
+    DriverThreaded();
+    ~DriverThreaded();
+
+    void attach( RegisterMap *const peripheral ) final override;
+
+    Chimera::Status_t driveSet(  const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout ) final override;
+
+    Chimera::Status_t speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout ) final override;
+
+    Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout ) final override;
+
+    Chimera::Status_t write( const uint8_t pin, const size_t val, const size_t timeout ) final override;
+
+    Chimera::Status_t alternateFunctionSet( const uint8_t pin, const size_t val, const size_t timeout ) final override;
+
+    size_t read( const size_t timeout ) final override;
+
+    size_t driveGet( const uint8_t pin, const size_t timeout ) final override;
+
+    size_t speedGet( const uint8_t pin, const size_t timeout ) final override;
+
+    size_t pullGet( const uint8_t pin, const size_t timeout ) final override;
+
+    size_t alternateFunctionGet( const uint8_t pin, const size_t timeout ) final override;
+
+  private:
+    DriverBare gpio;
     Chimera::Threading::RecursiveMutex_t mutex;
+  };
+
+  class DriverAtomic : public ModelAtomic
+  {
+  public:
+    DriverAtomic();
+    ~DriverAtomic();
+
+    void attach( RegisterMap *const peripheral ) final override;
+
+    Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive ) final override;
+
+    Chimera::Status_t speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed ) final override;
+
+    Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull ) final override;
+
+    Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state ) final override;
+
+    Chimera::Status_t alternateFunctionSet( const uint8_t pin, const size_t val ) final override;
+
+    size_t read() final override;
+
+    size_t driveGet( const uint8_t pin ) final override;
+
+    size_t speedGet( const uint8_t pin ) final override;
+
+    size_t pullGet( const uint8_t pin ) final override;
+
+    size_t alternateFunctionGet( const uint8_t pin ) final override;
+
+  private:
+    RegisterMap *periph;
   };
 
 }    // namespace Thor::Driver::GPIO

@@ -16,129 +16,208 @@
 #include <Thor/drivers/f4/gpio/hw_gpio_prj.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_types.hpp>
 
+
 namespace Thor::Driver::GPIO
 {
-  Driver::Driver( RegisterMap *const peripheral ) : periph( peripheral )
+  /*-----------------------------------------------------
+  Bare Metal Implementation
+  -----------------------------------------------------*/
+  DriverBare::DriverBare() : periph( nullptr )
   {
+  }
+
+  DriverBare::~DriverBare()
+  {
+  }
+
+  void DriverBare::attach( RegisterMap *const peripheral )
+  {
+    periph = peripheral;
+  }
+
+  Chimera::Status_t DriverBare::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t DriverBare::speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t DriverBare::pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t DriverBare::write( const uint8_t pin, const Chimera::GPIO::State state )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t DriverBare::alternateFunctionSet( const uint8_t pin, const size_t val )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  size_t DriverBare::read()
+  {
+    return 0;
+  }
+
+  size_t DriverBare::driveGet( const uint8_t pin )
+  {
+    return 0;
+  }
+
+  size_t DriverBare::speedGet( const uint8_t pin )
+  {
+    return 0;
+  }
+
+  size_t DriverBare::pullGet( const uint8_t pin )
+  {
+    return 0;
+  }
+
+  size_t DriverBare::alternateFunctionGet( const uint8_t pin )
+  {
+    return 0;
+  }
+
+  /*-----------------------------------------------------
+  Threaded Implementation
+  -----------------------------------------------------*/
+  DriverThreaded::DriverThreaded()
+  {
+  }
+
+  DriverThreaded::~DriverThreaded()
+  {
+  }
+
+  void DriverThreaded::attach( RegisterMap *const peripheral )
+  {
+    gpio.attach( peripheral );
     mutex = Chimera::Threading::createRecursiveMutex();
   }
 
-  Driver::~Driver()
-  {
-  }
-
-  Chimera::Status_t Driver::threadedDriveSet( const Chimera::GPIO::Drive drive )
+  Chimera::Status_t DriverThreaded::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::threadedSpeedSet( const Thor::Driver::GPIO::Speed speed )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  Chimera::Status_t Driver::threadedPullSet( const Chimera::GPIO::Pull pull )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  size_t Driver::threadedRead()
-  {
-    return 0;
-  };
-
-  Chimera::Status_t Driver::threadedWrite( const size_t val )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  Chimera::Status_t Driver::threadedAlternateFunctionSet( const size_t val )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  size_t Driver::threadedAlternateFunctionGet()
-  {
-    return 0;
-  };
-
-  Chimera::Status_t Driver::atomicDriveSet( const Chimera::GPIO::Drive drive )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  Chimera::Status_t Driver::atomicSpeedSet( const Thor::Driver::GPIO::Speed speed )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  Chimera::Status_t Driver::atomicPullSet( const Chimera::GPIO::Pull pull )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  Chimera::Status_t Driver::atomicWrite( const size_t val )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  size_t Driver::atomicRead()
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  Chimera::Status_t Driver::atomicAlternateFunctionSet( const size_t val )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  size_t Driver::atomicAlternateFunctionGet()
-  {
-    return 0;
-  };
-
-  Chimera::Status_t Driver::driveSet( const Chimera::GPIO::Drive drive )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  Chimera::Status_t Driver::speedSet( const Thor::Driver::GPIO::Speed speed )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  Chimera::Status_t Driver::pullSet( const Chimera::GPIO::Pull pull )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  size_t Driver::read()
-  {
-    return 0;
-  };
-
-  Chimera::Status_t Driver::write( const size_t val )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  Chimera::Status_t Driver::alternateFunctionSet( const size_t val )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  };
-
-  size_t Driver::alternateFunctionGet()
-  {
-    return 0;
-  };
-
-  Chimera::Status_t Driver::enableSignal( const InterruptSignal_t sig )
+  Chimera::Status_t DriverThreaded::speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::disableSignal( const InterruptSignal_t sig )
+  Chimera::Status_t DriverThreaded::pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t DriverThreaded::write( const uint8_t pin, const size_t val, const size_t timeout )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t DriverThreaded::alternateFunctionSet( const uint8_t pin, const size_t val, const size_t timeout )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  size_t DriverThreaded::read( const size_t timeout )
+  {
+    return 0;
+  }
+
+  size_t DriverThreaded::driveGet( const uint8_t pin, const size_t timeout )
+  {
+    return 0;
+  }
+
+  size_t DriverThreaded::speedGet( const uint8_t pin, const size_t timeout )
+  {
+    return 0;
+  }
+
+  size_t DriverThreaded::pullGet( const uint8_t pin, const size_t timeout )
+  {
+    return 0;
+  }
+
+  size_t DriverThreaded::alternateFunctionGet( const uint8_t pin, const size_t timeout )
+  {
+    return 0;
+  }
+
+
+  /*-----------------------------------------------------
+  Atomic Implementation
+  -----------------------------------------------------*/
+  DriverAtomic::DriverAtomic()
+  {
+
+  }
+
+  DriverAtomic::~DriverAtomic()
+  {
+
+  }
+
+  void attach( RegisterMap *const peripheral )
+  {
+    
+  }
+
+  Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t alternateFunctionSet( const uint8_t pin, const size_t val )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  size_t read()
+  {
+    return 0;
+  }
+
+  size_t driveGet( const uint8_t pin )
+  {
+    return 0;
+  }
+
+  size_t speedGet( const uint8_t pin )
+  {
+    return 0;
+  }
+
+  size_t pullGet( const uint8_t pin )
+  {
+    return 0;
+  }
+
+  size_t alternateFunctionGet( const uint8_t pin )
+  {
+    return 0;
   }
 }    // namespace Thor::Driver::GPIO
