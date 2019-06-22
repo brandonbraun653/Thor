@@ -28,10 +28,10 @@ namespace Thor::Driver
    *  Allows for control over whether or not different asynchronous signals
    *  (interrupts) are enabled or disabled.
    */
-  class Signal
+  class SignalModel
   {
   public:
-    virtual ~Signal() = default;
+    virtual ~SignalModel() = default;
 
     /**
      *  Enables the interrupt that corresponds with the given signal

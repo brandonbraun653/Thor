@@ -34,7 +34,7 @@ namespace Thor::Driver::USART
 {
   class Driver : public Thor::Driver::Serial::Basic,
                  public Thor::Driver::Serial::Extended,
-                 public Thor::Driver::Signal,
+                 public Thor::Driver::SignalModel,
                  public Thor::Driver::BasicCallback,
                  public Chimera::Threading::Lockable
   {
