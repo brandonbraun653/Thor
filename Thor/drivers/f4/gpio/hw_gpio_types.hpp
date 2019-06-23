@@ -3,7 +3,7 @@
  *    hw_gpio_types.hpp
  *
  *   Description:
- *    STM32 Types for the GPIO Peripheral
+ *    STM32F4 Types for the GPIO Peripheral
  *
  *   2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -41,7 +41,83 @@ namespace Thor::Driver::GPIO
   static RegisterMap *const GPIOF_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOF_BASE_ADDR );
   static RegisterMap *const GPIOG_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOG_BASE_ADDR );
   static RegisterMap *const GPIOH_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOH_BASE_ADDR );
-  
+
+  static constexpr uint32_t PIN_0   = 0x0001; /* Pin 0 selected    */
+  static constexpr uint32_t PIN_1   = 0x0002; /* Pin 1 selected    */
+  static constexpr uint32_t PIN_2   = 0x0004; /* Pin 2 selected    */
+  static constexpr uint32_t PIN_3   = 0x0008; /* Pin 3 selected    */
+  static constexpr uint32_t PIN_4   = 0x0010; /* Pin 4 selected    */
+  static constexpr uint32_t PIN_5   = 0x0020; /* Pin 5 selected    */
+  static constexpr uint32_t PIN_6   = 0x0040; /* Pin 6 selected    */
+  static constexpr uint32_t PIN_7   = 0x0080; /* Pin 7 selected    */
+  static constexpr uint32_t PIN_8   = 0x0100; /* Pin 8 selected    */
+  static constexpr uint32_t PIN_9   = 0x0200; /* Pin 9 selected    */
+  static constexpr uint32_t PIN_10  = 0x0400; /* Pin 10 selected   */
+  static constexpr uint32_t PIN_11  = 0x0800; /* Pin 11 selected   */
+  static constexpr uint32_t PIN_12  = 0x1000; /* Pin 12 selected   */
+  static constexpr uint32_t PIN_13  = 0x2000; /* Pin 13 selected   */
+  static constexpr uint32_t PIN_14  = 0x4000; /* Pin 14 selected   */
+  static constexpr uint32_t PIN_15  = 0x8000; /* Pin 15 selected   */
+  static constexpr uint32_t PIN_All = 0xFFFF; /* All pins selected */
+  static constexpr uint32_t MAX_NUM_PINS = 16;
+
+
+  /**
+   *  Mode register configuration options
+   *
+   *  Elements values convention: 0xX0yz00YZ
+   *    - X  : GPIO mode or EXTI Mode
+   *    - y  : External IT or Event trigger detection 
+   *    - z  : IO configuration on External IT or Event
+   *    - Y  : Output type (Push Pull or Open Drain)
+   *    - Z  : IO Direction mode (Input, Output, Alternate or Analog)
+   */
+  enum OPT_MODER : size_t
+  {
+    INPUT              = 0x00000000u, /**< Input Floating Mode                                                */
+    OUTPUT_PP          = 0x00000001u, /**< Output Push Pull Mode                                              */
+    OUTPUT_OD          = 0x00000011u, /**< Output Open Drain Mode                                             */
+    AF_PP              = 0x00000002u, /**< Alternate Function Push Pull Mode                                  */
+    AF_OD              = 0x00000012u, /**< Alternate Function Open Drain Mode                                 */
+    ANALOG             = 0x00000003u, /**< Analog Mode                                                        */
+    IT_RISING          = 0x10110000u, /**< External Interrupt Mode with Rising edge trigger detection         */
+    IT_FALLING         = 0x10210000u, /**< External Interrupt Mode with Falling edge trigger detection        */
+    IT_RISING_FALLING  = 0x10310000u, /**< External Interrupt Mode with Rising/Falling edge trigger detection */
+    EVT_RISING         = 0x10120000u, /**< External Event Mode with Rising edge trigger detection             */
+    EVT_FALLING        = 0x10220000u, /**< External Event Mode with Falling edge trigger detection            */
+    EVT_RISING_FALLING = 0x10320000u, /**< External Event Mode with Rising/Falling edge trigger detection     */
+  };
+
+  /**
+   *  Output type register configuration options
+   */
+  enum OPT_OTYPER : size_t
+  {
+    PUSH_PULL  = 0u, /**< The GPIO will be configured as a push-pull output */
+    OPEN_DRAIN = 1u  /**< The GPIO will be configured as an open-drain output */
+  };
+
+  /**
+   *  Output speed register configuration options
+   */
+  enum OPT_OSPEEDR : size_t
+  {
+    LOW       = 0u, /**< IO works at 2 MHz, please refer to the product datasheet */
+    MEDIUM    = 1u, /**< range 12,5 MHz to 50 MHz, please refer to the product datasheet */
+    HIGH      = 2u, /**< range 25 MHz to 100 MHz, please refer to the product datasheet  */
+    VERY_HIGH = 3u  /**< range 50 MHz to 200 MHz, please refer to the product datasheet  */
+  };
+
+  /**
+   *  Pull up/down register configuration options
+   */
+  enum OPT_PUPDR : size_t
+  {
+    NOPULL   = 0x00u, /**< No pull up or pull down activation */
+    PULLUP   = 0x01u, /**< Pull up activation */
+    PULLDOWN = 0x02u  /**< Pull down activation */
+  };
+
 }    // namespace Thor::Driver::GPIO
 
 #endif /* !THOR_HW_GPIO_TYPEGPIOHS_HPP */

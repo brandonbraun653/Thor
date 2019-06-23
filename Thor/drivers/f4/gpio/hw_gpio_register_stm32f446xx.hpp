@@ -30,6 +30,66 @@ namespace Thor::Driver::GPIO
   static constexpr uint32_t GPIOH_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x1C00U;
 
   /*------------------------------------------------
+  Alternate Functions
+  ------------------------------------------------*/
+  static constexpr uint8_t AF0_RTC_50Hz   = 0x00; /* RTC_50Hz Alternate Function mapping                       */
+  static constexpr uint8_t AF0_MCO        = 0x00; /* MCO (MCO1 and MCO2) Alternate Function mapping            */
+  static constexpr uint8_t AF0_TAMPER     = 0x00; /* TAMPER (TAMPER_1 and TAMPER_2) Alternate Function mapping */
+  static constexpr uint8_t AF0_SWJ        = 0x00; /* SWJ (SWD and JTAG) Alternate Function mapping             */
+  static constexpr uint8_t AF0_TRACE      = 0x00; /* TRACE Alternate Function mapping                          */
+  static constexpr uint8_t AF1_TIM1       = 0x01; /* TIM1 Alternate Function mapping */
+  static constexpr uint8_t AF1_TIM2       = 0x01; /* TIM2 Alternate Function mapping */
+  static constexpr uint8_t AF2_TIM3       = 0x02; /* TIM3 Alternate Function mapping */
+  static constexpr uint8_t AF2_TIM4       = 0x02; /* TIM4 Alternate Function mapping */
+  static constexpr uint8_t AF2_TIM5       = 0x02; /* TIM5 Alternate Function mapping */
+  static constexpr uint8_t AF3_TIM8       = 0x03; /* TIM8 Alternate Function mapping  */
+  static constexpr uint8_t AF3_TIM9       = 0x03; /* TIM9 Alternate Function mapping  */
+  static constexpr uint8_t AF3_TIM10      = 0x03; /* TIM10 Alternate Function mapping */
+  static constexpr uint8_t AF3_TIM11      = 0x03; /* TIM11 Alternate Function mapping */
+  static constexpr uint8_t AF3_CEC        = 0x03; /* CEC Alternate Function mapping   */
+  static constexpr uint8_t AF4_I2C1       = 0x04; /* I2C1 Alternate Function mapping */
+  static constexpr uint8_t AF4_I2C2       = 0x04; /* I2C2 Alternate Function mapping */
+  static constexpr uint8_t AF4_I2C3       = 0x04; /* I2C3 Alternate Function mapping */
+  static constexpr uint8_t AF4_FMPI2C1    = 0x04; /* FMPI2C1 Alternate Function mapping */
+  static constexpr uint8_t AF4_CEC        = 0x04; /* CEC Alternate Function mapping  */
+  static constexpr uint8_t AF5_SPI1       = 0x05; /* SPI1/I2S1 Alternate Function mapping   */
+  static constexpr uint8_t AF5_SPI2       = 0x05; /* SPI2/I2S2 Alternate Function mapping   */
+  static constexpr uint8_t AF5_SPI3       = 0x05; /* SPI3/I2S3 Alternate Function mapping   */
+  static constexpr uint8_t AF5_SPI4       = 0x05; /* SPI4 Alternate Function mapping        */
+  static constexpr uint8_t AF6_SPI2       = 0x06; /* SPI2/I2S2 Alternate Function mapping  */
+  static constexpr uint8_t AF6_SPI3       = 0x06; /* SPI3/I2S3 Alternate Function mapping  */
+  static constexpr uint8_t AF6_SPI4       = 0x06; /* SPI4 Alternate Function mapping       */
+  static constexpr uint8_t AF6_SAI1       = 0x06; /* SAI1 Alternate Function mapping       */
+  static constexpr uint8_t AF7_USART1     = 0x07; /* USART1 Alternate Function mapping     */
+  static constexpr uint8_t AF7_USART2     = 0x07; /* USART2 Alternate Function mapping     */
+  static constexpr uint8_t AF7_USART3     = 0x07; /* USART3 Alternate Function mapping     */
+  static constexpr uint8_t AF7_UART5      = 0x07; /* UART5 Alternate Function mapping      */
+  static constexpr uint8_t AF7_SPI2       = 0x07; /* SPI2/I2S2 Alternate Function mapping  */
+  static constexpr uint8_t AF7_SPI3       = 0x07; /* SPI3/I2S3 Alternate Function mapping  */
+  static constexpr uint8_t AF7_SPDIFRX    = 0x07; /* SPDIFRX Alternate Function mapping      */
+  static constexpr uint8_t AF8_UART4      = 0x08; /* UART4 Alternate Function mapping  */
+  static constexpr uint8_t AF8_UART5      = 0x08; /* UART5 Alternate Function mapping  */
+  static constexpr uint8_t AF8_USART6     = 0x08; /* USART6 Alternate Function mapping */
+  static constexpr uint8_t AF8_SPDIFRX    = 0x08; /* SPDIFRX Alternate Function mapping  */
+  static constexpr uint8_t AF8_SAI2       = 0x08; /* SAI2 Alternate Function mapping   */
+  static constexpr uint8_t AF9_CAN1       = 0x09; /* CAN1 Alternate Function mapping  */
+  static constexpr uint8_t AF9_CAN2       = 0x09; /* CAN2 Alternate Function mapping  */
+  static constexpr uint8_t AF9_TIM12      = 0x09; /* TIM12 Alternate Function mapping */
+  static constexpr uint8_t AF9_TIM13      = 0x09; /* TIM13 Alternate Function mapping */
+  static constexpr uint8_t AF9_TIM14      = 0x09; /* TIM14 Alternate Function mapping */
+  static constexpr uint8_t AF9_QSPI       = 0x09; /* QSPI Alternate Function mapping  */
+  static constexpr uint8_t AF10_OTG_FS    = 0x0A; /* OTG_FS Alternate Function mapping */
+  static constexpr uint8_t AF10_OTG_HS    = 0x0A; /* OTG_HS Alternate Function mapping */
+  static constexpr uint8_t AF10_SAI2      = 0x0A; /* SAI2 Alternate Function mapping   */
+  static constexpr uint8_t AF10_QSPI      = 0x0A; /* QSPI Alternate Function mapping  */
+  static constexpr uint8_t AF11_ETH       = 0x0B; /* ETHERNET Alternate Function mapping */
+  static constexpr uint8_t AF12_FMC       = 0x0C; /* FMC Alternate Function mapping                      */
+  static constexpr uint8_t AF12_OTG_HS_FS = 0x0C; /* OTG HS configured in FS, Alternate Function mapping */
+  static constexpr uint8_t AF12_SDIO      = 0x0C; /* SDIO Alternate Function mapping                     */
+  static constexpr uint8_t AF13_DCMI      = 0x0D; /* DCMI Alternate Function mapping */
+  static constexpr uint8_t AF15_EVENTOUT  = 0x0F; /* EVENTOUT Alternate Function mapping */
+
+  /*------------------------------------------------
   MODER
   ------------------------------------------------*/
   static constexpr uint32_t MODER_MODE0_Pos  = ( 0U );
@@ -168,6 +228,9 @@ namespace Thor::Driver::GPIO
   /*------------------------------------------------
   OSPEEDR
   ------------------------------------------------*/
+  static constexpr uint32_t OSPEEDR_CFG_X_WID = 0x02u;
+  static constexpr uint32_t OSPEEDR_CFG_X_MSK = 0x03u;
+
   static constexpr uint32_t OSPEEDR_OSPEED0_Pos  = ( 0U );
   static constexpr uint32_t OSPEEDR_OSPEED0_Msk  = ( 0x3U << OSPEEDR_OSPEED0_Pos );
   static constexpr uint32_t OSPEEDR_OSPEED0      = OSPEEDR_OSPEED0_Msk;

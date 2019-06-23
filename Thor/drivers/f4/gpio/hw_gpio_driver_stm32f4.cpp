@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Chimera Includes */
+#include <Chimera/assert.hpp>
 
 /* Driver Includes */
 #include <Thor/drivers/common/cortex-m4/utilities.hpp>
@@ -62,21 +63,31 @@ namespace Thor::Driver::GPIO
 
   size_t DriverBare::read()
   {
-    return 0;
+    return periph->IDR;
   }
 
   size_t DriverBare::driveGet( const uint8_t pin )
   {
+    DBG_ASSERT( pin < MAX_NUM_PINS )
     return 0;
   }
 
   size_t DriverBare::speedGet( const uint8_t pin )
   {
-    return 0;
+    DBG_ASSERT( pin < MAX_NUM_PINS )
+
+    const auto shift_val = pin * OSPEEDR_CFG_X_WID;
+    const auto current_val = periph->OSPEEDR & ( OSPEEDR_CFG_X_MSK << shift_val );
+
+    return static_cast<OPT_OSPEEDR>( current_val >> shift_val );
   }
 
   size_t DriverBare::pullGet( const uint8_t pin )
   {
+    DBG_ASSERT( pin < MAX_NUM_PINS )
+
+
+
     return 0;
   }
 
