@@ -29,6 +29,8 @@ namespace Thor::Driver::GPIO
   static constexpr uint32_t GPIOG_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x1800U;
   static constexpr uint32_t GPIOH_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x1C00U;
 
+  static constexpr size_t NUM_GPIO_PERIPHS = 8;
+
   /*------------------------------------------------
   Alternate Functions
   ------------------------------------------------*/
@@ -89,9 +91,14 @@ namespace Thor::Driver::GPIO
   static constexpr uint8_t AF13_DCMI      = 0x0D; /* DCMI Alternate Function mapping */
   static constexpr uint8_t AF15_EVENTOUT  = 0x0F; /* EVENTOUT Alternate Function mapping */
 
+  static constexpr uint8_t AF_NONE = 0xFF;
+
   /*------------------------------------------------
   MODER
   ------------------------------------------------*/
+  static constexpr uint32_t MODER_CFG_X_WID = 0x02u;
+  static constexpr uint32_t MODER_CFG_X_MSK = 0x03u;
+
   static constexpr uint32_t MODER_MODE0_Pos  = ( 0U );
   static constexpr uint32_t MODER_MODE0_Msk  = ( 0x3U << MODER_MODE0_Pos );
   static constexpr uint32_t MODER_MODE0      = MODER_MODE0_Msk;
@@ -315,6 +322,9 @@ namespace Thor::Driver::GPIO
   /*------------------------------------------------
   PUPDR
   ------------------------------------------------*/
+  static constexpr uint32_t PUPDR_CFG_X_WID = 0x02u;
+  static constexpr uint32_t PUPDR_CFG_X_MSK = 0x03u;
+  
   static constexpr uint32_t PUPDR_PUPD0_Pos  = ( 0U );
   static constexpr uint32_t PUPDR_PUPD0_Msk  = ( 0x3U << PUPDR_PUPD0_Pos );
   static constexpr uint32_t PUPDR_PUPD0      = PUPDR_PUPD0_Msk;
@@ -658,6 +668,9 @@ namespace Thor::Driver::GPIO
   /*------------------------------------------------
   AFRL
   ------------------------------------------------*/
+  static constexpr uint32_t AFR_CFG_X_WID = 0x04u;
+  static constexpr uint32_t AFR_CFG_X_MSK = 0x0Fu;
+  
   static constexpr uint32_t AFRL_AFSEL0_Pos = ( 0U );
   static constexpr uint32_t AFRL_AFSEL0_Msk = ( 0xFU << AFRL_AFSEL0_Pos );
   static constexpr uint32_t AFRL_AFSEL0     = AFRL_AFSEL0_Msk;

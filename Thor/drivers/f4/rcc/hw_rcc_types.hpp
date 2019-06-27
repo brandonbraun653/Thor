@@ -59,6 +59,18 @@ namespace Thor::Driver::RCC
   };
 
   static RegisterMap *const RCC_PERIPH = reinterpret_cast<RegisterMap *const>( Thor::Driver::RCC::RCC_BASE_ADDR );
+
+  struct CEConfig
+  {
+    volatile uint32_t *CER; /**< Clock enable register  */
+    uint8_t CERMask;        /**< Clock enable bit mask */
+  };
+
+  struct PRRConfig
+  {
+    volatile uint32_t *PRR; /**< Peripheral Reset Register */
+    uint8_t PRRMask;        /**< Peripheral reset bit mask */
+  };
 }    // namespace Thor::Driver::RCC
 
 #endif /* !THOR_HW_RCC_TYPES_HPP */

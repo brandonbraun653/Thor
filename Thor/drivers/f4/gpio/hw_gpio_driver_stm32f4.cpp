@@ -14,9 +14,10 @@
 /* Driver Includes */
 #include <Thor/drivers/common/cortex-m4/utilities.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_driver.hpp>
+#include <Thor/drivers/f4/gpio/hw_gpio_mapping.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_prj.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_types.hpp>
-
+#include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
 
 namespace Thor::Driver::GPIO
 {
@@ -31,34 +32,99 @@ namespace Thor::Driver::GPIO
   {
   }
 
-  void DriverBare::attach( RegisterMap *const peripheral )
+  void DriverBare::attach( volatile RegisterMap *const peripheral )
   {
     periph = peripheral;
+
+    auto i = reinterpret_cast<std::uintptr_t>( peripheral );
+  }
+
+  void DriverBare::clockEnable()
+  {
+  }
+
+  void DriverBare::clockDisable()
+  {
   }
 
   Chimera::Status_t DriverBare::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    DBG_ASSERT( pin < MAX_NUM_PINS )
+    auto const shift_val = pin * MODER_CFG_X_WID;
+    auto tmp             = periph->MODER;
+
+    /*------------------------------------------------
+    Use read-modify-write
+    ------------------------------------------------*/
+    tmp &= ~( MODER_CFG_X_MSK << shift_val );
+    tmp |= ( ModeMap.find( static_cast<uint8_t>( drive ) )->second & MODER_CFG_X_MSK ) << shift_val;
+    periph->MODER = tmp;
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t DriverBare::speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    DBG_ASSERT( pin < MAX_NUM_PINS )
+    auto const shift_val = pin * OSPEEDR_CFG_X_WID;
+    auto tmp             = periph->OSPEEDR;
+
+    tmp &= ~( OSPEEDR_CFG_X_MSK << shift_val );
+    tmp |= ( SpeedMap.find( static_cast<uint8_t>( speed ) )->second & OSPEEDR_CFG_X_MSK ) << shift_val;
+    periph->OSPEEDR = tmp;
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t DriverBare::pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    DBG_ASSERT( pin < MAX_NUM_PINS )
+    auto const shift_val = pin * PUPDR_CFG_X_WID;
+    auto tmp             = periph->PUPDR;
+
+    tmp &= ~( PUPDR_CFG_X_MSK << shift_val );
+    tmp |= ( PullMap.find( static_cast<uint8_t>( pull ) )->second & PUPDR_CFG_X_MSK ) << shift_val;
+    periph->PUPDR = tmp;
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t DriverBare::write( const uint8_t pin, const Chimera::GPIO::State state )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    DBG_ASSERT( pin < MAX_NUM_PINS )
+
+    auto temp = periph->ODR;
+
+    if ( static_cast<bool>( state ) )
+    {
+      temp |= 1u << pin;
+    }
+    else
+    {
+      temp &= ~( 1u << pin );
+    }
+
+    periph->ODR = temp;
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t DriverBare::alternateFunctionSet( const uint8_t pin, const size_t val )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    static_assert( sizeof( uint64_t ) == sizeof( RegisterMap::AFR ), "Invalid register memory map" );
+
+    uint64_t temp         = 0u;
+    const uint64_t offset = pin * AFR_CFG_X_WID;
+
+    /*------------------------------------------------
+    64-bit wide read-modify-write sequence to AFRL & AFRH
+    ------------------------------------------------*/
+    temp = *periph->AFR;
+    temp &= ~( AFR_CFG_X_MSK << offset );
+    temp |= ( val & AFR_CFG_X_MSK ) << offset;
+    *periph->AFR = temp;
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   size_t DriverBare::read()
@@ -76,7 +142,7 @@ namespace Thor::Driver::GPIO
   {
     DBG_ASSERT( pin < MAX_NUM_PINS )
 
-    const auto shift_val = pin * OSPEEDR_CFG_X_WID;
+    const auto shift_val   = pin * OSPEEDR_CFG_X_WID;
     const auto current_val = periph->OSPEEDR & ( OSPEEDR_CFG_X_MSK << shift_val );
 
     return static_cast<OPT_OSPEEDR>( current_val >> shift_val );
@@ -85,7 +151,6 @@ namespace Thor::Driver::GPIO
   size_t DriverBare::pullGet( const uint8_t pin )
   {
     DBG_ASSERT( pin < MAX_NUM_PINS )
-
 
 
     return 0;
@@ -107,7 +172,7 @@ namespace Thor::Driver::GPIO
   {
   }
 
-  void DriverThreaded::attach( RegisterMap *const peripheral )
+  void DriverThreaded::attach( volatile RegisterMap *const peripheral )
   {
     gpio.attach( peripheral );
     mutex = Chimera::Threading::createRecursiveMutex();
@@ -169,17 +234,14 @@ namespace Thor::Driver::GPIO
   -----------------------------------------------------*/
   DriverAtomic::DriverAtomic()
   {
-
   }
 
   DriverAtomic::~DriverAtomic()
   {
-
   }
 
   void attach( RegisterMap *const peripheral )
   {
-    
   }
 
   Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive )

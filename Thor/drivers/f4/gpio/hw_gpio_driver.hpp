@@ -34,7 +34,11 @@ namespace Thor::Driver::GPIO
     DriverBare();
     ~DriverBare();
 
-    void attach( RegisterMap *const peripheral ) final override;
+    void attach( volatile RegisterMap *const peripheral ) final override;
+
+    void clockEnable() final override;
+
+    void clockDisable() final override;
 
     Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive ) final override;
 
@@ -57,7 +61,7 @@ namespace Thor::Driver::GPIO
     size_t alternateFunctionGet( const uint8_t pin ) final override;
 
   private:
-    RegisterMap *periph;
+    volatile RegisterMap *periph;
   };
 
 
@@ -68,7 +72,11 @@ namespace Thor::Driver::GPIO
     DriverThreaded();
     ~DriverThreaded();
 
-    void attach( RegisterMap *const peripheral ) final override;
+    void attach( volatile RegisterMap *const peripheral ) final override;
+
+    void clockEnable() final override;
+
+    void clockDisable() final override;
 
     Chimera::Status_t driveSet(  const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout ) final override;
 
@@ -101,7 +109,11 @@ namespace Thor::Driver::GPIO
     DriverAtomic();
     ~DriverAtomic();
 
-    void attach( RegisterMap *const peripheral ) final override;
+    void attach( volatile RegisterMap *const peripheral ) final override;
+
+    void clockEnable() final override;
+
+    void clockDisable() final override;
 
     Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive ) final override;
 
@@ -124,7 +136,7 @@ namespace Thor::Driver::GPIO
     size_t alternateFunctionGet( const uint8_t pin ) final override;
 
   private:
-    RegisterMap *periph;
+    volatile RegisterMap *periph;
   };
 
 }    // namespace Thor::Driver::GPIO

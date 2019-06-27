@@ -29,11 +29,6 @@ namespace Thor::Driver::GPIO
     HIGH,
     MAX_SPEED = HIGH
   };
-
-  /**
-   *  Forward declarations of chip specific data structures
-   */
-  struct RegisterMap;
 }
 
 #endif /* !THOR_DRIVER_GPIO_COMMON_TYPES_HPP */

@@ -35,7 +35,21 @@ namespace Thor::Driver::GPIO
      *
      *  @return void
      */
-    virtual void attach( RegisterMap *const peripheral ) = 0;
+    virtual void attach( volatile RegisterMap *const peripheral ) = 0;
+  
+    /**
+     *  Enables the peripheral clock
+     *  
+     *  @return void
+     */
+    virtual void clockEnable() = 0;
+
+    /**
+     *  Disables the peripheral clock
+     *
+     *  @return void
+     */
+    virtual void clockDisable() = 0;
   };
 
   /**
