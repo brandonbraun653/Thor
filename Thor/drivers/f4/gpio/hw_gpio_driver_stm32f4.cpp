@@ -24,7 +24,7 @@ namespace Thor::Driver::GPIO
   /*-----------------------------------------------------
   Bare Metal Implementation
   -----------------------------------------------------*/
-  DriverBare::DriverBare() : periph( nullptr ), accessIndex(0)
+  DriverBare::DriverBare() : periph( nullptr ), accessIndex( 0 )
   {
   }
 
@@ -182,58 +182,157 @@ namespace Thor::Driver::GPIO
 
   void DriverThreaded::attach( volatile RegisterMap *const peripheral )
   {
-    gpio.attach( peripheral );
-    mutex = Chimera::Threading::createRecursiveMutex();
+    bareMetalDriver.attach( peripheral );
   }
 
   Chimera::Status_t DriverThreaded::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    if ( lock( timeout ) != Chimera::CommonStatusCodes::OK )
+    {
+      result = Chimera::CommonStatusCodes::LOCKED;
+    }
+    else
+    {
+      result = bareMetalDriver.driveSet( pin, drive );
+      unlock();
+    }
+
+    return result;
   }
 
   Chimera::Status_t DriverThreaded::speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    if ( lock( timeout ) != Chimera::CommonStatusCodes::OK )
+    {
+      result = Chimera::CommonStatusCodes::LOCKED;
+    }
+    else
+    {
+      result = bareMetalDriver.speedSet( pin, speed );
+      unlock();
+    }
+
+    return result;
   }
 
   Chimera::Status_t DriverThreaded::pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    if ( lock( timeout ) != Chimera::CommonStatusCodes::OK )
+    {
+      result = Chimera::CommonStatusCodes::LOCKED;
+    }
+    else
+    {
+      result = bareMetalDriver.pullSet( pin, pull );
+      unlock();
+    }
+
+    return result;
   }
 
-  Chimera::Status_t DriverThreaded::write( const uint8_t pin, const size_t val, const size_t timeout )
+  Chimera::Status_t DriverThreaded::write( const uint8_t pin, const Chimera::GPIO::State state, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    if ( lock( timeout ) != Chimera::CommonStatusCodes::OK )
+    {
+      result = Chimera::CommonStatusCodes::LOCKED;
+    }
+    else
+    {
+      result = bareMetalDriver.write( pin, state );
+      unlock();
+    }
+
+    return result;
   }
 
   Chimera::Status_t DriverThreaded::alternateFunctionSet( const uint8_t pin, const size_t val, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    if ( lock( timeout ) != Chimera::CommonStatusCodes::OK )
+    {
+      result = Chimera::CommonStatusCodes::LOCKED;
+    }
+    else
+    {
+      result = bareMetalDriver.alternateFunctionSet( pin, val );
+      unlock();
+    }
+
+    return result;
   }
 
   size_t DriverThreaded::read( const size_t timeout )
   {
-    return 0;
+    size_t result = defaultError;
+
+    if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    {
+      result = bareMetalDriver.read();
+      unlock();
+    }
+
+    return result;
   }
 
   size_t DriverThreaded::driveGet( const uint8_t pin, const size_t timeout )
   {
-    return 0;
+    size_t result = defaultError;
+
+    if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    {
+      result = bareMetalDriver.driveGet( pin );
+      unlock();
+    }
+
+    return result;
   }
 
   size_t DriverThreaded::speedGet( const uint8_t pin, const size_t timeout )
   {
-    return 0;
+    size_t result = defaultError;
+
+    if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    {
+      result = bareMetalDriver.speedGet( pin );
+      unlock();
+    }
+
+    return result;
   }
 
   size_t DriverThreaded::pullGet( const uint8_t pin, const size_t timeout )
   {
-    return 0;
+    size_t result = defaultError;
+
+    if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    {
+      result = bareMetalDriver.pullGet( pin );
+      unlock();
+    }
+
+    return result;
   }
 
   size_t DriverThreaded::alternateFunctionGet( const uint8_t pin, const size_t timeout )
   {
-    return 0;
+    size_t result = defaultError;
+
+    if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    {
+      result = bareMetalDriver.alternateFunctionGet( pin );
+      unlock();
+    }
+
+    return result;
   }
 
 

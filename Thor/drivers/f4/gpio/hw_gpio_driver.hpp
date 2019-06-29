@@ -85,7 +85,7 @@ namespace Thor::Driver::GPIO
 
     Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout ) final override;
 
-    Chimera::Status_t write( const uint8_t pin, const size_t val, const size_t timeout ) final override;
+    Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state, const size_t timeout ) final override;
 
     Chimera::Status_t alternateFunctionSet( const uint8_t pin, const size_t val, const size_t timeout ) final override;
 
@@ -100,8 +100,8 @@ namespace Thor::Driver::GPIO
     size_t alternateFunctionGet( const uint8_t pin, const size_t timeout ) final override;
 
   private:
-    DriverBare gpio;
-    Chimera::Threading::RecursiveMutex_t mutex;
+    DriverBare bareMetalDriver;
+    static constexpr size_t defaultError = 0;
   };
 
   class DriverAtomic : public ModelAtomic

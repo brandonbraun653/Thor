@@ -252,7 +252,7 @@ namespace Thor::Driver::GPIO
      *  |       TIMEOUT | The resource lock timed-out               |
      *  | NOT_SUPPORTED | The output state is not supported         |
      */
-    virtual Chimera::Status_t write( const uint8_t pin, const size_t val, const size_t timeout ) = 0;
+    virtual Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state, const size_t timeout ) = 0;
 
     /**
      *  Configures the GPIO alternate function register
