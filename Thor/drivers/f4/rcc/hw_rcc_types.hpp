@@ -66,6 +66,12 @@ namespace Thor::Driver::RCC
     uint8_t CERMask;        /**< Clock enable bit mask */
   };
 
+  struct CELPConfig
+  {
+    volatile uint32_t *CELPR; /**< Clock enable low power register */
+    uint8_t CELPMask;         /**< Clock enable low power bit mask */
+  };
+
   struct PRRConfig
   {
     volatile uint32_t *PRR; /**< Peripheral Reset Register */

@@ -24,7 +24,7 @@ namespace Thor::Driver::GPIO
   /*-----------------------------------------------------
   Bare Metal Implementation
   -----------------------------------------------------*/
-  DriverBare::DriverBare() : periph( nullptr )
+  DriverBare::DriverBare() : periph( nullptr ), accessIndex(0)
   {
   }
 
@@ -36,15 +36,23 @@ namespace Thor::Driver::GPIO
   {
     periph = peripheral;
 
-    auto i = reinterpret_cast<std::uintptr_t>( peripheral );
+    /*------------------------------------------------
+    Cache the GPIO instance accessor for mapping functions
+    ------------------------------------------------*/
+    auto portValue = InstanceToPortMap.find( reinterpret_cast<std::uintptr_t>( peripheral ) )->second;
+    accessIndex    = PortToIteratorMap.find( portValue )->second;
   }
 
   void DriverBare::clockEnable()
   {
+    auto rccGPIO = Thor::Driver::RCC::GPIOPeriph::get();
+    rccGPIO->enableClock( accessIndex );
   }
 
   void DriverBare::clockDisable()
   {
+    auto rccGPIO = Thor::Driver::RCC::GPIOPeriph::get();
+    rccGPIO->disableClock( accessIndex );
   }
 
   Chimera::Status_t DriverBare::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive )
@@ -142,8 +150,8 @@ namespace Thor::Driver::GPIO
   {
     DBG_ASSERT( pin < MAX_NUM_PINS )
 
-    const auto shift_val   = pin * OSPEEDR_CFG_X_WID;
-    const auto current_val = periph->OSPEEDR & ( OSPEEDR_CFG_X_MSK << shift_val );
+    auto const shift_val   = pin * OSPEEDR_CFG_X_WID;
+    auto const current_val = periph->OSPEEDR & ( OSPEEDR_CFG_X_MSK << shift_val );
 
     return static_cast<OPT_OSPEEDR>( current_val >> shift_val );
   }

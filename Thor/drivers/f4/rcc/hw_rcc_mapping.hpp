@@ -53,6 +53,25 @@ namespace Thor::Driver::RCC
     { reinterpret_cast<decltype(CEConfig::CER)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOHEN }
   }};
   
+  static const std::array<CELPConfig, Thor::Driver::GPIO::NUM_GPIO_PERIPHS> ClockConfigLP_GPIO = {{
+    /* GPIOA */
+    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOALPEN },
+    /* GPIOB */
+    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOBLPEN },
+    /* GPIOC */
+    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOCLPEN },
+    /* GPIOD */
+    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIODLPEN },
+    /* GPIOE */
+    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOELPEN },
+    /* GPIOF */
+    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOFLPEN },
+    /* GPIOG */
+    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOGLPEN },
+    /* GPIOH */
+    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOHLPEN }
+  }};
+
   /** 
    *  Generates the register access table for resetting GPIO peripherals
    */
