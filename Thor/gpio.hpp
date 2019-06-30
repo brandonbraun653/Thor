@@ -21,9 +21,10 @@
 /* Thor Includes */
 #include <Thor/types/gpio_types.hpp>
 
-#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
+
 namespace Thor::GPIO
 {
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
   class GPIOClass : public Chimera::GPIO::Interface
   {
   public:
@@ -64,14 +65,34 @@ namespace Thor::GPIO
     void GPIO_ClockEnable( Thor::GPIO::PinPort port );
     void GPIO_ClockDisable( Thor::GPIO::PinPort port );
   };
-
+  
   extern PinNum convertPinNum( const uint8_t num );
   extern PinPort convertPort( const Chimera::GPIO::Port port );
   extern PinMode convertDrive( const Chimera::GPIO::Drive drive );
   extern PinPull convertPull( const Chimera::GPIO::Pull pull );
   extern Initializer convertPinInit( const Chimera::GPIO::PinInit &pin );
+#endif
+
+  class GPIOClass : public Chimera::GPIO::Interface
+  {
+  public:
+    GPIOClass();
+    ~GPIOClass();
+
+    Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit ) final override;
+
+    Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin ) final override;
+
+    Chimera::Status_t setMode( const Chimera::GPIO::Drive drive, const bool pullup ) final override;
+
+    Chimera::Status_t setState( const Chimera::GPIO::State state ) final override;
+
+    Chimera::Status_t getState( Chimera::GPIO::State &state ) final override;
+
+    Chimera::Status_t toggle() final override;
+  };
+
 }    // namespace Thor::GPIO
 
-#endif 
 
 #endif    // !THOR_GPIO_HPP

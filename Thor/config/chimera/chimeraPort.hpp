@@ -30,7 +30,7 @@
 #define BACKEND_NAMESPACE Thor
 
 //#define CHIMERA_INHERITED_HW_CRC              Thor::HWCRC::HW
-//#define CHIMERA_INHERITED_GPIO                Thor::GPIO::GPIOClass
+#define CHIMERA_INHERITED_GPIO                Thor::GPIO::GPIOClass
 //#define CHIMERA_INHERITED_POWER_INFO          Thor::Power::SystemPower
 //#define CHIMERA_INHERITED_SERIAL              Thor::Serial::SerialClass
 //#define CHIMERA_INHERITED_SPI                 Thor::SPI::SPIClass
