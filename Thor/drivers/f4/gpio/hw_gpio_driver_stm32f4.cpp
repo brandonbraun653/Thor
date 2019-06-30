@@ -41,6 +41,11 @@ namespace Thor::Driver::GPIO
     ------------------------------------------------*/
     auto portValue = InstanceToPortMap.find( reinterpret_cast<std::uintptr_t>( peripheral ) )->second;
     accessIndex    = PortToIteratorMap.find( portValue )->second;
+
+    /*------------------------------------------------
+    Perform any initialization steps needed
+    ------------------------------------------------*/
+    clockEnable();
   }
 
   void DriverBare::clockEnable()
@@ -169,6 +174,7 @@ namespace Thor::Driver::GPIO
     return 0;
   }
 
+  
   /*-----------------------------------------------------
   Threaded Implementation
   -----------------------------------------------------*/
@@ -183,6 +189,16 @@ namespace Thor::Driver::GPIO
   void DriverThreaded::attach( volatile RegisterMap *const peripheral )
   {
     bareMetalDriver.attach( peripheral );
+  }
+
+  void DriverThreaded::clockEnable()
+  {
+    bareMetalDriver.clockEnable();
+  }
+
+  void DriverThreaded::clockDisable()
+  {
+    bareMetalDriver.clockDisable();
   }
 
   Chimera::Status_t DriverThreaded::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout )

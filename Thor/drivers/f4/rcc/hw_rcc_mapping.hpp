@@ -32,66 +32,69 @@ namespace Thor::Driver::RCC
   /* clang-format off */
 
   /**
-   *  Generates the register access table for turning on GPIO clocks
+   *  Generates the register access lookup table for turning on GPIO clocks
    */
   static const std::array<CEConfig, Thor::Driver::GPIO::NUM_GPIO_PERIPHS> ClockConfig_GPIO = {{
     /* GPIOA */
-    { reinterpret_cast<decltype(CEConfig::CER)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOAEN },
+    { reinterpret_cast<decltype(CEConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOAEN },
     /* GPIOB */
-    { reinterpret_cast<decltype(CEConfig::CER)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOBEN },
+    { reinterpret_cast<decltype(CEConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOBEN },
     /* GPIOC */
-    { reinterpret_cast<decltype(CEConfig::CER)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOCEN },
+    { reinterpret_cast<decltype(CEConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOCEN },
     /* GPIOD */
-    { reinterpret_cast<decltype(CEConfig::CER)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIODEN },
+    { reinterpret_cast<decltype(CEConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIODEN },
     /* GPIOE */
-    { reinterpret_cast<decltype(CEConfig::CER)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOEEN },
+    { reinterpret_cast<decltype(CEConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOEEN },
     /* GPIOF */
-    { reinterpret_cast<decltype(CEConfig::CER)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOFEN },
+    { reinterpret_cast<decltype(CEConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOFEN },
     /* GPIOG */
-    { reinterpret_cast<decltype(CEConfig::CER)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOGEN },
+    { reinterpret_cast<decltype(CEConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOGEN },
     /* GPIOH */
-    { reinterpret_cast<decltype(CEConfig::CER)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOHEN }
+    { reinterpret_cast<decltype(CEConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1ENR_GPIOHEN }
   }};
   
+  /**
+   *  Generates the register access lookup table for turning on GPIO low power clocks
+   */
   static const std::array<CELPConfig, Thor::Driver::GPIO::NUM_GPIO_PERIPHS> ClockConfigLP_GPIO = {{
     /* GPIOA */
-    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOALPEN },
+    { reinterpret_cast<decltype(CELPConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOALPEN },
     /* GPIOB */
-    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOBLPEN },
+    { reinterpret_cast<decltype(CELPConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOBLPEN },
     /* GPIOC */
-    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOCLPEN },
+    { reinterpret_cast<decltype(CELPConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOCLPEN },
     /* GPIOD */
-    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIODLPEN },
+    { reinterpret_cast<decltype(CELPConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIODLPEN },
     /* GPIOE */
-    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOELPEN },
+    { reinterpret_cast<decltype(CELPConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOELPEN },
     /* GPIOF */
-    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOFLPEN },
+    { reinterpret_cast<decltype(CELPConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOFLPEN },
     /* GPIOG */
-    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOGLPEN },
+    { reinterpret_cast<decltype(CELPConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOGLPEN },
     /* GPIOH */
-    { reinterpret_cast<decltype(CELPConfig::CELPR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOHLPEN }
+    { reinterpret_cast<decltype(CELPConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1LPENR) ), AHB1LPENR_GPIOHLPEN }
   }};
 
   /** 
-   *  Generates the register access table for resetting GPIO peripherals
+   *  Generates the register access lookup table for resetting GPIO peripherals
    */
   static const std::array<PRRConfig, Thor::Driver::GPIO::NUM_GPIO_PERIPHS> ResetConfig_GPIO = {{
     /* GPIOA */
-    { reinterpret_cast<decltype(PRRConfig::PRR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOARST },
+    { reinterpret_cast<decltype(PRRConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOARST },
     /* GPIOB */
-    { reinterpret_cast<decltype(PRRConfig::PRR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOBRST },
+    { reinterpret_cast<decltype(PRRConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOBRST },
     /* GPIOC */
-    { reinterpret_cast<decltype(PRRConfig::PRR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOCRST },
+    { reinterpret_cast<decltype(PRRConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOCRST },
     /* GPIOD */
-    { reinterpret_cast<decltype(PRRConfig::PRR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIODRST },
+    { reinterpret_cast<decltype(PRRConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIODRST },
     /* GPIOE */
-    { reinterpret_cast<decltype(PRRConfig::PRR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOERST },
+    { reinterpret_cast<decltype(PRRConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOERST },
     /* GPIOF */
-    { reinterpret_cast<decltype(PRRConfig::PRR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOFRST },
+    { reinterpret_cast<decltype(PRRConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOFRST },
     /* GPIOG */
-    { reinterpret_cast<decltype(PRRConfig::PRR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOGRST },
+    { reinterpret_cast<decltype(PRRConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOGRST },
     /* GPIOH */
-    { reinterpret_cast<decltype(PRRConfig::PRR)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOHRST }
+    { reinterpret_cast<decltype(PRRConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOHRST }
   }};
 
 

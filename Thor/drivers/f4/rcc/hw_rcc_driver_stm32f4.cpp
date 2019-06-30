@@ -23,14 +23,17 @@
 #include <Thor/drivers/model/rcc_model.hpp>
 
 static constexpr uint8_t numPeriphs = static_cast<uint8_t>( Chimera::Peripheral::Type::NUM_SUPPORTED_TYPES );
-static std::array<Thor::Driver::RCC::Peripheral *, numPeriphs> periphInstance;
+static std::array<Thor::Driver::RCC::Peripheral *, numPeriphs> periphSingletonInstances;
 
 namespace Thor::Driver::RCC
 {
-  static Peripheral *const getInstance( const Chimera::Peripheral::Type periph )
+  static Peripheral *const getPeriphInstance( const Chimera::Peripheral::Type periph )
   {
     using namespace Thor::Driver::Mapping;
-    
+
+    /*------------------------------------------------
+    Find the iterator associated with the requested peripheral
+    ------------------------------------------------*/
     auto iterator = PeriphTypeToIterator.find( periph );
     if ( iterator == PeriphTypeToIterator.end() )
     {
@@ -38,20 +41,25 @@ namespace Thor::Driver::RCC
     }
     else
     {
-      return periphInstance[ iterator->second ];
+      return periphSingletonInstances[ iterator->second ];
     }
   }
 
   void init()
   {
-    periphInstance.fill( nullptr );
+    static bool initialized = false;
+
+    if ( !initialized )
+    {
+      periphSingletonInstances.fill( nullptr );
+    }
   }
   
-  Chimera::Status_t enablePeripheralClock( const Chimera::Peripheral::Type periph, const size_t instance )
+  Chimera::Status_t enableClock( const Chimera::Peripheral::Type periph, const size_t instance )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    if ( auto p = getInstance( periph ); p != nullptr )
+    if ( auto p = getPeriphInstance( periph ); p != nullptr )
     {
       result = p->enableClock( instance );
     }
@@ -63,20 +71,36 @@ namespace Thor::Driver::RCC
     return result;
   }
 
-  GPIOPeriph::GPIOPeriph()
+  Chimera::Status_t disableClock( const Chimera::Peripheral::Type periph, const size_t instance )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    if ( auto p = getPeriphInstance( periph ); p != nullptr )
+    {
+      result = p->disableClock( instance );
+    }
+    else
+    {
+      result = Chimera::CommonStatusCodes::FAIL;
+    }
+    
+    return result;
+  }
+
+  GPIOPeriph::GPIOPeriph() : iterator( 0 )
   {
     /*------------------------------------------------
     Register the singleton instance with the peripheral tracker
     ------------------------------------------------*/
-    auto peripheralType        = Chimera::Peripheral::Type::GPIO;
-    iterator                   = Thor::Driver::Mapping::PeriphTypeToIterator.find( peripheralType )->second;
-    periphInstance[ iterator ] = reinterpret_cast<Peripheral *>( this );
+    auto peripheralType                  = Chimera::Peripheral::Type::GPIO;
+    iterator                             = Thor::Driver::Mapping::PeriphTypeToIterator.find( peripheralType )->second;
+    periphSingletonInstances[ iterator ] = reinterpret_cast<Peripheral *>( this );
   }
 
   GPIOPeriph::~GPIOPeriph()
   {
-    free( periphInstance[ iterator ] );
-    periphInstance[ iterator ] = nullptr;
+    free( periphSingletonInstances[ iterator ] );
+    periphSingletonInstances[ iterator ] = nullptr;
   }
 
   Peripheral *const GPIOPeriph::get()
@@ -100,12 +124,12 @@ namespace Thor::Driver::RCC
       /*------------------------------------------------
       Create the new object if non-existant
       ------------------------------------------------*/
-      if ( periphInstance[ iterator->second ] == nullptr )
+      if ( periphSingletonInstances[ iterator->second ] == nullptr )
       {
-        periphInstance[ iterator->second ] = new GPIOPeriph();
+        periphSingletonInstances[ iterator->second ] = new GPIOPeriph();
       }
 
-      return periphInstance[ iterator->second ];
+      return periphSingletonInstances[ iterator->second ];
     }
   }
 
@@ -121,13 +145,13 @@ namespace Thor::Driver::RCC
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
     auto prrConfig = ResetConfig_GPIO[ iterator ];
-    uint32_t tmp   = *prrConfig.PRR;
+    uint32_t tmp   = *prrConfig.reg;
 
     /*------------------------------------------------
     Begin the reset operation
     ------------------------------------------------*/
-    tmp |= prrConfig.PRRMask;
-    *prrConfig.PRR = tmp;
+    tmp |= prrConfig.mask;
+    *prrConfig.reg = tmp;
 
     /*------------------------------------------------
     Waste a few cycles to allow the reset to complete
@@ -137,8 +161,8 @@ namespace Thor::Driver::RCC
     /*------------------------------------------------
     Remove the reset flag as it is not cleared automatically by hardware
     ------------------------------------------------*/
-    tmp &= ~prrConfig.PRRMask;
-    *prrConfig.PRR = tmp;
+    tmp &= ~prrConfig.mask;
+    *prrConfig.reg = tmp;
 
     return result;
   }
@@ -156,7 +180,7 @@ namespace Thor::Driver::RCC
     Read-modify-write
     ------------------------------------------------*/
     auto ceConfig = ClockConfig_GPIO[ iterator ];
-    *ceConfig.CER |= ceConfig.CERMask;
+    *ceConfig.reg |= ceConfig.mask;
 
     return result;
   }
@@ -169,7 +193,7 @@ namespace Thor::Driver::RCC
     Read-modify-write
     ------------------------------------------------*/
     auto ceConfig = ClockConfig_GPIO[ iterator ];
-    *ceConfig.CER &= ~ceConfig.CERMask;
+    *ceConfig.reg &= ~ceConfig.mask;
     
     return result;
   }
@@ -178,8 +202,11 @@ namespace Thor::Driver::RCC
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
+    /*------------------------------------------------
+    Read-modify-write
+    ------------------------------------------------*/
     auto celpConfig = ClockConfigLP_GPIO[ iterator ];
-    *celpConfig.CELPR |= celpConfig.CELPMask;
+    *celpConfig.reg |= celpConfig.mask;
 
     return result;
   }
@@ -188,8 +215,11 @@ namespace Thor::Driver::RCC
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
+    /*------------------------------------------------
+    Read-modify-write
+    ------------------------------------------------*/
     auto celpConfig = ClockConfigLP_GPIO[ iterator ];
-    *celpConfig.CELPR &= ~celpConfig.CELPMask;
+    *celpConfig.reg &= ~celpConfig.mask;
     
     return result;
   }

@@ -32,21 +32,24 @@ namespace Thor::Driver::RCC
 
     /**
      *  Resets the peripheral using RCC reset registers
-     *  
+     *
+     *  @param[in]  instance    The peripheral instance number
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t reset( const size_t instance ) = 0;
-    
+
     /**
      *  Returns the type of peripheral that is being controlled
-     *  
+     *
+     *  @param[in]  instance    The peripheral instance number
      *  @return Chimera::Peripheral::Type
      */
     virtual Chimera::Peripheral::Type getType() = 0;
 
     /**
      *  Enables the peripheral clock
-     *  
+     *
+     *  @param[in]  instance    The peripheral instance number
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t enableClock( const size_t instance ) = 0;
@@ -54,6 +57,7 @@ namespace Thor::Driver::RCC
     /**
      *  Disables the peripheral clock
      *
+     *  @param[in]  instance    The peripheral instance number
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t disableClock( const size_t instance ) = 0;
@@ -61,6 +65,7 @@ namespace Thor::Driver::RCC
     /**
      *  Enables the peripheral clock in low power mode
      *
+     *  @param[in]  instance    The peripheral instance number
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t enableClockLowPower( const size_t instance ) = 0;
@@ -68,6 +73,7 @@ namespace Thor::Driver::RCC
     /**
      *  Disables the peripheral clock in low power mode
      *
+     *  @param[in]  instance    The peripheral instance number
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t disableClockLowPower( const size_t instance ) = 0;

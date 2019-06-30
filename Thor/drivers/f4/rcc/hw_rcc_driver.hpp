@@ -24,16 +24,30 @@
 
 namespace Thor::Driver::RCC
 {
-
   /**
    *  Initializes all system resources to their default state.
    *  
    *  @return void 
    */
   void init();
+  
+  /**
+   *  Enables any peripheral clock on the microcontroller
+   *  
+   *  @param[in]  periph    The peripheral to enable the clock on
+   *  @parma[in]  instance  The subperipheral instance number to enable
+   *  @return Chimera::Status_t
+   */
+  Chimera::Status_t enableClock( const Chimera::Peripheral::Type periph, const size_t instance );
 
-  Chimera::Status_t
-      enablePeripheralClock( const Chimera::Peripheral::Type periph, const size_t instance );
+  /**
+   *  Disables any peripheral clock on the microcontroller
+   *
+   *  @param[in]  periph    The peripheral to disable the clock on
+   *  @parma[in]  instance  The subperipheral instance number to disable
+   *  @return Chimera::Status_t
+   */
+  Chimera::Status_t disableClock( const Chimera::Peripheral::Type periph, const size_t instance );
 
   class GPIOPeriph : public Peripheral
   {
@@ -58,8 +72,9 @@ namespace Thor::Driver::RCC
 
   private:
     GPIOPeriph();
-    
+
     uint8_t iterator;
+    bool initialized;
     static const Chimera::Peripheral::Type sPeriphType = Chimera::Peripheral::Type::GPIO;
     ;
   };

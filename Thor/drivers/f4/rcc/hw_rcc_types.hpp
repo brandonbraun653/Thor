@@ -60,22 +60,31 @@ namespace Thor::Driver::RCC
 
   static RegisterMap *const RCC_PERIPH = reinterpret_cast<RegisterMap *const>( Thor::Driver::RCC::RCC_BASE_ADDR );
 
+  /**
+   *  Configuration struct for the clock enable register
+   */
   struct CEConfig
   {
-    volatile uint32_t *CER; /**< Clock enable register  */
-    uint8_t CERMask;        /**< Clock enable bit mask */
+    volatile uint32_t *reg; /**< Clock enable register */
+    uint8_t mask;           /**< Bit mask that will enable/disable the peripheral's clock */
   };
 
+  /**
+   *  Configuration struct for the clock enable low power register
+   */
   struct CELPConfig
   {
-    volatile uint32_t *CELPR; /**< Clock enable low power register */
-    uint8_t CELPMask;         /**< Clock enable low power bit mask */
+    volatile uint32_t *reg; /**< Clock enable low power register */
+    uint8_t mask;           /**< Bit mask that will enable/disable the peripheral's low power clock */
   };
 
+  /**
+   *  Configuration struct for the peripheral reset register
+   */
   struct PRRConfig
   {
-    volatile uint32_t *PRR; /**< Peripheral Reset Register */
-    uint8_t PRRMask;        /**< Peripheral reset bit mask */
+    volatile uint32_t *reg; /**< Peripheral Reset Register */
+    uint8_t mask;           /**< Bit mask that will reset the peripheral */
   };
 }    // namespace Thor::Driver::RCC
 

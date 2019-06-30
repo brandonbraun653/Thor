@@ -33,6 +33,7 @@ namespace Thor::Driver::GPIO
     /**
      *  Attaches a peripheral instance to the interaction model
      *
+     *  @param[in]  peripheral    Memory mapped struct of the desired GPIO peripheral
      *  @return void
      */
     virtual void attach( volatile RegisterMap *const peripheral ) = 0;
