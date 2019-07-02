@@ -21,6 +21,7 @@
 
 /* Driver Includes */
 #include <Thor/drivers/model/rcc_model.hpp>
+#include <Thor/types/clock_types.hpp>
 
 namespace Thor::Driver::RCC
 {
@@ -30,24 +31,36 @@ namespace Thor::Driver::RCC
    *  @return void 
    */
   void init();
-  
-  /**
-   *  Enables any peripheral clock on the microcontroller
-   *  
-   *  @param[in]  periph    The peripheral to enable the clock on
-   *  @parma[in]  instance  The subperipheral instance number to enable
-   *  @return Chimera::Status_t
-   */
-  Chimera::Status_t enableClock( const Chimera::Peripheral::Type periph, const size_t instance );
 
-  /**
-   *  Disables any peripheral clock on the microcontroller
-   *
-   *  @param[in]  periph    The peripheral to disable the clock on
-   *  @parma[in]  instance  The subperipheral instance number to disable
-   *  @return Chimera::Status_t
-   */
-  Chimera::Status_t disableClock( const Chimera::Peripheral::Type periph, const size_t instance );
+  class SystemClock : public ClockTree
+  {
+  public:
+    /**
+     *  Gets the singleton instance to the system clock driver
+     *
+     *  @return SystemClock *
+     */
+    SystemClock *const get();
+
+    Chimera::Status_t setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz ) final override;
+
+    Chimera::Status_t enableClock( const Chimera::Peripheral::Type periph, const size_t instance ) final override;
+
+    Chimera::Status_t disableClock( const Chimera::Peripheral::Type periph, const size_t instance ) final override;
+
+    Chimera::Status_t setCoreClock( const size_t freqHz ) final override;
+
+    Chimera::Status_t setCoreClockSource( const Thor::Clock::Source src ) final override;
+
+    size_t getCoreClock() final override;
+
+    Thor::Clock::Source getCoreClockSource() final override;
+
+    size_t getPeriphClock( const Chimera::Peripheral::Type periph ) final override;
+
+  private:
+    SystemClock();
+  };
 
   class GPIOPeriph : public Peripheral
   {
