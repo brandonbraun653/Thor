@@ -8,26 +8,15 @@
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+/* Chimera Includes */
+#include <Chimera/threading.hpp>
+
 #include <Thor/thor.hpp>
 #include <Thor/macro.hpp>
 #include <Thor/print.hpp>
 #include <Thor/definitions/interrupt_definitions.hpp>
 
 #if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
-#if defined( USING_FREERTOS )
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include "FreeRTOS.h"
-#include "task.h"
-
-#ifdef __cplusplus
-}
-#endif
-#endif
-
 void ThorInit()
 {
   /* This absolutely must be called first to setup the HAL system properly */
@@ -63,6 +52,8 @@ void cSystemInit()
   ThorInit();
 }
 
+#endif
+
 namespace Thor
 {
   uint32_t millis()
@@ -85,5 +76,3 @@ namespace Thor
   {
   }
 }    // namespace Thor
-
-#endif 

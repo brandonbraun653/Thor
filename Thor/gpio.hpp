@@ -16,9 +16,11 @@
 #include <cstdint>
 
 /* Chimera Includes */
+#include <Chimera/types/common_types.hpp>
 #include <Chimera/interface/gpio_intf.hpp>
 
 /* Thor Includes */
+#include <Thor/drivers/GPIO.hpp>
 #include <Thor/types/gpio_types.hpp>
 
 
@@ -72,24 +74,30 @@ namespace Thor::GPIO
   extern PinPull convertPull( const Chimera::GPIO::Pull pull );
   extern Initializer convertPinInit( const Chimera::GPIO::PinInit &pin );
 #endif
-
+  
   class GPIOClass : public Chimera::GPIO::Interface
   {
   public:
     GPIOClass();
     ~GPIOClass();
 
-    Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit ) final override;
+    Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit, const size_t timeout = ACCESS_TIMEOUT ) final override;
 
-    Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin ) final override;
+    Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin,
+                            const size_t timeout = ACCESS_TIMEOUT ) final override;
 
-    Chimera::Status_t setMode( const Chimera::GPIO::Drive drive, const bool pullup ) final override;
+    Chimera::Status_t setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull,
+                               const size_t timeout = ACCESS_TIMEOUT ) final override;
 
-    Chimera::Status_t setState( const Chimera::GPIO::State state ) final override;
+    Chimera::Status_t setState( const Chimera::GPIO::State state, const size_t timeout = ACCESS_TIMEOUT ) final override;
 
-    Chimera::Status_t getState( Chimera::GPIO::State &state ) final override;
+    Chimera::Status_t getState( Chimera::GPIO::State &state, const size_t timeout = ACCESS_TIMEOUT ) final override;
 
-    Chimera::Status_t toggle() final override;
+    Chimera::Status_t toggle( const size_t timeout = ACCESS_TIMEOUT ) final override;
+
+  private:
+    Thor::Driver::GPIO::Model *driver;
+    Chimera::GPIO::PinInit initSettings;
   };
 
 }    // namespace Thor::GPIO

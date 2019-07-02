@@ -60,7 +60,7 @@ namespace Thor::Driver::GPIO
     rccGPIO->disableClock( accessIndex );
   }
 
-  Chimera::Status_t DriverBare::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive )
+  Chimera::Status_t DriverBare::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout )
   {
     DBG_ASSERT( pin < MAX_NUM_PINS )
     auto const shift_val = pin * MODER_CFG_X_WID;
@@ -70,39 +70,39 @@ namespace Thor::Driver::GPIO
     Use read-modify-write
     ------------------------------------------------*/
     tmp &= ~( MODER_CFG_X_MSK << shift_val );
-    tmp |= ( ModeMap.find( static_cast<uint8_t>( drive ) )->second & MODER_CFG_X_MSK ) << shift_val;
+    tmp |= ( ModeMap.find( drive )->second & MODER_CFG_X_MSK ) << shift_val;
     periph->MODER = tmp;
 
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t DriverBare::speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed )
+  Chimera::Status_t DriverBare::speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout )
   {
     DBG_ASSERT( pin < MAX_NUM_PINS )
     auto const shift_val = pin * OSPEEDR_CFG_X_WID;
     auto tmp             = periph->OSPEEDR;
 
     tmp &= ~( OSPEEDR_CFG_X_MSK << shift_val );
-    tmp |= ( SpeedMap.find( static_cast<uint8_t>( speed ) )->second & OSPEEDR_CFG_X_MSK ) << shift_val;
+    tmp |= ( SpeedMap.find( speed )->second & OSPEEDR_CFG_X_MSK ) << shift_val;
     periph->OSPEEDR = tmp;
 
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t DriverBare::pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull )
+  Chimera::Status_t DriverBare::pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout )
   {
     DBG_ASSERT( pin < MAX_NUM_PINS )
     auto const shift_val = pin * PUPDR_CFG_X_WID;
     auto tmp             = periph->PUPDR;
 
     tmp &= ~( PUPDR_CFG_X_MSK << shift_val );
-    tmp |= ( PullMap.find( static_cast<uint8_t>( pull ) )->second & PUPDR_CFG_X_MSK ) << shift_val;
+    tmp |= ( PullMap.find( pull )->second & PUPDR_CFG_X_MSK ) << shift_val;
     periph->PUPDR = tmp;
 
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t DriverBare::write( const uint8_t pin, const Chimera::GPIO::State state )
+  Chimera::Status_t DriverBare::write( const uint8_t pin, const Chimera::GPIO::State state, const size_t timeout )
   {
     DBG_ASSERT( pin < MAX_NUM_PINS )
 
@@ -122,7 +122,7 @@ namespace Thor::Driver::GPIO
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t DriverBare::alternateFunctionSet( const uint8_t pin, const size_t val )
+  Chimera::Status_t DriverBare::alternateFunctionSet( const uint8_t pin, const size_t val, const size_t timeout )
   {
     static_assert( sizeof( uint64_t ) == sizeof( RegisterMap::AFR ), "Invalid register memory map" );
 
@@ -140,18 +140,18 @@ namespace Thor::Driver::GPIO
     return Chimera::CommonStatusCodes::OK;
   }
 
-  size_t DriverBare::read()
+  size_t DriverBare::read( const size_t timeout )
   {
     return periph->IDR;
   }
 
-  size_t DriverBare::driveGet( const uint8_t pin )
+  size_t DriverBare::driveGet( const uint8_t pin, const size_t timeout )
   {
     DBG_ASSERT( pin < MAX_NUM_PINS )
     return 0;
   }
 
-  size_t DriverBare::speedGet( const uint8_t pin )
+  size_t DriverBare::speedGet( const uint8_t pin, const size_t timeout )
   {
     DBG_ASSERT( pin < MAX_NUM_PINS )
 
@@ -161,7 +161,7 @@ namespace Thor::Driver::GPIO
     return static_cast<OPT_OSPEEDR>( current_val >> shift_val );
   }
 
-  size_t DriverBare::pullGet( const uint8_t pin )
+  size_t DriverBare::pullGet( const uint8_t pin, const size_t timeout )
   {
     DBG_ASSERT( pin < MAX_NUM_PINS )
 
@@ -169,7 +169,7 @@ namespace Thor::Driver::GPIO
     return 0;
   }
 
-  size_t DriverBare::alternateFunctionGet( const uint8_t pin )
+  size_t DriverBare::alternateFunctionGet( const uint8_t pin, const size_t timeout )
   {
     return 0;
   }
@@ -211,7 +211,7 @@ namespace Thor::Driver::GPIO
     }
     else
     {
-      result = bareMetalDriver.driveSet( pin, drive );
+      result = bareMetalDriver.driveSet( pin, drive, timeout );
       unlock();
     }
 
@@ -228,7 +228,7 @@ namespace Thor::Driver::GPIO
     }
     else
     {
-      result = bareMetalDriver.speedSet( pin, speed );
+      result = bareMetalDriver.speedSet( pin, speed, timeout );
       unlock();
     }
 
@@ -245,7 +245,7 @@ namespace Thor::Driver::GPIO
     }
     else
     {
-      result = bareMetalDriver.pullSet( pin, pull );
+      result = bareMetalDriver.pullSet( pin, pull, timeout );
       unlock();
     }
 
@@ -262,7 +262,7 @@ namespace Thor::Driver::GPIO
     }
     else
     {
-      result = bareMetalDriver.write( pin, state );
+      result = bareMetalDriver.write( pin, state, timeout );
       unlock();
     }
 
@@ -279,7 +279,7 @@ namespace Thor::Driver::GPIO
     }
     else
     {
-      result = bareMetalDriver.alternateFunctionSet( pin, val );
+      result = bareMetalDriver.alternateFunctionSet( pin, val, timeout );
       unlock();
     }
 
@@ -292,7 +292,7 @@ namespace Thor::Driver::GPIO
 
     if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
     {
-      result = bareMetalDriver.read();
+      result = bareMetalDriver.read( timeout );
       unlock();
     }
 
@@ -305,7 +305,7 @@ namespace Thor::Driver::GPIO
 
     if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
     {
-      result = bareMetalDriver.driveGet( pin );
+      result = bareMetalDriver.driveGet( pin, timeout );
       unlock();
     }
 
@@ -318,7 +318,7 @@ namespace Thor::Driver::GPIO
 
     if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
     {
-      result = bareMetalDriver.speedGet( pin );
+      result = bareMetalDriver.speedGet( pin, timeout );
       unlock();
     }
 
@@ -331,7 +331,7 @@ namespace Thor::Driver::GPIO
 
     if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
     {
-      result = bareMetalDriver.pullGet( pin );
+      result = bareMetalDriver.pullGet( pin, timeout );
       unlock();
     }
 
@@ -344,7 +344,7 @@ namespace Thor::Driver::GPIO
 
     if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
     {
-      result = bareMetalDriver.alternateFunctionGet( pin );
+      result = bareMetalDriver.alternateFunctionGet( pin, timeout );
       unlock();
     }
 
@@ -363,56 +363,67 @@ namespace Thor::Driver::GPIO
   {
   }
 
-  void attach( RegisterMap *const peripheral )
+  void DriverAtomic::attach( volatile RegisterMap *const peripheral )
   {
+    
   }
 
-  Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive )
+  void DriverAtomic::clockEnable()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    
   }
 
-  Chimera::Status_t speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed )
+  void DriverAtomic::clockDisable()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    
   }
 
-  Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state )
+  Chimera::Status_t DriverAtomic::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t alternateFunctionSet( const uint8_t pin, const size_t val )
+  Chimera::Status_t DriverAtomic::speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  size_t read()
+  Chimera::Status_t DriverAtomic::pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t DriverAtomic::write( const uint8_t pin, const Chimera::GPIO::State state, const size_t timeout )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t DriverAtomic::alternateFunctionSet( const uint8_t pin, const size_t val, const size_t timeout )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  size_t DriverAtomic::read( const size_t timeout )
   {
     return 0;
   }
 
-  size_t driveGet( const uint8_t pin )
+  size_t DriverAtomic::driveGet( const uint8_t pin, const size_t timeout )
   {
     return 0;
   }
 
-  size_t speedGet( const uint8_t pin )
+  size_t DriverAtomic::speedGet( const uint8_t pin, const size_t timeout)
   {
     return 0;
   }
 
-  size_t pullGet( const uint8_t pin )
+  size_t DriverAtomic::pullGet( const uint8_t pin, const size_t timeout )
   {
     return 0;
   }
 
-  size_t alternateFunctionGet( const uint8_t pin )
+  size_t DriverAtomic::alternateFunctionGet( const uint8_t pin, const size_t timeout )
   {
     return 0;
   }

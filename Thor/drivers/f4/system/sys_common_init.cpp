@@ -20,11 +20,6 @@ using namespace Thor::Driver::RCC;
 
 void SystemInit()
 {
-/*
-  1. reset the RCC periperal
-  2. Configure the base user clock
-  3. Uh...custom init step??
-*/
 
 /* FPU settings ------------------------------------------------------------*/
 #if ( __FPU_PRESENT == 1 ) && ( __FPU_USED == 1 )

@@ -19,9 +19,11 @@
 /* Thor Includes */
 #include <Thor/headers.hpp>
 
-#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
+
+
 namespace Thor::GPIO
 {
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
   class GPIOClass;
   using GPIOClass_sPtr = std::shared_ptr<GPIOClass>;
   using GPIOClass_uPtr = std::unique_ptr<GPIOClass>;
@@ -103,8 +105,10 @@ namespace Thor::GPIO
     PinPull pull       = PinPull::NOPULL;
     uint32_t alternate = NOALTERNATE;
   };
+#endif
+
+  static constexpr size_t ACCESS_TIMEOUT = 10;  /**< Default timeout (mS) for accessing GPIO hardware */
 
 }    // namespace Thor::GPIO
-#endif 
 
 #endif /* !THOR_GPIO_TYPES_HPP */
