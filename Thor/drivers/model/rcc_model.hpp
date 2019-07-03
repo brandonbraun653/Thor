@@ -39,24 +39,6 @@ namespace Thor::Driver::RCC
     virtual Chimera::Status_t setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz ) = 0;
 
     /**
-     *  Enables any peripheral clock gate on the microcontroller
-     *
-     *  @param[in]  periph    The peripheral to enable the clock on
-     *  @parma[in]  instance  The subperipheral instance number to enable
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t enableClock( const Chimera::Peripheral::Type periph, const size_t instance ) = 0;
-
-    /**
-     *  Disables any peripheral clock gate on the microcontroller
-     *
-     *  @param[in]  periph    The peripheral to disable the clock on
-     *  @parma[in]  instance  The subperipheral instance number to disable
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t disableClock( const Chimera::Peripheral::Type periph, const size_t instance ) = 0;
-
-    /**
      *  Sets the core clock frequency of the chip. This value will be the clock source 
      *  used to generate all other system clocks.
      *

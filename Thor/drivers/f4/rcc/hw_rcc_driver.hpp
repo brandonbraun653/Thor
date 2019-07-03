@@ -20,6 +20,7 @@
 #include <Chimera/types/peripheral_types.hpp>
 
 /* Driver Includes */
+#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
 #include <Thor/drivers/model/rcc_model.hpp>
 #include <Thor/types/clock_types.hpp>
 
@@ -32,21 +33,32 @@ namespace Thor::Driver::RCC
    */
   void init();
 
+
+  /**
+   *  Project specific declaration of the the oscillator configuration settings.
+   *
+   *  @return OscInit
+   */
+  extern OscInit prjGetOscConfig();
+
+
+  /**
+   *  Singleton that interacts with the system clock registers to allow the user
+   *  to configure a chip's clock at a very high level.
+   */
   class SystemClock : public ClockTree
   {
   public:
+    ~SystemClock();
+
     /**
      *  Gets the singleton instance to the system clock driver
      *
      *  @return SystemClock *
      */
-    SystemClock *const get();
+    static SystemClock *const get();
 
     Chimera::Status_t setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz ) final override;
-
-    Chimera::Status_t enableClock( const Chimera::Peripheral::Type periph, const size_t instance ) final override;
-
-    Chimera::Status_t disableClock( const Chimera::Peripheral::Type periph, const size_t instance ) final override;
 
     Chimera::Status_t setCoreClock( const size_t freqHz ) final override;
 
