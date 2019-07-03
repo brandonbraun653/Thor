@@ -58,7 +58,7 @@ namespace Thor::Driver::RCC
     volatile uint32_t DCKCFGR2;   /**< RCC Dedicated Clocks configuration register 2,               Address offset: 0x94 */
   };
 
-  static RegisterMap *const RCC_PERIPH = reinterpret_cast<RegisterMap *const>( Thor::Driver::RCC::RCC_BASE_ADDR );
+  static RegisterMap *const RCC_PERIPH = reinterpret_cast<RegisterMap *const>( RCC_BASE_ADDR );
 
   enum class OscillatorSource : uint8_t
   {
@@ -74,12 +74,11 @@ namespace Thor::Driver::RCC
   ------------------------------------------------*/
   namespace CR
   {
-    static constexpr uint32_t locked = 1u;
+    static constexpr uint32_t locked   = 1u;
     static constexpr uint32_t unlocked = 0u;
 
-    static constexpr uint32_t enabled = 1u;
+    static constexpr uint32_t enabled  = 1u;
     static constexpr uint32_t disabled = 0u;
-
 
     struct SAIRDY
     {
@@ -98,7 +97,6 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-
       }
     };
 
@@ -119,7 +117,6 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-
       }
     };
 
@@ -140,8 +137,18 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-
+        uint32_t tmp = get();
+        tmp &= ~( CR_PLLON );
+        tmp |= ( val & CR_PLLON );
+        RCC_PERIPH->CR = tmp;
       }
+    };
+
+    struct PLLConfig
+    {
+      static constexpr uint32_t NONE = 0u;
+      static constexpr uint32_t OFF  = 1u;
+      static constexpr uint32_t ON   = CR_PLLON;
     };
 
     struct CSSON
@@ -153,7 +160,6 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-
       }
     };
 
@@ -166,7 +172,6 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-
       }
     };
 
@@ -201,7 +206,6 @@ namespace Thor::Driver::RCC
       static constexpr uint32_t BYPASS = CR_HSEBYP | CR_HSEON;
     };
 
-
     struct HSIRDY
     {
       static inline uint32_t get()
@@ -219,7 +223,10 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-
+        uint32_t tmp = get();
+        tmp &= ~( CR_HSION );
+        tmp |= ( val & CR_HSION );
+        RCC_PERIPH->CR = tmp;
       }
     };
 
@@ -240,11 +247,18 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-
+        uint32_t tmp = get();
+        tmp &= ~( CR_HSITRIM );
+        tmp |= ( val << CR_HSITRIM_Pos ) & CR_HSITRIM;
+        RCC_PERIPH->CR = tmp;
       }
     };
 
-
+    struct HSIConfig
+    {
+      static constexpr uint32_t OFF = 0u;
+      static constexpr uint32_t ON  = 1u;
+    };
   }    // namespace CR
 
   /*------------------------------------------------
@@ -320,6 +334,322 @@ namespace Thor::Driver::RCC
     };
   }    // namespace CFGR
 
+  /*------------------------------------------------
+  RCC_APB1ENR Register Interaction Model
+  ------------------------------------------------*/
+  namespace APB1ENR
+  {
+    struct PWREN
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->APB1ENR & APB1ENR_PWREN;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( APB1ENR_PWREN );
+        tmp |= ( val & APB1ENR_PWREN );
+        RCC_PERIPH->APB1ENR = tmp;
+      }
+    };
+
+    struct PWRENConfig
+    {
+      static constexpr uint32_t ON  = APB1ENR_PWREN;
+      static constexpr uint32_t OFF = 0u;
+    };
+
+  }    // namespace APB1ENR
+
+  /*------------------------------------------------
+  RCC_BDCR Register Interaction Model
+  ------------------------------------------------*/
+  namespace BDCR
+  {
+    struct LSEON
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->BDCR & BDCR_LSEON;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( BDCR_LSEON );
+        tmp |= ( val & BDCR_LSEON );
+        RCC_PERIPH->BDCR = tmp;
+      }
+    };
+
+    struct LSERDY
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->BDCR & BDCR_LSERDY;
+      }
+    };
+
+    struct LSEConfig
+    {
+      static constexpr uint32_t OFF    = 0u;
+      static constexpr uint32_t ON     = BDCR_LSEON;
+      static constexpr uint32_t BYPASS = BDCR_LSEBYP | BDCR_LSEON;
+    };
+
+    struct LSEBYP
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->BDCR & BDCR_LSEBYP;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( BDCR_LSEBYP );
+        tmp |= ( val & BDCR_LSEBYP );
+        RCC_PERIPH->BDCR = tmp;
+      }
+    };
+
+    struct LSEMOD
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->BDCR & BDCR_LSEMOD;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( BDCR_LSEMOD );
+        tmp |= ( val & BDCR_LSEMOD );
+        RCC_PERIPH->BDCR = tmp;
+      }
+    };
+
+    struct RTCSEL
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->BDCR & BDCR_RTCSEL;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( BDCR_RTCSEL );
+        tmp |= ( val & BDCR_RTCSEL );
+        RCC_PERIPH->BDCR = tmp;
+      }
+    };
+
+    struct RTCEN
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->BDCR & BDCR_RTCEN;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( BDCR_RTCEN );
+        tmp |= ( val & BDCR_RTCEN );
+        RCC_PERIPH->BDCR = tmp;
+      }
+    };
+
+    struct BDRST
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->BDCR & BDCR_BDRST;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( BDCR_BDRST );
+        tmp |= ( val & BDCR_BDRST );
+        RCC_PERIPH->BDCR = tmp;
+      }
+    };
+  }    // namespace BDCR
+
+  /*------------------------------------------------
+  RCC_CSR Register Interaction Model
+  ------------------------------------------------*/
+  namespace CSR
+  {
+    static constexpr uint32_t flagSet = 1u;
+    static constexpr uint32_t flagClr = 0u;
+
+    static constexpr uint32_t locked   = 1u;
+    static constexpr uint32_t unlocked = 0u;
+
+    struct LPWRRSTF
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CSR & CSR_LPWRRSTF;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CSR_LPWRRSTF );
+        tmp |= ( val & CSR_LPWRRSTF );
+        RCC_PERIPH->CSR = tmp;
+      }
+    };
+
+    struct WWDGRSTF
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CSR & CSR_WWDGRSTF;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CSR_WWDGRSTF );
+        tmp |= ( val & CSR_WWDGRSTF );
+        RCC_PERIPH->CSR = tmp;
+      }
+    };
+
+    struct IWDGRSTF
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CSR & CSR_IWDGRSTF;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CSR_IWDGRSTF );
+        tmp |= ( val & CSR_IWDGRSTF );
+        RCC_PERIPH->CSR = tmp;
+      }
+    };
+
+    struct SFTRSTF
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CSR & CSR_SFTRSTF;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CSR_SFTRSTF );
+        tmp |= ( val & CSR_SFTRSTF );
+        RCC_PERIPH->CSR = tmp;
+      }
+    };
+
+    struct PORRSTF
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CSR & CSR_PORRSTF;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CSR_PORRSTF );
+        tmp |= ( val & CSR_PORRSTF );
+        RCC_PERIPH->CSR = tmp;
+      }
+    };
+
+    struct PINRSTF
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CSR & CSR_PINRSTF;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CSR_PINRSTF );
+        tmp |= ( val & CSR_PINRSTF );
+        RCC_PERIPH->CSR = tmp;
+      }
+    };
+
+    struct BORRSTF
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CSR & CSR_BORRSTF;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CSR_BORRSTF );
+        tmp |= ( val & CSR_BORRSTF );
+        RCC_PERIPH->CSR = tmp;
+      }
+    };
+
+    struct RMVF
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CSR & CSR_RMVF;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CSR_RMVF );
+        tmp |= ( val & CSR_RMVF );
+        RCC_PERIPH->CSR = tmp;
+      }
+    };
+
+    struct LSIRDY
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CSR & CSR_LSIRDY;
+      }
+    };
+
+    struct LSION
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CSR & CSR_LSION;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CSR_LSION );
+        tmp |= ( val & CSR_LSION );
+        RCC_PERIPH->CSR = tmp;
+      }
+    };
+
+    struct LSIConfig
+    {
+      static constexpr uint32_t OFF = 0u;
+      static constexpr uint32_t ON  = 1u;
+    };
+
+  }    // namespace CSR
 
   struct PLLInit
   {
@@ -352,11 +682,11 @@ namespace Thor::Driver::RCC
   struct OscInit
   {
     OscillatorSource source;      /*!< The oscillators to be configured. */
-    uint32_t HSEState;            /*!< The new state of the HSE. */
+    uint32_t HSEState;            /*!< The new state of the HSE. Can be value of CR::HSEConfig */
     uint32_t LSEState;            /*!< The new state of the LSE. */
-    uint32_t HSIState;            /*!< The new state of the HSI. */
-    uint32_t HSICalibrationValue; /*!< The HSI calibration trimming value */
+    uint32_t HSIState;            /*!< The new state of the HSI. Can be value of CR::HSIConfig */
     uint32_t LSIState;            /*!< The new state of the LSI. */
+    uint32_t HSICalibrationValue; /*!< The HSI calibration trimming value */
     PLLInit PLL;                  /*!< PLL structure parameters */
   };
 

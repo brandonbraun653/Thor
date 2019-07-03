@@ -13,12 +13,15 @@
 #include <cstring>
 
 /* Chimera Includes */
+#include <Chimera/chimera.hpp>
 #include <Chimera/interface/compiler_intf.hpp>
 #include <Chimera/types/peripheral_types.hpp>
 
 /* Driver Includes */
 #include <Thor/drivers/common/mapping/peripheral_mapping.hpp>
+#include <Thor/drivers/f4/power/hw_power_types.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
+#include <Thor/drivers/f4/rcc/hw_rcc_driver_prv.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_prj.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
@@ -29,6 +32,8 @@ static std::array<Thor::Driver::RCC::Peripheral *, numPeriphs> periphSingletonIn
 
 namespace Thor::Driver::RCC
 {
+  static inline void hseSetState( const uint32_t state );
+
   static Peripheral *const getPeriphInstance( const Chimera::Peripheral::Type periph )
   {
     using namespace Thor::Driver::Mapping;
@@ -57,317 +62,402 @@ namespace Thor::Driver::RCC
     }
   }
 
+
   /**
-   *  Clock Configuration RCC Driver
+   *  Configures the high speed external oscillator clock selection
+   *
+   *  @param[in]  init    Initialization configuration struct
+   *  @return Chimera::Status_t
    */
-
-  static inline Chimera::Status_t HSEConfig( const OscInit *init )
+  static inline Chimera::Status_t HSEOscillatorConfig( const OscInit *init )
   {
-    auto result = Chimera::CommonStatusCodes::OK;
+    using namespace CFGR;
+    using namespace PLLCFGR;
+    using namespace CR;
 
-    /*------------------------------------------------
-    When the HSE is used as system clock or configured as the 
-    clock source for PLL, the HSE will not be disabled.
-    ------------------------------------------------*/
-    const auto clockSource = CFGR::SWS::get();
-    const auto pllSource   = PLLCFGR::SRC::get();
+    const auto clockSource = SWS::get();
+    const auto pllSource   = SRC::get();
 
-    if ( ( clockSource == CFGR::SWS::HSE ) || ( ( clockSource == CFGR::SWS::PLL ) && ( pllSource == PLLCFGR::SRC::HSE ) ) )
+    if ( ( clockSource == SWS::HSE ) || ( ( clockSource == SWS::PLL ) && ( pllSource == SRC::HSE ) ) )
     {
-      if ( ( ( CR::HSERDY::get() == CR::locked ) || ( CR::HSEON::get() == CR::disabled ) ) &&
-           ( init->HSEState == CR::HSEConfig::OFF ) )
+      /*------------------------------------------------
+      When HSE is used as system clock it will not be disabled.
+      ------------------------------------------------*/
+      if ( ( ( HSERDY::get() == locked ) || ( HSEON::get() == enabled ) ) && ( init->HSEState == HSEConfig::OFF ) )
       {
-        result = Chimera::CommonStatusCodes::FAIL;
+        return Chimera::CommonStatusCodes::FAIL;
       }
     }
     else
     {
-//      /* Set the new HSE configuration ---------------------------------------*/
-//      __HAL_RCC_HSE_CONFIG( RCC_OscInitStruct->HSEState );
-//
-//      /* Check the HSE State */
-//      if ( ( RCC_OscInitStruct->HSEState ) != RCC_HSE_OFF )
-//      {
-//        /* Get Start Tick */
-//        tickstart = HAL_GetTick();
-//
-//        /* Wait till HSE is ready */
-//        while ( __HAL_RCC_GET_FLAG( RCC_FLAG_HSERDY ) == RESET )
-//        {
-//          if ( ( HAL_GetTick() - tickstart ) > HSE_TIMEOUT_VALUE )
-//          {
-//            return HAL_TIMEOUT;
-//          }
-//        }
-//      }
-//      else
-//      {
-//        /* Get Start Tick */
-//        tickstart = HAL_GetTick();
-//
-//        /* Wait till HSE is bypassed or disabled */
-//        while ( __HAL_RCC_GET_FLAG( RCC_FLAG_HSERDY ) != RESET )
-//        {
-//          if ( ( HAL_GetTick() - tickstart ) > HSE_TIMEOUT_VALUE )
-//          {
-//            return HAL_TIMEOUT;
-//          }
-//        }
-//      }
+      /*------------------------------------------------
+      Set the appropriate flags to change the HSE state
+      ------------------------------------------------*/
+      switch ( init->HSEState )
+      {
+        case HSEConfig::ON:
+          RCC_PERIPH->CR |= CR_HSEON;
+          break;
+
+        case HSEConfig::BYPASS:
+          RCC_PERIPH->CR |= CR_HSEBYP;
+          RCC_PERIPH->CR |= CR_HSEON;
+
+        case HSEConfig::OFF:
+        default:
+          RCC_PERIPH->CR &= ~CR_HSEON;
+          RCC_PERIPH->CR &= ~CR_HSEBYP;
+          break;
+      }
+
+      /*------------------------------------------------
+      Wait for the oscillator to achieve the desired state
+      ------------------------------------------------*/
+      auto tickstart = Chimera::millis();
+
+      if ( init->HSEState != HSEConfig::OFF )
+      {
+        while ( ( HSERDY::get() == locked ) || ( HSEON::get() == disabled ) )
+        {
+          if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
+          {
+            return Chimera::CommonStatusCodes::TIMEOUT;
+          }
+        }
+      }
+      else
+      {
+        while ( HSEON::get() != disabled )
+        {
+          if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
+          {
+            return Chimera::CommonStatusCodes::TIMEOUT;
+          }
+        }
+      }
+    }
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  /**
+   *  Configures the internal high speed oscillator clock selection
+   *
+   *  @param[in]  init    Initialization configuration struct
+   *  @return Chimera::Status_t
+   */
+  static inline Chimera::Status_t HSIOscillatorConfig( const OscInit *init )
+  {
+    using namespace CFGR;
+    using namespace PLLCFGR;
+    using namespace CR;
+
+    const auto clockSource = SWS::get();
+    const auto pllSource   = SRC::get();
+
+    /*------------------------------------------------
+    Check if HSI is used as system clock or as PLL source when PLL is selected as system clock
+    ------------------------------------------------*/
+    if ( ( clockSource == SWS::HSI ) || ( ( clockSource == SWS::PLL ) && ( pllSource == SRC::HSI ) ) )
+    {
+      /*------------------------------------------------
+      When HSI is used as system clock it will not be disabled.
+      ------------------------------------------------*/
+      if ( ( ( HSIRDY::get() == locked ) || ( HSION::get() == enabled ) ) && ( init->HSIState != HSIConfig::ON ) )
+      {
+        return Chimera::CommonStatusCodes::FAIL;
+      }
+      else
+      {
+        HSITRIM::set( init->HSICalibrationValue );
+      }
+    }
+    else
+    {
+      /*------------------------------------------------
+      Try to enter the desired configuration state
+      ------------------------------------------------*/
+      auto tickstart = Chimera::millis();
+
+      if ( init->HSIState  != HSIConfig::OFF )
+      {
+        /*------------------------------------------------
+        Enable the Internal High Speed oscillator
+        ------------------------------------------------*/
+        HSION::set( HSIConfig::ON );
+
+        /*------------------------------------------------
+        Wait till HSI has achieved the desired state
+        ------------------------------------------------*/
+        while ( HSIRDY::get() == unlocked )
+        {
+          if ( ( Chimera::millis() - tickstart ) > HSI_TIMEOUT_VALUE_MS )
+          {
+            return Chimera::CommonStatusCodes::TIMEOUT;
+          }
+        }
+
+        /*------------------------------------------------
+        Adjusts the Internal High Speed oscillator calibration value.
+        ------------------------------------------------*/
+        HSITRIM::set( init->HSICalibrationValue );
+      }
+      else
+      {
+        /*------------------------------------------------
+        Disable the Internal High Speed oscillator
+        ------------------------------------------------*/
+        HSION::set( HSIConfig::OFF );
+
+        /*------------------------------------------------
+        Wait till HSI has achieved the desired state
+        ------------------------------------------------*/
+        while ( HSIRDY::get() == locked )
+        {
+          if ( ( Chimera::millis() - tickstart ) > HSI_TIMEOUT_VALUE_MS )
+          {
+            return Chimera::CommonStatusCodes::TIMEOUT;
+          }
+        }
+      }
+    }
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  /**
+   *  Configures the low speed internal oscillator clock selection
+   *
+   *  @param[in]  init    Initialization configuration struct
+   *  @return Chimera::Status_t
+   */
+  static inline Chimera::Status_t LSIOscillatorConfig( const OscInit *init )
+  {
+    using namespace CSR;
+
+    /*------------------------------------------------
+    Set the clock configuration to the desired state
+    ------------------------------------------------*/
+    auto tickstart = Chimera::millis();
+
+    if ( init->LSIState != LSIConfig::OFF )
+    {
+      LSION::set( LSIConfig::ON );
+
+      /* Wait till LSI is ready */
+      while ( LSION::get() == unlocked )
+      {
+        if ( ( Chimera::millis() - tickstart ) > LSI_TIMEOUT_VALUE_MS )
+        {
+          return Chimera::CommonStatusCodes::TIMEOUT;
+        }
+      }
+    }
+    else
+    {
+      LSION::set( LSIConfig::OFF );
+
+      /* Wait till LSI is ready */
+      while ( LSION::get() == locked )
+      {
+        if ( ( Chimera::millis() - tickstart ) > LSI_TIMEOUT_VALUE_MS )
+        {
+          return Chimera::CommonStatusCodes::TIMEOUT;
+        }
+      }
+    }
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  /**
+   *  Configures the low speed external oscillator clock selection
+   *
+   *  @param[in]  init    Initialization configuration struct
+   *  @return Chimera::Status_t
+   */
+  static inline Chimera::Status_t LSEOsciallatorConfig( const OscInit *init )
+  {
+    using namespace APB1ENR;
+    using namespace BDCR;
+
+    bool pwrclkchanged = false;
+    uint32_t tickstart = 0u;
+
+    /*------------------------------------------------
+    Updating the LSE configuration requires write access
+    ------------------------------------------------*/
+    if ( PWREN::get() == PWRENConfig::OFF )
+    {
+      PWREN::set( PWRENConfig::ON );
+      pwrclkchanged = true;
+    }
+
+    /*------------------------------------------------
+    Enable write access to RTC and RTC Backup registers
+    ------------------------------------------------*/
+    if ( !PWR::CR::DBP::get() )
+    {
+      PWR::CR::DBP::set( PWR::CR_DBP );
+
+      /* Wait for Backup domain Write protection disable */
+      tickstart = Chimera::millis();
+
+      while ( !PWR::CR::DBP::get() )
+      {
+        if ( ( Chimera::millis() - tickstart ) > DBP_TIMEOUT_VALUE_MS )
+        {
+          return Chimera::CommonStatusCodes::TIMEOUT;
+        }
+      }
+    }
+
+    /*------------------------------------------------
+    Set the new oscillator configuration
+    ------------------------------------------------*/
+    switch ( init->LSEState )
+    {
+      case LSEConfig::ON:
+        RCC_PERIPH->BDCR |= BDCR_LSEON;
+        break;
+
+      case LSEConfig::BYPASS:
+        RCC_PERIPH->BDCR |= BDCR_LSEBYP;
+        RCC_PERIPH->BDCR |= BDCR_LSEON;
+
+      case LSEConfig::OFF:
+      default:
+        RCC_PERIPH->BDCR &= ~BDCR_LSEON;
+        RCC_PERIPH->BDCR &= ~BDCR_LSEBYP;
+        break;
+    }
+
+    if ( init->LSEState == LSEConfig::OFF )
+    {
+      /*------------------------------------------------
+      Wait until the flag goes low to indicate the clock has been disabled
+      ------------------------------------------------*/
+      tickstart = Chimera::millis();
+
+      while ( LSERDY::get() )
+      {
+        if ( ( Chimera::millis() - tickstart ) > LSE_TIMEOUT_VALUE_MS )
+        {
+          return Chimera::CommonStatusCodes::TIMEOUT;
+        }
+      }
+    }
+    else
+    {
+      /*------------------------------------------------
+      Wait until the flag goes high to indicate the clock is ready
+      ------------------------------------------------*/
+      tickstart = Chimera::millis();
+
+      while ( !LSERDY::get() )
+      {
+        if ( ( Chimera::millis() - tickstart ) > LSE_TIMEOUT_VALUE_MS )
+        {
+          return Chimera::CommonStatusCodes::TIMEOUT;
+        }
+      }
+    }
+
+    /*------------------------------------------------
+    Restore the power clock
+    ------------------------------------------------*/
+    if ( pwrclkchanged )
+    {
+      PWREN::set( PWRENConfig::OFF );
+    }
+  }
+
+  /**
+   *  Configures the PLL oscillator clock selection
+   *
+   *  @note Before calling this function, the system clock source
+   *        must be set to use the PLL.
+   *
+   *  @param[in]  init    Initialization configuration struct
+   *  @return Chimera::Status_t
+   */
+  static inline Chimera::Status_t PLLOscillatorConfig( const OscInit *init )
+  {
+    using namespace CR;
+    using namespace CFGR;
+
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    const auto clockSource = SWS::get();
+
+    if ( ( init->PLL.State != PLLConfig::NONE ) && ( clockSource == SWS::PLL ) )
+    {
+      if ( init->PLL.State == PLLConfig::ON )
+      {
+        /*------------------------------------------------
+        Turn off the PLL and wait for ready signal
+        ------------------------------------------------*/
+        auto tickstart = Chimera::millis();
+        PLLON::set( PLLConfig::OFF ); 
+
+        while ( PLLRDY::get() )
+        {
+          if ( ( Chimera::millis() - tickstart ) > PLL_TIMEOUT_VALUE_MS )
+          {
+            return Chimera::CommonStatusCodes::TIMEOUT;
+          }
+        }
+
+        /*------------------------------------------------
+        Configure the main PLL clock source, multiplication and division factors
+        ------------------------------------------------*/
+        const auto src = init->PLL.Source;
+        const auto M   = init->PLL.M;
+        const auto N   = init->PLL.N << PLLCFGR_PLLN_Pos;
+        const auto P   = ( ( init->PLL.P >> 1U ) - 1U ) << PLLCFGR_PLLP_Pos;
+        const auto Q   = init->PLL.Q << PLLCFGR_PLLQ_Pos;
+
+        uint32_t tmp = RCC_PERIPH->PLLCFGR;
+        tmp &= ~( PLLCFGR_PLLSRC | PLLCFGR_PLLM | PLLCFGR_PLLN | PLLCFGR_PLLP | PLLCFGR_PLLQ );
+        tmp |= ( src | M | N | P | Q );
+        RCC_PERIPH->PLLCFGR = tmp;
+
+        /*------------------------------------------------
+        Turn on the PLL and wait for ready signal
+        ------------------------------------------------*/
+        tickstart = Chimera::millis();
+        PLLON::set( PLLConfig::ON );
+
+        while ( !PLLRDY::get() )
+        {
+          if ( ( Chimera::millis() - tickstart ) > PLL_TIMEOUT_VALUE_MS )
+          {
+            return Chimera::CommonStatusCodes::TIMEOUT;
+          }
+        }
+      }
+      else
+      {
+        /*------------------------------------------------
+        Turn off the PLL and wait for ready signal
+        ------------------------------------------------*/
+        auto tickstart = Chimera::millis();
+        PLLON::set( PLLConfig::OFF );
+
+        while ( PLLRDY::get() )
+        {
+          if ( ( Chimera::millis() - tickstart ) > PLL_TIMEOUT_VALUE_MS )
+          {
+            return Chimera::CommonStatusCodes::TIMEOUT;
+          }
+        }
+      }
+    }
+    else
+    {
+      result = Chimera::CommonStatusCodes::FAIL;
     }
 
     return result;
-  }
-
-  static inline Chimera::Status_t HSIConfig( const OscInit *init )
-  {
-    //    /* Check if HSI is used as system clock or as PLL source when PLL is selected as system clock */
-    //    if ( ( __HAL_RCC_GET_SYSCLK_SOURCE() == RCC_CFGR_SWS_HSI ) ||
-    //         ( ( __HAL_RCC_GET_SYSCLK_SOURCE() == RCC_CFGR_SWS_PLL ) &&
-    //           ( ( RCC->PLLCFGR & RCC_PLLCFGR_PLLSRC ) == RCC_PLLCFGR_PLLSRC_HSI ) ) )
-    //    {
-    //      /* When HSI is used as system clock it will not disabled */
-    //      if ( ( __HAL_RCC_GET_FLAG( RCC_FLAG_HSIRDY ) != RESET ) && ( RCC_OscInitStruct->HSIState != RCC_HSI_ON ) )
-    //      {
-    //        return HAL_ERROR;
-    //      }
-    //      /* Otherwise, just the calibration is allowed */
-    //      else
-    //      {
-    //        /* Adjusts the Internal High Speed oscillator (HSI) calibration value.*/
-    //        __HAL_RCC_HSI_CALIBRATIONVALUE_ADJUST( RCC_OscInitStruct->HSICalibrationValue );
-    //      }
-    //    }
-    //    else
-    //    {
-    //      /* Check the HSI State */
-    //      if ( ( RCC_OscInitStruct->HSIState ) != RCC_HSI_OFF )
-    //      {
-    //        /* Enable the Internal High Speed oscillator (HSI). */
-    //        __HAL_RCC_HSI_ENABLE();
-    //
-    //        /* Get Start Tick*/
-    //        tickstart = HAL_GetTick();
-    //
-    //        /* Wait till HSI is ready */
-    //        while ( __HAL_RCC_GET_FLAG( RCC_FLAG_HSIRDY ) == RESET )
-    //        {
-    //          if ( ( HAL_GetTick() - tickstart ) > HSI_TIMEOUT_VALUE )
-    //          {
-    //            return HAL_TIMEOUT;
-    //          }
-    //        }
-    //
-    //        /* Adjusts the Internal High Speed oscillator (HSI) calibration value. */
-    //        __HAL_RCC_HSI_CALIBRATIONVALUE_ADJUST( RCC_OscInitStruct->HSICalibrationValue );
-    //      }
-    //      else
-    //      {
-    //        /* Disable the Internal High Speed oscillator (HSI). */
-    //        __HAL_RCC_HSI_DISABLE();
-    //
-    //        /* Get Start Tick*/
-    //        tickstart = HAL_GetTick();
-    //
-    //        /* Wait till HSI is ready */
-    //        while ( __HAL_RCC_GET_FLAG( RCC_FLAG_HSIRDY ) != RESET )
-    //        {
-    //          if ( ( HAL_GetTick() - tickstart ) > HSI_TIMEOUT_VALUE )
-    //          {
-    //            return HAL_TIMEOUT;
-    //          }
-    //        }
-    //      }
-    //    }
-  }
-
-  static inline Chimera::Status_t LSIConfig( const OscInit *init )
-  {
-    //    /* Check the LSI State */
-    //    if ( ( RCC_OscInitStruct->LSIState ) != RCC_LSI_OFF )
-    //    {
-    //      /* Enable the Internal Low Speed oscillator (LSI). */
-    //      __HAL_RCC_LSI_ENABLE();
-    //
-    //      /* Get Start Tick*/
-    //      tickstart = HAL_GetTick();
-    //
-    //      /* Wait till LSI is ready */
-    //      while ( __HAL_RCC_GET_FLAG( RCC_FLAG_LSIRDY ) == RESET )
-    //      {
-    //        if ( ( HAL_GetTick() - tickstart ) > LSI_TIMEOUT_VALUE )
-    //        {
-    //          return HAL_TIMEOUT;
-    //        }
-    //      }
-    //    }
-    //    else
-    //    {
-    //      /* Disable the Internal Low Speed oscillator (LSI). */
-    //      __HAL_RCC_LSI_DISABLE();
-    //
-    //      /* Get Start Tick */
-    //      tickstart = HAL_GetTick();
-    //
-    //      /* Wait till LSI is ready */
-    //      while ( __HAL_RCC_GET_FLAG( RCC_FLAG_LSIRDY ) != RESET )
-    //      {
-    //        if ( ( HAL_GetTick() - tickstart ) > LSI_TIMEOUT_VALUE )
-    //        {
-    //          return HAL_TIMEOUT;
-    //        }
-    //      }
-    //    }
-  }
-
-  static inline Chimera::Status_t LSEConfig( const OscInit *init )
-  {
-    //    FlagStatus pwrclkchanged = RESET;
-    //
-    //    /* Check the parameters */
-    //    assert_param( IS_RCC_LSE( RCC_OscInitStruct->LSEState ) );
-    //
-    //    /* Update LSE configuration in Backup Domain control register    */
-    //    /* Requires to enable write access to Backup Domain of necessary */
-    //    if ( __HAL_RCC_PWR_IS_CLK_DISABLED() )
-    //    {
-    //      __HAL_RCC_PWR_CLK_ENABLE();
-    //      pwrclkchanged = SET;
-    //    }
-    //
-    //    if ( HAL_IS_BIT_CLR( PWR->CR, PWR_CR_DBP ) )
-    //    {
-    //      /* Enable write access to Backup domain */
-    //      SET_BIT( PWR->CR, PWR_CR_DBP );
-    //
-    //      /* Wait for Backup domain Write protection disable */
-    //      tickstart = HAL_GetTick();
-    //
-    //      while ( HAL_IS_BIT_CLR( PWR->CR, PWR_CR_DBP ) )
-    //      {
-    //        if ( ( HAL_GetTick() - tickstart ) > RCC_DBP_TIMEOUT_VALUE )
-    //        {
-    //          return HAL_TIMEOUT;
-    //        }
-    //      }
-    //    }
-    //
-    //    /* Set the new LSE configuration -----------------------------------------*/
-    //    __HAL_RCC_LSE_CONFIG( RCC_OscInitStruct->LSEState );
-    //    /* Check the LSE State */
-    //    if ( ( RCC_OscInitStruct->LSEState ) != RCC_LSE_OFF )
-    //    {
-    //      /* Get Start Tick*/
-    //      tickstart = HAL_GetTick();
-    //
-    //      /* Wait till LSE is ready */
-    //      while ( __HAL_RCC_GET_FLAG( RCC_FLAG_LSERDY ) == RESET )
-    //      {
-    //        if ( ( HAL_GetTick() - tickstart ) > RCC_LSE_TIMEOUT_VALUE )
-    //        {
-    //          return HAL_TIMEOUT;
-    //        }
-    //      }
-    //    }
-    //    else
-    //    {
-    //      /* Get Start Tick */
-    //      tickstart = HAL_GetTick();
-    //
-    //      /* Wait till LSE is ready */
-    //      while ( __HAL_RCC_GET_FLAG( RCC_FLAG_LSERDY ) != RESET )
-    //      {
-    //        if ( ( HAL_GetTick() - tickstart ) > RCC_LSE_TIMEOUT_VALUE )
-    //        {
-    //          return HAL_TIMEOUT;
-    //        }
-    //      }
-    //    }
-    //
-    //    /* Restore clock configuration if changed */
-    //    if ( pwrclkchanged == SET )
-    //    {
-    //      __HAL_RCC_PWR_CLK_DISABLE();
-    //    }
-  }
-
-  static inline Chimera::Status_t PLLConfig( const OscInit *init )
-  {
-    //    /*-------------------------------- PLL Configuration -----------------------*/
-    //    /* Check the parameters */
-    //    assert_param( IS_RCC_PLL( RCC_OscInitStruct->PLL.PLLState ) );
-    //    if ( ( RCC_OscInitStruct->PLL.PLLState ) != RCC_PLL_NONE )
-    //    {
-    //      /* Check if the PLL is used as system clock or not */
-    //      if ( __HAL_RCC_GET_SYSCLK_SOURCE() != RCC_CFGR_SWS_PLL )
-    //      {
-    //        if ( ( RCC_OscInitStruct->PLL.PLLState ) == RCC_PLL_ON )
-    //        {
-    //          /* Check the parameters */
-    //          assert_param( IS_RCC_PLLSOURCE( RCC_OscInitStruct->PLL.PLLSource ) );
-    //          assert_param( IS_RCC_PLLM_VALUE( RCC_OscInitStruct->PLL.PLLM ) );
-    //          assert_param( IS_RCC_PLLN_VALUE( RCC_OscInitStruct->PLL.PLLN ) );
-    //          assert_param( IS_RCC_PLLP_VALUE( RCC_OscInitStruct->PLL.PLLP ) );
-    //          assert_param( IS_RCC_PLLQ_VALUE( RCC_OscInitStruct->PLL.PLLQ ) );
-    //
-    //          /* Disable the main PLL. */
-    //          __HAL_RCC_PLL_DISABLE();
-    //
-    //          /* Get Start Tick */
-    //          tickstart = HAL_GetTick();
-    //
-    //          /* Wait till PLL is ready */
-    //          while ( __HAL_RCC_GET_FLAG( RCC_FLAG_PLLRDY ) != RESET )
-    //          {
-    //            if ( ( HAL_GetTick() - tickstart ) > PLL_TIMEOUT_VALUE )
-    //            {
-    //              return HAL_TIMEOUT;
-    //            }
-    //          }
-    //
-    //          /* Configure the main PLL clock source, multiplication and division factors. */
-    //          WRITE_REG( RCC->PLLCFGR, ( RCC_OscInitStruct->PLL.PLLSource | RCC_OscInitStruct->PLL.PLLM |
-    //                                     ( RCC_OscInitStruct->PLL.PLLN << RCC_PLLCFGR_PLLN_Pos ) |
-    //                                     ( ( ( RCC_OscInitStruct->PLL.PLLP >> 1U ) - 1U ) << RCC_PLLCFGR_PLLP_Pos ) |
-    //                                     ( RCC_OscInitStruct->PLL.PLLQ << RCC_PLLCFGR_PLLQ_Pos ) ) );
-    //          /* Enable the main PLL. */
-    //          __HAL_RCC_PLL_ENABLE();
-    //
-    //          /* Get Start Tick */
-    //          tickstart = HAL_GetTick();
-    //
-    //          /* Wait till PLL is ready */
-    //          while ( __HAL_RCC_GET_FLAG( RCC_FLAG_PLLRDY ) == RESET )
-    //          {
-    //            if ( ( HAL_GetTick() - tickstart ) > PLL_TIMEOUT_VALUE )
-    //            {
-    //              return HAL_TIMEOUT;
-    //            }
-    //          }
-    //        }
-    //        else
-    //        {
-    //          /* Disable the main PLL. */
-    //          __HAL_RCC_PLL_DISABLE();
-    //
-    //          /* Get Start Tick */
-    //          tickstart = HAL_GetTick();
-    //
-    //          /* Wait till PLL is ready */
-    //          while ( __HAL_RCC_GET_FLAG( RCC_FLAG_PLLRDY ) != RESET )
-    //          {
-    //            if ( ( HAL_GetTick() - tickstart ) > PLL_TIMEOUT_VALUE )
-    //            {
-    //              return HAL_TIMEOUT;
-    //            }
-    //          }
-    //        }
-    //      }
-    //      else
-    //      {
-    //        return HAL_ERROR;
-    //      }
-    //    }
   }
 
   Chimera::Status_t OscConfig( OscInit *init )
@@ -383,24 +473,29 @@ namespace Thor::Driver::RCC
       switch ( init->source )
       {
         case OscillatorSource::HSE:
-          result = HSEConfig( init );
+          result = HSEOscillatorConfig( init );
           break;
 
         case OscillatorSource::HSI:
-          result = HSIConfig( init );
+          result = HSIOscillatorConfig( init );
           break;
 
         case OscillatorSource::LSE:
-          result = LSEConfig( init );
+          result = LSEOsciallatorConfig( init );
           break;
 
         case OscillatorSource::LSI:
-          result = LSIConfig( init );
+          result = LSIOscillatorConfig( init );
           break;
 
         default:
           result = Chimera::CommonStatusCodes::FAIL;
           break;
+      }
+
+      if ( result == Chimera::CommonStatusCodes::OK )
+      {
+        result = PLLOscillatorConfig( init );
       }
     }
 
