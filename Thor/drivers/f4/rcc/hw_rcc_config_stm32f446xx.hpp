@@ -27,6 +27,9 @@ extern "C"
    */
   extern uint32_t SystemCoreClock;
 
+  extern const uint8_t AHBPrescTable[ 16 ];
+  extern const uint8_t APBPrescTable[ 8 ];
+
 #ifdef __cplusplus
 }
 #endif

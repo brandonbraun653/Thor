@@ -69,6 +69,45 @@ namespace Thor::Driver::RCC
     LSI
   };
 
+  namespace ClockType
+  {
+    static constexpr uint32_t SYSCLK = 1u;
+    static constexpr uint32_t HCLK   = 2u;
+    static constexpr uint32_t PCLK1  = 4u;
+    static constexpr uint32_t PCLK2  = 8u;
+  };
+
+  namespace SysClockSource
+  {
+    static constexpr uint32_t HSI     = CFGR_SW_HSI;
+    static constexpr uint32_t HSE     = CFGR_SW_HSE;
+    static constexpr uint32_t PLLCLK  = CFGR_SW_PLL;
+    static constexpr uint32_t PLLRCLK = CFGR_SW_0 | CFGR_SW_1;
+  };
+
+  namespace SysClockDiv
+  {
+    static constexpr uint32_t DIV1   = CFGR_HPRE_DIV1;
+    static constexpr uint32_t DIV2   = CFGR_HPRE_DIV2;
+    static constexpr uint32_t DIV4   = CFGR_HPRE_DIV4;
+    static constexpr uint32_t DIV8   = CFGR_HPRE_DIV8;
+    static constexpr uint32_t DIV16  = CFGR_HPRE_DIV16;
+    static constexpr uint32_t DIV64  = CFGR_HPRE_DIV64;
+    static constexpr uint32_t DIV128 = CFGR_HPRE_DIV128;
+    static constexpr uint32_t DIV256 = CFGR_HPRE_DIV256;
+    static constexpr uint32_t DIV512 = CFGR_HPRE_DIV512;
+  };
+
+  namespace HClkDiv
+  {
+    static constexpr uint32_t DIV1  = CFGR_PPRE1_DIV1;
+    static constexpr uint32_t DIV2  = CFGR_PPRE1_DIV2;
+    static constexpr uint32_t DIV4  = CFGR_PPRE1_DIV4;
+    static constexpr uint32_t DIV8  = CFGR_PPRE1_DIV8;
+    static constexpr uint32_t DIV16 = CFGR_PPRE1_DIV16;
+  }
+
+
   /*------------------------------------------------
   RCC_CR Register Interaction Model
   ------------------------------------------------*/
@@ -149,6 +188,14 @@ namespace Thor::Driver::RCC
       static constexpr uint32_t NONE = 0u;
       static constexpr uint32_t OFF  = 1u;
       static constexpr uint32_t ON   = CR_PLLON;
+    };
+
+    struct PLLDiv
+    {
+      static constexpr uint32_t DIV2 = 2u;
+      static constexpr uint32_t DIV4 = 4u;
+      static constexpr uint32_t DIV6 = 6u;
+      static constexpr uint32_t DIV8 = 8u;
     };
 
     struct CSSON
@@ -266,9 +313,8 @@ namespace Thor::Driver::RCC
   ------------------------------------------------*/
   namespace PLLCFGR
   {
-    class SRC
+    struct SRC
     {
-    public:
       static constexpr uint32_t HSI = PLLCFGR_PLLSRC_HSI;
       static constexpr uint32_t HSE = PLLCFGR_PLLSRC_HSE;
 
@@ -284,11 +330,85 @@ namespace Thor::Driver::RCC
         tmp |= ( val & PLLCFGR_PLLSRC );
         RCC_PERIPH->PLLCFGR = tmp;
       }
+    };
 
-      static inline bool writable()
+    struct M
+    {
+      static inline uint32_t get()
       {
-        // TODO: According to datasheet, writable only when PLL and PLLI2S is disabled
-        return false;
+        return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLM;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( PLLCFGR_PLLM );
+        tmp |= ( val & PLLCFGR_PLLM );
+        RCC_PERIPH->PLLCFGR = tmp;
+      }
+    };
+
+    struct N
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLN;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( PLLCFGR_PLLN );
+        tmp |= ( val & PLLCFGR_PLLN );
+        RCC_PERIPH->PLLCFGR = tmp;
+      }
+    };
+
+    struct P
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLP;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( PLLCFGR_PLLP );
+        tmp |= ( val & PLLCFGR_PLLP );
+        RCC_PERIPH->PLLCFGR = tmp;
+      }
+    };
+
+    struct Q
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLQ;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( PLLCFGR_PLLQ );
+        tmp |= ( val & PLLCFGR_PLLQ );
+        RCC_PERIPH->PLLCFGR = tmp;
+      }
+    };
+
+    struct R
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLR;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( PLLCFGR_PLLR );
+        tmp |= ( val & PLLCFGR_PLLR );
+        RCC_PERIPH->PLLCFGR = tmp;
       }
     };
 
@@ -330,6 +450,66 @@ namespace Thor::Driver::RCC
       static inline uint32_t get()
       {
         return RCC_PERIPH->CFGR & CFGR_SWS;
+      }
+    };
+
+    struct HPRE
+    {
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CFGR & CFGR_HPRE;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CFGR_HPRE );
+        tmp |= ( val & CFGR_HPRE );
+        RCC_PERIPH->CFGR = tmp;
+      }
+    };
+
+    struct PPRE1
+    {
+      static constexpr uint32_t AHB_DIV1  = CFGR_PPRE1_DIV1;
+      static constexpr uint32_t AHB_DIV2  = CFGR_PPRE1_DIV2;
+      static constexpr uint32_t AHB_DIV4  = CFGR_PPRE1_DIV4;
+      static constexpr uint32_t AHB_DIV8  = CFGR_PPRE1_DIV8;
+      static constexpr uint32_t AHB_DIV16 = CFGR_PPRE1_DIV16;
+
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CFGR & CFGR_PPRE1;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CFGR_PPRE1 );
+        tmp |= ( val & CFGR_PPRE1 );
+        RCC_PERIPH->CFGR = tmp;
+      }
+    };
+
+    struct PPRE2
+    {
+      static constexpr uint32_t AHB_DIV1  = CFGR_PPRE2_DIV1;
+      static constexpr uint32_t AHB_DIV2  = CFGR_PPRE2_DIV2;
+      static constexpr uint32_t AHB_DIV4  = CFGR_PPRE2_DIV4;
+      static constexpr uint32_t AHB_DIV8  = CFGR_PPRE2_DIV8;
+      static constexpr uint32_t AHB_DIV16 = CFGR_PPRE2_DIV16;
+
+      static inline uint32_t get()
+      {
+        return RCC_PERIPH->CFGR & CFGR_PPRE2;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( CFGR_PPRE2 );
+        tmp |= ( val & CFGR_PPRE2 );
+        RCC_PERIPH->CFGR = tmp;
       }
     };
   }    // namespace CFGR

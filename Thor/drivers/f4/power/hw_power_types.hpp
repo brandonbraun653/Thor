@@ -212,6 +212,10 @@ namespace Thor::Driver::PWR
 
     struct VOS
     {
+      static constexpr uint32_t VOLTAGE_SCALE_1 = CR_VOS;
+      static constexpr uint32_t VOLTAGE_SCALE_2 = CR_VOS_1;
+      static constexpr uint32_t VOLTAGE_SCALE_3 = CR_VOS_0;
+
       static inline uint32_t get()
       {
         return PWR_PERIPH->CR & CR_VOS;
