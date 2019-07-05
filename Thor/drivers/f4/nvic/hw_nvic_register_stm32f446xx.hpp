@@ -12,9 +12,10 @@
 #ifndef THOR_HW_DRIVER_NVIC_REGISTER_STM32F446XX_HPP
 #define THOR_HW_DRIVER_NVIC_REGISTER_STM32F446XX_HPP
 
-namespace Thor::Driver::NVIC
+namespace Thor::Driver::Interrupt
 {
-
+  // Currently just a placeholder because all the register definitions are taken
+  // care of inside of the CMSIS drivers.
 }
 
 #endif /* !THOR_HW_DRIVER_FLASH_REGISTER_STM32F446XX_HPP */

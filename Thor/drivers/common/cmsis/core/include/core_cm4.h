@@ -60,8 +60,9 @@
   @{
  */
 
-#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
 #include <Thor/drivers/common/cmsis/core/include/cmsis_version.h>
+#include <Thor/drivers/common/cmsis/core/include/cmsis_compiler.h>
+#include <Thor/drivers/common/cmsis/configuration.hpp>
 
 /* CMSIS CM4 definitions */
 #define __CM4_CMSIS_VERSION_MAIN  (__CM_CMSIS_VERSION_MAIN)              /*!< \deprecated [31:16] CMSIS HAL main version */
@@ -159,9 +160,6 @@
   #endif
 
 #endif
-
-#include <Thor/drivers/common/cmsis/core/include/cmsis_compiler.h>               /* CMSIS compiler specific defines */
-
 
 #ifdef __cplusplus
 }

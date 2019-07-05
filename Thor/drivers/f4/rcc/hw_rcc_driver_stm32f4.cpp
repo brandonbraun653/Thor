@@ -720,7 +720,6 @@ namespace Thor::Driver::RCC
     return result;
   }
 
-
   WEAKDECL OscInit prjGetOscConfig()
   {
     OscInit dummyConfig;
