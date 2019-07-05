@@ -19,6 +19,8 @@
 
 /* Driver Includes */
 #include <Thor/drivers/common/mapping/peripheral_mapping.hpp>
+#include <Thor/drivers/f4/flash/hw_flash_driver.hpp>
+#include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
 #include <Thor/drivers/f4/power/hw_power_types.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver_prv.hpp>
