@@ -20,7 +20,7 @@
 
 namespace Thor::Driver::PWR
 {
-  static constexpr uint32_t PWR_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x7000U;
+  static constexpr uint32_t PWR_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x7000U;
 
   /*------------------------------------------------
   CR Register

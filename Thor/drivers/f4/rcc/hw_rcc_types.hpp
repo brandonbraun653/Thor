@@ -60,14 +60,17 @@ namespace Thor::Driver::RCC
 
   static RegisterMap *const RCC_PERIPH = reinterpret_cast<RegisterMap *const>( RCC_BASE_ADDR );
 
-  enum class OscillatorSource : uint8_t
+  /**
+   *  User level configuration options for the clock initialization structure
+   */
+  struct ClockSource
   {
-    NONE,
-    HSE,
-    HSI,
-    LSE,
-    LSI
+    static constexpr uint32_t HSE     = 1u; /**< Signals that the HSE clock should be configured */
+    static constexpr uint32_t HSI     = 2u; /**< Signals that the HSI clock should be configured */
+    static constexpr uint32_t PLLCLK  = 4u; /**< Signals that the PLL clock should be configured */
+    static constexpr uint32_t PLLRCLK = 6u; /**< Signals that the PLLR clock should be configured */
   };
+
 
   namespace ClockType
   {
@@ -77,6 +80,10 @@ namespace Thor::Driver::RCC
     static constexpr uint32_t PCLK2  = 8u;
   };
 
+  /**
+   *  Register level definitions for configuring the System Clock selection 
+   *  option inside of the RCC_CFGR register. 
+   */
   namespace SysClockSource
   {
     static constexpr uint32_t HSI     = CFGR_SW_HSI;
@@ -176,7 +183,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CR;
         tmp &= ~( CR_PLLON );
         tmp |= ( val & CR_PLLON );
         RCC_PERIPH->CR = tmp;
@@ -239,7 +246,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CR;
         tmp &= ~( CR_HSEON );
         tmp |= ( val & CR_HSEON );
         RCC_PERIPH->CR = tmp;
@@ -270,7 +277,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CR;
         tmp &= ~( CR_HSION );
         tmp |= ( val & CR_HSION );
         RCC_PERIPH->CR = tmp;
@@ -294,7 +301,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CR;
         tmp &= ~( CR_HSITRIM );
         tmp |= ( val << CR_HSITRIM_Pos ) & CR_HSITRIM;
         RCC_PERIPH->CR = tmp;
@@ -325,7 +332,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLSRC );
         tmp |= ( val & PLLCFGR_PLLSRC );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -341,7 +348,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLM );
         tmp |= ( val & PLLCFGR_PLLM );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -357,7 +364,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLN );
         tmp |= ( val & PLLCFGR_PLLN );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -373,7 +380,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLP );
         tmp |= ( val & PLLCFGR_PLLP );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -389,7 +396,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLQ );
         tmp |= ( val & PLLCFGR_PLLQ );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -405,7 +412,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLR );
         tmp |= ( val & PLLCFGR_PLLR );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -433,7 +440,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CFGR;
         tmp &= ~( CFGR_SW );
         tmp |= ( val & CFGR_SW );
         RCC_PERIPH->CFGR = tmp;
@@ -451,6 +458,14 @@ namespace Thor::Driver::RCC
       {
         return RCC_PERIPH->CFGR & CFGR_SWS;
       }
+
+      /**
+       *  Gets the right shifted value instead of the masked value
+       */
+      static inline uint32_t getRS()
+      {
+        return ( RCC_PERIPH->CFGR & CFGR_SWS ) >> CFGR_SWS_Pos;
+      }
     };
 
     struct HPRE
@@ -462,7 +477,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CFGR;
         tmp &= ~( CFGR_HPRE );
         tmp |= ( val & CFGR_HPRE );
         RCC_PERIPH->CFGR = tmp;
@@ -484,7 +499,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CFGR;
         tmp &= ~( CFGR_PPRE1 );
         tmp |= ( val & CFGR_PPRE1 );
         RCC_PERIPH->CFGR = tmp;
@@ -506,7 +521,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CFGR;
         tmp &= ~( CFGR_PPRE2 );
         tmp |= ( val & CFGR_PPRE2 );
         RCC_PERIPH->CFGR = tmp;
@@ -528,7 +543,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->APB1ENR;
         tmp &= ~( APB1ENR_PWREN );
         tmp |= ( val & APB1ENR_PWREN );
         RCC_PERIPH->APB1ENR = tmp;
@@ -557,7 +572,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_LSEON );
         tmp |= ( val & BDCR_LSEON );
         RCC_PERIPH->BDCR = tmp;
@@ -588,7 +603,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_LSEBYP );
         tmp |= ( val & BDCR_LSEBYP );
         RCC_PERIPH->BDCR = tmp;
@@ -604,7 +619,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_LSEMOD );
         tmp |= ( val & BDCR_LSEMOD );
         RCC_PERIPH->BDCR = tmp;
@@ -620,7 +635,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_RTCSEL );
         tmp |= ( val & BDCR_RTCSEL );
         RCC_PERIPH->BDCR = tmp;
@@ -636,7 +651,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_RTCEN );
         tmp |= ( val & BDCR_RTCEN );
         RCC_PERIPH->BDCR = tmp;
@@ -652,7 +667,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_BDRST );
         tmp |= ( val & BDCR_BDRST );
         RCC_PERIPH->BDCR = tmp;
@@ -680,7 +695,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_LPWRRSTF );
         tmp |= ( val & CSR_LPWRRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -696,7 +711,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_WWDGRSTF );
         tmp |= ( val & CSR_WWDGRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -712,7 +727,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_IWDGRSTF );
         tmp |= ( val & CSR_IWDGRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -728,7 +743,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_SFTRSTF );
         tmp |= ( val & CSR_SFTRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -744,7 +759,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_PORRSTF );
         tmp |= ( val & CSR_PORRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -760,7 +775,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_PINRSTF );
         tmp |= ( val & CSR_PINRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -776,7 +791,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_BORRSTF );
         tmp |= ( val & CSR_BORRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -792,7 +807,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_RMVF );
         tmp |= ( val & CSR_RMVF );
         RCC_PERIPH->CSR = tmp;
@@ -816,7 +831,7 @@ namespace Thor::Driver::RCC
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_LSION );
         tmp |= ( val & CSR_LSION );
         RCC_PERIPH->CSR = tmp;
@@ -833,50 +848,50 @@ namespace Thor::Driver::RCC
 
   struct PLLInit
   {
-    uint32_t State;  /*!< The new state of the PLL.*/
-    uint32_t Source; /*!< RCC_PLLSource: PLL entry clock source. */
-    uint32_t M;      /*!< PLLM: Division factor for PLL VCO input clock. */
-    uint32_t N;      /*!< PLLN: Multiplication factor for PLL VCO output clock. */
-    uint32_t P;      /*!< PLLP: Division factor for main system clock (SYSCLK). */
-    uint32_t Q;      /*!< PLLQ: Division factor for OTG FS, SDIO and RNG clocks.  */
-    uint32_t R;      /*!< PLLR: PLL division factor for I2S, SAI, SYSTEM, SPDIFRX clocks. */
+    uint32_t State;  /**< The new state of the PLL.*/
+    uint32_t Source; /**< RCC_PLLSource: PLL entry clock source. */
+    uint32_t M;      /**< PLLM: Division factor for PLL VCO input clock. */
+    uint32_t N;      /**< PLLN: Multiplication factor for PLL VCO output clock. */
+    uint32_t P;      /**< PLLP: Division factor for main system clock (SYSCLK). */
+    uint32_t Q;      /**< PLLQ: Division factor for OTG FS, SDIO and RNG clocks.  */
+    uint32_t R;      /**< PLLR: PLL division factor for I2S, SAI, SYSTEM, SPDIFRX clocks. */
   };
 
   struct PLLI2SInit
   {
-    uint32_t M; /*!< Specifies division factor for PLL VCO input clock. */
-    uint32_t N; /*!< Specifies the multiplication factor for PLLI2S VCO output clock. */
-    uint32_t P; /*!< Specifies division factor for SPDIFRX Clock. */
-    uint32_t Q; /*!< Specifies the division factor for SAI clock. */
-    uint32_t R; /*!< Specifies the division factor for I2S clock. */
+    uint32_t M; /**< Specifies division factor for PLL VCO input clock. */
+    uint32_t N; /**< Specifies the multiplication factor for PLLI2S VCO output clock. */
+    uint32_t P; /**< Specifies division factor for SPDIFRX Clock. */
+    uint32_t Q; /**< Specifies the division factor for SAI clock. */
+    uint32_t R; /**< Specifies the division factor for I2S clock. */
   };
 
   struct PLLSAIInit
   {
-    uint32_t M; /*!< Spcifies division factor for PLL VCO input clock. */
-    uint32_t N; /*!< Specifies the multiplication factor for PLLI2S VCO output clock. */
-    uint32_t P; /*!< Specifies division factor for OTG FS, SDIO and RNG clocks. */
-    uint32_t Q; /*!< Specifies the division factor for SAI clock. */
+    uint32_t M; /**< Spcifies division factor for PLL VCO input clock. */
+    uint32_t N; /**< Specifies the multiplication factor for PLLI2S VCO output clock. */
+    uint32_t P; /**< Specifies division factor for OTG FS, SDIO and RNG clocks. */
+    uint32_t Q; /**< Specifies the division factor for SAI clock. */
   };
 
   struct OscInit
   {
-    OscillatorSource source;      /*!< The oscillators to be configured. */
-    uint32_t HSEState;            /*!< The new state of the HSE. Can be value of CR::HSEConfig */
-    uint32_t LSEState;            /*!< The new state of the LSE. */
-    uint32_t HSIState;            /*!< The new state of the HSI. Can be value of CR::HSIConfig */
-    uint32_t LSIState;            /*!< The new state of the LSI. */
-    uint32_t HSICalibrationValue; /*!< The HSI calibration trimming value */
-    PLLInit PLL;                  /*!< PLL structure parameters */
+    uint32_t source;              /**< The oscillators to be configured. Can be value of SysClockSource */
+    uint32_t HSEState;            /**< The new state of the HSE. Can be value of CR::HSEConfig */
+    uint32_t LSEState;            /**< The new state of the LSE. */
+    uint32_t HSIState;            /**< The new state of the HSI. Can be value of CR::HSIConfig */
+    uint32_t LSIState;            /**< The new state of the LSI. */
+    uint32_t HSICalibrationValue; /**< The HSI calibration trimming value */
+    PLLInit PLL;                  /**< PLL structure parameters */
   };
 
   struct ClkInit
   {
-    uint32_t ClockType;      /*!< The clock to be configured. */
-    uint32_t SYSCLKSource;   /*!< The clock source (SYSCLKS) used as system clock. */
-    uint32_t AHBCLKDivider;  /*!< The AHB clock (HCLK) divider. This clock is derived from the system clock (SYSCLK). */
-    uint32_t APB1CLKDivider; /*!< The APB1 clock (PCLK1) divider. This clock is derived from the AHB clock (HCLK). */
-    uint32_t APB2CLKDivider; /*!< The APB2 clock (PCLK2) divider. This clock is derived from the AHB clock (HCLK). */
+    uint32_t ClockType;      /**< The clock to be configured. */
+    uint32_t SYSCLKSource;   /**< The clock source (SYSCLKS) used as system clock. */
+    uint32_t AHBCLKDivider;  /**< The AHB clock (HCLK) divider. This clock is derived from the system clock (SYSCLK). */
+    uint32_t APB1CLKDivider; /**< The APB1 clock (PCLK1) divider. This clock is derived from the AHB clock (HCLK). */
+    uint32_t APB2CLKDivider; /**< The APB2 clock (PCLK2) divider. This clock is derived from the AHB clock (HCLK). */
   };
 
 

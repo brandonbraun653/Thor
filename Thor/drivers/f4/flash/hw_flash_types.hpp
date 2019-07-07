@@ -47,7 +47,7 @@ namespace Thor::Driver::Flash
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = FLASH_PERIPH->ACR;
         tmp &= ~( ACR_DCRST );
         tmp |= val;
         FLASH_PERIPH->ACR = tmp;
@@ -63,7 +63,7 @@ namespace Thor::Driver::Flash
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = FLASH_PERIPH->ACR;
         tmp &= ~( ACR_ICRST );
         tmp |= val & ACR_ICRST;
         FLASH_PERIPH->ACR = tmp;
@@ -79,7 +79,7 @@ namespace Thor::Driver::Flash
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = FLASH_PERIPH->ACR;
         tmp &= ~( ACR_DCEN );
         tmp |= val & ACR_DCEN;
         FLASH_PERIPH->ACR = tmp;
@@ -95,7 +95,7 @@ namespace Thor::Driver::Flash
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = FLASH_PERIPH->ACR;
         tmp &= ~( ACR_ICEN );
         tmp |= val & ACR_ICEN;
         FLASH_PERIPH->ACR = tmp;
@@ -111,7 +111,7 @@ namespace Thor::Driver::Flash
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = FLASH_PERIPH->ACR;
         tmp &= ~( ACR_PRFTEN );
         tmp |= val & ACR_PRFTEN;
         FLASH_PERIPH->ACR = tmp;
@@ -127,7 +127,7 @@ namespace Thor::Driver::Flash
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = FLASH_PERIPH->ACR;
         tmp &= ~( ACR_LATENCY );
         tmp |= val & ACR_LATENCY;
         FLASH_PERIPH->ACR = tmp;

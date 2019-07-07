@@ -41,7 +41,6 @@ namespace Thor::Driver::RCC
    */
   extern OscInit prjGetOscConfig();
 
-
   /**
    *  Singleton that interacts with the system clock registers to allow the user
    *  to configure a chip's clock at a very high level.

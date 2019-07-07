@@ -28,7 +28,6 @@ namespace Thor::Driver::PWR
 
   static RegisterMap *const PWR_PERIPH = reinterpret_cast<RegisterMap *const>( PWR_BASE_ADDR );
 
-
   /*------------------------------------------------
   PWR_CR Register Interaction Model
   ------------------------------------------------*/
@@ -43,7 +42,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_LPDS );
         tmp |= ( val & CR_LPDS );
         PWR_PERIPH->CR = tmp;
@@ -59,7 +58,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_PDDS );
         tmp |= ( val & CR_PDDS );
         PWR_PERIPH->CR = tmp;
@@ -75,7 +74,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_CWUF );
         tmp |= ( val & CR_CWUF );
         PWR_PERIPH->CR = tmp;
@@ -91,7 +90,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_CSBF );
         tmp |= ( val & CR_CSBF );
         PWR_PERIPH->CR = tmp;
@@ -107,7 +106,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_PVDE );
         tmp |= ( val & CR_PVDE );
         PWR_PERIPH->CR = tmp;
@@ -123,7 +122,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_PLS );
         tmp |= ( val & CR_PLS );
         PWR_PERIPH->CR = tmp;
@@ -139,7 +138,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_DBP );
         tmp |= ( val & CR_DBP );
         PWR_PERIPH->CR = tmp;
@@ -155,7 +154,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_FPDS );
         tmp |= ( val & CR_FPDS );
         PWR_PERIPH->CR = tmp;
@@ -171,7 +170,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_LPLVDS );
         tmp |= ( val & CR_LPLVDS );
         PWR_PERIPH->CR = tmp;
@@ -187,7 +186,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_MRLVDS );
         tmp |= ( val & CR_MRLVDS );
         PWR_PERIPH->CR = tmp;
@@ -203,7 +202,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_ADCDC1 );
         tmp |= ( val & CR_ADCDC1 );
         PWR_PERIPH->CR = tmp;
@@ -223,7 +222,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_VOS );
         tmp |= ( val & CR_VOS );
         PWR_PERIPH->CR = tmp;
@@ -239,7 +238,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_ODEN );
         tmp |= ( val & CR_ODEN );
         PWR_PERIPH->CR = tmp;
@@ -255,7 +254,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_ODSWEN );
         tmp |= ( val & CR_ODSWEN );
         PWR_PERIPH->CR = tmp;
@@ -271,7 +270,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_UDEN );
         tmp |= ( val & CR_UDEN );
         PWR_PERIPH->CR = tmp;
@@ -287,7 +286,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_FMSSR );
         tmp |= ( val & CR_FMSSR );
         PWR_PERIPH->CR = tmp;
@@ -303,7 +302,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CR;
         tmp &= ~( CR_FISSR );
         tmp |= ( val & CR_FISSR );
         PWR_PERIPH->CR = tmp;
@@ -357,7 +356,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CSR;
         tmp &= ~( CSR_EWUP2 );
         tmp |= ( val & CSR_EWUP2 );
         PWR_PERIPH->CSR = tmp;
@@ -373,7 +372,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CSR;
         tmp &= ~( CSR_EWUP1 );
         tmp |= ( val & CSR_EWUP1 );
         PWR_PERIPH->CSR = tmp;
@@ -389,7 +388,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CSR;
         tmp &= ~( CSR_BRE );
         tmp |= ( val & CSR_BRE );
         PWR_PERIPH->CSR = tmp;
@@ -429,7 +428,7 @@ namespace Thor::Driver::PWR
 
       static inline void set( const uint32_t val )
       {
-        uint32_t tmp = get();
+        uint32_t tmp = PWR_PERIPH->CSR;
         tmp &= ~( CSR_UDRDY );
         tmp |= ( val & CSR_UDRDY );
         PWR_PERIPH->CSR = tmp;
