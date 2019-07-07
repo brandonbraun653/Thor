@@ -12,8 +12,15 @@
 #ifndef THOR_HW_DRIVER_FLASH_HPP
 #define THOR_HW_DRIVER_FLASH_HPP
 
+/* C++ Includes */
+#include <cstdint>
+
+/* Driver Includes */
+#include <Thor/drivers/f4/flash/hw_flash_types.hpp>
+
 namespace Thor::Driver::Flash
 {
+
 }
 
 #endif /* !THOR_HW_DRIVER_FLASH_HPP */

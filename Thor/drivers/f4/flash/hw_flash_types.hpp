@@ -12,9 +12,170 @@
 #ifndef THOR_HW_DRIVER_FLASH_TYPES_HPP
 #define THOR_HW_DRIVER_FLASH_TYPES_HPP
 
+/* C++ Includes */
+#include <cstdint>
+
+/* Driver Includes */
+#include <Thor/drivers/f4/flash/hw_flash_prj.hpp>
+
 namespace Thor::Driver::Flash
 {
+  struct RegisterMap
+  {
+    volatile uint32_t ACR;     /**< FLASH access control register,   Address offset: 0x00 */
+    volatile uint32_t KEYR;    /**< FLASH key register,              Address offset: 0x04 */
+    volatile uint32_t OPTKEYR; /**< FLASH option key register,       Address offset: 0x08 */
+    volatile uint32_t SR;      /**< FLASH status register,           Address offset: 0x0C */
+    volatile uint32_t CR;      /**< FLASH control register,          Address offset: 0x10 */
+    volatile uint32_t OPTCR;   /**< FLASH option control register ,  Address offset: 0x14 */
+    volatile uint32_t OPTCR1;  /**< FLASH option control register 1, Address offset: 0x18 */
+  };
 
-}
+  static RegisterMap *const FLASH_PERIPH = reinterpret_cast<RegisterMap *const>( FLASH_BASE_ADDR );
+
+  /*------------------------------------------------
+  Access Control Register (ACR)
+  ------------------------------------------------*/
+  namespace ACR
+  {
+    struct DCRST
+    {
+      static inline uint32_t get()
+      {
+        return FLASH_PERIPH->ACR & ACR_DCRST;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( ACR_DCRST );
+        tmp |= val;
+        FLASH_PERIPH->ACR = tmp;
+      }
+    };
+
+    struct ICRST
+    {
+      static inline uint32_t get()
+      {
+        return FLASH_PERIPH->ACR & ACR_ICRST;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( ACR_ICRST );
+        tmp |= val & ACR_ICRST;
+        FLASH_PERIPH->ACR = tmp;
+      }
+    };
+
+    struct DCEN
+    {
+      static inline uint32_t get()
+      {
+        return FLASH_PERIPH->ACR & ACR_DCEN;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( ACR_DCEN );
+        tmp |= val & ACR_DCEN;
+        FLASH_PERIPH->ACR = tmp;
+      }
+    };
+
+    struct ICEN
+    {
+      static inline uint32_t get()
+      {
+        return FLASH_PERIPH->ACR & ACR_ICEN;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( ACR_ICEN );
+        tmp |= val & ACR_ICEN;
+        FLASH_PERIPH->ACR = tmp;
+      }
+    };
+
+    struct PRFTEN
+    {
+      static inline uint32_t get()
+      {
+        return FLASH_PERIPH->ACR & ACR_PRFTEN;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( ACR_PRFTEN );
+        tmp |= val & ACR_PRFTEN;
+        FLASH_PERIPH->ACR = tmp;
+      }
+    };
+
+    struct LATENCY
+    {
+      static inline uint32_t get()
+      {
+        return FLASH_PERIPH->ACR & ACR_LATENCY;
+      }
+
+      static inline void set( const uint32_t val )
+      {
+        uint32_t tmp = get();
+        tmp &= ~( ACR_LATENCY );
+        tmp |= val & ACR_LATENCY;
+        FLASH_PERIPH->ACR = tmp;
+      }
+    };
+  }    // namespace ACR
+
+  /*------------------------------------------------
+  Key Register (KEYR)
+  ------------------------------------------------*/
+  namespace KEYR
+  {
+  }
+
+  /*------------------------------------------------
+  Option Key Register (OPTKEYR)
+  ------------------------------------------------*/
+  namespace OPTKEYR
+  {
+  }
+
+  /*------------------------------------------------
+  Status Register (SR)
+  ------------------------------------------------*/
+  namespace SR
+  {
+  }
+
+  /*------------------------------------------------
+  Control Register (CR)
+  ------------------------------------------------*/
+  namespace CR
+  {
+  }
+
+  /*------------------------------------------------
+  Option Control Register (OPTCR)
+  ------------------------------------------------*/
+  namespace OPTCR
+  {
+  }
+
+  /*------------------------------------------------
+  Option Control Register 1 (OPTCR1)
+  ------------------------------------------------*/
+  namespace OPTCR1
+  {
+  }
+}    // namespace Thor::Driver::Flash
 
 #endif /* !THOR_HW_DRIVER_FLASH_TYPES_HPP */

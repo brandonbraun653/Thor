@@ -87,7 +87,7 @@ namespace Thor::Driver::RCC
   }
 
 
-  WEAKDECL uint32_t HAL_RCC_GetSysClockFreq(void)
+  WEAKDECL uint32_t getSysClockFreq()
   {
     uint32_t pllm = 0U, pllvco = 0U, pllp = 0U;
     uint32_t sysclockfreq = 0U;
@@ -618,18 +618,20 @@ namespace Thor::Driver::RCC
    */
   static inline Chimera::Status_t UpdateFlashLatency( const uint32_t value )
   {
-    //    /* Program the new number of wait states to the LATENCY bits in the FLASH_ACR register */
-    //    __HAL_FLASH_SET_LATENCY(FLatency);
-    //
-    //    /* Check that the new number of wait states is taken into account to access the Flash
-    //    memory by reading the FLASH_ACR register */
-    //    if(__HAL_FLASH_GET_LATENCY() != FLatency)
-    //    {
-    //      return HAL_ERROR;
-    //    }
+    using namespace Thor::Driver::Flash;
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    // TODO!
-    return 0;
+    /*------------------------------------------------
+    Validate latency configuration since this is such
+    a critical operating parameter.
+    ------------------------------------------------*/
+    ACR::LATENCY::set( value );
+    if ( ACR::LATENCY::get() != value )
+    {
+      result = Chimera::CommonStatusCodes::FAIL;
+    }
+
+    return result;
   }
 
   Chimera::Status_t OscillatorConfig( OscInit *init )
@@ -674,7 +676,7 @@ namespace Thor::Driver::RCC
     return result;
   }
 
-  Chimera::Status_t ClockConfig( ClkInit *init )
+  Chimera::Status_t ClockConfig( ClkInit *init, const uint32_t flashLatency )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
@@ -708,13 +710,10 @@ namespace Thor::Driver::RCC
         PCLK2Config( init );
       }
 
-      UpdateFlashLatency( 0 );
+      UpdateFlashLatency( flashLatency );
 
       /* Update the SystemCoreClock global variable */
-      SystemCoreClock = HAL_RCC_GetSysClockFreq() >> AHBPrescTable[ CFGR::HPRE::get() >> CFGR_HPRE_Pos ];
-
-      /* Configure the source of time base considering new system clocks settings */
-      //HAL_InitTick( TICK_INT_PRIORITY );
+      SystemCoreClock = getSysClockFreq() >> AHBPrescTable[ CFGR::HPRE::get() >> CFGR_HPRE_Pos ];
     }
 
     return result;
@@ -814,7 +813,7 @@ namespace Thor::Driver::RCC
     clkCfg.APB1CLKDivider = HClkDiv::DIV4;
     clkCfg.APB2CLKDivider = HClkDiv::DIV2;
 
-    result = ClockConfig( &clkCfg );
+    result = ClockConfig( &clkCfg, 3 );
 
     /*------------------------------------------------
     Configure the SysTick interrupt and clock source
@@ -834,7 +833,7 @@ namespace Thor::Driver::RCC
 
   size_t SystemClock::getCoreClock()
   {
-    return 0;
+    return getSysClockFreq();
   }
 
   Thor::Clock::Source SystemClock::getCoreClockSource()
