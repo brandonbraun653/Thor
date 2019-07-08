@@ -52,94 +52,13 @@ namespace Thor::Driver::RCC
     }
   }
 
-  void init()
-  {
-    static bool initialized = false;
-
-    if ( !initialized )
-    {
-      periphSingletonInstances.fill( nullptr );
-    }
-  }
-
-  WEAKDECL uint32_t prjGetHSIValue()
-  {
-    /*------------------------------------------------
-    Typical value of the high speed internal oscillator in Hz
-    ------------------------------------------------*/
-    return 16000000u;
-  }
-
-  WEAKDECL uint32_t prjGetHSEValue()
-  {
-    /*------------------------------------------------
-    Typical value of the high speed external oscillator in Hz
-    ------------------------------------------------*/
-    return 25000000u;
-  }
-
-  WEAKDECL uint32_t prjGetLSIValue()
-  {
-    /*------------------------------------------------
-    Typical value of the low speed internal oscillator in Hz
-    ------------------------------------------------*/
-    return 32000u;
-  }
-
-  WEAKDECL uint32_t getSysClockFreq()
-  {
-    uint32_t pllm = 0U, pllvco = 0U, pllp = 0U;
-    uint32_t sysclockfreq = 0U;
-
-    const auto HSI_VALUE = prjGetHSIValue();
-    const auto HSE_VALUE = prjGetHSEValue();
-
-    switch ( CFGR::SWS::get() )
-    {
-      case CFGR::SWS::HSI:
-        sysclockfreq = HSI_VALUE;
-        break;
-
-      case CFGR::SWS::HSE:
-        sysclockfreq = HSE_VALUE;
-        break;
-
-      case CFGR::SWS::PLL:
-        pllm = PLLCFGR::M::get();
-
-        if ( PLLCFGR::SRC::get() == PLLCFGR::SRC::HSE )
-        {
-          pllvco = static_cast<uint32_t>(
-              ( ( static_cast<uint64_t>( HSE_VALUE ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
-              static_cast<uint64_t>( pllm ) );
-        }
-        else
-        {
-          pllvco = static_cast<uint32_t>(
-              ( ( static_cast<uint64_t>( HSI_VALUE ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
-              static_cast<uint64_t>( pllm ) );
-        }
-
-        pllp = ( ( ( PLLCFGR::P::get() >> PLLCFGR_PLLP_Pos ) + 1U ) * 2U );
-
-        sysclockfreq = pllvco / pllp;
-        break;
-
-      default:
-        sysclockfreq = HSI_VALUE;
-        break;
-    }
-
-    return sysclockfreq;
-  }
-
   /**
    *  Configures the high speed external oscillator clock selection
    *
    *  @param[in]  init    Initialization configuration struct
    *  @return Chimera::Status_t
    */
-  static inline Chimera::Status_t HSEOscillatorConfig( const OscInit *init )
+  static inline Chimera::Status_t HSEOscillatorConfig( const OscillatorInit *const init )
   {
     using namespace CFGR;
     using namespace PLLCFGR;
@@ -216,7 +135,7 @@ namespace Thor::Driver::RCC
    *  @param[in]  init    Initialization configuration struct
    *  @return Chimera::Status_t
    */
-  static inline Chimera::Status_t HSIOscillatorConfig( const OscInit *init )
+  static inline Chimera::Status_t HSIOscillatorConfig( const OscillatorInit *const init )
   {
     using namespace CFGR;
     using namespace PLLCFGR;
@@ -301,7 +220,7 @@ namespace Thor::Driver::RCC
    *  @param[in]  init    Initialization configuration struct
    *  @return Chimera::Status_t
    */
-  static inline Chimera::Status_t LSIOscillatorConfig( const OscInit *init )
+  static inline Chimera::Status_t LSIOscillatorConfig( const OscillatorInit *const init )
   {
     using namespace CSR;
 
@@ -346,7 +265,7 @@ namespace Thor::Driver::RCC
    *  @param[in]  init    Initialization configuration struct
    *  @return Chimera::Status_t
    */
-  static inline Chimera::Status_t LSEOsciallatorConfig( const OscInit *init )
+  static inline Chimera::Status_t LSEOsciallatorConfig( const OscillatorInit *const init )
   {
     using namespace APB1ENR;
     using namespace BDCR;
@@ -448,7 +367,7 @@ namespace Thor::Driver::RCC
    *  @param[in]  init    Initialization configuration struct
    *  @return Chimera::Status_t
    */
-  static Chimera::Status_t PLLOscillatorConfig( const OscInit *init )
+  static Chimera::Status_t PLLOscillatorConfig( const OscillatorInit *const init )
   {
     using namespace CR;
     using namespace CFGR;
@@ -512,21 +431,21 @@ namespace Thor::Driver::RCC
   }
 
   /**
-   *
+   *  Configures the HCLK
    */
-  static void HCLKConfig( const ClkInit *init )
+  static void HCLKConfig( const ClockInit *const init )
   {
     /*------------------------------------------------
     If also configuring the PCLKs, set the highest APBx dividers
     in order to ensure that we do not go through a non-spec phase
     whenever we decrease or increase HCLK.
     ------------------------------------------------*/
-    if ( ( init->ClockType & ClockType::PCLK1 ) == ClockType::PCLK1 )
+    if ( ( init->clock & ClockType::PCLK1 ) == ClockType::PCLK1 )
     {
       CFGR::PPRE1::set( CFGR::PPRE1::AHB_DIV16 );
     }
 
-    if ( ( init->ClockType & ClockType::PCLK2 ) == ClockType::PCLK2 )
+    if ( ( init->clock & ClockType::PCLK2 ) == ClockType::PCLK2 )
     {
       CFGR::PPRE2::set( CFGR::PPRE2::AHB_DIV16 );
     }
@@ -537,21 +456,22 @@ namespace Thor::Driver::RCC
   /**
    *
    */
-  static Chimera::Status_t SYSCLKConfig( const ClkInit *const init )
+  static Chimera::Status_t SYSCLKConfig( const ClockInit *const init )
   {
     /*------------------------------------------------
     Verify that the selected clock source indicates it is ready
     ------------------------------------------------*/
-    if ( ( init->SYSCLKSource == SysClockSource::HSE ) && !CR::HSERDY::get() )
+    auto sysClkSrc = init->SYSCLKSource;
+
+    if ( ( sysClkSrc == CFGR::SW::HSE ) && !CR::HSERDY::get() )
     {
       return Chimera::CommonStatusCodes::FAIL;
     }
-    else if ( ( ( init->SYSCLKSource == SysClockSource::PLLCLK ) || ( init->SYSCLKSource == SysClockSource::PLLRCLK ) ) &&
-              !CR::PLLRDY::get() )
+    else if ( ( ( sysClkSrc == CFGR::SW::PLLCLK ) || ( sysClkSrc == CFGR::SW::PLLRCLK ) ) && !CR::PLLRDY::get() )
     {
       return Chimera::CommonStatusCodes::FAIL;
     }
-    else if ( ( init->SYSCLKSource == SysClockSource::HSI ) && !CR::HSIRDY::get() )
+    else if ( ( sysClkSrc == CFGR::SW::HSI ) && !CR::HSIRDY::get() )
     {
       return Chimera::CommonStatusCodes::FAIL;
     }
@@ -577,7 +497,7 @@ namespace Thor::Driver::RCC
   /**
    *
    */
-  static inline Chimera::Status_t PCLK1Config( const ClkInit *init )
+  static inline Chimera::Status_t PCLK1Config( const ClockInit *init )
   {
     CFGR::PPRE1::set( init->APB1CLKDivider );
     return Chimera::CommonStatusCodes::OK;
@@ -586,7 +506,7 @@ namespace Thor::Driver::RCC
   /**
    *
    */
-  static inline Chimera::Status_t PCLK2Config( const ClkInit *init )
+  static inline Chimera::Status_t PCLK2Config( const ClockInit *init )
   {
     CFGR::PPRE2::set( init->APB2CLKDivider );
     return Chimera::CommonStatusCodes::OK;
@@ -616,7 +536,7 @@ namespace Thor::Driver::RCC
   /**
    *
    */
-  static Chimera::Status_t OscillatorConfig( OscInit *const init )
+  static Chimera::Status_t OscillatorConfig( OscillatorInit *const init )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
@@ -626,17 +546,17 @@ namespace Thor::Driver::RCC
     }
     else
     {
-      if ( ( init->source & ClockSource::HSE ) == ClockSource::HSE )
+      if ( ( init->source & OscillatorType::HSE ) == OscillatorType::HSE )
       {
         HSEOscillatorConfig( init );
       }
 
-      if ( ( init->source & ClockSource::HSI ) == ClockSource::HSI )
+      if ( ( init->source & OscillatorType::HSI ) == OscillatorType::HSI )
       {
         HSIOscillatorConfig( init );
       }
 
-      if ( ( init->source & ClockSource::PLLCLK ) == ClockSource::PLLCLK )
+      if ( ( init->source & OscillatorType::PLLCLK ) == OscillatorType::PLLCLK )
       {
         PLLOscillatorConfig( init );
       }
@@ -645,7 +565,7 @@ namespace Thor::Driver::RCC
     return result;
   }
 
-  Chimera::Status_t ClockConfig( ClkInit *init, const uint32_t flashLatency )
+  static Chimera::Status_t ClockConfig( const ClockInit *const init )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
@@ -655,53 +575,174 @@ namespace Thor::Driver::RCC
     }
     else
     {
-      UpdateFlashLatency( 4 );
+      UpdateFlashLatency( init->FlashLatency );
 
       /*------------------------------------------------
       Handle multiple clock configuration possibilities in the correct order.
       It may be ugly and innefficient, but this code does not run often.
       ------------------------------------------------*/
-      if ( ( init->ClockType & ClockType::HCLK ) == ClockType::HCLK )
+      if ( ( init->clock & ClockType::HCLK ) == ClockType::HCLK )
       {
         HCLKConfig( init );
       }
 
-      if ( ( init->ClockType & ClockType::SYSCLK ) == ClockType::SYSCLK )
+      if ( ( init->clock & ClockType::SYSCLK ) == ClockType::SYSCLK )
       {
         SYSCLKConfig( init );
       }
 
-      if ( ( init->ClockType & ClockType::PCLK1 ) == ClockType::PCLK1 )
+      if ( ( init->clock & ClockType::PCLK1 ) == ClockType::PCLK1 )
       {
         PCLK1Config( init );
       }
 
-      if ( ( init->ClockType & ClockType::PCLK2 ) == ClockType::PCLK2 )
+      if ( ( init->clock & ClockType::PCLK2 ) == ClockType::PCLK2 )
       {
         PCLK2Config( init );
       }
 
-      // UpdateFlashLatency( flashLatency );
-
       /* Update the SystemCoreClock global variable */
-      SystemCoreClock = getSysClockFreq();
+      SystemCoreClock = prjGetSysClockFreq();
     }
 
     return result;
   }
 
-  WEAKDECL OscInit prjGetOscConfig()
+  WEAKDECL uint32_t prjGetHSIValue()
   {
-    OscInit dummyConfig;
-    memset( &dummyConfig, 0, sizeof( OscInit ) );
-    return dummyConfig;
+    /*------------------------------------------------
+    Typical value of the high speed internal oscillator in Hz
+    ------------------------------------------------*/
+    return 16000000u;
   }
 
-  WEAKDECL ClkInit prjGetClkConfig()
+  WEAKDECL uint32_t prjGetHSEValue()
   {
-    ClkInit dummyConfig;
-    memset( &dummyConfig, 0, sizeof( ClkInit ) );
-    return dummyConfig;
+    /*------------------------------------------------
+    Typical value of the high speed external oscillator in Hz
+    ------------------------------------------------*/
+    return 25000000u;
+  }
+
+  WEAKDECL uint32_t prjGetLSIValue()
+  {
+    /*------------------------------------------------
+    Typical value of the low speed internal oscillator in Hz
+    ------------------------------------------------*/
+    return 32000u;
+  }
+
+  WEAKDECL uint32_t prjGetSysClockFreq()
+  {
+    uint32_t pllm = 0U, pllvco = 0U, pllp = 0U;
+    uint32_t sysclockfreq = 0U;
+
+    const auto HSI_VALUE = prjGetHSIValue();
+    const auto HSE_VALUE = prjGetHSEValue();
+
+    switch ( CFGR::SWS::get() )
+    {
+      case CFGR::SWS::HSI:
+        sysclockfreq = HSI_VALUE;
+        break;
+
+      case CFGR::SWS::HSE:
+        sysclockfreq = HSE_VALUE;
+        break;
+
+      case CFGR::SWS::PLL:
+        pllm = PLLCFGR::M::get();
+
+        if ( PLLCFGR::SRC::get() == PLLCFGR::SRC::HSE )
+        {
+          pllvco = static_cast<uint32_t>(
+              ( ( static_cast<uint64_t>( HSE_VALUE ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
+              static_cast<uint64_t>( pllm ) );
+        }
+        else
+        {
+          pllvco = static_cast<uint32_t>(
+              ( ( static_cast<uint64_t>( HSI_VALUE ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
+              static_cast<uint64_t>( pllm ) );
+        }
+
+        pllp = ( ( ( PLLCFGR::P::get() >> PLLCFGR_PLLP_Pos ) + 1U ) * 2U );
+
+        sysclockfreq = pllvco / pllp;
+        break;
+
+      default:
+        sysclockfreq = HSI_VALUE;
+        break;
+    }
+
+    return sysclockfreq;
+  }
+
+  WEAKDECL OscillatorInit prjGetOscillatorConfig()
+  {
+    OscillatorInit config;
+    memset( &config, 0, sizeof( OscillatorInit ) );
+
+    /*------------------------------------------------
+    Let the initialization function know we are sending
+    configuration data for the HSI & PLL clocks.
+    ------------------------------------------------*/
+    config.source = OscillatorType::HSI | OscillatorType::PLLCLK;
+
+    /*------------------------------------------------
+    We don't care about these clocks 
+    ------------------------------------------------*/
+    config.HSEState = CR::HSEConfig::OFF;
+    config.LSIState = CSR::LSIConfig::OFF;
+    config.LSEState = BDCR::LSEConfig::OFF;
+
+    /*------------------------------------------------
+    Turn on the internal high speed RC oscillator
+    ------------------------------------------------*/
+    config.HSIState            = CR::HSIConfig::ON;
+    config.HSICalibrationValue = 16;
+
+    /*------------------------------------------------
+    Turn on the PLL and give it an input clock from the HSI.
+    These settings will configure the PLL to output a 
+    128 MHz clock signal.
+    ------------------------------------------------*/
+    config.PLL.State  = CR::PLLConfig::ON;
+    config.PLL.Source = PLLCFGR::SRC::HSI;
+    config.PLL.M      = 8;
+    config.PLL.N      = 128;
+    config.PLL.P      = CR::PLLDiv::DIV2;
+    config.PLL.Q      = 2;
+    config.PLL.R      = 2;
+
+    return config;
+  }
+
+  WEAKDECL ClockInit prjGetClockConfig()
+  {
+    ClockInit config;
+    memset( &config, 0, sizeof( ClockInit ) );
+
+
+    config.clock          = ClockType::HCLK | ClockType::SYSCLK | ClockType::PCLK1 | ClockType::PCLK2;
+    config.SYSCLKSource   = CFGR::SW::PLLCLK;
+    config.AHBCLKDivider  = SysClockDiv::DIV1;
+    config.APB1CLKDivider = HClkDiv::DIV4;
+    config.APB2CLKDivider = HClkDiv::DIV2;
+    config.FlashLatency   = 4;
+
+    return config;
+  }
+
+  void init()
+  {
+    static bool initialized = false;
+
+    if ( !initialized )
+    {
+      periphSingletonInstances.fill( nullptr );
+    }
   }
 
   /**
@@ -709,6 +750,7 @@ namespace Thor::Driver::RCC
    */
   SystemClock::SystemClock()
   {
+    init();
   }
 
   SystemClock::~SystemClock()
@@ -727,14 +769,7 @@ namespace Thor::Driver::RCC
     return ref;
   }
 
-  Chimera::Status_t SystemClock::setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz )
-  {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
-
-    return result;
-  }
-
-  Chimera::Status_t SystemClock::setCoreClock( const size_t freqHz )
+  Chimera::Status_t SystemClock::configureProjectClocks()
   {
     using namespace Thor::Driver;
 
@@ -753,67 +788,50 @@ namespace Thor::Driver::RCC
     /*------------------------------------------------
     Initialize the clock source drivers
     ------------------------------------------------*/
-    auto oscCfg = prjGetOscConfig();
-
-    oscCfg.source = ClockSource::HSI | ClockSource::PLLCLK;
-
-    oscCfg.HSIState            = CR::HSIConfig::ON;
-    oscCfg.HSICalibrationValue = 16;
-
-    oscCfg.HSEState = CR::HSEConfig::OFF;
-    oscCfg.LSIState = CSR::LSIConfig::OFF;
-    oscCfg.LSEState = BDCR::LSEConfig::OFF;
-
-    oscCfg.PLL.State  = CR::PLLConfig::ON;
-    oscCfg.PLL.Source = PLLCFGR::SRC::HSI;
-    oscCfg.PLL.M      = 8;
-    oscCfg.PLL.N      = 128;
-    oscCfg.PLL.P      = CR::PLLDiv::DIV2;
-    oscCfg.PLL.Q      = 2;
-    oscCfg.PLL.R      = 2;
-
-    result = OscillatorConfig( &oscCfg );
+    auto oscCfg = prjGetOscillatorConfig();
+    result      = OscillatorConfig( &oscCfg );
 
     /*------------------------------------------------
     Initializes the CPU, AHB, and APB bus clocks
     ------------------------------------------------*/
-    auto clkCfg = prjGetClkConfig();
+    auto clkCfg = prjGetClockConfig();
+    result      = ClockConfig( &clkCfg );
 
-    clkCfg.ClockType      = ClockType::HCLK | ClockType::SYSCLK | ClockType::PCLK1 | ClockType::PCLK2;
-    clkCfg.SYSCLKSource   = SysClockSource::PLLCLK;
-    clkCfg.AHBCLKDivider  = SysClockDiv::DIV1;
-    clkCfg.APB1CLKDivider = HClkDiv::DIV4;
-    clkCfg.APB2CLKDivider = HClkDiv::DIV2;
+    return result;
+  }
 
-    result = ClockConfig( &clkCfg, 3 );
+  Chimera::Status_t SystemClock::setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return result;
+  }
 
-    /*------------------------------------------------
-    Configure the SysTick interrupt and clock source
-    ------------------------------------------------*/
-
+  Chimera::Status_t SystemClock::setCoreClock( const size_t freqHz )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
     return result;
   }
 
   Chimera::Status_t SystemClock::setCoreClockSource( const Thor::Clock::Source src )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
-
-
+    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
     return result;
   }
 
   size_t SystemClock::getCoreClock()
   {
-    return getSysClockFreq();
+    return prjGetSysClockFreq();
   }
 
   Thor::Clock::Source SystemClock::getCoreClockSource()
   {
+    // TODO
     return Thor::Clock::Source::CSI;
   }
 
   size_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph )
   {
+    // TODO
     return 0;
   }
 

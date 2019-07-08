@@ -33,13 +33,31 @@ namespace Thor::Driver::RCC
    */
   void init();
 
+  uint32_t prjGetHSIValue();
+
+  uint32_t prjGetHSEValue();
+
+  uint32_t prjGetLSIValue();
+
+  uint32_t prjGetSysClockFreq();
 
   /**
-   *  Project specific declaration of the the oscillator configuration settings.
+   *  Project specific declaration of the oscillator configuration settings.
    *
-   *  @return OscInit
+   *  @note Default implementation declared weak so projects can override
+   *
+   *  @return OscillatorInit
    */
-  extern OscInit prjGetOscConfig();
+  OscillatorInit prjGetOscillatorConfig();
+
+  /**
+   *  Project specific declaration of the clock configuration settings.
+   *
+   *  @note Default implementation declared weak so projects can override
+   *
+   *  @return ClockInit
+   */
+  ClockInit prjGetClockConfig();
 
   /**
    *  Singleton that interacts with the system clock registers to allow the user
@@ -56,6 +74,8 @@ namespace Thor::Driver::RCC
      *  @return SystemClock *
      */
     static SystemClock *const get();
+
+    Chimera::Status_t configureProjectClocks() final override;
 
     Chimera::Status_t setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz ) final override;
 

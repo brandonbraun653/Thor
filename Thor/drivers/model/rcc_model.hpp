@@ -27,6 +27,14 @@ namespace Thor::Driver::RCC
     virtual ~ClockTree() = default;
 
     /**
+     *  Configures the clock tree according to a user defined method, overriding
+     *  other set**() methods in this class.
+     *
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t configureProjectClocks() = 0;
+
+    /**
      *  Attempts to set the peripheral clock frequency to the given value.
      *  
      *  @note   Does not modify the system core clock in order to accomplish this.

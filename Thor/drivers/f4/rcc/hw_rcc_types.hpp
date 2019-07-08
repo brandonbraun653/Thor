@@ -61,35 +61,29 @@ namespace Thor::Driver::RCC
   static RegisterMap *const RCC_PERIPH = reinterpret_cast<RegisterMap *const>( RCC_BASE_ADDR );
 
   /**
-   *  User level configuration options for the clock initialization structure
+   *  High level structure describing what kinds of clocks are available 
+   *  to be used as a source for the System Clock.
    */
-  struct ClockSource
+  using OscillatorType_t = uint32_t;
+  struct OscillatorType
   {
-    static constexpr uint32_t HSE     = 1u; /**< Signals that the HSE clock should be configured */
-    static constexpr uint32_t HSI     = 2u; /**< Signals that the HSI clock should be configured */
-    static constexpr uint32_t PLLCLK  = 4u; /**< Signals that the PLL clock should be configured */
-    static constexpr uint32_t PLLRCLK = 6u; /**< Signals that the PLLR clock should be configured */
-  };
-
-
-  namespace ClockType
-  {
-    static constexpr uint32_t SYSCLK = 1u;
-    static constexpr uint32_t HCLK   = 2u;
-    static constexpr uint32_t PCLK1  = 4u;
-    static constexpr uint32_t PCLK2  = 8u;
+    static constexpr OscillatorType_t HSE     = 1u;
+    static constexpr OscillatorType_t HSI     = 2u;
+    static constexpr OscillatorType_t PLLCLK  = 4u;
+    static constexpr OscillatorType_t PLLRCLK = 6u;
   };
 
   /**
-   *  Register level definitions for configuring the System Clock selection 
-   *  option inside of the RCC_CFGR register. 
+   *  High level structure describing what kinds of clocks are available
+   *  to be configured by the code.
    */
-  namespace SysClockSource
+  using ClockType_t = uint32_t;
+  struct ClockType
   {
-    static constexpr uint32_t HSI     = CFGR_SW_HSI;
-    static constexpr uint32_t HSE     = CFGR_SW_HSE;
-    static constexpr uint32_t PLLCLK  = CFGR_SW_PLL;
-    static constexpr uint32_t PLLRCLK = CFGR_SW_0 | CFGR_SW_1;
+    static constexpr ClockType_t SYSCLK = 1u;
+    static constexpr ClockType_t HCLK   = 2u;
+    static constexpr ClockType_t PCLK1  = 4u;
+    static constexpr ClockType_t PCLK2  = 8u;
   };
 
   namespace SysClockDiv
@@ -428,10 +422,12 @@ namespace Thor::Driver::RCC
   {
     struct SW
     {
-      static constexpr uint32_t HSI  = CFGR_SW_HSI;
-      static constexpr uint32_t HSE  = CFGR_SW_HSE;
-      static constexpr uint32_t PLL  = CFGR_SW_PLL;
-      static constexpr uint32_t PLLR = CFGR_SW_PLLR;
+      using SysOscSrc_t = uint32_t;
+
+      static constexpr SysOscSrc_t HSI  = CFGR_SW_HSI;
+      static constexpr SysOscSrc_t HSE  = CFGR_SW_HSE;
+      static constexpr SysOscSrc_t PLLCLK  = CFGR_SW_PLL;
+      static constexpr SysOscSrc_t PLLRCLK = CFGR_SW_PLLR;
 
       static inline uint32_t get()
       {
@@ -874,9 +870,12 @@ namespace Thor::Driver::RCC
     uint32_t Q; /**< Specifies the division factor for SAI clock. */
   };
 
-  struct OscInit
+  /**
+   *  Structure that specifies how the system oscillators should be configured.
+   */
+  struct OscillatorInit
   {
-    uint32_t source;              /**< The oscillators to be configured. Can be value of SysClockSource */
+    OscillatorType_t source;      /**< The oscillators to be configured. Can be multiple values of OscillatorType  OR'd together */
     uint32_t HSEState;            /**< The new state of the HSE. Can be value of CR::HSEConfig */
     uint32_t LSEState;            /**< The new state of the LSE. */
     uint32_t HSIState;            /**< The new state of the HSI. Can be value of CR::HSIConfig */
@@ -885,13 +884,18 @@ namespace Thor::Driver::RCC
     PLLInit PLL;                  /**< PLL structure parameters */
   };
 
-  struct ClkInit
+  /**
+   *  Structure that allows for specifying how multiple system clocks
+   *  can be configured.
+   */
+  struct ClockInit
   {
-    uint32_t ClockType;      /**< The clock to be configured. */
-    uint32_t SYSCLKSource;   /**< The clock source (SYSCLKS) used as system clock. */
+    ClockType_t clock;                  /**< The clocks to be configured. Can be multiple values of ClockType OR'd together */
+    CFGR::SW::SysOscSrc_t SYSCLKSource; /**< The clock source (SYSCLKS) used as system clock. */
     uint32_t AHBCLKDivider;  /**< The AHB clock (HCLK) divider. This clock is derived from the system clock (SYSCLK). */
     uint32_t APB1CLKDivider; /**< The APB1 clock (PCLK1) divider. This clock is derived from the AHB clock (HCLK). */
     uint32_t APB2CLKDivider; /**< The APB2 clock (PCLK2) divider. This clock is derived from the AHB clock (HCLK). */
+    uint32_t FlashLatency;   /**< The new number of flash wait states given the updated system clock */
   };
 
 
