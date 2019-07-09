@@ -18,16 +18,20 @@
 /* Chimera Includes */
 #include <Chimera/types/peripheral_types.hpp>
 
-
 namespace Thor::Driver::Mapping
 {
   /* clang-format off */
+
+  /**
+   *  Maps a peripheral type into an index used to access peripheral specific resources.
+   */
   static const std::unordered_map<Chimera::Peripheral::Type, uint8_t> PeriphTypeToIterator{
-    { Chimera::Peripheral::Type::GPIO, 0 }
+    { Chimera::Peripheral::Type::GPIO,  0u },
+    { Chimera::Peripheral::Type::UART,  1u },
+    { Chimera::Peripheral::Type::USART, 2u },
   };
 
   /* clang-format on */
-  
 }
 
 #endif /* !THOR_DRIVER_COMMON_MAPPING_HPP */

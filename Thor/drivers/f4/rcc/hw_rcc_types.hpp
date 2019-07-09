@@ -70,7 +70,7 @@ namespace Thor::Driver::RCC
     static constexpr OscillatorType_t HSE     = 1u;
     static constexpr OscillatorType_t HSI     = 2u;
     static constexpr OscillatorType_t PLLCLK  = 4u;
-    static constexpr OscillatorType_t PLLRCLK = 6u;
+    static constexpr OscillatorType_t PLLRCLK = 8u;
   };
 
   /**
@@ -85,29 +85,6 @@ namespace Thor::Driver::RCC
     static constexpr ClockType_t PCLK1  = 4u;
     static constexpr ClockType_t PCLK2  = 8u;
   };
-
-  namespace SysClockDiv
-  {
-    static constexpr uint32_t DIV1   = CFGR_HPRE_DIV1;
-    static constexpr uint32_t DIV2   = CFGR_HPRE_DIV2;
-    static constexpr uint32_t DIV4   = CFGR_HPRE_DIV4;
-    static constexpr uint32_t DIV8   = CFGR_HPRE_DIV8;
-    static constexpr uint32_t DIV16  = CFGR_HPRE_DIV16;
-    static constexpr uint32_t DIV64  = CFGR_HPRE_DIV64;
-    static constexpr uint32_t DIV128 = CFGR_HPRE_DIV128;
-    static constexpr uint32_t DIV256 = CFGR_HPRE_DIV256;
-    static constexpr uint32_t DIV512 = CFGR_HPRE_DIV512;
-  };
-
-  namespace HClkDiv
-  {
-    static constexpr uint32_t DIV1  = CFGR_PPRE1_DIV1;
-    static constexpr uint32_t DIV2  = CFGR_PPRE1_DIV2;
-    static constexpr uint32_t DIV4  = CFGR_PPRE1_DIV4;
-    static constexpr uint32_t DIV8  = CFGR_PPRE1_DIV8;
-    static constexpr uint32_t DIV16 = CFGR_PPRE1_DIV16;
-  }
-
 
   /*------------------------------------------------
   RCC_CR Register Interaction Model
@@ -466,6 +443,18 @@ namespace Thor::Driver::RCC
 
     struct HPRE
     {
+      using AHBPrescale_t = uint32_t;
+
+      static constexpr AHBPrescale_t DIV1   = CFGR_HPRE_DIV1;
+      static constexpr AHBPrescale_t DIV2   = CFGR_HPRE_DIV2;
+      static constexpr AHBPrescale_t DIV4   = CFGR_HPRE_DIV4;
+      static constexpr AHBPrescale_t DIV8   = CFGR_HPRE_DIV8;
+      static constexpr AHBPrescale_t DIV16  = CFGR_HPRE_DIV16;
+      static constexpr AHBPrescale_t DIV64  = CFGR_HPRE_DIV64;
+      static constexpr AHBPrescale_t DIV128 = CFGR_HPRE_DIV128;
+      static constexpr AHBPrescale_t DIV256 = CFGR_HPRE_DIV256;
+      static constexpr AHBPrescale_t DIV512 = CFGR_HPRE_DIV512;
+
       static inline uint32_t get()
       {
         return RCC_PERIPH->CFGR & CFGR_HPRE;
@@ -482,11 +471,13 @@ namespace Thor::Driver::RCC
 
     struct PPRE1
     {
-      static constexpr uint32_t AHB_DIV1  = CFGR_PPRE1_DIV1;
-      static constexpr uint32_t AHB_DIV2  = CFGR_PPRE1_DIV2;
-      static constexpr uint32_t AHB_DIV4  = CFGR_PPRE1_DIV4;
-      static constexpr uint32_t AHB_DIV8  = CFGR_PPRE1_DIV8;
-      static constexpr uint32_t AHB_DIV16 = CFGR_PPRE1_DIV16;
+      using APB1Prescale_t = uint32_t;
+
+      static constexpr APB1Prescale_t DIV1  = CFGR_PPRE1_DIV1;
+      static constexpr APB1Prescale_t DIV2  = CFGR_PPRE1_DIV2;
+      static constexpr APB1Prescale_t DIV4  = CFGR_PPRE1_DIV4;
+      static constexpr APB1Prescale_t DIV8  = CFGR_PPRE1_DIV8;
+      static constexpr APB1Prescale_t DIV16 = CFGR_PPRE1_DIV16;
 
       static inline uint32_t get()
       {
@@ -504,11 +495,13 @@ namespace Thor::Driver::RCC
 
     struct PPRE2
     {
-      static constexpr uint32_t AHB_DIV1  = CFGR_PPRE2_DIV1;
-      static constexpr uint32_t AHB_DIV2  = CFGR_PPRE2_DIV2;
-      static constexpr uint32_t AHB_DIV4  = CFGR_PPRE2_DIV4;
-      static constexpr uint32_t AHB_DIV8  = CFGR_PPRE2_DIV8;
-      static constexpr uint32_t AHB_DIV16 = CFGR_PPRE2_DIV16;
+      using APB2Prescale_t = uint32_t;
+
+      static constexpr APB2Prescale_t DIV1  = CFGR_PPRE2_DIV1;
+      static constexpr APB2Prescale_t DIV2  = CFGR_PPRE2_DIV2;
+      static constexpr APB2Prescale_t DIV4  = CFGR_PPRE2_DIV4;
+      static constexpr APB2Prescale_t DIV8  = CFGR_PPRE2_DIV8;
+      static constexpr APB2Prescale_t DIV16 = CFGR_PPRE2_DIV16;
 
       static inline uint32_t get()
       {
@@ -842,6 +835,11 @@ namespace Thor::Driver::RCC
 
   }    // namespace CSR
 
+  /**
+   *  Initialization structure for the primary PLL
+   *
+   *  @note See reference manual Figure 13
+   */
   struct PLLInit
   {
     uint32_t State;  /**< The new state of the PLL.*/
@@ -853,6 +851,11 @@ namespace Thor::Driver::RCC
     uint32_t R;      /**< PLLR: PLL division factor for I2S, SAI, SYSTEM, SPDIFRX clocks. */
   };
 
+  /**
+   *  Initialization structure for the I2S PLL
+   *
+   *  @note See reference manual Figure 13
+   */
   struct PLLI2SInit
   {
     uint32_t M; /**< Specifies division factor for PLL VCO input clock. */
@@ -862,6 +865,11 @@ namespace Thor::Driver::RCC
     uint32_t R; /**< Specifies the division factor for I2S clock. */
   };
 
+  /**
+   *  Initialization structure for the SAI PLL
+   *
+   *  @note See reference manual Figure 13
+   */
   struct PLLSAIInit
   {
     uint32_t M; /**< Spcifies division factor for PLL VCO input clock. */
@@ -871,7 +879,7 @@ namespace Thor::Driver::RCC
   };
 
   /**
-   *  Structure that specifies how the system oscillators should be configured.
+   *  Initialization structure that specifies how all the system oscillators should be configured.
    */
   struct OscillatorInit
   {
@@ -881,49 +889,47 @@ namespace Thor::Driver::RCC
     uint32_t HSIState;            /**< The new state of the HSI. Can be value of CR::HSIConfig */
     uint32_t LSIState;            /**< The new state of the LSI. */
     uint32_t HSICalibrationValue; /**< The HSI calibration trimming value */
-    PLLInit PLL;                  /**< PLL structure parameters */
+    PLLInit PLL;                  /**< Main PLL initialization parameters */
   };
 
   /**
-   *  Structure that allows for specifying how multiple system clocks
-   *  can be configured.
+   *  Initialization structure that allows for specifying how multiple system clocks can be configured.
    */
   struct ClockInit
   {
     ClockType_t clock;                  /**< The clocks to be configured. Can be multiple values of ClockType OR'd together */
-    CFGR::SW::SysOscSrc_t SYSCLKSource; /**< The clock source (SYSCLKS) used as system clock. */
-    uint32_t AHBCLKDivider;  /**< The AHB clock (HCLK) divider. This clock is derived from the system clock (SYSCLK). */
-    uint32_t APB1CLKDivider; /**< The APB1 clock (PCLK1) divider. This clock is derived from the AHB clock (HCLK). */
-    uint32_t APB2CLKDivider; /**< The APB2 clock (PCLK2) divider. This clock is derived from the AHB clock (HCLK). */
-    uint32_t FlashLatency;   /**< The new number of flash wait states given the updated system clock */
+    CFGR::SW::SysOscSrc_t SYSCLKSource; /**< The system clock source (SYSCLKS)*/
+    CFGR::HPRE::AHBPrescale_t AHBCLKDivider;    /**< The AHB clock (HCLK) divider */
+    CFGR::PPRE1::APB1Prescale_t APB1CLKDivider; /**< The APB1 clock (PCLK1) divider */
+    CFGR::PPRE2::APB2Prescale_t APB2CLKDivider; /**< The APB2 clock (PCLK2) divider */
+    uint32_t FlashLatency;                      /**< The new number of flash wait states given the updated system clock */
   };
-
 
   /**
    *  Configuration struct for the clock enable register
    */
-  struct CEConfig
+  struct ClockEnableConfig
   {
     volatile uint32_t *reg; /**< Clock enable register */
-    uint8_t mask;           /**< Bit mask that will enable/disable the peripheral's clock */
+    uint32_t mask;          /**< Bit mask that will enable/disable the peripheral's clock */
   };
 
   /**
    *  Configuration struct for the clock enable low power register
    */
-  struct CELPConfig
+  struct ClockEnableLowPowerConfig
   {
     volatile uint32_t *reg; /**< Clock enable low power register */
-    uint8_t mask;           /**< Bit mask that will enable/disable the peripheral's low power clock */
+    uint32_t mask;          /**< Bit mask that will enable/disable the peripheral's low power clock */
   };
 
   /**
    *  Configuration struct for the peripheral reset register
    */
-  struct PRRConfig
+  struct PeripheralResetConfig
   {
     volatile uint32_t *reg; /**< Peripheral Reset Register */
-    uint8_t mask;           /**< Bit mask that will reset the peripheral */
+    uint32_t mask;          /**< Bit mask that will reset the peripheral */
   };
 }    // namespace Thor::Driver::RCC
 

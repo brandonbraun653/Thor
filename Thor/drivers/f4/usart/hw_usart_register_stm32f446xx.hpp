@@ -27,6 +27,8 @@ namespace Thor::Driver::USART
   static constexpr uint32_t USART3_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x4800U;
   static constexpr uint32_t USART6_BASE_ADDR = Thor::System::MemoryMap::APB2PERIPH_BASE_ADDR + 0x1400U;
 
+  static constexpr uint32_t NUM_USART_PERIPHS = 4u;
+
   /*------------------------------------------------
   USART Status Register
   ------------------------------------------------*/

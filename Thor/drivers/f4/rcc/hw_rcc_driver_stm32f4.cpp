@@ -18,8 +18,12 @@
 #include <Chimera/types/peripheral_types.hpp>
 
 /* Driver Includes */
+#include "thorDriverConfig.hpp"
 #include <Thor/drivers/common/mapping/peripheral_mapping.hpp>
 #include <Thor/drivers/f4/flash/hw_flash_driver.hpp>
+#include <Thor/drivers/f4/gpio/hw_gpio_mapping.hpp>
+#include <Thor/drivers/f4/uart/hw_uart_mapping.hpp>
+#include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
 #include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
 #include <Thor/drivers/f4/power/hw_power_types.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
@@ -442,12 +446,12 @@ namespace Thor::Driver::RCC
     ------------------------------------------------*/
     if ( ( init->clock & ClockType::PCLK1 ) == ClockType::PCLK1 )
     {
-      CFGR::PPRE1::set( CFGR::PPRE1::AHB_DIV16 );
+      CFGR::PPRE1::set( CFGR::PPRE1::DIV16 );
     }
 
     if ( ( init->clock & ClockType::PCLK2 ) == ClockType::PCLK2 )
     {
-      CFGR::PPRE2::set( CFGR::PPRE2::AHB_DIV16 );
+      CFGR::PPRE2::set( CFGR::PPRE2::DIV16 );
     }
 
     CFGR::HPRE::set( init->AHBCLKDivider );
@@ -608,7 +612,7 @@ namespace Thor::Driver::RCC
     return result;
   }
 
-  WEAKDECL uint32_t prjGetHSIValue()
+  WEAKDECL size_t prjGetHSIValue()
   {
     /*------------------------------------------------
     Typical value of the high speed internal oscillator in Hz
@@ -616,7 +620,7 @@ namespace Thor::Driver::RCC
     return 16000000u;
   }
 
-  WEAKDECL uint32_t prjGetHSEValue()
+  WEAKDECL size_t prjGetHSEValue()
   {
     /*------------------------------------------------
     Typical value of the high speed external oscillator in Hz
@@ -624,7 +628,7 @@ namespace Thor::Driver::RCC
     return 25000000u;
   }
 
-  WEAKDECL uint32_t prjGetLSIValue()
+  WEAKDECL size_t prjGetLSIValue()
   {
     /*------------------------------------------------
     Typical value of the low speed internal oscillator in Hz
@@ -632,10 +636,10 @@ namespace Thor::Driver::RCC
     return 32000u;
   }
 
-  WEAKDECL uint32_t prjGetSysClockFreq()
+  WEAKDECL size_t prjGetSysClockFreq()
   {
-    uint32_t pllm = 0U, pllvco = 0U, pllp = 0U;
-    uint32_t sysclockfreq = 0U;
+    size_t pllm = 0U, pllvco = 0U, pllp = 0U;
+    size_t sysclockfreq = 0U;
 
     const auto HSI_VALUE = prjGetHSIValue();
     const auto HSE_VALUE = prjGetHSEValue();
@@ -655,13 +659,13 @@ namespace Thor::Driver::RCC
 
         if ( PLLCFGR::SRC::get() == PLLCFGR::SRC::HSE )
         {
-          pllvco = static_cast<uint32_t>(
+          pllvco = static_cast<size_t>(
               ( ( static_cast<uint64_t>( HSE_VALUE ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
               static_cast<uint64_t>( pllm ) );
         }
         else
         {
-          pllvco = static_cast<uint32_t>(
+          pllvco = static_cast<size_t>(
               ( ( static_cast<uint64_t>( HSI_VALUE ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
               static_cast<uint64_t>( pllm ) );
         }
@@ -724,12 +728,11 @@ namespace Thor::Driver::RCC
     ClockInit config;
     memset( &config, 0, sizeof( ClockInit ) );
 
-
     config.clock          = ClockType::HCLK | ClockType::SYSCLK | ClockType::PCLK1 | ClockType::PCLK2;
     config.SYSCLKSource   = CFGR::SW::PLLCLK;
-    config.AHBCLKDivider  = SysClockDiv::DIV1;
-    config.APB1CLKDivider = HClkDiv::DIV4;
-    config.APB2CLKDivider = HClkDiv::DIV2;
+    config.AHBCLKDivider  = CFGR::HPRE::DIV1;
+    config.APB1CLKDivider = CFGR::PPRE1::DIV4;
+    config.APB2CLKDivider = CFGR::PPRE2::DIV2;
     config.FlashLatency   = 4;
 
     return config;
@@ -843,7 +846,7 @@ namespace Thor::Driver::RCC
   GPIOPeriph::GPIOPeriph() : iterator( 0 )
   {
     /*------------------------------------------------
-    Register the singleton instance with the peripheral tracker
+    Register the singleton periphIndex with the peripheral tracker
     ------------------------------------------------*/
     auto peripheralType                  = Chimera::Peripheral::Type::GPIO;
     iterator                             = Thor::Driver::Mapping::PeriphTypeToIterator.find( peripheralType )->second;
@@ -861,7 +864,7 @@ namespace Thor::Driver::RCC
     using namespace Thor::Driver::Mapping;
 
     /*------------------------------------------------
-    Lookup the index where the GPIO singleton is stored
+    Lookup the index where the singleton is stored
     ------------------------------------------------*/
     auto iterator = PeriphTypeToIterator.find( Chimera::Peripheral::Type::GPIO );
 
@@ -886,6 +889,19 @@ namespace Thor::Driver::RCC
     }
   }
 
+  Chimera::Peripheral::Type GPIOPeriph::getType()
+  {
+    return sPeriphType;
+  }
+
+  size_t GPIOPeriph::getPeriphIndex( const void *const peripheralAddress )
+  {
+    using namespace Thor::Driver::GPIO;
+
+    auto port = InstanceToPortMap.find( reinterpret_cast<std::uintptr_t>( peripheralAddress ) )->second;
+    return static_cast<size_t>( port );
+  }
+
   Chimera::Status_t GPIOPeriph::init()
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
@@ -893,11 +909,11 @@ namespace Thor::Driver::RCC
     return result;
   }
 
-  Chimera::Status_t GPIOPeriph::reset( const size_t instance )
+  Chimera::Status_t GPIOPeriph::reset( const size_t periphIndex )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    auto prrConfig = ResetConfig_GPIO[ iterator ];
+    auto prrConfig = ResetConfig_GPIO[ periphIndex ];
     uint32_t tmp   = *prrConfig.reg;
 
     /*------------------------------------------------
@@ -905,11 +921,6 @@ namespace Thor::Driver::RCC
     ------------------------------------------------*/
     tmp |= prrConfig.mask;
     *prrConfig.reg = tmp;
-
-    /*------------------------------------------------
-    Waste a few cycles to allow the reset to complete
-    ------------------------------------------------*/
-    // TODO
 
     /*------------------------------------------------
     Remove the reset flag as it is not cleared automatically by hardware
@@ -920,60 +931,301 @@ namespace Thor::Driver::RCC
     return result;
   }
 
-  Chimera::Peripheral::Type GPIOPeriph::getType()
-  {
-    return Chimera::Peripheral::Type::GPIO;
-  }
-
-  Chimera::Status_t GPIOPeriph::enableClock( const size_t instance )
+  Chimera::Status_t GPIOPeriph::enableClock( const size_t periphIndex )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    /*------------------------------------------------
-    Read-modify-write
-    ------------------------------------------------*/
-    auto ceConfig = ClockConfig_GPIO[ iterator ];
+    auto ceConfig = ClockConfig_GPIO[ periphIndex ];
     *ceConfig.reg |= ceConfig.mask;
 
     return result;
   }
 
-  Chimera::Status_t GPIOPeriph::disableClock( const size_t instance )
+  Chimera::Status_t GPIOPeriph::disableClock( const size_t periphIndex )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    /*------------------------------------------------
-    Read-modify-write
-    ------------------------------------------------*/
-    auto ceConfig = ClockConfig_GPIO[ iterator ];
+    auto ceConfig = ClockConfig_GPIO[ periphIndex ];
     *ceConfig.reg &= ~ceConfig.mask;
 
     return result;
   }
 
-  Chimera::Status_t GPIOPeriph::enableClockLowPower( const size_t instance )
+  Chimera::Status_t GPIOPeriph::enableClockLowPower( const size_t periphIndex )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    /*------------------------------------------------
-    Read-modify-write
-    ------------------------------------------------*/
-    auto celpConfig = ClockConfigLP_GPIO[ iterator ];
+    auto celpConfig = ClockConfigLP_GPIO[ periphIndex ];
     *celpConfig.reg |= celpConfig.mask;
 
     return result;
   }
 
-  Chimera::Status_t GPIOPeriph::disableClockLowPower( const size_t instance )
+  Chimera::Status_t GPIOPeriph::disableClockLowPower( const size_t periphIndex )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    /*------------------------------------------------
-    Read-modify-write
-    ------------------------------------------------*/
-    auto celpConfig = ClockConfigLP_GPIO[ iterator ];
+    auto celpConfig = ClockConfigLP_GPIO[ periphIndex ];
     *celpConfig.reg &= ~celpConfig.mask;
 
     return result;
   }
+
+  /**
+   *  UARTPeriph Class Implementation
+   */
+
+  UARTPeriph::UARTPeriph() : iterator( 0 )
+  {
+    /*------------------------------------------------
+    Register the singleton periphIndex with the peripheral tracker
+    ------------------------------------------------*/
+    auto peripheralType                  = Chimera::Peripheral::Type::UART;
+    iterator                             = Thor::Driver::Mapping::PeriphTypeToIterator.find( peripheralType )->second;
+    periphSingletonInstances[ iterator ] = reinterpret_cast<Peripheral *>( this );
+  }
+
+  UARTPeriph::~UARTPeriph()
+  {
+    free( periphSingletonInstances[ iterator ] );
+    periphSingletonInstances[ iterator ] = nullptr;
+  }
+
+  Peripheral *const UARTPeriph::get()
+  {
+    using namespace Thor::Driver::Mapping;
+
+    /*------------------------------------------------
+    Lookup the index where the singleton is stored
+    ------------------------------------------------*/
+    auto iterator = PeriphTypeToIterator.find( Chimera::Peripheral::Type::UART );
+
+    if ( iterator == PeriphTypeToIterator.end() )
+    {
+      /*------------------------------------------------
+      This peripheral type is not supported
+      ------------------------------------------------*/
+      return nullptr;
+    }
+    else
+    {
+      /*------------------------------------------------
+      Create the new object if non-existant
+      ------------------------------------------------*/
+      if ( periphSingletonInstances[ iterator->second ] == nullptr )
+      {
+        periphSingletonInstances[ iterator->second ] = new UARTPeriph();
+      }
+
+      return periphSingletonInstances[ iterator->second ];
+    }
+  }
+
+  Chimera::Peripheral::Type UARTPeriph::getType()
+  {
+    return sPeriphType;
+  }
+
+  size_t UARTPeriph::getPeriphIndex( const void *const peripheralAddress )
+  {
+    auto lookupIndex = reinterpret_cast<std::uintptr_t>( peripheralAddress );
+    return Thor::Driver::UART::InstanceToResourceIndex.find( lookupIndex )->second;
+  }
+
+  Chimera::Status_t UARTPeriph::init()
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    return result;
+  }
+
+  Chimera::Status_t UARTPeriph::reset( const size_t periphIndex )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto prrConfig = ResetConfig_UART[ periphIndex ];
+    uint32_t tmp   = *prrConfig.reg;
+
+    /*------------------------------------------------
+    Begin the reset operation
+    ------------------------------------------------*/
+    tmp |= prrConfig.mask;
+    *prrConfig.reg = tmp;
+
+    /*------------------------------------------------
+    Remove the reset flag as it is not cleared automatically by hardware
+    ------------------------------------------------*/
+    tmp &= ~prrConfig.mask;
+    *prrConfig.reg = tmp;
+
+    return result;
+  }
+
+  Chimera::Status_t UARTPeriph::enableClock( const size_t periphIndex )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto ceConfig = ClockConfig_UART[ periphIndex ];
+    *ceConfig.reg |= ceConfig.mask;
+
+    return result;
+  }
+
+  Chimera::Status_t UARTPeriph::disableClock( const size_t periphIndex )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto ceConfig = ClockConfig_UART[ periphIndex ];
+    *ceConfig.reg &= ~ceConfig.mask;
+
+    return result;
+  }
+
+  Chimera::Status_t UARTPeriph::enableClockLowPower( const size_t periphIndex )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto celpConfig = ClockConfigLP_UART[ periphIndex ];
+    *celpConfig.reg |= celpConfig.mask;
+
+    return result;
+  }
+
+  Chimera::Status_t UARTPeriph::disableClockLowPower( const size_t periphIndex )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto celpConfig = ClockConfigLP_UART[ periphIndex ];
+    *celpConfig.reg &= ~celpConfig.mask;
+
+    return result;
+  }
+
+  /**
+   *  USARTPeriph Class Implementation
+   */
+  USARTPeriph::USARTPeriph() : iterator( 0 )
+  {
+    /*------------------------------------------------
+    Register the singleton periphIndex with the peripheral tracker
+    ------------------------------------------------*/
+    auto peripheralType                  = Chimera::Peripheral::Type::USART;
+    iterator                             = Thor::Driver::Mapping::PeriphTypeToIterator.find( peripheralType )->second;
+    periphSingletonInstances[ iterator ] = reinterpret_cast<Peripheral *>( this );
+  }
+
+  USARTPeriph::~USARTPeriph()
+  {
+    free( periphSingletonInstances[ iterator ] );
+    periphSingletonInstances[ iterator ] = nullptr;
+  }
+
+  Peripheral *const USARTPeriph::get()
+  {
+    using namespace Thor::Driver::Mapping;
+
+    /*------------------------------------------------
+    Lookup the index where the singleton is stored
+    ------------------------------------------------*/
+    auto iterator = PeriphTypeToIterator.find( Chimera::Peripheral::Type::USART );
+
+    if ( iterator == PeriphTypeToIterator.end() )
+    {
+      /*------------------------------------------------
+      This peripheral type is not supported
+      ------------------------------------------------*/
+      return nullptr;
+    }
+    else
+    {
+      /*------------------------------------------------
+      Create the new object if non-existant
+      ------------------------------------------------*/
+      if ( periphSingletonInstances[ iterator->second ] == nullptr )
+      {
+        periphSingletonInstances[ iterator->second ] = new USARTPeriph();
+      }
+
+      return periphSingletonInstances[ iterator->second ];
+    }
+  }
+
+  Chimera::Peripheral::Type USARTPeriph::getType()
+  {
+    return sPeriphType;
+  }
+
+  size_t USARTPeriph::getPeriphIndex( const void *const peripheralAddress )
+  {
+    auto lookupIndex = reinterpret_cast<std::uintptr_t>( peripheralAddress );
+    return Thor::Driver::USART::InstanceToResourceIndex.find( lookupIndex )->second;
+  }
+
+  Chimera::Status_t USARTPeriph::init()
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    return result;
+  }
+
+  Chimera::Status_t USARTPeriph::reset( const size_t periphIndex )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto prrConfig = ResetConfig_USART[ periphIndex ];
+    uint32_t tmp   = *prrConfig.reg;
+
+    /*------------------------------------------------
+    Begin the reset operation
+    ------------------------------------------------*/
+    tmp |= prrConfig.mask;
+    *prrConfig.reg = tmp;
+
+    /*------------------------------------------------
+    Remove the reset flag as it is not cleared automatically by hardware
+    ------------------------------------------------*/
+    tmp &= ~prrConfig.mask;
+    *prrConfig.reg = tmp;
+
+    return result;
+  }
+
+  Chimera::Status_t USARTPeriph::enableClock( const size_t periphIndex )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto ceConfig = ClockConfig_USART[ periphIndex ];
+    *ceConfig.reg |= ceConfig.mask;
+
+    return result;
+  }
+
+  Chimera::Status_t USARTPeriph::disableClock( const size_t periphIndex )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto ceConfig = ClockConfig_USART[ periphIndex ];
+    *ceConfig.reg &= ~ceConfig.mask;
+
+    return result;
+  }
+
+  Chimera::Status_t USARTPeriph::enableClockLowPower( const size_t periphIndex )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto celpConfig = ClockConfigLP_USART[ periphIndex ];
+    *celpConfig.reg |= celpConfig.mask;
+
+    return result;
+  }
+
+  Chimera::Status_t USARTPeriph::disableClockLowPower( const size_t periphIndex )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto celpConfig = ClockConfigLP_USART[ periphIndex ];
+    *celpConfig.reg &= ~celpConfig.mask;
+
+    return result;
+  }
+
 }    // namespace Thor::Driver::RCC

@@ -24,6 +24,8 @@ namespace Thor::Driver::UART
 {
   static constexpr uint32_t UART4_BASE_ADDR  = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x4C00U;
   static constexpr uint32_t UART5_BASE_ADDR  = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x5000U;
+
+  static constexpr uint32_t NUM_UART_PERIPHS = 2u;
 }    // namespace Thor::Driver::USART
 
 #endif /* !THOR_HW_UART_REGISTER_HPP */

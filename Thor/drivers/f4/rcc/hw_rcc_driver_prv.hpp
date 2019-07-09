@@ -15,7 +15,10 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Driver Includes */
+#include "thorDriverConfig.hpp"
 
+#if THOR_DRIVER_RCC == 1
 namespace Thor::Driver::RCC
 {
   static constexpr uint32_t PLL_TIMEOUT_VALUE_MS          = 2u;
@@ -26,5 +29,6 @@ namespace Thor::Driver::RCC
   static constexpr uint32_t LSI_TIMEOUT_VALUE_MS          = 2u; 
   static constexpr uint32_t CLOCKSWITCH_TIMEOUT_VALUE_MS  = 5000u;
 }
+#endif
 
 #endif /* !THOR_DRIVER_RCC_PRIVATE_HPP */
