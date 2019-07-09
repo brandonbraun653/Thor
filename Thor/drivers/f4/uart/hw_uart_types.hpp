@@ -16,8 +16,11 @@
 #include <cstdint>
 
 /* Driver Includes */
+#include <Thor/headers.hpp>
 #include <Thor/drivers/f4/uart/hw_uart_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
 
 namespace Thor::Driver::UART
 {
@@ -29,6 +32,9 @@ namespace Thor::Driver::UART
   static RegisterMap *const UART4_PERIPH = reinterpret_cast<RegisterMap *const>( UART4_BASE_ADDR );
   static RegisterMap *const UART5_PERIPH = reinterpret_cast<RegisterMap *const>( UART5_BASE_ADDR );
 
+
+
 }    // namespace Thor::Driver::UART
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_UART */
 #endif /* !THOR_HW_UART_TYPES_HPP */

@@ -15,6 +15,11 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Driver Includes */
+#include <Thor/headers.hpp>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -33,4 +38,6 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */
 #endif /* !THOR_DRIVER_RCC_CONFIG_STM32F446XX_HPP */

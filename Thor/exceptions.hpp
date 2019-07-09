@@ -1,32 +1,24 @@
-#pragma once
-#ifndef EXCEPTIONS_H_
-#define EXCEPTIONS_H_
+/********************************************************************************
+ *   File Name:
+ *    execptions.hpp
+ *
+ *   Description:
+ *    Common Thor functionality for hardware and software exception handling
+ *
+ *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
 
+#pragma once
+#ifndef THOR_EXCEPTIONS_HPP
+#define THOR_EXCEPTIONS_HPP
+
+/* C++ Includes */
 #include <stdlib.h>
 #include <string>
 
-
-#define STRINGIZE_DETAIL( x ) #x
-#define STRINGIZE( x ) STRINGIZE_DETAIL( x )
-#define logError( msg ) ( __FILE__ " line " STRINGIZE( __LINE__ ) ": " msg )
-
-extern void BasicErrorHandler( std::string err_msg );
-
-
-#ifdef __cplusplus
-extern "C"
+namespace Thor::Exception
 {
-#endif
 
-  void HardFault_Handler();
-
-#if defined( __GCC__ )
-  void HardFault_HandlerC( unsigned long *hardfault_args ) __attribute__( ( used ) );
-#else
-void HardFault_HandlerC( unsigned long *hardfault_args );
-#endif
-#ifdef __cplusplus
 }
-#endif
 
-#endif /*! EXCEPTIONS_H_*/
+#endif /*! THOR_EXCEPTIONS_HPP */

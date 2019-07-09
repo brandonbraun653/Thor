@@ -10,7 +10,10 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/headers.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_config_stm32f446xx.hpp>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
 
 #ifdef  __cplusplus
 extern "C"
@@ -24,3 +27,5 @@ extern "C"
 #ifdef  __cplusplus
 }
 #endif
+
+#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */

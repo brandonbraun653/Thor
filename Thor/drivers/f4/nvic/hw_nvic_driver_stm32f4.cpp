@@ -9,9 +9,12 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/headers.hpp>
 #include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
 #include <Thor/drivers/f4/nvic/hw_nvic_prj.hpp>
 #include <Thor/drivers/f4/nvic/hw_nvic_types.hpp>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_NVIC == 1 )
 
 namespace Thor::Driver::Interrupt
 {
@@ -72,3 +75,5 @@ namespace Thor::Driver::Interrupt
     NVIC_SystemReset();
   }
 }
+
+#endif /* TARGET_STM32F4 && THOR_DRIVER_NVIC */

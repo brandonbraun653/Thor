@@ -18,7 +18,10 @@
 #include <cstdint>
 
 /* Driver Includes */
+#include <Thor/headers.hpp>
 #include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
 
 namespace Thor::Driver::UART
 {
@@ -28,4 +31,5 @@ namespace Thor::Driver::UART
   static constexpr uint32_t NUM_UART_PERIPHS = 2u;
 }    // namespace Thor::Driver::USART
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_UART */
 #endif /* !THOR_HW_UART_REGISTER_HPP */

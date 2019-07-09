@@ -22,10 +22,10 @@
 #include <Chimera/types/gpio_types.hpp>
 
 /* Driver Includes */
+#include <Thor/headers.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_prj.hpp>
 #include <Thor/drivers/f4/uart/hw_uart_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
-
 #include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_prj.hpp>
 #include <Thor/drivers/f4/system/sys_memory_map_prj.hpp>
@@ -34,6 +34,10 @@ namespace Thor::Driver::RCC
 {
   /* clang-format off */
 
+/*------------------------------------------------
+GPIO Peripheral RCC Configuration Resources
+------------------------------------------------*/
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
   /**
    *  GPIO clock enable register access lookup table
    */
@@ -100,8 +104,12 @@ namespace Thor::Driver::RCC
     { reinterpret_cast<decltype(PeripheralResetConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, AHB1ENR) ), AHB1RSTR_GPIOHRST }
   }};
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 
-
+/*------------------------------------------------
+UART Peripheral RCC Configuration Resources
+------------------------------------------------*/
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
   /**
    *  UART clock enable register access lookup table
    *
@@ -138,8 +146,12 @@ namespace Thor::Driver::RCC
     { reinterpret_cast<decltype(PeripheralResetConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, APB1RSTR) ), APB1RSTR_UART5RST }
   }};
   
+#endif /* TARGET_STM32F4 && THOR_DRIVER_UART */
 
-
+/*------------------------------------------------
+USART Peripheral RCC Configuration Resources
+------------------------------------------------*/
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
   /**
    *  USART clock enable register access lookup table
    *
@@ -188,6 +200,8 @@ namespace Thor::Driver::RCC
     { reinterpret_cast<decltype(PeripheralResetConfig::reg)>( RCC_BASE_ADDR + offsetof(RegisterMap, APB2RSTR) ), APB2RSTR_USART6RST }
   
   }};
+
+#endif /* TARGET_STM32F4 && THOR_DRIVER_USART */
 
   /* clang-format on */
 }    // namespace Thor::Driver::RCC

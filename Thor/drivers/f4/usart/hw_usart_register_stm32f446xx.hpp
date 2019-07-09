@@ -18,7 +18,10 @@
 #include <cstdint>
 
 /* Driver Includes */
+#include <Thor/headers.hpp>
 #include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
 
 namespace Thor::Driver::USART
 {
@@ -222,4 +225,5 @@ namespace Thor::Driver::USART
   static constexpr uint32_t GTPR_GT     = GTPR_GT_Msk;
 }    // namespace Thor::Driver::USART
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_USART */
 #endif /* !THOR_HW_USART_REGISTER_HPP */

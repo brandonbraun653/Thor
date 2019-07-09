@@ -16,7 +16,10 @@
 #include <cstdint>
 
 /* Driver Includes */
+#include <Thor/headers.hpp>
 #include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_PWR == 1 )
 
 namespace Thor::Driver::PWR
 {
@@ -130,4 +133,5 @@ namespace Thor::Driver::PWR
   static constexpr uint32_t CSR_UDRDY       = CSR_UDRDY_Msk; /**< Under Drive ready                                */
 }    // namespace Thor::Driver::PWR
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_PWR */
 #endif /* !THOR_HW_POWER_REGISTER_HPP */

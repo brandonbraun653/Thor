@@ -11,33 +11,50 @@
 /* C++ Includes */
 
 /* Chimera Includes */
+#include <Chimera/interface/system_intf.hpp>
 
 /* Thor Includes */
 #include <Thor/preprocessor.hpp>
 #include <Thor/headers.hpp>
 #include <Thor/system.hpp>
 
-namespace Thor
+/* Driver Includes */
+#include <Thor/drivers/RCC.hpp>
+
+namespace Thor::System
 {
-  namespace System
+  Identifier::Identifier()
   {
-    Identifier::Identifier()
-    {
-    }
+  }
 
-    Identifier::~Identifier()
-    {
-    }
+  Identifier::~Identifier()
+  {
+  }
 
-    uint32_t Identifier::deviceID()
-    {
-      return HAL_GetDEVID();
-    }
+  uint32_t Identifier::deviceID()
+  {
+    return 0;
+  }
 
-    uint32_t Identifier::uniqueID()
-    {
-      /* Will likely need to switch this up as the unique ID is 96 bits */
-      return 0u;
-    }
+  uint32_t Identifier::uniqueID()
+  {
+    /* Will likely need to switch this up as the unique ID is 96 bits */
+    // uint8_t * + length
+    return 0u;
+  }
+
+}    // namespace Thor::System
+
+namespace Chimera::System
+{
+  Chimera::Status_t prjSystemStartup()
+  {
+    Thor::Driver::RCC::init();
+    auto sys = Thor::Driver::RCC::SystemClock::get();
+    sys->configureProjectClocks();
+
+    volatile auto tmp = sys->getCoreClock();
+
+    return Chimera::CommonStatusCodes::OK;
   }
 }

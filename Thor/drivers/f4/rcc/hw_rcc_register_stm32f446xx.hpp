@@ -16,10 +16,13 @@
 #include <cstdint>
 
 /* Driver Includes */
+#include <Thor/headers.hpp>
 #include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
 
 /* ARM Includes */
 #include <Thor/drivers/common/cmsis/core/include/core_cm4.h>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
 
 namespace Thor::Driver::RCC
 {
@@ -1160,4 +1163,5 @@ namespace Thor::Driver::RCC
 
 }    // namespace Thor::Driver::RCC
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */
 #endif /* !THOR_HW_RCC_REGISTER_HPP */

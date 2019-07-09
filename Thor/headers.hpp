@@ -12,6 +12,7 @@
 #define THOR_HEADERS_HPP
 
 /* Thor Includes */
+#include "thorDriverConfig.hpp"
 #include <Thor/preprocessor.hpp>
 #include <Thor/definitions/system_checks.hpp>
 

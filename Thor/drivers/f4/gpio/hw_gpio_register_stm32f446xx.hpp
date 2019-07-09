@@ -18,6 +18,8 @@
 /* Driver Includes */
 #include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
 
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+
 namespace Thor::Driver::GPIO
 {
   static constexpr uint32_t GPIOA_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0000U;
@@ -841,4 +843,5 @@ namespace Thor::Driver::GPIO
   static constexpr uint32_t BRR_BR15     = BRR_BR15_Msk;
 }
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_GPIO_REGISTER_HPP */

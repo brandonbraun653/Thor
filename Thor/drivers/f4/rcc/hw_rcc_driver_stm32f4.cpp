@@ -18,7 +18,7 @@
 #include <Chimera/types/peripheral_types.hpp>
 
 /* Driver Includes */
-#include "thorDriverConfig.hpp"
+#include <Thor/headers.hpp>
 #include <Thor/drivers/common/mapping/peripheral_mapping.hpp>
 #include <Thor/drivers/f4/flash/hw_flash_driver.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_mapping.hpp>
@@ -32,6 +32,8 @@
 #include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
 #include <Thor/drivers/model/rcc_model.hpp>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
 
 static constexpr uint8_t numPeriphs = static_cast<uint8_t>( Chimera::Peripheral::Type::NUM_SUPPORTED_TYPES );
 static std::array<Thor::Driver::RCC::Peripheral *, numPeriphs> periphSingletonInstances;
@@ -748,9 +750,11 @@ namespace Thor::Driver::RCC
     }
   }
 
-  /**
-   *  SystemClock Class Implementation
-   */
+/*------------------------------------------------
+SystemClock Class Implementation
+------------------------------------------------*/
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
+
   SystemClock::SystemClock()
   {
     init();
@@ -838,10 +842,12 @@ namespace Thor::Driver::RCC
     return 0;
   }
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */
 
-  /**
-   *  GPIOPeriph Class Implementation
-   */
+/*------------------------------------------------
+GPIOPeriph Class Implementation
+------------------------------------------------*/
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
 
   GPIOPeriph::GPIOPeriph() : iterator( 0 )
   {
@@ -971,9 +977,12 @@ namespace Thor::Driver::RCC
     return result;
   }
 
-  /**
-   *  UARTPeriph Class Implementation
-   */
+#endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
+
+/*------------------------------------------------
+UARTPeriph Class Implementation
+------------------------------------------------*/
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
 
   UARTPeriph::UARTPeriph() : iterator( 0 )
   {
@@ -1100,9 +1109,13 @@ namespace Thor::Driver::RCC
     return result;
   }
 
-  /**
-   *  USARTPeriph Class Implementation
-   */
+#endif /* TARGET_STM32F4 && THOR_DRIVER_UART */
+
+/*------------------------------------------------
+USARTPeriph Class Implementation
+------------------------------------------------*/
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
+
   USARTPeriph::USARTPeriph() : iterator( 0 )
   {
     /*------------------------------------------------
@@ -1228,4 +1241,8 @@ namespace Thor::Driver::RCC
     return result;
   }
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_USART */
+
 }    // namespace Thor::Driver::RCC
+
+#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */

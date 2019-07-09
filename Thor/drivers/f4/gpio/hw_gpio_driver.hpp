@@ -27,6 +27,8 @@
 #include <Thor/drivers/model/gpio_model.hpp>
 #include <Thor/drivers/model/interrupt_model.hpp>
 
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+
 namespace Thor::Driver::GPIO
 {
   class DriverBare : public Model
@@ -143,4 +145,5 @@ namespace Thor::Driver::GPIO
 
 }    // namespace Thor::Driver::GPIO
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_DRIVER_GPIO_HPP */

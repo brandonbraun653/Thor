@@ -12,6 +12,11 @@
 #ifndef THOR_HW_DRIVER_NVIC_TYPES_HPP
 #define THOR_HW_DRIVER_NVIC_TYPES_HPP
 
+/* Driver Includes */
+#include <Thor/headers.hpp>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_NVIC == 1 )
+
 namespace Thor::Driver::Interrupt
 {
   using PriorityGrouping_t = uint32_t;
@@ -24,4 +29,5 @@ namespace Thor::Driver::Interrupt
 
 }    // namespace Thor::Driver::Interrupt
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_NVIC */
 #endif /* !THOR_HW_DRIVER_NVIC_TYPES_HPP */

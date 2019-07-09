@@ -16,9 +16,10 @@
 #include <cstdint>
 
 /* Driver Includes */
-#include "thorDriverConfig.hpp"
+#include <Thor/headers.hpp>
 
-#if THOR_DRIVER_RCC == 1
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
+
 namespace Thor::Driver::RCC
 {
   static constexpr uint32_t PLL_TIMEOUT_VALUE_MS          = 2u;
@@ -29,6 +30,6 @@ namespace Thor::Driver::RCC
   static constexpr uint32_t LSI_TIMEOUT_VALUE_MS          = 2u; 
   static constexpr uint32_t CLOCKSWITCH_TIMEOUT_VALUE_MS  = 5000u;
 }
-#endif
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */
 #endif /* !THOR_DRIVER_RCC_PRIVATE_HPP */

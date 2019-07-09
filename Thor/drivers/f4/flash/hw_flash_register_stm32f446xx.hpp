@@ -16,7 +16,10 @@
 #include <cstdint>
 
 /* Driver Includes */
+#include <Thor/headers.hpp>
 #include <Thor/drivers/f4/system/sys_memory_map_prj.hpp>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_FLASH == 1 )
 
 namespace Thor::Driver::Flash
 {
@@ -212,4 +215,5 @@ namespace Thor::Driver::Flash
   static constexpr uint32_t OPTCR1_nWRP_11  = ( 0x800U << OPTCR1_nWRP_Pos );
 }
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_FLASH */
 #endif /* !THOR_HW_DRIVER_FLASH_REGISTER_STM32F446XX_HPP */

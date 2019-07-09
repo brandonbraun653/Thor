@@ -18,6 +18,8 @@
 /* Driver Includes */
 #include <Thor/drivers/f4/power/hw_power_prj.hpp>
 
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_PWR == 1 )
+
 namespace Thor::Driver::PWR
 {
   struct RegisterMap
@@ -438,4 +440,5 @@ namespace Thor::Driver::PWR
   }    // namespace CSR
 }
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_PWR */
 #endif /* !THOR_HW_POWER_TYPES_HPP */

@@ -16,7 +16,13 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Driver Includes */
+#include <Thor/headers.hpp>
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
+
 extern void UART7_IRQHandler();
 extern void UART8_IRQHandler();
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_UART */
 #endif /* !THOR_HW_UART_TYPES_HPP */

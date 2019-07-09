@@ -23,6 +23,8 @@
 #include <Thor/drivers/f4/gpio/hw_gpio_types.hpp>
 #include <Thor/drivers/common/types/gpio_types.hpp>
 
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+
 namespace Thor::Driver::GPIO
 {
 
@@ -110,4 +112,5 @@ namespace Thor::Driver::GPIO
   /* clang-format on */
 }    // namespace Thor::Driver::GPIO
 
+#endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_GPIO_MAPPING_HPP */
