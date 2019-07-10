@@ -78,7 +78,7 @@ namespace Thor::Serial
     void await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier ) final override;
 
   private:
-    uint8_t serialChannel = 0;
+    uint8_t serialChannel;
     Chimera::Serial::Interface_sPtr serialObject;
   };
 }    // namespace Thor::Serial

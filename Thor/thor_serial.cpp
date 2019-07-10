@@ -15,58 +15,51 @@
 #include <Thor/types/serial_types.hpp>
 #include <Thor/definitions/serial_definitions.hpp>
 
-using namespace Thor;
-using namespace Thor::Serial;
-using namespace Thor::UART;
-using namespace Thor::USART;
-
 namespace Thor::Serial
 {
-  static const std::array<HardwareClassMapping, MAX_SERIAL_CHANNELS + 1> ch2Periph = { {
+  static const std::array<bool, MAX_VIRTUAL_CHANNELS> isUARTChannel = { {
 #if defined( STM32F767xx ) || defined( STM32F446xx )
-      { false, 0 }, /* Not actually a UART instance */
-      { false, 1 }, /* USART 1	*/
-      { false, 2 }, /* USART 2	*/
-      { false, 3 }, /* USART 3	*/
-      { true, 4 },  /* UART  4	*/
-      { true, 5 },  /* UART  5	*/
-      { false, 6 }, /* USART 6	*/
-      { true, 7 },  /* UART  7	*/
-      { true, 8 }   /* UART	 8	*/
+      false, /* Not actually a Serial channel */
+      false, /* USART 1	*/
+      false, /* USART 2	*/
+      false, /* USART 3	*/
+      true,  /* UART  4	*/
+      true,  /* UART  5	*/
+      false, /* USART 6	*/
+      true,  /* UART  7	*/
+      true   /* UART  8	*/
 #endif
   } };
 
-  SerialClass::SerialClass()
+  SerialClass::SerialClass() : serialChannel( INVALID_CHANNEL ), serialObject( nullptr )
   {
-    serialChannel = 0u;
-
     /*------------------------------------------------
     Make sure the behavior is disabled until the user calls assignHW()
     ------------------------------------------------*/
-    auto tmp     = std::make_shared<Chimera::Serial::SerialUnsupported>();
-    serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Chimera::Serial::SerialUnsupported>( tmp );
+//    auto tmp     = std::make_shared<Chimera::Serial::SerialUnsupported>();
+//    serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Chimera::Serial::SerialUnsupported>( tmp );
   }
 
   Chimera::Status_t SerialClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    if ( channel && ( channel < MAX_SERIAL_CHANNELS ) )
+    if ( ( channel != INVALID_CHANNEL ) && ( channel < MAX_VIRTUAL_CHANNELS ) )
     {
       serialChannel = channel;
 
       /*------------------------------------------------
       Decide which instance to create
       -------------------------------------------------*/
-      if ( ch2Periph[ channel ].ON_UART )
+      if ( isUARTChannel[ channel ] )
       {
-        auto tmp     = std::make_shared<UARTClass>();
-        serialObject = std::static_pointer_cast<Chimera::Serial::Interface, UARTClass>( tmp );
+        auto tmp     = std::make_shared<Thor::UART::UARTClass>();
+        serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Thor::UART::UARTClass>( tmp );
       }
       else
       {
-        auto tmp     = std::make_shared<USARTClass>();
-        serialObject = std::static_pointer_cast<Chimera::Serial::Interface, USARTClass>( tmp );
+        auto tmp     = std::make_shared<Thor::USART::USARTClass>();
+        serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Thor::USART::USARTClass>( tmp );
       }
 
       /*------------------------------------------------

@@ -8,6 +8,8 @@
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+#if ( THOR_STM32HAL_DRIVERS == 1 ) && ( THOR_DRIVER_UART == 1 )
+
 /* Boost Includes */
 #include <boost/bind.hpp>
 #include <boost/circular_buffer.hpp>
@@ -1813,3 +1815,5 @@ static void UART8ISRPostProcessor( void *argument )
     }
   }
 }
+
+#endif /* THOR_STM32HAL_DRIVERS && THOR_DRIVER_UART */

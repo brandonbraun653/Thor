@@ -8,6 +8,8 @@
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+#if ( THOR_STM32HAL_DRIVERS == 1 ) && ( THOR_DRIVER_USART == 1 )
+
 /* Boost Includes */
 #include <boost/bind.hpp>
 #include <boost/circular_buffer.hpp>
@@ -75,7 +77,7 @@ static std::array<Chimera::Function::void_func_void_ptr, MAX_SERIAL_CHANNELS + 1
 }; /* clang-format on */
 
 
-namespace Thor::USART
+namespace Thor::USART::STM32HAL
 {
   inline void USART_ClearIT_IDLE( USART_HandleTypeDef *const UsartHandle )
   {
@@ -1732,3 +1734,5 @@ static void USART6ISRPostProcessor( void *argument )
     }
   }
 }
+
+#endif /* THOR_STM32HAL_DRIVERS && THOR_DRIVER_USART */

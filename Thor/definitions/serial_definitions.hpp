@@ -21,7 +21,20 @@
 
 namespace Thor::Serial
 {
-  constexpr uint8_t MAX_SERIAL_CHANNELS = Thor::UART::MAX_UART_CHANNELS + Thor::USART::MAX_USART_CHANNELS;
+  /**
+   *  Channel 0 doesn't really exist in hardware (virtual)
+   */
+  static constexpr uint8_t INVALID_CHANNEL = 0u;
+
+  /**
+   *  Total number of hardware channels
+   */
+  static constexpr uint8_t MAX_PHYSICAL_CHANNELS = Thor::UART::MAX_UART_CHANNELS + Thor::USART::MAX_USART_CHANNELS;
+
+  /** 
+   *  Total number of hardware channels plus the imaginary invalid channel
+   */
+  static constexpr uint8_t MAX_VIRTUAL_CHANNELS = MAX_PHYSICAL_CHANNELS + 1;
 
 }    // namespace Thor::Serial
 
