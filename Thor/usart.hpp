@@ -49,9 +49,7 @@ namespace Thor::USART
 
     Chimera::Status_t end() final override;
 
-    Chimera::Status_t configure( const uint32_t baud, const Chimera::Serial::CharWid width,
-                                 const Chimera::Serial::Parity parity, const Chimera::Serial::StopBits stop,
-                                 const Chimera::Serial::FlowControl flow ) final override;
+    Chimera::Status_t configure( const Chimera::Serial::COMConfig &config ) final override;
 
     Chimera::Status_t setBaud( const uint32_t baud ) final override;
 
@@ -64,15 +62,11 @@ namespace Thor::USART
 
     Chimera::Status_t flush( const Chimera::Hardware::SubPeripheral periph ) final override;
 
-    void postISRProcessing() final override;
-
     Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
 
-#if defined( USING_FREERTOS )
     Chimera::Status_t attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr ) final override;
 
     Chimera::Status_t detachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr ) final override;
-#endif
 
     Chimera::Status_t enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                        boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
@@ -85,6 +79,8 @@ namespace Thor::USART
     void await( const Chimera::Event::Trigger event ) final override;
 
     void await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier ) final override;
+
+    void postISRProcessing() final override;
 
   private:
     friend void(::USART1_IRQHandler )( void );
@@ -129,9 +125,7 @@ namespace Thor::USART
 
       Chimera::Status_t end() final override;
 
-      Chimera::Status_t configure( const uint32_t baud, const Chimera::Serial::CharWid width,
-                                   const Chimera::Serial::Parity parity, const Chimera::Serial::StopBits stop,
-                                   const Chimera::Serial::FlowControl flow ) final override;
+      Chimera::Status_t configure( const Chimera::Serial::COMConfig &config ) final override;
 
       Chimera::Status_t setBaud( const uint32_t baud ) final override;
 

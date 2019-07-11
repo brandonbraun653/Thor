@@ -41,9 +41,7 @@ namespace Thor::Serial
 
     Chimera::Status_t end() final override;
 
-    Chimera::Status_t configure( const uint32_t baud, const Chimera::Serial::CharWid width,
-                                 const Chimera::Serial::Parity parity, const Chimera::Serial::StopBits stop,
-                                 const Chimera::Serial::FlowControl flow ) final override;
+    Chimera::Status_t configure( const Chimera::Serial::COMConfig &config ) final override;
 
     Chimera::Status_t setBaud( const uint32_t baud ) final override;
 

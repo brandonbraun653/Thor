@@ -32,9 +32,7 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t USARTClass::configure( const uint32_t baud, const Chimera::Serial::CharWid width,
-                                           const Chimera::Serial::Parity parity, const Chimera::Serial::StopBits stop,
-                                           const Chimera::Serial::FlowControl flow )
+  Chimera::Status_t USARTClass::configure( const Chimera::Serial::COMConfig &config )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }

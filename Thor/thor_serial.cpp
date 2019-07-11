@@ -89,11 +89,9 @@ namespace Thor::Serial
     return serialObject->end();
   }
 
-  Chimera::Status_t SerialClass::configure( const uint32_t baud, const Chimera::Serial::CharWid width,
-                                            const Chimera::Serial::Parity parity, const Chimera::Serial::StopBits stop,
-                                            const Chimera::Serial::FlowControl flow )
+  Chimera::Status_t SerialClass::configure( const Chimera::Serial::COMConfig &config )
   {
-    return serialObject->configure( baud, width, parity, stop, flow );
+    return serialObject->configure( config );
   }
 
   Chimera::Status_t SerialClass::setBaud( const uint32_t baud )

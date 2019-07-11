@@ -24,17 +24,11 @@
 
 namespace Thor::Driver::UART
 {
-  /* clang-format off */
-
   /**
-   *  Maps a UART peripheral into the corresponding resource index 
+   *  Maps a UART peripheral into the corresponding resource index
    */
-  static const std::unordered_map<std::uintptr_t, size_t> InstanceToResourceIndex{
-    { reinterpret_cast<std::uintptr_t>( UART4_PERIPH ), 0 },
-    { reinterpret_cast<std::uintptr_t>( UART5_PERIPH ), 1 }
-  };
+  extern const std::unordered_map<std::uintptr_t, size_t> InstanceToResourceIndex;
 
-  /* clang-format on */
 }    // namespace Thor::Driver::UART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_UART */

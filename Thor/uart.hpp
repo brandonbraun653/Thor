@@ -47,9 +47,7 @@ namespace Thor::UART
 
     Chimera::Status_t end() final override;
 
-    Chimera::Status_t configure( const uint32_t baud, const Chimera::Serial::CharWid width,
-                                 const Chimera::Serial::Parity parity, const Chimera::Serial::StopBits stop,
-                                 const Chimera::Serial::FlowControl flow ) final override;
+    Chimera::Status_t configure( const Chimera::Serial::COMConfig &config ) final override;
 
     Chimera::Status_t setBaud( const uint32_t baud ) final override;
 
@@ -61,8 +59,6 @@ namespace Thor::UART
     Chimera::Status_t read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS = 500 ) final override;
 
     Chimera::Status_t flush( const Chimera::Hardware::SubPeripheral periph ) final override;
-
-    void postISRProcessing() final override;
 
     Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
 
@@ -83,6 +79,8 @@ namespace Thor::UART
     void await( const Chimera::Event::Trigger event ) final override;
 
     void await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier ) final override;
+
+    void postISRProcessing() final override;
 
   private:
     friend void(::UART4_IRQHandler )( void );
@@ -114,9 +112,7 @@ namespace Thor::UART
 
       Chimera::Status_t end() final override;
 
-      Chimera::Status_t configure( const uint32_t baud, const Chimera::Serial::CharWid width,
-                                   const Chimera::Serial::Parity parity, const Chimera::Serial::StopBits stop,
-                                   const Chimera::Serial::FlowControl flow ) final override;
+      Chimera::Status_t configure( const Chimera::Serial::COMConfig &config ) final override;
 
       Chimera::Status_t setBaud( const uint32_t baud ) final override;
 
