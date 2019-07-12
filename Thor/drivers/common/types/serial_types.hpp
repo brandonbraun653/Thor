@@ -20,51 +20,59 @@
 
 namespace Thor::Driver::Serial
 {
+  /**
+   *  Configuration structure for the Serial peripherals (UART/USART).
+   *  Each member is expected to be equal to the exact value needed to 
+   *  configure the appropriate control register. The calculation of these
+   *  values is left up to the hardware driver as this might vary from
+   *  chip to chip. Expect that these values will be writen directly to
+   *  a register without much translation or protection.
+   */
   struct Config
   {
     /*------------------------------------------------
     This member configures the Usart communication baud rate.
     The baud rate is computed using the following formula:
       - IntegerDivider = ((PCLKx) / (8 * (husart->Init.BaudRate)))
-      - FractionalDivider = ((IntegerDivider - ((size_t) IntegerDivider)) * 8) + 0.5 
+      - FractionalDivider = ((IntegerDivider - ((uint32_t) IntegerDivider)) * 8) + 0.5 
     ------------------------------------------------*/
-    size_t BaudRate; 
+    uint32_t BaudRate; 
 
     /*------------------------------------------------
     Specifies the number of data bits transmitted or received in a frame
     ------------------------------------------------*/
-    size_t WordLength;
+    uint32_t WordLength;
                               
     /*------------------------------------------------
     Specifies the number of stop bits transmitted
     ------------------------------------------------*/
-    size_t StopBits; 
+    uint32_t StopBits; 
 
     /*------------------------------------------------
     Specifies the parity mode
     ------------------------------------------------*/
-    size_t Parity;
+    uint32_t Parity;
 
     /*------------------------------------------------
     Specifies whether the Receive or Transmit mode is enabled or disabled
     ------------------------------------------------*/
-    size_t Mode; 
+    uint32_t Mode; 
 
     /*------------------------------------------------
     Specifies the steady state of the serial clock
     ------------------------------------------------*/
-    size_t CLKPolarity;
+    uint32_t CLKPolarity;
 
     /*------------------------------------------------
     Specifies the clock transition on which the bit capture is made
     ------------------------------------------------*/
-    size_t CLKPhase; 
+    uint32_t CLKPhase; 
 
     /*------------------------------------------------
     Specifies whether the clock pulse corresponding to the last transmitted
     data bit (MSB) has to be output on the SCLK pin in synchronous mode
     ------------------------------------------------*/
-    size_t CLKLastBit;
+    uint32_t CLKLastBit;
   };
 
   class ITSigUSART

@@ -35,15 +35,17 @@ namespace Thor::Driver::USART
   /*------------------------------------------------
   USART Status Register
   ------------------------------------------------*/
+  static constexpr uint32_t SR_Msk      = ( 0x3FF );
+  static constexpr uint32_t SR_Rst      = ( 0x00C00000 );
   static constexpr uint32_t SR_PE_Pos   = ( 0U );
   static constexpr uint32_t SR_PE_Msk   = ( 0x1U << SR_PE_Pos );
   static constexpr uint32_t SR_PE       = SR_PE_Msk;
   static constexpr uint32_t SR_FE_Pos   = ( 1U );
   static constexpr uint32_t SR_FE_Msk   = ( 0x1U << SR_FE_Pos );
   static constexpr uint32_t SR_FE       = SR_FE_Msk;
-  static constexpr uint32_t SR_NE_Pos   = ( 2U );
-  static constexpr uint32_t SR_NE_Msk   = ( 0x1U << SR_NE_Pos );
-  static constexpr uint32_t SR_NE       = SR_NE_Msk;
+  static constexpr uint32_t SR_NF_Pos   = ( 2U );
+  static constexpr uint32_t SR_NF_Msk   = ( 0x1U << SR_NF_Pos );
+  static constexpr uint32_t SR_NF       = SR_NF_Msk;
   static constexpr uint32_t SR_ORE_Pos  = ( 3U );
   static constexpr uint32_t SR_ORE_Msk  = ( 0x1U << SR_ORE_Pos );
   static constexpr uint32_t SR_ORE      = SR_ORE_Msk;
@@ -76,6 +78,8 @@ namespace Thor::Driver::USART
   /*------------------------------------------------
   USART Baud Rate Register
   ------------------------------------------------*/
+  static constexpr uint32_t BRR_Msk              = ( 0xFFFF );
+  static constexpr uint32_t BRR_Rst              = ( 0U );
   static constexpr uint32_t BRR_DIV_Fraction_Pos = ( 0U );
   static constexpr uint32_t BRR_DIV_Fraction_Msk = ( 0xFU << BRR_DIV_Fraction_Pos );
   static constexpr uint32_t BRR_DIV_Fraction     = BRR_DIV_Fraction_Msk;
@@ -86,6 +90,8 @@ namespace Thor::Driver::USART
   /*------------------------------------------------
   USART Control Register 1
   ------------------------------------------------*/
+  static constexpr uint32_t CR1_Msk        = ( 0xBFFF );
+  static constexpr uint32_t CR1_Rst        = ( 0U );
   static constexpr uint32_t CR1_SBK_Pos    = ( 0U );
   static constexpr uint32_t CR1_SBK_Msk    = ( 0x1U << CR1_SBK_Pos );
   static constexpr uint32_t CR1_SBK        = CR1_SBK_Msk;
@@ -135,6 +141,8 @@ namespace Thor::Driver::USART
   /*------------------------------------------------
   USART Control Register 2
   ------------------------------------------------*/
+  static constexpr uint32_t CR2_Msk       = ( 0x7F6F );
+  static constexpr uint32_t CR2_Rst       = ( 0U );
   static constexpr uint32_t CR2_ADD_Pos   = ( 0U );
   static constexpr uint32_t CR2_ADD_Msk   = ( 0xFU << CR2_ADD_Pos );
   static constexpr uint32_t CR2_ADD       = CR2_ADD_Msk;
@@ -168,6 +176,8 @@ namespace Thor::Driver::USART
   /*------------------------------------------------
   USART Control Register 3
   ------------------------------------------------*/
+  static constexpr uint32_t CR3_Msk        = ( 0x0FFF );
+  static constexpr uint32_t CR3_Rst        = ( 0U );
   static constexpr uint32_t CR3_EIE_Pos    = ( 0U );
   static constexpr uint32_t CR3_EIE_Msk    = ( 0x1U << CR3_EIE_Pos );
   static constexpr uint32_t CR3_EIE        = CR3_EIE_Msk;
@@ -208,6 +218,8 @@ namespace Thor::Driver::USART
   /*------------------------------------------------
   USART Guard Time and Prescaler Register
   ------------------------------------------------*/
+  static constexpr uint32_t GTPR_Msk     = ( 0xFFFF );
+  static constexpr uint32_t GTPR_Rst     = ( 0U );
   static constexpr uint32_t GTPR_PSC_Pos = ( 0U );
   static constexpr uint32_t GTPR_PSC_Msk = ( 0xFFU << GTPR_PSC_Pos );
   static constexpr uint32_t GTPR_PSC     = GTPR_PSC_Msk;
@@ -219,10 +231,9 @@ namespace Thor::Driver::USART
   static constexpr uint32_t GTPR_PSC_5   = ( 0x20U << GTPR_PSC_Pos );
   static constexpr uint32_t GTPR_PSC_6   = ( 0x40U << GTPR_PSC_Pos );
   static constexpr uint32_t GTPR_PSC_7   = ( 0x80U << GTPR_PSC_Pos );
-
-  static constexpr uint32_t GTPR_GT_Pos = ( 8U );
-  static constexpr uint32_t GTPR_GT_Msk = ( 0xFFU << GTPR_GT_Pos );
-  static constexpr uint32_t GTPR_GT     = GTPR_GT_Msk;
+  static constexpr uint32_t GTPR_GT_Pos  = ( 8U );
+  static constexpr uint32_t GTPR_GT_Msk  = ( 0xFFU << GTPR_GT_Pos );
+  static constexpr uint32_t GTPR_GT      = GTPR_GT_Msk;
 }    // namespace Thor::Driver::USART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_USART */

@@ -22,8 +22,21 @@
 
 namespace Thor::Driver::USART
 {
-  Driver::Driver( RegisterMap *const peripheral ) : periph( peripheral )
+  /**
+   *  Number of elements to allocate by default for any vectors used in the Driver.
+   *
+   *  The goal is to size this such that a dynamic allocation isn't likely to occur
+   *  unless there suddenly are a lot of parties interested in being notified that
+   *  events are occuring.
+   */
+  static constexpr size_t DFLT_VECTOR_SIZE = 5;
+
+
+  Driver::Driver( RegisterMap *const peripheral, Thor::Driver::RCC::Peripheral *const rccDriver ) :
+      periph( peripheral ), rxCompleteListeners( DFLT_VECTOR_SIZE, nullptr ), txCompleteListeners( DFLT_VECTOR_SIZE, nullptr ),
+      rcc( rccDriver )
   {
+    rccPeripheralIndex = rccDriver->getPeriphIndex( reinterpret_cast<const void *const>( peripheral ) );
   }
 
   Driver::~Driver()
@@ -32,12 +45,66 @@ namespace Thor::Driver::USART
 
   Chimera::Status_t Driver::init( const Thor::Driver::Serial::Config &cfg )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    /*------------------------------------------------
+    First de-initialize the driver so we know we are
+    starting from a clean slate. There are no guarantees
+    on what state the system is in when this is called.
+    ------------------------------------------------*/
+    if ( deinit() != Chimera::CommonStatusCodes::OK )
+    {
+      return Chimera::CommonStatusCodes::FAIL;
+    }
+
+    /*------------------------------------------------
+    Ensure the clock is enabled otherwise the hardware is "dead"
+    ------------------------------------------------*/
+    rcc->enableClock( rccPeripheralIndex );
+
+    /*------------------------------------------------
+    Follow the initialization sequence as defined in RM0390 pg.801 
+    ------------------------------------------------*/
+    /* Enable the USART by writing the UE bit to 1 */
+    CR1::UE::set( periph, CR1_UE );
+
+    /* Program the M bit to define the word length */
+    CR1::M::set( periph, cfg.WordLength );
+
+    /* Program the number of stop bits */
+    CR2::STOP::set( periph, cfg.StopBits );
+
+    /* Select the desired baud rate */
+    BRR::set( periph, cfg.BaudRate );
+
+    /* Set the TE bit to send an idle frame as first transmission */
+    CR1::TE::set( periph, CR1_TE );
+
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t Driver::deinit()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    rcc->enableClock( rccPeripheralIndex );
+    rcc->reset( rccPeripheralIndex );
+    rcc->disableClock( rccPeripheralIndex );
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  Chimera::Status_t Driver::reset()
+  {
+    /*------------------------------------------------
+    Reset the hardware registers
+    ------------------------------------------------*/
+    deinit();
+
+    /*------------------------------------------------
+    Erases pointers to the listeners, not the listeners themselves
+    ------------------------------------------------*/
+    rxCompleteListeners.clear();
+    txCompleteListeners.clear();
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t Driver::transmit( const uint8_t *const data, const size_t size, const size_t timeout )
@@ -100,16 +167,6 @@ namespace Thor::Driver::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::registerCallback( const CallbackEvent type, const VoidCallback &func )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Hardware::Status Driver::pollTransferStatus()
-  {
-    return Chimera::Hardware::Status::PERIPHERAL_FREE;
-  }
-
   Chimera::Status_t Driver::enableSignal( const InterruptSignal_t sig )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
@@ -118,6 +175,21 @@ namespace Thor::Driver::USART
   Chimera::Status_t Driver::disableSignal( const InterruptSignal_t sig )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::registerEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t *const listener )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::removeEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t *const listener )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Hardware::Status Driver::pollTransferStatus()
+  {
+    return Chimera::Hardware::Status::PERIPHERAL_FREE;
   }
 
 }    // namespace Thor::Driver::USART

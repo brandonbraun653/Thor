@@ -44,12 +44,22 @@ namespace Thor::Driver::Serial
     virtual Chimera::Status_t init( const Thor::Driver::Serial::Config &cfg ) = 0;
 
     /**
-     *  Deinitializes the low level driver and peripheral. Once this function is
-     *  called, init() must be called again before the system can be used.
+     *  Deinitializes the low level driver and peripheral
+     *
+     *  @note init() must be called again before the driver can be reused
      *
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t deinit() = 0;
+
+    /**
+     *  Completely resets the entire driver, including all instance resources.
+     *  
+     *  @note init() must be called again before the driver can be reused
+     *
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t reset() = 0;
 
     /**
      *  Transmit data using blocking mode. The function will not return in the given
