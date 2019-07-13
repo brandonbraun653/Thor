@@ -65,7 +65,6 @@ namespace Thor::Driver::GPIO
 
   private:
     volatile RegisterMap *periph;
-    uint8_t accessIndex;
   };
 
 

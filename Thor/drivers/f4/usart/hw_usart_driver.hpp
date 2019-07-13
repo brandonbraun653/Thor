@@ -30,7 +30,6 @@
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
 #include <Thor/drivers/model/event_model.hpp>
 #include <Thor/drivers/model/interrupt_model.hpp>
-#include <Thor/drivers/model/rcc_model.hpp>
 #include <Thor/drivers/model/serial_model.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
@@ -43,7 +42,7 @@ namespace Thor::Driver::USART
                  public Thor::Driver::EventListener
   {
   public:
-    Driver( RegisterMap *const peripheral, Thor::Driver::RCC::Peripheral *const rccDriver );
+    Driver( RegisterMap *const peripheral );
     ~Driver();
 
     Chimera::Status_t init( const Thor::Driver::Serial::Config &cfg ) final override;
@@ -88,11 +87,8 @@ namespace Thor::Driver::USART
 
     Chimera::Hardware::Status pollTransferStatus() final override;
 
-
   private:
     RegisterMap *const periph;
-    Thor::Driver::RCC::Peripheral *const rcc;
-    size_t rccPeripheralIndex;
     std::vector<SemaphoreHandle_t *> rxCompleteListeners;
     std::vector<SemaphoreHandle_t *> txCompleteListeners;
   };

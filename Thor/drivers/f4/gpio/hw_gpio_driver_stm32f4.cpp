@@ -26,7 +26,7 @@ namespace Thor::Driver::GPIO
   /*-----------------------------------------------------
   Bare Metal Implementation
   -----------------------------------------------------*/
-  DriverBare::DriverBare() : periph( nullptr ), accessIndex( 0 )
+  DriverBare::DriverBare() : periph( nullptr )
   {
   }
 
@@ -39,12 +39,6 @@ namespace Thor::Driver::GPIO
     periph = peripheral;
 
     /*------------------------------------------------
-    Cache the GPIO instance accessor for mapping functions
-    ------------------------------------------------*/
-    auto portValue = InstanceToPortMap.find( reinterpret_cast<std::uintptr_t>( peripheral ) )->second;
-    accessIndex    = PortToIteratorMap.find( portValue )->second;
-
-    /*------------------------------------------------
     Perform any initialization steps needed
     ------------------------------------------------*/
     clockEnable();
@@ -52,14 +46,14 @@ namespace Thor::Driver::GPIO
 
   void DriverBare::clockEnable()
   {
-    auto rccGPIO = Thor::Driver::RCC::GPIOPeriph::get();
-    rccGPIO->enableClock( accessIndex );
+    auto rcc = Thor::Driver::RCC::PeripheralController::get();
+    rcc->enableClock( reinterpret_cast<std::uintptr_t>( periph ) );
   }
 
   void DriverBare::clockDisable()
   {
-    auto rccGPIO = Thor::Driver::RCC::GPIOPeriph::get();
-    rccGPIO->disableClock( accessIndex );
+    auto rcc = Thor::Driver::RCC::PeripheralController::get();
+    rcc->disableClock( reinterpret_cast<std::uintptr_t>( periph ) );
   }
 
   Chimera::Status_t DriverBare::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout )

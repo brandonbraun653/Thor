@@ -12,6 +12,9 @@
 #ifndef THOR_DRIVER_RCC_MODEL_HPP
 #define THOR_DRIVER_RCC_MODEL_HPP
 
+/* C++ Includes */
+#include <memory>
+
 /* Chimera Includes */
 #include <Chimera/types/common_types.hpp>
 #include <Chimera/types/gpio_types.hpp>
@@ -87,84 +90,6 @@ namespace Thor::Driver::RCC
     virtual size_t getPeriphClock( const Chimera::Peripheral::Type periph ) = 0;
   };
 
-  /** 
-   *  Models a high level peripheral control scheme for the RCC driver.
-   *
-   *  @note The index used for the class functions is intended to represent an instance of the
-   *        modeled peripheral. For instance, there are usually several GPIO peripheral ports 
-   *        grouped into the larger GPIO Peripheral category. This could be PortA, PortB, etc.
-   *        The index is to indicate which peripheral instance is actually being accessed. In 
-   *        the case of the GPIO, PortA == index 0, PortB == index 1, and so on. This way the
-   *        low level driver is able to store/access configuration information efficiently.
-   */
-  class Peripheral
-  {
-  public:
-    virtual ~Peripheral() = default;
-
-    /**
-     *  Returns the type of peripheral that is being controlled
-     *
-     *  @return Chimera::Peripheral::Type
-     */
-    virtual Chimera::Peripheral::Type getType() = 0;
-
-    /**
-     *  Converts the peripheral base address into an index that can be used
-     *  with the rest of the class functions.
-     *
-     *  @param[in]  peripheralAddress     Peripheral instance
-     *  @return size_t
-     */
-    virtual size_t getPeriphIndex( const void *const peripheralAddress ) = 0;
-
-    /**
-     *  Initializes the peripheral to a default configuration
-     *  
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t init() = 0;
-
-    /**
-     *  Resets the peripheral using RCC reset registers
-     *
-     *  @param[in]  periphIndex        Indicates which peripheral instance should be accessed
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t reset( const size_t periphIndex ) = 0;
-
-    /**
-     *  Enables the peripheral clock
-     *
-     *  @param[in]  periphIndex        Indicates which peripheral instance should be accessed
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t enableClock( const size_t periphIndex ) = 0;
-
-    /**
-     *  Disables the peripheral clock
-     *
-     *  @param[in]  periphIndex        Indicates which peripheral instance should be accessed
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t disableClock( const size_t periphIndex ) = 0;
-
-    /**
-     *  Enables the peripheral clock in low power mode
-     *
-     *  @param[in]  periphIndex        Indicates which peripheral instance should be accessed
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t enableClockLowPower( const size_t periphIndex ) = 0;
-
-    /**
-     *  Disables the peripheral clock in low power mode
-     *
-     *  @param[in]  periphIndex        Indicates which peripheral instance should be accessed
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t disableClockLowPower( const size_t periphIndex ) = 0;
-  };
 }    // namespace Thor::Driver::RCC
 
 #endif /* !THOR_DRIVER_RCC_MODEL_HPP */

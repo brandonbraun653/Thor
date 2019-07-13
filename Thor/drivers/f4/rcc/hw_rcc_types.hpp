@@ -64,7 +64,19 @@ namespace Thor::Driver::RCC
   static RegisterMap *const RCC_PERIPH = reinterpret_cast<RegisterMap *const>( RCC_BASE_ADDR );
 
   /**
-   *  High level structure describing what kinds of clocks are available 
+   *  Describes a generic set of registers for a peripheral type that
+   *  allow control of clocking and reset functionality.
+   */
+  struct PeriphCtrlRegisters
+  {
+    const void *clock;     /**< Standard clock configuration registers */
+    const void *clockLP;   /**< Low power clock configuration registers */
+    const void *reset;     /**< Peripheral reset registers*/
+    size_t elements; /**< Number of elements in the tables */
+  };
+
+  /**
+   *  High level structure describing what kinds of clocks are available
    *  to be used as a source for the System Clock.
    */
   using OscillatorType_t = uint32_t;

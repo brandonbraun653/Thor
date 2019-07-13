@@ -32,26 +32,35 @@
 
 namespace Thor::Driver::RCC
 {
-  /**
-   *  GPIO Peripheral Config Lookup Tables
-   */
-  extern const std::array<ClockEnableConfig, Thor::Driver::GPIO::NUM_GPIO_PERIPHS> ClockConfig_GPIO;
-  extern const std::array<ClockEnableLowPowerConfig, Thor::Driver::GPIO::NUM_GPIO_PERIPHS> ClockConfigLP_GPIO;
-  extern const std::array<PeripheralResetConfig, Thor::Driver::GPIO::NUM_GPIO_PERIPHS> ResetConfig_GPIO;
+  namespace LookupTables
+  {
+    /**
+     *  GPIO Peripheral Config Lookup Tables
+     */
+    static constexpr size_t gpioTableSize = Thor::Driver::GPIO::NUM_GPIO_PERIPHS;
 
-  /**
-   *  UART Peripheral Config Lookup Tables
-   */
-  extern const std::array<ClockEnableConfig, Thor::Driver::UART::NUM_UART_PERIPHS> ClockConfig_UART;
-  extern const std::array<ClockEnableLowPowerConfig, Thor::Driver::UART::NUM_UART_PERIPHS> ClockConfigLP_UART;
-  extern const std::array<PeripheralResetConfig, Thor::Driver::UART::NUM_UART_PERIPHS> ResetConfig_UART;
+    extern const ClockEnableConfig ClockConfig_GPIO[ gpioTableSize ];
+    extern const ClockEnableLowPowerConfig ClockConfigLP_GPIO[ gpioTableSize ];
+    extern const PeripheralResetConfig ResetConfig_GPIO[ gpioTableSize ];
 
-  /**
-   *  USART Peripheral Config Lookup Tables
-   */
-  extern const std::array<ClockEnableConfig, Thor::Driver::USART::NUM_USART_PERIPHS> ClockConfig_USART;
-  extern const std::array<ClockEnableLowPowerConfig, Thor::Driver::USART::NUM_USART_PERIPHS> ClockConfigLP_USART;
-  extern const std::array<PeripheralResetConfig, Thor::Driver::USART::NUM_USART_PERIPHS> ResetConfig_USART;
+    /**
+     *  UART Peripheral Config Lookup Tables
+     */
+    static constexpr size_t uartTableSize = Thor::Driver::UART::NUM_UART_PERIPHS;
+
+    extern const ClockEnableConfig ClockConfig_UART[uartTableSize];
+    extern const ClockEnableLowPowerConfig ClockConfigLP_UART[uartTableSize];
+    extern const PeripheralResetConfig ResetConfig_UART[uartTableSize];
+
+    /**
+     *  USART Peripheral Config Lookup Tables
+     */
+    static constexpr size_t usartTableSize = Thor::Driver::USART::NUM_USART_PERIPHS;
+    
+    extern const ClockEnableConfig ClockConfig_USART[usartTableSize];
+    extern const ClockEnableLowPowerConfig ClockConfigLP_USART[usartTableSize];
+    extern const PeripheralResetConfig ResetConfig_USART[usartTableSize ];
+  }
 
 }    // namespace Thor::Driver::RCC
 

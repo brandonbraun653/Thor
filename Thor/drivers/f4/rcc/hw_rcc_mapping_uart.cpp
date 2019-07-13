@@ -11,8 +11,7 @@
 /* Driver Includes */
 #include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
 
-
-namespace Thor::Driver::RCC
+namespace Thor::Driver::RCC::LookupTables
 {
 /*------------------------------------------------
 UART Peripheral RCC Configuration Resources
@@ -23,13 +22,13 @@ UART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_uart_mapping.hpp
    */
-  const std::array<ClockEnableConfig, Thor::Driver::UART::NUM_UART_PERIPHS> ClockConfig_UART = {
-    { /* UART4 */
-      { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
-        APB1ENR_UART4EN },
-      /* UART5 */
-      { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
-        APB1ENR_UART5EN } }
+  const ClockEnableConfig ClockConfig_UART[ uartTableSize ] = {
+    /* UART4 */
+    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
+      APB1ENR_UART4EN },
+    /* UART5 */
+    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
+      APB1ENR_UART5EN }
   };
 
   /**
@@ -37,13 +36,13 @@ UART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_uart_mapping.hpp
    */
-  const std::array<ClockEnableLowPowerConfig, Thor::Driver::UART::NUM_UART_PERIPHS> ClockConfigLP_UART = {
-    { /* UART4 */
-      { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
-        APB1LPENR_UART4LPEN },
-      /* UART5 */
-      { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
-        APB1LPENR_UART5LPEN } }
+  const ClockEnableLowPowerConfig ClockConfigLP_UART[ uartTableSize ] = {
+    /* UART4 */
+    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
+      APB1LPENR_UART4LPEN },
+    /* UART5 */
+    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
+      APB1LPENR_UART5LPEN }
   };
 
   /**
@@ -51,14 +50,14 @@ UART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_uart_mapping.hpp
    */
-  const std::array<PeripheralResetConfig, Thor::Driver::UART::NUM_UART_PERIPHS> ResetConfig_UART = {
-    { /* UART4 */
-      { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
-        APB1RSTR_UART4RST },
-      /* UART5 */
-      { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
-        APB1RSTR_UART5RST } }
+  const PeripheralResetConfig ResetConfig_UART[ uartTableSize ] = {
+    /* UART4 */
+    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
+      APB1RSTR_UART4RST },
+    /* UART5 */
+    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
+      APB1RSTR_UART5RST }
   };
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_UART */
-}    // namespace Thor::Driver::RCC
+}    // namespace Thor::Driver::RCC::LookupTables

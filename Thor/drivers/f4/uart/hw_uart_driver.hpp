@@ -34,8 +34,8 @@ namespace Thor::Driver::UART
   class Driver : public Thor::Driver::USART::Driver
   {
   public:
-    Driver( RegisterMap *const peripheral, Thor::Driver::RCC::Peripheral *const rccDriver ) :
-        Thor::Driver::USART::Driver( peripheral, rccDriver )
+    Driver( RegisterMap *const peripheral ) :
+        Thor::Driver::USART::Driver( peripheral )
     {
     }
 

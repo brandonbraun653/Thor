@@ -14,6 +14,7 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
@@ -32,11 +33,9 @@ namespace Thor::Driver::USART
   static constexpr size_t DFLT_VECTOR_SIZE = 5;
 
 
-  Driver::Driver( RegisterMap *const peripheral, Thor::Driver::RCC::Peripheral *const rccDriver ) :
-      periph( peripheral ), rxCompleteListeners( DFLT_VECTOR_SIZE, nullptr ), txCompleteListeners( DFLT_VECTOR_SIZE, nullptr ),
-      rcc( rccDriver )
+  Driver::Driver( RegisterMap *const peripheral ) :
+      periph( peripheral ), rxCompleteListeners( DFLT_VECTOR_SIZE, nullptr ), txCompleteListeners( DFLT_VECTOR_SIZE, nullptr )
   {
-    rccPeripheralIndex = rccDriver->getPeriphIndex( reinterpret_cast<const void *const>( peripheral ) );
   }
 
   Driver::~Driver()
@@ -58,7 +57,8 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Ensure the clock is enabled otherwise the hardware is "dead"
     ------------------------------------------------*/
-    rcc->enableClock( rccPeripheralIndex );
+    auto rcc = Thor::Driver::RCC::PeripheralController::get();
+    rcc->enableClock( reinterpret_cast<std::uintptr_t>( periph ) );
 
     /*------------------------------------------------
     Follow the initialization sequence as defined in RM0390 pg.801 
@@ -84,9 +84,12 @@ namespace Thor::Driver::USART
 
   Chimera::Status_t Driver::deinit()
   {
-    rcc->enableClock( rccPeripheralIndex );
-    rcc->reset( rccPeripheralIndex );
-    rcc->disableClock( rccPeripheralIndex );
+    auto rcc = Thor::Driver::RCC::PeripheralController::get();
+    auto address = reinterpret_cast<std::uintptr_t>( periph );
+
+    rcc->enableClock( address );
+    rcc->reset( address );
+    rcc->disableClock( address );
 
     return Chimera::CommonStatusCodes::OK;
   }

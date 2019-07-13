@@ -14,6 +14,7 @@
 
 /* C++ Includes */
 #include <cstdlib>
+#include <memory>
 
 /* Chimera Includes */
 #include <Chimera/types/common_types.hpp>
@@ -118,104 +119,60 @@ namespace Thor::Driver::RCC
     SystemClock();
   };
 
-  /**
-   *  Singleton that interacts with the GPIO reset and clock control registers
-   */
-  class GPIOPeriph : public Peripheral
+
+  class PeripheralController
   {
   public:
-    ~GPIOPeriph();
+    ~PeripheralController();
 
-    static Peripheral *const get();
+    static std::shared_ptr<PeripheralController> get();
 
-    Chimera::Peripheral::Type getType() final override;
+    /**
+     *  Resets the peripheral using RCC reset registers
+     *
+     *  @param[in]  address        Indicates which peripheral instance should be accessed
+     *  @return Chimera::Status_t
+     */
+    Chimera::Status_t reset( const std::uintptr_t address );
 
-    size_t getPeriphIndex( const void *const peripheralAddress ) final override;
+    /**
+     *  Enables the peripheral clock
+     *
+     *  @param[in]  address        Indicates which peripheral instance should be accessed
+     *  @return Chimera::Status_t
+     */
+    Chimera::Status_t enableClock( const std::uintptr_t address );
 
-    Chimera::Status_t init() final override;
+    /**
+     *  Disables the peripheral clock
+     *
+     *  @param[in]  address        Indicates which peripheral instance should be accessed
+     *  @return Chimera::Status_t
+     */
+    Chimera::Status_t disableClock( const std::uintptr_t address );
 
-    Chimera::Status_t reset( const size_t periphIndex ) final override;
+    /**
+     *  Enables the peripheral clock in low power mode
+     *
+     *  @param[in]  address        Indicates which peripheral instance should be accessed
+     *  @return Chimera::Status_t
+     */
+    Chimera::Status_t enableClockLowPower( const std::uintptr_t address );
 
-    Chimera::Status_t enableClock( const size_t periphIndex ) final override;
-
-    Chimera::Status_t disableClock( const size_t periphIndex ) final override;
-
-    Chimera::Status_t enableClockLowPower( const size_t periphIndex ) final override;
-
-    Chimera::Status_t disableClockLowPower( const size_t periphIndex ) final override;
-
-  private:
-    GPIOPeriph();
-
-    uint8_t iterator;
-    static const Chimera::Peripheral::Type sPeriphType = Chimera::Peripheral::Type::GPIO;
-  };
-
-  /**
-   *  Singleton that interacts with the UART reset and clock control registers
-   */
-  class UARTPeriph : public Peripheral
-  {
-  public:
-    ~UARTPeriph();
-
-    static Peripheral *const get();
-
-    Chimera::Peripheral::Type getType() final override;
-
-    size_t getPeriphIndex( const void *const peripheralAddress ) final override;
-
-    Chimera::Status_t init() final override;
-
-    Chimera::Status_t reset( const size_t periphIndex ) final override;
-
-    Chimera::Status_t enableClock( const size_t periphIndex ) final override;
-
-    Chimera::Status_t disableClock( const size_t periphIndex ) final override;
-
-    Chimera::Status_t enableClockLowPower( const size_t periphIndex ) final override;
-
-    Chimera::Status_t disableClockLowPower( const size_t periphIndex ) final override;
+    /**
+     *  Disables the peripheral clock in low power mode
+     *
+     *  @param[in]  address        Indicates which peripheral instance should be accessed
+     *  @return Chimera::Status_t
+     */
+    Chimera::Status_t disableClockLowPower( const std::uintptr_t address );
 
   private:
-    UARTPeriph();
-
-    uint8_t iterator;
-    static const Chimera::Peripheral::Type sPeriphType = Chimera::Peripheral::Type::UART;
+    PeripheralController();
   };
 
-  /**
-   *  Singleton that interacts with the USART reset and clock control registers
-   */
-  class USARTPeriph : public Peripheral
-  {
-  public:
-    ~USARTPeriph();
+  using PeripheralController_sPtr = std::shared_ptr<PeripheralController>;
 
-    static Peripheral *const get();
-
-    Chimera::Peripheral::Type getType() final override;
-
-    size_t getPeriphIndex( const void *const peripheralAddress ) final override;
-
-    Chimera::Status_t init() final override;
-
-    Chimera::Status_t reset( const size_t periphIndex ) final override;
-
-    Chimera::Status_t enableClock( const size_t periphIndex ) final override;
-
-    Chimera::Status_t disableClock( const size_t periphIndex ) final override;
-
-    Chimera::Status_t enableClockLowPower( const size_t periphIndex ) final override;
-
-    Chimera::Status_t disableClockLowPower( const size_t periphIndex ) final override;
-
-  private:
-    USARTPeriph();
-
-    uint8_t iterator;
-    static const Chimera::Peripheral::Type sPeriphType = Chimera::Peripheral::Type::USART;
-  };
 }    // namespace Thor::Driver::RCC
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */
