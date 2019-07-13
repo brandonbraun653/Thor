@@ -27,14 +27,14 @@ namespace Thor::Driver::Serial
    *  values is left up to the hardware driver as this might vary from
    *  chip to chip. Expect that these values will be writen directly to
    *  a register without much translation or protection.
+   *
+   *  The only exception is the BaudRate parameter, which can be set to 
+   *  a numerical value and not a register configuration value.
    */
   struct Config
   {
     /*------------------------------------------------
-    This member configures the Usart communication baud rate.
-    The baud rate is computed using the following formula:
-      - IntegerDivider = ((PCLKx) / (8 * (husart->Init.BaudRate)))
-      - FractionalDivider = ((IntegerDivider - ((uint32_t) IntegerDivider)) * 8) + 0.5 
+    This member configures the communication baud rate
     ------------------------------------------------*/
     uint32_t BaudRate; 
 
@@ -56,21 +56,36 @@ namespace Thor::Driver::Serial
     /*------------------------------------------------
     Specifies whether the Receive or Transmit mode is enabled or disabled
     ------------------------------------------------*/
-    uint32_t Mode; 
+    uint32_t Mode;
+
+    /*------------------------------------------------
+    Specifies whether the hardware flow control mode is enabled or disabled
+    (UART only)
+    ------------------------------------------------*/
+    uint32_t HwFlowCtl;
+
+    /*------------------------------------------------
+    Specifies whether the Over sampling 8 is enabled or
+    disabled, to achieve higher speed (up to fPCLK/8)
+    ------------------------------------------------*/
+    uint32_t OverSampling;
 
     /*------------------------------------------------
     Specifies the steady state of the serial clock
+    (USART only synchronous mode)
     ------------------------------------------------*/
     uint32_t CLKPolarity;
 
     /*------------------------------------------------
     Specifies the clock transition on which the bit capture is made
+    (USART only synchronous mode)
     ------------------------------------------------*/
-    uint32_t CLKPhase; 
+    uint32_t CLKPhase;
 
     /*------------------------------------------------
     Specifies whether the clock pulse corresponding to the last transmitted
-    data bit (MSB) has to be output on the SCLK pin in synchronous mode
+    data bit (MSB) has to be output on the SCLK pin.
+    (USART only synchronous mode)
     ------------------------------------------------*/
     uint32_t CLKLastBit;
   };

@@ -47,6 +47,83 @@ namespace Thor::Driver::USART
   bool isUSART( const std::uintptr_t address );
 
   /*------------------------------------------------
+  Configuration Options
+  ------------------------------------------------*/
+  namespace Configuration
+  {
+    namespace WordLength
+    {
+      static constexpr uint32_t LEN_8BIT = 0u;
+      static constexpr uint32_t LEN_9BIT = CR1_M;
+    }    // namespace WordLength
+
+    namespace Stop
+    {
+      static constexpr uint32_t BIT_1   = 0u;
+      static constexpr uint32_t BIT_0_5 = CR2_STOP_0;
+      static constexpr uint32_t BIT_2   = CR2_STOP_1;
+      static constexpr uint32_t BIT_1_5 = CR2_STOP_0 | CR2_STOP_1;
+    }    // namespace Stop
+
+    namespace Parity
+    {
+      static constexpr uint32_t NONE = 0u;
+      static constexpr uint32_t EVEN = CR1_PCE;
+      static constexpr uint32_t ODD  = CR1_PCE | CR1_PS;
+    }    // namespace Parity
+
+    namespace Modes
+    {
+      static constexpr uint32_t RX    = CR1_RE;
+      static constexpr uint32_t TX    = CR1_TE;
+      static constexpr uint32_t TX_RX = RX | TX;
+    }    // namespace Modes
+
+    namespace Clock
+    {
+      static constexpr uint32_t CLOCK_DISABLE = 0u;
+      static constexpr uint32_t CLOCK_ENABLE  = CR2_CLKEN;
+    }    // namespace Clock
+
+    namespace Polarity
+    {
+      static constexpr uint32_t POLARITY_LOW  = 0u;
+      static constexpr uint32_t POLARITY_HIGH = CR2_CPOL;
+    }    // namespace Polarity
+
+    namespace Phase
+    {
+      static constexpr uint32_t PHASE_1EDGE = 0u;
+      static constexpr uint32_t PHASE_2EDGE = CR2_CPHA;
+    }    // namespace Phase
+
+    namespace LastBit
+    {
+      static constexpr uint32_t LASTBIT_DISABLE = 0u;
+      static constexpr uint32_t LASTBIT_ENABLE  = CR2_LBCL;
+    }    // namespace LastBit
+
+    namespace Nack
+    {
+      static constexpr uint32_t NACK_ENABLE  = CR3_NACK;
+      static constexpr uint32_t NACK_DISABLE = 0u;
+    }    // namespace Nack
+
+    namespace Flags
+    {
+      static constexpr uint32_t FLAG_TXE  = SR_TXE;
+      static constexpr uint32_t FLAG_TC   = SR_TC;
+      static constexpr uint32_t FLAG_RXNE = SR_RXNE;
+      static constexpr uint32_t FLAG_IDLE = SR_IDLE;
+      static constexpr uint32_t FLAG_ORE  = SR_ORE;
+      static constexpr uint32_t FLAG_NF   = SR_NF;
+      static constexpr uint32_t FLAG_FE   = SR_FE;
+      static constexpr uint32_t FLAG_PE   = SR_PE;
+    }    // namespace Flags
+  }
+  
+
+  /*------------------------------------------------
   Status Register
   ------------------------------------------------*/
   namespace SR

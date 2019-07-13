@@ -21,6 +21,9 @@
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
 
+
+
+
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
 
 namespace Thor::Driver::USART
@@ -34,6 +37,7 @@ namespace Thor::Driver::USART
    */
   static constexpr size_t DFLT_VECTOR_SIZE = 5;
 
+  static inline uint32_t deriveBaudRateConfig( const uint32_t desired );
 
   bool isUSART( const std::uintptr_t address )
   {
@@ -86,8 +90,8 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Ensure the clock is enabled otherwise the hardware is "dead"
     ------------------------------------------------*/
-    auto rcc = Thor::Driver::RCC::PeripheralController::get();
-    rcc->enableClock( peripheralType, resourceIndex );
+    auto rccPeriph = Thor::Driver::RCC::PeripheralController::get();
+    rccPeriph->enableClock( peripheralType, resourceIndex );
 
     /*------------------------------------------------
     Follow the initialization sequence as defined in RM0390 pg.801 
@@ -102,7 +106,7 @@ namespace Thor::Driver::USART
     CR2::STOP::set( periph, cfg.StopBits );
 
     /* Select the desired baud rate */
-    BRR::set( periph, cfg.BaudRate );
+    BRR::set( periph, deriveBaudRateConfig( cfg.BaudRate ) );
 
     /* Set the TE bit to send an idle frame as first transmission */
     CR1::TE::set( periph, CR1_TE );
@@ -221,6 +225,31 @@ namespace Thor::Driver::USART
   {
     return Chimera::Hardware::Status::PERIPHERAL_FREE;
   }
+
+
+  static inline uint32_t calculateBRR( const uint32_t pclk, const uint32_t baud )
+  {
+    /*------------------------------------------------
+    Taken directly from the STM32 HAL Macros
+    ------------------------------------------------*/
+    auto divisor          = ( 25u * pclk ) / ( 2u * baud );
+    auto mantissa_divisor = divisor / 100u;
+    auto fraction_divisor = ( ( divisor - ( mantissa_divisor * 100u ) ) * 16u + 50u ) / 100u;
+    auto brr_value        = ( mantissa_divisor << BRR_DIV_Mantissa_Pos ) | ( fraction_divisor & BRR_DIV_Fraction );
+
+    return brr_value;
+  }
+
+  static inline uint32_t deriveBaudRateConfig( const uint32_t desired )
+  {
+    auto rccSys      = Thor::Driver::RCC::SystemClock::get();
+    auto periphClock = rccSys->getPeriphClock( Chimera::Peripheral::Type::USART );
+    auto configVal   = calculateBRR( periphClock, desired );
+
+    return configVal;
+  }
+
+
 
 }    // namespace Thor::Driver::USART
 
