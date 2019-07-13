@@ -90,6 +90,8 @@ namespace Thor::Driver::USART
 
   private:
     RegisterMap *const periph;
+    size_t resourceIndex;
+    Chimera::Peripheral::Type peripheralType;
     std::vector<SemaphoreHandle_t *> rxCompleteListeners;
     std::vector<SemaphoreHandle_t *> txCompleteListeners;
   };

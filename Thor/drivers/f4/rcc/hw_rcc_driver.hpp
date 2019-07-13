@@ -133,7 +133,7 @@ namespace Thor::Driver::RCC
      *  @param[in]  address        Indicates which peripheral instance should be accessed
      *  @return Chimera::Status_t
      */
-    Chimera::Status_t reset( const std::uintptr_t address );
+    Chimera::Status_t reset( const Chimera::Peripheral::Type type, const size_t index );
 
     /**
      *  Enables the peripheral clock
@@ -141,7 +141,7 @@ namespace Thor::Driver::RCC
      *  @param[in]  address        Indicates which peripheral instance should be accessed
      *  @return Chimera::Status_t
      */
-    Chimera::Status_t enableClock( const std::uintptr_t address );
+    Chimera::Status_t enableClock( const Chimera::Peripheral::Type type, const size_t index );
 
     /**
      *  Disables the peripheral clock
@@ -149,7 +149,7 @@ namespace Thor::Driver::RCC
      *  @param[in]  address        Indicates which peripheral instance should be accessed
      *  @return Chimera::Status_t
      */
-    Chimera::Status_t disableClock( const std::uintptr_t address );
+    Chimera::Status_t disableClock( const Chimera::Peripheral::Type type, const size_t index );
 
     /**
      *  Enables the peripheral clock in low power mode
@@ -157,7 +157,7 @@ namespace Thor::Driver::RCC
      *  @param[in]  address        Indicates which peripheral instance should be accessed
      *  @return Chimera::Status_t
      */
-    Chimera::Status_t enableClockLowPower( const std::uintptr_t address );
+    Chimera::Status_t enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index );
 
     /**
      *  Disables the peripheral clock in low power mode
@@ -165,13 +165,10 @@ namespace Thor::Driver::RCC
      *  @param[in]  address        Indicates which peripheral instance should be accessed
      *  @return Chimera::Status_t
      */
-    Chimera::Status_t disableClockLowPower( const std::uintptr_t address );
+    Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index );
 
   private:
     PeripheralController();
-
-    Chimera::Peripheral::Type addressToType( const std::uintptr_t address );
-    size_t addressToIndex( const Chimera::Peripheral::Type type, const std::uintptr_t address );
   };
 
   using PeripheralController_sPtr = std::shared_ptr<PeripheralController>;

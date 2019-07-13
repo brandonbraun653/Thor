@@ -15,7 +15,9 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
+#include <Thor/drivers/f4/uart/hw_uart_mapping.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
+#include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
 
@@ -51,6 +53,18 @@ namespace Thor::Driver::USART
   Driver::Driver( RegisterMap *const peripheral ) :
       periph( peripheral ), rxCompleteListeners( DFLT_VECTOR_SIZE, nullptr ), txCompleteListeners( DFLT_VECTOR_SIZE, nullptr )
   {
+    auto address = reinterpret_cast<std::uintptr_t>( peripheral );
+
+    if ( isUSART( address ) )
+    {
+      peripheralType = Chimera::Peripheral::Type::USART;
+      resourceIndex  = Thor::Driver::USART::InstanceToResourceIndex.find( address )->second;
+    }
+    else
+    {
+      peripheralType = Chimera::Peripheral::Type::UART;
+      resourceIndex  = Thor::Driver::UART::InstanceToResourceIndex.find( address )->second;
+    }
   }
 
   Driver::~Driver()
@@ -73,7 +87,7 @@ namespace Thor::Driver::USART
     Ensure the clock is enabled otherwise the hardware is "dead"
     ------------------------------------------------*/
     auto rcc = Thor::Driver::RCC::PeripheralController::get();
-    rcc->enableClock( reinterpret_cast<std::uintptr_t>( periph ) );
+    rcc->enableClock( peripheralType, resourceIndex );
 
     /*------------------------------------------------
     Follow the initialization sequence as defined in RM0390 pg.801 
@@ -100,11 +114,9 @@ namespace Thor::Driver::USART
   Chimera::Status_t Driver::deinit()
   {
     auto rcc = Thor::Driver::RCC::PeripheralController::get();
-    auto address = reinterpret_cast<std::uintptr_t>( periph );
-
-    rcc->enableClock( address );
-    rcc->reset( address );
-    rcc->disableClock( address );
+    rcc->enableClock( peripheralType, resourceIndex );
+    rcc->reset( peripheralType, resourceIndex );
+    rcc->disableClock( peripheralType, resourceIndex );
 
     return Chimera::CommonStatusCodes::OK;
   }

@@ -10,6 +10,7 @@
 
 /* Chimera Includes */
 #include <Chimera/assert.hpp>
+#include <Chimera/types/peripheral_types.hpp>
 
 /* Driver Includes */
 #include <Thor/drivers/common/cortex-m4/utilities.hpp>
@@ -61,14 +62,18 @@ namespace Thor::Driver::GPIO
 
   void DriverBare::clockEnable()
   {
-    auto rcc = Thor::Driver::RCC::PeripheralController::get();
-    rcc->enableClock( reinterpret_cast<std::uintptr_t>( periph ) );
+    auto rcc   = Thor::Driver::RCC::PeripheralController::get();
+    auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
+
+    rcc->enableClock( Chimera::Peripheral::Type::GPIO, index );
   }
 
   void DriverBare::clockDisable()
   {
-    auto rcc = Thor::Driver::RCC::PeripheralController::get();
-    rcc->disableClock( reinterpret_cast<std::uintptr_t>( periph ) );
+    auto rcc   = Thor::Driver::RCC::PeripheralController::get();
+    auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
+
+    rcc->disableClock( Chimera::Peripheral::Type::GPIO, index );
   }
 
   Chimera::Status_t DriverBare::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout )

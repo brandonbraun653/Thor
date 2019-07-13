@@ -339,14 +339,11 @@ namespace Thor::Driver::RCC
     {
     }
 
-    Chimera::Status_t PeripheralController::reset( const std::uintptr_t address )
+    Chimera::Status_t PeripheralController::reset( const Chimera::Peripheral::Type type, const size_t index )
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto type        = addressToType( address );
-      auto index       = addressToIndex( type, address );
       auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clock );
-
       auto config    = lookupTable[ index ];
       uint32_t tmp   = *config.reg;
 
@@ -365,109 +362,48 @@ namespace Thor::Driver::RCC
       return result;
     }
 
-    Chimera::Status_t PeripheralController::enableClock( const std::uintptr_t address )
+    Chimera::Status_t PeripheralController::enableClock( const Chimera::Peripheral::Type type, const size_t index )
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto type        = addressToType( address );
-      auto index       = addressToIndex( type, address );
       auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clock );
-
       auto config = lookupTable[ index ];
       *config.reg |= config.mask;
 
       return result;
     }
 
-    Chimera::Status_t PeripheralController::disableClock( const std::uintptr_t address )
+    Chimera::Status_t PeripheralController::disableClock( const Chimera::Peripheral::Type type, const size_t index )
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto type        = addressToType( address );
-      auto index       = addressToIndex( type, address );
       auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clock );
-
       auto config = lookupTable[ index ];
       *config.reg &= ~config.mask;
 
       return result;
     }
 
-    Chimera::Status_t PeripheralController::enableClockLowPower( const std::uintptr_t address )
+    Chimera::Status_t PeripheralController::enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto type        = addressToType( address );
-      auto index       = addressToIndex( type, address );
       auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clockLP );
-
       auto config = lookupTable[ index ];
       *config.reg |= config.mask;
 
       return result;
     }
 
-    Chimera::Status_t PeripheralController::disableClockLowPower( const std::uintptr_t address )
+    Chimera::Status_t PeripheralController::disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto type       = addressToType( address );
-      auto index      = addressToIndex( type, address );
       auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clockLP );
-
       auto config = lookupTable[ index ];
       *config.reg &= ~config.mask;
 
       return result;
-    }
-
-    Chimera::Peripheral::Type PeripheralController::addressToType( const std::uintptr_t address )
-    {
-      // Probably could register function pointers to make this a bit easier
-
-      if ( Thor::Driver::GPIO::isGPIO( address ) ) {
-        return Chimera::Peripheral::Type::GPIO;
-      }
-
-      if ( Thor::Driver::UART::isUART( address ) )
-      {
-        return Chimera::Peripheral::Type::UART;
-      }
-
-      if ( Thor::Driver::USART::isUSART( address ) )
-      {
-        return Chimera::Peripheral::Type::USART;
-      }
-
-      return Chimera::Peripheral::Type::NUM_SUPPORTED_TYPES;
-    }
-
-    size_t PeripheralController::addressToIndex( const Chimera::Peripheral::Type type, const std::uintptr_t address )
-    {
-      using namespace Chimera::Peripheral;
-
-      size_t value = 0;
-
-      switch ( type )
-      {
-        case Type::GPIO:
-          value = Thor::Driver::GPIO::InstanceToResourceIndex.find( address )->second;
-          break;
-
-        case Type::UART:
-          value = Thor::Driver::UART::InstanceToResourceIndex.find( address )->second;
-          break;
-
-        case Type::USART:
-          value = Thor::Driver::USART::InstanceToResourceIndex.find( address )->second;
-          break;
-
-        default:
-          value = 0;
-          break;
-      }
-
-      return value;
     }
 
 
