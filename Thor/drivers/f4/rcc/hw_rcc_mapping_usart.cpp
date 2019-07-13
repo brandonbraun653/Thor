@@ -22,18 +22,18 @@ USART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_usart_mapping.hpp
    */
-  const ClockEnableConfig ClockConfig_USART[ usartTableSize ] = {
+  const RegisterConfig ClockConfig_USART[ usartTableSize ] = {
     /* USART1 */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2ENR ) ),
       APB2ENR_USART1EN },
     /* USART2 */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
       APB1ENR_USART2EN },
     /* USART3 */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
       APB1ENR_USART3EN },
     /* USART6 */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2ENR ) ),
       APB2ENR_USART6EN }
   };
 
@@ -42,18 +42,18 @@ USART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_usart_mapping.hpp
    */
-  const ClockEnableLowPowerConfig ClockConfigLP_USART[ usartTableSize ] = {
+  const RegisterConfig ClockConfigLP_USART[ usartTableSize ] = {
     /* USART1 */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2LPENR ) ),
       APB2LPENR_USART1LPEN },
     /* USART2 */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
       APB1LPENR_USART2LPEN },
     /* USART3 */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
       APB1LPENR_USART3LPEN },
     /* USART6 */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2LPENR ) ),
       APB2LPENR_USART6LPEN }
   };
 
@@ -62,18 +62,18 @@ USART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_usart_mapping.hpp
    */
-  const PeripheralResetConfig ResetConfig_USART[ usartTableSize ] = {
+  const RegisterConfig ResetConfig_USART[ usartTableSize ] = {
     /* USART1 */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2RSTR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2RSTR ) ),
       APB2RSTR_USART1RST },
     /* USART2 */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
       APB1RSTR_USART2RST },
     /* USART3 */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
       APB1RSTR_USART3RST },
     /* USART6 */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2RSTR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2RSTR ) ),
       APB2RSTR_USART6RST }
 
   };

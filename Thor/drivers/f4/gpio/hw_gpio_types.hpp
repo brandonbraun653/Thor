@@ -24,7 +24,7 @@
 
 namespace Thor::Driver::GPIO
 {
-  typedef struct
+  struct RegisterMap
   {
     volatile uint32_t MODER;    /**< GPIO port mode register,               Address offset: 0x00      */
     volatile uint32_t OTYPER;   /**< GPIO port output type register,        Address offset: 0x04      */
@@ -35,7 +35,7 @@ namespace Thor::Driver::GPIO
     volatile uint32_t BSRR;     /**< GPIO port bit set/reset register,      Address offset: 0x18      */
     volatile uint32_t LCKR;     /**< GPIO port configuration lock register, Address offset: 0x1C      */
     volatile uint32_t AFR[ 2 ]; /**< GPIO alternate function registers,     Address offset: 0x20-0x24 */
-  } RegisterMap;
+  };
 
   static volatile RegisterMap *const GPIOA_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOA_BASE_ADDR );
   static volatile RegisterMap *const GPIOB_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOB_BASE_ADDR );
@@ -113,6 +113,12 @@ namespace Thor::Driver::GPIO
     PULLDOWN = 0x02u  /**< Pull down activation */
   };
 
+  /**
+   *  Checks if the given address belongs to a peripheral instance
+   *
+   *  @return bool
+   */
+  bool isGPIO( const std::uintptr_t address );
 }    // namespace Thor::Driver::GPIO
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

@@ -169,6 +169,9 @@ namespace Thor::Driver::RCC
 
   private:
     PeripheralController();
+
+    Chimera::Peripheral::Type addressToType( const std::uintptr_t address );
+    size_t addressToIndex( const Chimera::Peripheral::Type type, const std::uintptr_t address );
   };
 
   using PeripheralController_sPtr = std::shared_ptr<PeripheralController>;

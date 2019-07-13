@@ -33,6 +33,12 @@ namespace Thor::Driver::GPIO
 
   static constexpr size_t NUM_GPIO_PERIPHS = 8;
 
+  static constexpr std::array<uint32_t, NUM_GPIO_PERIPHS> periphAddressList = { GPIOA_BASE_ADDR, GPIOB_BASE_ADDR,
+                                                                                GPIOC_BASE_ADDR, GPIOD_BASE_ADDR,
+                                                                                GPIOE_BASE_ADDR, GPIOF_BASE_ADDR,
+                                                                                GPIOG_BASE_ADDR, GPIOH_BASE_ADDR };
+
+
   /*------------------------------------------------
   Alternate Functions
   ------------------------------------------------*/
@@ -326,7 +332,7 @@ namespace Thor::Driver::GPIO
   ------------------------------------------------*/
   static constexpr uint32_t PUPDR_CFG_X_WID = 0x02u;
   static constexpr uint32_t PUPDR_CFG_X_MSK = 0x03u;
-  
+
   static constexpr uint32_t PUPDR_PUPD0_Pos  = ( 0U );
   static constexpr uint32_t PUPDR_PUPD0_Msk  = ( 0x3U << PUPDR_PUPD0_Pos );
   static constexpr uint32_t PUPDR_PUPD0      = PUPDR_PUPD0_Msk;
@@ -672,7 +678,7 @@ namespace Thor::Driver::GPIO
   ------------------------------------------------*/
   static constexpr uint32_t AFR_CFG_X_WID = 0x04u;
   static constexpr uint32_t AFR_CFG_X_MSK = 0x0Fu;
-  
+
   static constexpr uint32_t AFRL_AFSEL0_Pos = ( 0U );
   static constexpr uint32_t AFRL_AFSEL0_Msk = ( 0xFU << AFRL_AFSEL0_Pos );
   static constexpr uint32_t AFRL_AFSEL0     = AFRL_AFSEL0_Msk;
@@ -841,7 +847,7 @@ namespace Thor::Driver::GPIO
   static constexpr uint32_t BRR_BR15_Pos = ( 15U );
   static constexpr uint32_t BRR_BR15_Msk = ( 0x1U << BRR_BR15_Pos );
   static constexpr uint32_t BRR_BR15     = BRR_BR15_Msk;
-}
+}    // namespace Thor::Driver::GPIO
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_GPIO_REGISTER_HPP */

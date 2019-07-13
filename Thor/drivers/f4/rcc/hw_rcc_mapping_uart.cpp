@@ -22,12 +22,12 @@ UART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_uart_mapping.hpp
    */
-  const ClockEnableConfig ClockConfig_UART[ uartTableSize ] = {
+  const RegisterConfig ClockConfig_UART[ uartTableSize ] = {
     /* UART4 */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
       APB1ENR_UART4EN },
     /* UART5 */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1ENR ) ),
       APB1ENR_UART5EN }
   };
 
@@ -36,12 +36,12 @@ UART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_uart_mapping.hpp
    */
-  const ClockEnableLowPowerConfig ClockConfigLP_UART[ uartTableSize ] = {
+  const RegisterConfig ClockConfigLP_UART[ uartTableSize ] = {
     /* UART4 */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
       APB1LPENR_UART4LPEN },
     /* UART5 */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1LPENR ) ),
       APB1LPENR_UART5LPEN }
   };
 
@@ -50,12 +50,12 @@ UART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_uart_mapping.hpp
    */
-  const PeripheralResetConfig ResetConfig_UART[ uartTableSize ] = {
+  const RegisterConfig ResetConfig_UART[ uartTableSize ] = {
     /* UART4 */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
       APB1RSTR_UART4RST },
     /* UART5 */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB1RSTR ) ),
       APB1RSTR_UART5RST }
   };
 

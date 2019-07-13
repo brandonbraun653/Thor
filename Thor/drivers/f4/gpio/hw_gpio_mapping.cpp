@@ -81,6 +81,18 @@ namespace Thor::Driver::GPIO
     { Chimera::GPIO::Port::PORTH, GPIOH_PERIPH }
   };
 
+  const std::unordered_map<std::uintptr_t, size_t> InstanceToResourceIndex
+  {
+    { reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ), 0 },
+    { reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ), 1 },
+    { reinterpret_cast<std::uintptr_t>( GPIOC_PERIPH ), 2 },
+    { reinterpret_cast<std::uintptr_t>( GPIOD_PERIPH ), 3 },
+    { reinterpret_cast<std::uintptr_t>( GPIOE_PERIPH ), 4 },
+    { reinterpret_cast<std::uintptr_t>( GPIOF_PERIPH ), 5 },
+    { reinterpret_cast<std::uintptr_t>( GPIOG_PERIPH ), 6 },
+    { reinterpret_cast<std::uintptr_t>( GPIOH_PERIPH ), 7 }
+  };
+
   /* clang-format on */
 
 }    // namespace Thor::Driver::GPIO

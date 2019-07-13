@@ -60,6 +60,11 @@ namespace Thor::Driver::GPIO
    */
   extern const std::unordered_map<Chimera::GPIO::Port, decltype( GPIOA_PERIPH )> PortToInstanceMap;
 
+  /**
+   *  Maps a GPIO peripheral into the corresponding resource index
+   */
+  extern const std::unordered_map<std::uintptr_t, size_t> InstanceToResourceIndex;
+
 }    // namespace Thor::Driver::GPIO
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

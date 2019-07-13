@@ -33,6 +33,21 @@ namespace Thor::Driver::USART
   static constexpr size_t DFLT_VECTOR_SIZE = 5;
 
 
+  bool isUSART( const std::uintptr_t address )
+  {
+    bool result = false;
+
+    for ( auto &val : periphAddressList )
+    {
+      if ( val == address )
+      {
+        result = true;
+      }
+    }
+
+    return result;
+  }
+
   Driver::Driver( RegisterMap *const peripheral ) :
       periph( peripheral ), rxCompleteListeners( DFLT_VECTOR_SIZE, nullptr ), txCompleteListeners( DFLT_VECTOR_SIZE, nullptr )
   {

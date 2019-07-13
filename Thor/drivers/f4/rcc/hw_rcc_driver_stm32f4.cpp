@@ -341,99 +341,211 @@ namespace Thor::Driver::RCC
 
     Chimera::Status_t PeripheralController::reset( const std::uintptr_t address )
     {
+      Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+      auto type        = addressToType( address );
+      auto index       = addressToIndex( type, address );
+      auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clock );
+
+      auto config    = lookupTable[ index ];
+      uint32_t tmp   = *config.reg;
+
+      /*------------------------------------------------
+      Begin the reset operation
+      ------------------------------------------------*/
+      tmp |= config.mask;
+      *config.reg = tmp;
+
+      /*------------------------------------------------
+      Remove the reset flag as it is not cleared automatically by hardware
+      ------------------------------------------------*/
+      tmp &= ~config.mask;
+      *config.reg = tmp;
+
+      return result;
     }
 
     Chimera::Status_t PeripheralController::enableClock( const std::uintptr_t address )
     {
+      Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+      auto type        = addressToType( address );
+      auto index       = addressToIndex( type, address );
+      auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clock );
+
+      auto config = lookupTable[ index ];
+      *config.reg |= config.mask;
+
+      return result;
     }
 
     Chimera::Status_t PeripheralController::disableClock( const std::uintptr_t address )
     {
+      Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+      auto type        = addressToType( address );
+      auto index       = addressToIndex( type, address );
+      auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clock );
+
+      auto config = lookupTable[ index ];
+      *config.reg &= ~config.mask;
+
+      return result;
     }
 
     Chimera::Status_t PeripheralController::enableClockLowPower( const std::uintptr_t address )
     {
+      Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+      auto type        = addressToType( address );
+      auto index       = addressToIndex( type, address );
+      auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clockLP );
+
+      auto config = lookupTable[ index ];
+      *config.reg |= config.mask;
+
+      return result;
     }
 
     Chimera::Status_t PeripheralController::disableClockLowPower( const std::uintptr_t address )
     {
+      Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+      auto type       = addressToType( address );
+      auto index      = addressToIndex( type, address );
+      auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clockLP );
+
+      auto config = lookupTable[ index ];
+      *config.reg &= ~config.mask;
+
+      return result;
     }
 
-  /**
-   *  Configures the high speed external oscillator clock selection
-   *
-   *  @param[in]  init    Initialization configuration struct
-   *  @return Chimera::Status_t
-   */
-  static inline Chimera::Status_t HSEOscillatorConfig( const OscillatorInit *const init )
-  {
-    using namespace CFGR;
-    using namespace PLLCFGR;
-    using namespace CR;
-
-    const auto clockSource = SWS::get();
-    const auto pllSource   = SRC::get();
-
-    if ( ( clockSource == SWS::HSE ) || ( ( clockSource == SWS::PLL ) && ( pllSource == SRC::HSE ) ) )
+    Chimera::Peripheral::Type PeripheralController::addressToType( const std::uintptr_t address )
     {
-      /*------------------------------------------------
-      When HSE is used as system clock it will not be disabled.
-      ------------------------------------------------*/
-      if ( ( ( HSERDY::get() == locked ) || ( HSEON::get() == enabled ) ) && ( init->HSEState == HSEConfig::OFF ) )
-      {
-        return Chimera::CommonStatusCodes::FAIL;
+      // Probably could register function pointers to make this a bit easier
+
+      if ( Thor::Driver::GPIO::isGPIO( address ) ) {
+        return Chimera::Peripheral::Type::GPIO;
       }
-    }
-    else
-    {
-      /*------------------------------------------------
-      Set the appropriate flags to change the HSE state
-      ------------------------------------------------*/
-      switch ( init->HSEState )
+
+      if ( Thor::Driver::UART::isUART( address ) )
       {
-        case HSEConfig::ON:
-          RCC_PERIPH->CR |= CR_HSEON;
+        return Chimera::Peripheral::Type::UART;
+      }
+
+      if ( Thor::Driver::USART::isUSART( address ) )
+      {
+        return Chimera::Peripheral::Type::USART;
+      }
+
+      return Chimera::Peripheral::Type::NUM_SUPPORTED_TYPES;
+    }
+
+    size_t PeripheralController::addressToIndex( const Chimera::Peripheral::Type type, const std::uintptr_t address )
+    {
+      using namespace Chimera::Peripheral;
+
+      size_t value = 0;
+
+      switch ( type )
+      {
+        case Type::GPIO:
+          value = Thor::Driver::GPIO::InstanceToResourceIndex.find( address )->second;
           break;
 
-        case HSEConfig::BYPASS:
-          RCC_PERIPH->CR |= CR_HSEBYP;
-          RCC_PERIPH->CR |= CR_HSEON;
+        case Type::UART:
+          value = Thor::Driver::UART::InstanceToResourceIndex.find( address )->second;
+          break;
 
-        case HSEConfig::OFF:
+        case Type::USART:
+          value = Thor::Driver::USART::InstanceToResourceIndex.find( address )->second;
+          break;
+
         default:
-          RCC_PERIPH->CR &= ~CR_HSEON;
-          RCC_PERIPH->CR &= ~CR_HSEBYP;
+          value = 0;
           break;
       }
 
-      /*------------------------------------------------
-      Wait for the oscillator to achieve the desired state
-      ------------------------------------------------*/
-      auto tickstart = Chimera::millis();
+      return value;
+    }
 
-      if ( init->HSEState != HSEConfig::OFF )
+
+    /**
+     *  Configures the high speed external oscillator clock selection
+     *
+     *  @param[in]  init    Initialization configuration struct
+     *  @return Chimera::Status_t
+     */
+    static inline Chimera::Status_t HSEOscillatorConfig( const OscillatorInit *const init )
+    {
+      using namespace CFGR;
+      using namespace PLLCFGR;
+      using namespace CR;
+
+      const auto clockSource = SWS::get();
+      const auto pllSource   = SRC::get();
+
+      if ( ( clockSource == SWS::HSE ) || ( ( clockSource == SWS::PLL ) && ( pllSource == SRC::HSE ) ) )
       {
-        while ( ( HSERDY::get() == locked ) || ( HSEON::get() == disabled ) )
+        /*------------------------------------------------
+        When HSE is used as system clock it will not be disabled.
+        ------------------------------------------------*/
+        if ( ( ( HSERDY::get() == locked ) || ( HSEON::get() == enabled ) ) && ( init->HSEState == HSEConfig::OFF ) )
         {
-          if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
-          {
-            return Chimera::CommonStatusCodes::TIMEOUT;
-          }
+          return Chimera::CommonStatusCodes::FAIL;
         }
       }
       else
       {
-        while ( HSEON::get() != disabled )
+        /*------------------------------------------------
+        Set the appropriate flags to change the HSE state
+        ------------------------------------------------*/
+        switch ( init->HSEState )
         {
-          if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
+          case HSEConfig::ON:
+            RCC_PERIPH->CR |= CR_HSEON;
+            break;
+
+          case HSEConfig::BYPASS:
+            RCC_PERIPH->CR |= CR_HSEBYP;
+            RCC_PERIPH->CR |= CR_HSEON;
+
+          case HSEConfig::OFF:
+          default:
+            RCC_PERIPH->CR &= ~CR_HSEON;
+            RCC_PERIPH->CR &= ~CR_HSEBYP;
+            break;
+        }
+
+        /*------------------------------------------------
+        Wait for the oscillator to achieve the desired state
+        ------------------------------------------------*/
+        auto tickstart = Chimera::millis();
+
+        if ( init->HSEState != HSEConfig::OFF )
+        {
+          while ( ( HSERDY::get() == locked ) || ( HSEON::get() == disabled ) )
           {
-            return Chimera::CommonStatusCodes::TIMEOUT;
+            if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
+            {
+              return Chimera::CommonStatusCodes::TIMEOUT;
+            }
+          }
+        }
+        else
+        {
+          while ( HSEON::get() != disabled )
+          {
+            if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
+            {
+              return Chimera::CommonStatusCodes::TIMEOUT;
+            }
           }
         }
       }
-    }
 
-    return Chimera::CommonStatusCodes::OK;
+      return Chimera::CommonStatusCodes::OK;
   }
 
   /**

@@ -21,90 +21,90 @@ GPIO Peripheral RCC Configuration Resources
   /**
    *  GPIO clock enable register access lookup table
    */
-  const ClockEnableConfig ClockConfig_GPIO[ gpioTableSize ] = {
+  const RegisterConfig ClockConfig_GPIO[ gpioTableSize ] = {
     /* GPIOA */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1ENR_GPIOAEN },
     /* GPIOB */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1ENR_GPIOBEN },
     /* GPIOC */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1ENR_GPIOCEN },
     /* GPIOD */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1ENR_GPIODEN },
     /* GPIOE */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1ENR_GPIOEEN },
     /* GPIOF */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1ENR_GPIOFEN },
     /* GPIOG */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1ENR_GPIOGEN },
     /* GPIOH */
-    { reinterpret_cast<decltype( ClockEnableConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1ENR_GPIOHEN }
   };
 
   /**
    *  GPIO low power clock enable register access lookup table
    */
-  const ClockEnableLowPowerConfig ClockConfigLP_GPIO[ gpioTableSize ] = {
+  const RegisterConfig ClockConfigLP_GPIO[ gpioTableSize ] = {
     /* GPIOA */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
       AHB1LPENR_GPIOALPEN },
     /* GPIOB */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
       AHB1LPENR_GPIOBLPEN },
     /* GPIOC */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
       AHB1LPENR_GPIOCLPEN },
     /* GPIOD */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
       AHB1LPENR_GPIODLPEN },
     /* GPIOE */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
       AHB1LPENR_GPIOELPEN },
     /* GPIOF */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
       AHB1LPENR_GPIOFLPEN },
     /* GPIOG */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
       AHB1LPENR_GPIOGLPEN },
     /* GPIOH */
-    { reinterpret_cast<decltype( ClockEnableLowPowerConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1LPENR ) ),
       AHB1LPENR_GPIOHLPEN }
   };
 
   /**
    *  GPIO reset register access lookup table
    */
-  const PeripheralResetConfig ResetConfig_GPIO[ gpioTableSize ] = {
+  const RegisterConfig ResetConfig_GPIO[ gpioTableSize ] = {
     /* GPIOA */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1RSTR_GPIOARST },
     /* GPIOB */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1RSTR_GPIOBRST },
     /* GPIOC */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1RSTR_GPIOCRST },
     /* GPIOD */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1RSTR_GPIODRST },
     /* GPIOE */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1RSTR_GPIOERST },
     /* GPIOF */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1RSTR_GPIOFRST },
     /* GPIOG */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1RSTR_GPIOGRST },
     /* GPIOH */
-    { reinterpret_cast<decltype( PeripheralResetConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
+    { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, AHB1ENR ) ),
       AHB1RSTR_GPIOHRST }
   };
 

@@ -923,28 +923,10 @@ namespace Thor::Driver::RCC
   /**
    *  Configuration struct for the clock enable register
    */
-  struct ClockEnableConfig
+  struct RegisterConfig
   {
     volatile uint32_t *reg; /**< Clock enable register */
     uint32_t mask;          /**< Bit mask that will enable/disable the peripheral's clock */
-  };
-
-  /**
-   *  Configuration struct for the clock enable low power register
-   */
-  struct ClockEnableLowPowerConfig
-  {
-    volatile uint32_t *reg; /**< Clock enable low power register */
-    uint32_t mask;          /**< Bit mask that will enable/disable the peripheral's low power clock */
-  };
-
-  /**
-   *  Configuration struct for the peripheral reset register
-   */
-  struct PeripheralResetConfig
-  {
-    volatile uint32_t *reg; /**< Peripheral Reset Register */
-    uint32_t mask;          /**< Bit mask that will reset the peripheral */
   };
 }    // namespace Thor::Driver::RCC
 

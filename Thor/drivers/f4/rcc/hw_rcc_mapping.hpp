@@ -39,27 +39,27 @@ namespace Thor::Driver::RCC
      */
     static constexpr size_t gpioTableSize = Thor::Driver::GPIO::NUM_GPIO_PERIPHS;
 
-    extern const ClockEnableConfig ClockConfig_GPIO[ gpioTableSize ];
-    extern const ClockEnableLowPowerConfig ClockConfigLP_GPIO[ gpioTableSize ];
-    extern const PeripheralResetConfig ResetConfig_GPIO[ gpioTableSize ];
+    extern const RegisterConfig ClockConfig_GPIO[ gpioTableSize ];
+    extern const RegisterConfig ClockConfigLP_GPIO[ gpioTableSize ];
+    extern const RegisterConfig ResetConfig_GPIO[ gpioTableSize ];
 
     /**
      *  UART Peripheral Config Lookup Tables
      */
     static constexpr size_t uartTableSize = Thor::Driver::UART::NUM_UART_PERIPHS;
 
-    extern const ClockEnableConfig ClockConfig_UART[uartTableSize];
-    extern const ClockEnableLowPowerConfig ClockConfigLP_UART[uartTableSize];
-    extern const PeripheralResetConfig ResetConfig_UART[uartTableSize];
+    extern const RegisterConfig ClockConfig_UART[uartTableSize];
+    extern const RegisterConfig ClockConfigLP_UART[uartTableSize];
+    extern const RegisterConfig ResetConfig_UART[uartTableSize];
 
     /**
      *  USART Peripheral Config Lookup Tables
      */
     static constexpr size_t usartTableSize = Thor::Driver::USART::NUM_USART_PERIPHS;
     
-    extern const ClockEnableConfig ClockConfig_USART[usartTableSize];
-    extern const ClockEnableLowPowerConfig ClockConfigLP_USART[usartTableSize];
-    extern const PeripheralResetConfig ResetConfig_USART[usartTableSize ];
+    extern const RegisterConfig ClockConfig_USART[usartTableSize];
+    extern const RegisterConfig ClockConfigLP_USART[usartTableSize];
+    extern const RegisterConfig ResetConfig_USART[usartTableSize ];
   }
 
 }    // namespace Thor::Driver::RCC

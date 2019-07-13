@@ -12,9 +12,6 @@
 #ifndef THOR_HW_DRIVER_GPIO_HPP
 #define THOR_HW_DRIVER_GPIO_HPP
 
-/* C++ Includes */
-
-
 /* Chimera Includes */
 #include <Chimera/threading.hpp>
 #include <Chimera/types/common_types.hpp>
@@ -31,6 +28,7 @@
 
 namespace Thor::Driver::GPIO
 {
+
   class DriverBare : public Model
   {
   public:

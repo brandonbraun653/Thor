@@ -23,6 +23,21 @@
 
 namespace Thor::Driver::GPIO
 {
+  bool isGPIO( const std::uintptr_t address )
+  {
+    bool result = false;
+
+    for ( auto &val : periphAddressList )
+    {
+      if ( val == address )
+      {
+        result = true;
+      }
+    }
+
+    return result;
+  }
+
   /*-----------------------------------------------------
   Bare Metal Implementation
   -----------------------------------------------------*/
@@ -170,7 +185,7 @@ namespace Thor::Driver::GPIO
     return 0;
   }
 
-  
+
   /*-----------------------------------------------------
   Threaded Implementation
   -----------------------------------------------------*/
@@ -361,17 +376,14 @@ namespace Thor::Driver::GPIO
 
   void DriverAtomic::attach( volatile RegisterMap *const peripheral )
   {
-    
   }
 
   void DriverAtomic::clockEnable()
   {
-    
   }
 
   void DriverAtomic::clockDisable()
   {
-    
   }
 
   Chimera::Status_t DriverAtomic::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout )
@@ -409,7 +421,7 @@ namespace Thor::Driver::GPIO
     return 0;
   }
 
-  size_t DriverAtomic::speedGet( const uint8_t pin, const size_t timeout)
+  size_t DriverAtomic::speedGet( const uint8_t pin, const size_t timeout )
   {
     return 0;
   }

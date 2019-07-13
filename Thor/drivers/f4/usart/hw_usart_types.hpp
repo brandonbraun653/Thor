@@ -39,6 +39,13 @@ namespace Thor::Driver::USART
   static RegisterMap *const USART3_PERIPH = reinterpret_cast<RegisterMap *const>( USART3_BASE_ADDR );
   static RegisterMap *const USART6_PERIPH = reinterpret_cast<RegisterMap *const>( USART6_BASE_ADDR );
 
+  /**
+   *  Checks if the given address belongs to a peripheral instance
+   *
+   *  @return bool
+   */
+  bool isUSART( const std::uintptr_t address );
+
   /*------------------------------------------------
   Status Register
   ------------------------------------------------*/

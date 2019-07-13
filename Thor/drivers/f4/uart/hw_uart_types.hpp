@@ -32,6 +32,13 @@ namespace Thor::Driver::UART
   static RegisterMap *const UART4_PERIPH = reinterpret_cast<RegisterMap *const>( UART4_BASE_ADDR );
   static RegisterMap *const UART5_PERIPH = reinterpret_cast<RegisterMap *const>( UART5_BASE_ADDR );
 
+  /**
+   *  Checks if the given address belongs to a peripheral instance
+   *
+   *  @return bool
+   */
+  bool isUART( const std::uintptr_t address );
+
 }    // namespace Thor::Driver::UART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_UART */
