@@ -15,7 +15,6 @@
 
 /* C++ Includes */
 #include <array>
-#include <unordered_map>
 
 /* Chimera Includes */
 #include <Chimera/types/peripheral_types.hpp>
@@ -39,28 +38,40 @@ namespace Thor::Driver::RCC
      */
     static constexpr size_t gpioTableSize = Thor::Driver::GPIO::NUM_GPIO_PERIPHS;
 
-    extern const RegisterConfig ClockConfig_GPIO[ gpioTableSize ];
-    extern const RegisterConfig ClockConfigLP_GPIO[ gpioTableSize ];
-    extern const RegisterConfig ResetConfig_GPIO[ gpioTableSize ];
+    extern const PCC GPIOLookup;
+
+    extern const RegisterConfig GPIO_ClockConfig[ gpioTableSize ];
+    extern const RegisterConfig GPIO_ClockConfigLP[ gpioTableSize ];
+    extern const RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
+
+    extern const Configuration::ClockType_t GPIO_SourceClock[ gpioTableSize ];
 
     /**
      *  UART Peripheral Config Lookup Tables
      */
     static constexpr size_t uartTableSize = Thor::Driver::UART::NUM_UART_PERIPHS;
 
-    extern const RegisterConfig ClockConfig_UART[uartTableSize];
-    extern const RegisterConfig ClockConfigLP_UART[uartTableSize];
-    extern const RegisterConfig ResetConfig_UART[uartTableSize];
+    extern const PCC UARTLookup;
+
+    extern const RegisterConfig UART_ClockConfig[ uartTableSize ];
+    extern const RegisterConfig UART_ClockConfigLP[ uartTableSize ];
+    extern const RegisterConfig UART_ResetConfig[ uartTableSize ];
+
+    extern const Configuration::ClockType_t UART_SourceClock[ uartTableSize ];
 
     /**
      *  USART Peripheral Config Lookup Tables
      */
     static constexpr size_t usartTableSize = Thor::Driver::USART::NUM_USART_PERIPHS;
+
+    extern const PCC USARTLookup;
+
+    extern const RegisterConfig USART_ClockConfig[ usartTableSize ];
+    extern const RegisterConfig USART_ClockConfigLP[ usartTableSize ];
+    extern const RegisterConfig USART_ResetConfig[ usartTableSize ];
     
-    extern const RegisterConfig ClockConfig_USART[usartTableSize];
-    extern const RegisterConfig ClockConfigLP_USART[usartTableSize];
-    extern const RegisterConfig ResetConfig_USART[usartTableSize ];
-  }
+    extern const Configuration::ClockType_t USART_SourceClock[ usartTableSize ];
+  }    // namespace LookupTables
 
 }    // namespace Thor::Driver::RCC
 

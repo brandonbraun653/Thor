@@ -45,7 +45,7 @@ namespace Thor::Driver::RCC
   /**
    *  Lookup table for all RCC peripheral control registers.
    */
-  static std::array<PeriphCtrlRegisters, numPeriphs> controlRegisters;
+  static std::array<const PCC *, numPeriphs> periphLookupTables;
 
   /*------------------------------------------------
   Local Function Declarations
@@ -66,15 +66,22 @@ namespace Thor::Driver::RCC
   /*------------------------------------------------
   Default implementations of project level functions
   ------------------------------------------------*/
-  WEAKDECL size_t prjGetHSIValue()
+  WEAKDECL Chimera::Status_t prjGetHSIValue(size_t *const projectValue)
   {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    if ( projectValue )
+    {
+      *projectValue = 16000000u;
+    }
     /*------------------------------------------------
     Typical value of the high speed internal oscillator in Hz
     ------------------------------------------------*/
-    return 16000000u;
+
+    return ;
   }
 
-  WEAKDECL size_t prjGetHSEValue()
+  WEAKDECL Chimera::Status_t prjGetHSEValue(size_t *const projectValue)
   {
     /*------------------------------------------------
     Typical value of the high speed external oscillator in Hz
@@ -82,7 +89,7 @@ namespace Thor::Driver::RCC
     return 25000000u;
   }
 
-  WEAKDECL size_t prjGetLSIValue()
+  WEAKDECL Chimera::Status_t prjGetLSIValue(size_t *const projectValue)
   {
     /*------------------------------------------------
     Typical value of the low speed internal oscillator in Hz
@@ -90,7 +97,7 @@ namespace Thor::Driver::RCC
     return 32000u;
   }
 
-  WEAKDECL size_t prjGetSysClockFreq()
+  WEAKDECL Chimera::Status_t prjGetSysClockFreq(size_t *const projectValue)
   {
     size_t pllm = 0U, pllvco = 0U, pllp = 0U;
     size_t sysclockfreq = 0U;
@@ -137,7 +144,7 @@ namespace Thor::Driver::RCC
     return sysclockfreq;
   }
 
-  WEAKDECL OscillatorInit prjGetOscillatorConfig()
+  WEAKDECL Chimera::Status_t prjGetOscillatorConfig(OscillatorInit *const projectValue)
   {
     OscillatorInit config;
     memset( &config, 0, sizeof( OscillatorInit ) );
@@ -146,7 +153,7 @@ namespace Thor::Driver::RCC
     Let the initialization function know we are sending
     configuration data for the HSI & PLL clocks.
     ------------------------------------------------*/
-    config.source = OscillatorType::HSI | OscillatorType::PLLCLK;
+    config.source =  Configuration::OscillatorType::HSI |  Configuration::OscillatorType::PLLCLK;
 
     /*------------------------------------------------
     We don't care about these clocks
@@ -177,12 +184,12 @@ namespace Thor::Driver::RCC
     return config;
   }
 
-  WEAKDECL ClockInit prjGetClockConfig()
+  WEAKDECL Chimera::Status_t prjGetClockConfig(ClockInit *const projectValue)
   {
     ClockInit config;
     memset( &config, 0, sizeof( ClockInit ) );
 
-    config.clock          = ClockType::HCLK | ClockType::SYSCLK | ClockType::PCLK1 | ClockType::PCLK2;
+    config.clock          = Configuration::ClockType::HCLK | Configuration::ClockType::SYSCLK | Configuration::ClockType::PCLK1 | Configuration::ClockType::PCLK2;
     config.SYSCLKSource   = CFGR::SW::PLLCLK;
     config.AHBCLKDivider  = CFGR::HPRE::DIV1;
     config.APB1CLKDivider = CFGR::PPRE1::DIV4;
@@ -207,16 +214,11 @@ namespace Thor::Driver::RCC
       /*------------------------------------------------
       Register the lookup tables with the system
       ------------------------------------------------*/
-      memset( controlRegisters.data(), 0, sizeof( controlRegisters ) );
+      memset( periphLookupTables.data(), 0, sizeof( periphLookupTables ) );
 
-      controlRegisters[ static_cast<uint8_t>( Type::GPIO ) ] = { ClockConfig_GPIO, ClockConfigLP_GPIO, ResetConfig_GPIO,
-                                                                 gpioTableSize };
-
-      controlRegisters[ static_cast<uint8_t>( Type::UART ) ] = { ClockConfig_UART, ClockConfigLP_UART, ResetConfig_UART,
-                                                                 uartTableSize };
-
-      controlRegisters[ static_cast<uint8_t>( Type::USART ) ] = { ClockConfig_USART, ClockConfigLP_USART, ResetConfig_USART,
-                                                                  usartTableSize };
+      periphLookupTables[ static_cast<uint8_t>( Type::GPIO ) ] = &GPIOLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::UART ) ] = &UARTLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::USART ) ] = &USARTLookup;
 
       initialized = true;
     }
@@ -343,7 +345,7 @@ namespace Thor::Driver::RCC
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clock );
+      auto lookupTable = reinterpret_cast<const RegisterConfig *>( periphLookupTables[ static_cast<uint8_t>( type ) ]->reset );
       auto config    = lookupTable[ index ];
       uint32_t tmp   = *config.reg;
 
@@ -366,7 +368,7 @@ namespace Thor::Driver::RCC
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clock );
+      auto lookupTable = reinterpret_cast<const RegisterConfig *>( periphLookupTables[ static_cast<uint8_t>( type ) ]->clock );
       auto config = lookupTable[ index ];
       *config.reg |= config.mask;
 
@@ -377,7 +379,7 @@ namespace Thor::Driver::RCC
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clock );
+      auto lookupTable = reinterpret_cast<const RegisterConfig *>( periphLookupTables[ static_cast<uint8_t>( type ) ]->clock );
       auto config = lookupTable[ index ];
       *config.reg &= ~config.mask;
 
@@ -388,7 +390,7 @@ namespace Thor::Driver::RCC
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clockLP );
+      auto lookupTable = reinterpret_cast<const RegisterConfig *>( periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP );
       auto config = lookupTable[ index ];
       *config.reg |= config.mask;
 
@@ -399,7 +401,7 @@ namespace Thor::Driver::RCC
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto lookupTable = reinterpret_cast<const RegisterConfig *>( controlRegisters[ static_cast<uint8_t>( type ) ].clockLP );
+      auto lookupTable = reinterpret_cast<const RegisterConfig *>( periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP );
       auto config = lookupTable[ index ];
       *config.reg &= ~config.mask;
 
@@ -795,12 +797,12 @@ namespace Thor::Driver::RCC
     in order to ensure that we do not go through a non-spec phase
     whenever we decrease or increase HCLK.
     ------------------------------------------------*/
-    if ( ( init->clock & ClockType::PCLK1 ) == ClockType::PCLK1 )
+    if ( ( init->clock & Configuration::ClockType::PCLK1 ) == Configuration::ClockType::PCLK1 )
     {
       CFGR::PPRE1::set( CFGR::PPRE1::DIV16 );
     }
 
-    if ( ( init->clock & ClockType::PCLK2 ) == ClockType::PCLK2 )
+    if ( ( init->clock & Configuration::ClockType::PCLK2 ) == Configuration::ClockType::PCLK2 )
     {
       CFGR::PPRE2::set( CFGR::PPRE2::DIV16 );
     }
@@ -901,17 +903,17 @@ namespace Thor::Driver::RCC
     }
     else
     {
-      if ( ( init->source & OscillatorType::HSE ) == OscillatorType::HSE )
+      if ( ( init->source &  Configuration::OscillatorType::HSE ) ==  Configuration::OscillatorType::HSE )
       {
         HSEOscillatorConfig( init );
       }
 
-      if ( ( init->source & OscillatorType::HSI ) == OscillatorType::HSI )
+      if ( ( init->source &  Configuration::OscillatorType::HSI ) ==  Configuration::OscillatorType::HSI )
       {
         HSIOscillatorConfig( init );
       }
 
-      if ( ( init->source & OscillatorType::PLLCLK ) == OscillatorType::PLLCLK )
+      if ( ( init->source &  Configuration::OscillatorType::PLLCLK ) ==  Configuration::OscillatorType::PLLCLK )
       {
         PLLOscillatorConfig( init );
       }
@@ -936,22 +938,22 @@ namespace Thor::Driver::RCC
       Handle multiple clock configuration possibilities in the correct order.
       It may be ugly and innefficient, but this code does not run often.
       ------------------------------------------------*/
-      if ( ( init->clock & ClockType::HCLK ) == ClockType::HCLK )
+      if ( ( init->clock & Configuration::ClockType::HCLK ) == Configuration::ClockType::HCLK )
       {
         HCLKConfig( init );
       }
 
-      if ( ( init->clock & ClockType::SYSCLK ) == ClockType::SYSCLK )
+      if ( ( init->clock & Configuration::ClockType::SYSCLK ) == Configuration::ClockType::SYSCLK )
       {
         SYSCLKConfig( init );
       }
 
-      if ( ( init->clock & ClockType::PCLK1 ) == ClockType::PCLK1 )
+      if ( ( init->clock & Configuration::ClockType::PCLK1 ) == Configuration::ClockType::PCLK1 )
       {
         PCLK1Config( init );
       }
 
-      if ( ( init->clock & ClockType::PCLK2 ) == ClockType::PCLK2 )
+      if ( ( init->clock & Configuration::ClockType::PCLK2 ) == Configuration::ClockType::PCLK2 )
       {
         PCLK2Config( init );
       }

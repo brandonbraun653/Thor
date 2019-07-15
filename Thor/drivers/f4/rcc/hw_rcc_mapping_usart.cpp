@@ -22,7 +22,7 @@ USART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_usart_mapping.hpp
    */
-  const RegisterConfig ClockConfig_USART[ usartTableSize ] = {
+  const RegisterConfig USART_ClockConfig[ usartTableSize ] = {
     /* USART1 */
     { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2ENR ) ),
       APB2ENR_USART1EN },
@@ -42,7 +42,7 @@ USART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_usart_mapping.hpp
    */
-  const RegisterConfig ClockConfigLP_USART[ usartTableSize ] = {
+  const RegisterConfig USART_ClockConfigLP[ usartTableSize ] = {
     /* USART1 */
     { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2LPENR ) ),
       APB2LPENR_USART1LPEN },
@@ -62,7 +62,7 @@ USART Peripheral RCC Configuration Resources
    *
    *  @note Indexing must match the lookup table in hw_usart_mapping.hpp
    */
-  const RegisterConfig ResetConfig_USART[ usartTableSize ] = {
+  const RegisterConfig USART_ResetConfig[ usartTableSize ] = {
     /* USART1 */
     { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2RSTR ) ),
       APB2RSTR_USART1RST },
@@ -75,8 +75,25 @@ USART Peripheral RCC Configuration Resources
     /* USART6 */
     { reinterpret_cast<decltype( RegisterConfig::reg )>( RCC_BASE_ADDR + offsetof( RegisterMap, APB2RSTR ) ),
       APB2RSTR_USART6RST }
-
   };
+
+  /**
+   *  USART clocking bus source identifier
+   *
+   *  @note Indexing must match the lookup table in hw_usart_mapping.hpp
+   */
+  const Configuration::ClockType_t USART_SourceClock[ usartTableSize ] = {
+    /* USART1 */
+    Configuration::ClockType::PCLK2,
+    /* USART2 */
+    Configuration::ClockType::PCLK1,
+    /* USART3 */
+    Configuration::ClockType::PCLK1,
+    /* USART6 */
+    Configuration::ClockType::PCLK2
+  };
+
+  const PCC USARTLookup = { USART_ClockConfig, USART_ClockConfigLP, USART_ResetConfig, USART_SourceClock, usartTableSize };
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_USART */
 }    // namespace Thor::Driver::RCC::LookupTables

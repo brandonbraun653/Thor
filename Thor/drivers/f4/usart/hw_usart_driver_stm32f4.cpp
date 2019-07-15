@@ -15,7 +15,6 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
-#include <Thor/drivers/f4/uart/hw_uart_mapping.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
@@ -58,17 +57,8 @@ namespace Thor::Driver::USART
       periph( peripheral ), rxCompleteListeners( DFLT_VECTOR_SIZE, nullptr ), txCompleteListeners( DFLT_VECTOR_SIZE, nullptr )
   {
     auto address = reinterpret_cast<std::uintptr_t>( peripheral );
-
-    if ( isUSART( address ) )
-    {
-      peripheralType = Chimera::Peripheral::Type::USART;
-      resourceIndex  = Thor::Driver::USART::InstanceToResourceIndex.find( address )->second;
-    }
-    else
-    {
-      peripheralType = Chimera::Peripheral::Type::UART;
-      resourceIndex  = Thor::Driver::UART::InstanceToResourceIndex.find( address )->second;
-    }
+    peripheralType = Chimera::Peripheral::Type::USART;
+    resourceIndex  = Thor::Driver::USART::InstanceToResourceIndex.find( address )->second;
   }
 
   Driver::~Driver()

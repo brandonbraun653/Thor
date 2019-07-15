@@ -63,43 +63,40 @@ namespace Thor::Driver::RCC
 
   static RegisterMap *const RCC_PERIPH = reinterpret_cast<RegisterMap *const>( RCC_BASE_ADDR );
 
-  /**
-   *  Describes a generic set of registers for a peripheral type that
-   *  allow control of clocking and reset functionality.
-   */
-  struct PeriphCtrlRegisters
-  {
-    const void *clock;     /**< Standard clock configuration registers */
-    const void *clockLP;   /**< Low power clock configuration registers */
-    const void *reset;     /**< Peripheral reset registers*/
-    size_t elements; /**< Number of elements in the tables */
-  };
+  
 
-  /**
-   *  High level structure describing what kinds of clocks are available
-   *  to be used as a source for the System Clock.
-   */
-  using OscillatorType_t = uint32_t;
-  struct OscillatorType
+  /*------------------------------------------------
+  Configuration Options
+  ------------------------------------------------*/
+  namespace Configuration
   {
-    static constexpr OscillatorType_t HSE     = 1u;
-    static constexpr OscillatorType_t HSI     = 2u;
-    static constexpr OscillatorType_t PLLCLK  = 4u;
-    static constexpr OscillatorType_t PLLRCLK = 8u;
-  };
+    /**
+     *  High level structure describing what kinds of clocks are available
+     *  to be used as a source for the System Clock.
+     */
+    using OscillatorType_t = uint32_t;
+    namespace OscillatorType
+    {
+      static constexpr OscillatorType_t HSE     = 1u;
+      static constexpr OscillatorType_t HSI     = 2u;
+      static constexpr OscillatorType_t PLLCLK  = 4u;
+      static constexpr OscillatorType_t PLLRCLK = 8u;
+    }    // namespace OscillatorType
 
-  /**
-   *  High level structure describing what kinds of clocks are available
-   *  to be configured by the code.
-   */
-  using ClockType_t = uint32_t;
-  struct ClockType
-  {
-    static constexpr ClockType_t SYSCLK = 1u;
-    static constexpr ClockType_t HCLK   = 2u;
-    static constexpr ClockType_t PCLK1  = 4u;
-    static constexpr ClockType_t PCLK2  = 8u;
-  };
+    /**
+     *  High level structure describing what kinds of clocks are available
+     *  to be configured by the code.
+     */
+    using ClockType_t = uint32_t;
+    namespace ClockType
+    {
+      static constexpr ClockType_t SYSCLK = 1u;
+      static constexpr ClockType_t HCLK   = 2u;
+      static constexpr ClockType_t PCLK1  = 4u;
+      static constexpr ClockType_t PCLK2  = 8u;
+    }    // namespace ClockType
+  }      // namespace Configuration
+
 
   /*------------------------------------------------
   RCC_CR Register Interaction Model
@@ -416,8 +413,8 @@ namespace Thor::Driver::RCC
     {
       using SysOscSrc_t = uint32_t;
 
-      static constexpr SysOscSrc_t HSI  = CFGR_SW_HSI;
-      static constexpr SysOscSrc_t HSE  = CFGR_SW_HSE;
+      static constexpr SysOscSrc_t HSI     = CFGR_SW_HSI;
+      static constexpr SysOscSrc_t HSE     = CFGR_SW_HSE;
       static constexpr SysOscSrc_t PLLCLK  = CFGR_SW_PLL;
       static constexpr SysOscSrc_t PLLRCLK = CFGR_SW_PLLR;
 
@@ -898,11 +895,12 @@ namespace Thor::Driver::RCC
    */
   struct OscillatorInit
   {
-    OscillatorType_t source;      /**< The oscillators to be configured. Can be multiple values of OscillatorType  OR'd together */
-    uint32_t HSEState;            /**< The new state of the HSE. Can be value of CR::HSEConfig */
-    uint32_t LSEState;            /**< The new state of the LSE. */
-    uint32_t HSIState;            /**< The new state of the HSI. Can be value of CR::HSIConfig */
-    uint32_t LSIState;            /**< The new state of the LSI. */
+    Configuration::OscillatorType_t
+        source;        /**< The oscillators to be configured. Can be multiple values of OscillatorType  OR'd together */
+    uint32_t HSEState; /**< The new state of the HSE. Can be value of CR::HSEConfig */
+    uint32_t LSEState; /**< The new state of the LSE. */
+    uint32_t HSIState; /**< The new state of the HSI. Can be value of CR::HSIConfig */
+    uint32_t LSIState; /**< The new state of the LSI. */
     uint32_t HSICalibrationValue; /**< The HSI calibration trimming value */
     PLLInit PLL;                  /**< Main PLL initialization parameters */
   };
@@ -912,7 +910,7 @@ namespace Thor::Driver::RCC
    */
   struct ClockInit
   {
-    ClockType_t clock;                  /**< The clocks to be configured. Can be multiple values of ClockType OR'd together */
+    Configuration::ClockType_t clock;   /**< The clocks to be configured. Can be multiple values of ClockType OR'd together */
     CFGR::SW::SysOscSrc_t SYSCLKSource; /**< The system clock source (SYSCLKS)*/
     CFGR::HPRE::AHBPrescale_t AHBCLKDivider;    /**< The AHB clock (HCLK) divider */
     CFGR::PPRE1::APB1Prescale_t APB1CLKDivider; /**< The APB1 clock (PCLK1) divider */
@@ -927,6 +925,23 @@ namespace Thor::Driver::RCC
   {
     volatile uint32_t *reg; /**< Clock enable register */
     uint32_t mask;          /**< Bit mask that will enable/disable the peripheral's clock */
+  };
+
+  /**
+   *  Peripheral Control & Config (PCC)
+   *  Describes a generic set of registers and configurations for a 
+   *  peripheral type that allows the RCC driver to generically configure
+   *  a large number of peripherals by referencing these lookup tables.
+   *
+   *  @note All pointers here reference a lookup table
+   */
+  struct PCC
+  {
+    const RegisterConfig *clock;                   /**< Standard clock configuration registers */
+    const RegisterConfig *clockLP;                 /**< Low power clock configuration registers */
+    const RegisterConfig *reset;                   /**< Peripheral reset registers */
+    const Configuration::ClockType_t *clockSource; /**< Which system clock is used on the peripheral */
+    size_t elements;                               /**< Number of elements in the tables */
   };
 }    // namespace Thor::Driver::RCC
 

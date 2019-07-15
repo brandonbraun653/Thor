@@ -41,50 +41,62 @@ namespace Thor::Driver::RCC
    *  Project specific declaration of the default HSI oscillator frequency in Hz
    *
    *  @note Default implementation declared weak so projects can override
-   *  @return size_t
+   *
+   *  @param[out] projectValue    Will contain the project's value upon function exit
+   *  @return Chimera::Status_t
    */
-  size_t prjGetHSIValue();
+  Chimera::Status_t prjGetHSIValue( size_t *const projectValue );
 
   /**
    *  Project specific declaration of the default HSE oscillator frequency in Hz
    *
    *  @note Default implementation declared weak so projects can override
-   *  @return size_t
+   *
+   *  @param[out] projectValue    Will contain the project's value upon function exit
+   *  @return Chimera::Status_t
    */
-  size_t prjGetHSEValue();
+  Chimera::Status_t prjGetHSEValue( size_t *const projectValue );
 
   /**
    *  Project specific declaration of the default LSI oscillator frequency in Hz
    *
    *  @note Default implementation declared weak so projects can override
-   *  @return size_t
+   *
+   *  @param[out] projectValue    Will contain the project's value upon function exit
+   *  @return Chimera::Status_t
    */
-  size_t prjGetLSIValue();
+  Chimera::Status_t prjGetLSIValue( size_t *const projectValue );
 
   /**
    *  Project specific declaration of the algorithm used to determine what
    *  is the current system clock frequency.
    *
    *  @note Default implementation declared weak so projects can override
-   *  @return size_t
+   *
+   *  @param[out] projectValue    Will contain the project's value upon function exit
+   *  @return Chimera::Status_t
    */
-  size_t prjGetSysClockFreq();
+  Chimera::Status_t prjGetSysClockFreq( size_t *const projectValue );
 
   /**
    *  Project specific declaration of the oscillator configuration settings.
    *
    *  @note Default implementation declared weak so projects can override
-   *  @return OscillatorInit
+   *
+   *  @param[out] projectValue    Will contain the project's value upon function exit
+   *  @return Chimera::Status_t
    */
-  OscillatorInit prjGetOscillatorConfig();
+  Chimera::Status_t prjGetOscillatorConfig( OscillatorInit *const projectValue );
 
   /**
    *  Project specific declaration of the clock configuration settings.
    *
    *  @note Default implementation declared weak so projects can override
-   *  @return ClockInit
+   *
+   *  @param[out] projectValue    Will contain the project's value upon function exit
+   *  @return Chimera::Status_t
    */
-  ClockInit prjGetClockConfig();
+  Chimera::Status_t prjGetClockConfig( ClockInit *const projectValue );
 
   /**
    *  Singleton that allows the user to configure a chip's clock at a very high level.
