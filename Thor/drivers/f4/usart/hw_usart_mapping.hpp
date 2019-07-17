@@ -13,11 +13,9 @@
 #ifndef THOR_HW_USART_MAPPING_HPP
 #define THOR_HW_USART_MAPPING_HPP
 
-/* C++ Includes */
-#include <unordered_map>
-
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
@@ -27,7 +25,7 @@ namespace Thor::Driver::USART
   /**
    *  Maps a USART peripheral into the corresponding resource index
    */
-  extern const std::unordered_map<std::uintptr_t, size_t> InstanceToResourceIndex;
+  extern const Thor::Driver::RCC::ResourceMap_t InstanceToResourceIndex;
 
 }    // namespace Thor::Driver::USART
 

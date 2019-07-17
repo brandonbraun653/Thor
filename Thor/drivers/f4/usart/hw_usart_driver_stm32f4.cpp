@@ -12,6 +12,9 @@
 
 /* C++ Includes */
 
+/* Chimera Includes */
+#include <Chimera/chimera.hpp>
+
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
@@ -19,8 +22,6 @@
 #include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
-
-
 
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
@@ -36,7 +37,7 @@ namespace Thor::Driver::USART
    */
   static constexpr size_t DFLT_VECTOR_SIZE = 5;
 
-  static inline uint32_t deriveBaudRateConfig( const uint32_t desired );
+  static inline uint32_t deriveBaudRateConfig( const uint32_t desired, const std::uintptr_t address );
 
   bool isUSART( const std::uintptr_t address )
   {
@@ -57,7 +58,7 @@ namespace Thor::Driver::USART
       periph( peripheral ), rxCompleteListeners( DFLT_VECTOR_SIZE, nullptr ), txCompleteListeners( DFLT_VECTOR_SIZE, nullptr )
   {
     auto address = reinterpret_cast<std::uintptr_t>( peripheral );
-    peripheralType = Chimera::Peripheral::Type::USART;
+    peripheralType = Chimera::Peripheral::Type::PERIPH_USART;
     resourceIndex  = Thor::Driver::USART::InstanceToResourceIndex.find( address )->second;
   }
 
@@ -96,11 +97,10 @@ namespace Thor::Driver::USART
     CR2::STOP::set( periph, cfg.StopBits );
 
     /* Select the desired baud rate */
-    BRR::set( periph, deriveBaudRateConfig( cfg.BaudRate ) );
+    BRR::set( periph, deriveBaudRateConfig( cfg.BaudRate, reinterpret_cast<std::uintptr_t>( periph ) ) );
 
-    /* Set the TE bit to send an idle frame as first transmission */
+    /* Turn on the Transmitter */
     CR1::TE::set( periph, CR1_TE );
-
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -133,7 +133,47 @@ namespace Thor::Driver::USART
 
   Chimera::Status_t Driver::transmit( const uint8_t *const data, const size_t size, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    size_t startTime = Chimera::millis();
+
+    /*------------------------------------------------
+    Wait for the driver to signal it finished the last transfer
+    ------------------------------------------------*/
+    if ( waitUntilTimeout( Configuration::Flags::FLAG_TC, timeout ) )
+    {
+      return Chimera::CommonStatusCodes::TIMEOUT;
+    }
+
+
+    for ( size_t x = 0; x < size; x++ )
+    {
+      /*------------------------------------------------
+      Wait for hardware to signal data has transfered from
+      the TDR into the shift register.
+      ------------------------------------------------*/
+      startTime = Chimera::millis();
+
+      if ( waitUntilTimeout( Configuration::Flags::FLAG_TXE, timeout ) )
+      {
+        return Chimera::CommonStatusCodes::TIMEOUT;
+      }
+
+      /*------------------------------------------------
+      Write new data to the TDR
+      ------------------------------------------------*/
+      periph->DR = data[ x ];
+    }
+
+    /*------------------------------------------------
+    Wait for the driver to signal it finished the last transfer
+    ------------------------------------------------*/
+    if ( waitUntilTimeout( Configuration::Flags::FLAG_TC, timeout ) )
+    {
+      return Chimera::CommonStatusCodes::TIMEOUT;
+    }
+
+    return result;
   }
 
   Chimera::Status_t Driver::receive( uint8_t *const data, const size_t size, const size_t timeout )
@@ -216,6 +256,23 @@ namespace Thor::Driver::USART
     return Chimera::Hardware::Status::PERIPHERAL_FREE;
   }
 
+  bool Driver::waitUntilTimeout( const uint32_t flag, const size_t timeout )
+  {
+    uint32_t srVal   = SR::get( periph );
+    size_t startTime = Chimera::millis();
+
+    while ( !( srVal & flag ) )
+    {
+      srVal = SR::get( periph );
+
+      if ( ( Chimera::millis() - startTime ) > timeout )
+      {
+        return true;
+      }
+    } 
+
+    return false;
+  }
 
   static inline uint32_t calculateBRR( const uint32_t pclk, const uint32_t baud )
   {
@@ -230,16 +287,18 @@ namespace Thor::Driver::USART
     return brr_value;
   }
 
-  static inline uint32_t deriveBaudRateConfig( const uint32_t desired )
+  static inline uint32_t deriveBaudRateConfig( const uint32_t desired, const std::uintptr_t address )
   {
+    size_t periphClock = 0u;
+
     auto rccSys      = Thor::Driver::RCC::SystemClock::get();
-    auto periphClock = rccSys->getPeriphClock( Chimera::Peripheral::Type::USART );
+    rccSys->getPeriphClock( Chimera::Peripheral::Type::PERIPH_USART, address, &periphClock );
     auto configVal   = calculateBRR( periphClock, desired );
 
     return configVal;
   }
 
-
+  
 
 }    // namespace Thor::Driver::USART
 

@@ -26,9 +26,9 @@ namespace Thor::Driver::Mapping
    *  Maps a peripheral type into an index used to access peripheral specific resources.
    */
   static const std::unordered_map<Chimera::Peripheral::Type, uint8_t> PeriphTypeToIterator{
-    { Chimera::Peripheral::Type::GPIO,  0u },
-    { Chimera::Peripheral::Type::UART,  1u },
-    { Chimera::Peripheral::Type::USART, 2u },
+    { Chimera::Peripheral::Type::PERIPH_GPIO,  0u },
+    { Chimera::Peripheral::Type::PERIPH_UART,  1u },
+    { Chimera::Peripheral::Type::PERIPH_USART, 2u },
   };
 
   /* clang-format on */

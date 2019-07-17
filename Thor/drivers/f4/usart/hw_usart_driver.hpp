@@ -94,6 +94,8 @@ namespace Thor::Driver::USART
     Chimera::Peripheral::Type peripheralType;
     std::vector<SemaphoreHandle_t *> rxCompleteListeners;
     std::vector<SemaphoreHandle_t *> txCompleteListeners;
+
+    bool waitUntilTimeout( const uint32_t flag, const size_t timeout );
   };
 }    // namespace Thor::Driver::USART
 

@@ -66,137 +66,225 @@ namespace Thor::Driver::RCC
   /*------------------------------------------------
   Default implementations of project level functions
   ------------------------------------------------*/
-  WEAKDECL Chimera::Status_t prjGetHSIValue(size_t *const projectValue)
+  WEAKDECL Chimera::Status_t prjGetHSIValue( size_t *const projectValue )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
-    if ( projectValue )
-    {
-      *projectValue = 16000000u;
-    }
     /*------------------------------------------------
     Typical value of the high speed internal oscillator in Hz
     ------------------------------------------------*/
-
-    return ;
-  }
-
-  WEAKDECL Chimera::Status_t prjGetHSEValue(size_t *const projectValue)
-  {
-    /*------------------------------------------------
-    Typical value of the high speed external oscillator in Hz
-    ------------------------------------------------*/
-    return 25000000u;
-  }
-
-  WEAKDECL Chimera::Status_t prjGetLSIValue(size_t *const projectValue)
-  {
-    /*------------------------------------------------
-    Typical value of the low speed internal oscillator in Hz
-    ------------------------------------------------*/
-    return 32000u;
-  }
-
-  WEAKDECL Chimera::Status_t prjGetSysClockFreq(size_t *const projectValue)
-  {
-    size_t pllm = 0U, pllvco = 0U, pllp = 0U;
-    size_t sysclockfreq = 0U;
-
-    const auto HSI_VALUE = prjGetHSIValue();
-    const auto HSE_VALUE = prjGetHSEValue();
-
-    switch ( CFGR::SWS::get() )
+    if ( projectValue )
     {
-      case CFGR::SWS::HSI:
-        sysclockfreq = HSI_VALUE;
-        break;
-
-      case CFGR::SWS::HSE:
-        sysclockfreq = HSE_VALUE;
-        break;
-
-      case CFGR::SWS::PLL:
-        pllm = PLLCFGR::M::get();
-
-        if ( PLLCFGR::SRC::get() == PLLCFGR::SRC::HSE )
-        {
-          pllvco = static_cast<size_t>(
-              ( ( static_cast<uint64_t>( HSE_VALUE ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
-              static_cast<uint64_t>( pllm ) );
-        }
-        else
-        {
-          pllvco = static_cast<size_t>(
-              ( ( static_cast<uint64_t>( HSI_VALUE ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
-              static_cast<uint64_t>( pllm ) );
-        }
-
-        pllp = ( ( ( PLLCFGR::P::get() >> PLLCFGR_PLLP_Pos ) + 1U ) * 2U );
-
-        sysclockfreq = pllvco / pllp;
-        break;
-
-      default:
-        sysclockfreq = HSI_VALUE;
-        break;
+      *projectValue = 16000000u;
+      result        = Chimera::CommonStatusCodes::OK;
     }
 
-    return sysclockfreq;
+    return result;
   }
 
-  WEAKDECL Chimera::Status_t prjGetOscillatorConfig(OscillatorInit *const projectValue)
+  WEAKDECL Chimera::Status_t prjGetHSEValue( size_t *const projectValue )
   {
-    OscillatorInit config;
-    memset( &config, 0, sizeof( OscillatorInit ) );
+    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
     /*------------------------------------------------
-    Let the initialization function know we are sending
-    configuration data for the HSI & PLL clocks.
+    Typical value of the high speed internal oscillator in Hz
     ------------------------------------------------*/
-    config.source =  Configuration::OscillatorType::HSI |  Configuration::OscillatorType::PLLCLK;
+    if ( projectValue )
+    {
+      *projectValue = 25000000u;
+      result        = Chimera::CommonStatusCodes::OK;
+    }
 
-    /*------------------------------------------------
-    We don't care about these clocks
-    ------------------------------------------------*/
-    config.HSEState = CR::HSEConfig::OFF;
-    config.LSIState = CSR::LSIConfig::OFF;
-    config.LSEState = BDCR::LSEConfig::OFF;
-
-    /*------------------------------------------------
-    Turn on the internal high speed RC oscillator
-    ------------------------------------------------*/
-    config.HSIState            = CR::HSIConfig::ON;
-    config.HSICalibrationValue = 16;
-
-    /*------------------------------------------------
-    Turn on the PLL and give it an input clock from the HSI.
-    These settings will configure the PLL to output a
-    128 MHz clock signal.
-    ------------------------------------------------*/
-    config.PLL.State  = CR::PLLConfig::ON;
-    config.PLL.Source = PLLCFGR::SRC::HSI;
-    config.PLL.M      = 8;
-    config.PLL.N      = 128;
-    config.PLL.P      = CR::PLLDiv::DIV2;
-    config.PLL.Q      = 2;
-    config.PLL.R      = 2;
-
-    return config;
+    return result;
   }
 
-  WEAKDECL Chimera::Status_t prjGetClockConfig(ClockInit *const projectValue)
+  WEAKDECL Chimera::Status_t prjGetLSIValue( size_t *const projectValue )
   {
-    ClockInit config;
-    memset( &config, 0, sizeof( ClockInit ) );
+    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
-    config.clock          = Configuration::ClockType::HCLK | Configuration::ClockType::SYSCLK | Configuration::ClockType::PCLK1 | Configuration::ClockType::PCLK2;
-    config.SYSCLKSource   = CFGR::SW::PLLCLK;
-    config.AHBCLKDivider  = CFGR::HPRE::DIV1;
-    config.APB1CLKDivider = CFGR::PPRE1::DIV4;
-    config.APB2CLKDivider = CFGR::PPRE2::DIV2;
-    config.FlashLatency   = 4;
+    /*------------------------------------------------
+    Typical value of the high speed internal oscillator in Hz
+    ------------------------------------------------*/
+    if ( projectValue )
+    {
+      *projectValue = 32000u;
+      result        = Chimera::CommonStatusCodes::OK;
+    }
 
-    return config;
+    return result;
+  }
+
+  WEAKDECL Chimera::Status_t prjGetSysClockFreq( size_t *const projectValue )
+  {
+    const Chimera::Status_t prjResult = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result          = Chimera::CommonStatusCodes::FAIL;
+    size_t pllm                       = 0u;
+    size_t pllvco                     = 0u;
+    size_t pllp                       = 0u;
+    size_t sysclockfreq               = 0u;
+    size_t hsiValue                   = 0u;
+    size_t hseValue                   = 0u;
+
+    if ( projectValue && ( prjGetHSIValue( &hsiValue ) == prjResult ) && ( prjGetHSEValue( &hseValue ) == prjResult ) )
+    {
+      switch ( CFGR::SWS::get() )
+      {
+        case CFGR::SWS::HSI:
+          sysclockfreq = hsiValue;
+          break;
+
+        case CFGR::SWS::HSE:
+          sysclockfreq = hseValue;
+          break;
+
+        case CFGR::SWS::PLL:
+          pllm = PLLCFGR::M::get();
+
+          if ( PLLCFGR::SRC::get() == PLLCFGR::SRC::HSE )
+          {
+            pllvco = static_cast<size_t>(
+                ( ( static_cast<uint64_t>( hseValue ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
+                static_cast<uint64_t>( pllm ) );
+          }
+          else
+          {
+            pllvco = static_cast<size_t>(
+                ( ( static_cast<uint64_t>( hsiValue ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
+                static_cast<uint64_t>( pllm ) );
+          }
+
+          pllp = ( ( ( PLLCFGR::P::get() >> PLLCFGR_PLLP_Pos ) + 1U ) * 2U );
+
+          sysclockfreq = pllvco / pllp;
+          break;
+
+        default:
+          sysclockfreq = hsiValue;
+          break;
+      }
+
+      *projectValue = sysclockfreq;
+      result        = Chimera::CommonStatusCodes::OK;
+    }
+
+    return result;
+  }
+
+  WEAKDECL Chimera::Status_t prjGetHCLKFreq( size_t *const projectValue )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+
+    if ( projectValue )
+    {
+      *projectValue = SystemCoreClock;
+      result        = Chimera::CommonStatusCodes::OK;
+    }
+
+    return result;
+  }
+
+  WEAKDECL Chimera::Status_t prjGetPCLK1Freq( size_t *const projectValue )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+
+    if ( projectValue )
+    {
+      size_t hclk = 0u;
+      prjGetHCLKFreq( &hclk );
+
+      *projectValue = hclk >> APBPrescTable[ ( RCC_PERIPH->CFGR & CFGR_PPRE1 ) >> CFGR_PPRE1_Pos ];
+      result        = Chimera::CommonStatusCodes::OK;
+    }
+
+    return result;
+  }
+
+  WEAKDECL Chimera::Status_t prjGetPCLK2Freq( size_t *const projectValue )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+
+    if ( projectValue )
+    {
+      size_t hclk = 0u;
+      prjGetHCLKFreq( &hclk );
+
+      *projectValue = hclk >> APBPrescTable[ ( RCC_PERIPH->CFGR & CFGR_PPRE2 ) >> CFGR_PPRE2_Pos ];
+      result        = Chimera::CommonStatusCodes::OK;
+    }
+
+    return result;
+  }
+
+  WEAKDECL Chimera::Status_t prjGetOscillatorConfig( OscillatorInit *const projectValue )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+
+    if ( projectValue )
+    {
+      OscillatorInit config;
+      memset( &config, 0, sizeof( OscillatorInit ) );
+
+      /*------------------------------------------------
+      Let the initialization function know we are sending
+      configuration data for the HSI & PLL clocks.
+      ------------------------------------------------*/
+      config.source = Configuration::OscillatorType::HSI | Configuration::OscillatorType::PLLCLK;
+
+      /*------------------------------------------------
+      We don't care about these clocks
+      ------------------------------------------------*/
+      config.HSEState = CR::HSEConfig::OFF;
+      config.LSIState = CSR::LSIConfig::OFF;
+      config.LSEState = BDCR::LSEConfig::OFF;
+
+      /*------------------------------------------------
+      Turn on the internal high speed RC oscillator
+      ------------------------------------------------*/
+      config.HSIState            = CR::HSIConfig::ON;
+      config.HSICalibrationValue = 16;
+
+      /*------------------------------------------------
+      Turn on the PLL and give it an input clock from the HSI.
+      These settings will configure the PLL to output a
+      128 MHz clock signal.
+      ------------------------------------------------*/
+      config.PLL.State  = CR::PLLConfig::ON;
+      config.PLL.Source = PLLCFGR::SRC::HSI;
+      config.PLL.M      = 8;
+      config.PLL.N      = 128;
+      config.PLL.P      = CR::PLLDiv::DIV2;
+      config.PLL.Q      = 2;
+      config.PLL.R      = 2;
+
+      memcpy( projectValue, &config, sizeof( OscillatorInit ) );
+      result = Chimera::CommonStatusCodes::OK;
+    }
+
+    return result;
+  }
+
+  WEAKDECL Chimera::Status_t prjGetClockConfig( ClockInit *const projectValue )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+
+    if ( projectValue )
+    {
+      ClockInit config;
+      memset( &config, 0, sizeof( ClockInit ) );
+
+      config.clock = Configuration::ClockType::HCLK | Configuration::ClockType::SYSCLK | Configuration::ClockType::PCLK1 |
+                     Configuration::ClockType::PCLK2;
+      config.SYSCLKSource   = CFGR::SW::PLLCLK;
+      config.AHBCLKDivider  = CFGR::HPRE::DIV1;
+      config.APB1CLKDivider = CFGR::PPRE1::DIV4;
+      config.APB2CLKDivider = CFGR::PPRE2::DIV2;
+      config.FlashLatency   = 4;
+
+      memcpy( projectValue, &config, sizeof( ClockInit ) );
+      result = Chimera::CommonStatusCodes::OK;
+    }
+
+    return result;
   }
 
   /*------------------------------------------------
@@ -216,9 +304,9 @@ namespace Thor::Driver::RCC
       ------------------------------------------------*/
       memset( periphLookupTables.data(), 0, sizeof( periphLookupTables ) );
 
-      periphLookupTables[ static_cast<uint8_t>( Type::GPIO ) ] = &GPIOLookup;
-      periphLookupTables[ static_cast<uint8_t>( Type::UART ) ] = &UARTLookup;
-      periphLookupTables[ static_cast<uint8_t>( Type::USART ) ] = &USARTLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ] = &GPIOLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ] = &UARTLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USART ) ] = &USARTLookup;
 
       initialized = true;
     }
@@ -253,6 +341,7 @@ namespace Thor::Driver::RCC
       using namespace Thor::Driver;
 
       Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+      const Chimera::Status_t prjResult = Chimera::CommonStatusCodes::OK;
 
       /*------------------------------------------------
       Turn on the main internal regulator output voltage
@@ -265,16 +354,23 @@ namespace Thor::Driver::RCC
       PWR::CR::VOS::set( PWR::CR::VOS::VOLTAGE_SCALE_1 );
 
       /*------------------------------------------------
-      Initialize the clock source drivers
+      Configure the system clocks
       ------------------------------------------------*/
-      auto oscCfg = prjGetOscillatorConfig();
-      result      = OscillatorConfig( &oscCfg );
+      ClockInit clkCfg;
+      OscillatorInit oscCfg;
 
-      /*------------------------------------------------
-      Initializes the CPU, AHB, and APB bus clocks
-      ------------------------------------------------*/
-      auto clkCfg = prjGetClockConfig();
-      result      = ClockConfig( &clkCfg );
+      if ( ( prjGetOscillatorConfig( &oscCfg ) == prjResult ) && ( prjGetClockConfig(&clkCfg) == prjResult )) 
+      {
+        /*------------------------------------------------
+        Initialize the oscillators which drive the system clocks
+        ------------------------------------------------*/
+        result = OscillatorConfig( &oscCfg );
+
+        /*------------------------------------------------
+        Initializes the CPU, AHB, and APB bus clocks
+        ------------------------------------------------*/
+        result = ClockConfig( &clkCfg );
+      }
 
       return result;
     }
@@ -297,21 +393,55 @@ namespace Thor::Driver::RCC
       return result;
     }
 
-    size_t SystemClock::getCoreClock()
+    Chimera::Status_t SystemClock::getClockFrequency( const Configuration::ClockType_t clock, size_t *const freqHz )
     {
-      return prjGetSysClockFreq();
+      Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+
+      if ( freqHz ) 
+      {
+        switch ( clock )
+        {
+          case Configuration::ClockType::HCLK:
+            result = prjGetHCLKFreq( freqHz );
+            break;
+
+          case Configuration::ClockType::PCLK1:
+            result = prjGetPCLK1Freq( freqHz );
+            break;
+
+          case Configuration::ClockType::PCLK2:
+            result = prjGetPCLK2Freq( freqHz );
+            break;
+
+          case Configuration::ClockType::SYSCLK:
+            result = prjGetSysClockFreq( freqHz );
+            break;
+
+          default:
+            // result = Chimera::CommonStatusCodes::FAIL;
+            break;
+        }
+      }
+
+      return result;
     }
 
-    Thor::Clock::Source SystemClock::getCoreClockSource()
+    Chimera::Status_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz )
     {
-      // TODO
-      return Thor::Clock::Source::CSI;
-    }
+      Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
-    size_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph )
-    {
-      // TODO
-      return 0;
+      auto clockLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->clockSource;
+      auto indexLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->resourceIndexMap;
+
+      if ( freqHz && clockLookupTable  && indexLookupTable )
+      {
+        auto index       = indexLookupTable->find( address )->second;
+        auto sourceClock = clockLookupTable[ index ];
+
+        result = getClockFrequency( sourceClock, freqHz );
+      }
+
+      return result;
     }
 
     /*------------------------------------------------
@@ -345,9 +475,9 @@ namespace Thor::Driver::RCC
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto lookupTable = reinterpret_cast<const RegisterConfig *>( periphLookupTables[ static_cast<uint8_t>( type ) ]->reset );
-      auto config    = lookupTable[ index ];
-      uint32_t tmp   = *config.reg;
+      auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->reset;
+      auto config      = lookupTable[ index ];
+      uint32_t tmp     = *config.reg;
 
       /*------------------------------------------------
       Begin the reset operation
@@ -368,7 +498,7 @@ namespace Thor::Driver::RCC
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto lookupTable = reinterpret_cast<const RegisterConfig *>( periphLookupTables[ static_cast<uint8_t>( type ) ]->clock );
+      auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
       auto config = lookupTable[ index ];
       *config.reg |= config.mask;
 
@@ -379,7 +509,7 @@ namespace Thor::Driver::RCC
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto lookupTable = reinterpret_cast<const RegisterConfig *>( periphLookupTables[ static_cast<uint8_t>( type ) ]->clock );
+      auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
       auto config = lookupTable[ index ];
       *config.reg &= ~config.mask;
 
@@ -390,7 +520,7 @@ namespace Thor::Driver::RCC
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto lookupTable = reinterpret_cast<const RegisterConfig *>( periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP );
+      auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
       auto config = lookupTable[ index ];
       *config.reg |= config.mask;
 
@@ -401,7 +531,7 @@ namespace Thor::Driver::RCC
     {
       Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-      auto lookupTable = reinterpret_cast<const RegisterConfig *>( periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP );
+      auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
       auto config = lookupTable[ index ];
       *config.reg &= ~config.mask;
 
@@ -958,14 +1088,14 @@ namespace Thor::Driver::RCC
         PCLK2Config( init );
       }
 
-      /* Update the SystemCoreClock global variable */
-      SystemCoreClock = prjGetSysClockFreq();
+      /* Update the SystemCoreClock global variable. FreeRTOS defines this as uint32_t, so make
+         sure that our sizing matches otherwise we might run into addressing issues. */
+      static_assert( sizeof( uint32_t ) == sizeof( size_t ), "" );
+      prjGetSysClockFreq( reinterpret_cast<size_t *>( &SystemCoreClock ) );
     }
 
     return result;
   }
-
-
 }    // namespace Thor::Driver::RCC
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */

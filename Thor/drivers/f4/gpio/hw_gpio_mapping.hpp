@@ -13,13 +13,12 @@
 #ifndef THOR_HW_GPIO_MAPPING_HPP
 #define THOR_HW_GPIO_MAPPING_HPP
 
-/* C++ Includes */
-#include <unordered_map>
-
 /* Chimera Includes */
 #include <Chimera/types/gpio_types.hpp>
 
 /* Driver Includes */
+#include <Thor/headers.hpp>
+#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_types.hpp>
 #include <Thor/drivers/common/types/gpio_types.hpp>
 
@@ -63,7 +62,7 @@ namespace Thor::Driver::GPIO
   /**
    *  Maps a GPIO peripheral into the corresponding resource index
    */
-  extern const std::unordered_map<std::uintptr_t, size_t> InstanceToResourceIndex;
+  extern const Thor::Driver::RCC::ResourceMap_t InstanceToResourceIndex;
 
 }    // namespace Thor::Driver::GPIO
 

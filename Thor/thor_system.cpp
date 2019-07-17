@@ -53,8 +53,6 @@ namespace Chimera::System
     auto sys = Thor::Driver::RCC::SystemClock::get();
     sys->configureProjectClocks();
 
-    volatile auto tmp = sys->getCoreClock();
-
     return Chimera::CommonStatusCodes::OK;
   }
 }

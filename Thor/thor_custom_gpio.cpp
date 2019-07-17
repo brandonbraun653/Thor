@@ -57,7 +57,7 @@ namespace Thor::GPIO
     
     driver->attach( PortToInstanceMap.find( pinInit.port )->second );
 
-    setMode( pinInit.drive, pinInit.pull, timeout );
+    result = setMode( pinInit.drive, pinInit.pull, timeout );
 
     return result;
   }
@@ -69,11 +69,22 @@ namespace Thor::GPIO
 
   Chimera::Status_t GPIOClass::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull, const size_t timeout )
   {
+    /*------------------------------------------------
+    Set the basic IO mode type
+    ------------------------------------------------*/
     auto result = driver->driveSet( initSettings.pin, drive, timeout );
 
-    if ( result == Chimera::CommonStatusCodes::OK )
+    /*------------------------------------------------
+    Configure the pullup/pulldown resistors
+    ------------------------------------------------*/
+    result |= driver->pullSet( initSettings.pin, pull, timeout );
+
+    /*------------------------------------------------
+    Configure the alternate function options
+    ------------------------------------------------*/
+    if ( ( drive == Chimera::GPIO::Drive::ALTERNATE_OPEN_DRAIN ) || ( drive == Chimera::GPIO::Drive::ALTERNATE_PUSH_PULL ) ) 
     {
-      result = driver->pullSet( initSettings.pin, pull, timeout );
+      result |= driver->alternateFunctionSet( initSettings.pin, initSettings.alternate, timeout );
     }
 
     return result;

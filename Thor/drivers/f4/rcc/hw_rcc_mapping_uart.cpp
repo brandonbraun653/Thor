@@ -10,6 +10,7 @@
 
 /* Driver Includes */
 #include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
+#include <Thor/drivers/f4/uart/hw_uart_mapping.hpp>
 
 namespace Thor::Driver::RCC::LookupTables
 {
@@ -71,7 +72,7 @@ UART Peripheral RCC Configuration Resources
     Configuration::ClockType::PCLK1
   };
 
-  const PCC UARTLookup = { UART_ClockConfig, UART_ClockConfigLP, UART_ResetConfig, UART_SourceClock, uartTableSize };
+  const PCC UARTLookup = { UART_ClockConfig, UART_ClockConfigLP, UART_ResetConfig, UART_SourceClock, &Thor::Driver::UART::InstanceToResourceIndex, uartTableSize };
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_UART */
 }    // namespace Thor::Driver::RCC::LookupTables

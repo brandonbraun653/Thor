@@ -68,26 +68,23 @@ namespace Thor::Driver::RCC
     virtual Chimera::Status_t setCoreClockSource( const Thor::Clock::Source src ) = 0;
 
     /**
-     *  Gets the current system core clock frequency in Hz
-     *
-     *  @return size_t
+     *  Gets the frequency of any major system level clock
+     *  
+     *  @param[in]  clock     The clock you wish to retreive the current frequency of
+     *  @param[out] freqHz    The current frequency of the requested clock
+     *  @return Chimera::Status_t
      */
-    virtual size_t getCoreClock() = 0;
-
-    /**
-     *  Gets the clock source used to generate the system core clock
-     *
-     *  @return Thor::Clock::Source
-     */
-    virtual Thor::Clock::Source getCoreClockSource() = 0;
+    virtual Chimera::Status_t getClockFrequency( const Configuration::ClockType_t clock, size_t *const freqHz ) = 0;
 
     /**
      *  Gets the current peripheral clock frequency in Hz
      *
-     *  @param[in]  periph    The peripheral to check
+     *  @param[in]  periph    The peripheral type to check
+     *  @param[in]  address   Lookup table index tied to the peripheral instance
+     *  @param[out] freqHz    The current clock frequency of the requested peripheral
      *  @return size_t
      */
-    virtual size_t getPeriphClock( const Chimera::Peripheral::Type periph ) = 0;
+    virtual Chimera::Status_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz ) = 0;
   };
 
 }    // namespace Thor::Driver::RCC

@@ -10,6 +10,7 @@
 
 /* Driver Includes */
 #include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
+#include <Thor/drivers/f4/gpio/hw_gpio_mapping.hpp>
 
 
 namespace Thor::Driver::RCC::LookupTables
@@ -131,7 +132,10 @@ GPIO Peripheral RCC Configuration Resources
   };
 
 
-  const PCC GPIOLookup = { GPIO_ClockConfig, GPIO_ClockConfigLP, GPIO_ResetConfig, GPIO_SourceClock, gpioTableSize };
+  const PCC GPIOLookup = {
+    GPIO_ClockConfig, GPIO_ClockConfigLP, GPIO_ResetConfig, GPIO_SourceClock, &Thor::Driver::GPIO::InstanceToResourceIndex,
+    gpioTableSize
+  };
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 }    // namespace Thor::Driver::RCC::LookupTables

@@ -50,7 +50,7 @@ namespace Thor::Driver::GPIO
   {
   }
 
-  void DriverBare::attach( volatile RegisterMap *const peripheral )
+  void DriverBare::attach( RegisterMap *const peripheral )
   {
     periph = peripheral;
 
@@ -65,7 +65,7 @@ namespace Thor::Driver::GPIO
     auto rcc   = Thor::Driver::RCC::PeripheralController::get();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
-    rcc->enableClock( Chimera::Peripheral::Type::GPIO, index );
+    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
   }
 
   void DriverBare::clockDisable()
@@ -73,7 +73,7 @@ namespace Thor::Driver::GPIO
     auto rcc   = Thor::Driver::RCC::PeripheralController::get();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
-    rcc->disableClock( Chimera::Peripheral::Type::GPIO, index );
+    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
   }
 
   Chimera::Status_t DriverBare::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout )
@@ -144,14 +144,16 @@ namespace Thor::Driver::GPIO
 
     uint64_t temp         = 0u;
     const uint64_t offset = pin * AFR_CFG_X_WID;
+    const uint64_t mask   = AFR_CFG_X_MSK;
+    const uint64_t AFcfg  = val;
 
     /*------------------------------------------------
     64-bit wide read-modify-write sequence to AFRL & AFRH
     ------------------------------------------------*/
-    temp = *periph->AFR;
-    temp &= ~( AFR_CFG_X_MSK << offset );
-    temp |= ( val & AFR_CFG_X_MSK ) << offset;
-    *periph->AFR = temp;
+    temp = periph->AFR;
+    temp &= ~( mask << offset );
+    temp |= ( AFcfg & mask ) << offset;
+    periph->AFR = temp;
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -202,7 +204,7 @@ namespace Thor::Driver::GPIO
   {
   }
 
-  void DriverThreaded::attach( volatile RegisterMap *const peripheral )
+  void DriverThreaded::attach( RegisterMap *const peripheral )
   {
     bareMetalDriver.attach( peripheral );
   }
@@ -379,7 +381,7 @@ namespace Thor::Driver::GPIO
   {
   }
 
-  void DriverAtomic::attach( volatile RegisterMap *const peripheral )
+  void DriverAtomic::attach( RegisterMap *const peripheral )
   {
   }
 

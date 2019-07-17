@@ -34,17 +34,17 @@ namespace Thor::Driver::GPIO
     volatile uint32_t ODR;      /**< GPIO port output data register,        Address offset: 0x14      */
     volatile uint32_t BSRR;     /**< GPIO port bit set/reset register,      Address offset: 0x18      */
     volatile uint32_t LCKR;     /**< GPIO port configuration lock register, Address offset: 0x1C      */
-    volatile uint32_t AFR[ 2 ]; /**< GPIO alternate function registers,     Address offset: 0x20-0x24 */
+    volatile uint64_t AFR; /**< GPIO alternate function registers,     Address offset: 0x20-0x24 */
   };
 
-  static volatile RegisterMap *const GPIOA_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOA_BASE_ADDR );
-  static volatile RegisterMap *const GPIOB_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOB_BASE_ADDR );
-  static volatile RegisterMap *const GPIOC_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOC_BASE_ADDR );
-  static volatile RegisterMap *const GPIOD_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOD_BASE_ADDR );
-  static volatile RegisterMap *const GPIOE_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOE_BASE_ADDR );
-  static volatile RegisterMap *const GPIOF_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOF_BASE_ADDR );
-  static volatile RegisterMap *const GPIOG_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOG_BASE_ADDR );
-  static volatile RegisterMap *const GPIOH_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOH_BASE_ADDR );
+  static RegisterMap *const GPIOA_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOA_BASE_ADDR );
+  static RegisterMap *const GPIOB_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOB_BASE_ADDR );
+  static RegisterMap *const GPIOC_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOC_BASE_ADDR );
+  static RegisterMap *const GPIOD_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOD_BASE_ADDR );
+  static RegisterMap *const GPIOE_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOE_BASE_ADDR );
+  static RegisterMap *const GPIOF_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOF_BASE_ADDR );
+  static RegisterMap *const GPIOG_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOG_BASE_ADDR );
+  static RegisterMap *const GPIOH_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOH_BASE_ADDR );
 
   static constexpr uint32_t PIN_0        = 0x0001; /**< Pin 0 selected    */
   static constexpr uint32_t PIN_1        = 0x0002; /**< Pin 1 selected    */

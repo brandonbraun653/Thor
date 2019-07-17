@@ -78,6 +78,12 @@ namespace Thor::Driver::RCC
    */
   Chimera::Status_t prjGetSysClockFreq( size_t *const projectValue );
 
+  Chimera::Status_t prjGetHCLKFreq( size_t *const projectValue );
+
+  Chimera::Status_t prjGetPCLK1Freq( size_t *const projectValue );
+
+  Chimera::Status_t prjGetPCLK2Freq( size_t *const projectValue );
+
   /**
    *  Project specific declaration of the oscillator configuration settings.
    *
@@ -121,11 +127,9 @@ namespace Thor::Driver::RCC
 
     Chimera::Status_t setCoreClockSource( const Thor::Clock::Source src ) final override;
 
-    size_t getCoreClock() final override;
+    Chimera::Status_t getClockFrequency( const Configuration::ClockType_t clock, size_t *const freqHz ) final override;
 
-    Thor::Clock::Source getCoreClockSource() final override;
-
-    size_t getPeriphClock( const Chimera::Peripheral::Type periph ) final override;
+    Chimera::Status_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz ) final override;
 
   private:
     SystemClock();

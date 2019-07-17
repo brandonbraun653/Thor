@@ -63,8 +63,6 @@ namespace Thor::Driver::RCC
 
   static RegisterMap *const RCC_PERIPH = reinterpret_cast<RegisterMap *const>( RCC_BASE_ADDR );
 
-  
-
   /*------------------------------------------------
   Configuration Options
   ------------------------------------------------*/
@@ -847,6 +845,11 @@ namespace Thor::Driver::RCC
 
   }    // namespace CSR
 
+  /*------------------------------------------------
+  Data Structures
+  ------------------------------------------------*/
+  using ResourceMap_t = std::unordered_map<std::uintptr_t, size_t>;
+
   /**
    *  Initialization structure for the primary PLL
    *
@@ -941,8 +944,11 @@ namespace Thor::Driver::RCC
     const RegisterConfig *clockLP;                 /**< Low power clock configuration registers */
     const RegisterConfig *reset;                   /**< Peripheral reset registers */
     const Configuration::ClockType_t *clockSource; /**< Which system clock is used on the peripheral */
+    const ResourceMap_t *resourceIndexMap;         /**< Converts a peripheral address into a resource index */
     size_t elements;                               /**< Number of elements in the tables */
   };
+
+
 }    // namespace Thor::Driver::RCC
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */

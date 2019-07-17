@@ -10,6 +10,7 @@
 
 /* Thor Includes */
 #include <Thor/headers.hpp>
+#include <Thor/thor.hpp>
 
 /* Chimera Includes */
 #include <Chimera/modules/freertos/freertos_hooks.hpp>
@@ -25,7 +26,8 @@ namespace Chimera::Modules::FreeRTOS
 
   void ApplicationTickHook()
   {
-    //HAL_IncTick();
+    // HAL_IncTick();
+    Thor::prjIncSysTick();
   }
 
   void ApplicationMallocFailedHook()

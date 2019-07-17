@@ -35,7 +35,7 @@ namespace Thor::Driver::GPIO
     DriverBare();
     ~DriverBare();
 
-    void attach( volatile RegisterMap *const peripheral ) final override;
+    void attach( RegisterMap *const peripheral ) final override;
 
     void clockEnable() final override;
 
@@ -62,7 +62,7 @@ namespace Thor::Driver::GPIO
     size_t alternateFunctionGet( const uint8_t pin, const size_t timeout ) final override;
 
   private:
-    volatile RegisterMap *periph;
+    RegisterMap *periph;
   };
 
 
@@ -73,7 +73,7 @@ namespace Thor::Driver::GPIO
     DriverThreaded();
     ~DriverThreaded();
 
-    void attach( volatile RegisterMap *const peripheral ) final override;
+    void attach( RegisterMap *const peripheral ) final override;
 
     void clockEnable() final override;
 
@@ -110,7 +110,7 @@ namespace Thor::Driver::GPIO
     DriverAtomic();
     ~DriverAtomic();
 
-    void attach( volatile RegisterMap *const peripheral ) final override;
+    void attach( RegisterMap *const peripheral ) final override;
 
     void clockEnable() final override;
 

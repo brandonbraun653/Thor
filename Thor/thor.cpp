@@ -10,7 +10,9 @@
 
 /* Chimera Includes */
 #include <Chimera/threading.hpp>
+#include <Chimera/interface/compiler_intf.hpp>
 
+/* Thor Includes */
 #include <Thor/thor.hpp>
 #include <Thor/macro.hpp>
 #include <Thor/print.hpp>
@@ -56,13 +58,20 @@ void cSystemInit()
 
 namespace Thor
 {
-  uint32_t millis()
+  static size_t systemTick = 0u;
+
+  WEAKDECL void prjIncSysTick()
   {
-    // return HAL_GetTick();
-    return 0;
+    systemTick++;
   }
 
-  void delayMilliseconds( uint32_t ms )
+  size_t millis()
+  {
+    // return HAL_GetTick();
+    return systemTick;
+  }
+
+  void delayMilliseconds( const size_t ms )
   {
 #if defined( USING_FREERTOS )
     vTaskDelay( pdMS_TO_TICKS( ms ) );
@@ -72,7 +81,7 @@ namespace Thor
   }
 
   // TODO: use a timer for this
-  void delayMicroseconds( uint32_t us )
+  void delayMicroseconds( const size_t us )
   {
   }
 }    // namespace Thor
