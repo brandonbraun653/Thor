@@ -81,12 +81,6 @@ namespace Thor::USART
     void await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier ) final override;
 
     void postISRProcessing() final override;
-
-  private:
-    friend void(::USART1_IRQHandler )( void );
-    friend void(::USART2_IRQHandler )( void );
-    friend void(::USART3_IRQHandler )( void );
-    friend void(::USART6_IRQHandler )( void );
   };
 
   using USARTClass_sPtr = std::shared_ptr<USARTClass>;

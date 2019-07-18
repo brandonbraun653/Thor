@@ -26,6 +26,9 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
 
+
+static std::array<Thor::Driver::USART::Driver *, Thor::Driver::USART::NUM_USART_PERIPHS> usartObjects;
+
 namespace Thor::Driver::USART
 {
   /**
@@ -36,8 +39,6 @@ namespace Thor::Driver::USART
    *  events are occuring.
    */
   static constexpr size_t DFLT_VECTOR_SIZE = 5;
-
-  static inline uint32_t deriveBaudRateConfig( const uint32_t desired, const std::uintptr_t address );
 
   bool isUSART( const std::uintptr_t address )
   {
@@ -54,10 +55,9 @@ namespace Thor::Driver::USART
     return result;
   }
 
-  Driver::Driver( RegisterMap *const peripheral ) :
-      periph( peripheral ), rxCompleteListeners( DFLT_VECTOR_SIZE, nullptr ), txCompleteListeners( DFLT_VECTOR_SIZE, nullptr )
+  Driver::Driver( RegisterMap *const peripheral ) : periph( peripheral )
   {
-    auto address = reinterpret_cast<std::uintptr_t>( peripheral );
+    auto address   = reinterpret_cast<std::uintptr_t>( peripheral );
     peripheralType = Chimera::Peripheral::Type::PERIPH_USART;
     resourceIndex  = Thor::Driver::USART::InstanceToResourceIndex.find( address )->second;
   }
@@ -79,6 +79,15 @@ namespace Thor::Driver::USART
     }
 
     /*------------------------------------------------
+    Initialize driver memory
+    ------------------------------------------------*/
+    enterCriticalSection();
+    
+    //initialize all isr variables
+
+    exitCriticalSection();
+
+    /*------------------------------------------------
     Ensure the clock is enabled otherwise the hardware is "dead"
     ------------------------------------------------*/
     auto rccPeriph = Thor::Driver::RCC::PeripheralController::get();
@@ -97,7 +106,7 @@ namespace Thor::Driver::USART
     CR2::STOP::set( periph, cfg.StopBits );
 
     /* Select the desired baud rate */
-    BRR::set( periph, deriveBaudRateConfig( cfg.BaudRate, reinterpret_cast<std::uintptr_t>( periph ) ) );
+    BRR::set( periph, calculateBRR( cfg.BaudRate ) );
 
     /* Turn on the Transmitter */
     CR1::TE::set( periph, CR1_TE );
@@ -125,8 +134,8 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Erases pointers to the listeners, not the listeners themselves
     ------------------------------------------------*/
-    rxCompleteListeners.clear();
-    txCompleteListeners.clear();
+    rxCompleteActors.clear();
+    txCompleteActors.clear();
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -140,7 +149,7 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Wait for the driver to signal it finished the last transfer
     ------------------------------------------------*/
-    if ( waitUntilTimeout( Configuration::Flags::FLAG_TC, timeout ) )
+    if ( waitUntilSet( Configuration::Flags::FLAG_TC, timeout ) )
     {
       return Chimera::CommonStatusCodes::TIMEOUT;
     }
@@ -154,7 +163,7 @@ namespace Thor::Driver::USART
       ------------------------------------------------*/
       startTime = Chimera::millis();
 
-      if ( waitUntilTimeout( Configuration::Flags::FLAG_TXE, timeout ) )
+      if ( waitUntilSet( Configuration::Flags::FLAG_TXE, timeout ) )
       {
         return Chimera::CommonStatusCodes::TIMEOUT;
       }
@@ -168,7 +177,7 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Wait for the driver to signal it finished the last transfer
     ------------------------------------------------*/
-    if ( waitUntilTimeout( Configuration::Flags::FLAG_TC, timeout ) )
+    if ( waitUntilSet( Configuration::Flags::FLAG_TC, timeout ) )
     {
       return Chimera::CommonStatusCodes::TIMEOUT;
     }
@@ -193,7 +202,11 @@ namespace Thor::Driver::USART
 
   Chimera::Status_t Driver::transmitIT( uint8_t *const data, const size_t size, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+
+
+    return result;
   }
 
   Chimera::Status_t Driver::receiveIT( uint8_t *const data, const size_t size, const size_t timeout )
@@ -256,7 +269,43 @@ namespace Thor::Driver::USART
     return Chimera::Hardware::Status::PERIPHERAL_FREE;
   }
 
-  bool Driver::waitUntilTimeout( const uint32_t flag, const size_t timeout )
+  void Driver::IRQHandler()
+  {
+    using namespace Configuration::Flags;
+
+    const uint32_t statusRegister = SR::get( periph );
+    const uint32_t txFlags        = statusRegister & ( FLAG_CTS | FLAG_TC | FLAG_TXE );
+    const uint32_t rxFlags        = statusRegister & ( FLAG_RXNE | FLAG_IDLE );
+    const uint32_t errorFlags     = statusRegister & ( FLAG_ORE | FLAG_PE | FLAG_NF | FLAG_FE );
+
+    /*------------------------------------------------
+    TX Related Handler
+    ------------------------------------------------*/
+    if ( txFlags ) {}
+
+    // Notify the user
+    // Clean up?? I'm not sure there is anything.
+
+    /*------------------------------------------------
+    RX Related Handler
+    ------------------------------------------------*/
+    if ( rxFlags ) {}
+
+    // Handle RX related stuff
+    //  Single reception character by character, up to a certain size
+    //  Need a transfer control block structure that is volatile/protected when accessed user side.
+
+    /*------------------------------------------------
+    Error Related Handler
+    ------------------------------------------------*/
+    if ( errorFlags ) {}
+
+    // Set flags for the user
+    // Acknowledge flags and go to a safe state.
+  }
+
+
+  bool Driver::waitUntilSet( const uint32_t flag, const size_t timeout )
   {
     uint32_t srVal   = SR::get( periph );
     size_t startTime = Chimera::millis();
@@ -274,32 +323,85 @@ namespace Thor::Driver::USART
     return false;
   }
 
-  static inline uint32_t calculateBRR( const uint32_t pclk, const uint32_t baud )
-  {
-    /*------------------------------------------------
-    Taken directly from the STM32 HAL Macros
-    ------------------------------------------------*/
-    auto divisor          = ( 25u * pclk ) / ( 2u * baud );
-    auto mantissa_divisor = divisor / 100u;
-    auto fraction_divisor = ( ( divisor - ( mantissa_divisor * 100u ) ) * 16u + 50u ) / 100u;
-    auto brr_value        = ( mantissa_divisor << BRR_DIV_Mantissa_Pos ) | ( fraction_divisor & BRR_DIV_Fraction );
-
-    return brr_value;
-  }
-
-  static inline uint32_t deriveBaudRateConfig( const uint32_t desired, const std::uintptr_t address )
+  uint32_t Driver::calculateBRR( const size_t desiredBaud )
   {
     size_t periphClock = 0u;
+    size_t calculatedBRR = 0u;
+    auto periphAddress = reinterpret_cast<std::uintptr_t>( periph );
 
-    auto rccSys      = Thor::Driver::RCC::SystemClock::get();
-    rccSys->getPeriphClock( Chimera::Peripheral::Type::PERIPH_USART, address, &periphClock );
-    auto configVal   = calculateBRR( periphClock, desired );
+    /*------------------------------------------------
+    Figure out the frequency of the clock that drives the USART
+    ------------------------------------------------*/
+    auto rccSys = Thor::Driver::RCC::SystemClock::get();
+    rccSys->getPeriphClock( Chimera::Peripheral::Type::PERIPH_USART, periphAddress, &periphClock );
 
-    return configVal;
+    /*------------------------------------------------
+    Protect from fault conditions in the math below
+    ------------------------------------------------*/
+    if ( !desiredBaud || !periphClock )
+    {
+      return 0u;
+    }
+
+    /*------------------------------------------------
+    Calculate the BRR value. Mostly this was taken directly from
+    the STM32 HAL Macros.
+    ------------------------------------------------*/
+    uint32_t over8Compensator = 2u;
+
+    if ( CR1::OVER8::get( periph ) )
+    {
+      over8Compensator = 1u;
+    }
+
+    auto divisor          = ( 25u * periphClock ) / ( 2u * over8Compensator * desiredBaud );
+    auto mantissa_divisor = divisor / 100u;
+    auto fraction_divisor = ( ( divisor - ( mantissa_divisor * 100u ) ) * 16u + 50u ) / 100u;
+    calculatedBRR         = ( mantissa_divisor << BRR_DIV_Mantissa_Pos ) | ( fraction_divisor & BRR_DIV_Fraction );
+
+    return calculatedBRR;
   }
 
-  
-
 }    // namespace Thor::Driver::USART
+
+void USART1_IRQHandler( void )
+{
+  static constexpr size_t index = 0;
+
+  if ( usartObjects[ index ] )
+  {
+    usartObjects[ index ]->IRQHandler();
+  }
+}
+
+void USART2_IRQHandler( void )
+{
+  static constexpr size_t index = 1;
+
+  if ( usartObjects[ index ] )
+  {
+    usartObjects[ index ]->IRQHandler();
+  }
+}
+
+void USART3_IRQHandler( void )
+{
+  static constexpr size_t index = 2;
+
+  if ( usartObjects[ index ] )
+  {
+    usartObjects[ index ]->IRQHandler();
+  }
+}
+
+void USART6_IRQHandler( void )
+{
+  static constexpr size_t index = 3;
+
+  if ( usartObjects[ index ] )
+  {
+    usartObjects[ index ]->IRQHandler();
+  }
+}
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_USART */

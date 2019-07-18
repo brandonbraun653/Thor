@@ -63,10 +63,12 @@ namespace Thor::Driver::Serial
 
     /**
      *  Transmit data using blocking mode. The function will not return in the given
-     *  thread of execution until the transfer is complete. Does not block other threads.
+     *  thread of execution until the transfer is complete.
      *
-     *  @param[in]  data      The data to be transmitted
-     *  @param[in]  size      How long the data is in bytes
+     *  @warning Not intended for production designs due to its blocking nature.
+     *
+     *  @param[in]  data      The buffer to transmit from
+     *  @param[in]  size      How much data to transfer in bytes
      *  @param[in]  timeout   How long to wait in milliseconds for the hardware to become available
      *  @return Chimera::Status_t
      */
@@ -74,10 +76,12 @@ namespace Thor::Driver::Serial
 
     /**
      *  Receive data using blocking mode. The function will not return in the given
-     *  thread of execution until the transfer is complete. Does not block other threads.
+     *  thread of execution until the transfer is complete.
      *
-     *  @param[in]  data      The data to be transmitted
-     *  @param[in]  size      How long the data is in bytes
+     *  @warning Not intended for production designs due to its blocking nature.
+     *
+     *  @param[in]  data      The buffer to read into
+     *  @param[in]  size      How much data to receive in bytes
      *  @param[in]  timeout   How long to wait in milliseconds for the hardware to become available
      *  @return Chimera::Status_t
      */

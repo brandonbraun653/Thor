@@ -25,6 +25,8 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/drivers/common/interrupts/usart_interrupt_vectors.hpp>
+#include <Thor/drivers/common/types/peripheral_event_types.hpp>
 #include <Thor/drivers/common/types/serial_types.hpp>
 #include <Thor/drivers/f4/common/types.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
@@ -88,14 +90,47 @@ namespace Thor::Driver::USART
 
     Chimera::Hardware::Status pollTransferStatus() final override;
 
+  protected:
+    friend void(::USART1_IRQHandler )();
+    friend void(::USART2_IRQHandler )();
+    friend void(::USART3_IRQHandler )();
+    friend void(::USART6_IRQHandler )();
+
+    /**
+     *  Generic interrupt handler for all USART specific ISR signals
+     *
+     *  @return void
+     */
+    void IRQHandler();
+
   private:
     RegisterMap *const periph;
     size_t resourceIndex;
     Chimera::Peripheral::Type peripheralType;
-    std::vector<SemaphoreHandle_t *> rxCompleteListeners;
-    std::vector<SemaphoreHandle_t *> txCompleteListeners;
 
-    bool waitUntilTimeout( const uint32_t flag, const size_t timeout );
+    EventResponders rxCompleteActors;
+    EventResponders txCompleteActors;
+
+    /**
+     *  Blocking wait on the particular flag in the status register to become set
+     *
+     *  @param[in]  flag      The flag to wait upon
+     *  @param[in]  timeout   How long to wait for the flag to become set
+     *  @return bool
+     */
+    bool waitUntilSet( const uint32_t flag, const size_t timeout );
+
+    /**
+     *  Calculates the appropriate configuration value for the Baud Rate Register
+     *  given a desired baud rate.
+     *
+     *  @param[in]  desiredBaud   The baud rate to be configured
+     */
+    uint32_t calculateBRR( const size_t desiredBaud );
+
+    void enterCriticalSection();
+
+    void exitCriticalSection();
   };
 }    // namespace Thor::Driver::USART
 

@@ -111,6 +111,7 @@ namespace Thor::Driver::USART
 
     namespace Flags
     {
+      static constexpr uint32_t FLAG_CTS  = SR_CTS;
       static constexpr uint32_t FLAG_TXE  = SR_TXE;
       static constexpr uint32_t FLAG_TC   = SR_TC;
       static constexpr uint32_t FLAG_RXNE = SR_RXNE;
