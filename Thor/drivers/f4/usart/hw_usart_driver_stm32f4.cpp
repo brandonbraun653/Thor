@@ -18,6 +18,7 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
+#include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
@@ -31,14 +32,6 @@ static std::array<Thor::Driver::USART::Driver *, Thor::Driver::USART::NUM_USART_
 
 namespace Thor::Driver::USART
 {
-  /**
-   *  Number of elements to allocate by default for any vectors used in the Driver.
-   *
-   *  The goal is to size this such that a dynamic allocation isn't likely to occur
-   *  unless there suddenly are a lot of parties interested in being notified that
-   *  events are occuring.
-   */
-  static constexpr size_t DFLT_VECTOR_SIZE = 5;
 
   bool isUSART( const std::uintptr_t address )
   {
@@ -60,6 +53,10 @@ namespace Thor::Driver::USART
     auto address   = reinterpret_cast<std::uintptr_t>( peripheral );
     peripheralType = Chimera::Peripheral::Type::PERIPH_USART;
     resourceIndex  = Thor::Driver::USART::InstanceToResourceIndex.find( address )->second;
+
+    periphIRQn = USART_IRQn[ resourceIndex ];
+
+    usartObjects[ resourceIndex ] = this;
   }
 
   Driver::~Driver()
@@ -82,8 +79,13 @@ namespace Thor::Driver::USART
     Initialize driver memory
     ------------------------------------------------*/
     enterCriticalSection();
-    
-    //initialize all isr variables
+
+    txTCB.reset();
+    rxTCB.reset();
+
+    rxCompleteActors.clear();
+    onTXComplete.clear();
+    onError.clear();
 
     exitCriticalSection();
 
@@ -107,9 +109,6 @@ namespace Thor::Driver::USART
 
     /* Select the desired baud rate */
     BRR::set( periph, calculateBRR( cfg.BaudRate ) );
-
-    /* Turn on the Transmitter */
-    CR1::TE::set( periph, CR1_TE );
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -135,54 +134,14 @@ namespace Thor::Driver::USART
     Erases pointers to the listeners, not the listeners themselves
     ------------------------------------------------*/
     rxCompleteActors.clear();
-    txCompleteActors.clear();
+    onTXComplete.clear();
 
     return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t Driver::transmit( const uint8_t *const data, const size_t size, const size_t timeout )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
-
-    size_t startTime = Chimera::millis();
-
-    /*------------------------------------------------
-    Wait for the driver to signal it finished the last transfer
-    ------------------------------------------------*/
-    if ( waitUntilSet( Configuration::Flags::FLAG_TC, timeout ) )
-    {
-      return Chimera::CommonStatusCodes::TIMEOUT;
-    }
-
-
-    for ( size_t x = 0; x < size; x++ )
-    {
-      /*------------------------------------------------
-      Wait for hardware to signal data has transfered from
-      the TDR into the shift register.
-      ------------------------------------------------*/
-      startTime = Chimera::millis();
-
-      if ( waitUntilSet( Configuration::Flags::FLAG_TXE, timeout ) )
-      {
-        return Chimera::CommonStatusCodes::TIMEOUT;
-      }
-
-      /*------------------------------------------------
-      Write new data to the TDR
-      ------------------------------------------------*/
-      periph->DR = data[ x ];
-    }
-
-    /*------------------------------------------------
-    Wait for the driver to signal it finished the last transfer
-    ------------------------------------------------*/
-    if ( waitUntilSet( Configuration::Flags::FLAG_TC, timeout ) )
-    {
-      return Chimera::CommonStatusCodes::TIMEOUT;
-    }
-
-    return result;
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::receive( uint8_t *const data, const size_t size, const size_t timeout )
@@ -190,28 +149,123 @@ namespace Thor::Driver::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::enableIT( const Chimera::Hardware::SubPeripheral periph )
+  Chimera::Status_t Driver::enableIT( const Chimera::Hardware::SubPeripheral subPeriph )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    /*------------------------------------------------
+    The individual TX and RX functions take care of the nitty gritty details
+    ------------------------------------------------*/
+    Thor::Driver::Interrupt::enableIRQ( periphIRQn );
+    return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t Driver::disableIT( const Chimera::Hardware::SubPeripheral periph )
+  Chimera::Status_t Driver::disableIT( const Chimera::Hardware::SubPeripheral subPeriph )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
+    using namespace Chimera::Hardware;
+    using namespace Thor::Driver::Interrupt;
 
-  Chimera::Status_t Driver::transmitIT( uint8_t *const data, const size_t size, const size_t timeout )
-  {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
+    disableIRQ( periphIRQn );
+    clearPendingIRQ( periphIRQn );
 
+    if ( ( subPeriph == SubPeripheral::TX ) || ( subPeriph == SubPeripheral::TXRX ) )
+    {
+      CR1::TCIE::set( periph, 0 );
+      CR1::TXEIE::set( periph, 0 );
+    }
+    else if ( ( subPeriph == SubPeripheral::RX ) || ( subPeriph == SubPeripheral::TXRX ) )
+    {
+
+    }
+    else
+    {
+      result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+
+    enableIRQ( periphIRQn );
 
     return result;
   }
 
+  Chimera::Status_t Driver::transmitIT( uint8_t *const data, const size_t size, const size_t timeout )
+  {
+#if defined( DEBUG )
+    if ( !data || !size )
+    {
+      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+#endif
+
+    if ( !SR::TC::get( periph ) )
+    {
+      return Chimera::CommonStatusCodes::BUSY;
+    }
+    else
+    {
+      enterCriticalSection();
+      
+      /*------------------------------------------------
+      Turn on the transmitter
+      ------------------------------------------------*/
+      CR1::TE::set( periph, CR1_TE );
+
+      /*------------------------------------------------
+      Turn on the Transmit Data register interrupt so we
+      know when we can stage the next byte transfer.
+      ------------------------------------------------*/
+      CR1::TXEIE::set( periph, CR1_TXEIE );
+
+      /*------------------------------------------------
+      Prep the transfer control block
+      ------------------------------------------------*/
+      txTCB.buffer = &data[ 1 ]; /* Point to the next byte */
+      txTCB.size   = size - 1u;  /* Pre-decrement to account for this first byte */
+      txTCB.state  = StateMachine::TX::IT_TX_ONGOING;
+
+      /*------------------------------------------------
+      Write the byte onto the wire
+      ------------------------------------------------*/
+      periph->DR = data[ 0 ];
+
+      exitCriticalSection();
+    }
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
   Chimera::Status_t Driver::receiveIT( uint8_t *const data, const size_t size, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+#if defined( DEBUG )
+    if ( !data || !size )
+    {
+      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+#endif
+
+    if ( SR::RXNE::get( periph ) )
+    {
+      /* There is a byte in the register that needs to be read by the ISR */
+      return Chimera::CommonStatusCodes::BUSY;
+    }
+    else
+    {
+      enterCriticalSection();
+
+      // do something with interrupt bits
+
+      /*------------------------------------------------
+      Prep the transfer control block to receive data
+      ------------------------------------------------*/
+      rxTCB.buffer = data;
+      rxTCB.size   = size;
+      rxTCB.state  = StateMachine::RX::IT_RX_ONGOING;
+
+      // turn on listening
+
+      exitCriticalSection();
+    }
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t Driver::initDMA()
@@ -244,16 +298,6 @@ namespace Thor::Driver::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::enableSignal( const InterruptSignal_t sig )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t Driver::disableSignal( const InterruptSignal_t sig )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
   Chimera::Status_t Driver::registerEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t *const listener )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
@@ -273,37 +317,108 @@ namespace Thor::Driver::USART
   {
     using namespace Configuration::Flags;
 
+    /*------------------------------------------------
+    Following the datasheet, flags are only cleared after
+    reading the SR and then DR.
+    ------------------------------------------------*/
     const uint32_t statusRegister = SR::get( periph );
-    const uint32_t txFlags        = statusRegister & ( FLAG_CTS | FLAG_TC | FLAG_TXE );
-    const uint32_t rxFlags        = statusRegister & ( FLAG_RXNE | FLAG_IDLE );
-    const uint32_t errorFlags     = statusRegister & ( FLAG_ORE | FLAG_PE | FLAG_NF | FLAG_FE );
+    const uint32_t dataRegister   = DR::get( periph );
+
+    /*------------------------------------------------
+    Cache the current state of the control registers
+    ------------------------------------------------*/
+    const uint32_t CR1 = CR1::get( periph );
+    const uint32_t CR2 = CR2::get( periph );
+    const uint32_t CR3 = CR3::get( periph );
+
+    /*------------------------------------------------
+    Figure out which interrupt flags have been set
+    ------------------------------------------------*/
+    const uint32_t txFlags    = statusRegister & ( FLAG_TC | FLAG_TXE );
+    const uint32_t rxFlags    = statusRegister & ( FLAG_RXNE | FLAG_IDLE );
+    const uint32_t errorFlags = statusRegister & ( FLAG_ORE | FLAG_PE | FLAG_NF | FLAG_FE );
 
     /*------------------------------------------------
     TX Related Handler
     ------------------------------------------------*/
-    if ( txFlags ) {}
+    if ( txFlags )
+    {
+      /*------------------------------------------------
+      TDR Empty Interrupt
+      ------------------------------------------------*/
+      if ( ( txFlags & FLAG_TXE ) && ( CR1 & CR1_TXEIE ) && ( txTCB.state == StateMachine::TX::IT_TX_ONGOING ) )
+      {
+        if ( txTCB.size )
+        {
+          /*------------------------------------------------
+          Make sure the TX complete interrupt cannot fire
+          ------------------------------------------------*/
+          CR1::TCIE::set( periph, 0 );
 
-    // Notify the user
-    // Clean up?? I'm not sure there is anything.
+          /*------------------------------------------------
+          Transfer the byte and prep for the next character
+          ------------------------------------------------*/
+          periph->DR = *txTCB.buffer;
+
+          txTCB.buffer++;
+          txTCB.size--;
+        }
+        else
+        {
+          /*------------------------------------------------
+          We finished pushing the last character into the TDR, so 
+          now listen for the TX complete interrupt.
+          ------------------------------------------------*/
+          CR1::TXEIE::set( periph, 0 );
+          CR1::TCIE::set( periph, CR1_TCIE );
+          txTCB.state = StateMachine::IT_TX_COMPLETE;
+        }
+      }
+
+      /*------------------------------------------------
+      Transfer Complete Interrupt
+      ------------------------------------------------*/
+      if ( ( txFlags & FLAG_TC ) && ( CR1 & CR1_TCIE ) && ( txTCB.state == StateMachine::TX::IT_TX_COMPLETE ) ) 
+      {
+        onTXComplete.notifyAtomic( Chimera::Event::Trigger::WRITE_COMPLETE );
+        onTXComplete.notifyThreaded();
+        onTXComplete.executeCallbacks( nullptr );
+
+        /*------------------------------------------------
+        Exit the TX ISR cleanly by disabling related interrupts
+        ------------------------------------------------*/
+        CR1::TCIE::set( periph, 0 );
+        CR1::TXEIE::set( periph, 0 );
+        CR1::TE::set( periph, 0 );
+        txTCB.state = StateMachine::TX::IT_TX_READY;
+      }
+    }
 
     /*------------------------------------------------
     RX Related Handler
     ------------------------------------------------*/
-    if ( rxFlags ) {}
+    if ( rxFlags )
+    {
 
     // Handle RX related stuff
     //  Single reception character by character, up to a certain size
     //  Need a transfer control block structure that is volatile/protected when accessed user side.
+    }
 
     /*------------------------------------------------
     Error Related Handler
     ------------------------------------------------*/
-    if ( errorFlags ) {}
+    if ( errorFlags )
+    {
+      ISRErrorFlags |= errorFlags;
 
-    // Set flags for the user
-    // Acknowledge flags and go to a safe state.
+      onError.notifyAtomic( Chimera::Event::Trigger::ERROR );
+      onError.notifyThreaded();
+      onError.executeCallbacks( reinterpret_cast<const void *const>( &errorFlags ) );
+
+      /* All error bits are cleared by read to SR then DR, which was already performed */
+    }
   }
-
 
   bool Driver::waitUntilSet( const uint32_t flag, const size_t timeout )
   {
@@ -360,6 +475,16 @@ namespace Thor::Driver::USART
     calculatedBRR         = ( mantissa_divisor << BRR_DIV_Mantissa_Pos ) | ( fraction_divisor & BRR_DIV_Fraction );
 
     return calculatedBRR;
+  }
+
+  void Driver::enterCriticalSection()
+  {
+    Thor::Driver::Interrupt::disableIRQ( periphIRQn );
+  }
+
+  void Driver::exitCriticalSection()
+  {
+    Thor::Driver::Interrupt::enableIRQ( periphIRQn );
   }
 
 }    // namespace Thor::Driver::USART

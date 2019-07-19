@@ -31,6 +31,7 @@ namespace Thor::Driver
   };
 
   using VoidCallback = boost::function<void( void )>;
+  using ConstVoidPtrCallback = boost::function<void( const void *const )>;
 
 }    // namespace Thor::Driver::Serial
 

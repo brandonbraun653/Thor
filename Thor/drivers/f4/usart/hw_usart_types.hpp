@@ -40,6 +40,23 @@ namespace Thor::Driver::USART
   static RegisterMap *const USART6_PERIPH = reinterpret_cast<RegisterMap *const>( USART6_BASE_ADDR );
 
   /**
+   *  Base unit of a transfer control block for the TX/RX channels
+   */
+  struct TCB
+  {
+    uint8_t *buffer;
+    size_t size;
+    uint8_t state;
+
+    inline void reset()
+    {
+      buffer = nullptr;
+      size   = 0;
+      state  = 0;
+    }
+  };
+
+  /**
    *  Checks if the given address belongs to a peripheral instance
    *
    *  @return bool
@@ -122,7 +139,26 @@ namespace Thor::Driver::USART
       static constexpr uint32_t FLAG_PE   = SR_PE;
     }    // namespace Flags
   }
-  
+
+  /*------------------------------------------------
+  State Machine 
+  ------------------------------------------------*/
+  namespace StateMachine
+  {
+    enum TX : uint8_t
+    {
+      IT_TX_READY = 0,
+      IT_TX_ONGOING,
+      IT_TX_COMPLETE
+    };
+
+    enum RX : uint8_t
+    {
+      IT_RX_READY = 0,
+      IT_RX_ONGOING,
+      IT_RX_COMPLETE
+    };
+  }    // namespace StateMachine
 
   /*------------------------------------------------
   Status Register
@@ -374,6 +410,7 @@ namespace Thor::Driver::USART
   namespace CR1
   {
     static constexpr uint32_t resetValue = CR1_Rst;
+    static constexpr uint32_t ITMask     = CR1_PEIE | CR1_TXEIE | CR1_TCIE | CR1_RXNEIE | CR1_IDLEIE;
 
     static inline uint32_t get( const RegisterMap *const periph )
     {
@@ -692,6 +729,7 @@ namespace Thor::Driver::USART
   namespace CR2
   {
     static constexpr uint32_t resetValue = CR2_Rst;
+    static constexpr uint32_t ITMask     = CR2_LBDIE;
 
     static inline uint32_t get( const RegisterMap *const periph )
     {
@@ -890,6 +928,7 @@ namespace Thor::Driver::USART
   namespace CR3
   {
     static constexpr uint32_t resetValue = CR3_Rst;
+    static constexpr uint32_t ITMask     = CR3_EIE;
 
     static inline uint32_t get( const RegisterMap *const periph )
     {

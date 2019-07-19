@@ -29,6 +29,7 @@
 #include <Thor/drivers/common/types/peripheral_event_types.hpp>
 #include <Thor/drivers/common/types/serial_types.hpp>
 #include <Thor/drivers/f4/common/types.hpp>
+#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
 #include <Thor/drivers/model/event_model.hpp>
 #include <Thor/drivers/model/interrupt_model.hpp>
@@ -41,7 +42,6 @@ namespace Thor::Driver::USART
 
   class Driver : public Thor::Driver::Serial::Basic,
                  public Thor::Driver::Serial::Extended,
-                 public Thor::Driver::SignalModel,
                  public Thor::Driver::EventListener
   {
   public:
@@ -78,10 +78,6 @@ namespace Thor::Driver::USART
 
     Chimera::Status_t receiveDMA( uint8_t *const data, const size_t size, const size_t timeout ) final override;
 
-    Chimera::Status_t enableSignal( const InterruptSignal_t sig ) final override;
-
-    Chimera::Status_t disableSignal( const InterruptSignal_t sig ) final override;
-
     Chimera::Status_t registerEventListener( const Chimera::Event::Trigger event,
                                              SemaphoreHandle_t *const listener ) final override;
 
@@ -106,10 +102,19 @@ namespace Thor::Driver::USART
   private:
     RegisterMap *const periph;
     size_t resourceIndex;
+    IRQn_Type periphIRQn;
+
     Chimera::Peripheral::Type peripheralType;
 
     EventResponders rxCompleteActors;
-    EventResponders txCompleteActors;
+    EventResponders onTXComplete;
+    EventResponders onError;
+
+    TCB txTCB;
+    TCB rxTCB;
+
+
+    volatile uint32_t ISRErrorFlags; /**< Error flags that were set inside the ISR handler */
 
     /**
      *  Blocking wait on the particular flag in the status register to become set
@@ -128,8 +133,14 @@ namespace Thor::Driver::USART
      */
     uint32_t calculateBRR( const size_t desiredBaud );
 
+    /**
+     *  Disables the USART interrupts
+     */
     void enterCriticalSection();
 
+    /**
+     *  Enables the USART interrupts
+     */
     void exitCriticalSection();
   };
 }    // namespace Thor::Driver::USART

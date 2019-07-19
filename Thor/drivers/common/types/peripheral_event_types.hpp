@@ -30,9 +30,9 @@ namespace Thor::Driver
   class EventResponders
   {
   public:
-    std::vector<uint32_t *> atomicNotifier;        /**< Atomically accessible POD */
-    std::vector<SemaphoreHandle_t> threadNotifier; /**< Threading primitive used for signaling */
-    std::vector<VoidCallback> callbackAction;      /**< Some kind of callable function to execute */
+    std::vector<uint32_t *> atomicNotifier;           /**< Atomically accessible POD */
+    std::vector<SemaphoreHandle_t> threadNotifier;    /**< Threading primitive used for signaling */
+    std::vector<ConstVoidPtrCallback> callbackAction; /**< Some kind of callable function to execute */
 
     void clear()
     {
@@ -41,13 +41,13 @@ namespace Thor::Driver
       callbackAction.clear();
     }
 
-    void notifyAtomic( const uint32_t value )
+    void notifyAtomic( const Chimera::Event::Trigger event )
     {
       for ( auto &notifier : atomicNotifier )
       {
         if ( notifier )
         {
-          *notifier = value;
+          *notifier = static_cast<uint32_t>( event );
         }
       }
     }
@@ -60,13 +60,13 @@ namespace Thor::Driver
       }
     }
 
-    void executeCallbacks()
+    void executeCallbacks( const void *const data )
     {
       for ( auto callback : callbackAction )
       {
         if ( callback )
         {
-          callback();
+          callback( data );
         }
       }
     }
