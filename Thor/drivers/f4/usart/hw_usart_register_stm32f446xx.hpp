@@ -35,7 +35,6 @@ namespace Thor::Driver::USART
   static constexpr std::array<uint32_t, NUM_USART_PERIPHS> periphAddressList = { USART1_BASE_ADDR, USART2_BASE_ADDR,
                                                                                  USART3_BASE_ADDR, USART6_BASE_ADDR };
 
-
   /*------------------------------------------------
   USART Status Register
   ------------------------------------------------*/
