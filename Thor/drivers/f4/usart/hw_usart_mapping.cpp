@@ -9,13 +9,14 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/headers.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
 
 namespace Thor::Driver::USART
 {
-  const std::unordered_map<std::uintptr_t, size_t> InstanceToResourceIndex{
+  const Thor::Driver::RCC::ResourceMap_t InstanceToResourceIndex{
     { reinterpret_cast<std::uintptr_t>( USART1_PERIPH ), 0 },
     { reinterpret_cast<std::uintptr_t>( USART2_PERIPH ), 1 },
     { reinterpret_cast<std::uintptr_t>( USART3_PERIPH ), 2 },

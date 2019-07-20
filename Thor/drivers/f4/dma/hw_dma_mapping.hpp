@@ -14,12 +14,31 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
+#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
+#include <Thor/drivers/f4/dma/hw_dma_types.hpp>
 
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
 
 namespace Thor::Driver::DMA
 {
+  /**
+   *  Maps a DMA peripheral into the corresponding resource index
+   */
+  extern const Thor::Driver::RCC::ResourceMap_t InstanceToResourceIndex;
+
+  /**
+   *  Maps a DMA peripheral stream into the corresponding resource index
+   */
+  extern const Thor::Driver::RCC::ResourceMap_t StreamToResourceIndex;
+
+  /**
+   *  Gets the interrupt request number tied to a DMA instance.
+   *
+   *  @note Must match the mapping in InstanceToResourceIndex
+   */
+  extern const IRQn_Type DMAStream_IRQn[ NUM_DMA_STREAMS * NUM_DMA_PERIPHS ];
 }
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_DMA */

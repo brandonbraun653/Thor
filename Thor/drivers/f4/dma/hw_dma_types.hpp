@@ -49,6 +49,27 @@ namespace Thor::Driver::DMA
     StreamX STREAM7;         /**< DMA Stream control registers, Address offset: 0x18 x stream number */
   };
 
+  static RegisterMap *const DMA1_PERIPH = reinterpret_cast<RegisterMap *const>( DMA1_BASE_ADDR );
+  static RegisterMap *const DMA2_PERIPH = reinterpret_cast<RegisterMap *const>( DMA2_BASE_ADDR );
+
+  static StreamX *const DMA1_STREAM0 = reinterpret_cast<StreamX *const>( DMA1_STREAM0_BASE_ADDR );
+  static StreamX *const DMA1_STREAM1 = reinterpret_cast<StreamX *const>( DMA1_STREAM1_BASE_ADDR );
+  static StreamX *const DMA1_STREAM2 = reinterpret_cast<StreamX *const>( DMA1_STREAM2_BASE_ADDR );
+  static StreamX *const DMA1_STREAM3 = reinterpret_cast<StreamX *const>( DMA1_STREAM3_BASE_ADDR );
+  static StreamX *const DMA1_STREAM4 = reinterpret_cast<StreamX *const>( DMA1_STREAM4_BASE_ADDR );
+  static StreamX *const DMA1_STREAM5 = reinterpret_cast<StreamX *const>( DMA1_STREAM5_BASE_ADDR );
+  static StreamX *const DMA1_STREAM6 = reinterpret_cast<StreamX *const>( DMA1_STREAM6_BASE_ADDR );
+  static StreamX *const DMA1_STREAM7 = reinterpret_cast<StreamX *const>( DMA1_STREAM7_BASE_ADDR );
+
+  static StreamX *const DMA2_STREAM0 = reinterpret_cast<StreamX *const>( DMA2_STREAM0_BASE_ADDR );
+  static StreamX *const DMA2_STREAM1 = reinterpret_cast<StreamX *const>( DMA2_STREAM1_BASE_ADDR );
+  static StreamX *const DMA2_STREAM2 = reinterpret_cast<StreamX *const>( DMA2_STREAM2_BASE_ADDR );
+  static StreamX *const DMA2_STREAM3 = reinterpret_cast<StreamX *const>( DMA2_STREAM3_BASE_ADDR );
+  static StreamX *const DMA2_STREAM4 = reinterpret_cast<StreamX *const>( DMA2_STREAM4_BASE_ADDR );
+  static StreamX *const DMA2_STREAM5 = reinterpret_cast<StreamX *const>( DMA2_STREAM5_BASE_ADDR );
+  static StreamX *const DMA2_STREAM6 = reinterpret_cast<StreamX *const>( DMA2_STREAM6_BASE_ADDR );
+  static StreamX *const DMA2_STREAM7 = reinterpret_cast<StreamX *const>( DMA2_STREAM7_BASE_ADDR );
+
   static inline StreamX *const getStream( RegisterMap *const periph, const uint32_t streamNum )
   {
     return reinterpret_cast<StreamX*const>( periph + ( offsetof( RegisterMap, STREAM0 ) * streamNum ) );
@@ -62,7 +83,10 @@ namespace Thor::Driver::DMA
   /*------------------------------------------------
   Configuration Options
   ------------------------------------------------*/
-
+  namespace Configuration
+  {
+    
+  }
 
   /*------------------------------------------------
   State Machine

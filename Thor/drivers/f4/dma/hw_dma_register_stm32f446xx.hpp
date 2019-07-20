@@ -24,11 +24,28 @@
 
 namespace Thor::Driver::DMA
 {
-  static constexpr uint32_t DMA1_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x6000U;
-  static constexpr uint32_t DMA2_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x6400U;
+  static constexpr uint32_t DMA1_BASE_ADDR         = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x6000U;
+  static constexpr uint32_t DMA1_STREAM0_BASE_ADDR = DMA1_BASE_ADDR + 0x010u;
+  static constexpr uint32_t DMA1_STREAM1_BASE_ADDR = DMA1_BASE_ADDR + 0x028u;
+  static constexpr uint32_t DMA1_STREAM2_BASE_ADDR = DMA1_BASE_ADDR + 0x040u;
+  static constexpr uint32_t DMA1_STREAM3_BASE_ADDR = DMA1_BASE_ADDR + 0x058u;
+  static constexpr uint32_t DMA1_STREAM4_BASE_ADDR = DMA1_BASE_ADDR + 0x070u;
+  static constexpr uint32_t DMA1_STREAM5_BASE_ADDR = DMA1_BASE_ADDR + 0x088u;
+  static constexpr uint32_t DMA1_STREAM6_BASE_ADDR = DMA1_BASE_ADDR + 0x0A0u;
+  static constexpr uint32_t DMA1_STREAM7_BASE_ADDR = DMA1_BASE_ADDR + 0x0B8u;
 
-  static constexpr uint32_t NUM_DMA_PERIPHS                                = 2u;
-  static constexpr std::array<uint32_t, NUM_DMA_PERIPHS> periphAddressList = { DMA1_BASE_ADDR, DMA2_BASE_ADDR };
+  static constexpr uint32_t DMA2_BASE_ADDR         = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x6400U;
+  static constexpr uint32_t DMA2_STREAM0_BASE_ADDR = DMA2_BASE_ADDR + 0x010u;
+  static constexpr uint32_t DMA2_STREAM1_BASE_ADDR = DMA2_BASE_ADDR + 0x028u;
+  static constexpr uint32_t DMA2_STREAM2_BASE_ADDR = DMA2_BASE_ADDR + 0x040u;
+  static constexpr uint32_t DMA2_STREAM3_BASE_ADDR = DMA2_BASE_ADDR + 0x058u;
+  static constexpr uint32_t DMA2_STREAM4_BASE_ADDR = DMA2_BASE_ADDR + 0x070u;
+  static constexpr uint32_t DMA2_STREAM5_BASE_ADDR = DMA2_BASE_ADDR + 0x088u;
+  static constexpr uint32_t DMA2_STREAM6_BASE_ADDR = DMA2_BASE_ADDR + 0x0A0u;
+  static constexpr uint32_t DMA2_STREAM7_BASE_ADDR = DMA2_BASE_ADDR + 0x0B8u;
+
+  static constexpr uint32_t NUM_DMA_PERIPHS = 2u;
+  static constexpr uint32_t NUM_DMA_STREAMS = 8u;
 
   /*------------------------------------------------
   Low Interrupt Status Register
