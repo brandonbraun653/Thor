@@ -62,7 +62,7 @@ namespace Thor::Driver::USART
 
     Chimera::Status_t disableIT( const Chimera::Hardware::SubPeripheral periph ) final override;
 
-    Chimera::Status_t transmitIT( uint8_t *const data, const size_t size, const size_t timeout ) final override;
+    Chimera::Status_t transmitIT( const uint8_t *const data, const size_t size, const size_t timeout ) final override;
 
     Chimera::Status_t receiveIT( uint8_t *const data, const size_t size, const size_t timeout ) final override;
 
@@ -78,13 +78,21 @@ namespace Thor::Driver::USART
 
     Chimera::Status_t receiveDMA( uint8_t *const data, const size_t size, const size_t timeout ) final override;
 
-    Chimera::Status_t registerEventListener( const Chimera::Event::Trigger event,
-                                             SemaphoreHandle_t *const listener ) final override;
+    Chimera::Status_t registerEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t listener ) final override;
 
-    Chimera::Status_t removeEventListener( const Chimera::Event::Trigger event,
-                                           SemaphoreHandle_t *const listener ) final override;
+    Chimera::Status_t removeEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t listener ) final override;
 
-    Chimera::Hardware::Status pollTransferStatus() final override;
+    Chimera::Status_t txTransferStatus() final override;
+
+    Chimera::Status_t rxTransferStatus() final override;
+
+    uint32_t getFlags() final override;
+
+    void clearFlags( const uint32_t flagBits ) final override;
+
+    void killTransmit() final override;
+
+    void killReceive() final override;
 
   protected:
     friend void(::USART1_IRQHandler )();
@@ -106,15 +114,15 @@ namespace Thor::Driver::USART
 
     Chimera::Peripheral::Type peripheralType;
 
-    EventResponders rxCompleteActors;
+    EventResponders onRXComplete;
     EventResponders onTXComplete;
     EventResponders onError;
 
-    TCB txTCB;
-    TCB rxTCB;
+    CDTCB txTCB;
+    MDTCB rxTCB;
 
 
-    volatile uint32_t ISRErrorFlags; /**< Error flags that were set inside the ISR handler */
+    volatile Runtime::Flag_t RuntimeFlags; /**< Error/process flags set at runtime to indicate state */
 
     /**
      *  Blocking wait on the particular flag in the status register to become set
@@ -136,12 +144,12 @@ namespace Thor::Driver::USART
     /**
      *  Disables the USART interrupts
      */
-    void enterCriticalSection();
+    inline void enterCriticalSection();
 
     /**
      *  Enables the USART interrupts
      */
-    void exitCriticalSection();
+    inline void exitCriticalSection();
   };
 }    // namespace Thor::Driver::USART
 

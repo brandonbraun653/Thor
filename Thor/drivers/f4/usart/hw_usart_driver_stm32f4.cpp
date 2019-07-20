@@ -83,7 +83,7 @@ namespace Thor::Driver::USART
     txTCB.reset();
     rxTCB.reset();
 
-    rxCompleteActors.clear();
+    onRXComplete.clear();
     onTXComplete.clear();
     onError.clear();
 
@@ -133,7 +133,7 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Erases pointers to the listeners, not the listeners themselves
     ------------------------------------------------*/
-    rxCompleteActors.clear();
+    onRXComplete.clear();
     onTXComplete.clear();
 
     return Chimera::CommonStatusCodes::OK;
@@ -187,7 +187,7 @@ namespace Thor::Driver::USART
     return result;
   }
 
-  Chimera::Status_t Driver::transmitIT( uint8_t *const data, const size_t size, const size_t timeout )
+  Chimera::Status_t Driver::transmitIT( const uint8_t *const data, const size_t size, const size_t timeout )
   {
 #if defined( DEBUG )
     if ( !data || !size )
@@ -220,7 +220,7 @@ namespace Thor::Driver::USART
       ------------------------------------------------*/
       txTCB.buffer = &data[ 1 ]; /* Point to the next byte */
       txTCB.size   = size - 1u;  /* Pre-decrement to account for this first byte */
-      txTCB.state  = StateMachine::TX::IT_TX_ONGOING;
+      txTCB.state  = StateMachine::TX::TX_ONGOING;
 
       /*------------------------------------------------
       Write the byte onto the wire
@@ -251,16 +251,22 @@ namespace Thor::Driver::USART
     {
       enterCriticalSection();
 
-      // do something with interrupt bits
+      /*------------------------------------------------
+      Only turn on RXNE so as to detect when the first byte arrives
+      ------------------------------------------------*/
+      CR1::RXNEIE::set( periph, CR1_RXNEIE );
 
       /*------------------------------------------------
       Prep the transfer control block to receive data
       ------------------------------------------------*/
       rxTCB.buffer = data;
       rxTCB.size   = size;
-      rxTCB.state  = StateMachine::RX::IT_RX_ONGOING;
+      rxTCB.state  = StateMachine::RX::RX_ONGOING;
 
-      // turn on listening
+      /*------------------------------------------------
+      Turn on the RX hardware to begin listening
+      ------------------------------------------------*/
+      CR1::RE::set( periph, CR1_RE );
 
       exitCriticalSection();
     }
@@ -298,19 +304,70 @@ namespace Thor::Driver::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::registerEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t *const listener )
+  Chimera::Status_t Driver::registerEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t listener )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::removeEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t *const listener )
+  Chimera::Status_t Driver::removeEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t listener )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Hardware::Status Driver::pollTransferStatus()
+  Chimera::Status_t Driver::txTransferStatus()
   {
-    return Chimera::Hardware::Status::PERIPHERAL_FREE;
+    Chimera::Status_t cacheStatus = Chimera::CommonStatusCodes::UNKNOWN_ERROR;
+
+    enterCriticalSection();
+    cacheStatus = txTCB.state;
+    exitCriticalSection();
+
+    return cacheStatus;
+  }
+
+  Chimera::Status_t Driver::rxTransferStatus()
+  {
+    Chimera::Status_t cacheStatus = Chimera::CommonStatusCodes::UNKNOWN_ERROR;
+
+    enterCriticalSection();
+    cacheStatus = rxTCB.state;
+    exitCriticalSection();
+
+    return cacheStatus;
+  }
+
+  uint32_t Driver::getFlags()
+  {
+    return RuntimeFlags;
+  }
+
+  void Driver::clearFlags( const uint32_t flagBits )
+  {
+    enterCriticalSection();
+    RuntimeFlags &= ~( flagBits );
+    exitCriticalSection();
+  }
+
+  void Driver::killTransmit()
+  {
+    enterCriticalSection();
+
+    disableIT( Chimera::Hardware::SubPeripheral::TX );
+    disableDMA_IT( Chimera::Hardware::SubPeripheral::TX );
+    txTCB.reset();
+
+    exitCriticalSection();
+  }
+
+  void Driver::killReceive()
+  {
+    enterCriticalSection();
+
+    disableIT( Chimera::Hardware::SubPeripheral::RX );
+    disableDMA_IT( Chimera::Hardware::SubPeripheral::RX );
+    rxTCB.reset();
+
+    exitCriticalSection();
   }
 
   void Driver::IRQHandler()
@@ -346,7 +403,7 @@ namespace Thor::Driver::USART
       /*------------------------------------------------
       TDR Empty Interrupt
       ------------------------------------------------*/
-      if ( ( txFlags & FLAG_TXE ) && ( CR1 & CR1_TXEIE ) && ( txTCB.state == StateMachine::TX::IT_TX_ONGOING ) )
+      if ( ( txFlags & FLAG_TXE ) && ( CR1 & CR1_TXEIE ) && ( txTCB.state == StateMachine::TX::TX_ONGOING ) )
       {
         if ( txTCB.size )
         {
@@ -371,14 +428,14 @@ namespace Thor::Driver::USART
           ------------------------------------------------*/
           CR1::TXEIE::set( periph, 0 );
           CR1::TCIE::set( periph, CR1_TCIE );
-          txTCB.state = StateMachine::IT_TX_COMPLETE;
+          txTCB.state = StateMachine::TX_COMPLETE;
         }
       }
 
       /*------------------------------------------------
       Transfer Complete Interrupt
       ------------------------------------------------*/
-      if ( ( txFlags & FLAG_TC ) && ( CR1 & CR1_TCIE ) && ( txTCB.state == StateMachine::TX::IT_TX_COMPLETE ) ) 
+      if ( ( txFlags & FLAG_TC ) && ( CR1 & CR1_TCIE ) && ( txTCB.state == StateMachine::TX::TX_COMPLETE ) ) 
       {
         onTXComplete.notifyAtomic( Chimera::Event::Trigger::WRITE_COMPLETE );
         onTXComplete.notifyThreaded();
@@ -390,7 +447,7 @@ namespace Thor::Driver::USART
         CR1::TCIE::set( periph, 0 );
         CR1::TXEIE::set( periph, 0 );
         CR1::TE::set( periph, 0 );
-        txTCB.state = StateMachine::TX::IT_TX_READY;
+        txTCB.state = StateMachine::TX::TX_COMPLETE;
       }
     }
 
@@ -399,10 +456,60 @@ namespace Thor::Driver::USART
     ------------------------------------------------*/
     if ( rxFlags )
     {
+      /*------------------------------------------------
+      RX register not empty, aka a new byte has arrived!
+      ------------------------------------------------*/
+      if ( ( rxFlags & FLAG_RXNE ) && ( CR1 & CR1_RXNEIE ) && ( rxTCB.state == StateMachine::RX::RX_ONGOING ) )
+      {
+        /*------------------------------------------------
+        Make sure the line idle interrupt is enabled. Regardless of
+        whether or not we have data left to RX, the sender might just
+        suddenly stop, and we need to detect that.
+        ------------------------------------------------*/
+        CR1::IDLEIE::set( periph, CR1_IDLEIE );
 
-    // Handle RX related stuff
-    //  Single reception character by character, up to a certain size
-    //  Need a transfer control block structure that is volatile/protected when accessed user side.
+        /*------------------------------------------------
+        Read out the current byte and prep for the next transfer
+        ------------------------------------------------*/
+        *rxTCB.buffer = periph->DR;
+
+        rxTCB.buffer++;
+        rxTCB.size--;
+
+        /*------------------------------------------------
+        If no more bytes left to receive, stop listening
+        ------------------------------------------------*/
+        if ( !rxTCB.size )
+        {
+          CR1::RE::set( periph, 0 );
+          CR1::IDLEIE::set( periph, 0 );
+          rxTCB.state = StateMachine::RX::RX_COMPLETE;
+        }
+      }
+
+      /*------------------------------------------------
+      Line Idle: We were in the middle of a transfer and 
+      then suddenly they just stopped sending data.
+      ------------------------------------------------*/
+      if ( ( rxFlags & FLAG_IDLE ) && ( CR1 & CR1_IDLEIE ) && ( rxTCB.state == StateMachine::RX::RX_ONGOING ) )
+      {
+        CR1::RE::set( periph, 0 );
+        CR1::IDLEIE::set( periph, 0 );
+        rxTCB.state = StateMachine::RX::RX_ABORTED;
+      }
+
+      /*------------------------------------------------
+      RX complete callbacks. Let the user decide what to
+      do if the status in the control block is aborted.
+      ------------------------------------------------*/
+      if ( ( rxTCB.state == StateMachine::RX::RX_READY ) || ( rxTCB.state == StateMachine::RX::RX_ABORTED ) ) 
+      {
+        RuntimeFlags |= Runtime::Flag::RX_LINE_IDLE_ABORT;
+
+        onRXComplete.notifyAtomic( Chimera::Event::Trigger::READ_COMPLETE );
+        onRXComplete.notifyThreaded();
+        onRXComplete.executeCallbacks( nullptr );
+      }
     }
 
     /*------------------------------------------------
@@ -410,7 +517,7 @@ namespace Thor::Driver::USART
     ------------------------------------------------*/
     if ( errorFlags )
     {
-      ISRErrorFlags |= errorFlags;
+      RuntimeFlags |= errorFlags;
 
       onError.notifyAtomic( Chimera::Event::Trigger::ERROR );
       onError.notifyThreaded();
@@ -477,12 +584,12 @@ namespace Thor::Driver::USART
     return calculatedBRR;
   }
 
-  void Driver::enterCriticalSection()
+  inline void Driver::enterCriticalSection()
   {
     Thor::Driver::Interrupt::disableIRQ( periphIRQn );
   }
 
-  void Driver::exitCriticalSection()
+  inline void Driver::exitCriticalSection()
   {
     Thor::Driver::Interrupt::enableIRQ( periphIRQn );
   }

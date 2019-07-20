@@ -41,7 +41,7 @@ namespace Thor::Driver
      *  |          FAIL | Failed event registration for some reason           |
      *  | NOT_SUPPORTED | This event is not supported by the low level driver |
      */
-    virtual Chimera::Status_t registerEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t *const listener ) = 0;
+    virtual Chimera::Status_t registerEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t listener ) = 0;
 
     /**
      *  Removes a listener from a particular event
@@ -54,7 +54,7 @@ namespace Thor::Driver
      *  |            OK | Removed successfully, even if nonexistant           |
      *  | NOT_SUPPORTED | This event is not supported by the low level driver |
      */
-    virtual Chimera::Status_t removeEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t *const listener ) = 0;
+    virtual Chimera::Status_t removeEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t listener ) = 0;
 
   };
 }    // namespace Thor::Driver::Serial

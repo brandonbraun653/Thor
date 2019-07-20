@@ -15,6 +15,9 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Chimera Includes */
+#include <Chimera/types/serial_types.hpp>
+
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
@@ -38,23 +41,6 @@ namespace Thor::Driver::USART
   static RegisterMap *const USART2_PERIPH = reinterpret_cast<RegisterMap *const>( USART2_BASE_ADDR );
   static RegisterMap *const USART3_PERIPH = reinterpret_cast<RegisterMap *const>( USART3_BASE_ADDR );
   static RegisterMap *const USART6_PERIPH = reinterpret_cast<RegisterMap *const>( USART6_BASE_ADDR );
-
-  /**
-   *  Base unit of a transfer control block for the TX/RX channels
-   */
-  struct TCB
-  {
-    uint8_t *buffer;
-    size_t size;
-    uint8_t state;
-
-    inline void reset()
-    {
-      buffer = nullptr;
-      size   = 0;
-      state  = 0;
-    }
-  };
 
   /**
    *  Checks if the given address belongs to a peripheral instance
@@ -129,6 +115,7 @@ namespace Thor::Driver::USART
     namespace Flags
     {
       static constexpr uint32_t FLAG_CTS  = SR_CTS;
+      static constexpr uint32_t FLAG_LBD  = SR_LBD;
       static constexpr uint32_t FLAG_TXE  = SR_TXE;
       static constexpr uint32_t FLAG_TC   = SR_TC;
       static constexpr uint32_t FLAG_RXNE = SR_RXNE;
@@ -141,22 +128,49 @@ namespace Thor::Driver::USART
   }
 
   /*------------------------------------------------
+  Runtime
+  ------------------------------------------------*/
+  namespace Runtime
+  {
+    using Flag_t = uint32_t;
+    namespace Flag
+    {
+      /* Let the first 16 bits match the Status Register for consistency */
+      static constexpr Flag_t RX_PARITY_ERROR    = Configuration::Flags::FLAG_PE;
+      static constexpr Flag_t RX_FRAMING_ERROR   = Configuration::Flags::FLAG_FE;
+      static constexpr Flag_t RX_NOISE_ERROR     = Configuration::Flags::FLAG_NF;
+      static constexpr Flag_t RX_OVERRUN         = Configuration::Flags::FLAG_ORE;
+      static constexpr Flag_t RX_IDLE_DETECTED   = Configuration::Flags::FLAG_IDLE;
+      static constexpr Flag_t RX_BYTE_READY      = Configuration::Flags::FLAG_RXNE;
+      static constexpr Flag_t TX_COMPLETE        = Configuration::Flags::FLAG_TC;
+      static constexpr Flag_t TX_DR_EMPTY        = Configuration::Flags::FLAG_TXE;
+      static constexpr Flag_t RX_LINE_IN_BREAK   = Configuration::Flags::FLAG_LBD;
+      static constexpr Flag_t CTL_CLEAR_TO_SEND  = Configuration::Flags::FLAG_CTS;
+
+      /* Use the remaining 16 bits for other signals */
+      static constexpr Flag_t RX_LINE_IDLE_ABORT = ( 1u << 16 );
+    }
+  }
+
+  /*------------------------------------------------
   State Machine 
   ------------------------------------------------*/
   namespace StateMachine
   {
-    enum TX : uint8_t
+    enum TX : Chimera::Status_t
     {
-      IT_TX_READY = 0,
-      IT_TX_ONGOING,
-      IT_TX_COMPLETE
+      TX_READY    = Chimera::Serial::Status::TX_READY,
+      TX_ONGOING  = Chimera::Serial::Status::TX_IN_PROGRESS,
+      TX_ABORTED  = Chimera::Serial::Status::TX_ABORTED,
+      TX_COMPLETE = Chimera::Serial::Status::TX_COMPLETE
     };
 
-    enum RX : uint8_t
+    enum RX : Chimera::Status_t
     {
-      IT_RX_READY = 0,
-      IT_RX_ONGOING,
-      IT_RX_COMPLETE
+      RX_READY    = Chimera::Serial::Status::RX_READY,
+      RX_ONGOING  = Chimera::Serial::Status::RX_IN_PROGRESS,
+      RX_COMPLETE = Chimera::Serial::Status::RX_COMPLETE,
+      RX_ABORTED  = Chimera::Serial::Status::RX_ABORTED
     };
   }    // namespace StateMachine
 
@@ -1238,6 +1252,48 @@ namespace Thor::Driver::USART
       static constexpr uint32_t mask = GTPR_PSC;
     };
   }    // namespace GTPR
+
+
+
+  /**
+   *  Transfer control block that handles data which should
+   *  never be modified during a transfer.
+   *
+   *  (C)onstant (D)ata (T)ransfer (C)ontrol (B)lock
+   */
+  struct CDTCB
+  {
+    const uint8_t *buffer;
+    size_t size;
+    Chimera::Status_t state;
+
+    inline void reset()
+    {
+      buffer = nullptr;
+      size   = 0;
+      state  = StateMachine::TX::TX_READY;
+    }
+  };
+
+  /**
+   *  Transfer control block that handles data which might
+   *  be modified during a transfer.
+   *
+   *  (M)odifiable (D)ata (T)ransfer (C)ontrol (B)lock
+   */
+  struct MDTCB
+  {
+    uint8_t *buffer;
+    size_t size;
+    Chimera::Status_t state;
+
+    inline void reset()
+    {
+      buffer = nullptr;
+      size   = 0;
+      state  = StateMachine::RX::RX_READY;
+    }
+  };
 }    // namespace Thor::Driver::USART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_USART */

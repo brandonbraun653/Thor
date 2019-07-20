@@ -18,6 +18,7 @@
 
 /* Chimera Includes */
 #include <Chimera/types/common_types.hpp>
+#include <Chimera/types/serial_types.hpp>
 
 /* Driver Includes */
 #include <Thor/drivers/common/types/serial_types.hpp>
@@ -86,6 +87,26 @@ namespace Thor::Driver::Serial
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t receive( uint8_t *const data, const size_t size, const size_t timeout ) = 0;
+    
+    /**
+     *
+     */
+    virtual Chimera::Status_t txTransferStatus() = 0;
+
+    /**
+     *
+     */
+    virtual Chimera::Status_t rxTransferStatus() = 0;
+
+    /**
+     *
+     */
+    virtual uint32_t getFlags() = 0;
+
+    /**
+     *
+     */
+    virtual void clearFlags( const uint32_t flagBits ) = 0;
   };
 
   /**
@@ -96,13 +117,6 @@ namespace Thor::Driver::Serial
   {
   public:
     virtual ~Extended() = default;
-
-    /**
-     *  Performs a manual check of the asynchronous transfer state
-     *
-     *  @return Chimera::Hardware::Status
-     */
-    virtual Chimera::Hardware::Status pollTransferStatus() = 0;
 
     /**
      *  Enable the interrupts needed for a particular peripheral to
@@ -131,7 +145,7 @@ namespace Thor::Driver::Serial
      *  @param[in]  timeout   How long to wait in milliseconds for the hardware to become available
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t transmitIT( uint8_t *const data, const size_t size, const size_t timeout ) = 0;
+    virtual Chimera::Status_t transmitIT( const uint8_t *const data, const size_t size, const size_t timeout ) = 0;
 
     /**
      *  Receive data using interrupt mode. If none arrives immediately, the driver should
@@ -200,6 +214,16 @@ namespace Thor::Driver::Serial
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t receiveDMA( uint8_t *const data, const size_t size, const size_t timeout ) = 0;
+
+    /**
+     *
+     */
+    virtual void killTransmit() = 0;
+
+    /**
+     *
+     */
+    virtual void killReceive() = 0;
   };
 
 }    // namespace Thor::Driver::Serial
