@@ -31,7 +31,8 @@ namespace Thor::Serial
 #endif
   } };
 
-  SerialClass::SerialClass() : serialChannel( INVALID_CHANNEL ), serialObject( nullptr )
+  SerialClass::SerialClass() :
+      serialChannel( INVALID_CHANNEL ), serialObject( nullptr )
   {
     /*------------------------------------------------
     Make sure the behavior is disabled until the user calls assignHW()
@@ -53,13 +54,13 @@ namespace Thor::Serial
       -------------------------------------------------*/
       if ( isUARTChannel[ channel ] )
       {
-        auto tmp     = std::make_shared<Thor::UART::UARTClass>();
-        serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Thor::UART::UARTClass>( tmp );
+        auto uartObject   = std::make_shared<Thor::UART::UARTClass>();
+        serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Thor::UART::UARTClass>( uartObject );
       }
       else
       {
-        auto tmp     = std::make_shared<Thor::USART::USARTClass>();
-        serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Thor::USART::USARTClass>( tmp );
+        auto usartObject  = std::make_shared<Thor::USART::USARTClass>();
+        serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Thor::USART::USARTClass>( usartObject );
       }
 
       /*------------------------------------------------
@@ -127,6 +128,16 @@ namespace Thor::Serial
   Chimera::Status_t SerialClass::readAsync( uint8_t *const buffer, const size_t len )
   {
     return serialObject->readAsync( buffer, len );
+  }
+
+  Chimera::Status_t SerialClass::attachCallback( const Chimera::Event::Trigger event, Chimera::Callback::ISRCallback &handle )
+  {
+    return serialObject->attachCallback( event, handle );
+  }
+
+  Chimera::Status_t SerialClass::detachCallback( const Chimera::Event::Trigger event, Chimera::Callback::ISRCallback &handle )
+  {
+    return serialObject->detachCallback( event, handle );
   }
 
 #if defined( USING_FREERTOS )

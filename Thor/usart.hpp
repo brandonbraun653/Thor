@@ -24,6 +24,7 @@
 /* Chimera Includes */
 #include <Chimera/buffer.hpp>
 #include <Chimera/interface/serial_intf.hpp>
+#include <Chimera/interface/callback_intf.hpp>
 #include <Chimera/types/event_types.hpp>
 
 /* Thor Includes */
@@ -81,6 +82,12 @@ namespace Thor::USART
     void await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier ) final override;
 
     void postISRProcessing() final override;
+
+    Chimera::Status_t attachCallback( const Chimera::Event::Trigger event,
+                                      Chimera::Callback::ISRCallback &handle ) final override;
+
+    Chimera::Status_t detachCallback( const Chimera::Event::Trigger event,
+                                      Chimera::Callback::ISRCallback &handle ) final override;
   };
 
   using USARTClass_sPtr = std::shared_ptr<USARTClass>;

@@ -16,6 +16,15 @@
 
 namespace Thor::USART
 {
+  USARTClass::USARTClass()
+  {
+
+  }
+
+  USARTClass::~USARTClass()
+  {
+  }
+
   Chimera::Status_t USARTClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
@@ -63,7 +72,7 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  void postISRProcessing()
+  void USARTClass::postISRProcessing()
   {
   }
 
@@ -107,5 +116,15 @@ namespace Thor::USART
 
   void USARTClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier )
   {
+  }
+
+  Chimera::Status_t USARTClass::attachCallback( const Chimera::Event::Trigger event, Chimera::Callback::ISRCallback &handle )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t USARTClass::detachCallback( const Chimera::Event::Trigger event, Chimera::Callback::ISRCallback &handle )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 }    // namespace Thor::USART

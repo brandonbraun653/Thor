@@ -20,6 +20,7 @@
 
 /* Chimera Includes */
 #include <Chimera/threading.hpp>
+#include <Chimera/interface/callback_intf.hpp>
 #include <Chimera/types/common_types.hpp>
 #include <Chimera/types/peripheral_types.hpp>
 
@@ -39,10 +40,10 @@
 
 namespace Thor::Driver::USART
 {
-
   class Driver : public Thor::Driver::Serial::Basic,
                  public Thor::Driver::Serial::Extended,
-                 public Thor::Driver::EventListener
+                 public Thor::Driver::EventListener,
+                 public Chimera::Callback::Manager<Driver, Chimera::Callback::ISRCallbackFunction>
   {
   public:
     Driver( RegisterMap *const peripheral );
@@ -114,9 +115,9 @@ namespace Thor::Driver::USART
 
     Chimera::Peripheral::Type peripheralType;
 
-    EventResponders onRXComplete;
-    EventResponders onTXComplete;
-    EventResponders onError;
+//    EventResponders onRXComplete;
+//    EventResponders onTXComplete;
+//    EventResponders onError;
 
     CDTCB txTCB;
     MDTCB rxTCB;

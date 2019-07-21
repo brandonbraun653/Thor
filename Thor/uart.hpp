@@ -23,6 +23,7 @@
 /* Chimera Includes */
 #include <Chimera/buffer.hpp>
 #include <Chimera/interface/serial_intf.hpp>
+#include <Chimera/interface/callback_intf.hpp>
 #include <Chimera/types/event_types.hpp>
 
 /* Thor Includes */
@@ -81,10 +82,13 @@ namespace Thor::UART
     void await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier ) final override;
 
     void postISRProcessing() final override;
-  };
 
-  using UARTClass_sPtr = std::shared_ptr<UARTClass>;
-  using UARTClass_uPtr = std::unique_ptr<UARTClass>;
+    Chimera::Status_t attachCallback( const Chimera::Event::Trigger event,
+                                      Chimera::Callback::ISRCallback &handle ) final override;
+
+    Chimera::Status_t detachCallback( const Chimera::Event::Trigger event,
+                                      Chimera::Callback::ISRCallback &handle ) final override;
+  };
 
 #endif /* THOR_CUSTOM_DRIVERS && THOR_DRIVER_UART */
 

@@ -81,9 +81,9 @@ namespace Thor::Driver::USART
     txTCB.reset();
     rxTCB.reset();
 
-    onRXComplete.clear();
-    onTXComplete.clear();
-    onError.clear();
+//    onRXComplete.clear();
+//    onTXComplete.clear();
+//    onError.clear();
 
     exitCriticalSection();
 
@@ -131,8 +131,8 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Erases pointers to the listeners, not the listeners themselves
     ------------------------------------------------*/
-    onRXComplete.clear();
-    onTXComplete.clear();
+//    onRXComplete.clear();
+//    onTXComplete.clear();
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -435,9 +435,9 @@ namespace Thor::Driver::USART
       ------------------------------------------------*/
       if ( ( txFlags & FLAG_TC ) && ( CR1 & CR1_TCIE ) && ( txTCB.state == StateMachine::TX::TX_COMPLETE ) ) 
       {
-        onTXComplete.notifyAtomic( Chimera::Event::Trigger::WRITE_COMPLETE );
-        onTXComplete.notifyThreaded();
-        onTXComplete.executeCallbacks( nullptr );
+//        onTXComplete.notifyAtomic( Chimera::Event::Trigger::WRITE_COMPLETE );
+//        onTXComplete.notifyThreaded();
+//        onTXComplete.executeCallbacks( nullptr );
 
         /*------------------------------------------------
         Exit the TX ISR cleanly by disabling related interrupts
@@ -504,9 +504,9 @@ namespace Thor::Driver::USART
       {
         RuntimeFlags |= Runtime::Flag::RX_LINE_IDLE_ABORT;
 
-        onRXComplete.notifyAtomic( Chimera::Event::Trigger::READ_COMPLETE );
-        onRXComplete.notifyThreaded();
-        onRXComplete.executeCallbacks( nullptr );
+//        onRXComplete.notifyAtomic( Chimera::Event::Trigger::READ_COMPLETE );
+//        onRXComplete.notifyThreaded();
+//        onRXComplete.executeCallbacks( nullptr );
       }
     }
 
@@ -517,9 +517,9 @@ namespace Thor::Driver::USART
     {
       RuntimeFlags |= errorFlags;
 
-      onError.notifyAtomic( Chimera::Event::Trigger::ERROR );
-      onError.notifyThreaded();
-      onError.executeCallbacks( reinterpret_cast<const void *const>( &errorFlags ) );
+//      onError.notifyAtomic( Chimera::Event::Trigger::ERROR );
+//      onError.notifyThreaded();
+//      onError.executeCallbacks( reinterpret_cast<const void *const>( &errorFlags ) );
 
       /* All error bits are cleared by read to SR then DR, which was already performed */
     }

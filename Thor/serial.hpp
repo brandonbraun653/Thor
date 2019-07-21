@@ -23,6 +23,10 @@
 #include <Chimera/interface/serial_intf.hpp>
 #include <Chimera/interface/threading_intf.hpp>
 
+/* Thor Includes */
+#include <Thor/types/uart_types.hpp>
+#include <Thor/types/usart_types.hpp>
+
 namespace Thor::Serial
 {
   class SerialClass;
@@ -56,6 +60,12 @@ namespace Thor::Serial
     void postISRProcessing() final override;
 
     Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
+
+    Chimera::Status_t attachCallback( const Chimera::Event::Trigger event,
+                                      Chimera::Callback::ISRCallback &handle ) final override;
+
+    Chimera::Status_t detachCallback( const Chimera::Event::Trigger event,
+                                      Chimera::Callback::ISRCallback &handle ) final override;
 
 #if defined( USING_FREERTOS )
     Chimera::Status_t attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr ) final override;
