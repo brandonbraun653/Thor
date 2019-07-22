@@ -26,7 +26,6 @@ namespace Chimera::Modules::FreeRTOS
 
   void ApplicationTickHook()
   {
-    // HAL_IncTick();
     Thor::prjIncSysTick();
   }
 

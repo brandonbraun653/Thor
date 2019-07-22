@@ -15,6 +15,7 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/event.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
 #include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
@@ -30,7 +31,6 @@ static std::array<Thor::Driver::USART::Driver *, Thor::Driver::USART::NUM_USART_
 
 namespace Thor::Driver::USART
 {
-
   bool isUSART( const std::uintptr_t address )
   {
     bool result = false;
@@ -46,13 +46,12 @@ namespace Thor::Driver::USART
     return result;
   }
 
-  Driver::Driver( RegisterMap *const peripheral ) : periph( peripheral )
+  Driver::Driver( RegisterMap *const peripheral ) : periph( peripheral ), listenerIDCount( 0 )
   {
     auto address   = reinterpret_cast<std::uintptr_t>( peripheral );
     peripheralType = Chimera::Peripheral::Type::PERIPH_USART;
     resourceIndex  = Thor::Driver::USART::InstanceToResourceIndex.find( address )->second;
-
-    periphIRQn = USART_IRQn[ resourceIndex ];
+    periphIRQn     = USART_IRQn[ resourceIndex ];
 
     usartObjects[ resourceIndex ] = this;
   }
@@ -81,9 +80,8 @@ namespace Thor::Driver::USART
     txTCB.reset();
     rxTCB.reset();
 
-//    onRXComplete.clear();
-//    onTXComplete.clear();
-//    onError.clear();
+    listenerIDCount = 0u;
+    eventListeners.clear();
 
     exitCriticalSection();
 
@@ -131,8 +129,7 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Erases pointers to the listeners, not the listeners themselves
     ------------------------------------------------*/
-//    onRXComplete.clear();
-//    onTXComplete.clear();
+    eventListeners.clear();
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -203,14 +200,10 @@ namespace Thor::Driver::USART
       enterCriticalSection();
       
       /*------------------------------------------------
-      Turn on the transmitter
+      Turn on the transmitter & TDR interrupt so we know 
+      when we can stage the next byte transfer.
       ------------------------------------------------*/
       CR1::TE::set( periph, CR1_TE );
-
-      /*------------------------------------------------
-      Turn on the Transmit Data register interrupt so we
-      know when we can stage the next byte transfer.
-      ------------------------------------------------*/
       CR1::TXEIE::set( periph, CR1_TXEIE );
 
       /*------------------------------------------------
@@ -302,16 +295,6 @@ namespace Thor::Driver::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::registerEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t listener )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t Driver::removeEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t listener )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
   Chimera::Status_t Driver::txTransferStatus()
   {
     Chimera::Status_t cacheStatus = Chimera::CommonStatusCodes::UNKNOWN_ERROR;
@@ -334,15 +317,38 @@ namespace Thor::Driver::USART
     return cacheStatus;
   }
 
+  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID )
+  {
+    registrationID = ++listenerIDCount;
+    listener.id    = registrationID;
+    eventListeners.push_back( listener );
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
+  {
+    for ( auto iterator = eventListeners.begin(); iterator != eventListeners.end(); iterator++ )
+    {
+      if ( iterator->id == registrationID )
+      {
+        eventListeners.erase( iterator );
+        return Chimera::CommonStatusCodes::OK;
+        break;
+      }
+    }
+
+    return Chimera::CommonStatusCodes::NOT_FOUND;
+  }
+
   uint32_t Driver::getFlags()
   {
-    return RuntimeFlags;
+    return runtimeFlags;
   }
 
   void Driver::clearFlags( const uint32_t flagBits )
   {
     enterCriticalSection();
-    RuntimeFlags &= ~( flagBits );
+    runtimeFlags &= ~( flagBits );
     exitCriticalSection();
   }
 
@@ -389,9 +395,9 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Figure out which interrupt flags have been set
     ------------------------------------------------*/
-    const uint32_t txFlags    = statusRegister & ( FLAG_TC | FLAG_TXE );
-    const uint32_t rxFlags    = statusRegister & ( FLAG_RXNE | FLAG_IDLE );
-    const uint32_t errorFlags = statusRegister & ( FLAG_ORE | FLAG_PE | FLAG_NF | FLAG_FE );
+    uint32_t txFlags    = statusRegister & ( FLAG_TC | FLAG_TXE );
+    uint32_t rxFlags    = statusRegister & ( FLAG_RXNE | FLAG_IDLE );
+    uint32_t errorFlags = statusRegister & ( FLAG_ORE | FLAG_PE | FLAG_NF | FLAG_FE );
 
     /*------------------------------------------------
     TX Related Handler
@@ -435,9 +441,22 @@ namespace Thor::Driver::USART
       ------------------------------------------------*/
       if ( ( txFlags & FLAG_TC ) && ( CR1 & CR1_TCIE ) && ( txTCB.state == StateMachine::TX::TX_COMPLETE ) ) 
       {
-//        onTXComplete.notifyAtomic( Chimera::Event::Trigger::WRITE_COMPLETE );
-//        onTXComplete.notifyThreaded();
-//        onTXComplete.executeCallbacks( nullptr );
+        const auto event = Chimera::Event::Trigger::WRITE_COMPLETE;
+
+        /*------------------------------------------------
+        Process registered listeners. There shouldn't be many.
+        ------------------------------------------------*/
+        for ( auto &listener : eventListeners )
+        {
+          if ( listener.trigger != event )
+          {
+            continue;
+          }
+
+          Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
+          Thor::Event::notifyThread( event, listener );
+          Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
+        }
 
         /*------------------------------------------------
         Exit the TX ISR cleanly by disabling related interrupts
@@ -494,19 +513,31 @@ namespace Thor::Driver::USART
         CR1::RE::set( periph, 0 );
         CR1::IDLEIE::set( periph, 0 );
         rxTCB.state = StateMachine::RX::RX_ABORTED;
+        runtimeFlags |= Runtime::Flag::RX_LINE_IDLE_ABORT;
       }
 
       /*------------------------------------------------
       RX complete callbacks. Let the user decide what to
       do if the status in the control block is aborted.
       ------------------------------------------------*/
-      if ( ( rxTCB.state == StateMachine::RX::RX_READY ) || ( rxTCB.state == StateMachine::RX::RX_ABORTED ) ) 
+      if ( ( rxTCB.state == StateMachine::RX::RX_COMPLETE ) || ( rxTCB.state == StateMachine::RX::RX_ABORTED ) ) 
       {
-        RuntimeFlags |= Runtime::Flag::RX_LINE_IDLE_ABORT;
+        const auto event = Chimera::Event::Trigger::READ_COMPLETE;
 
-//        onRXComplete.notifyAtomic( Chimera::Event::Trigger::READ_COMPLETE );
-//        onRXComplete.notifyThreaded();
-//        onRXComplete.executeCallbacks( nullptr );
+        /*------------------------------------------------
+        Process registered listeners. There shouldn't be many.
+        ------------------------------------------------*/
+        for ( auto &listener : eventListeners )
+        {
+          if ( listener.trigger != event )
+          {
+            continue;
+          }
+
+          Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
+          Thor::Event::notifyThread( event, listener );
+          Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
+        }
       }
     }
 
@@ -515,32 +546,27 @@ namespace Thor::Driver::USART
     ------------------------------------------------*/
     if ( errorFlags )
     {
-      RuntimeFlags |= errorFlags;
+      const auto event = Chimera::Event::Trigger::ERROR;
 
-//      onError.notifyAtomic( Chimera::Event::Trigger::ERROR );
-//      onError.notifyThreaded();
-//      onError.executeCallbacks( reinterpret_cast<const void *const>( &errorFlags ) );
+      runtimeFlags |= errorFlags;
+
+      /*------------------------------------------------
+      Process registered listeners. There shouldn't be many.
+      ------------------------------------------------*/
+      for ( auto &listener : eventListeners )
+      {
+        if ( listener.trigger != event )
+        {
+          continue;
+        }
+
+        Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
+        Thor::Event::notifyThread( event, listener );
+        Thor::Event::executeISRCallback( event, listener, reinterpret_cast<void *const>( &errorFlags ), sizeof( errorFlags ) );
+      }
 
       /* All error bits are cleared by read to SR then DR, which was already performed */
     }
-  }
-
-  bool Driver::waitUntilSet( const uint32_t flag, const size_t timeout )
-  {
-    uint32_t srVal   = SR::get( periph );
-    size_t startTime = Chimera::millis();
-
-    while ( !( srVal & flag ) )
-    {
-      srVal = SR::get( periph );
-
-      if ( ( Chimera::millis() - startTime ) > timeout )
-      {
-        return true;
-      }
-    } 
-
-    return false;
   }
 
   uint32_t Driver::calculateBRR( const size_t desiredBaud )
@@ -591,7 +617,6 @@ namespace Thor::Driver::USART
   {
     Thor::Driver::Interrupt::enableIRQ( periphIRQn );
   }
-
 }    // namespace Thor::Driver::USART
 
 void USART1_IRQHandler( void )

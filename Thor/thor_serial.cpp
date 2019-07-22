@@ -37,8 +37,8 @@ namespace Thor::Serial
     /*------------------------------------------------
     Make sure the behavior is disabled until the user calls assignHW()
     ------------------------------------------------*/
-//    auto tmp     = std::make_shared<Chimera::Serial::SerialUnsupported>();
-//    serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Chimera::Serial::SerialUnsupported>( tmp );
+    auto tmp     = std::make_shared<Chimera::Serial::SerialUnsupported>();
+    serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Chimera::Serial::SerialUnsupported>( tmp );
   }
 
   Chimera::Status_t SerialClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
@@ -130,28 +130,6 @@ namespace Thor::Serial
     return serialObject->readAsync( buffer, len );
   }
 
-  Chimera::Status_t SerialClass::attachCallback( const Chimera::Event::Trigger event, Chimera::Callback::ISRCallback &handle )
-  {
-    return serialObject->attachCallback( event, handle );
-  }
-
-  Chimera::Status_t SerialClass::detachCallback( const Chimera::Event::Trigger event, Chimera::Callback::ISRCallback &handle )
-  {
-    return serialObject->detachCallback( event, handle );
-  }
-
-#if defined( USING_FREERTOS )
-  Chimera::Status_t SerialClass::attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
-  {
-    return serialObject->attachNotifier( event, semphr );
-  }
-
-  Chimera::Status_t SerialClass::detachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
-  {
-    return serialObject->detachNotifier( event, semphr );
-  }
-#endif
-
   Chimera::Status_t SerialClass::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                                   boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
                                                   const uint32_t hwBufferSize )
@@ -162,6 +140,16 @@ namespace Thor::Serial
   Chimera::Status_t SerialClass::disableBuffering( const Chimera::Hardware::SubPeripheral periph )
   {
     return serialObject->disableBuffering( periph );
+  }
+
+  Chimera::Status_t SerialClass::registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID )
+  {
+    return serialObject->registerListener( listener, timeout, registrationID );
+  }
+
+  Chimera::Status_t SerialClass::removeListener( const size_t registrationID, const size_t timeout )
+  {
+    return serialObject->removeListener( registrationID, timeout );
   }
 
   bool SerialClass::available( size_t *const bytes )

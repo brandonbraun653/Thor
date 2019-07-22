@@ -18,7 +18,6 @@ namespace Thor::USART
 {
   USARTClass::USARTClass()
   {
-
   }
 
   USARTClass::~USARTClass()
@@ -81,18 +80,6 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-#if defined( USING_FREERTOS )
-  Chimera::Status_t USARTClass::attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t USARTClass::detachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-#endif
-
   Chimera::Status_t USARTClass::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                                  boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
                                                  const uint32_t hwBufferSize )
@@ -118,12 +105,13 @@ namespace Thor::USART
   {
   }
 
-  Chimera::Status_t USARTClass::attachCallback( const Chimera::Event::Trigger event, Chimera::Callback::ISRCallback &handle )
+  Chimera::Status_t USARTClass::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
+                                                  size_t &registrationID )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t USARTClass::detachCallback( const Chimera::Event::Trigger event, Chimera::Callback::ISRCallback &handle )
+  Chimera::Status_t USARTClass::removeListener( const size_t registrationID, const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }

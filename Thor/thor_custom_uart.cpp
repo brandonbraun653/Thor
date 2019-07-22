@@ -18,7 +18,6 @@ namespace Thor::UART
 {
   UARTClass::UARTClass()
   {
-
   }
 
   UARTClass::~UARTClass()
@@ -31,7 +30,7 @@ namespace Thor::UART
   }
 
   Chimera::Status_t UARTClass::begin( const Chimera::Hardware::SubPeripheralMode,
-                                       const Chimera::Hardware::SubPeripheralMode rxMode )
+                                      const Chimera::Hardware::SubPeripheralMode rxMode )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -52,7 +51,7 @@ namespace Thor::UART
   }
 
   Chimera::Status_t UARTClass::setMode( const Chimera::Hardware::SubPeripheral periph,
-                                         const Chimera::Hardware::SubPeripheralMode mode )
+                                        const Chimera::Hardware::SubPeripheralMode mode )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -81,21 +80,9 @@ namespace Thor::UART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-#if defined( USING_FREERTOS )
-  Chimera::Status_t UARTClass::attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t UARTClass::detachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-#endif
-
   Chimera::Status_t UARTClass::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
-                                                 boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
-                                                 const uint32_t hwBufferSize )
+                                                boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
+                                                const uint32_t hwBufferSize )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -118,12 +105,13 @@ namespace Thor::UART
   {
   }
 
-  Chimera::Status_t UARTClass::attachCallback( const Chimera::Event::Trigger event, Chimera::Callback::ISRCallback &handle )
+  Chimera::Status_t UARTClass::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
+                                                 size_t &registrationID )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t UARTClass::detachCallback( const Chimera::Event::Trigger event, Chimera::Callback::ISRCallback &handle )
+  Chimera::Status_t UARTClass::removeListener( const size_t registrationID, const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }

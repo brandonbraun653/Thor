@@ -24,7 +24,6 @@
 /* Chimera Includes */
 #include <Chimera/buffer.hpp>
 #include <Chimera/interface/serial_intf.hpp>
-#include <Chimera/interface/callback_intf.hpp>
 #include <Chimera/types/event_types.hpp>
 
 /* Thor Includes */
@@ -65,15 +64,15 @@ namespace Thor::USART
 
     Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
 
-    Chimera::Status_t attachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr ) final override;
-
-    Chimera::Status_t detachNotifier( const Chimera::Event::Trigger event, SemaphoreHandle_t *const semphr ) final override;
-
     Chimera::Status_t enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                        boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
                                        const uint32_t hwBufferSize ) final override;
 
     Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph ) final override;
+
+    Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID ) final override;
+
+    Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
 
     bool available( size_t *const bytes = nullptr ) final override;
 
@@ -82,12 +81,6 @@ namespace Thor::USART
     void await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier ) final override;
 
     void postISRProcessing() final override;
-
-    Chimera::Status_t attachCallback( const Chimera::Event::Trigger event,
-                                      Chimera::Callback::ISRCallback &handle ) final override;
-
-    Chimera::Status_t detachCallback( const Chimera::Event::Trigger event,
-                                      Chimera::Callback::ISRCallback &handle ) final override;
   };
 
   using USARTClass_sPtr = std::shared_ptr<USARTClass>;

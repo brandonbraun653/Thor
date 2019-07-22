@@ -19,20 +19,18 @@
 #include <boost/function.hpp>
 
 /* Chimera Includes */
-#include <Chimera/threading.hpp>
-#include <Chimera/interface/callback_intf.hpp>
+#include <Chimera/interface/event_intf.hpp>
 #include <Chimera/types/common_types.hpp>
+#include <Chimera/types/event_types.hpp>
 #include <Chimera/types/peripheral_types.hpp>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/common/interrupts/usart_interrupt_vectors.hpp>
-#include <Thor/drivers/common/types/peripheral_event_types.hpp>
 #include <Thor/drivers/common/types/serial_types.hpp>
 #include <Thor/drivers/f4/common/types.hpp>
 #include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
-#include <Thor/drivers/model/event_model.hpp>
 #include <Thor/drivers/model/interrupt_model.hpp>
 #include <Thor/drivers/model/serial_model.hpp>
 
@@ -42,8 +40,7 @@ namespace Thor::Driver::USART
 {
   class Driver : public Thor::Driver::Serial::Basic,
                  public Thor::Driver::Serial::Extended,
-                 public Thor::Driver::EventListener,
-                 public Chimera::Callback::Manager<Driver, Chimera::Callback::ISRCallbackFunction>
+                 public Chimera::Event::Listener
   {
   public:
     Driver( RegisterMap *const peripheral );
@@ -79,13 +76,14 @@ namespace Thor::Driver::USART
 
     Chimera::Status_t receiveDMA( uint8_t *const data, const size_t size, const size_t timeout ) final override;
 
-    Chimera::Status_t registerEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t listener ) final override;
-
-    Chimera::Status_t removeEventListener( const Chimera::Event::Trigger event, SemaphoreHandle_t listener ) final override;
-
     Chimera::Status_t txTransferStatus() final override;
 
     Chimera::Status_t rxTransferStatus() final override;
+
+    Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
+                                        size_t &registrationID ) final override;
+
+    Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
 
     uint32_t getFlags() final override;
 
@@ -109,30 +107,23 @@ namespace Thor::Driver::USART
     void IRQHandler();
 
   private:
-    RegisterMap *const periph;
-    size_t resourceIndex;
-    IRQn_Type periphIRQn;
+    RegisterMap *const periph;                /**< Points to the hardware registers for this instance */
+    size_t resourceIndex;                     /**< Derived lookup table index for resource access */
+    IRQn_Type periphIRQn;                     /**< Instance interrupt request signal number */
+    volatile Runtime::Flag_t runtimeFlags;    /**< Error/process flags set at runtime to indicate state */
+    Chimera::Peripheral::Type peripheralType; /**< What kind of peripheral this is */
 
-    Chimera::Peripheral::Type peripheralType;
+    /*------------------------------------------------
+    Asynchronous Event Listeners
+    ------------------------------------------------*/
+    size_t listenerIDCount;
+    std::vector<Chimera::Event::Actionable> eventListeners;
 
-//    EventResponders onRXComplete;
-//    EventResponders onTXComplete;
-//    EventResponders onError;
-
+    /*------------------------------------------------
+    Transfer Control Blocks
+    ------------------------------------------------*/
     CDTCB txTCB;
     MDTCB rxTCB;
-
-
-    volatile Runtime::Flag_t RuntimeFlags; /**< Error/process flags set at runtime to indicate state */
-
-    /**
-     *  Blocking wait on the particular flag in the status register to become set
-     *
-     *  @param[in]  flag      The flag to wait upon
-     *  @param[in]  timeout   How long to wait for the flag to become set
-     *  @return bool
-     */
-    bool waitUntilSet( const uint32_t flag, const size_t timeout );
 
     /**
      *  Calculates the appropriate configuration value for the Baud Rate Register
