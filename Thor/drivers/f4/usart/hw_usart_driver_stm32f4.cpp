@@ -15,6 +15,7 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/definitions/interrupt_definitions.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
 #include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
@@ -139,10 +140,15 @@ namespace Thor::Driver::USART
 
   Chimera::Status_t Driver::enableIT( const Chimera::Hardware::SubPeripheral subPeriph )
   {
+    using namespace Thor::Interrupt; 
+    using namespace Thor::Driver::Interrupt;
+
+    setPriority( periphIRQn, USART_IT_PREEMPT_PRIORITY, 0u );
+
     /*------------------------------------------------
     The individual TX and RX functions take care of the nitty gritty details
     ------------------------------------------------*/
-    Thor::Driver::Interrupt::enableIRQ( periphIRQn );
+    enableIRQ( periphIRQn );
     return Chimera::CommonStatusCodes::OK;
   }
 
@@ -190,6 +196,8 @@ namespace Thor::Driver::USART
     }
     else
     {
+      enableIT( Chimera::Hardware::SubPeripheral::TX );
+
       enterCriticalSection();
       
       /*------------------------------------------------
@@ -423,6 +431,16 @@ namespace Thor::Driver::USART
         CR1::TXEIE::set( periph, 0 );
         CR1::TE::set( periph, 0 );
         txTCB.state = StateMachine::TX::TX_COMPLETE;
+
+        /*------------------------------------------------
+        Unblock the higher level driver
+        ------------------------------------------------*/
+        if ( isrWakeup )
+        {
+          BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+          xSemaphoreGiveFromISR( isrWakeup, &xHigherPriorityTaskWoken );
+          portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+        }
       }
     }
 
@@ -473,6 +491,16 @@ namespace Thor::Driver::USART
         rxTCB.state = StateMachine::RX::RX_ABORTED;
         runtimeFlags |= Runtime::Flag::RX_LINE_IDLE_ABORT;
       }
+
+      /*------------------------------------------------
+      Unblock the higher level driver
+      ------------------------------------------------*/
+      if ( ( rxTCB.state == StateMachine::RX::RX_ABORTED || rxTCB.state == StateMachine::RX_COMPLETE ) && isrWakeup )
+      {
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        xSemaphoreGiveFromISR( isrWakeup, &xHigherPriorityTaskWoken );
+        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+      }
     }
 
     /*------------------------------------------------
@@ -482,16 +510,6 @@ namespace Thor::Driver::USART
     {
       runtimeFlags |= errorFlags;
       /* All error bits are cleared by read to SR then DR, which was already performed */
-    }
-
-    /*------------------------------------------------
-    Unblock the higher level driver
-    ------------------------------------------------*/
-    if ( isrWakeup )
-    {
-      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-      xSemaphoreGiveFromISR( isrWakeup, &xHigherPriorityTaskWoken );
-      portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
     }
   }
 

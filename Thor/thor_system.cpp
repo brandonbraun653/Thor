@@ -15,10 +15,12 @@
 
 /* Thor Includes */
 #include <Thor/preprocessor.hpp>
+#include <Thor/definitions/interrupt_definitions.hpp>
 #include <Thor/headers.hpp>
 #include <Thor/system.hpp>
 
 /* Driver Includes */
+#include <Thor/drivers/NVIC.hpp>
 #include <Thor/drivers/RCC.hpp>
 
 namespace Thor::System
@@ -52,6 +54,8 @@ namespace Chimera::System
     Thor::Driver::RCC::init();
     auto sys = Thor::Driver::RCC::SystemClock::get();
     sys->configureProjectClocks();
+
+    Thor::Driver::Interrupt::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
 
     return Chimera::CommonStatusCodes::OK;
   }

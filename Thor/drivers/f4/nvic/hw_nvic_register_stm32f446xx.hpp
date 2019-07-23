@@ -19,8 +19,11 @@
 
 namespace Thor::Driver::Interrupt
 {
-  // Currently just a placeholder because all the register definitions are taken
-  // care of inside of the CMSIS drivers.
+  static constexpr uint32_t NVIC_PRIORITYGROUP_0 = 0x00000007u; /*!< 0 bits for pre-emption priority, 4 bits for subpriority */
+  static constexpr uint32_t NVIC_PRIORITYGROUP_1 = 0x00000006u; /*!< 1 bits for pre-emption priority, 3 bits for subpriority */
+  static constexpr uint32_t NVIC_PRIORITYGROUP_2 = 0x00000005u; /*!< 2 bits for pre-emption priority, 2 bits for subpriority */
+  static constexpr uint32_t NVIC_PRIORITYGROUP_3 = 0x00000004u; /*!< 3 bits for pre-emption priority, 1 bits for subpriority */
+  static constexpr uint32_t NVIC_PRIORITYGROUP_4 = 0x00000003u; /*!< 4 bits for pre-emption priority, 0 bits for subpriority */
 }
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_NVIC */

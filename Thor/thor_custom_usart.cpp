@@ -22,6 +22,14 @@
 namespace USARTDriver = Thor::Driver::USART;
 
 /*------------------------------------------------
+Static Functions
+------------------------------------------------*/
+static void USART1ISRPostProcessorThread( void *argument );
+static void USART2ISRPostProcessorThread( void *argument );
+static void USART3ISRPostProcessorThread( void *argument );
+static void USART6ISRPostProcessorThread( void *argument );
+
+/*------------------------------------------------
 Static Data
 ------------------------------------------------*/
 static std::array<Thor::USART::USARTClass *, USARTDriver::NUM_USART_PERIPHS> usartObjects;
@@ -32,13 +40,16 @@ static std::array<TaskHandle_t, USARTDriver::NUM_USART_PERIPHS> postProcessorHan
 /* Post Processor Thread Wakeup Signals */
 static std::array<SemaphoreHandle_t, USARTDriver::NUM_USART_PERIPHS> postProcessorSignal;
 
-/*------------------------------------------------
-Static Functions
-------------------------------------------------*/
-static void USART1ISRPostProcessorThread( void *argument );
-static void USART2ISRPostProcessorThread( void *argument );
-static void USART3ISRPostProcessorThread( void *argument );
-static void USART6ISRPostProcessorThread( void *argument );
+/* Post Processor Thread Function Pointers */
+static std::array<Chimera::Function::void_func_void_ptr, USARTDriver::NUM_USART_PERIPHS> postProcessorThread = {
+  /* clang-format off */
+  USART1ISRPostProcessorThread, 
+  USART2ISRPostProcessorThread, 
+  USART3ISRPostProcessorThread,
+  USART6ISRPostProcessorThread
+  /* clang-format on */
+};
+
 
 namespace Thor::USART
 {
@@ -64,9 +75,9 @@ namespace Thor::USART
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
 
-    usartObjects[ channel ] = this;
-    auto instance           = iterator->second;
-    this->channel           = channel;
+    auto instance = iterator->second;
+    this->channel = channel;
+    resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( instance ) )->second;
 
     /*------------------------------------------------
     Create the hardware drivers
@@ -87,7 +98,7 @@ namespace Thor::USART
     listenerIDCount = 0u;
     eventListeners.clear();
 
-    resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( instance ) )->second;
+    usartObjects[ resourceIndex ] = this;
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -95,7 +106,22 @@ namespace Thor::USART
   Chimera::Status_t USARTClass::begin( const Chimera::Hardware::SubPeripheralMode txMode,
                                        const Chimera::Hardware::SubPeripheralMode rxMode )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+
+    /*------------------------------------------------
+    Register the ISR post processor thread
+    ------------------------------------------------*/
+    if ( postProcessorThread[ resourceIndex ] )
+    {
+      postProcessorSignal[ resourceIndex ] = xSemaphoreCreateBinary();
+      postProcessorHandle[ resourceIndex ] = nullptr;
+
+      hwDriver->attachISRWakeup( postProcessorSignal[ resourceIndex ] );
+
+      Chimera::Threading::addThread( postProcessorThread[ resourceIndex ], "", 500, NULL, 5,
+                                     &postProcessorHandle[ resourceIndex ] );
+    }
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t USARTClass::end()
@@ -131,11 +157,13 @@ namespace Thor::USART
 
   Chimera::Status_t USARTClass::write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
+    hwDriver->transmitIT( buffer, length, timeout_mS );
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
   Chimera::Status_t USARTClass::read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
+    hwDriver->receiveIT( buffer, length, timeout_mS );
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
@@ -146,18 +174,19 @@ namespace Thor::USART
 
   void USARTClass::postISRProcessing()
   {
+    const auto event = Chimera::Event::Trigger::WRITE_COMPLETE;
 
-//    for ( auto &listener : eventListeners )
-//    {
-//      if ( listener.trigger != event )
-//      {
-//        continue;
-//      }
-//
-//      Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
-//      Thor::Event::notifyThread( event, listener );
-//      Thor::Event::executeISRCallback( event, listener, reinterpret_cast<void *const>( &errorFlags ), sizeof( errorFlags ) );
-//    }
+    for ( auto &listener : eventListeners )
+    {
+      if ( listener.trigger != event )
+      {
+        continue;
+      }
+
+      Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
+      Thor::Event::notifyThread( event, listener );
+      Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
+    }
   }
 
   Chimera::Status_t USARTClass::readAsync( uint8_t *const buffer, const size_t len )
@@ -218,7 +247,7 @@ namespace Thor::USART
 }    // namespace Thor::USART
 
 
-static void USART1ISRPostProcessor( void *argument )
+static void USART1ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::Driver::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART1_PERIPH ) )->second;
@@ -240,7 +269,7 @@ static void USART1ISRPostProcessor( void *argument )
   }
 }
 
-static void USART2ISRPostProcessor( void *argument )
+static void USART2ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::Driver::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART2_PERIPH ) )->second;
@@ -262,7 +291,7 @@ static void USART2ISRPostProcessor( void *argument )
   }
 }
 
-static void USART3ISRPostProcessor( void *argument )
+static void USART3ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::Driver::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART3_PERIPH ) )->second;
@@ -284,7 +313,7 @@ static void USART3ISRPostProcessor( void *argument )
   }
 }
 
-static void USART6ISRPostProcessor( void *argument )
+static void USART6ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::Driver::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART6_PERIPH ) )->second;
