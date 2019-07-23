@@ -11,6 +11,7 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
+#include <Thor/drivers/f4/usart/hw_usart_types.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
 
@@ -44,6 +45,23 @@ namespace Thor::Driver::USART
     USART3_IRQn,
     /* USART 6 */
     USART6_IRQn
+  };
+
+  const std::unordered_map<Chimera::Serial::CharWid, uint32_t> CharWidToRegConfig{
+    { Chimera::Serial::CharWid::CW_8BIT, Configuration::WordLength::LEN_8BIT }, 
+    { Chimera::Serial::CharWid::CW_9BIT, Configuration::WordLength::LEN_9BIT }
+  };
+
+  const std::unordered_map<Chimera::Serial::Parity, uint32_t> ParityToRegConfig{
+    { Chimera::Serial::Parity::PAR_NONE, Configuration::Parity::NONE },
+    { Chimera::Serial::Parity::PAR_EVEN, Configuration::Parity::EVEN },
+    { Chimera::Serial::Parity::PAR_ODD, Configuration::Parity::ODD }
+  };
+
+  const std::unordered_map<Chimera::Serial::StopBits, uint32_t> StopBitsToRegConfig{ 
+    { Chimera::Serial::StopBits::SBITS_ONE, Configuration::Stop::BIT_1 }, 
+    { Chimera::Serial::StopBits::SBITS_ONE_POINT_FIVE, Configuration::Stop::BIT_1_5 }, 
+    { Chimera::Serial::StopBits::SBITS_TWO, Configuration::Stop::BIT_2 } 
   };
 }    // namespace Thor::Driver::USART
 

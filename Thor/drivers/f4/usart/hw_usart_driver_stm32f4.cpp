@@ -357,6 +357,40 @@ namespace Thor::Driver::USART
     isrWakeup = wakeup;
   }
 
+  CDTCB Driver::getTCB_TX()
+  {
+    CDTCB temp;
+    enterCriticalSection();
+    temp = txTCB;
+    exitCriticalSection();
+
+    return temp;
+  }
+
+  MDTCB Driver::getTCB_RX()
+  {
+    MDTCB temp;
+    enterCriticalSection();
+    temp = rxTCB;
+    exitCriticalSection();
+
+    return temp;
+  }
+
+  Thor::Driver::Serial::Config Driver::getConfiguration()
+  {
+    Thor::Driver::Serial::Config cfg;
+
+    cfg.BaudRate     = 0;
+    cfg.Mode         = CR1::TE::get( periph ) | CR1::RE::get( periph );
+    cfg.OverSampling = CR1::OVER8::get( periph );
+    cfg.Parity       = CR1::PCE::get( periph ) | CR1::PS::get( periph );
+    cfg.StopBits     = CR2::STOP::get( periph );
+    cfg.WordLength   = CR1::M::get( periph );
+
+    return cfg;
+  }
+
   void Driver::IRQHandler()
   {
     using namespace Configuration::Flags;
@@ -477,6 +511,7 @@ namespace Thor::Driver::USART
           CR1::RE::set( periph, 0 );
           CR1::IDLEIE::set( periph, 0 );
           rxTCB.state = StateMachine::RX::RX_COMPLETE;
+          runtimeFlags |= Runtime::Flag::RX_COMPLETE;
         }
       }
 

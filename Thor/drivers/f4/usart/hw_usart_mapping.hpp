@@ -40,6 +40,14 @@ namespace Thor::Driver::USART
    */
   extern const IRQn_Type USART_IRQn[ NUM_USART_PERIPHS ];
 
+
+  extern const std::unordered_map<Chimera::Serial::CharWid, uint32_t> CharWidToRegConfig;
+
+  extern const std::unordered_map<Chimera::Serial::Parity, uint32_t> ParityToRegConfig;
+
+  extern const std::unordered_map<Chimera::Serial::StopBits, uint32_t> StopBitsToRegConfig;
+
+
 }    // namespace Thor::Driver::USART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_USART */

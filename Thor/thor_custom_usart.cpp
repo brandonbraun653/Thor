@@ -32,29 +32,45 @@ static void USART6ISRPostProcessorThread( void *argument );
 /*------------------------------------------------
 Static Data
 ------------------------------------------------*/
-static std::array<Thor::USART::USARTClass *, USARTDriver::NUM_USART_PERIPHS> usartObjects;
+/* clang-format off */
+static std::array<Thor::USART::USARTClass *, USARTDriver::NUM_USART_PERIPHS> usartObjects = { 
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr 
+};
 
 /* Post Processor Thread Handles */
-static std::array<TaskHandle_t, USARTDriver::NUM_USART_PERIPHS> postProcessorHandle;
+static std::array<TaskHandle_t, USARTDriver::NUM_USART_PERIPHS> postProcessorHandle = { 
+  nullptr,  
+  nullptr, 
+  nullptr, 
+  nullptr 
+};
 
 /* Post Processor Thread Wakeup Signals */
-static std::array<SemaphoreHandle_t, USARTDriver::NUM_USART_PERIPHS> postProcessorSignal;
+static std::array<SemaphoreHandle_t, USARTDriver::NUM_USART_PERIPHS> postProcessorSignal = { 
+  nullptr, 
+  nullptr, 
+  nullptr,
+  nullptr 
+};
 
 /* Post Processor Thread Function Pointers */
 static std::array<Chimera::Function::void_func_void_ptr, USARTDriver::NUM_USART_PERIPHS> postProcessorThread = {
-  /* clang-format off */
   USART1ISRPostProcessorThread, 
   USART2ISRPostProcessorThread, 
   USART3ISRPostProcessorThread,
   USART6ISRPostProcessorThread
-  /* clang-format on */
 };
-
+/* clang-format on */
 
 namespace Thor::USART
 {
   USARTClass::USARTClass() : resourceIndex( 0 ), channel( 0 ), listenerIDCount( 0 )
   {
+    awaitEventRXComplete = xSemaphoreCreateBinary();
+    awaitEventTXComplete = xSemaphoreCreateBinary();
   }
 
   USARTClass::~USARTClass()
@@ -106,7 +122,6 @@ namespace Thor::USART
   Chimera::Status_t USARTClass::begin( const Chimera::Hardware::SubPeripheralMode txMode,
                                        const Chimera::Hardware::SubPeripheralMode rxMode )
   {
-
     /*------------------------------------------------
     Register the ISR post processor thread
     ------------------------------------------------*/
@@ -133,25 +148,66 @@ namespace Thor::USART
   {
     Thor::Driver::Serial::Config cfg;
 
-    cfg.BaudRate   = 115200;
-    cfg.Mode       = USARTDriver::Configuration::Modes::TX_RX;
-    cfg.Parity     = USARTDriver::Configuration::Parity::NONE;
-    cfg.StopBits   = USARTDriver::Configuration::Stop::BIT_1;
-    cfg.WordLength = USARTDriver::Configuration::WordLength::LEN_8BIT;
+    /*------------------------------------------------
+    Config settings that don't need a lookup table
+    ------------------------------------------------*/
+    cfg.BaudRate = config.baud;
+    cfg.Mode     = USARTDriver::Configuration::Modes::TX_RX;
 
-    hwDriver->init( cfg );
+    /*------------------------------------------------
+    Configure the parity register settings 
+    ------------------------------------------------*/
+    auto parityIterator = USARTDriver::ParityToRegConfig.find( config.parity );
+    if ( parityIterator != USARTDriver::ParityToRegConfig.end() )
+    {
+      cfg.Parity = parityIterator->second;
+    }
+    else
+    {
+      cfg.Parity = USARTDriver::Configuration::Parity::NONE;
+    }
 
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    /*------------------------------------------------
+    Configure the stop bits register settings
+    ------------------------------------------------*/
+    auto stopIterator = USARTDriver::StopBitsToRegConfig.find( config.stopBits );
+    if ( stopIterator != USARTDriver::StopBitsToRegConfig.end() )
+    {
+      cfg.StopBits = stopIterator->second;
+    }
+    else
+    {
+      cfg.StopBits = USARTDriver::Configuration::Stop::BIT_1;
+    }
+
+    /*------------------------------------------------
+    Configure the word length register settings
+    ------------------------------------------------*/
+    auto wordIterator = USARTDriver::CharWidToRegConfig.find( config.width );
+    if ( wordIterator != USARTDriver::CharWidToRegConfig.end() )
+    {
+      cfg.WordLength = wordIterator->second;
+    }
+    else
+    {
+      cfg.WordLength = USARTDriver::Configuration::WordLength::LEN_8BIT;
+    }
+
+    return hwDriver->init( cfg );
   }
 
   Chimera::Status_t USARTClass::setBaud( const uint32_t baud )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    auto currentConfig = hwDriver->getConfiguration();
+    currentConfig.BaudRate = baud;
+
+    return hwDriver->init( currentConfig );
   }
 
   Chimera::Status_t USARTClass::setMode( const Chimera::Hardware::SubPeripheral periph,
                                          const Chimera::Hardware::SubPeripheralMode mode )
   {
+    // This is a software level selection thing
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
@@ -174,18 +230,45 @@ namespace Thor::USART
 
   void USARTClass::postISRProcessing()
   {
-    const auto event = Chimera::Event::Trigger::WRITE_COMPLETE;
+    using namespace USARTDriver;
 
-    for ( auto &listener : eventListeners )
+    const auto flags = hwDriver->getFlags();
+    auto event       = Chimera::Event::Trigger::INVALID;
+
+    if ( flags & Runtime::Flag::TX_COMPLETE )
     {
-      if ( listener.trigger != event )
-      {
-        continue;
-      }
+      hwDriver->clearFlags( Runtime::Flag::TX_COMPLETE );
+      auto tcb = hwDriver->getTCB_TX();
 
-      Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
-      Thor::Event::notifyThread( event, listener );
-      Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
+      /*------------------------------------------------
+      Process Transmit Buffers
+      ------------------------------------------------*/
+      // Look at tx queue...more to transmit?? 
+      // Sort into continuous block of memory first.
+
+      /*------------------------------------------------
+      Process Event Listeners
+      ------------------------------------------------*/
+      processListeners( Chimera::Event::Trigger::WRITE_COMPLETE );
+      xSemaphoreGive( awaitEventTXComplete );
+    }
+
+    if ( flags & Runtime::Flag::RX_COMPLETE )
+    {
+      hwDriver->clearFlags( Runtime::Flag::RX_COMPLETE );
+      auto tcb = hwDriver->getTCB_RX();
+
+      /*------------------------------------------------
+      Process Receive Buffers
+      ------------------------------------------------*/
+      // dump into queue?
+      // how many bytes were read? Need copy of TCB
+
+      /*------------------------------------------------
+      Process Event Listeners
+      ------------------------------------------------*/
+      processListeners( Chimera::Event::Trigger::READ_COMPLETE );
+      xSemaphoreGive( awaitEventRXComplete );
     }
   }
 
@@ -211,12 +294,39 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  void USARTClass::await( const Chimera::Event::Trigger event )
+  Chimera::Status_t USARTClass::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
+    using namespace Chimera::Event;
+
+    if ( ( event != Trigger::READ_COMPLETE ) || ( event != Trigger::WRITE_COMPLETE ) )
+    {
+      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    }
+
+    if ( ( event == Trigger::WRITE_COMPLETE ) &&
+         ( xSemaphoreTake( awaitEventTXComplete, pdMS_TO_TICKS( timeout ) ) != pdPASS ) )
+    {
+      return Chimera::CommonStatusCodes::TIMEOUT;
+    }
+    else if ( ( event == Trigger::READ_COMPLETE ) &&
+              ( xSemaphoreTake( awaitEventRXComplete, pdMS_TO_TICKS( timeout ) ) != pdPASS ) )
+    {
+      return Chimera::CommonStatusCodes::TIMEOUT;
+    }
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
-  void USARTClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier )
+  Chimera::Status_t USARTClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier, const size_t timeout )
   {
+    auto result = await( event, timeout );
+
+    if ( result == Chimera::CommonStatusCodes::OK )
+    {
+      xSemaphoreGive( notifier );
+    }
+
+    return result;
   }
 
   Chimera::Status_t USARTClass::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
@@ -243,6 +353,21 @@ namespace Thor::USART
     }
 
     return Chimera::CommonStatusCodes::NOT_FOUND;
+  }
+
+  void USARTClass::processListeners( const Chimera::Event::Trigger event )
+  {
+    for ( auto &listener : eventListeners )
+    {
+      if ( listener.trigger != event )
+      {
+        continue;
+      }
+
+      Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
+      Thor::Event::notifyThread( event, listener );
+      Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
+    }
   }
 }    // namespace Thor::USART
 

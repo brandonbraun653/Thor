@@ -86,6 +86,12 @@ namespace Thor::Driver::USART
 
     void attachISRWakeup( SemaphoreHandle_t wakeup );
 
+    CDTCB getTCB_TX();
+
+    MDTCB getTCB_RX();
+
+    Thor::Driver::Serial::Config getConfiguration();
+
   protected:
     friend void(::USART1_IRQHandler )();
     friend void(::USART2_IRQHandler )();

@@ -149,6 +149,7 @@ namespace Thor::Driver::USART
 
       /* Use the remaining 16 bits for other signals */
       static constexpr Flag_t RX_LINE_IDLE_ABORT = ( 1u << 16 );
+      static constexpr Flag_t RX_COMPLETE        = ( 1u << 17 );
     }
   }
 

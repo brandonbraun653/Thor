@@ -97,12 +97,14 @@ namespace Thor::UART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  void UARTClass::await( const Chimera::Event::Trigger event )
+  Chimera::Status_t UARTClass::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  void UARTClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier )
+  Chimera::Status_t UARTClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier, const size_t timeout )
   {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
   Chimera::Status_t UARTClass::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,

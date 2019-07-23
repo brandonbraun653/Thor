@@ -76,9 +76,10 @@ namespace Thor::USART
 
     bool available( size_t *const bytes = nullptr ) final override;
 
-    void await( const Chimera::Event::Trigger event ) final override;
+    Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout ) final override;
 
-    void await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier ) final override;
+    Chimera::Status_t await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier,
+                             const size_t timeout ) final override;
 
     void postISRProcessing() final override;
 
@@ -93,6 +94,11 @@ namespace Thor::USART
 
     size_t listenerIDCount;
     std::vector<Chimera::Event::Actionable> eventListeners;
+
+    SemaphoreHandle_t awaitEventRXComplete;
+    SemaphoreHandle_t awaitEventTXComplete;
+
+    void processListeners( const Chimera::Event::Trigger event );
   };
 
   using USARTClass_sPtr = std::shared_ptr<USARTClass>;

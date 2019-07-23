@@ -157,14 +157,14 @@ namespace Thor::Serial
     return serialObject->available( bytes );
   }
 
-  void SerialClass::await( const Chimera::Event::Trigger event )
+  Chimera::Status_t SerialClass::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
-    serialObject->await( event );
+    return serialObject->await( event, timeout );
   }
 
-  void SerialClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier )
+  Chimera::Status_t SerialClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier, const size_t timeout )
   {
-    serialObject->await( event, notifier );
+    return serialObject->await( event, notifier, timeout );
   }
 
 }    // namespace Thor::Serial
