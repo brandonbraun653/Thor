@@ -23,10 +23,11 @@
 
 namespace Thor::GPIO
 {
-#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
   class GPIOClass;
   using GPIOClass_sPtr = std::shared_ptr<GPIOClass>;
   using GPIOClass_uPtr = std::unique_ptr<GPIOClass>;
+
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 
   typedef GPIO_TypeDef *PinPort;
 

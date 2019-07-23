@@ -13,15 +13,12 @@
 #define THOR_HW_USART_DRIVER_HPP
 
 /* C++ Includes */
+#include <memory>
 #include <vector>
 
-/* Boost Includes */
-#include <boost/function.hpp>
-
 /* Chimera Includes */
-#include <Chimera/interface/event_intf.hpp>
+#include <Chimera/threading.hpp>
 #include <Chimera/types/common_types.hpp>
-#include <Chimera/types/event_types.hpp>
 #include <Chimera/types/peripheral_types.hpp>
 
 /* Driver Includes */
@@ -39,8 +36,7 @@
 namespace Thor::Driver::USART
 {
   class Driver : public Thor::Driver::Serial::Basic,
-                 public Thor::Driver::Serial::Extended,
-                 public Chimera::Event::Listener
+                 public Thor::Driver::Serial::Extended
   {
   public:
     Driver( RegisterMap *const peripheral );
@@ -80,11 +76,6 @@ namespace Thor::Driver::USART
 
     Chimera::Status_t rxTransferStatus() final override;
 
-    Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
-                                        size_t &registrationID ) final override;
-
-    Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
-
     uint32_t getFlags() final override;
 
     void clearFlags( const uint32_t flagBits ) final override;
@@ -92,6 +83,8 @@ namespace Thor::Driver::USART
     void killTransmit() final override;
 
     void killReceive() final override;
+
+    void attachISRWakeup( SemaphoreHandle_t wakeup );
 
   protected:
     friend void(::USART1_IRQHandler )();
@@ -116,8 +109,7 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Asynchronous Event Listeners
     ------------------------------------------------*/
-    size_t listenerIDCount;
-    std::vector<Chimera::Event::Actionable> eventListeners;
+    SemaphoreHandle_t isrWakeup;
 
     /*------------------------------------------------
     Transfer Control Blocks
@@ -143,6 +135,10 @@ namespace Thor::Driver::USART
      */
     inline void exitCriticalSection();
   };
+
+  using Driver_sPtr = std::shared_ptr<Driver>;
+  using Driver_uPtr = std::unique_ptr<Driver>;
+
 }    // namespace Thor::Driver::USART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_USART */

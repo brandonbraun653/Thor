@@ -47,7 +47,7 @@ namespace Thor::UART
 
     Chimera::Status_t end() final override;
 
-    Chimera::Status_t configure( const Chimera::Serial::COMConfig &config ) final override;
+    Chimera::Status_t configure( const Chimera::Serial::Config &config ) final override;
 
     Chimera::Status_t setBaud( const uint32_t baud ) final override;
 

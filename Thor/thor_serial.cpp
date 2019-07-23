@@ -90,7 +90,7 @@ namespace Thor::Serial
     return serialObject->end();
   }
 
-  Chimera::Status_t SerialClass::configure( const Chimera::Serial::COMConfig &config )
+  Chimera::Status_t SerialClass::configure( const Chimera::Serial::Config &config )
   {
     return serialObject->configure( config );
   }

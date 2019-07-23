@@ -13,6 +13,9 @@
 #ifndef THOR_HW_USART_MAPPING_HPP
 #define THOR_HW_USART_MAPPING_HPP
 
+/* C++ Includes */
+#include <unordered_map>
+
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
@@ -27,6 +30,8 @@ namespace Thor::Driver::USART
    *  Maps a USART peripheral into the corresponding resource index
    */
   extern const Thor::Driver::RCC::ResourceMap_t InstanceToResourceIndex;
+
+  extern const std::unordered_map<size_t, RegisterMap *const> ChanneltoInstance;
 
   /**
    *  Gets the interrupt request number tied to a USART instance.

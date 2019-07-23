@@ -23,6 +23,18 @@ namespace Thor::Driver::USART
     { reinterpret_cast<std::uintptr_t>( USART6_PERIPH ), 3 }
   };
 
+  const std::unordered_map<size_t, RegisterMap *const> ChanneltoInstance{
+    /* Serial 1 */
+    { 1, USART1_PERIPH },
+    /* Serial 2 */
+    { 2, USART2_PERIPH },
+    /* Serial 3 */
+    { 3, USART3_PERIPH },
+    /* Serial 6 */
+    { 6, USART6_PERIPH }
+  };
+
+
   const IRQn_Type USART_IRQn[ NUM_USART_PERIPHS ] = {
     /* USART 1 */
     USART1_IRQn,

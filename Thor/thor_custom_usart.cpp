@@ -8,28 +8,91 @@
  *   2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+/* C++ Includes */
+#include <array>
+
+/* Chimera Includes */
+#include <Chimera/threading.hpp>
 
 /* Thor Includes */
+#include <Thor/event.hpp>
 #include <Thor/usart.hpp>
 #include <Thor/drivers/Usart.hpp>
 
+namespace USARTDriver = Thor::Driver::USART;
+
+/*------------------------------------------------
+Static Data
+------------------------------------------------*/
+static std::array<Thor::USART::USARTClass *, USARTDriver::NUM_USART_PERIPHS> usartObjects;
+
+/* Post Processor Thread Handles */
+static std::array<TaskHandle_t, USARTDriver::NUM_USART_PERIPHS> postProcessorHandle;
+
+/* Post Processor Thread Wakeup Signals */
+static std::array<SemaphoreHandle_t, USARTDriver::NUM_USART_PERIPHS> postProcessorSignal;
+
+/*------------------------------------------------
+Static Functions
+------------------------------------------------*/
+static void USART1ISRPostProcessorThread( void *argument );
+static void USART2ISRPostProcessorThread( void *argument );
+static void USART3ISRPostProcessorThread( void *argument );
+static void USART6ISRPostProcessorThread( void *argument );
 
 namespace Thor::USART
 {
-  USARTClass::USARTClass()
+  USARTClass::USARTClass() : resourceIndex( 0 ), channel( 0 ), listenerIDCount( 0 )
   {
   }
 
   USARTClass::~USARTClass()
   {
+    usartObjects[ channel ] = nullptr;
   }
 
   Chimera::Status_t USARTClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    using namespace Thor::Driver::USART;
+
+    /*------------------------------------------------
+    Make sure the channel is actually supported
+    ------------------------------------------------*/
+    auto iterator = ChanneltoInstance.find( channel );
+    if ( iterator == ChanneltoInstance.end() )
+    {
+      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    }
+
+    usartObjects[ channel ] = this;
+    auto instance           = iterator->second;
+    this->channel           = channel;
+
+    /*------------------------------------------------
+    Create the hardware drivers
+    ------------------------------------------------*/
+    hwDriver = std::make_unique<USARTDriver::Driver>( instance );
+    txPin = std::make_unique<Thor::GPIO::GPIOClass>();
+    rxPin = std::make_unique<Thor::GPIO::GPIOClass>();
+
+    /*------------------------------------------------
+    Initialize/Configure hardware drivers
+    ------------------------------------------------*/
+    txPin->init( pins.tx );
+    rxPin->init( pins.rx );
+
+    /*------------------------------------------------
+    Configure miscellaneous class members
+    ------------------------------------------------*/
+    listenerIDCount = 0u;
+    eventListeners.clear();
+
+    resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( instance ) )->second;
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t USARTClass::begin( const Chimera::Hardware::SubPeripheralMode,
+  Chimera::Status_t USARTClass::begin( const Chimera::Hardware::SubPeripheralMode txMode,
                                        const Chimera::Hardware::SubPeripheralMode rxMode )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
@@ -40,8 +103,18 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t USARTClass::configure( const Chimera::Serial::COMConfig &config )
+  Chimera::Status_t USARTClass::configure( const Chimera::Serial::Config &config )
   {
+    Thor::Driver::Serial::Config cfg;
+
+    cfg.BaudRate   = 115200;
+    cfg.Mode       = USARTDriver::Configuration::Modes::TX_RX;
+    cfg.Parity     = USARTDriver::Configuration::Parity::NONE;
+    cfg.StopBits   = USARTDriver::Configuration::Stop::BIT_1;
+    cfg.WordLength = USARTDriver::Configuration::WordLength::LEN_8BIT;
+
+    hwDriver->init( cfg );
+
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
@@ -73,6 +146,18 @@ namespace Thor::USART
 
   void USARTClass::postISRProcessing()
   {
+
+//    for ( auto &listener : eventListeners )
+//    {
+//      if ( listener.trigger != event )
+//      {
+//        continue;
+//      }
+//
+//      Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
+//      Thor::Event::notifyThread( event, listener );
+//      Thor::Event::executeISRCallback( event, listener, reinterpret_cast<void *const>( &errorFlags ), sizeof( errorFlags ) );
+//    }
   }
 
   Chimera::Status_t USARTClass::readAsync( uint8_t *const buffer, const size_t len )
@@ -108,11 +193,115 @@ namespace Thor::USART
   Chimera::Status_t USARTClass::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
                                                   size_t &registrationID )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    registrationID = ++listenerIDCount;
+    listener.id    = registrationID;
+
+    eventListeners.push_back( listener );
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t USARTClass::removeListener( const size_t registrationID, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    for ( auto iterator = eventListeners.begin(); iterator != eventListeners.end(); iterator++ )
+    {
+      if ( iterator->id == registrationID )
+      {
+        eventListeners.erase( iterator );
+        return Chimera::CommonStatusCodes::OK;
+        break;
+      }
+    }
+
+    return Chimera::CommonStatusCodes::NOT_FOUND;
   }
 }    // namespace Thor::USART
+
+
+static void USART1ISRPostProcessor( void *argument )
+{
+  using namespace Thor::Driver::USART;
+  static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART1_PERIPH ) )->second;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto usart = usartObjects[ resourceIndex ]; usart )
+      {
+        usart->postISRProcessing();
+      }
+    }
+  }
+}
+
+static void USART2ISRPostProcessor( void *argument )
+{
+  using namespace Thor::Driver::USART;
+  static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART2_PERIPH ) )->second;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto usart = usartObjects[ resourceIndex ]; usart )
+      {
+        usart->postISRProcessing();
+      }
+    }
+  }
+}
+
+static void USART3ISRPostProcessor( void *argument )
+{
+  using namespace Thor::Driver::USART;
+  static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART3_PERIPH ) )->second;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto usart = usartObjects[ resourceIndex ]; usart )
+      {
+        usart->postISRProcessing();
+      }
+    }
+  }
+}
+
+static void USART6ISRPostProcessor( void *argument )
+{
+  using namespace Thor::Driver::USART;
+  static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART6_PERIPH ) )->second;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto usart = usartObjects[ resourceIndex ]; usart )
+      {
+        usart->postISRProcessing();
+      }
+    }
+  }
+}

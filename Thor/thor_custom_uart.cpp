@@ -40,7 +40,7 @@ namespace Thor::UART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t UARTClass::configure( const Chimera::Serial::COMConfig &config )
+  Chimera::Status_t UARTClass::configure( const Chimera::Serial::Config &config )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }

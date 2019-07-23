@@ -21,8 +21,11 @@ Using the custom STM32 driver
 -------------------------------------------------*/
 #if defined( THOR_CUSTOM_DRIVERS ) && ( THOR_CUSTOM_DRIVERS == 1)
 
+#include <Thor/drivers/common/types/serial_types.hpp>
+
 #if defined( TARGET_STM32F4 )
 #include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
+#include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
 #endif
 
 #if defined( TARGET_STM32F7 )

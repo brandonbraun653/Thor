@@ -44,12 +44,12 @@ namespace Thor::USART
 
     Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 
-    Chimera::Status_t begin( const Chimera::Hardware::SubPeripheralMode,
+    Chimera::Status_t begin( const Chimera::Hardware::SubPeripheralMode txMode,
                              const Chimera::Hardware::SubPeripheralMode rxMode ) final override;
 
     Chimera::Status_t end() final override;
 
-    Chimera::Status_t configure( const Chimera::Serial::COMConfig &config ) final override;
+    Chimera::Status_t configure( const Chimera::Serial::Config &config ) final override;
 
     Chimera::Status_t setBaud( const uint32_t baud ) final override;
 
@@ -81,6 +81,18 @@ namespace Thor::USART
     void await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier ) final override;
 
     void postISRProcessing() final override;
+
+  private:
+    Thor::Driver::USART::Driver_uPtr hwDriver;
+    Thor::GPIO::GPIOClass_uPtr rxPin;
+    Thor::GPIO::GPIOClass_uPtr txPin;
+
+    uint8_t channel;      /**< Hardware channel associated with this driver */
+    size_t resourceIndex; /**< Lookup table index for USART resources */
+
+
+    size_t listenerIDCount;
+    std::vector<Chimera::Event::Actionable> eventListeners;
   };
 
   using USARTClass_sPtr = std::shared_ptr<USARTClass>;
