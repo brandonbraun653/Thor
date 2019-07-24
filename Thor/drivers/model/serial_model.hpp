@@ -201,7 +201,7 @@ namespace Thor::Driver::Serial
      *  @param[in]  timeout   How long to wait in milliseconds for the hardware to become available
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t transmitDMA( uint8_t *const data, const size_t size, const size_t timeout ) = 0;
+    virtual Chimera::Status_t transmitDMA( const uint8_t *const data, const size_t size, const size_t timeout ) = 0;
 
     /**
      *  Receive data using interrupt mode. If none arrives immediately, the driver should

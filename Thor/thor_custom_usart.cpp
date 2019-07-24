@@ -18,6 +18,7 @@
 #include <Thor/event.hpp>
 #include <Thor/usart.hpp>
 #include <Thor/drivers/Usart.hpp>
+#include <Thor/defaults/serial_defaults.hpp>
 
 namespace USARTDriver = Thor::Driver::USART;
 
@@ -69,6 +70,22 @@ namespace Thor::USART
 {
   USARTClass::USARTClass() : resourceIndex( 0 ), channel( 0 ), listenerIDCount( 0 )
   {
+    using namespace Chimera::Hardware;
+
+    /*------------------------------------------------
+    Register the read function pointers
+    ------------------------------------------------*/
+    readFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::BLOCKING ) ]  = &USARTClass::readBlocking;
+    readFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::INTERRUPT ) ] = &USARTClass::readInterrupt;
+    readFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::DMA ) ]       = &USARTClass::readDMA;
+
+    /*------------------------------------------------
+    Register the write function pointers
+    ------------------------------------------------*/
+    writeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::BLOCKING ) ]  = &USARTClass::writeBlocking;
+    writeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::INTERRUPT ) ] = &USARTClass::writeInterrupt;
+    writeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::DMA ) ]       = &USARTClass::writeDMA;
+
     awaitEventRXComplete = xSemaphoreCreateBinary();
     awaitEventTXComplete = xSemaphoreCreateBinary();
   }
@@ -122,6 +139,9 @@ namespace Thor::USART
   Chimera::Status_t USARTClass::begin( const Chimera::Hardware::SubPeripheralMode txMode,
                                        const Chimera::Hardware::SubPeripheralMode rxMode )
   {
+    setMode( Chimera::Hardware::SubPeripheral::RX, rxMode );
+    setMode( Chimera::Hardware::SubPeripheral::TX, txMode );
+
     /*------------------------------------------------
     Register the ISR post processor thread
     ------------------------------------------------*/
@@ -136,6 +156,9 @@ namespace Thor::USART
                                      &postProcessorHandle[ resourceIndex ] );
     }
 
+    xSemaphoreGive( awaitEventRXComplete );
+    xSemaphoreGive( awaitEventTXComplete );
+
     return Chimera::CommonStatusCodes::OK;
   }
 
@@ -146,7 +169,7 @@ namespace Thor::USART
 
   Chimera::Status_t USARTClass::configure( const Chimera::Serial::Config &config )
   {
-    Thor::Driver::Serial::Config cfg;
+    Thor::Driver::Serial::Config cfg = hwDriver->getConfiguration();
 
     /*------------------------------------------------
     Config settings that don't need a lookup table
@@ -193,6 +216,12 @@ namespace Thor::USART
       cfg.WordLength = USARTDriver::Configuration::WordLength::LEN_8BIT;
     }
 
+    cfg.BaudRate   = 115200;
+    cfg.Mode       = USARTDriver::Configuration::Modes::TX_RX;
+    cfg.Parity     = USARTDriver::Configuration::Parity::NONE;
+    cfg.StopBits   = USARTDriver::Configuration::Stop::BIT_1;
+    cfg.WordLength = USARTDriver::Configuration::WordLength::LEN_8BIT;
+
     return hwDriver->init( cfg );
   }
 
@@ -207,25 +236,81 @@ namespace Thor::USART
   Chimera::Status_t USARTClass::setMode( const Chimera::Hardware::SubPeripheral periph,
                                          const Chimera::Hardware::SubPeripheralMode mode )
   {
-    // This is a software level selection thing
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    using namespace Chimera::Hardware;
+
+    if ( ( periph == SubPeripheral::RX ) || ( periph == SubPeripheral::TXRX ) )
+    {
+      rxMode = mode;
+    }
+
+    if ( ( periph == SubPeripheral::TX ) || ( periph == SubPeripheral::TXRX ) )
+    {
+      txMode = mode;
+    }
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t USARTClass::write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
-    hwDriver->transmitIT( buffer, length, timeout_mS );
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    auto error = Chimera::CommonStatusCodes::OK;
+    auto iter  = static_cast<uint8_t>( txMode );
+
+    //    if ( !PeripheralState.gpio_enabled || !PeripheralState.configured )
+    //    {
+    //      error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+    //    }
+    if ( iter >= writeFuncPtrs.size() )
+    {
+      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+    else
+    {
+      error = ( this->*( writeFuncPtrs[ iter ] ) )( buffer, length, timeout_mS );
+    }
+
+    return error;
   }
 
   Chimera::Status_t USARTClass::read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
-    hwDriver->receiveIT( buffer, length, timeout_mS );
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    auto error = Chimera::CommonStatusCodes::OK;
+    auto iter  = static_cast<uint8_t>( rxMode );
+
+    //    if ( !PeripheralState.gpio_enabled || !PeripheralState.configured )
+    //    {
+    //      error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
+    //    }
+    if ( iter >= readFuncPtrs.size() )
+    {
+      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+    else
+    {
+      error = ( this->*( readFuncPtrs[ iter ] ) )( buffer, length, timeout_mS );
+    }
+
+    return error;
   }
 
   Chimera::Status_t USARTClass::flush( const Chimera::Hardware::SubPeripheral periph )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+    if ( periph == Chimera::Hardware::SubPeripheral::TX )
+    {
+      error = txBuffers.flush();
+    }
+    else if ( periph == Chimera::Hardware::SubPeripheral::RX )
+    {
+      error = rxBuffers.flush();
+    }
+    else
+    {
+      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+
+    return error;
   }
 
   void USARTClass::postISRProcessing()
@@ -243,18 +328,23 @@ namespace Thor::USART
       /*------------------------------------------------
       Process Transmit Buffers
       ------------------------------------------------*/
-      // Look at tx queue...more to transmit?? 
-      // Sort into continuous block of memory first.
+      xSemaphoreGive( awaitEventTXComplete );
+
+      if ( !txBuffers.external->empty() )
+      {
+        size_t bytesToTransmit = txBuffers.copyToHWBuffer( txBuffers.external->size() );
+        write( txBuffers.getHWBuffer(), bytesToTransmit );
+      }
 
       /*------------------------------------------------
       Process Event Listeners
       ------------------------------------------------*/
       processListeners( Chimera::Event::Trigger::WRITE_COMPLETE );
-      xSemaphoreGive( awaitEventTXComplete );
     }
 
     if ( flags & Runtime::Flag::RX_COMPLETE )
     {
+      xSemaphoreGive( awaitEventRXComplete );
       hwDriver->clearFlags( Runtime::Flag::RX_COMPLETE );
       auto tcb = hwDriver->getTCB_RX();
 
@@ -268,30 +358,100 @@ namespace Thor::USART
       Process Event Listeners
       ------------------------------------------------*/
       processListeners( Chimera::Event::Trigger::READ_COMPLETE );
-      xSemaphoreGive( awaitEventRXComplete );
     }
   }
 
   Chimera::Status_t USARTClass::readAsync( uint8_t *const buffer, const size_t len )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+    if ( !buffer )
+    {
+      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+    else
+    {
+      size_t bytesRead = 0;
+
+      if ( auto tmp = rxBuffers.get(); tmp )
+      {
+        while ( !tmp->empty() && ( bytesRead < len ) )
+        {
+          buffer[ bytesRead ] = tmp->front();
+          tmp->pop_front();
+          bytesRead++;
+        }
+      }
+
+
+      if ( bytesRead != len )
+      {
+        error = Chimera::CommonStatusCodes::EMPTY;
+      }
+    }
+
+    return error;
   }
 
   Chimera::Status_t USARTClass::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                                  boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
                                                  const uint32_t hwBufferSize )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+    if ( periph == Chimera::Hardware::SubPeripheral::TX )
+    {
+      txBuffers.assign( userBuffer, hwBuffer, hwBufferSize );
+      txBuffers.flush();
+    }
+    else if ( periph == Chimera::Hardware::SubPeripheral::RX )
+    {
+      rxBuffers.assign( userBuffer, hwBuffer, hwBufferSize );
+      rxBuffers.flush();
+    }
+    else
+    {
+      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+
+    return error;
   }
 
   Chimera::Status_t USARTClass::disableBuffering( const Chimera::Hardware::SubPeripheral periph )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+//    if ( periph == Chimera::Hardware::SubPeripheral::TX )
+//    {
+//      PeripheralState.tx_buffering_enabled = false;
+//    }
+//    else if ( periph == Chimera::Hardware::SubPeripheral::RX )
+//    {
+//      PeripheralState.tx_buffering_enabled = false;
+//    }
+//    else
+//    {
+//      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+//    }
+
+    return error;
   }
 
   bool USARTClass::available( size_t *const bytes )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    bool retval = false;
+
+    if ( auto tmp = rxBuffers.get(); tmp && !tmp->empty() )
+    {
+      retval = true;
+
+      if ( bytes )
+      {
+        *bytes = tmp->size();
+      }
+    }
+
+    return retval;
   }
 
   Chimera::Status_t USARTClass::await( const Chimera::Event::Trigger event, const size_t timeout )
@@ -369,6 +529,145 @@ namespace Thor::USART
       Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
     }
   }
+
+  Chimera::Status_t USARTClass::readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  {
+    Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
+
+    if ( xSemaphoreTake( awaitEventRXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+    {
+      error = hwDriver->receive( buffer, length, timeout_mS );
+      xSemaphoreGive( awaitEventRXComplete );
+    }
+
+    return error;
+  }
+
+  Chimera::Status_t USARTClass::readInterrupt( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  {
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+    if ( !rxBuffers.initialized() )
+    {
+      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+    }
+
+
+    if ( ( length <= rxBuffers.internalSize ) &&
+         ( xSemaphoreTake( awaitEventRXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS ) )
+    {
+      memset( rxBuffers.internal, 0, rxBuffers.internalSize );
+
+      error = hwDriver->receiveIT( rxBuffers.internal, length, timeout_mS );
+
+      if ( error == Chimera::CommonStatusCodes::OK )
+      {
+        error = Chimera::Serial::Status::RX_IN_PROGRESS;
+      }
+    }
+    else
+    {
+      error = Chimera::CommonStatusCodes::MEMORY;
+    }
+
+    return error;
+  }
+
+  Chimera::Status_t USARTClass::readDMA( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  {
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+    if ( !rxBuffers.initialized() )
+    {
+      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+    }
+
+
+    if ( ( length <= rxBuffers.internalSize ) &&
+         ( xSemaphoreTake( awaitEventRXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS ) )
+    { 
+
+      memset( rxBuffers.internal, 0, rxBuffers.internalSize );
+      error = hwDriver->receiveDMA( rxBuffers.internal, length, timeout_mS );
+
+      if ( error == Chimera::CommonStatusCodes::OK )
+      {
+        error = Chimera::Serial::Status::RX_IN_PROGRESS;
+      }
+    }
+    else
+    {
+      error = Chimera::CommonStatusCodes::MEMORY;
+    }
+
+    return error;
+  }
+
+  Chimera::Status_t USARTClass::writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  {
+    Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
+
+    if ( xSemaphoreTake( awaitEventTXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+    {
+      error = hwDriver->transmit( buffer, length, timeout_mS );
+      xSemaphoreGive( awaitEventTXComplete );
+    }
+
+    return error;
+  }
+
+  Chimera::Status_t USARTClass::writeInterrupt( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  {
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+    if ( !txBuffers.initialized() )
+    {
+      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+    }
+
+    /*------------------------------------------------
+    Hardware is free. Send the data directly. Otherwise
+    queue everything up to send later.
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( awaitEventTXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+    {
+      error = hwDriver->transmitIT( buffer, length, timeout_mS );
+    }
+    else
+    {
+      error = Chimera::CommonStatusCodes::BUSY;
+      txBuffers.push( buffer, length );
+    }
+
+    return error;
+  }
+
+  Chimera::Status_t USARTClass::writeDMA( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  {
+    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+
+    if ( !txBuffers.initialized() )
+    {
+      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+    }
+
+    /*------------------------------------------------
+    Hardware is free. Send the data directly. Otherwise
+    queue everything up to send later.
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( awaitEventTXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+    {
+      error = hwDriver->transmitDMA( buffer, length, timeout_mS );
+    }
+    else
+    {
+      error = Chimera::CommonStatusCodes::BUSY;
+      txBuffers.push( buffer, length );
+    }
+
+    return error;
+  }
+
 }    // namespace Thor::USART
 
 

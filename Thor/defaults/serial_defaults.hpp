@@ -17,11 +17,14 @@
 #include <Thor/definitions/serial_definitions.hpp>
 #include <Thor/types/serial_types.hpp>
 
-#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
+
 namespace Thor::Serial
 {
-  static constexpr uint32_t BLOCKING_TIMEOUT_MS = 10;
+  static constexpr size_t DEFAULT_TIMEOUT_MS = 10;
 
+}    // namespace Thor::Serial
+
+  #if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
   extern const std::array<const Thor::Serial::SerialConfig *const, Thor::Serial::MAX_SERIAL_CHANNELS + 1> hwConfig;
 
   /*------------------------------------------------
@@ -47,7 +50,6 @@ namespace Thor::Serial
 #if defined( STM32F7 )
   extern const UART_AdvFeatureInitTypeDef dflt_UART_AdvInit;
 #endif
-}    // namespace Thor::Serial
 #endif 
 
 #endif /* !THOR_SERIAL_DEFAULTS_HPP */

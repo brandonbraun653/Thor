@@ -98,7 +98,24 @@ namespace Thor::USART
     SemaphoreHandle_t awaitEventRXComplete;
     SemaphoreHandle_t awaitEventTXComplete;
 
+    Chimera::Buffer::DoubleBuffer<USARTClass> txBuffers;
+    Chimera::Buffer::DoubleBuffer<USARTClass> rxBuffers;
+
+
+    Chimera::Hardware::SubPeripheralMode txMode;
+    Chimera::Hardware::SubPeripheralMode rxMode;
+
     void processListeners( const Chimera::Event::Trigger event );
+
+    std::array<Chimera::Status_t ( USARTClass::* )( uint8_t *const, const size_t, const uint32_t ), 3> readFuncPtrs;
+    Chimera::Status_t readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
+    Chimera::Status_t readInterrupt( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
+    Chimera::Status_t readDMA( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
+
+    std::array<Chimera::Status_t ( USARTClass::* )( const uint8_t *const, const size_t, const uint32_t ), 3> writeFuncPtrs;
+    Chimera::Status_t writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
+    Chimera::Status_t writeInterrupt( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
+    Chimera::Status_t writeDMA( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
   };
 
   using USARTClass_sPtr = std::shared_ptr<USARTClass>;

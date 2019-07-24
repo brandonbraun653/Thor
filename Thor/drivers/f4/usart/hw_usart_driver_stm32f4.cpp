@@ -54,6 +54,12 @@ namespace Thor::Driver::USART
     periphIRQn     = USART_IRQn[ resourceIndex ];
 
     usartObjects[ resourceIndex ] = this;
+
+    /*------------------------------------------------
+    Ensure the clock is enabled otherwise the hardware is "dead"
+    ------------------------------------------------*/
+    auto rccPeriph = Thor::Driver::RCC::PeripheralController::get();
+    rccPeriph->enableClock( peripheralType, resourceIndex );
   }
 
   Driver::~Driver()
@@ -201,7 +207,7 @@ namespace Thor::Driver::USART
       enterCriticalSection();
       
       /*------------------------------------------------
-      Turn on the transmitter & TDR interrupt so we know 
+      Turn on the transmitter & enable TDR interrupt so we know 
       when we can stage the next byte transfer.
       ------------------------------------------------*/
       CR1::TE::set( periph, CR1_TE );
@@ -286,7 +292,7 @@ namespace Thor::Driver::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::transmitDMA( uint8_t *const data, const size_t size, const size_t timeout )
+  Chimera::Status_t Driver::transmitDMA( const uint8_t *const data, const size_t size, const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -380,6 +386,7 @@ namespace Thor::Driver::USART
   Thor::Driver::Serial::Config Driver::getConfiguration()
   {
     Thor::Driver::Serial::Config cfg;
+    memset( &cfg, 0, sizeof( cfg ) );
 
     cfg.BaudRate     = 0;
     cfg.Mode         = CR1::TE::get( periph ) | CR1::RE::get( periph );
@@ -465,6 +472,7 @@ namespace Thor::Driver::USART
         CR1::TXEIE::set( periph, 0 );
         CR1::TE::set( periph, 0 );
         txTCB.state = StateMachine::TX::TX_COMPLETE;
+        runtimeFlags |= Runtime::Flag::TX_COMPLETE;
 
         /*------------------------------------------------
         Unblock the higher level driver
