@@ -10,6 +10,9 @@
  *   2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+/* C++ Includes */
+#include <cstring>
+
 /* Chimera Includes */
 #include <Chimera/chimera.hpp>
 

@@ -98,9 +98,8 @@ namespace Thor::USART
     SemaphoreHandle_t awaitEventRXComplete;
     SemaphoreHandle_t awaitEventTXComplete;
 
-    Chimera::Buffer::DoubleBuffer<USARTClass> txBuffers;
-    Chimera::Buffer::DoubleBuffer<USARTClass> rxBuffers;
-
+    Chimera::Buffer::PeripheralBuffer txBuffers;
+    Chimera::Buffer::PeripheralBuffer rxBuffers;
 
     Chimera::Hardware::SubPeripheralMode txMode;
     Chimera::Hardware::SubPeripheralMode rxMode;

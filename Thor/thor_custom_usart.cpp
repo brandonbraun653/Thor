@@ -11,6 +11,9 @@
 /* C++ Includes */
 #include <array>
 
+/* Boost Includes */
+#include <boost/circular_buffer.hpp>
+
 /* Chimera Includes */
 #include <Chimera/threading.hpp>
 
@@ -324,16 +327,19 @@ namespace Thor::USART
     {
       hwDriver->clearFlags( Runtime::Flag::TX_COMPLETE );
       auto tcb = hwDriver->getTCB_TX();
+      auto cb  = txBuffers.circularBuffer();
+      auto lb  = txBuffers.linearBuffer();
 
       /*------------------------------------------------
       Process Transmit Buffers
       ------------------------------------------------*/
       xSemaphoreGive( awaitEventTXComplete );
 
-      if ( !txBuffers.external->empty() )
+      if ( !cb->empty() )
       {
-        size_t bytesToTransmit = txBuffers.copyToHWBuffer( txBuffers.external->size() );
-        write( txBuffers.getHWBuffer(), bytesToTransmit );
+        size_t bytesToTransmit = 0;
+        txBuffers.transferInto( cb->size(), bytesToTransmit );
+        write( lb, bytesToTransmit );
       }
 
       /*------------------------------------------------
@@ -373,7 +379,7 @@ namespace Thor::USART
     {
       size_t bytesRead = 0;
 
-      if ( auto tmp = rxBuffers.get(); tmp )
+      if ( auto tmp = rxBuffers.circularBuffer(); tmp )
       {
         while ( !tmp->empty() && ( bytesRead < len ) )
         {
@@ -441,7 +447,7 @@ namespace Thor::USART
   {
     bool retval = false;
 
-    if ( auto tmp = rxBuffers.get(); tmp && !tmp->empty() )
+    if ( auto tmp = rxBuffers.circularBuffer(); tmp && !tmp->empty() )
     {
       retval = true;
 
@@ -553,12 +559,12 @@ namespace Thor::USART
     }
 
 
-    if ( ( length <= rxBuffers.internalSize ) &&
+    if ( ( length <= rxBuffers.linearSize() ) &&
          ( xSemaphoreTake( awaitEventRXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS ) )
     {
-      memset( rxBuffers.internal, 0, rxBuffers.internalSize );
+      memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
 
-      error = hwDriver->receiveIT( rxBuffers.internal, length, timeout_mS );
+      error = hwDriver->receiveIT( rxBuffers.linearBuffer(), length, timeout_mS );
 
       if ( error == Chimera::CommonStatusCodes::OK )
       {
@@ -583,12 +589,12 @@ namespace Thor::USART
     }
 
 
-    if ( ( length <= rxBuffers.internalSize ) &&
+    if ( ( length <= rxBuffers.linearSize() ) &&
          ( xSemaphoreTake( awaitEventRXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS ) )
     { 
 
-      memset( rxBuffers.internal, 0, rxBuffers.internalSize );
-      error = hwDriver->receiveDMA( rxBuffers.internal, length, timeout_mS );
+      memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
+      error = hwDriver->receiveDMA( rxBuffers.linearBuffer(), length, timeout_mS );
 
       if ( error == Chimera::CommonStatusCodes::OK )
       {
@@ -635,8 +641,9 @@ namespace Thor::USART
     }
     else
     {
+      size_t pushed = 0;
       error = Chimera::CommonStatusCodes::BUSY;
-      txBuffers.push( buffer, length );
+      txBuffers.push( buffer, length, pushed );
     }
 
     return error;
@@ -661,8 +668,9 @@ namespace Thor::USART
     }
     else
     {
+      size_t pushed = 0;
       error = Chimera::CommonStatusCodes::BUSY;
-      txBuffers.push( buffer, length );
+      txBuffers.push( buffer, length, pushed );
     }
 
     return error;
