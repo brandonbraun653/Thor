@@ -12,6 +12,9 @@
 #ifndef THOR_HW_DMA_MAPPING_HPP
 #define THOR_HW_DMA_MAPPING_HPP
 
+/* C++ Includes */
+#include <unordered_map>
+
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
@@ -34,11 +37,20 @@ namespace Thor::Driver::DMA
   extern const Thor::Driver::RCC::ResourceMap_t StreamToResourceIndex;
 
   /**
+   *  Maps a DMA peripheral stream into the corresponding register index
+   *  which is used to access offsets in the hardware registers
+   */
+  extern const Thor::Driver::RCC::ResourceMap_t StreamToRegisterIndex;
+
+  /**
    *  Gets the interrupt request number tied to a DMA instance.
    *
    *  @note Must match the mapping in InstanceToResourceIndex
    */
   extern const IRQn_Type DMAStream_IRQn[ NUM_DMA_STREAMS * NUM_DMA_PERIPHS ];
+
+
+  extern const std::unordered_map<Chimera::DMA::Channel, StreamX *const> ChannelToStream;
 }
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_DMA */

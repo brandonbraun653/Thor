@@ -85,8 +85,115 @@ namespace Thor::Driver::DMA
   ------------------------------------------------*/
   namespace Configuration
   {
-    
-  }
+    namespace Mode
+    {
+      static constexpr uint32_t Normal   = 0u;
+      static constexpr uint32_t Periph   = SxCR_PFCTRL;
+      static constexpr uint32_t Circular = SxCR_CIRC;
+    }    // namespace Mode
+
+    namespace ChannelSelect
+    {
+      static constexpr uint32_t Channel0 = ( 0u << SxCR_CHSEL_Pos ) & SxCR_Msk;
+      static constexpr uint32_t Channel1 = ( 1u << SxCR_CHSEL_Pos ) & SxCR_Msk;
+      static constexpr uint32_t Channel2 = ( 2u << SxCR_CHSEL_Pos ) & SxCR_Msk;
+      static constexpr uint32_t Channel3 = ( 3u << SxCR_CHSEL_Pos ) & SxCR_Msk;
+      static constexpr uint32_t Channel4 = ( 4u << SxCR_CHSEL_Pos ) & SxCR_Msk;
+      static constexpr uint32_t Channel5 = ( 5u << SxCR_CHSEL_Pos ) & SxCR_Msk;
+      static constexpr uint32_t Channel6 = ( 6u << SxCR_CHSEL_Pos ) & SxCR_Msk;
+      static constexpr uint32_t Channel7 = ( 7u << SxCR_CHSEL_Pos ) & SxCR_Msk;
+    }    // namespace ChannelSelect
+
+    namespace MemoryBurst
+    {
+      static constexpr uint32_t Single = ( 0u << SxCR_MBURST_Pos ) & SxCR_MBURST_Msk;
+      static constexpr uint32_t Incr4  = ( 1u << SxCR_MBURST_Pos ) & SxCR_MBURST_Msk;
+      static constexpr uint32_t Incr8  = ( 2u << SxCR_MBURST_Pos ) & SxCR_MBURST_Msk;
+      static constexpr uint32_t Incr16 = ( 3u << SxCR_MBURST_Pos ) & SxCR_MBURST_Msk;
+    }    // namespace MemoryBurst
+
+    namespace PeriphBurst
+    {
+      static constexpr uint32_t Single = ( 0u << SxCR_PBURST_Pos ) & SxCR_PBURST_Msk;
+      static constexpr uint32_t Incr4  = ( 1u << SxCR_PBURST_Pos ) & SxCR_PBURST_Msk;
+      static constexpr uint32_t Incr8  = ( 2u << SxCR_PBURST_Pos ) & SxCR_PBURST_Msk;
+      static constexpr uint32_t Incr16 = ( 3u << SxCR_PBURST_Pos ) & SxCR_PBURST_Msk;
+    }    // namespace PeriphBurst
+
+    namespace CurrentTarget
+    {
+      static constexpr uint32_t Memory0 = 0;
+      static constexpr uint32_t Memory1 = SxCR_CT;
+    }    // namespace CurrentTarget
+
+    namespace DoubleBufferMode
+    {
+      static constexpr uint32_t NoSwitch = 0;
+      static constexpr uint32_t Switch   = SxCR_DBM;
+    }    // namespace DoubleBufferMode
+
+    namespace PriorityLevel
+    {
+      static constexpr uint32_t Low    = ( 0u << SxCR_PL_Pos ) & SxCR_PL_Msk;
+      static constexpr uint32_t Medium = ( 1u << SxCR_PL_Pos ) & SxCR_PL_Msk;
+      static constexpr uint32_t High   = ( 2u << SxCR_PL_Pos ) & SxCR_PL_Msk;
+      static constexpr uint32_t Ultra  = ( 3u << SxCR_PL_Pos ) & SxCR_PL_Msk;
+    }    // namespace PriorityLevel
+
+    namespace PeriphIncOffset
+    {
+      static constexpr uint32_t PSIZE  = 0;
+      static constexpr uint32_t Fixed4 = SxCR_PINCOS;
+    }    // namespace PeriphIncOffset
+
+    namespace MemoryDataSize
+    {
+      static constexpr uint32_t Byte     = ( 0u << SxCR_MSIZE_Pos ) & SxCR_MSIZE_Msk;
+      static constexpr uint32_t HalfWord = ( 1u << SxCR_MSIZE_Pos ) & SxCR_MSIZE_Msk;
+      static constexpr uint32_t Word     = ( 2u << SxCR_MSIZE_Pos ) & SxCR_MSIZE_Msk;
+    }    // namespace MemoryDataSize
+
+    namespace PeriphDataSize
+    {
+      static constexpr uint32_t Byte     = ( 0u << SxCR_PSIZE_Pos ) & SxCR_PSIZE_Msk;
+      static constexpr uint32_t HalfWord = ( 1u << SxCR_PSIZE_Pos ) & SxCR_PSIZE_Msk;
+      static constexpr uint32_t Word     = ( 2u << SxCR_PSIZE_Pos ) & SxCR_PSIZE_Msk;
+    }    // namespace PeriphDataSize
+
+    namespace MemoryIncrementMode
+    {
+      static constexpr uint32_t Fixed     = 0;
+      static constexpr uint32_t Increment = SxCR_MINC;
+    }    // namespace MemoryIncrementMode
+
+    namespace PeriphIncrementMode
+    {
+      static constexpr uint32_t Fixed     = 0;
+      static constexpr uint32_t Increment = SxCR_PINC;
+    }    // namespace PeriphIncrementMode
+
+    namespace TransferDirection
+    {
+      static constexpr uint32_t P2M = ( 0u << SxCR_DIR_Pos ) & SxCR_DIR_Msk;
+      static constexpr uint32_t M2P = ( 1u << SxCR_DIR_Pos ) & SxCR_DIR_Msk;
+      static constexpr uint32_t M2M = ( 2u << SxCR_DIR_Pos ) & SxCR_DIR_Msk;
+    }    // namespace TransferDirection
+
+    namespace FIFODirectMode
+    {
+      static constexpr uint32_t Enabled  = 0;
+      static constexpr uint32_t Disabled = SxFCR_DMDIS;
+    }    // namespace FIFODirectMode
+
+    namespace FIFOThreshold
+    {
+      static constexpr uint32_t Threshold_1_4 = ( 0u << SxFCR_FTH_Pos ) & SxFCR_FTH_Msk;
+      static constexpr uint32_t Threshold_1_2 = ( 1u << SxFCR_FTH_Pos ) & SxFCR_FTH_Msk;
+      static constexpr uint32_t Threshold_3_4 = ( 2u << SxFCR_FTH_Pos ) & SxFCR_FTH_Msk;
+      static constexpr uint32_t Threshold_4_4 = ( 3u << SxFCR_FTH_Pos ) & SxFCR_FTH_Msk;
+    }    // namespace FIFOThreshold
+
+  }      // namespace Configuration
 
   /*------------------------------------------------
   State Machine
@@ -484,6 +591,55 @@ namespace Thor::Driver::DMA
       periph->LIFCR = val & LIFCR_Msk;
     }
 
+    static inline void setStream0( RegisterMap *const periph )
+    {
+      uint32_t STREAMx_BITS_PATTERN = LIFCR_CFEIF0 | LIFCR_CDMEIF0 | LIFCR_CTEIF0 | LIFCR_CHTIF0 | LIFCR_CTCIF0;
+      set( periph, STREAMx_BITS_PATTERN );
+    }
+
+    static inline void setStream1( RegisterMap *const periph )
+    {
+      uint32_t STREAMx_BITS_PATTERN = ( LIFCR_CFEIF0 | LIFCR_CDMEIF0 | LIFCR_CTEIF0 | LIFCR_CHTIF0 | LIFCR_CTCIF0 ) << 6u;
+      set( periph, STREAMx_BITS_PATTERN );
+    }
+
+    static inline void setStream2( RegisterMap *const periph )
+    {
+      uint32_t STREAMx_BITS_PATTERN = ( LIFCR_CFEIF0 | LIFCR_CDMEIF0 | LIFCR_CTEIF0 | LIFCR_CHTIF0 | LIFCR_CTCIF0 ) << 16u;
+      set( periph, STREAMx_BITS_PATTERN );
+    }
+
+    static inline void setStream3( RegisterMap *const periph )
+    {
+      uint32_t STREAMx_BITS_PATTERN = ( LIFCR_CFEIF0 | LIFCR_CDMEIF0 | LIFCR_CTEIF0 | LIFCR_CHTIF0 | LIFCR_CTCIF0 ) << 22u;
+      set( periph, STREAMx_BITS_PATTERN );
+    }
+
+    static inline void setStreamX( RegisterMap *const periph, const size_t stream )
+    {
+      switch ( stream )
+      {
+        case 0:
+          setStream0( periph );
+          break;
+
+        case 1:
+          setStream1( periph );
+          break;
+
+        case 2:
+          setStream2( periph );
+          break;
+
+        case 3:
+          setStream3( periph );
+          break;
+
+        default:
+          break;
+      }
+    }
+
     class CTCIF3
     {
     public:
@@ -675,6 +831,56 @@ namespace Thor::Driver::DMA
       periph->HIFCR = val & HIFCR_Msk;
     }
 
+    static inline void setStream4( RegisterMap *const periph )
+    {
+      uint32_t STREAMx_BITS_PATTERN = HIFCR_CFEIF4 | HIFCR_CDMEIF4 | HIFCR_CTEIF4 | HIFCR_CHTIF4 | HIFCR_CTCIF4;
+      set( periph, STREAMx_BITS_PATTERN );
+    }
+
+    static inline void setStream5( RegisterMap *const periph )
+    {
+      uint32_t STREAMx_BITS_PATTERN = ( HIFCR_CFEIF4 | HIFCR_CDMEIF4 | HIFCR_CTEIF4 | HIFCR_CHTIF4 | HIFCR_CTCIF4 ) << 6u;
+      set( periph, STREAMx_BITS_PATTERN );
+    }
+
+    static inline void setStream6( RegisterMap *const periph )
+    {
+      uint32_t STREAMx_BITS_PATTERN = ( HIFCR_CFEIF4 | HIFCR_CDMEIF4 | HIFCR_CTEIF4 | HIFCR_CHTIF4 | HIFCR_CTCIF4 ) << 16u;
+      set( periph, STREAMx_BITS_PATTERN );
+    }
+
+    static inline void setStream7( RegisterMap *const periph )
+    {
+      uint32_t STREAMx_BITS_PATTERN = ( HIFCR_CFEIF4 | HIFCR_CDMEIF4 | HIFCR_CTEIF4 | HIFCR_CHTIF4 | HIFCR_CTCIF4 ) << 22u;
+      set( periph, STREAMx_BITS_PATTERN );
+    }
+
+    static inline void setStreamX( RegisterMap *const periph, const size_t stream )
+    {
+      switch ( stream )
+      {
+        case 4:
+          setStream4( periph );
+          break;
+
+        case 5:
+          setStream5( periph );
+          break;
+
+        case 6:
+          setStream6( periph );
+          break;
+
+        case 7:
+          setStream7( periph );
+          break;
+
+        default:
+          break;
+      }
+    }
+
+
     class CTCIF7
     {
     public:
@@ -861,31 +1067,27 @@ namespace Thor::Driver::DMA
   ------------------------------------------------*/
   namespace SxCR
   {
-    static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+    static inline uint32_t get( const StreamX *const stream )
     {
-      auto streamPtr = getStream( periph, streamNum );
-      return streamPtr->CR & SxCR_Msk;
+      return stream->CR & SxCR_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+    static inline void set( StreamX *const stream, const uint32_t val )
     {
-      auto streamPtr  = getStream( periph, streamNum );
-      streamPtr->CR = val & SxCR_Msk;
+      stream->CR = val & SxCR_Msk;
     }
 
     class CHSEL
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -895,16 +1097,14 @@ namespace Thor::Driver::DMA
     class MBURST
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -914,16 +1114,14 @@ namespace Thor::Driver::DMA
     class PBURST
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -933,35 +1131,31 @@ namespace Thor::Driver::DMA
     class CT
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
       static constexpr uint32_t mask = SxCR_CT;
     };
-      
+
     class DBM
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -971,16 +1165,14 @@ namespace Thor::Driver::DMA
     class PL
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -990,16 +1182,14 @@ namespace Thor::Driver::DMA
     class PINCOS
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -1009,16 +1199,14 @@ namespace Thor::Driver::DMA
     class MSIZE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -1028,16 +1216,14 @@ namespace Thor::Driver::DMA
     class PSIZE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -1047,16 +1233,14 @@ namespace Thor::Driver::DMA
     class MINC
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -1066,16 +1250,14 @@ namespace Thor::Driver::DMA
     class PINC
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -1085,16 +1267,14 @@ namespace Thor::Driver::DMA
     class CIRC
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -1104,16 +1284,14 @@ namespace Thor::Driver::DMA
     class DIR
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -1123,16 +1301,14 @@ namespace Thor::Driver::DMA
     class PFCTRL
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -1142,16 +1318,14 @@ namespace Thor::Driver::DMA
     class TCIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -1161,16 +1335,14 @@ namespace Thor::Driver::DMA
     class HTIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -1180,35 +1352,31 @@ namespace Thor::Driver::DMA
     class TEIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
       static constexpr uint32_t mask = SxCR_TEIE;
     };
-      
+
     class DMEIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
       }
 
     private:
@@ -1218,16 +1386,21 @@ namespace Thor::Driver::DMA
     class EN
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->CR & mask;
+        return stream->CR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->CR = val & mask;
+        stream->CR = val & mask;
+
+        /*------------------------------------------------
+        According to the datasheet (9.3.18), clearing this bit
+        is not instant and we need to wait for it to take effect.
+        This will occur when all current transfers have finished.
+        ------------------------------------------------*/
+        while ( get( stream ) != val ) {}
       }
 
     private:
@@ -1240,16 +1413,14 @@ namespace Thor::Driver::DMA
   ------------------------------------------------*/
   namespace SxNDTR
   {
-    static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+    static inline uint32_t get( const StreamX *const stream )
     {
-      auto streamPtr = getStream( periph, streamNum );
-      return streamPtr->NDTR & SxNDT_Msk;
+      return stream->NDTR & SxNDT_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+    static inline void set( StreamX *const stream, const uint32_t val )
     {
-      auto streamPtr  = getStream( periph, streamNum );
-      streamPtr->NDTR = val & SxNDT_Msk;
+      stream->NDTR = val & SxNDT_Msk;
     }
   }    // namespace SxNDTR
 
@@ -1258,16 +1429,14 @@ namespace Thor::Driver::DMA
   ------------------------------------------------*/
   namespace SxPAR
   {
-    static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+    static inline uint32_t get( const StreamX *const stream )
     {
-      auto streamPtr = getStream( periph, streamNum );
-      return streamPtr->PAR & SxPAR_Msk;
+      return stream->PAR & SxPAR_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+    static inline void set( StreamX *const stream, const uint32_t val )
     {
-      auto streamPtr  = getStream( periph, streamNum );
-      streamPtr->PAR = val & SxPAR_Msk;
+      stream->PAR = val & SxPAR_Msk;
     }
   }
 
@@ -1276,16 +1445,14 @@ namespace Thor::Driver::DMA
   ------------------------------------------------*/
   namespace SxM0AR
   {
-    static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+    static inline uint32_t get( const StreamX *const stream )
     {
-      auto streamPtr = getStream( periph, streamNum );
-      return streamPtr->M0AR & SxM0AR_Msk;
+      return stream->M0AR & SxM0AR_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+    static inline void set( StreamX *const stream, const uint32_t val )
     {
-      auto streamPtr  = getStream( periph, streamNum );
-      streamPtr->M0AR = val & SxM0AR_Msk;
+      stream->M0AR = val & SxM0AR_Msk;
     }
   }
 
@@ -1294,16 +1461,14 @@ namespace Thor::Driver::DMA
   ------------------------------------------------*/
   namespace SxM1AR
   {
-    static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+    static inline uint32_t get( const StreamX *const stream )
     {
-      auto streamPtr = getStream( periph, streamNum );
-      return streamPtr->M1AR & SxM1AR_Msk;
+      return stream->M1AR & SxM1AR_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+    static inline void set( StreamX *const stream, const uint32_t val )
     {
-      auto streamPtr  = getStream( periph, streamNum );
-      streamPtr->M1AR = val & SxM1AR_Msk;
+      stream->M1AR = val & SxM1AR_Msk;
     }
   }
 
@@ -1312,31 +1477,27 @@ namespace Thor::Driver::DMA
   ------------------------------------------------*/
   namespace SxFCR
   {
-    static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+    static inline uint32_t get( const StreamX *const stream )
     {
-      auto streamPtr = getStream( periph, streamNum );
-      return streamPtr->FCR & SxFCR_Msk;
+      return stream->FCR & SxFCR_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+    static inline void set( StreamX *const stream, const uint32_t val )
     {
-      auto streamPtr  = getStream( periph, streamNum );
-      streamPtr->FCR = val & SxFCR_Msk;
+      stream->FCR = val & SxFCR_Msk;
     }
 
     class FEIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->FCR & mask;
+        return stream->FCR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->FCR = val & mask;
+        stream->FCR = val & mask;
       }
 
     private:
@@ -1346,10 +1507,9 @@ namespace Thor::Driver::DMA
     class FS
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->FCR & mask;
+        return stream->FCR & mask;
       }
 
     private:
@@ -1359,16 +1519,14 @@ namespace Thor::Driver::DMA
     class DMDIS
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->FCR & mask;
+        return stream->FCR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->FCR = val & mask;
+        stream->FCR = val & mask;
       }
 
     private:
@@ -1378,16 +1536,14 @@ namespace Thor::Driver::DMA
     class FTH
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph, const uint32_t streamNum )
+      static inline uint32_t get( const StreamX *const stream )
       {
-        auto streamPtr = getStream( periph, streamNum );
-        return streamPtr->FCR & mask;
+        return stream->FCR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t streamNum, const uint32_t val )
+      static inline void set( StreamX *const stream, const uint32_t val )
       {
-        auto streamPtr  = getStream( periph, streamNum );
-        streamPtr->FCR = val & mask;
+        stream->FCR = val & mask;
       }
 
     private:

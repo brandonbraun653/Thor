@@ -19,6 +19,7 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/definitions/interrupt_definitions.hpp>
+#include <Thor/drivers/dma.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
 #include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_driver.hpp>

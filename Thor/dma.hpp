@@ -36,6 +36,8 @@ namespace Thor::DMA
     Chimera::Status_t abort( Chimera::DMA::TransferHandle_t handle, const size_t timeout ) final override;
 
     Chimera::Status_t status( Chimera::DMA::TransferHandle_t handle, const size_t timeout ) final override;
+   
+
   };
 }    // namespace Thor::DMA
 

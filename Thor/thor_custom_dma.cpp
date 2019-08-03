@@ -8,9 +8,26 @@
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+/* C++ Includes */
+#include <array>
+
+/* Chimera Includes */
+#include <Chimera/threading.hpp>
+
 /* Thor Includes */
 #include <Thor/thor.hpp>
 #include <Thor/dma.hpp>
+#include <Thor/drivers/dma.hpp>
+
+namespace DMADriver = Thor::Driver::DMA;
+
+/*------------------------------------------------
+Static Functions
+------------------------------------------------*/
+static void USART1ISRPostProcessorThread( void *argument );
+static void USART2ISRPostProcessorThread( void *argument );
+static void USART3ISRPostProcessorThread( void *argument );
+static void USART6ISRPostProcessorThread( void *argument );
 
 namespace Thor::DMA
 {
