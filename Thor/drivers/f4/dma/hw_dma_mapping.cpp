@@ -34,7 +34,7 @@ namespace Thor::Driver::DMA
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM3 ), 3 }, 
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM4 ), 4 }, 
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM5 ), 5 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM1 ), 6 }, 
+    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM6 ), 6 }, 
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM7 ), 7 }, 
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM0 ), 8 }, 
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM1 ), 9 }, 
@@ -42,7 +42,7 @@ namespace Thor::Driver::DMA
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM3 ), 11 }, 
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM4 ), 12 }, 
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM5 ), 13 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM1 ), 14 }, 
+    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM6 ), 14 }, 
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM7 ), 15 }, 
   };
 
@@ -53,7 +53,7 @@ namespace Thor::Driver::DMA
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM3 ), 3 }, 
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM4 ), 4 }, 
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM5 ), 5 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM1 ), 6 }, 
+    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM6 ), 6 }, 
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM7 ), 7 }, 
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM0 ), 0 }, 
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM1 ), 1 }, 
@@ -61,7 +61,7 @@ namespace Thor::Driver::DMA
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM3 ), 3 }, 
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM4 ), 4 }, 
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM5 ), 5 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM1 ), 6 }, 
+    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM6 ), 6 }, 
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM7 ), 7 }, 
   };
 

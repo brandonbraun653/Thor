@@ -18,10 +18,11 @@
 #include <Thor/definitions/interrupt_definitions.hpp>
 #include <Thor/headers.hpp>
 #include <Thor/system.hpp>
+#include <Thor/dma.hpp>
 
 /* Driver Includes */
-#include <Thor/drivers/NVIC.hpp>
-#include <Thor/drivers/RCC.hpp>
+#include <Thor/drivers/nvic.hpp>
+#include <Thor/drivers/rcc.hpp>
 
 namespace Thor::System
 {
@@ -51,11 +52,23 @@ namespace Chimera::System
 {
   Chimera::Status_t prjSystemStartup()
   {
+    /*------------------------------------------------
+    Initialize the system clocks
+    ------------------------------------------------*/
     Thor::Driver::RCC::init();
     auto sys = Thor::Driver::RCC::SystemClock::get();
     sys->configureProjectClocks();
 
+    /*------------------------------------------------
+    Initialize interrupt settings
+    ------------------------------------------------*/
     Thor::Driver::Interrupt::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
+
+    /*------------------------------------------------
+    Initialize the DMA Driver
+    ------------------------------------------------*/
+    auto dma = Thor::DMA::DMAClass::get();
+    dma->init();
 
     return Chimera::CommonStatusCodes::OK;
   }

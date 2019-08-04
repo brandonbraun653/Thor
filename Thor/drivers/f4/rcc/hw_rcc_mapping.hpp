@@ -22,6 +22,7 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/drivers/f4/dma/hw_dma_prj.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_prj.hpp>
 #include <Thor/drivers/f4/uart/hw_uart_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
@@ -33,6 +34,19 @@ namespace Thor::Driver::RCC
 {
   namespace LookupTables
   {
+    /**
+     *  DMA Peripheral Config Lookup Tables
+     */
+    static constexpr size_t dmaTableSize = Thor::Driver::DMA::NUM_DMA_PERIPHS;
+
+    extern const PCC DMALookup;
+
+    extern const RegisterConfig DMA_ClockConfig[ dmaTableSize ];
+    extern const RegisterConfig DMA_ClockConfigLP[ dmaTableSize ];
+    extern const RegisterConfig DMA_ResetConfig[ dmaTableSize ];
+
+    extern const Configuration::ClockType_t DMA_SourceClock[ dmaTableSize ];
+
     /**
      *  GPIO Peripheral Config Lookup Tables
      */

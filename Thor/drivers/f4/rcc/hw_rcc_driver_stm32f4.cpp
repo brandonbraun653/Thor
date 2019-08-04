@@ -304,316 +304,318 @@ namespace Thor::Driver::RCC
       ------------------------------------------------*/
       memset( periphLookupTables.data(), 0, sizeof( periphLookupTables ) );
 
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ] = &GPIOLookup;
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ] = &UARTLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ]   = &DMALookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ]  = &GPIOLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ]  = &UARTLookup;
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USART ) ] = &USARTLookup;
 
       initialized = true;
     }
   }
 
-    /*------------------------------------------------
-    SystemClock Class Implementation
-    ------------------------------------------------*/
-    SystemClock::SystemClock()
+  /*------------------------------------------------
+  SystemClock Class Implementation
+  ------------------------------------------------*/
+  SystemClock::SystemClock()
+  {
+    init();
+  }
+
+  SystemClock::~SystemClock()
+  {
+  }
+
+  SystemClock *const SystemClock::get()
+  {
+    static SystemClock *ref = nullptr;
+
+    if ( ref == nullptr )
     {
-      init();
+      ref = new SystemClock();
     }
 
-    SystemClock::~SystemClock()
-    {
-    }
+    return ref;
+  }
 
-    SystemClock *const SystemClock::get()
-    {
-      static SystemClock *ref = nullptr;
+  Chimera::Status_t SystemClock::configureProjectClocks()
+  {
+    using namespace Thor::Driver;
 
-      if ( ref == nullptr )
-      {
-        ref = new SystemClock();
-      }
-
-      return ref;
-    }
-
-    Chimera::Status_t SystemClock::configureProjectClocks()
-    {
-      using namespace Thor::Driver;
-
-      Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
-      const Chimera::Status_t prjResult = Chimera::CommonStatusCodes::OK;
-
-      /*------------------------------------------------
-      Turn on the main internal regulator output voltage
-      ------------------------------------------------*/
-      APB1ENR::PWREN::set( APB1ENR::PWRENConfig::ON );
-
-      /*------------------------------------------------
-      Set the voltage scaling to allow us to achieve max clock
-      ------------------------------------------------*/
-      PWR::CR::VOS::set( PWR::CR::VOS::VOLTAGE_SCALE_1 );
-
-      /*------------------------------------------------
-      Configure the system clocks
-      ------------------------------------------------*/
-      ClockInit clkCfg;
-      OscillatorInit oscCfg;
-
-      if ( ( prjGetOscillatorConfig( &oscCfg ) == prjResult ) && ( prjGetClockConfig(&clkCfg) == prjResult )) 
-      {
-        /*------------------------------------------------
-        Initialize the oscillators which drive the system clocks
-        ------------------------------------------------*/
-        result = OscillatorConfig( &oscCfg );
-
-        /*------------------------------------------------
-        Initializes the CPU, AHB, and APB bus clocks
-        ------------------------------------------------*/
-        result = ClockConfig( &clkCfg );
-      }
-
-      return result;
-    }
-
-    Chimera::Status_t SystemClock::setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz )
-    {
-      Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
-      return result;
-    }
-
-    Chimera::Status_t SystemClock::setCoreClock( const size_t freqHz )
-    {
-      Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
-      return result;
-    }
-
-    Chimera::Status_t SystemClock::setCoreClockSource( const Thor::Clock::Source src )
-    {
-      Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
-      return result;
-    }
-
-    Chimera::Status_t SystemClock::getClockFrequency( const Configuration::ClockType_t clock, size_t *const freqHz )
-    {
-      Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
-
-      if ( freqHz ) 
-      {
-        switch ( clock )
-        {
-          case Configuration::ClockType::HCLK:
-            result = prjGetHCLKFreq( freqHz );
-            break;
-
-          case Configuration::ClockType::PCLK1:
-            result = prjGetPCLK1Freq( freqHz );
-            break;
-
-          case Configuration::ClockType::PCLK2:
-            result = prjGetPCLK2Freq( freqHz );
-            break;
-
-          case Configuration::ClockType::SYSCLK:
-            result = prjGetSysClockFreq( freqHz );
-            break;
-
-          default:
-            // result = Chimera::CommonStatusCodes::FAIL;
-            break;
-        }
-      }
-
-      return result;
-    }
-
-    Chimera::Status_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz )
-    {
-      Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
-
-      auto clockLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->clockSource;
-      auto indexLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->resourceIndexMap;
-
-      if ( freqHz && clockLookupTable  && indexLookupTable )
-      {
-        auto index       = indexLookupTable->find( address )->second;
-        auto sourceClock = clockLookupTable[ index ];
-
-        result = getClockFrequency( sourceClock, freqHz );
-      }
-
-      return result;
-    }
+    Chimera::Status_t result          = Chimera::CommonStatusCodes::FAIL;
+    const Chimera::Status_t prjResult = Chimera::CommonStatusCodes::OK;
 
     /*------------------------------------------------
-    PeripheralController Class Implementation
+    Turn on the main internal regulator output voltage
     ------------------------------------------------*/
-    std::shared_ptr<PeripheralController> PeripheralController::get()
-    {
-      struct make_shared_enabler : public PeripheralController
-      {
-      };
-      static std::shared_ptr<make_shared_enabler> ref;
+    APB1ENR::PWREN::set( APB1ENR::PWRENConfig::ON );
 
-      if ( !ref )
+    /*------------------------------------------------
+    Set the voltage scaling to allow us to achieve max clock
+    ------------------------------------------------*/
+    PWR::CR::VOS::set( PWR::CR::VOS::VOLTAGE_SCALE_1 );
+
+    /*------------------------------------------------
+    Configure the system clocks
+    ------------------------------------------------*/
+    ClockInit clkCfg;
+    OscillatorInit oscCfg;
+
+    if ( ( prjGetOscillatorConfig( &oscCfg ) == prjResult ) && ( prjGetClockConfig( &clkCfg ) == prjResult ) )
+    {
+      /*------------------------------------------------
+      Initialize the oscillators which drive the system clocks
+      ------------------------------------------------*/
+      result = OscillatorConfig( &oscCfg );
+
+      /*------------------------------------------------
+      Initializes the CPU, AHB, and APB bus clocks
+      ------------------------------------------------*/
+      result = ClockConfig( &clkCfg );
+    }
+
+    return result;
+  }
+
+  Chimera::Status_t SystemClock::setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return result;
+  }
+
+  Chimera::Status_t SystemClock::setCoreClock( const size_t freqHz )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return result;
+  }
+
+  Chimera::Status_t SystemClock::setCoreClockSource( const Thor::Clock::Source src )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return result;
+  }
+
+  Chimera::Status_t SystemClock::getClockFrequency( const Configuration::ClockType_t clock, size_t *const freqHz )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+
+    if ( freqHz )
+    {
+      switch ( clock )
       {
-        ref = std::make_shared<make_shared_enabler>();
+        case Configuration::ClockType::HCLK:
+          result = prjGetHCLKFreq( freqHz );
+          break;
+
+        case Configuration::ClockType::PCLK1:
+          result = prjGetPCLK1Freq( freqHz );
+          break;
+
+        case Configuration::ClockType::PCLK2:
+          result = prjGetPCLK2Freq( freqHz );
+          break;
+
+        case Configuration::ClockType::SYSCLK:
+          result = prjGetSysClockFreq( freqHz );
+          break;
+
+        default:
+          // result = Chimera::CommonStatusCodes::FAIL;
+          break;
+      }
+    }
+
+    return result;
+  }
+
+  Chimera::Status_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address,
+                                                 size_t *const freqHz )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+
+    auto clockLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->clockSource;
+    auto indexLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->resourceIndexMap;
+
+    if ( freqHz && clockLookupTable && indexLookupTable )
+    {
+      auto index       = indexLookupTable->find( address )->second;
+      auto sourceClock = clockLookupTable[ index ];
+
+      result = getClockFrequency( sourceClock, freqHz );
+    }
+
+    return result;
+  }
+
+  /*------------------------------------------------
+  PeripheralController Class Implementation
+  ------------------------------------------------*/
+  std::shared_ptr<PeripheralController> PeripheralController::get()
+  {
+    struct make_shared_enabler : public PeripheralController
+    {
+    };
+    static std::shared_ptr<make_shared_enabler> ref;
+
+    if ( !ref )
+    {
+      ref = std::make_shared<make_shared_enabler>();
+    }
+
+    return ref;
+  }
+
+  PeripheralController::PeripheralController()
+  {
+    init();
+  }
+
+  PeripheralController::~PeripheralController()
+  {
+  }
+
+  Chimera::Status_t PeripheralController::reset( const Chimera::Peripheral::Type type, const size_t index )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->reset;
+    auto config      = lookupTable[ index ];
+    uint32_t tmp     = *config.reg;
+
+    /*------------------------------------------------
+    Begin the reset operation
+    ------------------------------------------------*/
+    tmp |= config.mask;
+    *config.reg = tmp;
+
+    /*------------------------------------------------
+    Remove the reset flag as it is not cleared automatically by hardware
+    ------------------------------------------------*/
+    tmp &= ~config.mask;
+    *config.reg = tmp;
+
+    return result;
+  }
+
+  Chimera::Status_t PeripheralController::enableClock( const Chimera::Peripheral::Type type, const size_t index )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
+    auto config      = lookupTable[ index ];
+    *config.reg |= config.mask;
+
+    return result;
+  }
+
+  Chimera::Status_t PeripheralController::disableClock( const Chimera::Peripheral::Type type, const size_t index )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
+    auto config      = lookupTable[ index ];
+    *config.reg &= ~config.mask;
+
+    return result;
+  }
+
+  Chimera::Status_t PeripheralController::enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
+    auto config      = lookupTable[ index ];
+    *config.reg |= config.mask;
+
+    return result;
+  }
+
+  Chimera::Status_t PeripheralController::disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
+  {
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
+    auto config      = lookupTable[ index ];
+    *config.reg &= ~config.mask;
+
+    return result;
+  }
+
+
+  /**
+   *  Configures the high speed external oscillator clock selection
+   *
+   *  @param[in]  init    Initialization configuration struct
+   *  @return Chimera::Status_t
+   */
+  static inline Chimera::Status_t HSEOscillatorConfig( const OscillatorInit *const init )
+  {
+    using namespace CFGR;
+    using namespace PLLCFGR;
+    using namespace CR;
+
+    const auto clockSource = SWS::get();
+    const auto pllSource   = SRC::get();
+
+    if ( ( clockSource == SWS::HSE ) || ( ( clockSource == SWS::PLL ) && ( pllSource == SRC::HSE ) ) )
+    {
+      /*------------------------------------------------
+      When HSE is used as system clock it will not be disabled.
+      ------------------------------------------------*/
+      if ( ( ( HSERDY::get() == locked ) || ( HSEON::get() == enabled ) ) && ( init->HSEState == HSEConfig::OFF ) )
+      {
+        return Chimera::CommonStatusCodes::FAIL;
+      }
+    }
+    else
+    {
+      /*------------------------------------------------
+      Set the appropriate flags to change the HSE state
+      ------------------------------------------------*/
+      switch ( init->HSEState )
+      {
+        case HSEConfig::ON:
+          RCC_PERIPH->CR |= CR_HSEON;
+          break;
+
+        case HSEConfig::BYPASS:
+          RCC_PERIPH->CR |= CR_HSEBYP;
+          RCC_PERIPH->CR |= CR_HSEON;
+
+        case HSEConfig::OFF:
+        default:
+          RCC_PERIPH->CR &= ~CR_HSEON;
+          RCC_PERIPH->CR &= ~CR_HSEBYP;
+          break;
       }
 
-      return ref;
-    }
-
-    PeripheralController::PeripheralController()
-    {
-      init();
-    }
-
-    PeripheralController::~PeripheralController()
-    {
-    }
-
-    Chimera::Status_t PeripheralController::reset( const Chimera::Peripheral::Type type, const size_t index )
-    {
-      Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
-
-      auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->reset;
-      auto config      = lookupTable[ index ];
-      uint32_t tmp     = *config.reg;
-
       /*------------------------------------------------
-      Begin the reset operation
+      Wait for the oscillator to achieve the desired state
       ------------------------------------------------*/
-      tmp |= config.mask;
-      *config.reg = tmp;
+      auto tickstart = Chimera::millis();
 
-      /*------------------------------------------------
-      Remove the reset flag as it is not cleared automatically by hardware
-      ------------------------------------------------*/
-      tmp &= ~config.mask;
-      *config.reg = tmp;
-
-      return result;
-    }
-
-    Chimera::Status_t PeripheralController::enableClock( const Chimera::Peripheral::Type type, const size_t index )
-    {
-      Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
-
-      auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
-      auto config = lookupTable[ index ];
-      *config.reg |= config.mask;
-
-      return result;
-    }
-
-    Chimera::Status_t PeripheralController::disableClock( const Chimera::Peripheral::Type type, const size_t index )
-    {
-      Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
-
-      auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
-      auto config = lookupTable[ index ];
-      *config.reg &= ~config.mask;
-
-      return result;
-    }
-
-    Chimera::Status_t PeripheralController::enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
-    {
-      Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
-
-      auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
-      auto config = lookupTable[ index ];
-      *config.reg |= config.mask;
-
-      return result;
-    }
-
-    Chimera::Status_t PeripheralController::disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
-    {
-      Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
-
-      auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
-      auto config = lookupTable[ index ];
-      *config.reg &= ~config.mask;
-
-      return result;
-    }
-
-
-    /**
-     *  Configures the high speed external oscillator clock selection
-     *
-     *  @param[in]  init    Initialization configuration struct
-     *  @return Chimera::Status_t
-     */
-    static inline Chimera::Status_t HSEOscillatorConfig( const OscillatorInit *const init )
-    {
-      using namespace CFGR;
-      using namespace PLLCFGR;
-      using namespace CR;
-
-      const auto clockSource = SWS::get();
-      const auto pllSource   = SRC::get();
-
-      if ( ( clockSource == SWS::HSE ) || ( ( clockSource == SWS::PLL ) && ( pllSource == SRC::HSE ) ) )
+      if ( init->HSEState != HSEConfig::OFF )
       {
-        /*------------------------------------------------
-        When HSE is used as system clock it will not be disabled.
-        ------------------------------------------------*/
-        if ( ( ( HSERDY::get() == locked ) || ( HSEON::get() == enabled ) ) && ( init->HSEState == HSEConfig::OFF ) )
+        while ( ( HSERDY::get() == locked ) || ( HSEON::get() == disabled ) )
         {
-          return Chimera::CommonStatusCodes::FAIL;
+          if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
+          {
+            return Chimera::CommonStatusCodes::TIMEOUT;
+          }
         }
       }
       else
       {
-        /*------------------------------------------------
-        Set the appropriate flags to change the HSE state
-        ------------------------------------------------*/
-        switch ( init->HSEState )
+        while ( HSEON::get() != disabled )
         {
-          case HSEConfig::ON:
-            RCC_PERIPH->CR |= CR_HSEON;
-            break;
-
-          case HSEConfig::BYPASS:
-            RCC_PERIPH->CR |= CR_HSEBYP;
-            RCC_PERIPH->CR |= CR_HSEON;
-
-          case HSEConfig::OFF:
-          default:
-            RCC_PERIPH->CR &= ~CR_HSEON;
-            RCC_PERIPH->CR &= ~CR_HSEBYP;
-            break;
-        }
-
-        /*------------------------------------------------
-        Wait for the oscillator to achieve the desired state
-        ------------------------------------------------*/
-        auto tickstart = Chimera::millis();
-
-        if ( init->HSEState != HSEConfig::OFF )
-        {
-          while ( ( HSERDY::get() == locked ) || ( HSEON::get() == disabled ) )
+          if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
           {
-            if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
-            {
-              return Chimera::CommonStatusCodes::TIMEOUT;
-            }
-          }
-        }
-        else
-        {
-          while ( HSEON::get() != disabled )
-          {
-            if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
-            {
-              return Chimera::CommonStatusCodes::TIMEOUT;
-            }
+            return Chimera::CommonStatusCodes::TIMEOUT;
           }
         }
       }
+    }
 
-      return Chimera::CommonStatusCodes::OK;
+    return Chimera::CommonStatusCodes::OK;
   }
 
   /**
@@ -1033,17 +1035,17 @@ namespace Thor::Driver::RCC
     }
     else
     {
-      if ( ( init->source &  Configuration::OscillatorType::HSE ) ==  Configuration::OscillatorType::HSE )
+      if ( ( init->source & Configuration::OscillatorType::HSE ) == Configuration::OscillatorType::HSE )
       {
         HSEOscillatorConfig( init );
       }
 
-      if ( ( init->source &  Configuration::OscillatorType::HSI ) ==  Configuration::OscillatorType::HSI )
+      if ( ( init->source & Configuration::OscillatorType::HSI ) == Configuration::OscillatorType::HSI )
       {
         HSIOscillatorConfig( init );
       }
 
-      if ( ( init->source &  Configuration::OscillatorType::PLLCLK ) ==  Configuration::OscillatorType::PLLCLK )
+      if ( ( init->source & Configuration::OscillatorType::PLLCLK ) == Configuration::OscillatorType::PLLCLK )
       {
         PLLOscillatorConfig( init );
       }

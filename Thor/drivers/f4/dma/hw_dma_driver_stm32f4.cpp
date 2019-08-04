@@ -404,21 +404,21 @@ namespace Thor::Driver::DMA
     clockEnable();
 
     /*------------------------------------------------
-    Make sure a stream instance exists
+    Initialize all the stream objects for this DMA peripheral
     ------------------------------------------------*/
-    auto streamArray = dma1Streams;
-
+    auto tmp = &dma1Streams;
     if ( periph == DMA2_PERIPH )
     {
-      streamArray = dma2Streams;
+      tmp = &dma2Streams;
     }
 
-    for ( uint8_t x = 0; x < streamArray.size(); x++ )
+    for ( uint8_t x = 0; x < (*tmp).size(); x++ )
     {
-      if ( !streamArray[ x ] )
+      if ( !(*tmp)[ x ] )
       {
-        streamArray[ x ] = new Internal::Stream();
-        streamArray[ x ]->attach( getStream( periph, x ), periph );
+        auto streamInstance = getStream( periph, x );
+        (*tmp)[ x ] = new Internal::Stream();
+        (*tmp)[ x ]->attach( streamInstance, periph );
       }
     }
 

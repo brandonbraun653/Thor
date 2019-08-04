@@ -15,6 +15,9 @@
 /* C++ Includes */
 #include <unordered_map>
 
+/* Chimera Includes */
+#include <Chimera/dma.hpp>
+
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
