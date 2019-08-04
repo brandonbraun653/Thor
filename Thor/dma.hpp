@@ -24,20 +24,33 @@ namespace Thor::DMA
   class DMAClass : public Chimera::DMA::Interface
   {
   public:
-    DMAClass();
     ~DMAClass();
 
-    Chimera::Status_t init( const Chimera::DMA::Init &config, const size_t timeout,
-                            Chimera::DMA::TransferHandle_t handle ) final override;
+    /**
+     *
+     */
+    static std::shared_ptr<DMAClass> get();
 
-    Chimera::Status_t start( Chimera::DMA::TransferHandle_t handle, const Chimera::DMA::TCB &transfer,
-                             const size_t timeout ) final override;
+    Chimera::Status_t init() final override;
+
+    Chimera::Status_t reset() final override;
+
+    Chimera::Status_t start( const Chimera::DMA::Init &config, const Chimera::DMA::TCB &transfer, const size_t timeout,
+                             Chimera::DMA::TransferHandle_t *const handle ) final override;
 
     Chimera::Status_t abort( Chimera::DMA::TransferHandle_t handle, const size_t timeout ) final override;
 
     Chimera::Status_t status( Chimera::DMA::TransferHandle_t handle, const size_t timeout ) final override;
-   
 
+    Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID ) final override;
+
+    Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
+
+  private:
+    DMAClass();
+
+    size_t listenerIDCount;
+    std::vector<Chimera::Event::Actionable> eventListeners;
   };
 }    // namespace Thor::DMA
 

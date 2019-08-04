@@ -18,6 +18,8 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/dma.hpp>
+
 #include <Thor/definitions/interrupt_definitions.hpp>
 #include <Thor/drivers/dma.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
@@ -298,11 +300,18 @@ namespace Thor::Driver::USART
 
   Chimera::Status_t Driver::transmitDMA( const uint8_t *const data, const size_t size, const size_t timeout )
   {
+    auto dma = Thor::DMA::DMAClass::get();
+
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::receiveDMA( uint8_t *const data, const size_t size, const size_t timeout )
   {
+    auto dma = Thor::DMA::DMAClass::get();
+
+    Chimera::DMA::Init init;
+    Chimera::DMA::TCB tcb;
+
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 

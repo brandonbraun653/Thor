@@ -44,8 +44,17 @@ namespace Thor::Driver::DMA
   static constexpr uint32_t DMA2_STREAM6_BASE_ADDR = DMA2_BASE_ADDR + 0x0A0u;
   static constexpr uint32_t DMA2_STREAM7_BASE_ADDR = DMA2_BASE_ADDR + 0x0B8u;
 
-  static constexpr uint32_t NUM_DMA_PERIPHS = 2u;
-  static constexpr uint32_t NUM_DMA_STREAMS = 8u;
+  static constexpr uint32_t NUM_DMA_PERIPHS            = 2u;
+  static constexpr uint32_t NUM_DMA_STREAMS_PER_PERIPH = 8u;
+  static constexpr uint32_t NUM_DMA_STREAMS            = NUM_DMA_PERIPHS * NUM_DMA_STREAMS_PER_PERIPH;
+
+  static constexpr std::array<uint32_t, NUM_DMA_PERIPHS> periphAddressList = { DMA1_BASE_ADDR, DMA2_BASE_ADDR };
+  static constexpr std::array<uint32_t, NUM_DMA_STREAMS> streamAddressList = {
+    DMA1_STREAM0_BASE_ADDR, DMA1_STREAM1_BASE_ADDR, DMA1_STREAM2_BASE_ADDR, DMA1_STREAM3_BASE_ADDR,
+    DMA1_STREAM4_BASE_ADDR, DMA1_STREAM5_BASE_ADDR, DMA1_STREAM6_BASE_ADDR, DMA1_STREAM7_BASE_ADDR,
+    DMA2_STREAM0_BASE_ADDR, DMA2_STREAM1_BASE_ADDR, DMA2_STREAM2_BASE_ADDR, DMA2_STREAM3_BASE_ADDR,
+    DMA2_STREAM4_BASE_ADDR, DMA2_STREAM5_BASE_ADDR, DMA2_STREAM6_BASE_ADDR, DMA2_STREAM7_BASE_ADDR
+  };
 
   /*------------------------------------------------
   Low Interrupt Status Register

@@ -135,9 +135,18 @@ namespace Thor::Driver::DMA
 
   struct TCB
   {
-    uint32_t srcAddress;
-    uint32_t dstAddress;
-    uint32_t numBytes;
+    uint32_t srcAddress;        /**< Address where the data will be pulled from */
+    uint32_t dstAddress;        /**< Address where the data will be transfered into */
+    uint32_t transferSize;      /**< How many bytes to transfer between source and destination */
+    uint32_t bytesTransfered;   /**< How many bytes were actually transfered */
+    uint32_t transferState;     /**< DMA transfer state machine status */
+
+    uint32_t selectedChannel;   /**< When the ISR fires, will contain hardware channel that was used */
+    uint32_t requestGenerator;  /**< When the ISR fires, will contain the peripheral that generated the event */
+
+    bool fifoError;
+    bool directModeError;
+    bool transferError;
   };
 }    // namespace Thor::Driver::DMA
 

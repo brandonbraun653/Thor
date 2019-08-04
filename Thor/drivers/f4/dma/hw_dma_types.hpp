@@ -70,14 +70,23 @@ namespace Thor::Driver::DMA
   static StreamX *const DMA2_STREAM6 = reinterpret_cast<StreamX *const>( DMA2_STREAM6_BASE_ADDR );
   static StreamX *const DMA2_STREAM7 = reinterpret_cast<StreamX *const>( DMA2_STREAM7_BASE_ADDR );
 
-  static inline StreamX *const getStream( RegisterMap *const periph, const uint32_t streamNum )
+
+  static const std::array<RegisterMap *const, NUM_DMA_PERIPHS> periphInstanceList = { DMA1_PERIPH, DMA2_PERIPH };
+
+  static const std::array<StreamX *const, NUM_DMA_STREAMS> streamInstanceList = {
+    DMA1_STREAM0, DMA1_STREAM1, DMA1_STREAM2, DMA1_STREAM3, DMA1_STREAM4, DMA1_STREAM5, DMA1_STREAM6, DMA1_STREAM7,
+    DMA2_STREAM0, DMA2_STREAM1, DMA2_STREAM2, DMA2_STREAM3, DMA2_STREAM4, DMA2_STREAM5, DMA2_STREAM6, DMA2_STREAM7
+  };
+
+  static inline StreamX *const
+      getStream( RegisterMap *const periph, const uint32_t streamNum )
   {
-    return reinterpret_cast<StreamX*const>( periph + ( offsetof( RegisterMap, STREAM0 ) * streamNum ) );
+    return reinterpret_cast<StreamX *const>( periph + ( offsetof( RegisterMap, STREAM0 ) * streamNum ) );
   }
 
   static inline const StreamX *const getStream( const RegisterMap *const periph, const uint32_t streamNum )
   {
-    return reinterpret_cast<const StreamX*const>( periph + ( offsetof( RegisterMap, STREAM0 ) * streamNum ) );
+    return reinterpret_cast<const StreamX *const>( periph + ( offsetof( RegisterMap, STREAM0 ) * streamNum ) );
   }
 
   /*------------------------------------------------
@@ -174,9 +183,10 @@ namespace Thor::Driver::DMA
 
     namespace TransferDirection
     {
-      static constexpr uint32_t P2M = ( 0u << SxCR_DIR_Pos ) & SxCR_DIR_Msk;
-      static constexpr uint32_t M2P = ( 1u << SxCR_DIR_Pos ) & SxCR_DIR_Msk;
-      static constexpr uint32_t M2M = ( 2u << SxCR_DIR_Pos ) & SxCR_DIR_Msk;
+      static constexpr uint32_t INVALID = 0;
+      static constexpr uint32_t P2M     = ( 0u << SxCR_DIR_Pos ) & SxCR_DIR_Msk;
+      static constexpr uint32_t M2P     = ( 1u << SxCR_DIR_Pos ) & SxCR_DIR_Msk;
+      static constexpr uint32_t M2M     = ( 2u << SxCR_DIR_Pos ) & SxCR_DIR_Msk;
     }    // namespace TransferDirection
 
     namespace FIFODirectMode
@@ -193,11 +203,26 @@ namespace Thor::Driver::DMA
       static constexpr uint32_t Threshold_4_4 = ( 3u << SxFCR_FTH_Pos ) & SxFCR_FTH_Msk;
     }    // namespace FIFOThreshold
 
-  }      // namespace Configuration
+  }    // namespace Configuration
 
   /*------------------------------------------------
-  State Machine
+  Runtime
   ------------------------------------------------*/
+  namespace Runtime
+  {
+    using Flag_t = uint32_t;
+    namespace Flag
+    {
+      static constexpr Flag_t TRANSFER_COMPLETE      = ( 1u << 0 );
+      static constexpr Flag_t TRANSFER_HALF_COMPLETE = ( 1u << 1 );
+      static constexpr Flag_t TRANSFER_ERROR         = ( 1u << 2 );
+      static constexpr Flag_t DIRECT_MODE_ERROR      = ( 1u << 3 );
+      static constexpr Flag_t FIFO_ERROR             = ( 1u << 4 );
+      static constexpr Flag_t TRANSFER_IN_PROGRESS   = ( 1u << 5 );
+      static constexpr Flag_t TRANSFER_READY         = ( 1u << 6 );
+      static constexpr Flag_t TRANSFER_NOT_READY     = ( 1u << 7 );
+    }    // namespace Flag
+  }      // namespace Runtime
 
   /*------------------------------------------------
   Low Interrupt Status Register
@@ -1406,13 +1431,15 @@ namespace Thor::Driver::DMA
     private:
       static constexpr uint32_t mask = SxCR_EN;
     };
-  }
+  }    // namespace SxCR
 
   /*------------------------------------------------
   Stream X Number of Data Register
   ------------------------------------------------*/
   namespace SxNDTR
   {
+    static constexpr uint32_t MAX_BYTES = 0xFFFF;
+
     static inline uint32_t get( const StreamX *const stream )
     {
       return stream->NDTR & SxNDT_Msk;
@@ -1438,7 +1465,7 @@ namespace Thor::Driver::DMA
     {
       stream->PAR = val & SxPAR_Msk;
     }
-  }
+  }    // namespace SxPAR
 
   /*------------------------------------------------
   Stream X Memory 0 Address Register
@@ -1454,7 +1481,7 @@ namespace Thor::Driver::DMA
     {
       stream->M0AR = val & SxM0AR_Msk;
     }
-  }
+  }    // namespace SxM0AR
 
   /*------------------------------------------------
   Stream X Memory 1 Address Register
@@ -1470,7 +1497,7 @@ namespace Thor::Driver::DMA
     {
       stream->M1AR = val & SxM1AR_Msk;
     }
-  }
+  }    // namespace SxM1AR
 
   /*------------------------------------------------
   Stream X FIFO Control Register

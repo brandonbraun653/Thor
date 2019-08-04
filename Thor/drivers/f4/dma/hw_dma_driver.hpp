@@ -20,6 +20,8 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/definitions/dma_definitions.hpp>
+#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
 #include <Thor/drivers/model/dma_model.hpp>
 #include <Thor/drivers/f4/dma/hw_dma_types.hpp>
 #include <Thor/drivers/common/interrupts/dma_interrupt_vectors.hpp>
@@ -45,8 +47,6 @@ namespace Thor::Driver::DMA
 
       Chimera::Status_t start() final override;
 
-      Chimera::Status_t pause() final override;
-
       Chimera::Status_t abort() final override;
 
     protected:
@@ -67,17 +67,30 @@ namespace Thor::Driver::DMA
       friend void (::DMA2_Stream6_IRQHandler)();
       friend void (::DMA2_Stream7_IRQHandler)();
 
-      void IRQHandler(const uint8_t channel, const uint8_t request);
+      /**
+       *  Stream interrupt request handler
+       *
+       *  @param[in]  channel     The channel on the stream that generated the interrupt.
+       *  @param[in]  request     The request generator peripheral ID
+       *  @return void
+       */
+      void IRQHandler( const uint8_t channel, const Thor::DMA::Source_t request );
 
     private:
       StreamX *stream;
       RegisterMap *parent;
-      TCB *controlBlock;
-      size_t streamIndex;
+      TCB controlBlock; 
+      size_t streamRegisterIndex;
+      size_t streamResourceIndex;
       SemaphoreHandle_t wakeupSignal;
+      IRQn_Type streamIRQn;
+
+      void enableTransferIRQ();
+      void disableTransferIRQ();
+      void enterCriticalSection();
+      void exitCriticalSection();
     };
   }
-
 
   class Driver : public PeripheralModel
   {
@@ -85,15 +98,21 @@ namespace Thor::Driver::DMA
     Driver();
     ~Driver();
 
-    Chimera::Status_t attach( RegisterMap *const peripheral );
+    Chimera::Status_t attach( RegisterMap *const peripheral ) final override;
 
-    Chimera::Status_t clockEnable();
+    Chimera::Status_t clockEnable() final override;
 
-    Chimera::Status_t clockDisable();
+    Chimera::Status_t clockDisable() final override;
 
-    Chimera::Status_t reset();
+    Chimera::Status_t reset() final override;
 
-    Chimera::Status_t init();
+    Chimera::Status_t init() final override;
+
+    Chimera::Status_t configure( StreamX *const stream, StreamConfig *const config, TCB *const controlBlock ) final override;
+
+    Chimera::Status_t start( StreamX *const stream) final override;
+
+    Chimera::Status_t abort( StreamX *const stream) final override;
 
   private:
     RegisterMap *periph;

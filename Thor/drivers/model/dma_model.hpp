@@ -68,6 +68,24 @@ namespace Thor::Driver::DMA
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t init() = 0;
+
+    /**
+     *  Reconfigures a stream for a new transfer
+     *
+     *  @param[in]  config    The stream's transfer configuration settings
+     *  @return Chimera::Status_t
+     *
+     *  |  Return Value |               Explanation               |
+     *  |:-------------:|:---------------------------------------:|
+     *  |            OK | The stream was configured               |
+     *  |        LOCKED | The stream is busy                      |
+     *  | NOT_SUPPORTED | A configuration option wasn't supported |
+     */
+    virtual Chimera::Status_t configure( StreamX *const stream, StreamConfig *const config, TCB *const controlBlock ) = 0;
+
+    virtual Chimera::Status_t start( StreamX *const stream ) = 0;
+
+    virtual Chimera::Status_t abort( StreamX *const stream ) = 0;
   };
 
   class StreamModel
@@ -85,7 +103,7 @@ namespace Thor::Driver::DMA
      *  @param[in]  wakeup    Signal to be given to upon ISR events
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t attachISRWakeup( SemaphoreHandle_t wakeup );
+    virtual Chimera::Status_t attachISRWakeup( SemaphoreHandle_t wakeup ) = 0;
     
     /**
      *  Reconfigures a stream for a new transfer
@@ -103,13 +121,8 @@ namespace Thor::Driver::DMA
 
     virtual Chimera::Status_t start() = 0;
 
-    virtual Chimera::Status_t pause() = 0;
-
     virtual Chimera::Status_t abort() = 0;
-
-
   };
 }    // namespace Thor::Driver::DMA
-
 
 #endif /* !THOR_DRIVER_MODEL_DMA_HPP */
