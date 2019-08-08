@@ -20,14 +20,16 @@ namespace Thor::Driver::GPIO
   /**
    *  Effectively defines the drive strength of the GPIO output. Actual
    *  strength depends on VDD and the connected load.
+   *
+   *  @note Do not change these enum values as they are used to index arrays
    */
   enum class Speed : uint8_t
   {
-    LOW,
+    LOW = 0,
     MEDIUM,
     FAST,
     HIGH,
-    MAX_SPEED = HIGH
+    NUM_OPTIONS
   };
 
   /**

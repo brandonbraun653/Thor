@@ -47,21 +47,21 @@ namespace Thor::Driver::USART
     USART6_IRQn
   };
 
-  const std::unordered_map<Chimera::Serial::CharWid, uint32_t> CharWidToRegConfig{
-    { Chimera::Serial::CharWid::CW_8BIT, Configuration::WordLength::LEN_8BIT }, 
-    { Chimera::Serial::CharWid::CW_9BIT, Configuration::WordLength::LEN_9BIT }
+  const std::array<uint32_t, NUM_USART_PERIPHS> CharWidToRegConfig = {
+    Configuration::WordLength::LEN_8BIT, 
+    Configuration::WordLength::LEN_9BIT
   };
 
-  const std::unordered_map<Chimera::Serial::Parity, uint32_t> ParityToRegConfig{
-    { Chimera::Serial::Parity::PAR_NONE, Configuration::Parity::NONE },
-    { Chimera::Serial::Parity::PAR_EVEN, Configuration::Parity::EVEN },
-    { Chimera::Serial::Parity::PAR_ODD, Configuration::Parity::ODD }
+  const std::array<uint32_t, NUM_USART_PERIPHS> ParityToRegConfig = {
+    Configuration::Parity::NONE,
+    Configuration::Parity::EVEN,
+    Configuration::Parity::ODD 
   };
 
-  const std::unordered_map<Chimera::Serial::StopBits, uint32_t> StopBitsToRegConfig{ 
-    { Chimera::Serial::StopBits::SBITS_ONE, Configuration::Stop::BIT_1 }, 
-    { Chimera::Serial::StopBits::SBITS_ONE_POINT_FIVE, Configuration::Stop::BIT_1_5 }, 
-    { Chimera::Serial::StopBits::SBITS_TWO, Configuration::Stop::BIT_2 } 
+  const std::array<uint32_t, NUM_USART_PERIPHS> StopBitsToRegConfig = { 
+    Configuration::Stop::BIT_1, 
+    Configuration::Stop::BIT_1_5, 
+    Configuration::Stop::BIT_2
   };
 }    // namespace Thor::Driver::USART
 

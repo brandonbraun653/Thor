@@ -118,7 +118,7 @@ namespace Thor::Driver::DMA
         else if ( config->Direction == Configuration::TransferDirection::M2P )
         {
           SxM0AR::set( stream, cb->srcAddress );
-          SxM1AR::set( stream, cb->dstAddress );
+          SxPAR::set( stream, cb->dstAddress );
         }
         else
         {
@@ -159,7 +159,8 @@ namespace Thor::Driver::DMA
         /*------------------------------------------------
         Step 7: Set the FIFO usage
         ------------------------------------------------*/
-        // Nothing to do at the moment
+        SxFCR::DMDIS::set( stream, config->FIFOMode );
+        SxFCR::FTH::set( stream, config->FIFOThreshold );
 
         /*------------------------------------------------
         Step 8: Set additional misc settings
@@ -187,7 +188,7 @@ namespace Thor::Driver::DMA
 
       auto result = Chimera::CommonStatusCodes::LOCKED;
 
-      if ( lock( TIMEOUT_DONT_WAIT ) )
+      if ( LockGuard(*this).lock() )
       {
         /*------------------------------------------------
         Set up the interrupt bits
@@ -225,7 +226,7 @@ namespace Thor::Driver::DMA
       ------------------------------------------------*/
       uint32_t statusRegister = 0;
 
-      if ( streamRegisterIndex > LOW_HIGH_REGISTER_STREAM_BOUNDARY )
+      if ( streamRegisterIndex <= LOW_HIGH_REGISTER_STREAM_BOUNDARY )
       {
         statusRegister = LISR::get( parent );
       }
@@ -272,12 +273,20 @@ namespace Thor::Driver::DMA
         controlBlock.bytesTransfered  = controlBlock.transferSize - SxNDTR::get( stream );
 
         /*------------------------------------------------
-        Exit the ISR with
+        Exit the ISR with no more interrupts and the class 
+        resources unlocked. 
         ------------------------------------------------*/
         disableTransferIRQ();
-        xSemaphoreGiveFromISR( wakeupSignal, nullptr );
-        semaphoreGiven = true;
-        unlock();
+        unlockFromISR();
+
+        /*------------------------------------------------
+        Wake up the stream event listener thread
+        ------------------------------------------------*/
+        if ( !semaphoreGiven && wakeupSignal )
+        {
+          xSemaphoreGiveFromISR( wakeupSignal, nullptr );
+          semaphoreGiven = true;
+        }
       }
 
       /*------------------------------------------------
@@ -307,7 +316,7 @@ namespace Thor::Driver::DMA
         /*------------------------------------------------
         Wake up the stream event listener thread
         ------------------------------------------------*/
-        if ( !semaphoreGiven )
+        if ( !semaphoreGiven && wakeupSignal )
         {
           xSemaphoreGiveFromISR( wakeupSignal, nullptr );
         }
@@ -323,6 +332,7 @@ namespace Thor::Driver::DMA
       SxCR::TCIE::set( stream, SxCR_TCIE );
       SxCR::TEIE::set( stream, SxCR_TEIE );
       SxCR::DMEIE::set( stream, SxCR_DMEIE );
+      SxFCR::FEIE::set( stream, SxFCR_FEIE );
     }
 
     void Stream::disableTransferIRQ()
@@ -330,6 +340,7 @@ namespace Thor::Driver::DMA
       SxCR::TCIE::set( stream, 0 );
       SxCR::TEIE::set( stream, 0 );
       SxCR::DMEIE::set( stream, 0 );
+      SxFCR::FEIE::set( stream, 0 );
     }
 
     void Stream::enterCriticalSection()

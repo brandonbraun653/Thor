@@ -45,14 +45,17 @@ namespace Thor::Driver::DMA
    */
   extern const Thor::Driver::RCC::ResourceMap_t StreamToRegisterIndex;
 
-  extern const std::unordered_map<Chimera::DMA::TransferDirection, uint32_t> TransferMap;
-  extern const std::unordered_map<Chimera::DMA::Mode, uint32_t> ModeMap;
-  extern const std::unordered_map<Chimera::DMA::Channel, uint32_t> ChannelMap;
-  extern const std::unordered_map<Chimera::DMA::MemoryIncrement, uint32_t> MemoryIncrementMap;
-  extern const std::unordered_map<Chimera::DMA::MemoryAlignment, uint32_t> MemoryAlignmentMap;
-  extern const std::unordered_map<Chimera::DMA::PeripheralIncrement, uint32_t> PeripheralIncrementMap;
-  extern const std::unordered_map<Chimera::DMA::PeripheralAlignment, uint32_t> PeripheralAlignmentMap;
-  extern const std::unordered_map<Chimera::DMA::Priority, uint32_t> PriorityMap;
+  /**
+   *  Conversion lookup tables between Chimera DMA configuration options 
+   *  and their register equivalents on the hardware side for Thor.
+   */
+  extern const std::array<uint32_t, static_cast<uint8_t>(Chimera::DMA::TransferDirection::NUM_OPTIONS)> TransferMap;
+  extern const std::array<uint32_t, static_cast<uint8_t>(Chimera::DMA::Mode::NUM_OPTIONS)> ModeMap;
+  extern const std::array<uint32_t, static_cast<uint8_t>(Chimera::DMA::MemoryIncrement::NUM_OPTIONS)> MemoryIncrementMap;
+  extern const std::array<uint32_t, static_cast<uint8_t>(Chimera::DMA::MemoryAlignment::NUM_OPTIONS)> MemoryAlignmentMap;
+  extern const std::array<uint32_t, static_cast<uint8_t>(Chimera::DMA::PeripheralIncrement::NUM_OPTIONS)> PeripheralIncrementMap;
+  extern const std::array<uint32_t, static_cast<uint8_t>(Chimera::DMA::PeripheralAlignment::NUM_OPTIONS)> PeripheralAlignmentMap;
+  extern const std::array<uint32_t, static_cast<uint8_t>(Chimera::DMA::Priority::NUM_OPTIONS)> PriorityMap;
 
 
   /**
@@ -71,8 +74,6 @@ namespace Thor::Driver::DMA
   extern const uint32_t DMAStream_TEIF[ NUM_DMA_STREAMS ];
   extern const uint32_t DMAStream_DMEIF[ NUM_DMA_STREAMS ];
   extern const uint32_t DMAStream_FEIF[ NUM_DMA_STREAMS ];
-
-  extern const std::unordered_map<Chimera::DMA::Channel, StreamX *const> ChannelToStream;
 }
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_DMA */

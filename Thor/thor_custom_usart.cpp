@@ -175,55 +175,15 @@ namespace Thor::USART
     Thor::Driver::Serial::Config cfg = hwDriver->getConfiguration();
 
     /*------------------------------------------------
-    Config settings that don't need a lookup table
+    Convert between the generalize Chimera options into 
+    MCU specific register configuration settings. If these lookup
+    tables fail, you might have something wrong with the mappings.
     ------------------------------------------------*/
-    cfg.BaudRate = config.baud;
-    cfg.Mode     = USARTDriver::Configuration::Modes::TX_RX;
-
-    /*------------------------------------------------
-    Configure the parity register settings 
-    ------------------------------------------------*/
-    auto parityIterator = USARTDriver::ParityToRegConfig.find( config.parity );
-    if ( parityIterator != USARTDriver::ParityToRegConfig.end() )
-    {
-      cfg.Parity = parityIterator->second;
-    }
-    else
-    {
-      cfg.Parity = USARTDriver::Configuration::Parity::NONE;
-    }
-
-    /*------------------------------------------------
-    Configure the stop bits register settings
-    ------------------------------------------------*/
-    auto stopIterator = USARTDriver::StopBitsToRegConfig.find( config.stopBits );
-    if ( stopIterator != USARTDriver::StopBitsToRegConfig.end() )
-    {
-      cfg.StopBits = stopIterator->second;
-    }
-    else
-    {
-      cfg.StopBits = USARTDriver::Configuration::Stop::BIT_1;
-    }
-
-    /*------------------------------------------------
-    Configure the word length register settings
-    ------------------------------------------------*/
-    auto wordIterator = USARTDriver::CharWidToRegConfig.find( config.width );
-    if ( wordIterator != USARTDriver::CharWidToRegConfig.end() )
-    {
-      cfg.WordLength = wordIterator->second;
-    }
-    else
-    {
-      cfg.WordLength = USARTDriver::Configuration::WordLength::LEN_8BIT;
-    }
-
-    cfg.BaudRate   = 115200;
+    cfg.BaudRate   = config.baud;
     cfg.Mode       = USARTDriver::Configuration::Modes::TX_RX;
-    cfg.Parity     = USARTDriver::Configuration::Parity::NONE;
-    cfg.StopBits   = USARTDriver::Configuration::Stop::BIT_1;
-    cfg.WordLength = USARTDriver::Configuration::WordLength::LEN_8BIT;
+    cfg.Parity     = USARTDriver::ParityToRegConfig[ static_cast<size_t>( config.parity ) ];
+    cfg.StopBits   = USARTDriver::StopBitsToRegConfig[ static_cast<size_t>( config.stopBits ) ];
+    cfg.WordLength = USARTDriver::CharWidToRegConfig[ static_cast<size_t>( config.width ) ];
 
     return hwDriver->init( cfg );
   }

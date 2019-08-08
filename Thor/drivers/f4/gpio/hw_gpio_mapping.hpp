@@ -29,17 +29,17 @@ namespace Thor::Driver::GPIO
   /**
    *  Maps a Chimera GPIO Pull type into the appropriate register configuration value
    */
-  extern const std::unordered_map<Chimera::GPIO::Pull, size_t> PullMap;
+  extern const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Pull::NUM_OPTIONS)> PullMap;
 
   /**
    *  Maps a Chimera GPIO Drive type into the appropriate register configuration value
    */
-  extern const std::unordered_map<Chimera::GPIO::Drive, size_t> ModeMap;
+  extern const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Drive::NUM_OPTIONS)> ModeMap;
 
   /**
-   *  Maps a Chimera GPIO Speed type into the appropriate register configuration value
+   *  Maps a Thor GPIO Speed type into the appropriate register configuration value
    */
-  extern const std::unordered_map<Thor::Driver::GPIO::Speed, size_t> SpeedMap;
+  extern const std::array<uint32_t, static_cast<size_t>(Thor::Driver::GPIO::Speed::NUM_OPTIONS)> SpeedMap;
 
   /**
    *  Maps a Chimera Port enum type into a value that can be used as an
@@ -47,7 +47,7 @@ namespace Thor::Driver::GPIO
    *
    *  @note An example of this is Thor::Driver::RCC::ClockConfig_GPIO
    */
-  extern const std::unordered_map<Chimera::GPIO::Port, uint8_t> PortToIteratorMap;
+  extern const std::array<uint8_t, static_cast<size_t>(Chimera::GPIO::Port::NUM_OPTIONS)> PortToIteratorMap;
 
   /**
    *  Maps a GPIO peripheral into the corresponding Chimera Port enum type

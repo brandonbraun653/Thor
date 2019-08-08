@@ -17,44 +17,43 @@ namespace Thor::Driver::GPIO
 {
   /* clang-format off */
 
-  const std::unordered_map<Chimera::GPIO::Pull, size_t> PullMap
+  const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Pull::NUM_OPTIONS)> PullMap =
   {
-    { Chimera::GPIO::Pull::NO_PULL,       OPT_PUPDR::NOPULL   }, 
-    { Chimera::GPIO::Pull::PULL_DN,       OPT_PUPDR::PULLDOWN },
-    { Chimera::GPIO::Pull::PULL_UP,       OPT_PUPDR::PULLUP   },
-    { Chimera::GPIO::Pull::UNKNOWN_PULL,  OPT_PUPDR::NOPULL   }
+    OPT_PUPDR::NOPULL, 
+    OPT_PUPDR::PULLDOWN,
+    OPT_PUPDR::PULLUP,
+    OPT_PUPDR::NOPULL  
   };
 
-  const std::unordered_map<Chimera::GPIO::Drive, size_t> ModeMap
+  const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Drive::NUM_OPTIONS)> ModeMap =
   { 
-    { Chimera::GPIO::Drive::INPUT,                OPT_MODER::INPUT   },
-    { Chimera::GPIO::Drive::OUTPUT_PUSH_PULL,     OPT_MODER::OUTPUT  },
-    { Chimera::GPIO::Drive::OUTPUT_OPEN_DRAIN,    OPT_MODER::OUTPUT  },
-    { Chimera::GPIO::Drive::ALTERNATE_PUSH_PULL,  OPT_MODER::AF      },
-    { Chimera::GPIO::Drive::ALTERNATE_OPEN_DRAIN, OPT_MODER::AF      },
-    { Chimera::GPIO::Drive::ANALOG,               OPT_MODER::ANALOG  },
-    { Chimera::GPIO::Drive::HIZ,                  OPT_MODER::INPUT   },
+    OPT_MODER::INPUT,
+    OPT_MODER::OUTPUT,
+    OPT_MODER::OUTPUT,
+    OPT_MODER::AF,
+    OPT_MODER::AF,
+    OPT_MODER::ANALOG,
+    OPT_MODER::INPUT
   };
 
-  const std::unordered_map<Thor::Driver::GPIO::Speed, size_t> SpeedMap
+  const std::array<uint32_t, static_cast<size_t>(Thor::Driver::GPIO::Speed::NUM_OPTIONS)> SpeedMap =
   {
-    { Speed::LOW,       OPT_OSPEEDR::LOW        },
-    { Speed::MEDIUM,    OPT_OSPEEDR::MEDIUM     },
-    { Speed::HIGH,      OPT_OSPEEDR::HIGH       },
-    { Speed::FAST,      OPT_OSPEEDR::VERY_HIGH  },
-    { Speed::MAX_SPEED, OPT_OSPEEDR::VERY_HIGH  }
+    OPT_OSPEEDR::LOW,
+    OPT_OSPEEDR::MEDIUM,
+    OPT_OSPEEDR::HIGH,
+    OPT_OSPEEDR::VERY_HIGH
   };
 
-  const std::unordered_map<Chimera::GPIO::Port, uint8_t> PortToIteratorMap
+  const std::array<uint8_t, static_cast<size_t>(Chimera::GPIO::Port::NUM_OPTIONS)> PortToIteratorMap =
   {
-    { Chimera::GPIO::Port::PORTA, 0u },
-    { Chimera::GPIO::Port::PORTB, 1u },
-    { Chimera::GPIO::Port::PORTC, 2u },
-    { Chimera::GPIO::Port::PORTD, 3u },
-    { Chimera::GPIO::Port::PORTE, 4u },
-    { Chimera::GPIO::Port::PORTF, 5u },
-    { Chimera::GPIO::Port::PORTG, 6u },
-    { Chimera::GPIO::Port::PORTH, 7u }
+    0u,
+    1u,
+    2u,
+    3u,
+    4u,
+    5u,
+    6u,
+    7u
   };
   
   const std::unordered_map<std::uintptr_t, Chimera::GPIO::Port> InstanceToPortMap

@@ -41,12 +41,13 @@ namespace Thor::Driver::USART
   extern const IRQn_Type USART_IRQn[ NUM_USART_PERIPHS ];
 
 
-  extern const std::unordered_map<Chimera::Serial::CharWid, uint32_t> CharWidToRegConfig;
-
-  extern const std::unordered_map<Chimera::Serial::Parity, uint32_t> ParityToRegConfig;
-
-  extern const std::unordered_map<Chimera::Serial::StopBits, uint32_t> StopBitsToRegConfig;
-
+  /**
+   *  Conversion arrays to "map" Chimera::Serial enum configuration options
+   *  into the relevant register configuration values for the MCU.
+   */
+  extern const std::array<uint32_t, NUM_USART_PERIPHS> CharWidToRegConfig;
+  extern const std::array<uint32_t, NUM_USART_PERIPHS> ParityToRegConfig;
+  extern const std::array<uint32_t, NUM_USART_PERIPHS> StopBitsToRegConfig;
 
 }    // namespace Thor::Driver::USART
 

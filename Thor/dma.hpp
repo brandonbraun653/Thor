@@ -13,6 +13,7 @@
 #define THOR_DMA_HPP
 
 /* Chimera Includes */
+#include <Chimera/threading.hpp>
 #include <Chimera/interface/dma_intf.hpp>
 #include <Chimera/types/dma_types.hpp>
 
@@ -21,7 +22,7 @@
 
 namespace Thor::DMA
 {
-  class DMAClass : public Chimera::DMA::Interface
+  class DMAClass : public Chimera::DMA::Interface, public Chimera::Threading::Lockable
   {
   public:
     ~DMAClass();
@@ -35,8 +36,10 @@ namespace Thor::DMA
 
     Chimera::Status_t reset() final override;
 
-    Chimera::Status_t start( const Chimera::DMA::Init &config, const Chimera::DMA::TCB &transfer, const size_t timeout,
-                             Chimera::DMA::TransferHandle_t *const handle ) final override;
+    Chimera::Status_t start() final override;
+
+    Chimera::Status_t configure( const Chimera::DMA::Init &config, const Chimera::DMA::TCB &transfer, const size_t timeout,
+                                 Chimera::DMA::TransferHandle_t *const handle ) final override;
 
     Chimera::Status_t abort( Chimera::DMA::TransferHandle_t handle, const size_t timeout ) final override;
 

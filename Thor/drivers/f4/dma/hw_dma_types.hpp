@@ -622,6 +622,7 @@ namespace Thor::Driver::DMA
   {
     static inline void set( RegisterMap *const periph, const uint32_t val )
     {
+      // No need to read-modify-write as state is not kept
       periph->LIFCR = val & LIFCR_Msk;
     }
 
@@ -862,6 +863,7 @@ namespace Thor::Driver::DMA
   {
     static inline void set( RegisterMap *const periph, const uint32_t val )
     {
+      // No need to read-modify-write as state is not kept
       periph->HIFCR = val & HIFCR_Msk;
     }
 
@@ -1108,7 +1110,10 @@ namespace Thor::Driver::DMA
 
     static inline void set( StreamX *const stream, const uint32_t val )
     {
-      stream->CR = val & SxCR_Msk;
+      auto tmp = stream->CR;
+      tmp &= ~SxCR_Msk;
+      tmp |= val & SxCR_Msk;
+      stream->CR = tmp;
     }
 
     class CHSEL
@@ -1121,7 +1126,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1138,7 +1146,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1155,7 +1166,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1172,7 +1186,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1189,7 +1206,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1206,7 +1226,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1223,7 +1246,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1240,7 +1266,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1257,7 +1286,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1274,7 +1306,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1291,7 +1326,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1308,7 +1346,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1325,7 +1366,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1342,7 +1386,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1359,7 +1406,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1376,7 +1426,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1393,7 +1446,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1410,7 +1466,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
       }
 
     private:
@@ -1427,7 +1486,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->CR = val & mask;
+        auto tmp = stream->CR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->CR = tmp;
 
         /*------------------------------------------------
         According to the datasheet (9.3.18), clearing this bit
@@ -1520,7 +1582,10 @@ namespace Thor::Driver::DMA
 
     static inline void set( StreamX *const stream, const uint32_t val )
     {
-      stream->FCR = val & SxFCR_Msk;
+      auto tmp = stream->FCR;
+      tmp &= ~SxFCR_Msk;
+      tmp |= val & SxFCR_Msk;
+      stream->FCR = tmp;
     }
 
     class FEIE
@@ -1533,7 +1598,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->FCR = val & mask;
+        auto tmp = stream->FCR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->FCR = tmp;
       }
 
     private:
@@ -1562,7 +1630,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->FCR = val & mask;
+        auto tmp = stream->FCR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->FCR = tmp;
       }
 
     private:
@@ -1579,7 +1650,10 @@ namespace Thor::Driver::DMA
 
       static inline void set( StreamX *const stream, const uint32_t val )
       {
-        stream->FCR = val & mask;
+        auto tmp = stream->FCR;
+        tmp &= ~mask;
+        tmp |= val & mask;
+        stream->FCR = tmp;
       }
 
     private:

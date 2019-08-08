@@ -15,6 +15,7 @@
 
 /* Chimera Includes */
 #include <Chimera/chimera.hpp>
+#include <Chimera/threading.hpp>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
@@ -52,7 +53,7 @@ namespace Thor::Driver::USART
     return result;
   }
 
-  Driver::Driver( RegisterMap *const peripheral ) : periph( peripheral ), isrWakeup( nullptr )
+  Driver::Driver( RegisterMap *const peripheral ) : periph( peripheral ), ISRWakeup_external( nullptr )
   {
     auto address   = reinterpret_cast<std::uintptr_t>( peripheral );
     peripheralType = Chimera::Peripheral::Type::PERIPH_USART;
@@ -135,7 +136,7 @@ namespace Thor::Driver::USART
     ------------------------------------------------*/
     deinit();
 
-    isrWakeup = nullptr;
+    ISRWakeup_external = nullptr;
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -298,19 +299,64 @@ namespace Thor::Driver::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::transmitDMA( const uint8_t *const data, const size_t size, const size_t timeout )
+  Chimera::Status_t Driver::transmitDMA( const void *const data, const size_t size, const size_t timeout )
   {
+    using namespace Chimera::Threading;
+
+    auto result = Chimera::CommonStatusCodes::TIMEOUT;
+
+    /*------------------------------------------------
+    Create the control blocks for configuring a USART DMA transfer
+    ------------------------------------------------*/
+    Chimera::DMA::Init init;
+    init.direction = Chimera::DMA::TransferDirection::MEMORY_TO_PERIPH;
+    init.mAlign    = Chimera::DMA::MemoryAlignment::ALIGN_BYTE;
+    init.mInc      = Chimera::DMA::MemoryIncrement::ENABLED;
+    init.mode      = Chimera::DMA::Mode::NORMAL;
+    init.pAlign    = Chimera::DMA::PeripheralAlignment::ALIGN_BYTE;
+    init.pInc      = Chimera::DMA::PeripheralIncrement::DISABLED;
+    init.priority  = Chimera::DMA::Priority::MEDIUM;
+    init.request   = Thor::DMA::Source::S_USART3_TX;
+
+    Chimera::DMA::TCB tcb;
+    tcb.dstAddress = reinterpret_cast<uint32_t>(&USART3_PERIPH->DR);
+    tcb.srcAddress = reinterpret_cast<uint32_t>(data);
+    tcb.transferSize = size;
+
+    /*------------------------------------------------
+    Grab a pointer to the DMA singleton and start the transfer
+    ------------------------------------------------*/
     auto dma = Thor::DMA::DMAClass::get();
 
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    if ( dma->lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    {
+      /*------------------------------------------------
+      According to pg.32 of AN4031, the DMA must be initialized
+      BEFORE the peripheral is enabled otherwise a FIFO error 
+      is likely to ensue. I found this to be very true.
+      ------------------------------------------------*/
+      result = dma->configure( init, tcb, timeout, nullptr );
+      dma->start();
+
+      /*------------------------------------------------
+      At this point the DMA is enabled and waiting for the 
+      peripheral to send a request. Setting these two bits
+      accomplish this.
+      ------------------------------------------------*/
+      CR3::DMAT::set( periph, CR3_DMAT );
+      CR1::TE::set( periph, CR1_TE );
+
+      dma->unlock();
+    }
+
+    return result;
   }
 
-  Chimera::Status_t Driver::receiveDMA( uint8_t *const data, const size_t size, const size_t timeout )
+  Chimera::Status_t Driver::receiveDMA( void *const data, const size_t size, const size_t timeout )
   {
     auto dma = Thor::DMA::DMAClass::get();
 
-    Chimera::DMA::Init init;
-    Chimera::DMA::TCB tcb;
+    
 
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -373,7 +419,7 @@ namespace Thor::Driver::USART
 
   void Driver::attachISRWakeup( SemaphoreHandle_t wakeup )
   {
-    isrWakeup = wakeup;
+    ISRWakeup_external = wakeup;
   }
 
   CDTCB Driver::getTCB_TX()
@@ -490,10 +536,10 @@ namespace Thor::Driver::USART
         /*------------------------------------------------
         Unblock the higher level driver
         ------------------------------------------------*/
-        if ( isrWakeup )
+        if ( ISRWakeup_external )
         {
           BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-          xSemaphoreGiveFromISR( isrWakeup, &xHigherPriorityTaskWoken );
+          xSemaphoreGiveFromISR( ISRWakeup_external, &xHigherPriorityTaskWoken );
           portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
         }
       }
@@ -551,10 +597,10 @@ namespace Thor::Driver::USART
       /*------------------------------------------------
       Unblock the higher level driver
       ------------------------------------------------*/
-      if ( ( rxTCB.state == StateMachine::RX::RX_ABORTED || rxTCB.state == StateMachine::RX_COMPLETE ) && isrWakeup )
+      if ( ( rxTCB.state == StateMachine::RX::RX_ABORTED || rxTCB.state == StateMachine::RX_COMPLETE ) && ISRWakeup_external )
       {
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        xSemaphoreGiveFromISR( isrWakeup, &xHigherPriorityTaskWoken );
+        xSemaphoreGiveFromISR( ISRWakeup_external, &xHigherPriorityTaskWoken );
         portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
       }
     }

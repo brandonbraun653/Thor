@@ -86,7 +86,7 @@ namespace Thor::Driver::GPIO
     Use read-modify-write
     ------------------------------------------------*/
     tmp &= ~( MODER_CFG_X_MSK << shift_val );
-    tmp |= ( ModeMap.find( drive )->second & MODER_CFG_X_MSK ) << shift_val;
+    tmp |= ( ModeMap[ static_cast<size_t>( drive ) ] & MODER_CFG_X_MSK ) << shift_val;
     periph->MODER = tmp;
 
     return Chimera::CommonStatusCodes::OK;
@@ -99,7 +99,7 @@ namespace Thor::Driver::GPIO
     auto tmp             = periph->OSPEEDR;
 
     tmp &= ~( OSPEEDR_CFG_X_MSK << shift_val );
-    tmp |= ( SpeedMap.find( speed )->second & OSPEEDR_CFG_X_MSK ) << shift_val;
+    tmp |= ( SpeedMap[ static_cast<size_t>( speed ) ] & OSPEEDR_CFG_X_MSK ) << shift_val;
     periph->OSPEEDR = tmp;
 
     return Chimera::CommonStatusCodes::OK;
@@ -112,7 +112,7 @@ namespace Thor::Driver::GPIO
     auto tmp             = periph->PUPDR;
 
     tmp &= ~( PUPDR_CFG_X_MSK << shift_val );
-    tmp |= ( PullMap.find( pull )->second & PUPDR_CFG_X_MSK ) << shift_val;
+    tmp |= ( PullMap[ static_cast<size_t>( pull ) ] & PUPDR_CFG_X_MSK ) << shift_val;
     periph->PUPDR = tmp;
 
     return Chimera::CommonStatusCodes::OK;

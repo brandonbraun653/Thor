@@ -68,9 +68,9 @@ namespace Thor::Driver::USART
 
     Chimera::Status_t disableDMA_IT( const Chimera::Hardware::SubPeripheral periph ) final override;
 
-    Chimera::Status_t transmitDMA( const uint8_t *const data, const size_t size, const size_t timeout ) final override;
+    Chimera::Status_t transmitDMA( const void *const data, const size_t size, const size_t timeout ) final override;
 
-    Chimera::Status_t receiveDMA( uint8_t *const data, const size_t size, const size_t timeout ) final override;
+    Chimera::Status_t receiveDMA( void *const data, const size_t size, const size_t timeout ) final override;
 
     Chimera::Status_t txTransferStatus() final override;
 
@@ -115,7 +115,7 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Asynchronous Event Listeners
     ------------------------------------------------*/
-    SemaphoreHandle_t isrWakeup;
+    SemaphoreHandle_t ISRWakeup_external;
 
     /*------------------------------------------------
     Transfer Control Blocks
