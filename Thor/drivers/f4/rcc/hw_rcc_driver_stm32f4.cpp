@@ -435,6 +435,8 @@ namespace Thor::Driver::RCC
     auto clockLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->clockSource;
     auto indexLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->resourceIndexMap;
 
+    //auto tmp = reinterpret_cast<Chimera::Container::LightFlatMap<std::uintptr_t, size_t, NUM_DMA_PERIPHS>
+
     if ( freqHz && clockLookupTable && indexLookupTable )
     {
       auto index       = indexLookupTable->find( address )->second;

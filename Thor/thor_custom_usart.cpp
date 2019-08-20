@@ -106,7 +106,7 @@ namespace Thor::USART
     Make sure the channel is actually supported
     ------------------------------------------------*/
     auto iterator = ChanneltoInstance.find( channel );
-    if ( iterator == ChanneltoInstance.end() )
+    if ( !iterator )
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }

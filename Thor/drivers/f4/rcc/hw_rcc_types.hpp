@@ -15,6 +15,9 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Chimera/Includes */
+#include <Chimera/container.hpp>
+
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_prj.hpp>
@@ -848,8 +851,6 @@ namespace Thor::Driver::RCC
   /*------------------------------------------------
   Data Structures
   ------------------------------------------------*/
-  using ResourceMap_t = std::unordered_map<std::uintptr_t, size_t>;
-
   /**
    *  Initialization structure for the primary PLL
    *
@@ -944,7 +945,7 @@ namespace Thor::Driver::RCC
     const RegisterConfig *clockLP;                 /**< Low power clock configuration registers */
     const RegisterConfig *reset;                   /**< Peripheral reset registers */
     const Configuration::ClockType_t *clockSource; /**< Which system clock is used on the peripheral */
-    const ResourceMap_t *resourceIndexMap;         /**< Converts a peripheral address into a resource index */
+    const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> *resourceIndexMap; /**< Converts a peripheral address into a resource index */
     size_t elements;                               /**< Number of elements in the tables */
   };
 

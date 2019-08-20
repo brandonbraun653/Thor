@@ -20,18 +20,17 @@
 
 /* Thor Includes */
 #include <Thor/definitions/dma_definitions.hpp>
+#include <Thor/drivers/common/types/dma_types.hpp>
 
 namespace Thor::DMA
 {
   /**
-   *  Stores callbacks that can be used when a particular DMA request interrupt completes
+   *  The number of possible request generators that are currently supported
+   *  in the DMA driver. Currently this is sized only for signals that have 
+   *  actually been used in project code. This minimizes memory usage nicely.
    */
-  extern std::array<boost::function<void( void )>, Source::NUM_DMA_REQUESTORS> requestHandlers;
-
-
-  extern const std::array<std::array<uint8_t, 8>, 8> dma1RequestMapping;
-
-  extern const std::array<std::array<uint8_t, 8>, 8> dma2RequestMapping;
+  static constexpr size_t NUM_REQUEST_GENERATORS = 7u;
+  extern std::array<Thor::Driver::DMA::StreamResources, NUM_REQUEST_GENERATORS> RequestGenerators;
 
 }    // namespace Thor::DMA
 

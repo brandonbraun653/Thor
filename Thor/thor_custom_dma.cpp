@@ -10,6 +10,7 @@
 
 /* C++ Includes */
 #include <array>
+#include <cstring>
 
 /* Chimera Includes */
 #include <Chimera/threading.hpp>
@@ -18,6 +19,7 @@
 #include <Thor/thor.hpp>
 #include <Thor/dma.hpp>
 #include <Thor/drivers/dma.hpp>
+#include <Thor/resources/dma_resources.hpp>
 
 namespace DMADriver = Thor::Driver::DMA;
 
@@ -44,8 +46,14 @@ namespace Thor::DMA
   static DMADriver::StreamConfig convertConfig( const Chimera::DMA::Init &config );
   static DMADriver::TCB convertTCB( const Chimera::DMA::TCB &transfer );
 
+  static bool compareFunction( DMADriver::StreamResources &a, DMADriver::StreamResources &b )
+  {
+    return a.requestID > b.requestID;
+  }
+
   DMAClass::DMAClass()
   {
+    memset( &lastLookup, 0, sizeof( DMADriver::StreamResources ) );
   }
 
   DMAClass::~DMAClass()
@@ -68,22 +76,32 @@ namespace Thor::DMA
   Chimera::Status_t DMAClass::init()
   {
     /*------------------------------------------------
-    Ensure an instance of DMA peripherals are created
-    and initialized properly.
+    Ensure an instance of DMA peripherals are created and initialized properly.
     ------------------------------------------------*/
     for ( uint8_t x = 0; x < dmaPeriphs.size(); x++ )
     {
+      /*------------------------------------------------
+      Dynamically allocate peripheral drivers 
+      ------------------------------------------------*/
       if ( !dmaPeriphs[ x ] )
       {
         dmaPeriphs[ x ] = new DMADriver::Driver();
         dmaPeriphs[ x ]->attach( DMADriver::periphInstanceList[ x ] );
       }
 
+      /*------------------------------------------------
+      Initialize the drivers
+      ------------------------------------------------*/
       if ( dmaPeriphs[ x ]->init() != Chimera::CommonStatusCodes::OK )
       {
         return Chimera::CommonStatusCodes::FAIL;
       }
     }
+
+    /*------------------------------------------------
+    Sort the request resources such that lookup becomes O(log(N))
+    ------------------------------------------------*/
+    std::sort( RequestGenerators.begin(), RequestGenerators.end(), compareFunction );
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -153,7 +171,39 @@ namespace Thor::DMA
 
   static DMADriver::StreamX *const getStream( const Chimera::DMA::Init &config )
   {
-    // Figure out the stream instance from the source
+    DMADriver::StreamX *stream = nullptr;
+    uint32_t streamNum          = 0;
+
+    /*------------------------------------------------
+    Find the request meta info using binary search of sorted list
+    ------------------------------------------------*/
+    DMADriver::StreamResources c;
+    c.clear();
+    c.requestID = config.request;
+
+    volatile auto metaInfo = std::lower_bound(
+        RequestGenerators.begin(), RequestGenerators.end(), c,
+        []( const DMADriver::StreamResources &a, const DMADriver::StreamResources &b ) { return b.requestID < a.requestID; } );
+
+    if ( metaInfo->requestID != config.request )
+    {
+      return stream;
+    }
+
+    /*------------------------------------------------
+    Pull out the stream object
+    ------------------------------------------------*/
+    streamNum = ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_STREAM ) >> DMADriver::ConfigBitFields::DMA_STREAM_POS;
+    if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA1 )
+    {
+      stream = DMADriver::getStream( DMADriver::DMA1_PERIPH, streamNum );
+    }
+    else if( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA2 )
+    {
+      stream = DMADriver::getStream( DMADriver::DMA2_PERIPH, streamNum );
+    }
+
+    return stream;
   }
 
   static DMADriver::StreamConfig convertConfig( const Chimera::DMA::Init &config )

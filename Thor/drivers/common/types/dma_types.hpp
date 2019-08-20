@@ -15,8 +15,45 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Chimera Includes */
+#include <Chimera/types/event_types.hpp>
+
+/* Thor Includes */
+#include <Thor/definitions/dma_definitions.hpp>
+
 namespace Thor::Driver::DMA
 {
+  using Config_t = uint16_t;
+  namespace ConfigBitFields
+  {
+    static constexpr Config_t EMPTY_CONFIG = 0u;
+    static constexpr Config_t DMA_ON_DMA1  = ( 1u << 0 );
+    static constexpr Config_t DMA_ON_DMA2  = ( 1u << 1 );
+
+    static constexpr Config_t DMA_CHANNEL_POS = 2u;
+    static constexpr Config_t DMA_CHANNEL_MSK = ( 0x7 << DMA_CHANNEL_POS );
+    static constexpr Config_t DMA_CHANNEL     = DMA_CHANNEL_MSK << DMA_CHANNEL_POS;
+    static constexpr Config_t DMA_CHANNEL_0   = ( 0u << DMA_CHANNEL_POS ) & DMA_CHANNEL_MSK;
+    static constexpr Config_t DMA_CHANNEL_1   = ( 1u << DMA_CHANNEL_POS ) & DMA_CHANNEL_MSK;
+    static constexpr Config_t DMA_CHANNEL_2   = ( 2u << DMA_CHANNEL_POS ) & DMA_CHANNEL_MSK;
+    static constexpr Config_t DMA_CHANNEL_3   = ( 3u << DMA_CHANNEL_POS ) & DMA_CHANNEL_MSK;
+    static constexpr Config_t DMA_CHANNEL_4   = ( 4u << DMA_CHANNEL_POS ) & DMA_CHANNEL_MSK;
+    static constexpr Config_t DMA_CHANNEL_5   = ( 5u << DMA_CHANNEL_POS ) & DMA_CHANNEL_MSK;
+    static constexpr Config_t DMA_CHANNEL_6   = ( 6u << DMA_CHANNEL_POS ) & DMA_CHANNEL_MSK;
+    static constexpr Config_t DMA_CHANNEL_7   = ( 7u << DMA_CHANNEL_POS ) & DMA_CHANNEL_MSK;
+
+    static constexpr Config_t DMA_STREAM_POS = 5u;
+    static constexpr Config_t DMA_STREAM_MSK = ( 0x7 << DMA_STREAM_POS );
+    static constexpr Config_t DMA_STREAM     = DMA_STREAM_MSK << DMA_STREAM_POS;
+    static constexpr Config_t DMA_STREAM_0   = ( 0u << DMA_STREAM_POS ) & DMA_STREAM_MSK;
+    static constexpr Config_t DMA_STREAM_1   = ( 1u << DMA_STREAM_POS ) & DMA_STREAM_MSK;
+    static constexpr Config_t DMA_STREAM_2   = ( 2u << DMA_STREAM_POS ) & DMA_STREAM_MSK;
+    static constexpr Config_t DMA_STREAM_3   = ( 3u << DMA_STREAM_POS ) & DMA_STREAM_MSK;
+    static constexpr Config_t DMA_STREAM_4   = ( 4u << DMA_STREAM_POS ) & DMA_STREAM_MSK;
+    static constexpr Config_t DMA_STREAM_5   = ( 5u << DMA_STREAM_POS ) & DMA_STREAM_MSK;
+    static constexpr Config_t DMA_STREAM_6   = ( 6u << DMA_STREAM_POS ) & DMA_STREAM_MSK;
+    static constexpr Config_t DMA_STREAM_7   = ( 7u << DMA_STREAM_POS ) & DMA_STREAM_MSK;
+  }
 
   /**
    *  Forward declarations to ease compilation
@@ -131,6 +168,22 @@ namespace Thor::Driver::DMA
     Can be a value of Thor::Driver::DMA::Configuration::PeriphBurst
     ------------------------------------------------*/
     uint32_t PeriphBurst;
+  };
+
+  /**
+   *  Runtime resources for each stream. Used for looking up common properties
+   *  and configuration information for a given stream request source.
+   */
+  struct StreamResources
+  {
+    uint8_t requestID;                                        /**< Source ID of the system that generated the DMA request */
+    Config_t cfgBitField;                                     /**< Configuration bitfield defining meta information about the request ID */
+    std::vector<Chimera::Event::Actionable> eventListeners;   /**< Action registration queue that can provide callback like functionality */
+
+    void clear()
+    {
+      memset( this, 0, sizeof( StreamResources ) );
+    }
   };
 
   struct TCB

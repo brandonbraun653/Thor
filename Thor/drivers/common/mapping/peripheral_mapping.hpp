@@ -12,26 +12,16 @@
 #ifndef THOR_DRIVER_COMMON_MAPPING_HPP
 #define THOR_DRIVER_COMMON_MAPPING_HPP
 
-/* C++ Includes */
-#include <unordered_map>
-
 /* Chimera Includes */
 #include <Chimera/types/peripheral_types.hpp>
+#include <Chimera/container.hpp>
 
 namespace Thor::Driver::Mapping
 {
-  /* clang-format off */
-
   /**
    *  Maps a peripheral type into an index used to access peripheral specific resources.
    */
-  static const std::unordered_map<Chimera::Peripheral::Type, uint8_t> PeriphTypeToIterator{
-    { Chimera::Peripheral::Type::PERIPH_GPIO,  0u },
-    { Chimera::Peripheral::Type::PERIPH_UART,  1u },
-    { Chimera::Peripheral::Type::PERIPH_USART, 2u },
-  };
-
-  /* clang-format on */
+  extern const Chimera::Container::LightFlatMap<Chimera::Peripheral::Type, uint8_t> PeriphTypeToIterator;
 }
 
 #endif /* !THOR_DRIVER_COMMON_MAPPING_HPP */

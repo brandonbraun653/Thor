@@ -56,7 +56,7 @@ namespace Thor::Driver::GPIO
     7u
   };
   
-  const std::unordered_map<std::uintptr_t, Chimera::GPIO::Port> InstanceToPortMap
+  const Chimera::Container::LightFlatMap<std::uintptr_t, Chimera::GPIO::Port> InstanceToPortMap
   {
     { reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ), Chimera::GPIO::Port::PORTA },
     { reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ), Chimera::GPIO::Port::PORTB },
@@ -68,7 +68,7 @@ namespace Thor::Driver::GPIO
     { reinterpret_cast<std::uintptr_t>( GPIOH_PERIPH ), Chimera::GPIO::Port::PORTH }
   };
 
-  const std::unordered_map<Chimera::GPIO::Port, decltype( GPIOA_PERIPH )> PortToInstanceMap
+  const Chimera::Container::LightFlatMap<Chimera::GPIO::Port, decltype( GPIOA_PERIPH )> PortToInstanceMap
   {
     { Chimera::GPIO::Port::PORTA, GPIOA_PERIPH },
     { Chimera::GPIO::Port::PORTB, GPIOB_PERIPH },
@@ -80,7 +80,7 @@ namespace Thor::Driver::GPIO
     { Chimera::GPIO::Port::PORTH, GPIOH_PERIPH }
   };
 
-  const std::unordered_map<std::uintptr_t, size_t> InstanceToResourceIndex
+  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex
   {
     { reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ), 0 },
     { reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ), 1 },

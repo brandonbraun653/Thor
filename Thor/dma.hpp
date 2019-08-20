@@ -19,6 +19,7 @@
 
 /* Thor Includes */
 #include <Thor/definitions/dma_definitions.hpp>
+#include <Thor/drivers/common/types/dma_types.hpp>
 
 namespace Thor::DMA
 {
@@ -51,6 +52,8 @@ namespace Thor::DMA
 
   private:
     DMAClass();
+
+    Thor::Driver::DMA::StreamResources lastLookup;
 
     size_t listenerIDCount;
     std::vector<Chimera::Event::Actionable> eventListeners;

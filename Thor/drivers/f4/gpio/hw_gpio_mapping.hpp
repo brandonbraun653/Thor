@@ -14,6 +14,7 @@
 #define THOR_HW_GPIO_MAPPING_HPP
 
 /* Chimera Includes */
+#include <Chimera/container.hpp>
 #include <Chimera/types/gpio_types.hpp>
 
 /* Driver Includes */
@@ -52,17 +53,17 @@ namespace Thor::Driver::GPIO
   /**
    *  Maps a GPIO peripheral into the corresponding Chimera Port enum type
    */
-  extern const std::unordered_map<std::uintptr_t, Chimera::GPIO::Port> InstanceToPortMap;
+  extern const Chimera::Container::LightFlatMap<std::uintptr_t, Chimera::GPIO::Port> InstanceToPortMap;
 
   /**
    *  Maps a Chimera Port enum into the corresponding GPIO peripheral type
    */
-  extern const std::unordered_map<Chimera::GPIO::Port, decltype( GPIOA_PERIPH )> PortToInstanceMap;
+  extern const Chimera::Container::LightFlatMap<Chimera::GPIO::Port, decltype( GPIOA_PERIPH )> PortToInstanceMap;
 
   /**
    *  Maps a GPIO peripheral into the corresponding resource index
    */
-  extern const Thor::Driver::RCC::ResourceMap_t InstanceToResourceIndex;
+  extern const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
 
 }    // namespace Thor::Driver::GPIO
 

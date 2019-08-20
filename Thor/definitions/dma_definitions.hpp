@@ -14,6 +14,7 @@
 
 /* C++ Includes */
 #include <cstdint>
+#include <limits>
 
 /* Thor Includes */
 #include <Thor/headers.hpp>
@@ -27,7 +28,7 @@ namespace Thor::DMA
   using Source_t = uint8_t;
   namespace Source
   {
-    static constexpr Source_t NONE         = 0;
+    static constexpr Source_t NONE         = std::numeric_limits<Source_t>::max();
     static constexpr Source_t S_ADC1       = 1;
     static constexpr Source_t S_ADC2       = 2;
     static constexpr Source_t S_ADC3       = 3;

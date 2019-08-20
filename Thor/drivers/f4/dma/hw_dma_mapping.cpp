@@ -22,12 +22,12 @@
 namespace Thor::Driver::DMA
 {
   /* clang-format off */
-  const Thor::Driver::RCC::ResourceMap_t InstanceToResourceIndex{
+  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex{
     { reinterpret_cast<std::uintptr_t>( DMA1_PERIPH ), 0 }, 
     { reinterpret_cast<std::uintptr_t>( DMA2_PERIPH ), 1 }
   };
 
-  const Thor::Driver::RCC::ResourceMap_t StreamToResourceIndex{
+  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> StreamToResourceIndex{
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM0 ), 0 }, 
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM1 ), 1 }, 
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM2 ), 2 }, 
@@ -46,7 +46,7 @@ namespace Thor::Driver::DMA
     { reinterpret_cast<std::uintptr_t>( DMA2_STREAM7 ), 15 }, 
   };
 
-  const Thor::Driver::RCC::ResourceMap_t StreamToRegisterIndex{
+  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> StreamToRegisterIndex{
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM0 ), 0 }, 
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM1 ), 1 }, 
     { reinterpret_cast<std::uintptr_t>( DMA1_STREAM2 ), 2 }, 

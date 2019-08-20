@@ -17,7 +17,7 @@ namespace Thor::Driver::UART
 {
   /* clang-format off */
 
-  const std::unordered_map<std::uintptr_t, size_t> InstanceToResourceIndex
+  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex
   {
     { reinterpret_cast<std::uintptr_t>( UART4_PERIPH ), 0 },
     { reinterpret_cast<std::uintptr_t>( UART5_PERIPH ), 1 }

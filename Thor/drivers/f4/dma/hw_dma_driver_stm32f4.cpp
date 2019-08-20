@@ -188,7 +188,7 @@ namespace Thor::Driver::DMA
 
       auto result = Chimera::CommonStatusCodes::LOCKED;
 
-      if ( LockGuard(*this).lock() )
+      if ( LockGuard( *this ).lock() )
       {
         /*------------------------------------------------
         Set up the interrupt bits
@@ -216,7 +216,7 @@ namespace Thor::Driver::DMA
       return Chimera::CommonStatusCodes::OK;
     }
 
-    void Stream::IRQHandler( const uint8_t channel, const Thor::DMA::Source_t request )
+    void Stream::IRQHandler( const uint8_t channel )
     {
       /* Indicates the split between the LISR and HISR registers */
       static constexpr uint32_t LOW_HIGH_REGISTER_STREAM_BOUNDARY = 3u;
@@ -268,13 +268,13 @@ namespace Thor::Driver::DMA
         Update the control block with the event information. This
         is how the thread that gets woken up will know what occurred.
         ------------------------------------------------*/
-        controlBlock.selectedChannel  = channel;
-        controlBlock.requestGenerator = request;
-        controlBlock.bytesTransfered  = controlBlock.transferSize - SxNDTR::get( stream );
+        controlBlock.selectedChannel = channel;
+        // controlBlock.requestGenerator = request;
+        controlBlock.bytesTransfered = controlBlock.transferSize - SxNDTR::get( stream );
 
         /*------------------------------------------------
-        Exit the ISR with no more interrupts and the class 
-        resources unlocked. 
+        Exit the ISR with no more interrupts and the class
+        resources unlocked.
         ------------------------------------------------*/
         disableTransferIRQ();
         unlockFromISR();
@@ -423,13 +423,13 @@ namespace Thor::Driver::DMA
       tmp = &dma2Streams;
     }
 
-    for ( uint8_t x = 0; x < (*tmp).size(); x++ )
+    for ( uint8_t x = 0; x < ( *tmp ).size(); x++ )
     {
-      if ( !(*tmp)[ x ] )
+      if ( !( *tmp )[ x ] )
       {
         auto streamInstance = getStream( periph, x );
-        (*tmp)[ x ] = new Internal::Stream();
-        (*tmp)[ x ]->attach( streamInstance, periph );
+        ( *tmp )[ x ]       = new Internal::Stream();
+        ( *tmp )[ x ]->attach( streamInstance, periph );
       }
     }
 
@@ -447,7 +447,7 @@ namespace Thor::Driver::DMA
       streamArray = dma2Streams;
     }
 
-    if ( streamArray[ streamIndex ] ) 
+    if ( streamArray[ streamIndex ] )
     {
       return streamArray[ streamIndex ]->configure( config, controlBlock );
     }
@@ -501,193 +501,177 @@ using namespace Thor::Driver::DMA;
 
 void DMA1_Stream0_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 0u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA1_STREAM0 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma1RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 0u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM0 ) >> SxCR_CHSEL_Pos;
 
   if ( dma1Streams[ stream ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel, request );
+    dma1Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA1_Stream1_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 1u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA1_STREAM1 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma1RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 1u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM1 ) >> SxCR_CHSEL_Pos;
 
   if ( dma1Streams[ stream ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel, request );
+    dma1Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA1_Stream2_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 2u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA1_STREAM2 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma1RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 2u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM2 ) >> SxCR_CHSEL_Pos;
 
   if ( dma1Streams[ stream ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel, request );
+    dma1Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA1_Stream3_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 3u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA1_STREAM3 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma1RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 3u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM3 ) >> SxCR_CHSEL_Pos;
 
   if ( dma1Streams[ stream ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel, request );
+    dma1Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA1_Stream4_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 4u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA1_STREAM4 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma1RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 4u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM4 ) >> SxCR_CHSEL_Pos;
 
   if ( dma1Streams[ stream ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel, request );
+    dma1Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA1_Stream5_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 5u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA1_STREAM5 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma1RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 5u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM5 ) >> SxCR_CHSEL_Pos;
 
   if ( dma1Streams[ stream ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel, request );
+    dma1Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA1_Stream6_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 6u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA1_STREAM6 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma1RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 6u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM6 ) >> SxCR_CHSEL_Pos;
 
   if ( dma1Streams[ stream ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel, request );
+    dma1Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA1_Stream7_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 7u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA1_STREAM7 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma1RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 7u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM7 ) >> SxCR_CHSEL_Pos;
 
   if ( dma1Streams[ stream ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel, request );
+    dma1Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA2_Stream0_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 0u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA2_STREAM0 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma2RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 0u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM0 ) >> SxCR_CHSEL_Pos;
 
   if ( dma2Streams[ stream ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel, request );
+    dma2Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA2_Stream1_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 1u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA2_STREAM1 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma2RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 1u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM1 ) >> SxCR_CHSEL_Pos;
 
   if ( dma2Streams[ stream ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel, request );
+    dma2Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA2_Stream2_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 2u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA2_STREAM2 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma2RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 2u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM2 ) >> SxCR_CHSEL_Pos;
 
   if ( dma2Streams[ stream ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel, request );
+    dma2Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA2_Stream3_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 3u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA2_STREAM3 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma2RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 3u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM3 ) >> SxCR_CHSEL_Pos;
 
   if ( dma2Streams[ stream ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel, request );
+    dma2Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA2_Stream4_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 4u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA2_STREAM4 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma2RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 4u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM4 ) >> SxCR_CHSEL_Pos;
 
   if ( dma2Streams[ stream ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel, request );
+    dma2Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA2_Stream5_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 5u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA2_STREAM5 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma2RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 5u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM5 ) >> SxCR_CHSEL_Pos;
 
   if ( dma2Streams[ stream ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel, request );
+    dma2Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA2_Stream6_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 6u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA2_STREAM6 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma2RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 6u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM6 ) >> SxCR_CHSEL_Pos;
 
   if ( dma2Streams[ stream ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel, request );
+    dma2Streams[ stream ]->IRQHandler( channel );
   }
 }
 
 void DMA2_Stream7_IRQHandler( void )
 {
-  constexpr uint8_t stream          = 7u;
-  const uint8_t channel             = SxCR::CHSEL::get( DMA2_STREAM7 ) >> SxCR_CHSEL_Pos;
-  const Thor::DMA::Source_t request = dma2RequestMapping[ channel ][ stream ];
+  constexpr uint8_t stream = 7u;
+  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM7 ) >> SxCR_CHSEL_Pos;
 
   if ( dma2Streams[ stream ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel, request );
+    dma2Streams[ stream ]->IRQHandler( channel );
   }
 }
 

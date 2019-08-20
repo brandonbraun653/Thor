@@ -74,7 +74,7 @@ namespace Thor::Driver::DMA
        *  @param[in]  request     The request generator peripheral ID
        *  @return void
        */
-      void IRQHandler( const uint8_t channel, const Thor::DMA::Source_t request );
+      void IRQHandler( const uint8_t channel );
 
     private:
       StreamX *stream;

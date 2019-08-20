@@ -17,6 +17,7 @@
 
 /* Chimera Includes */
 #include <Chimera/dma.hpp>
+#include <Chimera/container.hpp>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
@@ -32,18 +33,18 @@ namespace Thor::Driver::DMA
   /**
    *  Maps a DMA peripheral into the corresponding resource index
    */
-  extern const Thor::Driver::RCC::ResourceMap_t InstanceToResourceIndex;
+  extern const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
 
   /**
    *  Maps a DMA peripheral stream into the corresponding resource index
    */
-  extern const Thor::Driver::RCC::ResourceMap_t StreamToResourceIndex;
+  extern const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> StreamToResourceIndex;
 
   /**
    *  Maps a DMA peripheral stream into the corresponding register index
    *  which is used to access offsets in the hardware registers
    */
-  extern const Thor::Driver::RCC::ResourceMap_t StreamToRegisterIndex;
+  extern const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> StreamToRegisterIndex;
 
   /**
    *  Conversion lookup tables between Chimera DMA configuration options 

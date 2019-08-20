@@ -29,9 +29,9 @@ namespace Thor::Driver::USART
   /**
    *  Maps a USART peripheral into the corresponding resource index
    */
-  extern const Thor::Driver::RCC::ResourceMap_t InstanceToResourceIndex;
+  extern const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
 
-  extern const std::unordered_map<size_t, RegisterMap *const> ChanneltoInstance;
+  extern const Chimera::Container::LightFlatMap<size_t, RegisterMap *const> ChanneltoInstance;
 
   /**
    *  Gets the interrupt request number tied to a USART instance.

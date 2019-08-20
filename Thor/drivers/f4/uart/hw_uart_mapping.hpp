@@ -13,6 +13,9 @@
 #ifndef THOR_HW_UART_MAPPING_HPP
 #define THOR_HW_UART_MAPPING_HPP
 
+/* Chimera Includes */
+#include <Chimera/container.hpp>
+
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
@@ -25,7 +28,7 @@ namespace Thor::Driver::UART
   /**
    *  Maps a UART peripheral into the corresponding resource index
    */
-  extern const Thor::Driver::RCC::ResourceMap_t InstanceToResourceIndex;
+  extern const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
 
 }    // namespace Thor::Driver::UART
 
