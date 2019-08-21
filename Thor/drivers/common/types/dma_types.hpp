@@ -32,7 +32,7 @@ namespace Thor::Driver::DMA
 
     static constexpr Config_t DMA_CHANNEL_POS = 2u;
     static constexpr Config_t DMA_CHANNEL_MSK = ( 0x7 << DMA_CHANNEL_POS );
-    static constexpr Config_t DMA_CHANNEL     = DMA_CHANNEL_MSK << DMA_CHANNEL_POS;
+    static constexpr Config_t DMA_CHANNEL     = DMA_CHANNEL_MSK;
     static constexpr Config_t DMA_CHANNEL_0   = ( 0u << DMA_CHANNEL_POS ) & DMA_CHANNEL_MSK;
     static constexpr Config_t DMA_CHANNEL_1   = ( 1u << DMA_CHANNEL_POS ) & DMA_CHANNEL_MSK;
     static constexpr Config_t DMA_CHANNEL_2   = ( 2u << DMA_CHANNEL_POS ) & DMA_CHANNEL_MSK;
@@ -44,7 +44,7 @@ namespace Thor::Driver::DMA
 
     static constexpr Config_t DMA_STREAM_POS = 5u;
     static constexpr Config_t DMA_STREAM_MSK = ( 0x7 << DMA_STREAM_POS );
-    static constexpr Config_t DMA_STREAM     = DMA_STREAM_MSK << DMA_STREAM_POS;
+    static constexpr Config_t DMA_STREAM     = DMA_STREAM_MSK;
     static constexpr Config_t DMA_STREAM_0   = ( 0u << DMA_STREAM_POS ) & DMA_STREAM_MSK;
     static constexpr Config_t DMA_STREAM_1   = ( 1u << DMA_STREAM_POS ) & DMA_STREAM_MSK;
     static constexpr Config_t DMA_STREAM_2   = ( 2u << DMA_STREAM_POS ) & DMA_STREAM_MSK;

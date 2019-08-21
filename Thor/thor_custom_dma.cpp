@@ -37,7 +37,7 @@ static std::array<DMADriver::Driver *, DMADriver::NUM_DMA_PERIPHS> dmaPeriphs;
 static std::shared_ptr<Thor::DMA::DMAClass> dmaSingleton = nullptr;
 
 static DMADriver::Driver *currentDMAInstance = nullptr;
-static DMADriver::StreamX *currentStream = nullptr;
+static DMADriver::StreamX *currentStream     = nullptr;
 
 namespace Thor::DMA
 {
@@ -63,7 +63,9 @@ namespace Thor::DMA
   std::shared_ptr<DMAClass> DMAClass::get()
   {
     /* Gets around the private constructor issue with shared_ptr */
-    struct A : public DMAClass{};
+    struct A : public DMAClass
+    {
+    };
 
     if ( !dmaSingleton )
     {
@@ -81,7 +83,7 @@ namespace Thor::DMA
     for ( uint8_t x = 0; x < dmaPeriphs.size(); x++ )
     {
       /*------------------------------------------------
-      Dynamically allocate peripheral drivers 
+      Dynamically allocate peripheral drivers
       ------------------------------------------------*/
       if ( !dmaPeriphs[ x ] )
       {
@@ -113,7 +115,7 @@ namespace Thor::DMA
 
   Chimera::Status_t DMAClass::start()
   {
-    if ( currentDMAInstance && currentStream ) 
+    if ( currentDMAInstance && currentStream )
     {
       return currentDMAInstance->start( currentStream );
     }
@@ -126,17 +128,23 @@ namespace Thor::DMA
   {
     auto result = Chimera::CommonStatusCodes::FAIL;
 
-    auto dma = getDriver( config );
-    auto stream = getStream( config );
+    /*------------------------------------------------
+    Convert from the generic Chimera representation of DMA settings into
+    the actual register bit values needed for this device.
+    ------------------------------------------------*/
     auto cfg = convertConfig( config );
     auto tcb = convertTCB( transfer );
 
-    // Manually set the stream and dma driver just for testing purposes.
+    /*------------------------------------------------
+    Lookup the associated DMA peripheral and Stream to be configured
+    ------------------------------------------------*/
+    currentDMAInstance = getDriver( config );
+    currentStream      = getStream( config );
 
-    currentDMAInstance = dmaPeriphs[ 0 ];
-    currentStream = DMADriver::DMA1_STREAM3;
-
-    if ( currentDMAInstance ) 
+    /*------------------------------------------------
+    Perform the configuration
+    ------------------------------------------------*/
+    if ( currentDMAInstance && currentStream )
     {
       result = currentDMAInstance->configure( currentStream, &cfg, &tcb );
     }
@@ -154,7 +162,8 @@ namespace Thor::DMA
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t DMAClass::registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID )
+  Chimera::Status_t DMAClass::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
+                                                size_t &registrationID )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -166,13 +175,8 @@ namespace Thor::DMA
 
   static DMADriver::Driver *const getDriver( const Chimera::DMA::Init &config )
   {
-    // Figure out the DMA peripheral instance (driver) from the source
-  }
-
-  static DMADriver::StreamX *const getStream( const Chimera::DMA::Init &config )
-  {
-    DMADriver::StreamX *stream = nullptr;
-    uint32_t streamNum          = 0;
+    DMADriver::Driver *driver = nullptr;
+    uint32_t streamNum        = 0;
 
     /*------------------------------------------------
     Find the request meta info using binary search of sorted list
@@ -181,7 +185,43 @@ namespace Thor::DMA
     c.clear();
     c.requestID = config.request;
 
-    volatile auto metaInfo = std::lower_bound(
+    auto metaInfo = std::lower_bound(
+        RequestGenerators.begin(), RequestGenerators.end(), c,
+        []( const DMADriver::StreamResources &a, const DMADriver::StreamResources &b ) { return b.requestID < a.requestID; } );
+
+    if ( metaInfo->requestID != config.request )
+    {
+      return driver;
+    }
+
+    /*------------------------------------------------
+    Pull out the stream object
+    ------------------------------------------------*/
+    if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA1 )
+    {
+      driver = dmaPeriphs[ 0 ];
+    }
+    else if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA2 )
+    {
+      driver = dmaPeriphs[ 1 ];
+    }
+
+    return driver;
+  }
+
+  static DMADriver::StreamX *const getStream( const Chimera::DMA::Init &config )
+  {
+    DMADriver::StreamX *stream = nullptr;
+    uint32_t streamNum         = 0;
+
+    /*------------------------------------------------
+    Find the request meta info using binary search of sorted list
+    ------------------------------------------------*/
+    DMADriver::StreamResources c;
+    c.clear();
+    c.requestID = config.request;
+
+    auto metaInfo = std::lower_bound(
         RequestGenerators.begin(), RequestGenerators.end(), c,
         []( const DMADriver::StreamResources &a, const DMADriver::StreamResources &b ) { return b.requestID < a.requestID; } );
 
@@ -193,12 +233,13 @@ namespace Thor::DMA
     /*------------------------------------------------
     Pull out the stream object
     ------------------------------------------------*/
-    streamNum = ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_STREAM ) >> DMADriver::ConfigBitFields::DMA_STREAM_POS;
+    streamNum =
+        ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_STREAM ) >> DMADriver::ConfigBitFields::DMA_STREAM_POS;
     if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA1 )
     {
       stream = DMADriver::getStream( DMADriver::DMA1_PERIPH, streamNum );
     }
-    else if( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA2 )
+    else if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA2 )
     {
       stream = DMADriver::getStream( DMADriver::DMA2_PERIPH, streamNum );
     }
@@ -223,9 +264,9 @@ namespace Thor::DMA
     scfg.PeriphDataAlignment = PeripheralAlignmentMap[ static_cast<size_t>( config.pAlign ) ];
     scfg.Priority            = PriorityMap[ static_cast<uint32_t>( config.priority ) ];
 
-    // TODO: These two are a bit of a weirdo...how to abstract this higher?
-    scfg.FIFOMode            = Configuration::FIFODirectMode::Enabled;
-    scfg.FIFOThreshold       = Configuration::FIFOThreshold::Threshold_4_4;
+    // TODO: These two are a bit weird...how to abstract this higher?
+    scfg.FIFOMode      = Configuration::FIFODirectMode::Enabled;
+    scfg.FIFOThreshold = Configuration::FIFOThreshold::Threshold_4_4;
 
     return scfg;
   }
@@ -235,8 +276,8 @@ namespace Thor::DMA
     using namespace DMADriver;
 
     TCB tcb;
-    tcb.srcAddress = transfer.srcAddress;
-    tcb.dstAddress = transfer.dstAddress;
+    tcb.srcAddress   = transfer.srcAddress;
+    tcb.dstAddress   = transfer.dstAddress;
     tcb.transferSize = transfer.transferSize;
 
     return tcb;
