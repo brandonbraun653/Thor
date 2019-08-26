@@ -1,9 +1,9 @@
 /********************************************************************************
  *   File Name:
- *    hw_dma_mapping.hpp
+ *    hw_dma_driver_stm32f4.cpp
  *
  *   Description:
- *    STM32 Mappings for the DMA Peripheral
+ *    STM32F4 DMA Driver Implementation
  *
  *   2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -12,9 +12,9 @@
 #include <Thor/resources/dma_resources.hpp>
 #include <Chimera/types/peripheral_types.hpp>
 
-
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/event.hpp>
 #include <Thor/definitions/interrupt_definitions.hpp>
 #include <Thor/drivers/f4/dma/hw_dma_driver.hpp>
 #include <Thor/drivers/f4/dma/hw_dma_mapping.hpp>
@@ -23,337 +23,553 @@
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
 #include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
 
+namespace DMADriver = Thor::Driver::DMA;
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
 
-static std::array<Thor::Driver::DMA::Internal::Stream *, Thor::Driver::DMA::NUM_DMA_STREAMS_PER_PERIPH> dma1Streams;
-static std::array<Thor::Driver::DMA::Internal::Stream *, Thor::Driver::DMA::NUM_DMA_STREAMS_PER_PERIPH> dma2Streams;
+static std::array<Thor::Driver::DMA::Stream *, Thor::Driver::DMA::NUM_DMA_STREAMS> streamObjects;
+
+static void DMA1_Stream0_ISRPostProcessorThread( void *argument );
+static void DMA1_Stream1_ISRPostProcessorThread( void *argument );
+static void DMA1_Stream2_ISRPostProcessorThread( void *argument );
+static void DMA1_Stream3_ISRPostProcessorThread( void *argument );
+static void DMA1_Stream4_ISRPostProcessorThread( void *argument );
+static void DMA1_Stream5_ISRPostProcessorThread( void *argument );
+static void DMA1_Stream6_ISRPostProcessorThread( void *argument );
+static void DMA1_Stream7_ISRPostProcessorThread( void *argument );
+static void DMA2_Stream0_ISRPostProcessorThread( void *argument );
+static void DMA2_Stream1_ISRPostProcessorThread( void *argument );
+static void DMA2_Stream2_ISRPostProcessorThread( void *argument );
+static void DMA2_Stream3_ISRPostProcessorThread( void *argument );
+static void DMA2_Stream4_ISRPostProcessorThread( void *argument );
+static void DMA2_Stream5_ISRPostProcessorThread( void *argument );
+static void DMA2_Stream6_ISRPostProcessorThread( void *argument );
+static void DMA2_Stream7_ISRPostProcessorThread( void *argument );
+
+/*------------------------------------------------
+Static Data
+------------------------------------------------*/
+/* clang-format off */
+/* Post Processor Thread Handles */
+static std::array<TaskHandle_t, DMADriver::NUM_DMA_STREAMS> postProcessorHandle = { 
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,
+  nullptr
+};
+
+/* Post Processor Thread Wakeup Signals */
+static std::array<SemaphoreHandle_t, DMADriver::NUM_DMA_STREAMS> postProcessorSignal = { 
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,  
+  nullptr,
+  nullptr,
+  nullptr
+};
+
+/* Post Processor Thread Function Pointers */
+static std::array<Chimera::Function::void_func_void_ptr, DMADriver::NUM_DMA_STREAMS> postProcessorThread = {
+  DMA1_Stream0_ISRPostProcessorThread,
+  DMA1_Stream1_ISRPostProcessorThread,
+  DMA1_Stream2_ISRPostProcessorThread,
+  DMA1_Stream3_ISRPostProcessorThread,
+  DMA1_Stream4_ISRPostProcessorThread,
+  DMA1_Stream5_ISRPostProcessorThread,
+  DMA1_Stream6_ISRPostProcessorThread,
+  DMA1_Stream7_ISRPostProcessorThread,
+  DMA2_Stream0_ISRPostProcessorThread,
+  DMA2_Stream1_ISRPostProcessorThread,
+  DMA2_Stream2_ISRPostProcessorThread,
+  DMA2_Stream3_ISRPostProcessorThread,
+  DMA2_Stream4_ISRPostProcessorThread,
+  DMA2_Stream5_ISRPostProcessorThread,
+  DMA2_Stream6_ISRPostProcessorThread,
+  DMA2_Stream7_ISRPostProcessorThread
+};
+/* clang-format on */
 
 namespace Thor::Driver::DMA
 {
-  namespace Internal
+  bool streamIsOnPeripheral( RegisterMap *const controller, StreamX *const stream )
   {
-    Stream::Stream() :
-        stream( nullptr ), parent( nullptr ), streamRegisterIndex( 0 ), streamResourceIndex( 0 ), wakeupSignal( nullptr )
+    auto streamAddress = reinterpret_cast<std::uintptr_t>( stream );
+
+    switch ( reinterpret_cast<std::uintptr_t>( controller ) )
     {
+      case static_cast<std::uintptr_t>( DMA1_BASE_ADDR ):
+        return ( ( streamAddress == DMA1_STREAM0_BASE_ADDR ) || ( streamAddress == DMA1_STREAM1_BASE_ADDR ) ||
+                 ( streamAddress == DMA1_STREAM2_BASE_ADDR ) || ( streamAddress == DMA1_STREAM3_BASE_ADDR ) ||
+                 ( streamAddress == DMA1_STREAM4_BASE_ADDR ) || ( streamAddress == DMA1_STREAM5_BASE_ADDR ) ||
+                 ( streamAddress == DMA1_STREAM6_BASE_ADDR ) || ( streamAddress == DMA1_STREAM7_BASE_ADDR ) );
+        break;
+
+      case static_cast<std::uintptr_t>( DMA2_BASE_ADDR ):
+        return ( ( streamAddress == DMA2_STREAM0_BASE_ADDR ) || ( streamAddress == DMA2_STREAM1_BASE_ADDR ) ||
+                 ( streamAddress == DMA2_STREAM2_BASE_ADDR ) || ( streamAddress == DMA2_STREAM3_BASE_ADDR ) ||
+                 ( streamAddress == DMA2_STREAM4_BASE_ADDR ) || ( streamAddress == DMA2_STREAM5_BASE_ADDR ) ||
+                 ( streamAddress == DMA2_STREAM6_BASE_ADDR ) || ( streamAddress == DMA2_STREAM7_BASE_ADDR ) );
+        break;
+
+      default:
+        return false;
+        break;
     }
+  }
 
-    Stream::~Stream()
+  Stream::Stream() :
+      stream( nullptr ), parent( nullptr ), streamRegisterIndex( 0 ), streamResourceIndex( 0 ), wakeupSignal( nullptr ),
+      listenerIDCount( 0 )
+  {
+  }
+
+  Stream::~Stream()
+  {
+  }
+
+  Chimera::Status_t Stream::attach( StreamX *const peripheral, RegisterMap *const parent )
+  {
+    using namespace Chimera::Threading;
+
+    auto result = Chimera::CommonStatusCodes::LOCKED;
+
+    if ( LockGuard( *this ).lock() )
     {
-    }
-
-    Chimera::Status_t Stream::attach( StreamX *const peripheral, RegisterMap *const parent )
-    {
-      using namespace Chimera::Threading;
-
-      auto result = Chimera::CommonStatusCodes::LOCKED;
-
-      if ( LockGuard( *this ).lock() )
-      {
-        stream              = peripheral;
-        this->parent        = parent;
-        streamRegisterIndex = StreamToRegisterIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
-        streamResourceIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
-        streamIRQn          = DMAStream_IRQn[ streamResourceIndex ];
-
-        result = Chimera::CommonStatusCodes::OK;
-      }
-
-      return result;
-    }
-
-    Chimera::Status_t Stream::attachISRWakeup( SemaphoreHandle_t wakeup )
-    {
-      using namespace Chimera::Threading;
-
-      auto result = Chimera::CommonStatusCodes::LOCKED;
-
-      if ( LockGuard( *this ).lock() )
-      {
-        enterCriticalSection();
-
-        wakeupSignal = wakeup;
-        result       = Chimera::CommonStatusCodes::OK;
-
-        exitCriticalSection();
-      }
-
-      return result;
-    }
-
-    Chimera::Status_t Stream::configure( StreamConfig *const config, TCB *const cb )
-    {
-      using namespace Chimera::Threading;
-
-      auto result = Chimera::CommonStatusCodes::LOCKED;
-
-      if ( LockGuard( *this ).lock() )
-      {
-        enterCriticalSection();
-        result = Chimera::CommonStatusCodes::OK;
-
-        /*------------------------------------------------
-        Initialize the control block
-        ------------------------------------------------*/
-        memcpy( &controlBlock, cb, sizeof( TCB ) );
-        controlBlock.transferState = Runtime::Flag::TRANSFER_NOT_READY;
-
-        /*------------------------------------------------
-        Step 1: Check for enabled status and clear ISR flags
-        ------------------------------------------------*/
-        SxCR::EN::set( stream, 0 );
-        LIFCR::setStreamX( parent, streamRegisterIndex );
-        HIFCR::setStreamX( parent, streamRegisterIndex );
-
-        /*------------------------------------------------
-        Step 2: Set the transfer address registers
-        See table 30 in RM0390
-        ------------------------------------------------*/
-        if ( ( config->Direction == Configuration::TransferDirection::P2M ) ||
-             ( config->Direction == Configuration::TransferDirection::M2M ) )
-        {
-          SxPAR::set( stream, cb->srcAddress );
-          SxM0AR::set( stream, cb->dstAddress );
-        }
-        else if ( config->Direction == Configuration::TransferDirection::M2P )
-        {
-          SxM0AR::set( stream, cb->srcAddress );
-          SxPAR::set( stream, cb->dstAddress );
-        }
-        else
-        {
-          return Chimera::CommonStatusCodes::FAIL;
-        }
-
-        /*------------------------------------------------
-        Step 3: Set how many bytes are to be transfered
-        ------------------------------------------------*/
-        SxNDTR::set( stream, cb->transferSize );
-
-        /*------------------------------------------------
-        Step 4: Select the DMA channel request
-        ------------------------------------------------*/
-        SxCR::CHSEL::set( stream, config->Channel );
-
-        /*------------------------------------------------
-        Step 5: Set the flow controller options
-        ------------------------------------------------*/
-        SxCR::PFCTRL::set( stream, 0 );
-        SxCR::CIRC::set( stream, 0 );
-
-        if ( config->Mode == Configuration::Mode::Periph )
-        {
-          SxCR::PFCTRL::set( stream, config->Mode );
-        }
-        else if ( config->Mode == Configuration::Mode::Circular )
-        {
-          SxCR::CIRC::set( stream, config->Mode );
-        }
-        // else normal DMA peripheral is the flow controller
-
-        /*------------------------------------------------
-        Step 6: Set the transfer priority
-        ------------------------------------------------*/
-        SxCR::PL::set( stream, config->Priority );
-
-        /*------------------------------------------------
-        Step 7: Set the FIFO usage
-        ------------------------------------------------*/
-        SxFCR::DMDIS::set( stream, config->FIFOMode );
-        SxFCR::FTH::set( stream, config->FIFOThreshold );
-
-        /*------------------------------------------------
-        Step 8: Set additional misc settings
-        ------------------------------------------------*/
-        SxCR::DIR::set( stream, config->Direction );
-
-        SxCR::MINC::set( stream, config->MemInc );
-        SxCR::MBURST::set( stream, config->MemBurst );
-        SxCR::MSIZE::set( stream, config->MemDataAlignment );
-
-        SxCR::PINC::set( stream, config->PeriphInc );
-        SxCR::PBURST::set( stream, config->PeriphBurst );
-        SxCR::PSIZE::set( stream, config->PeriphDataAlignment );
-
-        controlBlock.transferState = Runtime::Flag::TRANSFER_READY;
-        exitCriticalSection();
-      }
-
-      return result;
-    }
-
-    Chimera::Status_t Stream::start()
-    {
-      using namespace Chimera::Threading;
-
-      auto result = Chimera::CommonStatusCodes::LOCKED;
-
-      if ( LockGuard( *this ).lock() )
-      {
-        /*------------------------------------------------
-        Set up the interrupt bits
-        ------------------------------------------------*/
-        enterCriticalSection();
-        enableTransferIRQ();
-
-        /*------------------------------------------------
-        Initialize the transfer control block
-        ------------------------------------------------*/
-        controlBlock.transferState = Runtime::Flag::TRANSFER_IN_PROGRESS;
-
-        /*------------------------------------------------
-        Enable stream, which starts the transfer if already configured
-        ------------------------------------------------*/
-        exitCriticalSection();
-        SxCR::EN::set( stream, SxCR_EN );
-      }
-    }
-
-    Chimera::Status_t Stream::abort()
-    {
-      // Should abruptly disable the hardware and fire an ISR if there is an ongoing transfer.
-      SxCR::EN::set( stream, 0 );
-      return Chimera::CommonStatusCodes::OK;
-    }
-
-    void Stream::IRQHandler( const uint8_t channel )
-    {
-      /* Indicates the split between the LISR and HISR registers */
-      static constexpr uint32_t LOW_HIGH_REGISTER_STREAM_BOUNDARY = 3u;
+      /*------------------------------------------------
+      Initialize class level variables
+      ------------------------------------------------*/
+      stream              = peripheral;
+      this->parent        = parent;
+      streamRegisterIndex = StreamToRegisterIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
+      streamResourceIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
+      streamIRQn          = DMAStream_IRQn[ streamResourceIndex ];
 
       /*------------------------------------------------
-      Read the status registers and parse the flags for this stream
+      Initialize ISR handler thread resources
       ------------------------------------------------*/
-      uint32_t statusRegister = 0;
+      postProcessorSignal[ streamResourceIndex ] = xSemaphoreCreateBinary();
+      postProcessorHandle[ streamResourceIndex ] = new TaskHandle_t;
 
-      if ( streamRegisterIndex <= LOW_HIGH_REGISTER_STREAM_BOUNDARY )
-      {
-        statusRegister = LISR::get( parent );
-      }
-      else
-      {
-        statusRegister = HISR::get( parent );
-      }
+      wakeupSignal = postProcessorSignal[ streamResourceIndex ];
 
-      bool TCIF  = statusRegister & DMAStream_TCIF[ streamResourceIndex ];
-      bool HTIF  = statusRegister & DMAStream_HTIF[ streamResourceIndex ];
-      bool TEIF  = statusRegister & DMAStream_TEIF[ streamResourceIndex ];
-      bool DMEIF = statusRegister & DMAStream_DMEIF[ streamResourceIndex ];
-      bool FEIF  = statusRegister & DMAStream_FEIF[ streamResourceIndex ];
+      Chimera::Threading::addThread( postProcessorThread[ streamResourceIndex ], "", 500, NULL, 5,
+                                     &postProcessorHandle[ streamResourceIndex ] );
 
-      /*------------------------------------------------
-      Read the control registers for config information
-      ------------------------------------------------*/
-      const bool TCEIE = SxCR::TCIE::get( stream );
-      const bool HTIE  = SxCR::HTIE::get( stream );
-      const bool TEIE  = SxCR::TEIE::get( stream );
-      const bool DMEIE = SxCR::DMEIE::get( stream );
-      const bool FEIE  = SxFCR::FEIE::get( stream );
+      result = Chimera::CommonStatusCodes::OK;
+    }
+
+    return result;
+  }
+
+  Chimera::Status_t Stream::attachISRWakeup( SemaphoreHandle_t wakeup )
+  {
+    using namespace Chimera::Threading;
+
+    auto result = Chimera::CommonStatusCodes::LOCKED;
+
+    if ( LockGuard( *this ).lock() )
+    {
+      enterCriticalSection();
+
+      wakeupSignal = wakeup;
+      result       = Chimera::CommonStatusCodes::OK;
+
+      exitCriticalSection();
+    }
+
+    return result;
+  }
+
+  Chimera::Status_t Stream::configure( StreamConfig *const config, TCB *const cb )
+  {
+    using namespace Chimera::Threading;
+
+    auto result = Chimera::CommonStatusCodes::LOCKED;
+
+    if ( LockGuard( *this ).lock() )
+    {
+      enterCriticalSection();
+      result = Chimera::CommonStatusCodes::OK;
 
       /*------------------------------------------------
       Initialize the control block
       ------------------------------------------------*/
-      controlBlock.fifoError       = false;
-      controlBlock.transferError   = false;
-      controlBlock.directModeError = false;
+      memcpy( &controlBlock, cb, sizeof( TCB ) );
+      controlBlock.transferState = Runtime::Flag::TRANSFER_NOT_READY;
 
       /*------------------------------------------------
-      Transfer Complete
+      Step 1: Check for enabled status and clear ISR flags
       ------------------------------------------------*/
-      bool semaphoreGiven = false;
+      SxCR::EN::set( stream, 0 );
+      LIFCR::setStreamX( parent, streamRegisterIndex );
+      HIFCR::setStreamX( parent, streamRegisterIndex );
 
-      if ( TCIF && TCEIE )
+      /*------------------------------------------------
+      Step 2: Set the transfer address registers
+      See table 30 in RM0390
+      ------------------------------------------------*/
+      if ( ( config->Direction == Configuration::TransferDirection::P2M ) ||
+           ( config->Direction == Configuration::TransferDirection::M2M ) )
       {
-        /*------------------------------------------------
-        Update the control block with the event information. This
-        is how the thread that gets woken up will know what occurred.
-        ------------------------------------------------*/
-        controlBlock.selectedChannel = channel;
-        // controlBlock.requestGenerator = request;
-        controlBlock.bytesTransfered = controlBlock.transferSize - SxNDTR::get( stream );
-
-        /*------------------------------------------------
-        Exit the ISR with no more interrupts and the class
-        resources unlocked.
-        ------------------------------------------------*/
-        disableTransferIRQ();
-        unlockFromISR();
-
-        /*------------------------------------------------
-        Wake up the stream event listener thread
-        ------------------------------------------------*/
-        if ( !semaphoreGiven && wakeupSignal )
-        {
-          xSemaphoreGiveFromISR( wakeupSignal, nullptr );
-          semaphoreGiven = true;
-        }
+        SxPAR::set( stream, cb->srcAddress );
+        SxM0AR::set( stream, cb->dstAddress );
+      }
+      else if ( config->Direction == Configuration::TransferDirection::M2P )
+      {
+        SxM0AR::set( stream, cb->srcAddress );
+        SxPAR::set( stream, cb->dstAddress );
+      }
+      else
+      {
+        return Chimera::CommonStatusCodes::FAIL;
       }
 
       /*------------------------------------------------
-      Transfer Half-Complete
+      Step 3: Set how many bytes are to be transfered
       ------------------------------------------------*/
-      if ( HTIF && HTIE ) {}    // Currently not supported
+      SxNDTR::set( stream, cb->transferSize );
 
       /*------------------------------------------------
-      Transfer Errors
+      Step 4: Select the DMA channel request
       ------------------------------------------------*/
-      if ( ( TEIF && TEIE ) || ( DMEIF && DMEIE ) || ( FEIF && FEIE ) )
+      SxCR::CHSEL::set( stream, config->Channel );
+
+      /*------------------------------------------------
+      Step 5: Set the flow controller options
+      ------------------------------------------------*/
+      SxCR::PFCTRL::set( stream, 0 );
+      SxCR::CIRC::set( stream, 0 );
+
+      if ( config->Mode == Configuration::Mode::Periph )
       {
-        /*------------------------------------------------
-        Make sure the ISR can't fire indefinitely in case we didn't
-        get here after a transfer completion.
-        ------------------------------------------------*/
-        disableTransferIRQ();
+        SxCR::PFCTRL::set( stream, config->Mode );
+      }
+      else if ( config->Mode == Configuration::Mode::Circular )
+      {
+        SxCR::CIRC::set( stream, config->Mode );
+      }
+      // else normal DMA peripheral is the flow controller
 
-        /*------------------------------------------------
-        Let whichever thread that handles the result of the
-        transfer know if there were any errors.
-        ------------------------------------------------*/
-        controlBlock.fifoError       = FEIF;
-        controlBlock.transferError   = TEIF;
-        controlBlock.directModeError = DMEIF;
+      /*------------------------------------------------
+      Step 6: Set the transfer priority
+      ------------------------------------------------*/
+      SxCR::PL::set( stream, config->Priority );
 
-        /*------------------------------------------------
-        Wake up the stream event listener thread
-        ------------------------------------------------*/
-        if ( !semaphoreGiven && wakeupSignal )
-        {
-          xSemaphoreGiveFromISR( wakeupSignal, nullptr );
-        }
+      /*------------------------------------------------
+      Step 7: Set the FIFO usage
+      ------------------------------------------------*/
+      SxFCR::DMDIS::set( stream, config->FIFOMode );
+      SxFCR::FTH::set( stream, config->FIFOThreshold );
+
+      /*------------------------------------------------
+      Step 8: Set additional misc settings
+      ------------------------------------------------*/
+      SxCR::DIR::set( stream, config->Direction );
+
+      SxCR::MINC::set( stream, config->MemInc );
+      SxCR::MBURST::set( stream, config->MemBurst );
+      SxCR::MSIZE::set( stream, config->MemDataAlignment );
+
+      SxCR::PINC::set( stream, config->PeriphInc );
+      SxCR::PBURST::set( stream, config->PeriphBurst );
+      SxCR::PSIZE::set( stream, config->PeriphDataAlignment );
+
+      controlBlock.transferState = Runtime::Flag::TRANSFER_READY;
+      exitCriticalSection();
+    }
+
+    return result;
+  }
+
+  Chimera::Status_t Stream::start()
+  {
+    using namespace Chimera::Threading;
+
+    auto result = Chimera::CommonStatusCodes::LOCKED;
+
+    if ( LockGuard( *this ).lock() )
+    {
+      /*------------------------------------------------
+      Set up the interrupt bits
+      ------------------------------------------------*/
+      enterCriticalSection();
+      enableTransferIRQ();
+
+      /*------------------------------------------------
+      Initialize the transfer control block
+      ------------------------------------------------*/
+      controlBlock.transferState = Runtime::Flag::TRANSFER_IN_PROGRESS;
+
+      /*------------------------------------------------
+      Enable stream, which starts the transfer if already configured
+      ------------------------------------------------*/
+      exitCriticalSection();
+      SxCR::EN::set( stream, SxCR_EN );
+    }
+  }
+
+  Chimera::Status_t Stream::abort()
+  {
+    // Should abruptly disable the hardware and fire an ISR if there is an ongoing transfer.
+    SxCR::EN::set( stream, 0 );
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  Chimera::Status_t Stream::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
+                                              size_t &registrationID )
+  {
+    registrationID = ++listenerIDCount;
+    listener.id    = registrationID;
+
+    eventListeners.push_back( listener );
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  Chimera::Status_t Stream::removeListener( const size_t registrationID, const size_t timeout )
+  {
+    for ( auto iterator = eventListeners.begin(); iterator != eventListeners.end(); iterator++ )
+    {
+      if ( iterator->id == registrationID )
+      {
+        eventListeners.erase( iterator );
+        return Chimera::CommonStatusCodes::OK;
+        break;
       }
     }
 
-    void Stream::enableTransferIRQ()
+    return Chimera::CommonStatusCodes::NOT_FOUND;
+  }
+
+  Chimera::Status_t Stream::postISRProcessing()
+  {
+    using namespace Chimera::Threading;
+
+    auto result = Chimera::CommonStatusCodes::OK;
+    auto event  = Chimera::Event::Trigger::INVALID;
+
+    TCB cb;
+    cb.clear();
+
+    /*------------------------------------------------
+    Make sure we gain exclusive access to the control block
+    ------------------------------------------------*/
+    if ( LockGuard( *this ).lock() )
     {
-      using namespace Thor::Driver::Interrupt;
-
-      setPriority( streamIRQn, Thor::Interrupt::DMA_STREAM_PREEMPT_PRIORITY, 0 );
-
-      SxCR::TCIE::set( stream, SxCR_TCIE );
-      SxCR::TEIE::set( stream, SxCR_TEIE );
-      SxCR::DMEIE::set( stream, SxCR_DMEIE );
-      SxFCR::FEIE::set( stream, SxFCR_FEIE );
+      enterCriticalSection();
+      cb = controlBlock;
+      exitCriticalSection();
+    }
+    else
+    {
+      return Chimera::CommonStatusCodes::LOCKED;
     }
 
-    void Stream::disableTransferIRQ()
+    /*------------------------------------------------
+    Transfer Complete
+    ------------------------------------------------*/
+    if ( cb.transferState & Runtime::Flag::TRANSFER_COMPLETE ) 
     {
-      SxCR::TCIE::set( stream, 0 );
-      SxCR::TEIE::set( stream, 0 );
-      SxCR::DMEIE::set( stream, 0 );
-      SxFCR::FEIE::set( stream, 0 );
+      processListeners( Chimera::Event::Trigger::TRANSFER_COMPLETE );
     }
 
-    void Stream::enterCriticalSection()
+    /*------------------------------------------------
+    Transfer Errors
+    ------------------------------------------------*/
+    if ( cb.transferState & ( Runtime::Flag::TRANSFER_ERROR | Runtime::Flag::DIRECT_MODE_ERROR | Runtime::Flag::FIFO_ERROR ) )
     {
-      Thor::Driver::Interrupt::disableIRQ( streamIRQn );
+      processListeners( Chimera::Event::Trigger::SYSTEM_ERROR );
     }
 
-    void Stream::exitCriticalSection()
-    {
-      Thor::Driver::Interrupt::enableIRQ( streamIRQn );
-    }
-  }    // namespace Internal
+    return result;
+  }
 
+  void Stream::IRQHandler( const uint8_t channel )
+  {
+    /* Indicates the split between the LISR and HISR registers */
+    static constexpr uint32_t LOW_HIGH_REGISTER_STREAM_BOUNDARY = 3u;
+
+    /*------------------------------------------------
+    Read the status registers and parse the flags for this stream
+    ------------------------------------------------*/
+    uint32_t statusRegister = 0;
+
+    if ( streamRegisterIndex <= LOW_HIGH_REGISTER_STREAM_BOUNDARY )
+    {
+      statusRegister = LISR::get( parent );
+    }
+    else
+    {
+      statusRegister = HISR::get( parent );
+    }
+
+    bool TCIF  = statusRegister & DMAStream_TCIF[ streamResourceIndex ];
+    bool HTIF  = statusRegister & DMAStream_HTIF[ streamResourceIndex ];
+    bool TEIF  = statusRegister & DMAStream_TEIF[ streamResourceIndex ];
+    bool DMEIF = statusRegister & DMAStream_DMEIF[ streamResourceIndex ];
+    bool FEIF  = statusRegister & DMAStream_FEIF[ streamResourceIndex ];
+
+    /*------------------------------------------------
+    Read the control registers for config information
+    ------------------------------------------------*/
+    const bool TCEIE = SxCR::TCIE::get( stream );
+    const bool HTIE  = SxCR::HTIE::get( stream );
+    const bool TEIE  = SxCR::TEIE::get( stream );
+    const bool DMEIE = SxCR::DMEIE::get( stream );
+    const bool FEIE  = SxFCR::FEIE::get( stream );
+
+    /*------------------------------------------------
+    Initialize the control block
+    ------------------------------------------------*/
+    controlBlock.fifoError       = false;
+    controlBlock.transferError   = false;
+    controlBlock.directModeError = false;
+
+    /*------------------------------------------------
+    Transfer Complete
+    ------------------------------------------------*/
+    bool semaphoreGiven = false;
+
+    if ( TCIF && TCEIE )
+    {
+      /*------------------------------------------------
+      Update the control block with the event information. This
+      is how the thread that gets woken up will know what occurred.
+      ------------------------------------------------*/
+      controlBlock.selectedChannel = channel;
+      controlBlock.bytesTransfered = controlBlock.transferSize - SxNDTR::get( stream );
+      controlBlock.transferState |= Runtime::Flag::TRANSFER_COMPLETE;
+
+      /*------------------------------------------------
+      Exit the ISR with no more interrupts and the class
+      resources unlocked.
+      ------------------------------------------------*/
+      disableTransferIRQ();
+      unlockFromISR();
+
+      /*------------------------------------------------
+      Wake up the stream event listener thread
+      ------------------------------------------------*/
+      if ( !semaphoreGiven && wakeupSignal )
+      {
+        xSemaphoreGiveFromISR( wakeupSignal, nullptr );
+        semaphoreGiven = true;
+      }
+    }
+
+    /*------------------------------------------------
+    Transfer Half-Complete
+    ------------------------------------------------*/
+    if ( HTIF && HTIE ) {}    // Currently not supported
+
+    /*------------------------------------------------
+    Transfer Errors
+    ------------------------------------------------*/
+    if ( ( TEIF && TEIE ) || ( DMEIF && DMEIE ) || ( FEIF && FEIE ) )
+    {
+      /*------------------------------------------------
+      Make sure the ISR can't fire indefinitely in case we didn't
+      get here after a transfer completion.
+      ------------------------------------------------*/
+      disableTransferIRQ();
+
+      /*------------------------------------------------
+      Let whichever thread that handles the result of the
+      transfer know if there were any errors.
+      ------------------------------------------------*/
+      controlBlock.fifoError       = FEIF;
+      controlBlock.transferError   = TEIF;
+      controlBlock.directModeError = DMEIF;
+
+      /*------------------------------------------------
+      Wake up the stream event listener thread
+      ------------------------------------------------*/
+      if ( !semaphoreGiven && wakeupSignal )
+      {
+        xSemaphoreGiveFromISR( wakeupSignal, nullptr );
+      }
+    }
+  }
+
+  void Stream::enableTransferIRQ()
+  {
+    /*------------------------------------------------
+    Make sure the interrupt priority has been set to correctly
+    ------------------------------------------------*/
+    Thor::Driver::Interrupt::setPriority( streamIRQn, Thor::Interrupt::DMA_STREAM_PREEMPT_PRIORITY, 0 );
+
+    /*------------------------------------------------
+    - Transfer complete
+    - Transfer error
+    - Direct mode error
+    - FIFO error
+    ------------------------------------------------*/
+    SxCR::TCIE::set( stream, SxCR_TCIE );
+    SxCR::TEIE::set( stream, SxCR_TEIE );
+    SxCR::DMEIE::set( stream, SxCR_DMEIE );
+    SxFCR::FEIE::set( stream, SxFCR_FEIE );
+  }
+
+  void Stream::disableTransferIRQ()
+  {
+    /*------------------------------------------------
+    - Transfer complete
+    - Transfer error
+    - Direct mode error
+    - FIFO error
+    ------------------------------------------------*/
+    SxCR::TCIE::set( stream, 0 );
+    SxCR::TEIE::set( stream, 0 );
+    SxCR::DMEIE::set( stream, 0 );
+    SxFCR::FEIE::set( stream, 0 );
+  }
+
+  void Stream::enterCriticalSection()
+  {
+    Thor::Driver::Interrupt::disableIRQ( streamIRQn );
+  }
+
+  void Stream::exitCriticalSection()
+  {
+    Thor::Driver::Interrupt::enableIRQ( streamIRQn );
+  }
+
+  void Stream::processListeners( const Chimera::Event::Trigger event )
+  {
+    for ( auto &listener : eventListeners )
+    {
+      if ( listener.trigger != event )
+      {
+        continue;
+      }
+
+      Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
+      Thor::Event::notifyThread( event, listener );
+      Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
+    }
+  }
 
   /*------------------------------------------------
   Driver Implementation
@@ -415,21 +631,35 @@ namespace Thor::Driver::DMA
     clockEnable();
 
     /*------------------------------------------------
-    Initialize all the stream objects for this DMA peripheral
+    Initialize all the stream objects for the DMA
+    peripherals if one hasn't been created yet.
     ------------------------------------------------*/
-    auto tmp = &dma1Streams;
-    if ( periph == DMA2_PERIPH )
-    {
-      tmp = &dma2Streams;
-    }
+    static_assert( DMA1_RESOURCE_INDEX_START == 0, "DMA1 resource index invalid" );
 
-    for ( uint8_t x = 0; x < ( *tmp ).size(); x++ )
+    if ( periph == DMA1_PERIPH )
     {
-      if ( !( *tmp )[ x ] )
+      for ( uint8_t x = DMA1_RESOURCE_INDEX_START; x < DMA1_RESOURCE_INDEX_END; x++ )
       {
-        auto streamInstance = getStream( periph, x );
-        ( *tmp )[ x ]       = new Internal::Stream();
-        ( *tmp )[ x ]->attach( streamInstance, periph );
+        if ( !streamObjects[ x ] )
+        {
+          /* x is already zero indexed, no need to convert it to get the proper stream */
+          auto streamInstance = getStreamRegisters( periph, x );
+          streamObjects[ x ]  = new Stream();
+          streamObjects[ x ]->attach( streamInstance, periph );
+        }
+      }
+    }
+    else if ( periph == DMA2_PERIPH )
+    {
+      for ( uint8_t x = DMA2_RESOURCE_INDEX_START; x < DMA2_RESOURCE_INDEX_END; x++ )
+      {
+        if ( !streamObjects[ x ] )
+        {
+          /* Need to convert back to zero index to get the stream properly */
+          auto streamInstance = getStreamRegisters( periph, ( x - DMA2_RESOURCE_INDEX_START ) );
+          streamObjects[ x ]  = new Stream();
+          streamObjects[ x ]->attach( streamInstance, periph );
+        }
       }
     }
 
@@ -438,59 +668,71 @@ namespace Thor::Driver::DMA
 
   Chimera::Status_t Driver::configure( StreamX *const stream, StreamConfig *const config, TCB *const controlBlock )
   {
-    // TODO: Optimize this
-
     auto streamIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
-    auto streamArray = dma1Streams;
-    if ( periph == DMA2_PERIPH )
-    {
-      streamArray = dma2Streams;
-    }
 
-    if ( streamArray[ streamIndex ] )
+    if ( streamObjects[ streamIndex ] )
     {
-      return streamArray[ streamIndex ]->configure( config, controlBlock );
+      return streamObjects[ streamIndex ]->configure( config, controlBlock );
     }
-
-    return Chimera::CommonStatusCodes::FAIL;
+    else
+    {
+      return Chimera::CommonStatusCodes::FAIL;
+    }
   }
 
   Chimera::Status_t Driver::start( StreamX *const stream )
   {
-    // TODO: Optimize this
-
     auto streamIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
-    auto streamArray = dma1Streams;
-    if ( periph == DMA2_PERIPH )
-    {
-      streamArray = dma2Streams;
-    }
 
-    if ( streamArray[ streamIndex ] )
+    if ( streamObjects[ streamIndex ] )
     {
-      return streamArray[ streamIndex ]->start();
+      return streamObjects[ streamIndex ]->start();
     }
-
-    return Chimera::CommonStatusCodes::FAIL;
+    else
+    {
+      return Chimera::CommonStatusCodes::FAIL;
+    }
   }
 
   Chimera::Status_t Driver::abort( StreamX *const stream )
   {
-    // TODO: Optimize this
-
     auto streamIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
-    auto streamArray = dma1Streams;
-    if ( periph == DMA2_PERIPH )
+
+    if ( streamObjects[ streamIndex ] )
     {
-      streamArray = dma2Streams;
+      return streamObjects[ streamIndex ]->abort();
+    }
+    else
+    {
+      return Chimera::CommonStatusCodes::FAIL;
+    }
+  }
+
+  Chimera::Status_t Driver::registerListener( StreamX *const stream, Chimera::Event::Actionable &listener, const size_t timeout,
+                                              size_t &registrationID )
+  {
+    auto result          = Chimera::CommonStatusCodes::FAIL;
+    size_t resourceIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
+
+    if ( ( resourceIndex < streamObjects.size() ) && streamObjects[ resourceIndex ] )
+    {
+      result = streamObjects[ resourceIndex ]->registerListener( listener, timeout, registrationID );
     }
 
-    if ( streamArray[ streamIndex ] )
+    return result;
+  }
+
+  Chimera::Status_t Driver::removeListener( StreamX *const stream, const size_t registrationID, const size_t timeout )
+  {
+    auto result = Chimera::CommonStatusCodes::FAIL;
+    size_t resourceIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
+
+    if ( ( resourceIndex < streamObjects.size() ) && streamObjects[ resourceIndex ] )
     {
-      return streamArray[ streamIndex ]->abort();
+      result = streamObjects[ resourceIndex ]->removeListener( registrationID, timeout );
     }
 
-    return Chimera::CommonStatusCodes::FAIL;
+    return result;
   }
 
 }    // namespace Thor::Driver::DMA
@@ -499,181 +741,533 @@ namespace Thor::Driver::DMA
 using namespace Thor::DMA;
 using namespace Thor::Driver::DMA;
 
+
 void DMA1_Stream0_IRQHandler( void )
 {
-  constexpr uint8_t stream = 0u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM0 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA1_STREAM0_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA1_STREAM0 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma1Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA1_Stream0_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM0_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA1_Stream1_IRQHandler( void )
 {
-  constexpr uint8_t stream = 1u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM1 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA1_STREAM1_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA1_STREAM1 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma1Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA1_Stream1_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM1_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA1_Stream2_IRQHandler( void )
 {
-  constexpr uint8_t stream = 2u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM2 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA1_STREAM2_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA1_STREAM2 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma1Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA1_Stream2_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM2_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA1_Stream3_IRQHandler( void )
 {
-  constexpr uint8_t stream = 3u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM3 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA1_STREAM3_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA1_STREAM3 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma1Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA1_Stream3_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM3_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA1_Stream4_IRQHandler( void )
 {
-  constexpr uint8_t stream = 4u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM4 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA1_STREAM4_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA1_STREAM4 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma1Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA1_Stream4_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM4_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA1_Stream5_IRQHandler( void )
 {
-  constexpr uint8_t stream = 5u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM5 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA1_STREAM5_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA1_STREAM5 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma1Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA1_Stream5_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM5_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA1_Stream6_IRQHandler( void )
 {
-  constexpr uint8_t stream = 6u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM6 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA1_STREAM6_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA1_STREAM6 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma1Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA1_Stream6_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM6_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA1_Stream7_IRQHandler( void )
 {
-  constexpr uint8_t stream = 7u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA1_STREAM7 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA1_STREAM7_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA1_STREAM7 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma1Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma1Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA1_Stream7_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM7_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA2_Stream0_IRQHandler( void )
 {
-  constexpr uint8_t stream = 0u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM0 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA2_STREAM0_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA2_STREAM0 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma2Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA2_Stream0_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM0_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA2_Stream1_IRQHandler( void )
 {
-  constexpr uint8_t stream = 1u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM1 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA2_STREAM1_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA2_STREAM1 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma2Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA2_Stream1_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM1_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA2_Stream2_IRQHandler( void )
 {
-  constexpr uint8_t stream = 2u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM2 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA2_STREAM2_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA2_STREAM2 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma2Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA2_Stream2_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM2_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA2_Stream3_IRQHandler( void )
 {
-  constexpr uint8_t stream = 3u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM3 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA2_STREAM3_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA2_STREAM3 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma2Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA2_Stream3_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM3_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA2_Stream4_IRQHandler( void )
 {
-  constexpr uint8_t stream = 4u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM4 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA2_STREAM4_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA2_STREAM4 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma2Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA2_Stream4_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM4_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA2_Stream5_IRQHandler( void )
 {
-  constexpr uint8_t stream = 5u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM5 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA2_STREAM5_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA2_STREAM5 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma2Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA2_Stream5_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM5_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA2_Stream6_IRQHandler( void )
 {
-  constexpr uint8_t stream = 6u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM6 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA2_STREAM6_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA2_STREAM6 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma2Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
+  }
+}
+
+static void DMA2_Stream6_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM6_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
   }
 }
 
 void DMA2_Stream7_IRQHandler( void )
 {
-  constexpr uint8_t stream = 7u;
-  const uint8_t channel    = SxCR::CHSEL::get( DMA2_STREAM7 ) >> SxCR_CHSEL_Pos;
+  constexpr auto resourceIndex = DMA2_STREAM7_RESOURCE_INDEX;
+  const uint8_t channel        = SxCR::CHSEL::get( DMA2_STREAM7 ) >> SxCR_CHSEL_Pos;
 
-  if ( dma2Streams[ stream ] )
+  if ( streamObjects[ resourceIndex ] )
   {
-    dma2Streams[ stream ]->IRQHandler( channel );
+    streamObjects[ resourceIndex ]->IRQHandler( channel );
   }
 }
 
+static void DMA2_Stream7_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::Driver::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM7_RESOURCE_INDEX;
+
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+    }
+  }
+}
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_DMA */

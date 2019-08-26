@@ -78,7 +78,7 @@ namespace Thor::Driver::DMA
     DMA2_STREAM0, DMA2_STREAM1, DMA2_STREAM2, DMA2_STREAM3, DMA2_STREAM4, DMA2_STREAM5, DMA2_STREAM6, DMA2_STREAM7
   };
 
-  static inline StreamX *const getStream( RegisterMap *const periph, const uint32_t streamNum )
+  static inline StreamX *const getStreamRegisters( RegisterMap *const periph, const uint32_t streamNum )
   {
     /*------------------------------------------------
     This equation taken directly from register spec in datasheet.
@@ -88,7 +88,7 @@ namespace Thor::Driver::DMA
     return reinterpret_cast<StreamX *const>( address );
   }
 
-  static inline const StreamX *const getStream( const RegisterMap *const periph, const uint32_t streamNum )
+  static inline const StreamX *const getStreamRegisters( const RegisterMap *const periph, const uint32_t streamNum )
   {
     /*------------------------------------------------
     This equation taken directly from register spec in datasheet.

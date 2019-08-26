@@ -17,6 +17,7 @@
 #include <cstdlib>
 
 /* Chimera Includes */
+#include <Chimera/interface/event_intf.hpp>
 #include <Chimera/threading.hpp>
 #include <Chimera/types/common_types.hpp>
 #include <Chimera/types/event_types.hpp>
@@ -88,7 +89,7 @@ namespace Thor::Driver::DMA
     virtual Chimera::Status_t abort( StreamX *const stream ) = 0;
   };
 
-  class StreamModel
+  class StreamModel : public Chimera::Event::Listener
   {
   public:
     virtual ~StreamModel() = default;

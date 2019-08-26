@@ -23,16 +23,7 @@
 
 namespace DMADriver = Thor::Driver::DMA;
 
-/*------------------------------------------------
-Static Functions
-------------------------------------------------*/
-static void USART1ISRPostProcessorThread( void *argument );
-static void USART2ISRPostProcessorThread( void *argument );
-static void USART3ISRPostProcessorThread( void *argument );
-static void USART6ISRPostProcessorThread( void *argument );
-
-
-static std::array<DMADriver::Driver *, DMADriver::NUM_DMA_PERIPHS> dmaPeriphs;
+static std::array<DMADriver::Driver *, DMADriver::NUM_DMA_PERIPHS> dmaObjects;
 
 static std::shared_ptr<Thor::DMA::DMAClass> dmaSingleton = nullptr;
 
@@ -80,21 +71,21 @@ namespace Thor::DMA
     /*------------------------------------------------
     Ensure an instance of DMA peripherals are created and initialized properly.
     ------------------------------------------------*/
-    for ( uint8_t x = 0; x < dmaPeriphs.size(); x++ )
+    for ( uint8_t resourceIndex = 0; resourceIndex < dmaObjects.size(); resourceIndex++ )
     {
       /*------------------------------------------------
       Dynamically allocate peripheral drivers
       ------------------------------------------------*/
-      if ( !dmaPeriphs[ x ] )
+      if ( !dmaObjects[ resourceIndex ] )
       {
-        dmaPeriphs[ x ] = new DMADriver::Driver();
-        dmaPeriphs[ x ]->attach( DMADriver::periphInstanceList[ x ] );
+        dmaObjects[ resourceIndex ] = new DMADriver::Driver();
+        dmaObjects[ resourceIndex ]->attach( DMADriver::periphInstanceList[ resourceIndex ] );
       }
 
       /*------------------------------------------------
       Initialize the drivers
       ------------------------------------------------*/
-      if ( dmaPeriphs[ x ]->init() != Chimera::CommonStatusCodes::OK )
+      if ( dmaObjects[ resourceIndex ]->init() != Chimera::CommonStatusCodes::OK )
       {
         return Chimera::CommonStatusCodes::FAIL;
       }
@@ -162,15 +153,45 @@ namespace Thor::DMA
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t DMAClass::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
+  Chimera::Status_t DMAClass::registerListener( Driver::DMA::StreamX *const stream, Chimera::Event::Actionable &listener, const size_t timeout,
                                                 size_t &registrationID )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    auto result = Chimera::CommonStatusCodes::OK;
+
+    if ( streamIsOnPeripheral( DMADriver::DMA1_PERIPH, stream ) && dmaObjects[ 0 ] )
+    {
+      result = dmaObjects[ 0 ]->registerListener( stream, listener, timeout, registrationID );
+    }
+    else if ( streamIsOnPeripheral( DMADriver::DMA2_PERIPH, stream ) && dmaObjects[ 1 ] )
+    {
+      result = dmaObjects[ 1 ]->registerListener( stream, listener, timeout, registrationID );
+    }
+    else
+    {
+      result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+
+    return result;
   }
 
-  Chimera::Status_t DMAClass::removeListener( const size_t registrationID, const size_t timeout )
+  Chimera::Status_t DMAClass::removeListener( Driver::DMA::StreamX *const stream, const size_t registrationID, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    auto result = Chimera::CommonStatusCodes::OK;
+
+    if ( streamIsOnPeripheral( DMADriver::DMA1_PERIPH, stream ) && dmaObjects[ 0 ] )
+    {
+      result = dmaObjects[ 0 ]->removeListener( stream, registrationID, timeout );
+    }
+    else if ( streamIsOnPeripheral( DMADriver::DMA2_PERIPH, stream ) && dmaObjects[ 1 ] )
+    {
+      result = dmaObjects[ 1 ]->removeListener( stream, registrationID, timeout );
+    }
+    else
+    {
+      result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+
+    return result;
   }
 
   static DMADriver::Driver *const getDriver( const Chimera::DMA::Init &config )
@@ -199,11 +220,11 @@ namespace Thor::DMA
     ------------------------------------------------*/
     if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA1 )
     {
-      driver = dmaPeriphs[ 0 ];
+      driver = dmaObjects[ 0 ];
     }
     else if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA2 )
     {
-      driver = dmaPeriphs[ 1 ];
+      driver = dmaObjects[ 1 ];
     }
 
     return driver;
@@ -237,11 +258,11 @@ namespace Thor::DMA
         ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_STREAM ) >> DMADriver::ConfigBitFields::DMA_STREAM_POS;
     if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA1 )
     {
-      stream = DMADriver::getStream( DMADriver::DMA1_PERIPH, streamNum );
+      stream = DMADriver::getStreamRegisters( DMADriver::DMA1_PERIPH, streamNum );
     }
     else if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA2 )
     {
-      stream = DMADriver::getStream( DMADriver::DMA2_PERIPH, streamNum );
+      stream = DMADriver::getStreamRegisters( DMADriver::DMA2_PERIPH, streamNum );
     }
 
     return stream;
@@ -283,3 +304,4 @@ namespace Thor::DMA
     return tcb;
   }
 }    // namespace Thor::DMA
+

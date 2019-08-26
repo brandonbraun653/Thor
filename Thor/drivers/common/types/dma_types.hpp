@@ -193,13 +193,26 @@ namespace Thor::Driver::DMA
     uint32_t transferSize;      /**< How many bytes to transfer between source and destination */
     uint32_t bytesTransfered;   /**< How many bytes were actually transfered */
     uint32_t transferState;     /**< DMA transfer state machine status */
-
     uint32_t selectedChannel;   /**< When the ISR fires, will contain hardware channel that was used */
     uint32_t requestGenerator;  /**< When the ISR fires, will contain the peripheral that generated the event */
 
     bool fifoError;
     bool directModeError;
     bool transferError;
+
+    void clear()
+    {
+      srcAddress       = 0u;
+      dstAddress       = 0u;
+      transferSize     = 0u;
+      bytesTransfered  = 0u;
+      transferState    = 0u;
+      selectedChannel  = 0u;
+      requestGenerator = 0u;
+      fifoError        = false;
+      directModeError  = false;
+      transferError    = false;
+    }
   };
 }    // namespace Thor::Driver::DMA
 

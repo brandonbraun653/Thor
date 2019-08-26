@@ -46,9 +46,29 @@ namespace Thor::DMA
 
     Chimera::Status_t status( Chimera::DMA::TransferHandle_t handle, const size_t timeout ) final override;
 
-    Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID ) final override;
+    /**
+     *  Registers a listener to a specific DMA stream
+     *
+     *  @param[in]  stream            The stream to register the listener against
+     *  @param[in]  listener          The listener to be registered
+     *  @param[in]  timeout           How long to wait for the registration sink to become available
+     *  @param[out] registrationID    Returned ID that uniquely identifies the registrated listener
+     *
+     *  @return Chimera::Status_t
+     */
+    Chimera::Status_t registerListener( Driver::DMA::StreamX *const stream, Chimera::Event::Actionable &listener,
+                                        const size_t timeout, size_t &registrationID );
 
-    Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
+    /**
+     *  Removes a previously registered listener on a specific DMA stream
+     *
+     *  @param[in]  stream            The stream to remove the listener from
+     *  @param[in]  registrationID    ID returned when the listener was registered
+     *  @param[in]  timeout           How long to wait for the registration sink to become available
+     *
+     *  @return Chimera::Status_t
+     */
+    Chimera::Status_t removeListener( Driver::DMA::StreamX *const stream, const size_t registrationID, const size_t timeout );
 
   private:
     DMAClass();

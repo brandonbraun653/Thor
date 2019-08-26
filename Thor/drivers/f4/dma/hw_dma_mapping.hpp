@@ -40,6 +40,26 @@ namespace Thor::Driver::DMA
    */
   extern const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> StreamToResourceIndex;
 
+  static constexpr uint8_t DMA1_RESOURCE_INDEX_START   = 0u;
+  static constexpr uint8_t DMA1_STREAM0_RESOURCE_INDEX = DMA1_RESOURCE_INDEX_START;
+  static constexpr uint8_t DMA1_STREAM1_RESOURCE_INDEX = 1u;
+  static constexpr uint8_t DMA1_STREAM2_RESOURCE_INDEX = 2u;
+  static constexpr uint8_t DMA1_STREAM3_RESOURCE_INDEX = 3u;
+  static constexpr uint8_t DMA1_STREAM4_RESOURCE_INDEX = 4u;
+  static constexpr uint8_t DMA1_STREAM5_RESOURCE_INDEX = 5u;
+  static constexpr uint8_t DMA1_STREAM6_RESOURCE_INDEX = 6u;
+  static constexpr uint8_t DMA1_STREAM7_RESOURCE_INDEX = 7u;
+  static constexpr uint8_t DMA1_RESOURCE_INDEX_END     = DMA1_STREAM7_RESOURCE_INDEX;
+  static constexpr uint8_t DMA2_RESOURCE_INDEX_START   = DMA1_RESOURCE_INDEX_END + 1u;
+  static constexpr uint8_t DMA2_STREAM0_RESOURCE_INDEX = DMA2_RESOURCE_INDEX_START;
+  static constexpr uint8_t DMA2_STREAM1_RESOURCE_INDEX = 9u;
+  static constexpr uint8_t DMA2_STREAM2_RESOURCE_INDEX = 10u;
+  static constexpr uint8_t DMA2_STREAM3_RESOURCE_INDEX = 11u;
+  static constexpr uint8_t DMA2_STREAM4_RESOURCE_INDEX = 12u;
+  static constexpr uint8_t DMA2_STREAM5_RESOURCE_INDEX = 13u;
+  static constexpr uint8_t DMA2_STREAM6_RESOURCE_INDEX = 14u;
+  static constexpr uint8_t DMA2_STREAM7_RESOURCE_INDEX = 15u;
+  static constexpr uint8_t DMA2_RESOURCE_INDEX_END     = DMA2_STREAM7_RESOURCE_INDEX;
   /**
    *  Maps a DMA peripheral stream into the corresponding register index
    *  which is used to access offsets in the hardware registers

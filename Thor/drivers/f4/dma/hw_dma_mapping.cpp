@@ -28,22 +28,22 @@ namespace Thor::Driver::DMA
   };
 
   const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> StreamToResourceIndex{
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM0 ), 0 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM1 ), 1 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM2 ), 2 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM3 ), 3 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM4 ), 4 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM5 ), 5 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM6 ), 6 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM7 ), 7 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM0 ), 8 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM1 ), 9 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM2 ), 10 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM3 ), 11 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM4 ), 12 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM5 ), 13 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM6 ), 14 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM7 ), 15 }, 
+    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM0 ), DMA1_STREAM0_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM1 ), DMA1_STREAM1_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM2 ), DMA1_STREAM2_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM3 ), DMA1_STREAM3_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM4 ), DMA1_STREAM4_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM5 ), DMA1_STREAM5_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM6 ), DMA1_STREAM6_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM7 ), DMA1_STREAM7_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM0 ), DMA2_STREAM0_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM1 ), DMA2_STREAM1_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM2 ), DMA2_STREAM2_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM3 ), DMA2_STREAM3_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM4 ), DMA2_STREAM4_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM5 ), DMA2_STREAM5_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM6 ), DMA2_STREAM6_RESOURCE_INDEX }, 
+    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM7 ), DMA2_STREAM7_RESOURCE_INDEX }, 
   };
 
   const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> StreamToRegisterIndex{
