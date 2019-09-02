@@ -95,8 +95,10 @@ namespace Thor::USART
     size_t listenerIDCount;
     std::vector<Chimera::Event::Actionable> eventListeners;
 
-    SemaphoreHandle_t awaitEventRXComplete;
-    SemaphoreHandle_t awaitEventTXComplete;
+    SemaphoreHandle_t awaitRXComplete;
+    SemaphoreHandle_t awaitTXComplete;
+    SemaphoreHandle_t rxLock;
+    SemaphoreHandle_t txLock;
 
     Chimera::Buffer::PeripheralBuffer txBuffers;
     Chimera::Buffer::PeripheralBuffer rxBuffers;

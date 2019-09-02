@@ -13,24 +13,6 @@
 #include <Thor/definitions/interrupt_definitions.hpp>
 
 
-/* Additional includes not provided in Thor config */
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#if defined( TARGET_STM32F4 )
-#include <stm32f4/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_exti.h>
-
-#elif defined( TARGET_STM32F7 )
-#include <stm32f7/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_exti.h>
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-
-
 #if defined( USING_FREERTOS )
 
 #ifdef __cplusplus

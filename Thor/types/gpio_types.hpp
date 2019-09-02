@@ -19,8 +19,6 @@
 /* Thor Includes */
 #include <Thor/headers.hpp>
 
-
-
 namespace Thor::GPIO
 {
   class GPIOClass;

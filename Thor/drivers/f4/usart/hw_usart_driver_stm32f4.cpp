@@ -33,8 +33,16 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
 
+static std::array<Thor::Driver::USART::Driver *, Thor::Driver::USART::NUM_USART_PERIPHS> usartObjects = { nullptr, nullptr,
+                                                                                                          nullptr, nullptr };
 
-static std::array<Thor::Driver::USART::Driver *, Thor::Driver::USART::NUM_USART_PERIPHS> usartObjects;
+static std::array<uint32_t, Thor::Driver::USART::NUM_USART_PERIPHS> usartDMATXRequestSignals = {
+  Thor::DMA::Source::S_USART1_TX, Thor::DMA::Source::S_USART2_TX, Thor::DMA::Source::S_USART3_TX, Thor::DMA::Source::S_USART6_TX
+};
+
+static std::array<uint32_t, Thor::Driver::USART::NUM_USART_PERIPHS> usartDMARXRequestSignals = {
+  Thor::DMA::Source::S_USART1_RX, Thor::DMA::Source::S_USART2_RX, Thor::DMA::Source::S_USART3_RX, Thor::DMA::Source::S_USART6_RX
+};
 
 namespace Thor::Driver::USART
 {
@@ -59,6 +67,8 @@ namespace Thor::Driver::USART
     peripheralType = Chimera::Peripheral::Type::PERIPH_USART;
     resourceIndex  = Thor::Driver::USART::InstanceToResourceIndex.find( address )->second;
     periphIRQn     = USART_IRQn[ resourceIndex ];
+    dmaTXSignal    = usartDMATXRequestSignals[ resourceIndex ];
+    dmaRXSignal    = usartDMARXRequestSignals[ resourceIndex ];
 
     usartObjects[ resourceIndex ] = this;
 
@@ -104,6 +114,11 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Follow the initialization sequence as defined in RM0390 pg.801 
     ------------------------------------------------*/
+    /* Clear out all the control registers to ensure a clean slate */
+    CR1::set( periph, CR1::resetValue );
+    CR2::set( periph, CR2::resetValue );
+    CR3::set( periph, CR3::resetValue );
+
     /* Enable the USART by writing the UE bit to 1 */
     CR1::UE::set( periph, CR1_UE );
 
@@ -316,18 +331,25 @@ namespace Thor::Driver::USART
     init.pAlign    = Chimera::DMA::PeripheralAlignment::ALIGN_BYTE;
     init.pInc      = Chimera::DMA::PeripheralIncrement::DISABLED;
     init.priority  = Chimera::DMA::Priority::MEDIUM;
-    init.request   = Thor::DMA::Source::S_USART3_TX;
+    init.request   = dmaTXSignal;
 
     Chimera::DMA::TCB tcb;
-    tcb.dstAddress = reinterpret_cast<uint32_t>(&USART3_PERIPH->DR);
+    tcb.dstAddress = reinterpret_cast<uint32_t>(&periph->DR);
     tcb.srcAddress = reinterpret_cast<uint32_t>(data);
     tcb.transferSize = size;
 
     /*------------------------------------------------
-    Grab a pointer to the DMA singleton and start the transfer
+    Grab a pointer to the DMA singleton
     ------------------------------------------------*/
     auto dma = Thor::DMA::DMAClass::get();
+    if ( !dma )
+    {
+      return Chimera::CommonStatusCodes::FAIL;
+    }
 
+    /*------------------------------------------------
+    Acquire exclusive access to the hardware and start the transfer
+    ------------------------------------------------*/
     if ( dma->lock( timeout ) == Chimera::CommonStatusCodes::OK )
     {
       /*------------------------------------------------
@@ -341,10 +363,25 @@ namespace Thor::Driver::USART
       /*------------------------------------------------
       At this point the DMA is enabled and waiting for the 
       peripheral to send a request. Setting these two bits
-      accomplish this.
+      accomplish this. 
       ------------------------------------------------*/
+      enableIT( Chimera::Hardware::SubPeripheral::TX );
+      enterCriticalSection();
+
       CR3::DMAT::set( periph, CR3_DMAT );
       CR1::TE::set( periph, CR1_TE );
+
+      /*------------------------------------------------
+      Prepare the USART state machine to correctly process the ISR request. Once the DMA 
+      transfer finishes, the TCIF will be set and trigger the USART ISR processing.
+
+      According to the datasheet, the TC flag must be cleared before starting the DMA transfer.
+      ------------------------------------------------*/
+      SR::TC::set( periph, 0 );
+      CR1::TCIE::set( periph, CR1_TCIE );
+      txTCB.state = StateMachine::TX::TX_COMPLETE;
+
+      exitCriticalSection();
 
       dma->unlock();
     }
@@ -356,7 +393,7 @@ namespace Thor::Driver::USART
   {
     auto dma = Thor::DMA::DMAClass::get();
 
-    
+    // don't forget to pull the correct signal
 
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -529,8 +566,6 @@ namespace Thor::Driver::USART
         ------------------------------------------------*/
         CR1::TCIE::set( periph, 0 );
         CR1::TXEIE::set( periph, 0 );
-        CR1::TE::set( periph, 0 );
-        txTCB.state = StateMachine::TX::TX_COMPLETE;
         runtimeFlags |= Runtime::Flag::TX_COMPLETE;
 
         /*------------------------------------------------

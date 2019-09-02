@@ -24,13 +24,16 @@ namespace Thor::DMA
   Taken from tables 28 & 29 on RM0390 datasheet
   ------------------------------------------------*/
   std::array<Thor::Driver::DMA::StreamResources, NUM_REQUEST_GENERATORS> RequestGenerators = {{
-    { Source::NONE,           ConfigBitFields::EMPTY_CONFIG,    {} },
-    { Source::S_USART3_RX,    DMA_ON_DMA1 | DMA_STREAM_1 | DMA_CHANNEL_4 ,     {} },
-    { Source::S_USART3_TX,    DMA_ON_DMA1 | DMA_STREAM_3 | DMA_CHANNEL_4 ,     {} },
-    { Source::S_SPI3_RX,      ConfigBitFields::DMA_ON_DMA1,     {} },
-    { Source::S_SPI3_TX,      ConfigBitFields::DMA_ON_DMA1,     {} },
-    { Source::S_SPI2_RX,      ConfigBitFields::DMA_ON_DMA1,     {} },
-    { Source::S_SPI2_TX,      ConfigBitFields::DMA_ON_DMA1,     {} }
+    { Source::NONE,           ConfigBitFields::EMPTY_CONFIG,                    {} },
+    /* USART */
+    { Source::S_USART1_RX,    DMA_ON_DMA2 | DMA_STREAM_2 | DMA_CHANNEL_4,       {} },
+    { Source::S_USART1_TX,    DMA_ON_DMA2 | DMA_STREAM_7 | DMA_CHANNEL_4,       {} },
+    { Source::S_USART2_RX,    DMA_ON_DMA1 | DMA_STREAM_5 | DMA_CHANNEL_4,       {} },
+    { Source::S_USART2_TX,    DMA_ON_DMA1 | DMA_STREAM_6 | DMA_CHANNEL_4,       {} },
+    { Source::S_USART3_RX,    DMA_ON_DMA1 | DMA_STREAM_1 | DMA_CHANNEL_4,       {} },
+    { Source::S_USART3_TX,    DMA_ON_DMA1 | DMA_STREAM_3 | DMA_CHANNEL_4,       {} },
+    { Source::S_USART6_RX,    DMA_ON_DMA2 | DMA_STREAM_1 | DMA_CHANNEL_5,       {} },
+    { Source::S_USART6_TX,    DMA_ON_DMA2 | DMA_STREAM_6 | DMA_CHANNEL_5,       {} },
   }};
 
 
@@ -56,5 +59,5 @@ namespace Thor::DMA
 //    { Source::NONE,         Source::S_TIM8_UP,      Source::S_TIM8_CH1,     Source::S_TIM8_CH2,   Source::S_TIM8_CH3,     Source::NONE,           Source::NONE,           Source::S_TIM8_CH4  }
 //  }};
   #endif
-  /* clang-format on */
+/* clang-format on */
 }

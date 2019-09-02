@@ -29,7 +29,7 @@ namespace Thor::DMA
    *  in the DMA driver. Currently this is sized only for signals that have 
    *  actually been used in project code. This minimizes memory usage nicely.
    */
-  static constexpr size_t NUM_REQUEST_GENERATORS = 7u;
+  static constexpr size_t NUM_REQUEST_GENERATORS = 9u;
   extern std::array<Thor::Driver::DMA::StreamResources, NUM_REQUEST_GENERATORS> RequestGenerators;
 
 }    // namespace Thor::DMA

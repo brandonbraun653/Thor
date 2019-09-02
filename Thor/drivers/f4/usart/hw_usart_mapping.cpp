@@ -25,44 +25,21 @@ namespace Thor::Driver::USART
   };
 
   const Chimera::Container::LightFlatMap<size_t, RegisterMap *const> ChanneltoInstance{
-    /* Serial 1 */
-    { 1, USART1_PERIPH },
-    /* Serial 2 */
-    { 2, USART2_PERIPH },
-    /* Serial 3 */
-    { 3, USART3_PERIPH },
-    /* Serial 6 */
-    { 6, USART6_PERIPH }
+    { 1, USART1_PERIPH }, { 2, USART2_PERIPH }, { 3, USART3_PERIPH }, { 6, USART6_PERIPH }
   };
 
 
-  const IRQn_Type USART_IRQn[ NUM_USART_PERIPHS ] = {
-    /* USART 1 */
-    USART1_IRQn,
-    /* USART 2 */
-    USART2_IRQn,
-    /* USART 3 */
-    USART3_IRQn,
-    /* USART 6 */
-    USART6_IRQn
-  };
+  const IRQn_Type USART_IRQn[ NUM_USART_PERIPHS ] = { USART1_IRQn, USART2_IRQn, USART3_IRQn, USART6_IRQn };
 
-  const std::array<uint32_t, NUM_USART_PERIPHS> CharWidToRegConfig = {
-    Configuration::WordLength::LEN_8BIT, 
-    Configuration::WordLength::LEN_9BIT
-  };
+  const std::array<uint32_t, NUM_USART_PERIPHS> CharWidToRegConfig = { Configuration::WordLength::LEN_8BIT,
+                                                                       Configuration::WordLength::LEN_9BIT };
 
-  const std::array<uint32_t, NUM_USART_PERIPHS> ParityToRegConfig = {
-    Configuration::Parity::NONE,
-    Configuration::Parity::EVEN,
-    Configuration::Parity::ODD 
-  };
+  const std::array<uint32_t, NUM_USART_PERIPHS> ParityToRegConfig = { Configuration::Parity::NONE, Configuration::Parity::EVEN,
+                                                                      Configuration::Parity::ODD };
 
-  const std::array<uint32_t, NUM_USART_PERIPHS> StopBitsToRegConfig = { 
-    Configuration::Stop::BIT_1, 
-    Configuration::Stop::BIT_1_5, 
-    Configuration::Stop::BIT_2
-  };
+  const std::array<uint32_t, NUM_USART_PERIPHS> StopBitsToRegConfig = { Configuration::Stop::BIT_1,
+                                                                        Configuration::Stop::BIT_1_5,
+                                                                        Configuration::Stop::BIT_2 };
 }    // namespace Thor::Driver::USART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

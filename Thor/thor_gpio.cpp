@@ -10,6 +10,7 @@
 
 /* Thor Includes */
 #include <Thor/gpio.hpp>
+#include <Thor/types/gpio_types.hpp>
 
 /* Mock Includes */
 #if defined( GMOCK_TEST )

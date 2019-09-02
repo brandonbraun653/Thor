@@ -89,8 +89,14 @@ namespace Thor::USART
     writeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::INTERRUPT ) ] = &USARTClass::writeInterrupt;
     writeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::DMA ) ]       = &USARTClass::writeDMA;
 
-    awaitEventRXComplete = xSemaphoreCreateBinary();
-    awaitEventTXComplete = xSemaphoreCreateBinary();
+    /*------------------------------------------------
+    Binary semaphores used as signaling mechanism from the ISR and 
+    post processing handler threads.
+    ------------------------------------------------*/
+    rxLock          = xSemaphoreCreateBinary();
+    txLock          = xSemaphoreCreateBinary();
+    awaitRXComplete = xSemaphoreCreateBinary();
+    awaitTXComplete = xSemaphoreCreateBinary();
   }
 
   USARTClass::~USARTClass()
@@ -142,6 +148,9 @@ namespace Thor::USART
   Chimera::Status_t USARTClass::begin( const Chimera::Hardware::SubPeripheralMode txMode,
                                        const Chimera::Hardware::SubPeripheralMode rxMode )
   {
+    /*------------------------------------------------
+    Initialize to the desired TX/RX modes
+    ------------------------------------------------*/
     setMode( Chimera::Hardware::SubPeripheral::RX, rxMode );
     setMode( Chimera::Hardware::SubPeripheral::TX, txMode );
 
@@ -159,8 +168,13 @@ namespace Thor::USART
                                      &postProcessorHandle[ resourceIndex ] );
     }
 
-    xSemaphoreGive( awaitEventRXComplete );
-    xSemaphoreGive( awaitEventTXComplete );
+    /*------------------------------------------------
+    Unlock all the processes. Leave the TX/RX event driven
+    semaphores in a default locked state to force an event
+    to 'give' to the semaphore first.
+    ------------------------------------------------*/
+    xSemaphoreGive( rxLock );
+    xSemaphoreGive( txLock );
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -219,10 +233,6 @@ namespace Thor::USART
     auto error = Chimera::CommonStatusCodes::OK;
     auto iter  = static_cast<uint8_t>( txMode );
 
-    //    if ( !PeripheralState.gpio_enabled || !PeripheralState.configured )
-    //    {
-    //      error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
-    //    }
     if ( iter >= writeFuncPtrs.size() )
     {
       error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
@@ -240,10 +250,6 @@ namespace Thor::USART
     auto error = Chimera::CommonStatusCodes::OK;
     auto iter  = static_cast<uint8_t>( rxMode );
 
-    //    if ( !PeripheralState.gpio_enabled || !PeripheralState.configured )
-    //    {
-    //      error = Chimera::CommonStatusCodes::NOT_INITIALIZED;
-    //    }
     if ( iter >= readFuncPtrs.size() )
     {
       error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
@@ -293,8 +299,6 @@ namespace Thor::USART
       /*------------------------------------------------
       Process Transmit Buffers
       ------------------------------------------------*/
-      xSemaphoreGive( awaitEventTXComplete );
-
       if ( !cb->empty() )
       {
         size_t bytesToTransmit = 0;
@@ -303,14 +307,17 @@ namespace Thor::USART
       }
 
       /*------------------------------------------------
-      Process Event Listeners
+      Process Event Listeners. Semaphores unlocked in preparation
+      for the listeners to possibly try and write more data.
       ------------------------------------------------*/
+      xSemaphoreGive( txLock );
+      xSemaphoreGive( awaitTXComplete );
+
       processListeners( Chimera::Event::Trigger::WRITE_COMPLETE );
     }
 
     if ( flags & Runtime::Flag::RX_COMPLETE )
     {
-      xSemaphoreGive( awaitEventRXComplete );
       hwDriver->clearFlags( Runtime::Flag::RX_COMPLETE );
       auto tcb = hwDriver->getTCB_RX();
 
@@ -321,8 +328,12 @@ namespace Thor::USART
       // how many bytes were read? Need copy of TCB
 
       /*------------------------------------------------
-      Process Event Listeners
+      Process Event Listeners. Semaphores unlocked in preparation
+      for the listeners to possibly try and read more data.
       ------------------------------------------------*/
+      xSemaphoreGive( rxLock );
+      xSemaphoreGive( awaitRXComplete );
+
       processListeners( Chimera::Event::Trigger::READ_COMPLETE );
     }
   }
@@ -424,18 +435,18 @@ namespace Thor::USART
   {
     using namespace Chimera::Event;
 
-    if ( ( event != Trigger::READ_COMPLETE ) || ( event != Trigger::WRITE_COMPLETE ) )
+    if ( ( event != Trigger::READ_COMPLETE ) && ( event != Trigger::WRITE_COMPLETE ) )
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
 
     if ( ( event == Trigger::WRITE_COMPLETE ) &&
-         ( xSemaphoreTake( awaitEventTXComplete, pdMS_TO_TICKS( timeout ) ) != pdPASS ) )
+         ( xSemaphoreTake( awaitTXComplete, pdMS_TO_TICKS( timeout ) ) != pdPASS ) )
     {
       return Chimera::CommonStatusCodes::TIMEOUT;
     }
     else if ( ( event == Trigger::READ_COMPLETE ) &&
-              ( xSemaphoreTake( awaitEventRXComplete, pdMS_TO_TICKS( timeout ) ) != pdPASS ) )
+              ( xSemaphoreTake( awaitRXComplete, pdMS_TO_TICKS( timeout ) ) != pdPASS ) )
     {
       return Chimera::CommonStatusCodes::TIMEOUT;
     }
@@ -447,7 +458,7 @@ namespace Thor::USART
   {
     auto result = await( event, timeout );
 
-    if ( result == Chimera::CommonStatusCodes::OK )
+    if ( ( result == Chimera::CommonStatusCodes::OK ) && notifier )
     {
       xSemaphoreGive( notifier );
     }
@@ -500,10 +511,10 @@ namespace Thor::USART
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
 
-    if ( xSemaphoreTake( awaitEventRXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+    if ( xSemaphoreTake( rxLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
     {
       error = hwDriver->receive( buffer, length, timeout_mS );
-      xSemaphoreGive( awaitEventRXComplete );
+      xSemaphoreGive( rxLock );
     }
 
     return error;
@@ -519,8 +530,7 @@ namespace Thor::USART
     }
 
 
-    if ( ( length <= rxBuffers.linearSize() ) &&
-         ( xSemaphoreTake( awaitEventRXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS ) )
+    if ( ( length <= rxBuffers.linearSize() ) && ( xSemaphoreTake( rxLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS ) )
     {
       memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
 
@@ -549,8 +559,7 @@ namespace Thor::USART
     }
 
 
-    if ( ( length <= rxBuffers.linearSize() ) &&
-         ( xSemaphoreTake( awaitEventRXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS ) )
+    if ( ( length <= rxBuffers.linearSize() ) && ( xSemaphoreTake( rxLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS ) )
     { 
 
       memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
@@ -573,10 +582,10 @@ namespace Thor::USART
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
 
-    if ( xSemaphoreTake( awaitEventTXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+    if ( xSemaphoreTake( txLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
     {
       error = hwDriver->transmit( buffer, length, timeout_mS );
-      xSemaphoreGive( awaitEventTXComplete );
+      xSemaphoreGive( txLock );
     }
 
     return error;
@@ -595,7 +604,7 @@ namespace Thor::USART
     Hardware is free. Send the data directly. Otherwise
     queue everything up to send later.
     ------------------------------------------------*/
-    if ( xSemaphoreTake( awaitEventTXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+    if ( xSemaphoreTake( txLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
     {
       error = hwDriver->transmitIT( buffer, length, timeout_mS );
     }
@@ -622,7 +631,7 @@ namespace Thor::USART
     Hardware is free. Send the data directly. Otherwise
     queue everything up to send later.
     ------------------------------------------------*/
-    if ( xSemaphoreTake( awaitEventTXComplete, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+    if ( xSemaphoreTake( txLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
     {
       error = hwDriver->transmitDMA( buffer, length, timeout_mS );
     }

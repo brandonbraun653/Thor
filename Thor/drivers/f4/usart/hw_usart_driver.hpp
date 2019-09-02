@@ -108,6 +108,8 @@ namespace Thor::Driver::USART
   private:
     RegisterMap *const periph;                /**< Points to the hardware registers for this instance */
     size_t resourceIndex;                     /**< Derived lookup table index for resource access */
+    uint32_t dmaTXSignal;                     /**< DMA request signal ID for TX operations */
+    uint32_t dmaRXSignal;                     /**< DMA request signal ID for RX operations */
     IRQn_Type periphIRQn;                     /**< Instance interrupt request signal number */
     volatile Runtime::Flag_t runtimeFlags;    /**< Error/process flags set at runtime to indicate state */
     Chimera::Peripheral::Type peripheralType; /**< What kind of peripheral this is */
