@@ -15,6 +15,7 @@
 #define THOR_HW_USART_REGISTER_HPP
 
 /* C++ Includes */
+#include <array>
 #include <cstdint>
 
 /* Driver Includes */

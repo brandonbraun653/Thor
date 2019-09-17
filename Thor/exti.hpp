@@ -2,6 +2,8 @@
 #ifndef THOR_EXTI_HPP
 #define THOR_EXTI_HPP
 
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
+
 /* Boost Includes */
 #include <boost/circular_buffer.hpp>
 #include <boost/container/vector.hpp>
@@ -126,5 +128,7 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
+
+#endif 
 
 #endif /* THOR_EXTI_HPP */

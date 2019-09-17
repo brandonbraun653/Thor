@@ -7,6 +7,7 @@
  *
  *   2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 
 /* C/C++ Includes */
 #include <cstdlib>
@@ -1469,3 +1470,6 @@ void SPI6_IRQHandler()
     spiObjects[ 6 ]->IRQHandler();
   }
 }
+
+
+#endif

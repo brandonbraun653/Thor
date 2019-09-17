@@ -1,3 +1,6 @@
+
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
+
 #include <Thor/exti.hpp>
 
 using namespace Thor::Interrupt;
@@ -81,3 +84,5 @@ void EXTI9_5_IRQHandler()
 void EXTI15_10_IRQHandler()
 {
 }
+
+#endif

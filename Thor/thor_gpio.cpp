@@ -7,6 +7,7 @@
  *
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 
 /* Thor Includes */
 #include <Thor/gpio.hpp>
@@ -407,3 +408,5 @@ namespace Thor::GPIO
 #endif /* !GMOCK_TEST */
   }
 }    // namespace Thor::GPIO
+
+#endif 

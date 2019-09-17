@@ -14,7 +14,7 @@
 #define THOR_HW_USART_MAPPING_HPP
 
 /* C++ Includes */
-#include <unordered_map>
+#include <array>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
