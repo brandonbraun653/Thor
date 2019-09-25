@@ -14,7 +14,7 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WATCHDOG == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
 namespace Thor::Driver::WWDG
 {
   class Driver

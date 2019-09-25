@@ -21,7 +21,21 @@
 
 namespace Thor::Driver::WWDG
 {
+  static const uint8_t counterMax    = 0x7F;
+  static const uint8_t counterMin    = 0x40;
+  static const uint8_t counterMask   = 0x3F;
+  static const uint8_t counterRange  = counterMax - counterMin;
+  static const uint8_t numPrescalers = 4;
 
+  /**
+   *   Calculates the actual watchdog timeout to the precision of 1mS
+   *
+   *   @param[in]  pckl1       The clock frequency of PCLK in Hz
+   *   @param[in]  prescaler   The watchdog prescaler value as given in the register (0, 1, 2, 3)
+   *   @param[in]  counter     The starting value of the countdown timer
+   *   @return Number of milliseconds until a timeout occurs
+   */
+  static uint32_t calculateTimeout_mS( const uint32_t pclk1, const uint8_t prescaler, const uint8_t counter );
 }
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */

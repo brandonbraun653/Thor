@@ -24,6 +24,7 @@
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/dma/hw_dma_prj.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_prj.hpp>
+#include <Thor/drivers/f4/iwdg/hw_iwdg_prj.hpp>
 #include <Thor/drivers/f4/uart/hw_uart_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>

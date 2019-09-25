@@ -227,9 +227,6 @@ namespace Thor::Driver::RCC
   static constexpr uint32_t CFGR_MCO2_0      = ( 0x1U << CFGR_MCO2_Pos );
   static constexpr uint32_t CFGR_MCO2_1      = ( 0x2U << CFGR_MCO2_Pos );
 
-
-
-
   /*------------------------------------------------
   CIR Register
   ------------------------------------------------*/

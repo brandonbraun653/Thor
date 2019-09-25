@@ -11,28 +11,53 @@
 #ifndef THOR_HW_IWDG_DRIVER_HPP
 #define THOR_HW_IWDG_DRIVER_HPP
 
+/* C++ Includes */
+#include <memory>
+
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/model/watchdog_model.hpp>
+#include <Thor/drivers/f4/iwdg/hw_iwdg_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WATCHDOG == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
 namespace Thor::Driver::IWDG
 {
   class Driver : public Thor::Driver::Watchdog::Basic
   {
   public:
-    void kick() final override;
+    /**
+     *  Low level driver constructor
+     *
+     *  @param[in]  periph      Memory mapped structure of the IWDG to be controlled
+     */
+    Driver( RegisterMap *const periph );
+    ~Driver();
+
+    uint32_t calculatePrescaler( const size_t ms ) final override;
+
+    uint32_t calculateReload( const size_t ms, const uint32_t prescaler ) final override;
+
+    Chimera::Status_t setPrescaler( const uint32_t val ) final override;
+
+    Chimera::Status_t setReload( const uint32_t val ) final override;
+
+    void start() final override;
+
+    void reload() final override;
+
+    void enableClock() final override;
 
     size_t maxDelay( const uint32_t prescaler ) final override;
 
     size_t minDelay( const uint32_t prescaler ) final override;
 
-    
-    void unlock();
-
   private:
-
+    RegisterMap *const periph;
+    size_t resourceIndex;
   };
+
+  using Driver_sPtr = std::shared_ptr<Driver>;
+  using Driver_uPtr = std::unique_ptr<Driver>;
 }    // namespace Thor::Driver::IWDG
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */

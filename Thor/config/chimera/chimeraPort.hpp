@@ -38,8 +38,7 @@
 //#define CHIMERA_INHERITED_SPI                 Thor::SPI::SPIClass
 //#define CHIMERA_INHERITED_SYSTEM_FLASH        Thor::Memory::InternalFlash
 //#define CHIMERA_INHERITED_SYSTEM_SRAM         Thor::Memory::InternalSRAM
-//#define CHIMERA_INHERITED_WATCHDOG            Thor::Watchdog::WindowWatchdog
-//
+#define CHIMERA_INHERITED_WATCHDOG            Thor::Watchdog::Independent
 //#define CHIMERA_INHERITED_SYSTEM_IDENTIFIER   Thor::System::Identifier
 
 #endif

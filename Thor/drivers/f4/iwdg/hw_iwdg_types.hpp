@@ -18,7 +18,7 @@
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/iwdg/hw_iwdg_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WATCHDOG == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
 namespace Thor::Driver::IWDG
 {
 
@@ -37,7 +37,6 @@ namespace Thor::Driver::IWDG
   ------------------------------------------------*/
   namespace Configuration
   {
-
   }
 
   /*------------------------------------------------
@@ -45,6 +44,11 @@ namespace Thor::Driver::IWDG
   ------------------------------------------------*/
   namespace KR
   {
+    static constexpr uint32_t RefreshSequence = KR_REFRESH;
+    static constexpr uint32_t StartSequence   = KR_START;
+    static constexpr uint32_t UnlockSequence  = KR_UNLOCK;
+    static constexpr uint32_t LockSequence    = KR_LOCK;
+
     static inline uint32_t get( const RegisterMap *const periph )
     {
       return periph->KR & KR_Msk;
@@ -86,6 +90,18 @@ namespace Thor::Driver::IWDG
   ------------------------------------------------*/
   namespace PR
   {
+    static constexpr uint32_t PRESCALE_4   = PR_PRESCALE_4;
+    static constexpr uint32_t PRESCALE_8   = PR_PRESCALE_8;
+    static constexpr uint32_t PRESCALE_16  = PR_PRESCALE_16;
+    static constexpr uint32_t PRESCALE_32  = PR_PRESCALE_32;
+    static constexpr uint32_t PRESCALE_64  = PR_PRESCALE_64;
+    static constexpr uint32_t PRESCALE_128 = PR_PRESCALE_128;
+    static constexpr uint32_t PRESCALE_256 = PR_PRESCALE_256;
+    static constexpr uint32_t PRESCALE_MIN = PR_MIN_PRESCALE;
+    static constexpr uint32_t PRESCALE_MAX = PR_MAX_PRESCALE;
+
+    static constexpr uint32_t NUM_PRESCALE_OPTIONS = 7u;
+
     static inline uint32_t get( const RegisterMap *const periph )
     {
       return periph->PR & PR_Msk;

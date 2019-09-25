@@ -64,6 +64,7 @@ namespace Thor::GPIO
 
   Chimera::Status_t GPIOClass::init( const Chimera::GPIO::Port port, const uint8_t pin, const size_t timeout )
   {
+    // TODO
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
@@ -102,6 +103,7 @@ namespace Thor::GPIO
 
   Chimera::Status_t GPIOClass::toggle( const size_t timeout )
   {
+    // TODO
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 }
