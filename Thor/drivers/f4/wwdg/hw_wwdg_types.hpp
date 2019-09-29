@@ -18,7 +18,7 @@
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/wwdg/hw_wwdg_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WATCHDOG == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
 namespace Thor::Driver::WWDG
 {
   struct RegisterMap
@@ -89,7 +89,10 @@ namespace Thor::Driver::WWDG
       {
         uint32_t tmp = periph->CR;
         tmp &= ~mask;
-        tmp |= val & mask;
+
+        // Make sure the proper bit is set to prevent an instant reset
+        tmp |= ( val & mask ) | CR_T_ACT_LOW_MANUAL_RESET;
+
         periph->CR = tmp;
       }
 
@@ -104,6 +107,16 @@ namespace Thor::Driver::WWDG
   ------------------------------------------------*/
   namespace CFR
   {
+    static constexpr uint32_t CLK_DIV_1  = CFR_CLK_DIV_1;
+    static constexpr uint32_t CLK_DIV_2  = CFR_CLK_DIV_2;
+    static constexpr uint32_t CLK_DIV_4  = CFR_CLK_DIV_4;
+    static constexpr uint32_t CLK_DIV_8  = CFR_CLK_DIV_8;
+
+    static constexpr uint32_t CLK_DIV_MIN = CLK_DIV_1;
+    static constexpr uint32_t CLK_DIV_MAX = CLK_DIV_8;
+
+    static constexpr uint32_t PCLK_1_DIV = CFR_PCLK_1_DIV;
+
     static inline uint32_t get( const RegisterMap *const periph )
     {
       return periph->CFR & CFR_Msk;

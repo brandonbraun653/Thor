@@ -20,10 +20,7 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/common/mapping/peripheral_mapping.hpp>
-#include <Thor/drivers/f4/flash/hw_flash_driver.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_mapping.hpp>
-#include <Thor/drivers/f4/uart/hw_uart_mapping.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
+
 #include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
 #include <Thor/drivers/f4/power/hw_power_types.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
@@ -32,6 +29,12 @@
 #include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
 #include <Thor/drivers/model/rcc_model.hpp>
+
+#include <Thor/drivers/f4/flash/hw_flash_driver.hpp>
+#include <Thor/drivers/f4/gpio/hw_gpio_mapping.hpp>
+#include <Thor/drivers/f4/uart/hw_uart_mapping.hpp>
+#include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
+#include <Thor/drivers/f4/wwdg/hw_wwdg_mapping.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
 
@@ -308,6 +311,7 @@ namespace Thor::Driver::RCC
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ]  = &GPIOLookup;
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ]  = &UARTLookup;
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USART ) ] = &USARTLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_WWDG ) ]  = &WWDGLookup;
 
       initialized = true;
     }

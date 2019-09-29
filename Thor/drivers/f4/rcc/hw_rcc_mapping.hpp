@@ -24,9 +24,9 @@
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/dma/hw_dma_prj.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_prj.hpp>
-#include <Thor/drivers/f4/iwdg/hw_iwdg_prj.hpp>
 #include <Thor/drivers/f4/uart/hw_uart_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
+#include <Thor/drivers/f4/wwdg/hw_wwdg_prj.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_prj.hpp>
 #include <Thor/drivers/f4/system/sys_memory_map_prj.hpp>
@@ -86,6 +86,20 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig USART_ResetConfig[ usartTableSize ];
     
     extern const Configuration::ClockType_t USART_SourceClock[ usartTableSize ];
+
+    /**
+     *  WWDG Peripheral Config Lookup Tables
+     */
+    static constexpr size_t wwdgTableSize = Thor::Driver::WWDG::NUM_WWDG_PERIPHS;
+
+    extern const PCC WWDGLookup;
+
+    extern const RegisterConfig WWDG_ClockConfig[ wwdgTableSize ];
+    extern const RegisterConfig WWDG_ClockConfigLP[ wwdgTableSize ];
+    extern const RegisterConfig WWDG_ResetConfig[ wwdgTableSize ];
+
+    extern const Configuration::ClockType_t WWDG_SourceClock[ wwdgTableSize ];
+
   }    // namespace LookupTables
 
 }    // namespace Thor::Driver::RCC

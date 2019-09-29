@@ -47,9 +47,11 @@ namespace Thor::Driver::IWDG
 
     void enableClock() final override;
 
-    size_t maxDelay( const uint32_t prescaler ) final override;
+    size_t getMaxTimeout( const uint32_t prescaler ) final override;
 
-    size_t minDelay( const uint32_t prescaler ) final override;
+    size_t getMinTimeout( const uint32_t prescaler ) final override;
+
+    size_t getTimeout() final override;
 
   private:
     RegisterMap *const periph;
@@ -58,6 +60,7 @@ namespace Thor::Driver::IWDG
 
   using Driver_sPtr = std::shared_ptr<Driver>;
   using Driver_uPtr = std::unique_ptr<Driver>;
+
 }    // namespace Thor::Driver::IWDG
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */

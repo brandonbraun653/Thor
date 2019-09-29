@@ -20,9 +20,6 @@
 #include <Chimera/types/common_types.hpp>
 #include <Chimera/types/watchdog_types.hpp>
 
-/* Driver Includes */
-//#include <Thor/drivers/common/types/w>
-
 namespace Thor::Driver::Watchdog
 {
   class Basic
@@ -79,8 +76,7 @@ namespace Thor::Driver::Watchdog
 
     /**
      *  Places the watchdog hardware in a state such that it needs to be 
-     *  periodically refereshed with the kick() function, otherwise causing
-     *  a system reset to occur.
+     *  periodically refereshed, otherwise a system reset will occur.
      *
      *  @return void
      */
@@ -94,23 +90,60 @@ namespace Thor::Driver::Watchdog
     virtual void reload() = 0;
 
     /** 
-     *  Calculates the maximum delay (mS) that can be achieved with the
+     *  Calculates the maximum timeout (mS) that can be achieved with the
      *  given prescaler value.
      *  
      *  @param[in]  prescaler     The watchdog clock prescaler (register value)
      *  @return size_t            Millisecond delay
      */
-    virtual size_t maxDelay( const uint32_t prescaler ) = 0;
+    virtual size_t getMaxTimeout( const uint32_t prescaler ) = 0;
 
     /** 
-     *  Calculates the minimum delay (mS) that can be achieved with the
+     *  Calculates the minimum timeout (mS) that can be achieved with the
      *  given prescaler value.
      *  
      *  @param[in]  prescaler     The watchdog clock prescaler (register value)
      *  @return size_t            Millisecond delay
      */
-    virtual size_t minDelay( const uint32_t prescaler ) = 0;
+    virtual size_t getMinTimeout( const uint32_t prescaler ) = 0;
+
+    /**
+     *  Gets the currently configured timeout (mS)
+     *
+     *  @return size_t
+     */
+    virtual size_t getTimeout() = 0;
   };
+
+
+  class Advanced
+  {
+  public:
+    virtual ~Advanced() = default;
+
+    /**
+     *  Calculates the register value needed to properly configure the window in
+     *  which a watchdog can be kicked.
+     *
+     *  @param[in]  ms            The watchdog's timeout in milliseconds
+     *  @param[in]  percent       Percentage of the timeout (ms) which defines the window
+     *                            that the watchdog can be updated in.
+     *  @param[in]  prescaler     The hardware register prescaler value
+     *  @return uint32_t          Register value
+     */
+    virtual uint32_t calculateWindow( const size_t ms, const uint8_t percent, const uint32_t prescaler ) = 0;
+
+    /**
+     *  Sets the hardware register watchdog window value
+     *
+     *  @see calculateWindow()
+     *
+     *  @param[in]  val           The register value to be set
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t setWindow( const uint32_t val ) = 0;
+  };
+
 }    // namespace Thor::Driver::Watchdog
 
 

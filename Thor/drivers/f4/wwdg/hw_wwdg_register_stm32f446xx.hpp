@@ -20,10 +20,10 @@
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WATCHDOG == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
 namespace Thor::Driver::WWDG
 {
-  static constexpr uint32_t WWDG_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x3000U;
+  static constexpr uint32_t WWDG_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x2C00U;
   static constexpr uint32_t NUM_WWDG_PERIPHS = 1u;
 
   static constexpr std::array<uint32_t, NUM_WWDG_PERIPHS> periphAddressList = { WWDG_BASE_ADDR };
@@ -46,6 +46,11 @@ namespace Thor::Driver::WWDG
   static constexpr uint32_t CR_WDGA_Pos = ( 7U );
   static constexpr uint32_t CR_WDGA_Msk = ( 0x1U << CR_WDGA_Pos );
   static constexpr uint32_t CR_WDGA     = CR_WDGA_Msk;
+
+  static constexpr uint32_t CR_T_MAX = 0x7F;
+  static constexpr uint32_t CR_T_MIN = 0x40;
+  static constexpr uint32_t CR_T_RNG = CR_T_MAX - CR_T_MIN;
+  static constexpr uint32_t CR_T_ACT_LOW_MANUAL_RESET = CR_T_6;
 
   /*-------------------------------------------------
   WWDG Configuration Register
@@ -70,6 +75,12 @@ namespace Thor::Driver::WWDG
   static constexpr uint32_t CFR_EWI_Pos   = ( 9U );
   static constexpr uint32_t CFR_EWI_Msk   = ( 0x1U << CFR_EWI_Pos );
   static constexpr uint32_t CFR_EWI       = CFR_EWI_Msk;
+
+  static constexpr uint32_t CFR_CLK_DIV_1  = 0u;
+  static constexpr uint32_t CFR_CLK_DIV_2  = 1u;
+  static constexpr uint32_t CFR_CLK_DIV_4  = 2u;
+  static constexpr uint32_t CFR_CLK_DIV_8  = 3u;
+  static constexpr uint32_t CFR_PCLK_1_DIV = 4096u;
 
   /*-------------------------------------------------
   WWDG Status Register

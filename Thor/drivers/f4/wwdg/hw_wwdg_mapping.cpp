@@ -13,7 +13,7 @@
 #include <Thor/drivers/f4/wwdg/hw_wwdg_types.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WATCHDOG == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
 namespace Thor::Driver::WWDG
 {
   const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex = {

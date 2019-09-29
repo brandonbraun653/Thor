@@ -190,17 +190,24 @@ namespace Thor::Driver::IWDG
      */
   }
 
-  size_t Driver::maxDelay( const uint32_t prescaler )
+  size_t Driver::getMaxTimeout( const uint32_t prescaler )
   {
     // TODO
     return 0u;
   }
 
-  size_t Driver::minDelay( const uint32_t prescaler )
+  size_t Driver::getMinTimeout( const uint32_t prescaler )
   {
     // TODO
     return 0u;
   }
+
+  size_t Driver::getTimeout()
+  {
+    // TODO
+    return 0u;
+  }
+
 }    // namespace Thor::Driver::IWDG
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */
