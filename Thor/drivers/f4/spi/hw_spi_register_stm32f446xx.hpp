@@ -29,10 +29,15 @@ namespace Thor::Driver::SPI
   static constexpr uint32_t SPI3_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x3C00U;
   static constexpr uint32_t SPI4_BASE_ADDR = Thor::System::MemoryMap::APB2PERIPH_BASE_ADDR + 0x3400U;
 
-  static constexpr uint32_t NUM_PERIPHS = 4;
+  static constexpr uint32_t NUM_SPI_PERIPHS = 4;
 
-  static constexpr std::array<uint32_t, NUM_PERIPHS> periphAddressList = { SPI1_BASE_ADDR, SPI2_BASE_ADDR, SPI3_BASE_ADDR,
-                                                                           SPI4_BASE_ADDR };
+  static constexpr std::array<uint32_t, NUM_SPI_PERIPHS> periphAddressList = { SPI1_BASE_ADDR, SPI2_BASE_ADDR, SPI3_BASE_ADDR,
+                                                                               SPI4_BASE_ADDR };
+
+  static constexpr uint8_t SPI0_RESOURCE_INDEX = 0u;
+  static constexpr uint8_t SPI1_RESOURCE_INDEX = 1u;
+  static constexpr uint8_t SPI2_RESOURCE_INDEX = 2u;
+  static constexpr uint8_t SPI3_RESOURCE_INDEX = 3u;
 
   /*------------------------------------------------
   Control Register 1
@@ -54,6 +59,15 @@ namespace Thor::Driver::SPI
   static constexpr uint32_t CR1_BR_0         = ( 0x1U << CR1_BR_Pos );
   static constexpr uint32_t CR1_BR_1         = ( 0x2U << CR1_BR_Pos );
   static constexpr uint32_t CR1_BR_2         = ( 0x4U << CR1_BR_Pos );
+  static constexpr uint32_t CR1_BR_DIV_2     = ( 0U << CR1_BR_Pos );
+  static constexpr uint32_t CR1_BR_DIV_4     = ( 1U << CR1_BR_Pos );
+  static constexpr uint32_t CR1_BR_DIV_8     = ( 2U << CR1_BR_Pos );
+  static constexpr uint32_t CR1_BR_DIV_16    = ( 3U << CR1_BR_Pos );
+  static constexpr uint32_t CR1_BR_DIV_32    = ( 4U << CR1_BR_Pos );
+  static constexpr uint32_t CR1_BR_DIV_64    = ( 5U << CR1_BR_Pos );
+  static constexpr uint32_t CR1_BR_DIV_128   = ( 6U << CR1_BR_Pos );
+  static constexpr uint32_t CR1_BR_DIV_256   = ( 7U << CR1_BR_Pos );
+
   static constexpr uint32_t CR1_SPE_Pos      = ( 6U );
   static constexpr uint32_t CR1_SPE_Msk      = ( 0x1U << CR1_SPE_Pos );
   static constexpr uint32_t CR1_SPE          = CR1_SPE_Msk;

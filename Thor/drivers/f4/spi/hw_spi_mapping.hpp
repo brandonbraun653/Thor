@@ -14,11 +14,30 @@
 
 /* Thor Includes */
 #include <Thor/headers.hpp>
+#include <Thor/drivers/f4/spi/hw_spi_types.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
 
 namespace Thor::Driver::SPI
 {
+/*------------------------------------------------
+  Peripheral Memory Mapping
+  ------------------------------------------------*/
+  static RegisterMap *const SPI1_PERIPH = reinterpret_cast<RegisterMap *const>( SPI1_BASE_ADDR );
+  static RegisterMap *const SPI2_PERIPH = reinterpret_cast<RegisterMap *const>( SPI2_BASE_ADDR );
+  static RegisterMap *const SPI3_PERIPH = reinterpret_cast<RegisterMap *const>( SPI3_BASE_ADDR );
+  static RegisterMap *const SPI4_PERIPH = reinterpret_cast<RegisterMap *const>( SPI4_BASE_ADDR );
+
+  /*------------------------------------------------
+  Peripheral DMA Signals
+  ------------------------------------------------*/
+  extern DMASignalList RXDMASignals;
+  extern DMASignalList TXDMASignals;
+
+  /*------------------------------------------------
+  Low Level Driver Instances
+  ------------------------------------------------*/
+  extern DriverInstanceList spiObjects;
 }
 
 #endif  /* TARGET_STM32F4 && THOR_DRIVER_SPI */

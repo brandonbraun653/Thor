@@ -11,6 +11,7 @@
  ********************************************************************************/
 
 /* C++ Includes */
+#include <array>
 #include <cstring>
 
 /* Chimera Includes */
@@ -33,8 +34,7 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
 
-static std::array<Thor::Driver::USART::Driver *, Thor::Driver::USART::NUM_USART_PERIPHS> usartObjects = { nullptr, nullptr,
-                                                                                                          nullptr, nullptr };
+static std::array<Thor::Driver::USART::Driver *, Thor::Driver::USART::NUM_USART_PERIPHS> usartObjects{};
 
 static std::array<uint32_t, Thor::Driver::USART::NUM_USART_PERIPHS> usartDMATXRequestSignals = {
   Thor::DMA::Source::S_USART1_TX, Thor::DMA::Source::S_USART2_TX, Thor::DMA::Source::S_USART3_TX, Thor::DMA::Source::S_USART6_TX
@@ -55,6 +55,7 @@ namespace Thor::Driver::USART
       if ( val == address )
       {
         result = true;
+        break;
       }
     }
 

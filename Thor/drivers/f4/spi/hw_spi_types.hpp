@@ -26,23 +26,23 @@
 
 namespace Thor::Driver::SPI
 {
+  class Driver;
+
   struct RegisterMap
   {
-    volatile uint32_t CR1;      /**< Control Register 1,            Address Offset: 0x00 */
-    volatile uint32_t CR2;      /**< Control Register 2,            Address Offset: 0x04 */
-    volatile uint32_t SR;       /**< Status Register,               Address Offset: 0x08 */
-    volatile uint32_t DR;       /**< Data Register,                 Address Offset: 0x0C */
-    volatile uint32_t CRCPR;    /**< CRC Polynomial Register,       Address Offset: 0x10 */
-    volatile uint32_t RXCRCR;   /**< RX CRC Register,               Address Offset: 0x14 */
-    volatile uint32_t TXCRCR;   /**< TX CRC Register,               Address Offset: 0x18 */
-    volatile uint32_t I2SCFGR;  /**< I2S Configuration Register,    Address Offset: 0x1C */
-    volatile uint32_t I2SPR;    /**< I2S Prescale Register,         Address Offset: 0x20 */
+    volatile uint32_t CR1;     /**< Control Register 1,            Address Offset: 0x00 */
+    volatile uint32_t CR2;     /**< Control Register 2,            Address Offset: 0x04 */
+    volatile uint32_t SR;      /**< Status Register,               Address Offset: 0x08 */
+    volatile uint32_t DR;      /**< Data Register,                 Address Offset: 0x0C */
+    volatile uint32_t CRCPR;   /**< CRC Polynomial Register,       Address Offset: 0x10 */
+    volatile uint32_t RXCRCR;  /**< RX CRC Register,               Address Offset: 0x14 */
+    volatile uint32_t TXCRCR;  /**< TX CRC Register,               Address Offset: 0x18 */
+    volatile uint32_t I2SCFGR; /**< I2S Configuration Register,    Address Offset: 0x1C */
+    volatile uint32_t I2SPR;   /**< I2S Prescale Register,         Address Offset: 0x20 */
   };
 
-  static RegisterMap *const SPI1_PERIPH = reinterpret_cast<RegisterMap *const>( SPI1_BASE_ADDR );
-  static RegisterMap *const SPI2_PERIPH = reinterpret_cast<RegisterMap *const>( SPI2_BASE_ADDR );
-  static RegisterMap *const SPI3_PERIPH = reinterpret_cast<RegisterMap *const>( SPI3_BASE_ADDR );
-  static RegisterMap *const SPI4_PERIPH = reinterpret_cast<RegisterMap *const>( SPI4_BASE_ADDR );
+  using DriverInstanceList = std::array<Driver *, NUM_SPI_PERIPHS>;
+  using DMASignalList      = std::array<uint32_t, NUM_SPI_PERIPHS>;
 
 
   /**
@@ -57,8 +57,86 @@ namespace Thor::Driver::SPI
   ------------------------------------------------*/
   namespace Configuration
   {
-    
-  }
+    namespace Direction
+    {
+      static constexpr uint32_t HALF_DUPLEX = CR1_BIDIMODE;
+      static constexpr uint32_t FULL_DUPLEX = 0u;
+    }    // namespace Direction
+
+    namespace HalfDuplexMode
+    {
+      static constexpr uint32_t RX_ONLY = 0u;
+      static constexpr uint32_t TX_ONLY = CR1_BIDIOE;
+    }    // namespace HalfDuplexMode
+
+    namespace CRC
+    {
+      static constexpr uint32_t ENABLED  = CR1_CRCEN;
+      static constexpr uint32_t DISABLED = 0u;
+    }    // namespace CRC
+
+    namespace Width
+    {
+      static constexpr uint32_t WIDTH_8_BIT  = 0u;
+      static constexpr uint32_t WIDTH_16_BIT = CR1_DFF;
+    }    // namespace Width
+
+    namespace ChipSelectManager
+    {
+      static constexpr uint32_t SOFTWARE = CR1_SSM;
+      static constexpr uint32_t HARDWARE = 0u;
+    }    // namespace ChipSelectManager
+
+    namespace DataFormat
+    {
+      static constexpr uint32_t LSB = CR1_LSBFIRST;
+      static constexpr uint32_t MSB = 0u;
+    }    // namespace DataFormat
+
+    namespace ClockFormat
+    {
+      static constexpr uint32_t MODE0 = 0u;
+      static constexpr uint32_t MODE1 = CR1_CPHA;
+      static constexpr uint32_t MODE2 = CR1_CPOL;
+      static constexpr uint32_t MODE3 = CR1_CPOL | CR1_CPHA;
+    }    // namespace ClockFormat
+
+    namespace ClockDivisor
+    {
+      static constexpr uint32_t DIV_2   = CR1_BR_DIV_2;
+      static constexpr uint32_t DIV_4   = CR1_BR_DIV_4;
+      static constexpr uint32_t DIV_8   = CR1_BR_DIV_8;
+      static constexpr uint32_t DIV_16  = CR1_BR_DIV_16;
+      static constexpr uint32_t DIV_32  = CR1_BR_DIV_32;
+      static constexpr uint32_t DIV_64  = CR1_BR_DIV_64;
+      static constexpr uint32_t DIV_128 = CR1_BR_DIV_128;
+      static constexpr uint32_t DIV_256 = CR1_BR_DIV_256;
+    }    // namespace ClockDivisor
+
+    namespace Mode
+    {
+      static constexpr uint32_t MASTER = CR1_MSTR;
+      static constexpr uint32_t SLAVE  = 0u;
+    }    // namespace Mode
+
+    namespace Interrupt
+    {
+      static constexpr uint32_t TX_BUFFER_EMPTY_ENABLE      = CR2_TXEIE;
+      static constexpr uint32_t TX_BUFFER_EMPTY_DISABLE     = 0u;
+      static constexpr uint32_t RX_BUFFER_NOT_EMPTY_ENABLE  = CR2_RXNEIE;
+      static constexpr uint32_t RX_BUFFER_NOT_EMPTY_DISABLE = 0u;
+      static constexpr uint32_t ERROR_ENABLE                = CR2_ERRIE;
+      static constexpr uint32_t ERROR_DISABLE               = 0u;
+    }    // namespace Interrupt
+
+    namespace DMA
+    {
+      static constexpr uint32_t TX_ENABLE  = CR2_TXDMAEN;
+      static constexpr uint32_t TX_DISABLE = 0u;
+      static constexpr uint32_t RX_ENABLE  = CR2_RXDMAEN;
+      static constexpr uint32_t RX_DISABLE = 0u;
+    }    // namespace DMA
+  }      // namespace Configuration
 
   /*------------------------------------------------
   Runtime
@@ -68,23 +146,23 @@ namespace Thor::Driver::SPI
     using Flag_t = uint32_t;
     namespace Flag
     {
-//      /* Let the first 16 bits match the Status Register for consistency */
-//      static constexpr Flag_t RX_PARITY_ERROR   = Configuration::Flags::FLAG_PE;
-//      static constexpr Flag_t RX_FRAMING_ERROR  = Configuration::Flags::FLAG_FE;
-//      static constexpr Flag_t RX_NOISE_ERROR    = Configuration::Flags::FLAG_NF;
-//      static constexpr Flag_t RX_OVERRUN        = Configuration::Flags::FLAG_ORE;
-//      static constexpr Flag_t RX_IDLE_DETECTED  = Configuration::Flags::FLAG_IDLE;
-//      static constexpr Flag_t RX_BYTE_READY     = Configuration::Flags::FLAG_RXNE;
-//      static constexpr Flag_t TX_COMPLETE       = Configuration::Flags::FLAG_TC;
-//      static constexpr Flag_t TX_DR_EMPTY       = Configuration::Flags::FLAG_TXE;
-//      static constexpr Flag_t RX_LINE_IN_BREAK  = Configuration::Flags::FLAG_LBD;
-//      static constexpr Flag_t CTL_CLEAR_TO_SEND = Configuration::Flags::FLAG_CTS;
-//
-//      /* Use the remaining 16 bits for other signals */
-//      static constexpr Flag_t RX_LINE_IDLE_ABORT = ( 1u << 16 );
-//      static constexpr Flag_t RX_COMPLETE        = ( 1u << 17 );
+      //      /* Let the first 16 bits match the Status Register for consistency */
+      //      static constexpr Flag_t RX_PARITY_ERROR   = Configuration::Flags::FLAG_PE;
+      //      static constexpr Flag_t RX_FRAMING_ERROR  = Configuration::Flags::FLAG_FE;
+      //      static constexpr Flag_t RX_NOISE_ERROR    = Configuration::Flags::FLAG_NF;
+      //      static constexpr Flag_t RX_OVERRUN        = Configuration::Flags::FLAG_ORE;
+      //      static constexpr Flag_t RX_IDLE_DETECTED  = Configuration::Flags::FLAG_IDLE;
+      //      static constexpr Flag_t RX_BYTE_READY     = Configuration::Flags::FLAG_RXNE;
+      //      static constexpr Flag_t TX_COMPLETE       = Configuration::Flags::FLAG_TC;
+      //      static constexpr Flag_t TX_DR_EMPTY       = Configuration::Flags::FLAG_TXE;
+      //      static constexpr Flag_t RX_LINE_IN_BREAK  = Configuration::Flags::FLAG_LBD;
+      //      static constexpr Flag_t CTL_CLEAR_TO_SEND = Configuration::Flags::FLAG_CTS;
+      //
+      //      /* Use the remaining 16 bits for other signals */
+      //      static constexpr Flag_t RX_LINE_IDLE_ABORT = ( 1u << 16 );
+      //      static constexpr Flag_t RX_COMPLETE        = ( 1u << 17 );
     }    // namespace Flag
-  }
+  }      // namespace Runtime
 
   /*------------------------------------------------
   State Machine
@@ -404,7 +482,7 @@ namespace Thor::Driver::SPI
     private:
       static constexpr uint32_t mask = CR1_CPHA;
     };
-  }
+  }    // namespace CR1
 
   /*------------------------------------------------
   Control Register 2
@@ -562,7 +640,7 @@ namespace Thor::Driver::SPI
     private:
       static constexpr uint32_t mask = CR2_RXDMAEN;
     };
-  }
+  }    // namespace CR2
 
   /*------------------------------------------------
   Status Register
@@ -691,7 +769,7 @@ namespace Thor::Driver::SPI
     private:
       static constexpr uint32_t mask = SR_RXNE;
     };
-  }
+  }    // namespace SR
 
   /*------------------------------------------------
   Data Register
@@ -699,7 +777,7 @@ namespace Thor::Driver::SPI
   namespace DR
   {
     static constexpr uint32_t resetValue = DR_Rst;
-    
+
     static inline uint32_t get( const RegisterMap *const periph )
     {
       return periph->DR & DR_Msk;
@@ -709,7 +787,7 @@ namespace Thor::Driver::SPI
     {
       periph->DR = val & DR_Msk;
     }
-  }
+  }    // namespace DR
 
   /*------------------------------------------------
   CRC Polynomial Register
@@ -727,7 +805,7 @@ namespace Thor::Driver::SPI
     {
       periph->CRCPR = val & CRCPR_Msk;
     }
-  }
+  }    // namespace CRCPR
 
   /*------------------------------------------------
   RX CRC Register
@@ -745,7 +823,7 @@ namespace Thor::Driver::SPI
     {
       periph->RXCRCR = val & RXCRCR_Msk;
     }
-  }
+  }    // namespace RXCRCR
 
   /*------------------------------------------------
   TX CRC Register
@@ -763,7 +841,7 @@ namespace Thor::Driver::SPI
     {
       periph->TXCRCR = val & TXCRCR_Msk;
     }
-  }
+  }    // namespace TXCRCR
 
   /*------------------------------------------------
   I2S Configuration Register
@@ -961,7 +1039,7 @@ namespace Thor::Driver::SPI
     private:
       static constexpr uint32_t mask = I2SCFGR_CHLEN;
     };
-  }
+  }    // namespace I2SCFGR
 
   /*------------------------------------------------
   I2S Prescale Register
@@ -1039,7 +1117,7 @@ namespace Thor::Driver::SPI
     private:
       static constexpr uint32_t mask = I2SPR_DIV;
     };
-  }
+  }    // namespace I2SPR
 
 }    // namespace Thor::Driver::SPI
 

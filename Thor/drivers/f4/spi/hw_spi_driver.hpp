@@ -25,11 +25,25 @@
 #include <Thor/headers.hpp>
 #include <Thor/drivers/model/spi_model.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
 
-namespace Thor::Driver::USART
+namespace Thor::Driver::SPI
 {
-}
+  /**
+   *  Takes care of initializing any resources from a system perspective. 
+   *  Each supported chip will have a different implementation of this function.
+   *
+   *  @return void
+   */
+  extern void initializeSystemDriver();
+
+
+  class Driver
+  {
+  public:
+  private:
+  };
+}    // namespace Thor::Driver::SPI
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_SPI */
 #endif /* THOR_HW_SPI_DRIVER_HPP */
