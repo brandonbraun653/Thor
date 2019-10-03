@@ -216,24 +216,24 @@ namespace Thor::Driver::SPI
   static constexpr uint32_t I2SCFGR_I2SMOD_Pos  = ( 11U );
   static constexpr uint32_t I2SCFGR_I2SMOD_Msk  = ( 0x1U << I2SCFGR_I2SMOD_Pos );
   static constexpr uint32_t I2SCFGR_I2SMOD      = I2SCFGR_I2SMOD_Msk;
-  static constexpr uint32_t I2SCFGR_ASTRTEN_Pos = ( 12U );
-  static constexpr uint32_t I2SCFGR_ASTRTEN_Msk = ( 0x1U << I2SCFGR_ASTRTEN_Pos );
-  static constexpr uint32_t I2SCFGR_ASTRTEN     = I2SCFGR_ASTRTEN_Msk;
+  static constexpr uint32_t I2SCFGR_ASTREN_Pos  = ( 12U );
+  static constexpr uint32_t I2SCFGR_ASTREN_Msk  = ( 0x1U << I2SCFGR_ASTREN_Pos );
+  static constexpr uint32_t I2SCFGR_ASTREN      = I2SCFGR_ASTREN_Msk;
 
   /*------------------------------------------------
   I2S Prescale Register
   ------------------------------------------------*/
-  static constexpr uint32_t I2SPR_Msk        = 0x03FF;
-  static constexpr uint32_t I2SPR_Rst        = 0x0002;
-  static constexpr uint32_t I2SPR_I2SDIV_Pos = ( 0U );
-  static constexpr uint32_t I2SPR_I2SDIV_Msk = ( 0xFFU << I2SPR_I2SDIV_Pos );
-  static constexpr uint32_t I2SPR_I2SDIV     = I2SPR_I2SDIV_Msk;
-  static constexpr uint32_t I2SPR_ODD_Pos    = ( 8U );
-  static constexpr uint32_t I2SPR_ODD_Msk    = ( 0x1U << I2SPR_ODD_Pos );
-  static constexpr uint32_t I2SPR_ODD        = I2SPR_ODD_Msk;
-  static constexpr uint32_t I2SPR_MCKOE_Pos  = ( 9U );
-  static constexpr uint32_t I2SPR_MCKOE_Msk  = ( 0x1U << I2SPR_MCKOE_Pos );
-  static constexpr uint32_t I2SPR_MCKOE      = I2SPR_MCKOE_Msk;
+  static constexpr uint32_t I2SPR_Msk       = 0x03FF;
+  static constexpr uint32_t I2SPR_Rst       = 0x0002;
+  static constexpr uint32_t I2SPR_DIV_Pos   = ( 0U );
+  static constexpr uint32_t I2SPR_DIV_Msk   = ( 0xFFU << I2SPR_DIV_Pos );
+  static constexpr uint32_t I2SPR_DIV       = I2SPR_DIV_Msk;
+  static constexpr uint32_t I2SPR_ODD_Pos   = ( 8U );
+  static constexpr uint32_t I2SPR_ODD_Msk   = ( 0x1U << I2SPR_ODD_Pos );
+  static constexpr uint32_t I2SPR_ODD       = I2SPR_ODD_Msk;
+  static constexpr uint32_t I2SPR_MCKOE_Pos = ( 9U );
+  static constexpr uint32_t I2SPR_MCKOE_Msk = ( 0x1U << I2SPR_MCKOE_Pos );
+  static constexpr uint32_t I2SPR_MCKOE     = I2SPR_MCKOE_Msk;
 
 }    // namespace Thor::Driver::SPI
 
