@@ -75,10 +75,10 @@ namespace Thor::Driver::RCC
 
     extern const Configuration::ClockType_t SPI_SourceClock[ spiTableSize ];
 
-    /**
-     *  UART Peripheral Config Lookup Tables
-     */
-    #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
+/**
+ *  UART Peripheral Config Lookup Tables
+ */
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
     static constexpr size_t uartTableSize = Thor::Driver::UART::NUM_UART_PERIPHS;
 
     extern const PCC UARTLookup;
@@ -88,12 +88,12 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig UART_ResetConfig[ uartTableSize ];
 
     extern const Configuration::ClockType_t UART_SourceClock[ uartTableSize ];
-    #endif 
+#endif
 
-    /**
-     *  USART Peripheral Config Lookup Tables
-     */
-    #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
+/**
+ *  USART Peripheral Config Lookup Tables
+ */
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
     static constexpr size_t usartTableSize = Thor::Driver::USART::NUM_USART_PERIPHS;
 
     extern const PCC USARTLookup;
@@ -101,13 +101,14 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig USART_ClockConfig[ usartTableSize ];
     extern const RegisterConfig USART_ClockConfigLP[ usartTableSize ];
     extern const RegisterConfig USART_ResetConfig[ usartTableSize ];
-    
+
     extern const Configuration::ClockType_t USART_SourceClock[ usartTableSize ];
-    #endif
+#endif
 
     /**
      *  WWDG Peripheral Config Lookup Tables
      */
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
     static constexpr size_t wwdgTableSize = Thor::Driver::WWDG::NUM_WWDG_PERIPHS;
 
     extern const PCC WWDGLookup;
@@ -117,6 +118,7 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig WWDG_ResetConfig[ wwdgTableSize ];
 
     extern const Configuration::ClockType_t WWDG_SourceClock[ wwdgTableSize ];
+#endif
 
   }    // namespace LookupTables
 

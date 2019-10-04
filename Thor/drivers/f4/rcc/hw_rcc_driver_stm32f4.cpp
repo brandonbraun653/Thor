@@ -318,8 +318,9 @@ namespace Thor::Driver::RCC
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USART ) ] = &USARTLookup;
 #endif
 
-      
+#if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )  
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_WWDG ) ]  = &WWDGLookup;
+#endif
 
       initialized = true;
     }

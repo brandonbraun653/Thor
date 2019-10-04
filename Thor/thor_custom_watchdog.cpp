@@ -23,6 +23,8 @@ namespace Thor::Watchdog
   /*------------------------------------------------
   Window Watchdog Driver
   ------------------------------------------------*/
+#if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )
+
   Window::Window() : currentPrescaler( 0u )
   {
     hwDriver = std::make_unique<Thor::Driver::WWDG::Driver>( Thor::Driver::WWDG::WWDG_PERIPH );
@@ -90,9 +92,13 @@ namespace Thor::Watchdog
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
+#endif  /* THOR_DRIVER_WWDG */
+
   /*------------------------------------------------
   Independent Watchdog Driver 
   ------------------------------------------------*/
+#if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
+
   Independent::Independent() : currentPrescaler( 0u )
   {
     hwDriver = std::make_unique<Thor::Driver::IWDG::Driver>( Thor::Driver::IWDG::IWDG_PERIPH );
@@ -158,5 +164,6 @@ namespace Thor::Watchdog
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
+#endif  /* THOR_DRIVER_IWDG */
 
 }    // namespace Thor::Watchdog

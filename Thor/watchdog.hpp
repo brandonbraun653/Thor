@@ -21,6 +21,8 @@
 
 namespace Thor::Watchdog
 {
+#if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )
+
   /**
    *   A high resolution Watchdog peripheral driven by PCLK1 off the AHB bus. This
    *   watchdog is intended to protect against software faults and has more advanced
@@ -52,6 +54,9 @@ namespace Thor::Watchdog
     uint32_t currentPrescaler;
     Thor::Driver::WWDG::Driver_uPtr hwDriver;
   };
+#endif  /* THOR_DRIVER_WWDG */
+
+#if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
 
   /**
    *   A low resolution Watchdog peripheral driven by the LSI clock, which is
@@ -85,4 +90,6 @@ namespace Thor::Watchdog
     uint32_t currentPrescaler;
     Thor::Driver::IWDG::Driver_uPtr hwDriver;
   };
+#endif  /* THOR_DRIVER_IWDG */
+
 }    // namespace Thor::Watchdog

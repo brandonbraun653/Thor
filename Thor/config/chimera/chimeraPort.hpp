@@ -34,11 +34,20 @@
 #define CHIMERA_INHERITED_DMA                 Thor::DMA::DMAClass
 #define CHIMERA_INHERITED_GPIO                Thor::GPIO::GPIOClass
 //#define CHIMERA_INHERITED_POWER_INFO          Thor::Power::SystemPower
+
+#if defined( TARGET_STM32F4 ) && ( ( THOR_DRIVER_UART == 1 ) || ( THOR_DRIVER_USART == 1 ) )
 #define CHIMERA_INHERITED_SERIAL              Thor::Serial::SerialClass
+#endif
+
 //#define CHIMERA_INHERITED_SPI                 Thor::SPI::SPIClass
 //#define CHIMERA_INHERITED_SYSTEM_FLASH        Thor::Memory::InternalFlash
 //#define CHIMERA_INHERITED_SYSTEM_SRAM         Thor::Memory::InternalSRAM
+
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
 #define CHIMERA_INHERITED_WATCHDOG            Thor::Watchdog::Independent
+#endif 
+
 //#define CHIMERA_INHERITED_SYSTEM_IDENTIFIER   Thor::System::Identifier
 
 #endif
