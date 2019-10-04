@@ -12,6 +12,9 @@
 #ifndef THOR_HW_SPI_MAPPING_HPP
 #define THOR_HW_SPI_MAPPING_HPP
 
+/* Chimera Includes */
+#include <Chimera/container.hpp>
+
 /* Thor Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/spi/hw_spi_types.hpp>
@@ -38,6 +41,11 @@ namespace Thor::Driver::SPI
   Low Level Driver Instances
   ------------------------------------------------*/
   extern DriverInstanceList spiObjects;
+
+  /*------------------------------------------------
+  Maps a SPI peripheral into the corresponding resource index
+  ------------------------------------------------*/
+  extern const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
 }
 
 #endif  /* TARGET_STM32F4 && THOR_DRIVER_SPI */

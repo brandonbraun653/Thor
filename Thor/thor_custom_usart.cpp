@@ -23,6 +23,8 @@
 #include <Thor/drivers/Usart.hpp>
 #include <Thor/defaults/serial_defaults.hpp>
 
+#if defined( THOR_DRIVER_USART ) && ( THOR_DRIVER_USART == 1 )
+
 namespace USARTDriver = Thor::Driver::USART;
 
 /*------------------------------------------------
@@ -735,3 +737,5 @@ static void USART6ISRPostProcessorThread( void *argument )
     }
   }
 }
+
+#endif /* THOR_DRIVER_USART */

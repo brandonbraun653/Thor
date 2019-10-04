@@ -34,10 +34,10 @@ namespace Thor::Driver::SPI
   static constexpr std::array<uint32_t, NUM_SPI_PERIPHS> periphAddressList = { SPI1_BASE_ADDR, SPI2_BASE_ADDR, SPI3_BASE_ADDR,
                                                                                SPI4_BASE_ADDR };
 
-  static constexpr uint8_t SPI0_RESOURCE_INDEX = 0u;
-  static constexpr uint8_t SPI1_RESOURCE_INDEX = 1u;
-  static constexpr uint8_t SPI2_RESOURCE_INDEX = 2u;
-  static constexpr uint8_t SPI3_RESOURCE_INDEX = 3u;
+  static constexpr uint8_t SPI1_RESOURCE_INDEX = 0u;
+  static constexpr uint8_t SPI2_RESOURCE_INDEX = 1u;
+  static constexpr uint8_t SPI3_RESOURCE_INDEX = 2u;
+  static constexpr uint8_t SPI4_RESOURCE_INDEX = 3u;
 
   /*------------------------------------------------
   Control Register 1

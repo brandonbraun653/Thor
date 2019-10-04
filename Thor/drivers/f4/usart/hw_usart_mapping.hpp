@@ -16,6 +16,9 @@
 /* C++ Includes */
 #include <array>
 
+/* Chimera Includes */
+#include <Chimera/container.hpp>
+
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>

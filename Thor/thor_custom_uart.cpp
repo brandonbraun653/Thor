@@ -11,8 +11,9 @@
 
 /* Thor Includes */
 #include <Thor/uart.hpp>
-#include <Thor/drivers/Uart.hpp>
+#include <Thor/drivers/uart.hpp>
 
+#if defined( THOR_DRIVER_UART ) && ( THOR_DRIVER_UART == 1 )
 
 namespace Thor::UART
 {
@@ -118,3 +119,5 @@ namespace Thor::UART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 }    // namespace Thor::UART
+
+#endif  /* THOR_DRIVER_UART */

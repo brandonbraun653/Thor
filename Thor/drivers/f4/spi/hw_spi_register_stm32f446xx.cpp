@@ -26,18 +26,18 @@ namespace Thor::Driver::SPI
     /*------------------------------------------------
     Initialize RX DMA Signals
     ------------------------------------------------*/
-    RXDMASignals[ SPI0_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI1_RX;
-    RXDMASignals[ SPI1_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI2_RX;
-    RXDMASignals[ SPI2_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI3_RX;
-    RXDMASignals[ SPI3_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI4_RX;
+    RXDMASignals[ SPI1_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI1_RX;
+    RXDMASignals[ SPI2_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI2_RX;
+    RXDMASignals[ SPI3_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI3_RX;
+    RXDMASignals[ SPI4_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI4_RX;
 
     /*------------------------------------------------
     Initialize TX DMA Signals
     ------------------------------------------------*/
-    TXDMASignals[ SPI0_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI1_TX;
-    TXDMASignals[ SPI1_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI2_TX;
-    TXDMASignals[ SPI2_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI3_TX;
-    TXDMASignals[ SPI3_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI4_TX;
+    TXDMASignals[ SPI1_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI1_TX;
+    TXDMASignals[ SPI2_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI2_TX;
+    TXDMASignals[ SPI3_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI3_TX;
+    TXDMASignals[ SPI4_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI4_TX;
 
   }
 }

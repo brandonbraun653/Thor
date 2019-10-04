@@ -41,6 +41,9 @@ namespace Thor::Driver::SPI
   class Driver
   {
   public:
+    Driver();
+    ~Driver();
+
   private:
   };
 }    // namespace Thor::Driver::SPI

@@ -24,6 +24,7 @@
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/dma/hw_dma_prj.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_prj.hpp>
+#include <Thor/drivers/f4/spi/hw_spi_prj.hpp>
 #include <Thor/drivers/f4/uart/hw_uart_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
 #include <Thor/drivers/f4/wwdg/hw_wwdg_prj.hpp>
@@ -62,8 +63,22 @@ namespace Thor::Driver::RCC
     extern const Configuration::ClockType_t GPIO_SourceClock[ gpioTableSize ];
 
     /**
+     *  SPI Peripheral Config Lookup Tables
+     */
+    static constexpr size_t spiTableSize = Thor::Driver::SPI::NUM_SPI_PERIPHS;
+
+    extern const PCC SPILookup;
+
+    extern const RegisterConfig SPI_ClockConfig[ spiTableSize ];
+    extern const RegisterConfig SPI_ClockConfigLP[ spiTableSize ];
+    extern const RegisterConfig SPI_ResetConfig[ spiTableSize ];
+
+    extern const Configuration::ClockType_t SPI_SourceClock[ spiTableSize ];
+
+    /**
      *  UART Peripheral Config Lookup Tables
      */
+    #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
     static constexpr size_t uartTableSize = Thor::Driver::UART::NUM_UART_PERIPHS;
 
     extern const PCC UARTLookup;
@@ -73,10 +88,12 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig UART_ResetConfig[ uartTableSize ];
 
     extern const Configuration::ClockType_t UART_SourceClock[ uartTableSize ];
+    #endif 
 
     /**
      *  USART Peripheral Config Lookup Tables
      */
+    #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
     static constexpr size_t usartTableSize = Thor::Driver::USART::NUM_USART_PERIPHS;
 
     extern const PCC USARTLookup;
@@ -86,6 +103,7 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig USART_ResetConfig[ usartTableSize ];
     
     extern const Configuration::ClockType_t USART_SourceClock[ usartTableSize ];
+    #endif
 
     /**
      *  WWDG Peripheral Config Lookup Tables

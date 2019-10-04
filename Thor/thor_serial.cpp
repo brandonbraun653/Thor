@@ -54,13 +54,17 @@ namespace Thor::Serial
       -------------------------------------------------*/
       if ( isUARTChannel[ channel ] )
       {
-        auto uartObject   = std::make_shared<Thor::UART::UARTClass>();
-        serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Thor::UART::UARTClass>( uartObject );
+#if defined( THOR_DRIVER_UART ) && ( THOR_DRIVER_UART == 1 )
+        auto uartObject = std::make_shared<Thor::UART::UARTClass>();
+        serialObject    = std::static_pointer_cast<Chimera::Serial::Interface, Thor::UART::UARTClass>( uartObject );
+#endif
       }
       else
       {
+#if defined( THOR_DRIVER_USART ) && ( THOR_DRIVER_USART == 1 )
         auto usartObject  = std::make_shared<Thor::USART::USARTClass>();
         serialObject = std::static_pointer_cast<Chimera::Serial::Interface, Thor::USART::USARTClass>( usartObject );
+#endif
       }
 
       /*------------------------------------------------

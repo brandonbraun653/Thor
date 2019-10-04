@@ -44,6 +44,15 @@ namespace Thor::Driver::SPI
     return result;
   }
 
+  Driver::Driver()
+  {
+
+  }
+
+  Driver::~Driver()
+  {
+
+  }
 }
 
 #endif  /* TARGET_STM32F4 && THOR_DRIVER_SPI */
