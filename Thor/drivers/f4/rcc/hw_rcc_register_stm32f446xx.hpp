@@ -24,6 +24,8 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
 
+#define STM32_RCC1_PERIPH_AVAILABLE
+
 namespace Thor::Driver::RCC
 {
   static constexpr uint32_t RCC_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x3800U;

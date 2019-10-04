@@ -21,6 +21,8 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_PWR == 1 )
 
+#define STM32_PWR1_PERIPH_AVAILABLE
+
 namespace Thor::Driver::PWR
 {
   static constexpr uint32_t PWR_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x7000U;

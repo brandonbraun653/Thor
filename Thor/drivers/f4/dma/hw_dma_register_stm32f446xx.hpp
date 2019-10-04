@@ -22,6 +22,9 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
 
+#define STM32_DMA1_PERIPH_AVAILABLE
+#define STM32_DMA2_PERIPH_AVAILABLE
+
 namespace Thor::Driver::DMA
 {
   static constexpr uint32_t DMA1_BASE_ADDR         = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x6000U;

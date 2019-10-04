@@ -22,6 +22,11 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
 
+#define STM32_SPI1_PERIPH_AVAILABLE
+#define STM32_SPI2_PERIPH_AVAILABLE 
+#define STM32_SPI3_PERIPH_AVAILABLE
+#define STM32_SPI4_PERIPH_AVAILABLE
+
 namespace Thor::Driver::SPI
 {
   static constexpr uint32_t SPI1_BASE_ADDR = Thor::System::MemoryMap::APB2PERIPH_BASE_ADDR + 0x3000U;

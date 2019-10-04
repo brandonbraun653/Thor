@@ -23,6 +23,9 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
 
+#define STM32_UART4_PERIPH_AVAILABLE
+#define STM32_UART5_PERIPH_AVAILABLE
+
 namespace Thor::Driver::UART
 {
   static constexpr uint32_t UART4_BASE_ADDR  = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x4C00U;

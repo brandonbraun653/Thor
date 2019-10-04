@@ -21,6 +21,9 @@
 #include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
+
+#define STM32_WWDG1_PERIPH_AVAILABLE
+
 namespace Thor::Driver::WWDG
 {
   static constexpr uint32_t WWDG_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x2C00U;

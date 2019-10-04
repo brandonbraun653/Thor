@@ -21,6 +21,9 @@
 #include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
+
+#define STM32_IWDG1_PERIPH_AVAILABLE
+
 namespace Thor::Driver::IWDG
 {
   static constexpr uint32_t IWDG_BASE_ADDR       = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x3000U;

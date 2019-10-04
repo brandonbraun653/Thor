@@ -21,6 +21,8 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_FLASH == 1 )
 
+#define STM32_FLASH1_AVAILABLE
+
 namespace Thor::Driver::Flash
 {
   static constexpr uint32_t FLASH_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x3C00U;
