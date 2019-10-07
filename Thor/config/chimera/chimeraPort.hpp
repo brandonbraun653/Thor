@@ -30,21 +30,20 @@
 
 #define BACKEND_NAMESPACE Thor
 
-//#define CHIMERA_INHERITED_HW_CRC              Thor::HWCRC::HW
+
+#if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
 #define CHIMERA_INHERITED_DMA                 Thor::DMA::DMAClass
+#endif
+
+#if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
 #define CHIMERA_INHERITED_GPIO                Thor::GPIO::GPIOClass
-//#define CHIMERA_INHERITED_POWER_INFO          Thor::Power::SystemPower
+#endif 
 
 #if defined( TARGET_STM32F4 ) && ( ( THOR_DRIVER_UART == 1 ) || ( THOR_DRIVER_USART == 1 ) )
 #define CHIMERA_INHERITED_SERIAL              Thor::Serial::SerialClass
 #endif
 
-//#define CHIMERA_INHERITED_SPI                 Thor::SPI::SPIClass
-//#define CHIMERA_INHERITED_SYSTEM_FLASH        Thor::Memory::InternalFlash
-//#define CHIMERA_INHERITED_SYSTEM_SRAM         Thor::Memory::InternalSRAM
-
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
+#if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
 #define CHIMERA_INHERITED_WATCHDOG            Thor::Watchdog::Independent
 #endif 
 

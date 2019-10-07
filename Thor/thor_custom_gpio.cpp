@@ -17,6 +17,8 @@
 
 namespace Thor::GPIO
 {
+#if ( THOR_DRIVER_GPIO == 1 ) && ( THOR_DRIVER_GPIO == 1 )
+
   GPIOClass::GPIOClass() : driver( nullptr ) 
   {
     memset( &initSettings, 0, sizeof( initSettings ) );
@@ -106,4 +108,6 @@ namespace Thor::GPIO
     // TODO
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
+
+#endif  /* THOR_DRIVER_GPIO */
 }

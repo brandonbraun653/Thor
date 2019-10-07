@@ -307,8 +307,13 @@ namespace Thor::Driver::RCC
       ------------------------------------------------*/
       memset( periphLookupTables.data(), 0, sizeof( periphLookupTables ) );
 
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ]   = &DMALookup;
+#if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ] = &DMALookup;
+#endif
+
+#if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ]  = &GPIOLookup;
+#endif
 
 #if defined( THOR_DRIVER_UART ) && ( THOR_DRIVER_UART == 1 )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ] = &UARTLookup;

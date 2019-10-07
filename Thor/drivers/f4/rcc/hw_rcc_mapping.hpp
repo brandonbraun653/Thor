@@ -52,6 +52,8 @@ namespace Thor::Driver::RCC
     /**
      *  GPIO Peripheral Config Lookup Tables
      */
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+
     static constexpr size_t gpioTableSize = Thor::Driver::GPIO::NUM_GPIO_PERIPHS;
 
     extern const PCC GPIOLookup;
@@ -61,10 +63,13 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
 
     extern const Configuration::ClockType_t GPIO_SourceClock[ gpioTableSize ];
+#endif
 
     /**
      *  SPI Peripheral Config Lookup Tables
      */
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
+
     static constexpr size_t spiTableSize = Thor::Driver::SPI::NUM_SPI_PERIPHS;
 
     extern const PCC SPILookup;
@@ -74,6 +79,7 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig SPI_ResetConfig[ spiTableSize ];
 
     extern const Configuration::ClockType_t SPI_SourceClock[ spiTableSize ];
+#endif 
 
 /**
  *  UART Peripheral Config Lookup Tables

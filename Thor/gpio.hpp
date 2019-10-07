@@ -26,55 +26,8 @@
 
 namespace Thor::GPIO
 {
-#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
-  class GPIOClass : public Chimera::GPIO::Interface
-  {
-  public:
-    GPIOClass();
-    ~GPIOClass();
+#if ( THOR_DRIVER_GPIO == 1 ) && ( THOR_DRIVER_GPIO == 1 )
 
-    Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit ) final override;
-
-    Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin ) final override;
-
-    Chimera::Status_t setMode( const Chimera::GPIO::Drive drive, const bool pullup ) final override;
-
-    Chimera::Status_t setState( const Chimera::GPIO::State state ) final override;
-
-    Chimera::Status_t getState( Chimera::GPIO::State &state ) final override;
-
-    Chimera::Status_t toggle() final override;
-
-    /**
-     *  A more advanced initialization function that allows full configuration of a pin's behavior in one go
-     *
-     *  @param[in]  port    The port to use
-     *  @param[in]  pin     The pin to use
-     *  @param[in]  speed   How "fast" you want the pin to switch. This is effectively drive strength.
-     *  @param[in]  alt     Alternate function parameter as defined in the STM32 HAL to remap the GPIO to a peripheral
-     *  @return void
-     */
-    void initAdvanced( const Thor::GPIO::PinPort port, const Thor::GPIO::PinNum pin, const Thor::GPIO::PinSpeed speed,
-                       const uint32_t alt );
-
-    static GPIO_InitTypeDef getHALInit( const Thor::GPIO::Initializer &config );
-
-  private:
-    bool initialized = false;
-    Thor::GPIO::Initializer pinConfig;
-
-    void GPIO_Init( Thor::GPIO::PinPort port, GPIO_InitTypeDef *initStruct );
-    void GPIO_ClockEnable( Thor::GPIO::PinPort port );
-    void GPIO_ClockDisable( Thor::GPIO::PinPort port );
-  };
-  
-  extern PinNum convertPinNum( const uint8_t num );
-  extern PinPort convertPort( const Chimera::GPIO::Port port );
-  extern PinMode convertDrive( const Chimera::GPIO::Drive drive );
-  extern PinPull convertPull( const Chimera::GPIO::Pull pull );
-  extern Initializer convertPinInit( const Chimera::GPIO::PinInit &pin );
-#endif
-  
   class GPIOClass : public Chimera::GPIO::Interface
   {
   public:
@@ -99,6 +52,8 @@ namespace Thor::GPIO
     Thor::Driver::GPIO::Model *driver;
     Chimera::GPIO::PinInit initSettings;
   };
+
+#endif  /* THOR_DRIVER_GPIO */
 
 }    // namespace Thor::GPIO
 
