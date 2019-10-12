@@ -23,7 +23,7 @@
 
 namespace Thor::DMA
 {
-  class DMAClass : public Chimera::DMA::Interface, public Chimera::Threading::Lockable
+  class DMAClass : public Chimera::DMA::HWInterface, public Chimera::Threading::Lockable
   {
   public:
     ~DMAClass();

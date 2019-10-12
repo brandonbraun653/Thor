@@ -28,7 +28,7 @@ namespace Thor::Watchdog
    *   watchdog is intended to protect against software faults and has more advanced
    *   capabilities than the Independent Watchdog.
    */
-  class Window : public Chimera::Watchdog::Interface
+  class Window : public Chimera::Watchdog::HWInterface
   {
   public:
     Window();
@@ -64,7 +64,7 @@ namespace Thor::Watchdog
    *   to protect against issues deriving from a faulty system clock that would not
    *   trip the window watchdog.
    */
-  class Independent : public Chimera::Watchdog::Interface
+  class Independent : public Chimera::Watchdog::HWInterface
   {
   public:
     Independent();

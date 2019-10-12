@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    RCC.hpp
+ *    rcc.hpp
  *
  *  Description:
  *    Common header for Thor RCC that configures the driver based on which

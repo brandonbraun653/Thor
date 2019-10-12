@@ -20,7 +20,7 @@
 #include <Chimera/interface/gpio_intf.hpp>
 
 /* Thor Includes */
-#include <Thor/drivers/GPIO.hpp>
+#include <Thor/drivers/gpio.hpp>
 #include <Thor/types/gpio_types.hpp>
 
 
@@ -28,7 +28,7 @@ namespace Thor::GPIO
 {
 #if ( THOR_DRIVER_GPIO == 1 ) && ( THOR_DRIVER_GPIO == 1 )
 
-  class GPIOClass : public Chimera::GPIO::Interface
+  class GPIOClass : public Chimera::GPIO::HWInterface
   {
   public:
     GPIOClass();
