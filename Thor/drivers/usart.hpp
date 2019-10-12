@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    Usart.hpp
+ *    usart.hpp
  *  
  *  Description:
  *    Common header for Thor USART that configures the driver based on which

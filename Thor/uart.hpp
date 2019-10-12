@@ -23,19 +23,24 @@
 /* Chimera Includes */
 #include <Chimera/buffer.hpp>
 #include <Chimera/threading.hpp>
+#include <Chimera/interface/event_intf.hpp>
 #include <Chimera/interface/serial_intf.hpp>
+#include <Chimera/interface/threading_intf.hpp>
 #include <Chimera/types/event_types.hpp>
 
 /* Thor Includes */
 #include <Thor/gpio.hpp>
+#include <Thor/drivers/uart.hpp>
 #include <Thor/types/interrupt_types.hpp>
-#include <Thor/drivers/Uart.hpp>
 
 namespace Thor::UART
 {
 #if ( THOR_CUSTOM_DRIVERS == 1 ) && ( THOR_DRIVER_UART == 1 )
 
-  class UARTClass : public Chimera::Serial::Interface, public Chimera::Threading::Lockable
+  class UARTClass : public Chimera::Serial::HWInterface,
+                    public Chimera::Event::ListenerInterface,
+                    public Chimera::Threading::AsyncIOBaseInterface,
+                    public Chimera::Threading::Lockable
   {
   public:
     UARTClass();

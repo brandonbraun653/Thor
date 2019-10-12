@@ -13,7 +13,7 @@
 
 /* Thor Includes */
 #include <Thor/gpio.hpp>
-#include <Thor/drivers/GPIO.hpp>
+#include <Thor/drivers/gpio.hpp>
 
 namespace Thor::GPIO
 {

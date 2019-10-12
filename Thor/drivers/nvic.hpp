@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    NVIC.hpp
+ *    nvic.hpp
  *
  *  Description:
  *    Common header for Thor NVIC that configures the driver based on which

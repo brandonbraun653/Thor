@@ -18,8 +18,13 @@
 #include <Thor/types/serial_types.hpp>
 #include <Thor/definitions/serial_definitions.hpp>
 
+/*------------------------------------------------
+Waiting to work until #Thor_20
+------------------------------------------------*/
+#if 0
 namespace Thor::Serial
 {
+  // TODO: Refactor this away as this requires chip knowledge. This abstraction layer should not know this.
   static const std::array<bool, MAX_VIRTUAL_CHANNELS> isUARTChannel = { {
 #if defined( STM32F767xx ) || defined( STM32F446xx )
       false, /* Not actually a Serial channel */
@@ -175,3 +180,5 @@ namespace Thor::Serial
   }
 
 }    // namespace Thor::Serial
+
+#endif 

@@ -39,7 +39,7 @@
 #define CHIMERA_INHERITED_GPIO                Thor::GPIO::GPIOClass
 #endif 
 
-#if defined( TARGET_STM32F4 ) && ( ( THOR_DRIVER_UART == 1 ) || ( THOR_DRIVER_USART == 1 ) )
+#if defined( THOR_DRIVER_SERIAL ) && ( THOR_DRIVER_SERIAL == 1 )
 #define CHIMERA_INHERITED_SERIAL              Thor::Serial::SerialClass
 #endif
 

@@ -18,8 +18,12 @@
 #include <cstdint>
 #include <memory>
 
+/* Boost Includes */
+#include <boost/circular_buffer_fwd.hpp>
+
 /* Chimera Includes */
 #include <Chimera/threading.hpp>
+#include <Chimera/interface/event_intf.hpp>
 #include <Chimera/interface/serial_intf.hpp>
 #include <Chimera/interface/threading_intf.hpp>
 #include <Chimera/types/callback_types.hpp>
@@ -28,13 +32,20 @@
 #include <Thor/types/uart_types.hpp>
 #include <Thor/types/usart_types.hpp>
 
+/*------------------------------------------------
+Waiting to work until #Thor_20
+------------------------------------------------*/
+#if 0
 namespace Thor::Serial
 {
   class SerialClass;
   using SerialClass_sPtr = std::shared_ptr<SerialClass>;
   using SerialClass_uPtr = std::unique_ptr<SerialClass>;
 
-  class SerialClass : public Chimera::Serial::Interface, public Chimera::Threading::Lockable
+  class SerialClass : public Chimera::Serial::Interface,
+                      public Chimera::Event::ListenerInterface,
+                      public Chimera::Threading::AsyncIOBaseInterface,
+                      public Chimera::Threading::Lockable
   {
   public:
     SerialClass();
@@ -86,4 +97,6 @@ namespace Thor::Serial
     Chimera::Serial::Interface_sPtr serialObject;
   };
 }    // namespace Thor::Serial
+#endif 
+
 #endif /* !SERIAL_H_ */

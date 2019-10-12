@@ -20,7 +20,7 @@
 #include <Chimera/interface/gpio_intf.hpp>
 
 /* Thor Includes */
-#include <Thor/drivers/GPIO.hpp>
+#include <Thor/drivers/gpio.hpp>
 #include <Thor/types/gpio_types.hpp>
 
 
