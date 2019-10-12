@@ -28,7 +28,7 @@ namespace Thor::GPIO
 {
 #if ( THOR_DRIVER_GPIO == 1 ) && ( THOR_DRIVER_GPIO == 1 )
 
-  class GPIOClass : public Chimera::GPIO::Interface
+  class GPIOClass : public Chimera::GPIO::HWInterface
   {
   public:
     GPIOClass();
