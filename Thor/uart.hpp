@@ -22,6 +22,7 @@
 
 /* Chimera Includes */
 #include <Chimera/buffer.hpp>
+#include <Chimera/threading.hpp>
 #include <Chimera/interface/serial_intf.hpp>
 #include <Chimera/types/event_types.hpp>
 
@@ -34,7 +35,7 @@ namespace Thor::UART
 {
 #if ( THOR_CUSTOM_DRIVERS == 1 ) && ( THOR_DRIVER_UART == 1 )
 
-  class UARTClass : public Chimera::Serial::Interface
+  class UARTClass : public Chimera::Serial::Interface, public Chimera::Threading::Lockable
   {
   public:
     UARTClass();

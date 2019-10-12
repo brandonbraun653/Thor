@@ -89,7 +89,7 @@ namespace Thor::Driver::DMA
     virtual Chimera::Status_t abort( StreamX *const stream ) = 0;
   };
 
-  class StreamModel : public Chimera::Event::Listener
+  class StreamModel : public Chimera::Event::ListenerInterface
   {
   public:
     virtual ~StreamModel() = default;

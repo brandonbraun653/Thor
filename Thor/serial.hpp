@@ -34,7 +34,7 @@ namespace Thor::Serial
   using SerialClass_sPtr = std::shared_ptr<SerialClass>;
   using SerialClass_uPtr = std::unique_ptr<SerialClass>;
 
-  class SerialClass : public Chimera::Serial::Interface
+  class SerialClass : public Chimera::Serial::Interface, public Chimera::Threading::Lockable
   {
   public:
     SerialClass();

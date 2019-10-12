@@ -8,6 +8,9 @@
  * 2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+/* Chimera Includes */
+#include <Chimera/serial.hpp>
+
 /* Thor Includes */
 #include <Thor/serial.hpp>
 #include <Thor/uart.hpp>
