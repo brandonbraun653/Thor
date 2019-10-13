@@ -73,7 +73,7 @@ static std::array<Chimera::Function::void_func_void_ptr, USARTDriver::NUM_USART_
 
 namespace Thor::USART
 {
-  USARTClass::USARTClass() : resourceIndex( 0 ), channel( 0 ), listenerIDCount( 0 )
+  USARTClass::USARTClass() : channel( 0 ), resourceIndex( 0 ), listenerIDCount( 0 )
   {
     using namespace Chimera::Hardware;
 
@@ -289,12 +289,12 @@ namespace Thor::USART
     using namespace USARTDriver;
 
     const auto flags = hwDriver->getFlags();
-    auto event       = Chimera::Event::Trigger::INVALID;
+    //auto event       = Chimera::Event::Trigger::INVALID;
 
     if ( flags & Runtime::Flag::TX_COMPLETE )
     {
       hwDriver->clearFlags( Runtime::Flag::TX_COMPLETE );
-      auto tcb = hwDriver->getTCB_TX();
+      //auto tcb = hwDriver->getTCB_TX();
       auto cb  = txBuffers.circularBuffer();
       auto lb  = txBuffers.linearBuffer();
 
@@ -321,7 +321,7 @@ namespace Thor::USART
     if ( flags & Runtime::Flag::RX_COMPLETE )
     {
       hwDriver->clearFlags( Runtime::Flag::RX_COMPLETE );
-      auto tcb = hwDriver->getTCB_RX();
+      //auto tcb = hwDriver->getTCB_RX();
 
       /*------------------------------------------------
       Process Receive Buffers

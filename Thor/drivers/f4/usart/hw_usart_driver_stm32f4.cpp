@@ -504,14 +504,11 @@ namespace Thor::Driver::USART
     reading the SR and then DR.
     ------------------------------------------------*/
     const uint32_t statusRegister = SR::get( periph );
-    const uint32_t dataRegister   = DR::get( periph );
 
     /*------------------------------------------------
     Cache the current state of the control registers
     ------------------------------------------------*/
     const uint32_t CR1 = CR1::get( periph );
-    const uint32_t CR2 = CR2::get( periph );
-    const uint32_t CR3 = CR3::get( periph );
 
     /*------------------------------------------------
     Figure out which interrupt flags have been set

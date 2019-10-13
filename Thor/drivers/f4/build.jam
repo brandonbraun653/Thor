@@ -1,0 +1,218 @@
+# ====================================================
+# Local Rules 
+# ====================================================
+local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
+    {
+    alias $(name) : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
+    explicit $(name) ;
+    }
+
+# ====================================================
+# Local Resources 
+# ====================================================
+# ------------------------------------------
+# Build Target Specific Options 
+# ------------------------------------------
+local f4_dbg_defs = DEBUG ;
+local f4_dbg_cflags = -ggdb -Og ;
+
+local f4_rel_defs = NDEBUG ;
+local f4_rel_cflags = -O3 ;
+
+# ------------------------------------------
+# Generic STM32F4 Family CFlags
+# ------------------------------------------
+# Applies to all F4 targets, but not propagated to dependents.
+local lib_only_cflags = 
+    -fno-common
+    -fmessage-length=0
+    -fno-exceptions
+    -ffunction-sections
+    -fdata-sections
+    -Wall
+    --std=gnu11
+    ;
+
+local lib_only_cxxflags = 
+    -fno-common
+    -fmessage-length=0
+    -fno-exceptions
+    -ffunction-sections
+    -fdata-sections
+    -Wall
+    --std=gnu++17
+    ;
+
+# Assumes all devices are Cortex-M4 processors with HW FPU.
+# Will be propagated to dependents
+local propagated_cflags = 
+    -mfloat-abi=hard
+    -mcpu=cortex-m4
+    -mthumb
+    ;
+
+local propagated_cxxflags = 
+    -mfloat-abi=hard
+    -mcpu=cortex-m4
+    -mthumb
+    ;
+
+# ------------------------------------------
+# Generic STM32F4 Family Linker Flags
+# ------------------------------------------
+# Applies to all F4 targets, but not propagated to dependents.
+local lib_only_link_flags = 
+    -mthumb 
+    -mabi=aapcs 
+    ;
+
+# Assumes all devices are Cortex-M4 processors with HW FPU.
+# Will be propagated to dependents.
+local propagated_link_flags = 
+    -mfloat-abi=hard 
+    -mcpu=cortex-m4
+    -specs=nano.specs 
+    -specs=nosys.specs
+    ;
+  
+# ------------------------------------------
+# Source Files
+# ------------------------------------------
+local cmn_src         = [ glob common/*.cpp ] ;
+local dma_src         = [ glob dma/*.cpp ] ;
+local flash_src       = [ glob flash/*.cpp ] ;
+local gpio_src        = [ glob gpio/*.cpp ] ;
+local interrupt_src   = [ glob interrupt/*.cpp ] ;
+local iwdg_src        = [ glob iwdg/*.cpp ] ;
+local nvic_src        = [ glob nvic/*.cpp ] ;
+local power_src       = [ glob power/*.cpp ] ;
+local rcc_src         = [ glob rcc/*.cpp ] ;
+local spi_src         = [ glob spi/*.cpp ] ;
+local startup_src     = [ glob startup/*.cpp ] ;
+local system_src      = [ glob system/*.cpp ] ;
+local uart_src        = [ glob uart/*.cpp ] ;
+local usart_src       = [ glob usart/*.cpp ] ;
+local wwdg_src        = [ glob wwdg/*.cpp ] ;
+
+local f4_src =  $(cmn_src)
+                $(dma_src)
+                $(flash_src)
+                $(gpio_src)
+                $(interrupt_src)
+                $(iwdg_src)
+                $(nvic_src)
+                $(power_src)
+                $(rcc_src)
+                $(spi_src)
+                $(startup_src)
+                $(system_src)
+                $(uart_src)
+                $(usart_src)
+                $(wwdg_src)
+                ;   
+
+# ====================================================
+# Device Specific Libs: 
+#   Figures out what device we are actually compiling for. By default
+#   propagates MCU specific defines/cflags/linkflags in the usage-requirements 
+#   field. This is how so many chip variants are supported without much effort.
+# ====================================================
+
+# ------------------------------------------
+# STM32F446RE
+# ------------------------------------------
+alias ALIAS_MCU_OPTIONS 
+    : 
+    :   <Thor>enabled-F446
+        <Thor>enabled-RE
+    :
+    # Expect all these to be propagated to all projects
+    :   <define>STM32F446xx                     
+        <define>CHIMERA_LITTLE_ENDIAN                               # We are a little endian device 
+        <define>THOR_CUSTOM_DRIVERS
+        <cflags>$(propagated_cflags)                                   
+        <cxxflags>$(propagated_cxxflags)   
+        <linkflags>$(propagated_link_flags)
+        <cflags>-mfpu=fpv4-sp-d16        
+        <cxxflags>-mfpu=fpv4-sp-d16
+        <linkflags>-mfpu=fpv4-sp-d16
+        <linkflags>-T"linker/STM32F446RE_flash.lds"                 # Linker script    
+    ;
+
+lib LIB_TARGET_STARTUP 
+    :   startup/startup_stm32f446xx.c
+    
+    :   <Thor>enabled-F446
+        <link>static
+        <cflags>$(lib_only_cflags)
+        <define>DEBUG_DEFAULT_INTERRUPT_HANDLERS
+        <use>ALIAS_MCU_OPTIONS 
+    ;
+
+# ------------------------------------------
+# Add more here
+# ------------------------------------------
+
+explicit LIB_TARGET_STARTUP ;
+explicit ALIAS_MCU_OPTIONS ;
+
+# ====================================================
+# STM32F4 Driver Libraries
+# ====================================================
+# ------------------------------------------
+# Debug Variant
+# ------------------------------------------
+lib LIB 
+    :   $(f4_src)
+        LIB_TARGET_STARTUP
+
+    :   <variant>debug
+        <link>static
+        <define>$(f4_dbg_defs)
+        <cxxflags>$(lib_only_cxxflags)
+
+        <use>ALIAS_MCU_OPTIONS
+
+        <use>/CHIMERA//PUB
+        <use>/FREERTOS//PUB
+
+        <use>/PRJ//BOOST
+        <use>/PRJ//CHIMERA_PORT
+        <use>/PRJ//FREERTOS_CFG
+        <use>/PRJ//THOR_PRJ_PUB
+    :
+    :   <use>ALIAS_MCU_OPTIONS
+    ;
+
+# ------------------------------------------
+# Release Variant
+# ------------------------------------------
+lib LIB
+    :   $(f4_src)
+        LIB_TARGET_STARTUP
+
+    :   <variant>release
+        <link>static
+        <define>$(f4_rel_defs)
+        <cxxflags>$(lib_only_cxxflags)
+
+        <use>ALIAS_MCU_OPTIONS
+
+        <use>/CHIMERA//PUB
+        <use>/FREERTOS//PUB
+
+        <use>/PRJ//BOOST
+        <use>/PRJ//CHIMERA_PORT
+        <use>/PRJ//FREERTOS_CFG
+        <use>/PRJ//THOR_PRJ_PUB
+    :
+    :   <use>ALIAS_MCU_OPTIONS
+    ;
+
+explicit LIB ;
+
+# ====================================================
+# Public Components 
+# ====================================================
+explicit_alias PUB ;
+

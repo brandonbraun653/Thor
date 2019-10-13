@@ -44,7 +44,7 @@ namespace Thor::DMA
 
   DMAClass::DMAClass()
   {
-    memset( &lastLookup, 0, sizeof( DMADriver::StreamResources ) );
+    lastLookup.clear();
   }
 
   DMAClass::~DMAClass()
@@ -197,7 +197,6 @@ namespace Thor::DMA
   static DMADriver::Driver *const getDriver( const Chimera::DMA::Init &config )
   {
     DMADriver::Driver *driver = nullptr;
-    uint32_t streamNum        = 0;
 
     /*------------------------------------------------
     Find the request meta info using binary search of sorted list

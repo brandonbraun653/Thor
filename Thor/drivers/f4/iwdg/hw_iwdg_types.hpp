@@ -54,7 +54,7 @@ namespace Thor::Driver::IWDG
       return periph->KR & KR_Msk;
     }
 
-    static inline uint32_t set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const uint32_t val )
     {
       periph->KR = val & KR_Msk;
     }
@@ -107,7 +107,7 @@ namespace Thor::Driver::IWDG
       return periph->PR & PR_Msk;
     }
 
-    static inline uint32_t set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const uint32_t val )
     {
       periph->PR = val & PR_Msk;
     }
@@ -128,7 +128,7 @@ namespace Thor::Driver::IWDG
       return periph->RLR & RLR_Msk;
     }
 
-    static inline uint32_t set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const uint32_t val )
     {
       periph->RLR = val & RLR_Msk;
     }
@@ -149,7 +149,7 @@ namespace Thor::Driver::IWDG
       return periph->SR & SR_Msk;
     }
 
-    static inline uint32_t set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const uint32_t val )
     {
       periph->SR = val & SR_Msk;
     }

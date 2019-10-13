@@ -15,3 +15,4 @@ cppcheck/*
 
 bin/*
 Thor/bin/*
+Thor/drivers/f4/bin/*

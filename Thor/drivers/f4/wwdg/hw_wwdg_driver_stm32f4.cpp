@@ -143,7 +143,6 @@ namespace Thor::Driver::WWDG
     correlates to the actual prescaler numerical divisor.
     ------------------------------------------------*/
     auto pair     = Chimera::Utilities::findInVector( prescalerRegVals, prescaler );
-    int index     = pair.second;
     bool validity = pair.first;
 
     if ( !validity )

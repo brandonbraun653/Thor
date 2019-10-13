@@ -311,6 +311,8 @@ namespace Thor::Driver::DMA
 
     if ( LockGuard( *this ).lock() )
     {
+      result = Chimera::CommonStatusCodes::OK;
+
       /*------------------------------------------------
       Set up the interrupt bits
       ------------------------------------------------*/
@@ -328,6 +330,8 @@ namespace Thor::Driver::DMA
       exitCriticalSection();
       SxCR::EN::set( stream, SxCR_EN );
     }
+
+    return result;
   }
 
   Chimera::Status_t Stream::abort()
@@ -368,7 +372,6 @@ namespace Thor::Driver::DMA
     using namespace Chimera::Threading;
 
     auto result = Chimera::CommonStatusCodes::OK;
-    auto event  = Chimera::Event::Trigger::INVALID;
 
     TCB cb;
     cb.clear();

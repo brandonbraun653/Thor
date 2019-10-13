@@ -182,7 +182,7 @@ namespace Thor::Driver::DMA
 
     void clear()
     {
-      memset( this, 0, sizeof( StreamResources ) );
+      //memset( this, 0, sizeof( StreamResources ) );
     }
   };
 

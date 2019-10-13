@@ -21,7 +21,7 @@ namespace Thor::GPIO
 
   GPIOClass::GPIOClass() : driver( nullptr ) 
   {
-    memset( &initSettings, 0, sizeof( initSettings ) );
+    initSettings.clear();
   }
 
   GPIOClass::~GPIOClass()

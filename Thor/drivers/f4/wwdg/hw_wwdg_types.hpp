@@ -47,7 +47,7 @@ namespace Thor::Driver::WWDG
       return periph->CR & CR_Msk;
     }
 
-    static inline uint32_t set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const uint32_t val )
     {
       periph->CR = val & CR_Msk;
     }
@@ -122,7 +122,7 @@ namespace Thor::Driver::WWDG
       return periph->CFR & CFR_Msk;
     }
 
-    static inline uint32_t set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const uint32_t val )
     {
       periph->CFR = val & CFR_Msk;
     }
@@ -203,7 +203,7 @@ namespace Thor::Driver::WWDG
       return periph->SR & SR_Msk;
     }
 
-    static inline uint32_t set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const uint32_t val )
     {
       periph->SR = val & SR_Msk;
     }
