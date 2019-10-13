@@ -39,7 +39,7 @@ namespace Thor::UART
 
   class UARTClass : public Chimera::Serial::HWInterface,
                     public Chimera::Event::ListenerInterface,
-                    public Chimera::Threading::AsyncIOBaseInterface,
+                    public Chimera::Threading::AsyncIOInterface,
                     public Chimera::Threading::Lockable
   {
   public:
@@ -48,8 +48,8 @@ namespace Thor::UART
 
     Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 
-    Chimera::Status_t begin( const Chimera::Hardware::SubPeripheralMode,
-                             const Chimera::Hardware::SubPeripheralMode rxMode ) final override;
+    Chimera::Status_t begin( const Chimera::Hardware::PeripheralMode,
+                             const Chimera::Hardware::PeripheralMode rxMode ) final override;
 
     Chimera::Status_t end() final override;
 
@@ -58,7 +58,7 @@ namespace Thor::UART
     Chimera::Status_t setBaud( const uint32_t baud ) final override;
 
     Chimera::Status_t setMode( const Chimera::Hardware::SubPeripheral periph,
-                               const Chimera::Hardware::SubPeripheralMode mode ) final override;
+                               const Chimera::Hardware::PeripheralMode mode ) final override;
 
     Chimera::Status_t write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS = 500 ) final override;
 

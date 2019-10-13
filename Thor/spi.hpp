@@ -15,26 +15,78 @@
 /* C/C++ Includes */
 #include <cstdint>
 
-/* Thor Includes */
-#include <Thor/types/spi_types.hpp>
-#include <Thor/types/gpio_types.hpp>
-
 /* Chimera Includes */
+#include <Chimera/interface/event_intf.hpp>
 #include <Chimera/interface/spi_intf.hpp>
+#include <Chimera/interface/threading_intf.hpp>
+#include <Chimera/threading.hpp>
+#include <Chimera/types/event_types.hpp>
 
-#ifdef __cplusplus
-extern "C"
+/* Thor Includes */
+#include <Thor/drivers/common/interrupts/spi_interrupt_vectors.hpp>
+#include <Thor/types/spi_types.hpp>
+
+
+#if defined( THOR_CUSTOM_DRIVERS ) && ( THOR_DRIVER_SPI == 1 )
+namespace Thor::SPI
 {
-#endif
-  extern void SPI1_IRQHandler();
-  extern void SPI2_IRQHandler();
-  extern void SPI3_IRQHandler();
-  extern void SPI4_IRQHandler();
-  extern void SPI5_IRQHandler();
-  extern void SPI6_IRQHandler();
-#ifdef __cplusplus
-}
-#endif
+  class SPIClass : public Chimera::SPI::HWInterface,
+                   public Chimera::Event::ListenerInterface,
+                   public Chimera::Threading::AsyncIOInterface,
+                   public Chimera::Threading::Lockable
+  {
+  public:
+    SPIClass();
+    ~SPIClass();
+
+    /*------------------------------------------------
+    HW Interface
+    ------------------------------------------------*/
+    Chimera::Status_t init( const Chimera::SPI::DriverConfig &setupStruct ) final override;
+
+    Chimera::SPI::DriverConfig getInit() final override;
+
+    Chimera::Status_t deInit() final override;
+
+    Chimera::Status_t setChipSelect( const Chimera::GPIO::State value ) final override;
+
+    Chimera::Status_t setChipSelectControlMode( const Chimera::SPI::CSMode mode ) final override;
+
+    Chimera::Status_t writeBytes( const void *const txBuffer, const size_t length, const size_t timeoutMS ) final override;
+
+    Chimera::Status_t readBytes( void *const rxBuffer, const size_t length, const size_t timeoutMS ) final override;
+
+    Chimera::Status_t readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length,
+                                              const size_t timeoutMS ) final override;
+
+    Chimera::Status_t setPeripheralMode( const Chimera::Hardware::PeripheralMode mode ) final override;
+
+    Chimera::Status_t setClockFrequency( const size_t freq, const size_t tolerance ) final override;
+
+    size_t getClockFrequency() final override;
+
+    /*------------------------------------------------
+    Async IO Interface
+    ------------------------------------------------*/
+    Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout ) final override;
+
+    Chimera::Status_t await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier,
+                             const size_t timeout ) final override;
+
+    /*------------------------------------------------
+    Listener Interface
+    ------------------------------------------------*/
+    Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
+                                        size_t &registrationID ) final override;
+
+    Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
+  };
+
+}    // namespace Thor::SPI
+
+#endif /* THOR_CUSTOM_DRIVERS && THOR_DRIVER_SPI */
+
+
 
 #if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor::SPI

@@ -80,16 +80,16 @@ namespace Thor::USART
     /*------------------------------------------------
     Register the read function pointers
     ------------------------------------------------*/
-    readFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::BLOCKING ) ]  = &USARTClass::readBlocking;
-    readFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::INTERRUPT ) ] = &USARTClass::readInterrupt;
-    readFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::DMA ) ]       = &USARTClass::readDMA;
+    readFuncPtrs[ static_cast<uint8_t>( PeripheralMode::BLOCKING ) ]  = &USARTClass::readBlocking;
+    readFuncPtrs[ static_cast<uint8_t>( PeripheralMode::INTERRUPT ) ] = &USARTClass::readInterrupt;
+    readFuncPtrs[ static_cast<uint8_t>( PeripheralMode::DMA ) ]       = &USARTClass::readDMA;
 
     /*------------------------------------------------
     Register the write function pointers
     ------------------------------------------------*/
-    writeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::BLOCKING ) ]  = &USARTClass::writeBlocking;
-    writeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::INTERRUPT ) ] = &USARTClass::writeInterrupt;
-    writeFuncPtrs[ static_cast<uint8_t>( SubPeripheralMode::DMA ) ]       = &USARTClass::writeDMA;
+    writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::BLOCKING ) ]  = &USARTClass::writeBlocking;
+    writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::INTERRUPT ) ] = &USARTClass::writeInterrupt;
+    writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::DMA ) ]       = &USARTClass::writeDMA;
 
     /*------------------------------------------------
     Binary semaphores used as signaling mechanism from the ISR and 
@@ -147,8 +147,8 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t USARTClass::begin( const Chimera::Hardware::SubPeripheralMode txMode,
-                                       const Chimera::Hardware::SubPeripheralMode rxMode )
+  Chimera::Status_t USARTClass::begin( const Chimera::Hardware::PeripheralMode txMode,
+                                       const Chimera::Hardware::PeripheralMode rxMode )
   {
     /*------------------------------------------------
     Initialize to the desired TX/RX modes
@@ -213,7 +213,7 @@ namespace Thor::USART
   }
 
   Chimera::Status_t USARTClass::setMode( const Chimera::Hardware::SubPeripheral periph,
-                                         const Chimera::Hardware::SubPeripheralMode mode )
+                                         const Chimera::Hardware::PeripheralMode mode )
   {
     using namespace Chimera::Hardware;
 

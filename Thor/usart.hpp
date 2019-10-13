@@ -41,7 +41,7 @@ namespace Thor::USART
 
   class USARTClass : public Chimera::Serial::HWInterface,
                      public Chimera::Event::ListenerInterface,
-                     public Chimera::Threading::AsyncIOBaseInterface,
+                     public Chimera::Threading::AsyncIOInterface,
                      public Chimera::Threading::Lockable
   {
   public:
@@ -50,8 +50,8 @@ namespace Thor::USART
 
     Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 
-    Chimera::Status_t begin( const Chimera::Hardware::SubPeripheralMode txMode,
-                             const Chimera::Hardware::SubPeripheralMode rxMode ) final override;
+    Chimera::Status_t begin( const Chimera::Hardware::PeripheralMode txMode,
+                             const Chimera::Hardware::PeripheralMode rxMode ) final override;
 
     Chimera::Status_t end() final override;
 
@@ -60,7 +60,7 @@ namespace Thor::USART
     Chimera::Status_t setBaud( const uint32_t baud ) final override;
 
     Chimera::Status_t setMode( const Chimera::Hardware::SubPeripheral periph,
-                               const Chimera::Hardware::SubPeripheralMode mode ) final override;
+                               const Chimera::Hardware::PeripheralMode mode ) final override;
 
     Chimera::Status_t write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS = 500 ) final override;
 
@@ -109,8 +109,8 @@ namespace Thor::USART
     Chimera::Buffer::PeripheralBuffer txBuffers;
     Chimera::Buffer::PeripheralBuffer rxBuffers;
 
-    Chimera::Hardware::SubPeripheralMode txMode;
-    Chimera::Hardware::SubPeripheralMode rxMode;
+    Chimera::Hardware::PeripheralMode txMode;
+    Chimera::Hardware::PeripheralMode rxMode;
 
     void processListeners( const Chimera::Event::Trigger event );
 

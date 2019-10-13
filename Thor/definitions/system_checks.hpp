@@ -34,14 +34,14 @@ namespace Thor
   /*------------------------------------------------
   Validate the SubPeripheralMode enum: Used as array accessors
   ------------------------------------------------*/
-  static_assert( static_cast<uint8_t>( Chimera::Hardware::SubPeripheralMode::BLOCKING ) == 0, "Blocking mode accessor invalid" );
-  static_assert( Chimera::Hardware::SubPeripheralMode::BLOCKING != Chimera::Hardware::SubPeripheralMode::INTERRUPT, "Blocking mode == interrupt mode" );
-  static_assert( Chimera::Hardware::SubPeripheralMode::BLOCKING != Chimera::Hardware::SubPeripheralMode::DMA, "Blocking mode == DMA mode" );
+  static_assert( static_cast<uint8_t>( Chimera::Hardware::PeripheralMode::BLOCKING ) == 0, "Blocking mode accessor invalid" );
+  static_assert( Chimera::Hardware::PeripheralMode::BLOCKING != Chimera::Hardware::PeripheralMode::INTERRUPT, "Blocking mode == interrupt mode" );
+  static_assert( Chimera::Hardware::PeripheralMode::BLOCKING != Chimera::Hardware::PeripheralMode::DMA, "Blocking mode == DMA mode" );
 
-  static_assert( static_cast<uint8_t>( Chimera::Hardware::SubPeripheralMode::INTERRUPT ) == 1, "Interrupt mode accessor invalid" );
-  static_assert( Chimera::Hardware::SubPeripheralMode::INTERRUPT != Chimera::Hardware::SubPeripheralMode::DMA, "Interrupt mode == DMA mode" );
+  static_assert( static_cast<uint8_t>( Chimera::Hardware::PeripheralMode::INTERRUPT ) == 1, "Interrupt mode accessor invalid" );
+  static_assert( Chimera::Hardware::PeripheralMode::INTERRUPT != Chimera::Hardware::PeripheralMode::DMA, "Interrupt mode == DMA mode" );
 
-  static_assert( static_cast<uint8_t>( Chimera::Hardware::SubPeripheralMode::DMA ) == 2, "DMA mode accessor invalid" );
+  static_assert( static_cast<uint8_t>( Chimera::Hardware::PeripheralMode::DMA ) == 2, "DMA mode accessor invalid" );
 }
 
 namespace Thor::Serial

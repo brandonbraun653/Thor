@@ -43,10 +43,12 @@
 #define CHIMERA_INHERITED_SERIAL              Thor::Serial::SerialClass
 #endif
 
-#if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
-#define CHIMERA_INHERITED_WATCHDOG            Thor::Watchdog::Independent
+#if defined( THOR_DRIVER_SPI ) && ( THOR_DRIVER_SPI == 1 )
+#define CHIMERA_INHERITED_SPI                 Thor::SPI::SPIClass
 #endif 
 
-//#define CHIMERA_INHERITED_SYSTEM_IDENTIFIER   Thor::System::Identifier
+#if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
+#define CHIMERA_INHERITED_WATCHDOG            Thor::Watchdog::Independent
+#endif
 
 #endif

@@ -30,8 +30,8 @@ namespace Thor::UART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t UARTClass::begin( const Chimera::Hardware::SubPeripheralMode,
-                                      const Chimera::Hardware::SubPeripheralMode rxMode )
+  Chimera::Status_t UARTClass::begin( const Chimera::Hardware::PeripheralMode,
+                                      const Chimera::Hardware::PeripheralMode rxMode )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -52,7 +52,7 @@ namespace Thor::UART
   }
 
   Chimera::Status_t UARTClass::setMode( const Chimera::Hardware::SubPeripheral periph,
-                                        const Chimera::Hardware::SubPeripheralMode mode )
+                                        const Chimera::Hardware::PeripheralMode mode )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
