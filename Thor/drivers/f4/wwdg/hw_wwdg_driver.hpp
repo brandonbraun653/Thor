@@ -41,17 +41,17 @@ namespace Thor::Driver::WWDG
     Driver( RegisterMap *const periph );
     ~Driver();
 
-    uint32_t calculatePrescaler( const size_t ms ) final override;
+    Reg32_t calculatePrescaler( const size_t ms ) override;
 
-    uint32_t calculateReload( const size_t ms, const uint32_t prescaler ) final override;
+    Reg32_t calculateReload( const size_t ms, const Reg32_t prescaler ) override;
 
-    uint32_t calculateWindow( const size_t ms, const uint8_t percent, const uint32_t prescaler ) final override;
+    Reg32_t calculateWindow( const size_t ms, const uint8_t percent, const Reg32_t prescaler ) override;
 
-    Chimera::Status_t setPrescaler( const uint32_t val ) final override;
+    Chimera::Status_t setPrescaler( const Reg32_t val ) override;
 
-    Chimera::Status_t setReload( const uint32_t val ) final override;
+    Chimera::Status_t setReload( const Reg32_t val ) override;
 
-    Chimera::Status_t setWindow( const uint32_t val ) final override;
+    Chimera::Status_t setWindow( const Reg32_t val ) override;
 
     void start() final override;
 
@@ -59,7 +59,7 @@ namespace Thor::Driver::WWDG
 
     void enableClock() final override;
 
-    size_t getMaxTimeout( const uint32_t prescaler ) final override;
+    size_t getMaxTimeout( const Reg32_t prescaler ) override;
 
     size_t getMinTimeout( const uint32_t prescaler ) final override;
 

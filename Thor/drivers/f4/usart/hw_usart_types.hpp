@@ -16,6 +16,7 @@
 #include <cstdint>
 
 /* Chimera Includes */
+#include <Chimera/types/common_types.hpp>
 #include <Chimera/types/serial_types.hpp>
 
 /* Driver Includes */
@@ -28,13 +29,13 @@ namespace Thor::Driver::USART
 {
   struct RegisterMap
   {
-    volatile uint32_t SR;   /**< USART Status register,                   Address offset: 0x00 */
-    volatile uint32_t DR;   /**< USART Data register,                     Address offset: 0x04 */
-    volatile uint32_t BRR;  /**< USART Baud rate register,                Address offset: 0x08 */
-    volatile uint32_t CR1;  /**< USART Control register 1,                Address offset: 0x0C */
-    volatile uint32_t CR2;  /**< USART Control register 2,                Address offset: 0x10 */
-    volatile uint32_t CR3;  /**< USART Control register 3,                Address offset: 0x14 */
-    volatile uint32_t GTPR; /**< USART Guard time and prescaler register, Address offset: 0x18 */
+    volatile Reg32_t SR;   /**< USART Status register,                   Address offset: 0x00 */
+    volatile Reg32_t DR;   /**< USART Data register,                     Address offset: 0x04 */
+    volatile Reg32_t BRR;  /**< USART Baud rate register,                Address offset: 0x08 */
+    volatile Reg32_t CR1;  /**< USART Control register 1,                Address offset: 0x0C */
+    volatile Reg32_t CR2;  /**< USART Control register 2,                Address offset: 0x10 */
+    volatile Reg32_t CR3;  /**< USART Control register 3,                Address offset: 0x14 */
+    volatile Reg32_t GTPR; /**< USART Guard time and prescaler register, Address offset: 0x18 */
   };
 
   /**
@@ -51,74 +52,74 @@ namespace Thor::Driver::USART
   {
     namespace WordLength
     {
-      static constexpr uint32_t LEN_8BIT = 0u;
-      static constexpr uint32_t LEN_9BIT = CR1_M;
+      static constexpr Reg32_t LEN_8BIT = 0u;
+      static constexpr Reg32_t LEN_9BIT = CR1_M;
     }    // namespace WordLength
 
     namespace Stop
     {
-      static constexpr uint32_t BIT_1   = 0u;
-      static constexpr uint32_t BIT_0_5 = CR2_STOP_0;
-      static constexpr uint32_t BIT_2   = CR2_STOP_1;
-      static constexpr uint32_t BIT_1_5 = CR2_STOP_0 | CR2_STOP_1;
+      static constexpr Reg32_t BIT_1   = 0u;
+      static constexpr Reg32_t BIT_0_5 = CR2_STOP_0;
+      static constexpr Reg32_t BIT_2   = CR2_STOP_1;
+      static constexpr Reg32_t BIT_1_5 = CR2_STOP_0 | CR2_STOP_1;
     }    // namespace Stop
 
     namespace Parity
     {
-      static constexpr uint32_t NONE = 0u;
-      static constexpr uint32_t EVEN = CR1_PCE;
-      static constexpr uint32_t ODD  = CR1_PCE | CR1_PS;
+      static constexpr Reg32_t NONE = 0u;
+      static constexpr Reg32_t EVEN = CR1_PCE;
+      static constexpr Reg32_t ODD  = CR1_PCE | CR1_PS;
     }    // namespace Parity
 
     namespace Modes
     {
-      static constexpr uint32_t RX    = CR1_RE;
-      static constexpr uint32_t TX    = CR1_TE;
-      static constexpr uint32_t TX_RX = RX | TX;
+      static constexpr Reg32_t RX    = CR1_RE;
+      static constexpr Reg32_t TX    = CR1_TE;
+      static constexpr Reg32_t TX_RX = RX | TX;
     }    // namespace Modes
 
     namespace Clock
     {
-      static constexpr uint32_t CLOCK_DISABLE = 0u;
-      static constexpr uint32_t CLOCK_ENABLE  = CR2_CLKEN;
+      static constexpr Reg32_t CLOCK_DISABLE = 0u;
+      static constexpr Reg32_t CLOCK_ENABLE  = CR2_CLKEN;
     }    // namespace Clock
 
     namespace Polarity
     {
-      static constexpr uint32_t POLARITY_LOW  = 0u;
-      static constexpr uint32_t POLARITY_HIGH = CR2_CPOL;
+      static constexpr Reg32_t POLARITY_LOW  = 0u;
+      static constexpr Reg32_t POLARITY_HIGH = CR2_CPOL;
     }    // namespace Polarity
 
     namespace Phase
     {
-      static constexpr uint32_t PHASE_1EDGE = 0u;
-      static constexpr uint32_t PHASE_2EDGE = CR2_CPHA;
+      static constexpr Reg32_t PHASE_1EDGE = 0u;
+      static constexpr Reg32_t PHASE_2EDGE = CR2_CPHA;
     }    // namespace Phase
 
     namespace LastBit
     {
-      static constexpr uint32_t LASTBIT_DISABLE = 0u;
-      static constexpr uint32_t LASTBIT_ENABLE  = CR2_LBCL;
+      static constexpr Reg32_t LASTBIT_DISABLE = 0u;
+      static constexpr Reg32_t LASTBIT_ENABLE  = CR2_LBCL;
     }    // namespace LastBit
 
     namespace Nack
     {
-      static constexpr uint32_t NACK_ENABLE  = CR3_NACK;
-      static constexpr uint32_t NACK_DISABLE = 0u;
+      static constexpr Reg32_t NACK_ENABLE  = CR3_NACK;
+      static constexpr Reg32_t NACK_DISABLE = 0u;
     }    // namespace Nack
 
     namespace Flags
     {
-      static constexpr uint32_t FLAG_CTS  = SR_CTS;
-      static constexpr uint32_t FLAG_LBD  = SR_LBD;
-      static constexpr uint32_t FLAG_TXE  = SR_TXE;
-      static constexpr uint32_t FLAG_TC   = SR_TC;
-      static constexpr uint32_t FLAG_RXNE = SR_RXNE;
-      static constexpr uint32_t FLAG_IDLE = SR_IDLE;
-      static constexpr uint32_t FLAG_ORE  = SR_ORE;
-      static constexpr uint32_t FLAG_NF   = SR_NF;
-      static constexpr uint32_t FLAG_FE   = SR_FE;
-      static constexpr uint32_t FLAG_PE   = SR_PE;
+      static constexpr Reg32_t FLAG_CTS  = SR_CTS;
+      static constexpr Reg32_t FLAG_LBD  = SR_LBD;
+      static constexpr Reg32_t FLAG_TXE  = SR_TXE;
+      static constexpr Reg32_t FLAG_TC   = SR_TC;
+      static constexpr Reg32_t FLAG_RXNE = SR_RXNE;
+      static constexpr Reg32_t FLAG_IDLE = SR_IDLE;
+      static constexpr Reg32_t FLAG_ORE  = SR_ORE;
+      static constexpr Reg32_t FLAG_NF   = SR_NF;
+      static constexpr Reg32_t FLAG_FE   = SR_FE;
+      static constexpr Reg32_t FLAG_PE   = SR_PE;
     }    // namespace Flags
   }
 
@@ -127,7 +128,7 @@ namespace Thor::Driver::USART
   ------------------------------------------------*/
   namespace Runtime
   {
-    using Flag_t = uint32_t;
+    using Flag_t = Reg32_t;
     namespace Flag
     {
       /* Let the first 16 bits match the Status Register for consistency */
@@ -175,14 +176,14 @@ namespace Thor::Driver::USART
   ------------------------------------------------*/
   namespace SR
   {
-    static constexpr uint32_t resetValue = SR_Rst;
+    static constexpr Reg32_t resetValue = SR_Rst;
 
-    static inline uint32_t get( const RegisterMap *const periph )
+    static inline Reg32_t get( const RegisterMap *const periph )
     {
       return periph->SR & SR_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const Reg32_t val )
     {
       periph->SR = val & SR_Msk;
     }
@@ -190,153 +191,153 @@ namespace Thor::Driver::USART
     class CTS
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->SR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->SR;
+        Reg32_t tmp = periph->SR;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->SR = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = SR_CTS;
+      static constexpr Reg32_t mask = SR_CTS;
     };
 
     class LBD
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->SR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->SR;
+        Reg32_t tmp = periph->SR;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->SR = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = SR_LBD;
+      static constexpr Reg32_t mask = SR_LBD;
     };
 
     class TXE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->SR & mask;
       }
 
     private:
-      static constexpr uint32_t mask = SR_TXE;
+      static constexpr Reg32_t mask = SR_TXE;
     };
 
     class TC
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->SR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->SR;
+        Reg32_t tmp = periph->SR;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->SR = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = SR_TC;
+      static constexpr Reg32_t mask = SR_TC;
     };
 
     class RXNE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->SR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->SR;
+        Reg32_t tmp = periph->SR;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->SR = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = SR_RXNE;
+      static constexpr Reg32_t mask = SR_RXNE;
     };
 
     class IDLE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->SR & mask;
       }
 
     private:
-      static constexpr uint32_t mask = SR_IDLE;
+      static constexpr Reg32_t mask = SR_IDLE;
     };
 
     class ORE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->SR & mask;
       }
 
     private:
-      static constexpr uint32_t mask = SR_ORE;
+      static constexpr Reg32_t mask = SR_ORE;
     };
 
     class NF
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->SR & mask;
       }
 
     private:
-      static constexpr uint32_t mask = SR_NF;
+      static constexpr Reg32_t mask = SR_NF;
     };
 
     class FE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->SR & mask;
       }
 
     private:
-      static constexpr uint32_t mask = SR_FE;
+      static constexpr Reg32_t mask = SR_FE;
     };
 
     class PE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->SR & mask;
       }
 
     private:
-      static constexpr uint32_t mask = SR_PE;
+      static constexpr Reg32_t mask = SR_PE;
     };
   }    // namespace SR
 
@@ -345,12 +346,12 @@ namespace Thor::Driver::USART
   ------------------------------------------------*/
   namespace DR
   {
-    static inline uint32_t get( const RegisterMap *const periph )
+    static inline Reg32_t get( const RegisterMap *const periph )
     {
       return periph->DR & DR_DR;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const Reg32_t val )
     {
       periph->DR = val & DR_DR;
     }
@@ -361,14 +362,14 @@ namespace Thor::Driver::USART
   ------------------------------------------------*/
   namespace BRR
   {
-    static constexpr uint32_t resetValue = BRR_Rst;
+    static constexpr Reg32_t resetValue = BRR_Rst;
 
-    static inline uint32_t get( const RegisterMap *const periph )
+    static inline Reg32_t get( const RegisterMap *const periph )
     {
       return periph->BRR & BRR_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const Reg32_t val )
     {
       periph->BRR = val & BRR_Msk;
     }
@@ -376,41 +377,41 @@ namespace Thor::Driver::USART
     class Mantissa
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->BRR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->BRR;
+        Reg32_t tmp = periph->BRR;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->BRR = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = BRR_DIV_Mantissa;
+      static constexpr Reg32_t mask = BRR_DIV_Mantissa;
     };
 
     class Fraction
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->BRR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->BRR;
+        Reg32_t tmp = periph->BRR;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->BRR = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = BRR_DIV_Fraction;
+      static constexpr Reg32_t mask = BRR_DIV_Fraction;
     };
   }    // namespace BR
 
@@ -419,15 +420,15 @@ namespace Thor::Driver::USART
   ------------------------------------------------*/
   namespace CR1
   {
-    static constexpr uint32_t resetValue = CR1_Rst;
-    static constexpr uint32_t ITMask     = CR1_PEIE | CR1_TXEIE | CR1_TCIE | CR1_RXNEIE | CR1_IDLEIE;
+    static constexpr Reg32_t resetValue = CR1_Rst;
+    static constexpr Reg32_t ITMask     = CR1_PEIE | CR1_TXEIE | CR1_TCIE | CR1_RXNEIE | CR1_IDLEIE;
 
-    static inline uint32_t get( const RegisterMap *const periph )
+    static inline Reg32_t get( const RegisterMap *const periph )
     {
       return periph->CR1 & CR1_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const Reg32_t val )
     {
       periph->CR1 = val & CR1_Msk;
     }
@@ -435,301 +436,301 @@ namespace Thor::Driver::USART
     class OVER8
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_OVER8;
+      static constexpr Reg32_t mask = CR1_OVER8;
     };
 
     class UE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_UE;
+      static constexpr Reg32_t mask = CR1_UE;
     };
 
     class M
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_M;
+      static constexpr Reg32_t mask = CR1_M;
     };
 
     class WAKE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_WAKE;
+      static constexpr Reg32_t mask = CR1_WAKE;
     };
 
     class PCE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_PCE;
+      static constexpr Reg32_t mask = CR1_PCE;
     };
 
     class PS
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_PS;
+      static constexpr Reg32_t mask = CR1_PS;
     };
 
     class PEIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_PEIE;
+      static constexpr Reg32_t mask = CR1_PEIE;
     };
 
     class TXEIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_TXEIE;
+      static constexpr Reg32_t mask = CR1_TXEIE;
     };
 
     class TCIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_TCIE;
+      static constexpr Reg32_t mask = CR1_TCIE;
     };
 
     class RXNEIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_RXNEIE;
+      static constexpr Reg32_t mask = CR1_RXNEIE;
     };
 
     class IDLEIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_IDLEIE;
+      static constexpr Reg32_t mask = CR1_IDLEIE;
     };
 
     class TE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_TE;
+      static constexpr Reg32_t mask = CR1_TE;
     };
 
     class RE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_RE;
+      static constexpr Reg32_t mask = CR1_RE;
     };
 
     class RWU
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_RWU;
+      static constexpr Reg32_t mask = CR1_RWU;
     };
 
     class SBK
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR1 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR1;
+        Reg32_t tmp = periph->CR1;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR1 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR1_SBK;
+      static constexpr Reg32_t mask = CR1_SBK;
     };
   }    // namespace CR1
 
@@ -738,15 +739,15 @@ namespace Thor::Driver::USART
   ------------------------------------------------*/
   namespace CR2
   {
-    static constexpr uint32_t resetValue = CR2_Rst;
-    static constexpr uint32_t ITMask     = CR2_LBDIE;
+    static constexpr Reg32_t resetValue = CR2_Rst;
+    static constexpr Reg32_t ITMask     = CR2_LBDIE;
 
-    static inline uint32_t get( const RegisterMap *const periph )
+    static inline Reg32_t get( const RegisterMap *const periph )
     {
       return periph->CR2 & CR2_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const Reg32_t val )
     {
       periph->CR2 = val & CR2_Msk;
     }
@@ -754,181 +755,181 @@ namespace Thor::Driver::USART
     class LINEN
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR2 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR2;
+        Reg32_t tmp = periph->CR2;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR2 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR2_LINEN;
+      static constexpr Reg32_t mask = CR2_LINEN;
     };
 
     class STOP
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR2 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR2;
+        Reg32_t tmp = periph->CR2;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR2 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR2_STOP;
+      static constexpr Reg32_t mask = CR2_STOP;
     };
 
     class CLKEN
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR2 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR2;
+        Reg32_t tmp = periph->CR2;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR2 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR2_CLKEN;
+      static constexpr Reg32_t mask = CR2_CLKEN;
     };
 
     class CPOL
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR2 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR2;
+        Reg32_t tmp = periph->CR2;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR2 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR2_CPOL;
+      static constexpr Reg32_t mask = CR2_CPOL;
     };
 
     class CPHA
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR2 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR2;
+        Reg32_t tmp = periph->CR2;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR2 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR2_CPHA;
+      static constexpr Reg32_t mask = CR2_CPHA;
     };
 
     class LBCL
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR2 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR2;
+        Reg32_t tmp = periph->CR2;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR2 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR2_LBCL;
+      static constexpr Reg32_t mask = CR2_LBCL;
     };
 
     class LBDIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR2 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR2;
+        Reg32_t tmp = periph->CR2;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR2 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR2_LBDIE;
+      static constexpr Reg32_t mask = CR2_LBDIE;
     };
 
     class LBDL
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR2 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR2;
+        Reg32_t tmp = periph->CR2;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR2 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR2_LBDL;
+      static constexpr Reg32_t mask = CR2_LBDL;
     };
 
     class ADD
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR2 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR2;
+        Reg32_t tmp = periph->CR2;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR2 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR2_ADD;
+      static constexpr Reg32_t mask = CR2_ADD;
     };
   }
 
@@ -937,15 +938,15 @@ namespace Thor::Driver::USART
   ------------------------------------------------*/
   namespace CR3
   {
-    static constexpr uint32_t resetValue = CR3_Rst;
-    static constexpr uint32_t ITMask     = CR3_EIE;
+    static constexpr Reg32_t resetValue = CR3_Rst;
+    static constexpr Reg32_t ITMask     = CR3_EIE;
 
-    static inline uint32_t get( const RegisterMap *const periph )
+    static inline Reg32_t get( const RegisterMap *const periph )
     {
       return periph->CR3 & CR3_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const Reg32_t val )
     {
       periph->CR3 = val & CR3_Msk;
     }
@@ -953,241 +954,241 @@ namespace Thor::Driver::USART
     class ONEBIT
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_ONEBIT;
+      static constexpr Reg32_t mask = CR3_ONEBIT;
     };
 
     class CTSIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_CTSIE;
+      static constexpr Reg32_t mask = CR3_CTSIE;
     };
 
     class CTSE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_CTSE;
+      static constexpr Reg32_t mask = CR3_CTSE;
     };
 
     class RTSE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_RTSE;
+      static constexpr Reg32_t mask = CR3_RTSE;
     };
 
     class DMAT
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_DMAT;
+      static constexpr Reg32_t mask = CR3_DMAT;
     };
 
     class DMAR
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_DMAR;
+      static constexpr Reg32_t mask = CR3_DMAR;
     };
 
     class SCEN
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_SCEN;
+      static constexpr Reg32_t mask = CR3_SCEN;
     };
 
     class NACK
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_NACK;
+      static constexpr Reg32_t mask = CR3_NACK;
     };
 
     class HDSEL
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_HDSEL;
+      static constexpr Reg32_t mask = CR3_HDSEL;
     };
 
     class IRLP
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_IRLP;
+      static constexpr Reg32_t mask = CR3_IRLP;
     };
 
     class IREN
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_IREN;
+      static constexpr Reg32_t mask = CR3_IREN;
     };
 
     class EIE
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->CR3 & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->CR3;
+        Reg32_t tmp = periph->CR3;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->CR3 = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = CR3_EIE;
+      static constexpr Reg32_t mask = CR3_EIE;
     };
   }    // namespace CR3
 
@@ -1196,14 +1197,14 @@ namespace Thor::Driver::USART
   ------------------------------------------------*/
   namespace GTPR
   {
-    static constexpr uint32_t resetValue = GTPR_Rst;
+    static constexpr Reg32_t resetValue = GTPR_Rst;
 
-    static inline uint32_t get( const RegisterMap *const periph )
+    static inline Reg32_t get( const RegisterMap *const periph )
     {
       return periph->GTPR & GTPR_Msk;
     }
 
-    static inline void set( RegisterMap *const periph, const uint32_t val )
+    static inline void set( RegisterMap *const periph, const Reg32_t val )
     {
       periph->GTPR = val & GTPR_Msk;
     }
@@ -1211,41 +1212,41 @@ namespace Thor::Driver::USART
     class GT
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->GTPR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->GTPR;
+        Reg32_t tmp = periph->GTPR;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->GTPR = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = GTPR_GT;
+      static constexpr Reg32_t mask = GTPR_GT;
     };
 
     class PSC
     {
     public:
-      static inline uint32_t get( const RegisterMap *const periph )
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
         return periph->GTPR & mask;
       }
 
-      static inline void set( RegisterMap *const periph, const uint32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        uint32_t tmp = periph->GTPR;
+        Reg32_t tmp = periph->GTPR;
         tmp &= ~mask;
         tmp |= val & mask;
         periph->GTPR = tmp;
       }
 
     private:
-      static constexpr uint32_t mask = GTPR_PSC;
+      static constexpr Reg32_t mask = GTPR_PSC;
     };
   }    // namespace GTPR
 

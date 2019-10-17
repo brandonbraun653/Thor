@@ -15,6 +15,7 @@
 /* Chimera Includes */
 #include <Chimera/chimera.hpp>
 #include <Chimera/interface/compiler_intf.hpp>
+#include <Chimera/interface/clock_intf.hpp>
 #include <Chimera/types/peripheral_types.hpp>
 
 /* Driver Includes */
@@ -294,7 +295,7 @@ namespace Thor::Driver::RCC
   /*------------------------------------------------
   Standalone Functions
   ------------------------------------------------*/
-  void init()
+  void initializeDriver()
   {
     using namespace Chimera::Peripheral;
     using namespace LookupTables;
@@ -309,6 +310,7 @@ namespace Thor::Driver::RCC
       memset( periphLookupTables.data(), 0, sizeof( periphLookupTables ) );
 
 #if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
+      DMAInitTables();
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ] = &DMALookup;
 #endif
 
@@ -337,7 +339,7 @@ namespace Thor::Driver::RCC
   ------------------------------------------------*/
   SystemClock::SystemClock()
   {
-    init();
+    initializeDriver();
   }
 
   SystemClock::~SystemClock()
@@ -487,7 +489,7 @@ namespace Thor::Driver::RCC
 
   PeripheralController::PeripheralController()
   {
-    init();
+    initializeDriver();
   }
 
   PeripheralController::~PeripheralController()
@@ -927,6 +929,7 @@ namespace Thor::Driver::RCC
         tickstart = Chimera::millis();
         PLLON::set( PLLConfig::ON );
 
+        #if defined( _EMBEDDED )
         while ( !PLLRDY::get() )
         {
           if ( ( Chimera::millis() - tickstart ) > PLL_TIMEOUT_VALUE_MS )
@@ -934,6 +937,7 @@ namespace Thor::Driver::RCC
             return Chimera::CommonStatusCodes::TIMEOUT;
           }
         }
+        #endif 
       }
     }
 

@@ -39,6 +39,7 @@ namespace Thor::Driver::RCC
     /**
      *  DMA Peripheral Config Lookup Tables
      */
+#if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
     static constexpr size_t dmaTableSize = Thor::Driver::DMA::NUM_DMA_PERIPHS;
 
     extern const PCC DMALookup;
@@ -48,6 +49,9 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig DMA_ResetConfig[ dmaTableSize ];
 
     extern const Configuration::ClockType_t DMA_SourceClock[ dmaTableSize ];
+
+    extern void DMAInitTables();
+#endif 
 
     /**
      *  GPIO Peripheral Config Lookup Tables
@@ -63,6 +67,8 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
 
     extern const Configuration::ClockType_t GPIO_SourceClock[ gpioTableSize ];
+
+    extern void GPIOInitTables();
 #endif
 
     /**

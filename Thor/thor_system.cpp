@@ -55,7 +55,7 @@ namespace Chimera::System
     /*------------------------------------------------
     Initialize the system clocks
     ------------------------------------------------*/
-    Thor::Driver::RCC::init();
+    Thor::Driver::RCC::initializeDriver();
     auto sys = Thor::Driver::RCC::SystemClock::get();
     sys->configureProjectClocks();
 

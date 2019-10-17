@@ -17,6 +17,7 @@
 
 /* Chimera/Includes */
 #include <Chimera/container.hpp>
+#include <Chimera/types/common_types.hpp>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
@@ -28,40 +29,40 @@ namespace Thor::Driver::RCC
 {
   struct RegisterMap
   {
-    volatile uint32_t CR;         /**< RCC clock control register,                                  Address offset: 0x00 */
-    volatile uint32_t PLLCFGR;    /**< RCC PLL configuration register,                              Address offset: 0x04 */
-    volatile uint32_t CFGR;       /**< RCC clock configuration register,                            Address offset: 0x08 */
-    volatile uint32_t CIR;        /**< RCC clock interrupt register,                                Address offset: 0x0C */
-    volatile uint32_t AHB1RSTR;   /**< RCC AHB1 peripheral reset register,                          Address offset: 0x10 */
-    volatile uint32_t AHB2RSTR;   /**< RCC AHB2 peripheral reset register,                          Address offset: 0x14 */
-    volatile uint32_t AHB3RSTR;   /**< RCC AHB3 peripheral reset register,                          Address offset: 0x18 */
-    uint32_t RESERVED0;           /**< Reserved, 0x1C                                                                    */
-    volatile uint32_t APB1RSTR;   /**< RCC APB1 peripheral reset register,                          Address offset: 0x20 */
-    volatile uint32_t APB2RSTR;   /**< RCC APB2 peripheral reset register,                          Address offset: 0x24 */
-    uint32_t RESERVED1[ 2 ];      /**< Reserved, 0x28-0x2C                                                               */
-    volatile uint32_t AHB1ENR;    /**< RCC AHB1 peripheral clock register,                          Address offset: 0x30 */
-    volatile uint32_t AHB2ENR;    /**< RCC AHB2 peripheral clock register,                          Address offset: 0x34 */
-    volatile uint32_t AHB3ENR;    /**< RCC AHB3 peripheral clock register,                          Address offset: 0x38 */
-    uint32_t RESERVED2;           /**< Reserved, 0x3C                                                                    */
-    volatile uint32_t APB1ENR;    /**< RCC APB1 peripheral clock enable register,                   Address offset: 0x40 */
-    volatile uint32_t APB2ENR;    /**< RCC APB2 peripheral clock enable register,                   Address offset: 0x44 */
-    uint32_t RESERVED3[ 2 ];      /**< Reserved, 0x48-0x4C                                                               */
-    volatile uint32_t AHB1LPENR;  /**< RCC AHB1 peripheral clock enable in low power mode register, Address offset: 0x50 */
-    volatile uint32_t AHB2LPENR;  /**< RCC AHB2 peripheral clock enable in low power mode register, Address offset: 0x54 */
-    volatile uint32_t AHB3LPENR;  /**< RCC AHB3 peripheral clock enable in low power mode register, Address offset: 0x58 */
-    uint32_t RESERVED4;           /**< Reserved, 0x5C                                                                    */
-    volatile uint32_t APB1LPENR;  /**< RCC APB1 peripheral clock enable in low power mode register, Address offset: 0x60 */
-    volatile uint32_t APB2LPENR;  /**< RCC APB2 peripheral clock enable in low power mode register, Address offset: 0x64 */
-    uint32_t RESERVED5[ 2 ];      /**< Reserved, 0x68-0x6C                                                               */
-    volatile uint32_t BDCR;       /**< RCC Backup domain control register,                          Address offset: 0x70 */
-    volatile uint32_t CSR;        /**< RCC clock control & status register,                         Address offset: 0x74 */
-    uint32_t RESERVED6[ 2 ];      /**< Reserved, 0x78-0x7C                                                               */
-    volatile uint32_t SSCGR;      /**< RCC spread spectrum clock generation register,               Address offset: 0x80 */
-    volatile uint32_t PLLI2SCFGR; /**< RCC PLLI2S configuration register,                           Address offset: 0x84 */
-    volatile uint32_t PLLSAICFGR; /**< RCC PLLSAI configuration register,                           Address offset: 0x88 */
-    volatile uint32_t DCKCFGR;    /**< RCC Dedicated Clocks configuration register,                 Address offset: 0x8C */
-    volatile uint32_t CKGATENR;   /**< RCC Clocks Gated ENable Register,                            Address offset: 0x90 */
-    volatile uint32_t DCKCFGR2;   /**< RCC Dedicated Clocks configuration register 2,               Address offset: 0x94 */
+    volatile Reg32_t CR;         /**< RCC clock control register,                                  Address offset: 0x00 */
+    volatile Reg32_t PLLCFGR;    /**< RCC PLL configuration register,                              Address offset: 0x04 */
+    volatile Reg32_t CFGR;       /**< RCC clock configuration register,                            Address offset: 0x08 */
+    volatile Reg32_t CIR;        /**< RCC clock interrupt register,                                Address offset: 0x0C */
+    volatile Reg32_t AHB1RSTR;   /**< RCC AHB1 peripheral reset register,                          Address offset: 0x10 */
+    volatile Reg32_t AHB2RSTR;   /**< RCC AHB2 peripheral reset register,                          Address offset: 0x14 */
+    volatile Reg32_t AHB3RSTR;   /**< RCC AHB3 peripheral reset register,                          Address offset: 0x18 */
+    Reg32_t RESERVED0;           /**< Reserved, 0x1C                                                                    */
+    volatile Reg32_t APB1RSTR;   /**< RCC APB1 peripheral reset register,                          Address offset: 0x20 */
+    volatile Reg32_t APB2RSTR;   /**< RCC APB2 peripheral reset register,                          Address offset: 0x24 */
+    Reg32_t RESERVED1[ 2 ];      /**< Reserved, 0x28-0x2C                                                               */
+    volatile Reg32_t AHB1ENR;    /**< RCC AHB1 peripheral clock register,                          Address offset: 0x30 */
+    volatile Reg32_t AHB2ENR;    /**< RCC AHB2 peripheral clock register,                          Address offset: 0x34 */
+    volatile Reg32_t AHB3ENR;    /**< RCC AHB3 peripheral clock register,                          Address offset: 0x38 */
+    Reg32_t RESERVED2;           /**< Reserved, 0x3C                                                                    */
+    volatile Reg32_t APB1ENR;    /**< RCC APB1 peripheral clock enable register,                   Address offset: 0x40 */
+    volatile Reg32_t APB2ENR;    /**< RCC APB2 peripheral clock enable register,                   Address offset: 0x44 */
+    Reg32_t RESERVED3[ 2 ];      /**< Reserved, 0x48-0x4C                                                               */
+    volatile Reg32_t AHB1LPENR;  /**< RCC AHB1 peripheral clock enable in low power mode register, Address offset: 0x50 */
+    volatile Reg32_t AHB2LPENR;  /**< RCC AHB2 peripheral clock enable in low power mode register, Address offset: 0x54 */
+    volatile Reg32_t AHB3LPENR;  /**< RCC AHB3 peripheral clock enable in low power mode register, Address offset: 0x58 */
+    Reg32_t RESERVED4;           /**< Reserved, 0x5C                                                                    */
+    volatile Reg32_t APB1LPENR;  /**< RCC APB1 peripheral clock enable in low power mode register, Address offset: 0x60 */
+    volatile Reg32_t APB2LPENR;  /**< RCC APB2 peripheral clock enable in low power mode register, Address offset: 0x64 */
+    Reg32_t RESERVED5[ 2 ];      /**< Reserved, 0x68-0x6C                                                               */
+    volatile Reg32_t BDCR;       /**< RCC Backup domain control register,                          Address offset: 0x70 */
+    volatile Reg32_t CSR;        /**< RCC clock control & status register,                         Address offset: 0x74 */
+    Reg32_t RESERVED6[ 2 ];      /**< Reserved, 0x78-0x7C                                                               */
+    volatile Reg32_t SSCGR;      /**< RCC spread spectrum clock generation register,               Address offset: 0x80 */
+    volatile Reg32_t PLLI2SCFGR; /**< RCC PLLI2S configuration register,                           Address offset: 0x84 */
+    volatile Reg32_t PLLSAICFGR; /**< RCC PLLSAI configuration register,                           Address offset: 0x88 */
+    volatile Reg32_t DCKCFGR;    /**< RCC Dedicated Clocks configuration register,                 Address offset: 0x8C */
+    volatile Reg32_t CKGATENR;   /**< RCC Clocks Gated ENable Register,                            Address offset: 0x90 */
+    volatile Reg32_t DCKCFGR2;   /**< RCC Dedicated Clocks configuration register 2,               Address offset: 0x94 */
   };
 
   extern RegisterMap *const RCC_PERIPH;
@@ -75,7 +76,7 @@ namespace Thor::Driver::RCC
      *  High level structure describing what kinds of clocks are available
      *  to be used as a source for the System Clock.
      */
-    using OscillatorType_t = uint32_t;
+    using OscillatorType_t = Reg32_t;
     namespace OscillatorType
     {
       static constexpr OscillatorType_t HSE     = 1u;
@@ -88,7 +89,7 @@ namespace Thor::Driver::RCC
      *  High level structure describing what kinds of clocks are available
      *  to be configured by the code.
      */
-    using ClockType_t = uint32_t;
+    using ClockType_t = Reg32_t;
     namespace ClockType
     {
       static constexpr ClockType_t SYSCLK = 1u;
@@ -104,15 +105,15 @@ namespace Thor::Driver::RCC
   ------------------------------------------------*/
   namespace CR
   {
-    static constexpr uint32_t locked   = 1u;
-    static constexpr uint32_t unlocked = 0u;
+    static constexpr Reg32_t locked   = 1u;
+    static constexpr Reg32_t unlocked = 0u;
 
-    static constexpr uint32_t enabled  = 1u;
-    static constexpr uint32_t disabled = 0u;
+    static constexpr Reg32_t enabled  = 1u;
+    static constexpr Reg32_t disabled = 0u;
 
     struct SAIRDY
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_PLLSAIRDY;
       }
@@ -120,19 +121,19 @@ namespace Thor::Driver::RCC
 
     struct SAION
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_PLLSAION;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
       }
     };
 
     struct I2SRDY
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_PLLI2SRDY;
       }
@@ -140,19 +141,19 @@ namespace Thor::Driver::RCC
 
     struct I2SON
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_PLLI2SON;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
       }
     };
 
     struct PLLRDY
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_PLLRDY;
       }
@@ -160,14 +161,14 @@ namespace Thor::Driver::RCC
 
     struct PLLON
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_PLLON;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CR;
+        Reg32_t tmp = RCC_PERIPH->CR;
         tmp &= ~( CR_PLLON );
         tmp |= ( val & CR_PLLON );
         RCC_PERIPH->CR = tmp;
@@ -176,46 +177,46 @@ namespace Thor::Driver::RCC
 
     struct PLLConfig
     {
-      static constexpr uint32_t NONE = 0u;
-      static constexpr uint32_t OFF  = 1u;
-      static constexpr uint32_t ON   = CR_PLLON;
+      static constexpr Reg32_t NONE = 0u;
+      static constexpr Reg32_t OFF  = 1u;
+      static constexpr Reg32_t ON   = CR_PLLON;
     };
 
     struct PLLDiv
     {
-      static constexpr uint32_t DIV2 = 2u;
-      static constexpr uint32_t DIV4 = 4u;
-      static constexpr uint32_t DIV6 = 6u;
-      static constexpr uint32_t DIV8 = 8u;
+      static constexpr Reg32_t DIV2 = 2u;
+      static constexpr Reg32_t DIV4 = 4u;
+      static constexpr Reg32_t DIV6 = 6u;
+      static constexpr Reg32_t DIV8 = 8u;
     };
 
     struct CSSON
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_CSSON;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
       }
     };
 
     struct HSEBYP
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_HSEBYP;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
       }
     };
 
     struct HSERDY
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_HSERDY;
       }
@@ -223,14 +224,14 @@ namespace Thor::Driver::RCC
 
     struct HSEON
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_HSEON;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CR;
+        Reg32_t tmp = RCC_PERIPH->CR;
         tmp &= ~( CR_HSEON );
         tmp |= ( val & CR_HSEON );
         RCC_PERIPH->CR = tmp;
@@ -239,14 +240,14 @@ namespace Thor::Driver::RCC
 
     struct HSEConfig
     {
-      static constexpr uint32_t OFF    = 0u;
-      static constexpr uint32_t ON     = CR_HSEON;
-      static constexpr uint32_t BYPASS = CR_HSEBYP | CR_HSEON;
+      static constexpr Reg32_t OFF    = 0u;
+      static constexpr Reg32_t ON     = CR_HSEON;
+      static constexpr Reg32_t BYPASS = CR_HSEBYP | CR_HSEON;
     };
 
     struct HSIRDY
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_HSIRDY;
       }
@@ -254,14 +255,14 @@ namespace Thor::Driver::RCC
 
     struct HSION
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_HSION;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CR;
+        Reg32_t tmp = RCC_PERIPH->CR;
         tmp &= ~( CR_HSION );
         tmp |= ( val & CR_HSION );
         RCC_PERIPH->CR = tmp;
@@ -270,7 +271,7 @@ namespace Thor::Driver::RCC
 
     struct HSICAL
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_HSICAL;
       }
@@ -278,14 +279,14 @@ namespace Thor::Driver::RCC
 
     struct HSITRIM
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CR & CR_HSITRIM;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CR;
+        Reg32_t tmp = RCC_PERIPH->CR;
         tmp &= ~( CR_HSITRIM );
         tmp |= ( val << CR_HSITRIM_Pos ) & CR_HSITRIM;
         RCC_PERIPH->CR = tmp;
@@ -294,8 +295,8 @@ namespace Thor::Driver::RCC
 
     struct HSIConfig
     {
-      static constexpr uint32_t OFF = 0u;
-      static constexpr uint32_t ON  = 1u;
+      static constexpr Reg32_t OFF = 0u;
+      static constexpr Reg32_t ON  = 1u;
     };
   }    // namespace CR
 
@@ -306,17 +307,17 @@ namespace Thor::Driver::RCC
   {
     struct SRC
     {
-      static constexpr uint32_t HSI = PLLCFGR_PLLSRC_HSI;
-      static constexpr uint32_t HSE = PLLCFGR_PLLSRC_HSE;
+      static constexpr Reg32_t HSI = PLLCFGR_PLLSRC_HSI;
+      static constexpr Reg32_t HSE = PLLCFGR_PLLSRC_HSE;
 
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLSRC;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLSRC );
         tmp |= ( val & PLLCFGR_PLLSRC );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -325,14 +326,14 @@ namespace Thor::Driver::RCC
 
     struct M
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLM;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLM );
         tmp |= ( val & PLLCFGR_PLLM );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -341,14 +342,14 @@ namespace Thor::Driver::RCC
 
     struct N
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLN;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLN );
         tmp |= ( val & PLLCFGR_PLLN );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -357,14 +358,14 @@ namespace Thor::Driver::RCC
 
     struct P
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLP;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLP );
         tmp |= ( val & PLLCFGR_PLLP );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -373,14 +374,14 @@ namespace Thor::Driver::RCC
 
     struct Q
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLQ;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLQ );
         tmp |= ( val & PLLCFGR_PLLQ );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -389,14 +390,14 @@ namespace Thor::Driver::RCC
 
     struct R
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLR;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLR );
         tmp |= ( val & PLLCFGR_PLLR );
         RCC_PERIPH->PLLCFGR = tmp;
@@ -412,21 +413,21 @@ namespace Thor::Driver::RCC
   {
     struct SW
     {
-      using SysOscSrc_t = uint32_t;
+      using SysOscSrc_t = Reg32_t;
 
       static constexpr SysOscSrc_t HSI     = CFGR_SW_HSI;
       static constexpr SysOscSrc_t HSE     = CFGR_SW_HSE;
       static constexpr SysOscSrc_t PLLCLK  = CFGR_SW_PLL;
       static constexpr SysOscSrc_t PLLRCLK = CFGR_SW_PLLR;
 
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CFGR & CFGR_SW;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CFGR;
+        Reg32_t tmp = RCC_PERIPH->CFGR;
         tmp &= ~( CFGR_SW );
         tmp |= ( val & CFGR_SW );
         RCC_PERIPH->CFGR = tmp;
@@ -435,12 +436,12 @@ namespace Thor::Driver::RCC
 
     struct SWS
     {
-      static constexpr uint32_t HSI  = CFGR_SWS_HSI;
-      static constexpr uint32_t HSE  = CFGR_SWS_HSE;
-      static constexpr uint32_t PLL  = CFGR_SWS_PLL;
-      static constexpr uint32_t PLLR = CFGR_SWS_PLLR;
+      static constexpr Reg32_t HSI  = CFGR_SWS_HSI;
+      static constexpr Reg32_t HSE  = CFGR_SWS_HSE;
+      static constexpr Reg32_t PLL  = CFGR_SWS_PLL;
+      static constexpr Reg32_t PLLR = CFGR_SWS_PLLR;
 
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CFGR & CFGR_SWS;
       }
@@ -448,7 +449,7 @@ namespace Thor::Driver::RCC
       /**
        *  Gets the right shifted value instead of the masked value
        */
-      static inline uint32_t getRS()
+      static inline Reg32_t getRS()
       {
         return ( RCC_PERIPH->CFGR & CFGR_SWS ) >> CFGR_SWS_Pos;
       }
@@ -456,7 +457,7 @@ namespace Thor::Driver::RCC
 
     struct HPRE
     {
-      using AHBPrescale_t = uint32_t;
+      using AHBPrescale_t = Reg32_t;
 
       static constexpr AHBPrescale_t DIV1   = CFGR_HPRE_DIV1;
       static constexpr AHBPrescale_t DIV2   = CFGR_HPRE_DIV2;
@@ -468,14 +469,14 @@ namespace Thor::Driver::RCC
       static constexpr AHBPrescale_t DIV256 = CFGR_HPRE_DIV256;
       static constexpr AHBPrescale_t DIV512 = CFGR_HPRE_DIV512;
 
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CFGR & CFGR_HPRE;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CFGR;
+        Reg32_t tmp = RCC_PERIPH->CFGR;
         tmp &= ~( CFGR_HPRE );
         tmp |= ( val & CFGR_HPRE );
         RCC_PERIPH->CFGR = tmp;
@@ -484,7 +485,7 @@ namespace Thor::Driver::RCC
 
     struct PPRE1
     {
-      using APB1Prescale_t = uint32_t;
+      using APB1Prescale_t = Reg32_t;
 
       static constexpr APB1Prescale_t DIV1  = CFGR_PPRE1_DIV1;
       static constexpr APB1Prescale_t DIV2  = CFGR_PPRE1_DIV2;
@@ -492,14 +493,14 @@ namespace Thor::Driver::RCC
       static constexpr APB1Prescale_t DIV8  = CFGR_PPRE1_DIV8;
       static constexpr APB1Prescale_t DIV16 = CFGR_PPRE1_DIV16;
 
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CFGR & CFGR_PPRE1;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CFGR;
+        Reg32_t tmp = RCC_PERIPH->CFGR;
         tmp &= ~( CFGR_PPRE1 );
         tmp |= ( val & CFGR_PPRE1 );
         RCC_PERIPH->CFGR = tmp;
@@ -508,7 +509,7 @@ namespace Thor::Driver::RCC
 
     struct PPRE2
     {
-      using APB2Prescale_t = uint32_t;
+      using APB2Prescale_t = Reg32_t;
 
       static constexpr APB2Prescale_t DIV1  = CFGR_PPRE2_DIV1;
       static constexpr APB2Prescale_t DIV2  = CFGR_PPRE2_DIV2;
@@ -516,14 +517,14 @@ namespace Thor::Driver::RCC
       static constexpr APB2Prescale_t DIV8  = CFGR_PPRE2_DIV8;
       static constexpr APB2Prescale_t DIV16 = CFGR_PPRE2_DIV16;
 
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CFGR & CFGR_PPRE2;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CFGR;
+        Reg32_t tmp = RCC_PERIPH->CFGR;
         tmp &= ~( CFGR_PPRE2 );
         tmp |= ( val & CFGR_PPRE2 );
         RCC_PERIPH->CFGR = tmp;
@@ -538,14 +539,14 @@ namespace Thor::Driver::RCC
   {
     struct PWREN
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->APB1ENR & APB1ENR_PWREN;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->APB1ENR;
+        Reg32_t tmp = RCC_PERIPH->APB1ENR;
         tmp &= ~( APB1ENR_PWREN );
         tmp |= ( val & APB1ENR_PWREN );
         RCC_PERIPH->APB1ENR = tmp;
@@ -554,8 +555,8 @@ namespace Thor::Driver::RCC
 
     struct PWRENConfig
     {
-      static constexpr uint32_t ON  = APB1ENR_PWREN;
-      static constexpr uint32_t OFF = 0u;
+      static constexpr Reg32_t ON  = APB1ENR_PWREN;
+      static constexpr Reg32_t OFF = 0u;
     };
 
   }    // namespace APB1ENR
@@ -567,14 +568,14 @@ namespace Thor::Driver::RCC
   {
     struct LSEON
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->BDCR & BDCR_LSEON;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_LSEON );
         tmp |= ( val & BDCR_LSEON );
         RCC_PERIPH->BDCR = tmp;
@@ -583,7 +584,7 @@ namespace Thor::Driver::RCC
 
     struct LSERDY
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->BDCR & BDCR_LSERDY;
       }
@@ -591,21 +592,21 @@ namespace Thor::Driver::RCC
 
     struct LSEConfig
     {
-      static constexpr uint32_t OFF    = 0u;
-      static constexpr uint32_t ON     = BDCR_LSEON;
-      static constexpr uint32_t BYPASS = BDCR_LSEBYP | BDCR_LSEON;
+      static constexpr Reg32_t OFF    = 0u;
+      static constexpr Reg32_t ON     = BDCR_LSEON;
+      static constexpr Reg32_t BYPASS = BDCR_LSEBYP | BDCR_LSEON;
     };
 
     struct LSEBYP
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->BDCR & BDCR_LSEBYP;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_LSEBYP );
         tmp |= ( val & BDCR_LSEBYP );
         RCC_PERIPH->BDCR = tmp;
@@ -614,14 +615,14 @@ namespace Thor::Driver::RCC
 
     struct LSEMOD
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->BDCR & BDCR_LSEMOD;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_LSEMOD );
         tmp |= ( val & BDCR_LSEMOD );
         RCC_PERIPH->BDCR = tmp;
@@ -630,14 +631,14 @@ namespace Thor::Driver::RCC
 
     struct RTCSEL
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->BDCR & BDCR_RTCSEL;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_RTCSEL );
         tmp |= ( val & BDCR_RTCSEL );
         RCC_PERIPH->BDCR = tmp;
@@ -646,14 +647,14 @@ namespace Thor::Driver::RCC
 
     struct RTCEN
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->BDCR & BDCR_RTCEN;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_RTCEN );
         tmp |= ( val & BDCR_RTCEN );
         RCC_PERIPH->BDCR = tmp;
@@ -662,14 +663,14 @@ namespace Thor::Driver::RCC
 
     struct BDRST
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->BDCR & BDCR_BDRST;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = RCC_PERIPH->BDCR;
         tmp &= ~( BDCR_BDRST );
         tmp |= ( val & BDCR_BDRST );
         RCC_PERIPH->BDCR = tmp;
@@ -682,22 +683,22 @@ namespace Thor::Driver::RCC
   ------------------------------------------------*/
   namespace CSR
   {
-    static constexpr uint32_t flagSet = 1u;
-    static constexpr uint32_t flagClr = 0u;
+    static constexpr Reg32_t flagSet = 1u;
+    static constexpr Reg32_t flagClr = 0u;
 
-    static constexpr uint32_t locked   = 1u;
-    static constexpr uint32_t unlocked = 0u;
+    static constexpr Reg32_t locked   = 1u;
+    static constexpr Reg32_t unlocked = 0u;
 
     struct LPWRRSTF
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CSR & CSR_LPWRRSTF;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_LPWRRSTF );
         tmp |= ( val & CSR_LPWRRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -706,14 +707,14 @@ namespace Thor::Driver::RCC
 
     struct WWDGRSTF
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CSR & CSR_WWDGRSTF;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_WWDGRSTF );
         tmp |= ( val & CSR_WWDGRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -722,14 +723,14 @@ namespace Thor::Driver::RCC
 
     struct IWDGRSTF
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CSR & CSR_IWDGRSTF;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_IWDGRSTF );
         tmp |= ( val & CSR_IWDGRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -738,14 +739,14 @@ namespace Thor::Driver::RCC
 
     struct SFTRSTF
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CSR & CSR_SFTRSTF;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_SFTRSTF );
         tmp |= ( val & CSR_SFTRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -754,14 +755,14 @@ namespace Thor::Driver::RCC
 
     struct PORRSTF
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CSR & CSR_PORRSTF;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_PORRSTF );
         tmp |= ( val & CSR_PORRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -770,14 +771,14 @@ namespace Thor::Driver::RCC
 
     struct PINRSTF
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CSR & CSR_PINRSTF;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_PINRSTF );
         tmp |= ( val & CSR_PINRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -786,14 +787,14 @@ namespace Thor::Driver::RCC
 
     struct BORRSTF
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CSR & CSR_BORRSTF;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_BORRSTF );
         tmp |= ( val & CSR_BORRSTF );
         RCC_PERIPH->CSR = tmp;
@@ -802,14 +803,14 @@ namespace Thor::Driver::RCC
 
     struct RMVF
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CSR & CSR_RMVF;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_RMVF );
         tmp |= ( val & CSR_RMVF );
         RCC_PERIPH->CSR = tmp;
@@ -818,7 +819,7 @@ namespace Thor::Driver::RCC
 
     struct LSIRDY
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CSR & CSR_LSIRDY;
       }
@@ -826,14 +827,14 @@ namespace Thor::Driver::RCC
 
     struct LSION
     {
-      static inline uint32_t get()
+      static inline Reg32_t get()
       {
         return RCC_PERIPH->CSR & CSR_LSION;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( const Reg32_t val )
       {
-        uint32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = RCC_PERIPH->CSR;
         tmp &= ~( CSR_LSION );
         tmp |= ( val & CSR_LSION );
         RCC_PERIPH->CSR = tmp;
@@ -842,8 +843,8 @@ namespace Thor::Driver::RCC
 
     struct LSIConfig
     {
-      static constexpr uint32_t OFF = 0u;
-      static constexpr uint32_t ON  = 1u;
+      static constexpr Reg32_t OFF = 0u;
+      static constexpr Reg32_t ON  = 1u;
     };
 
   }    // namespace CSR
@@ -858,13 +859,13 @@ namespace Thor::Driver::RCC
    */
   struct PLLInit
   {
-    uint32_t State;  /**< The new state of the PLL.*/
-    uint32_t Source; /**< RCC_PLLSource: PLL entry clock source. */
-    uint32_t M;      /**< PLLM: Division factor for PLL VCO input clock. */
-    uint32_t N;      /**< PLLN: Multiplication factor for PLL VCO output clock. */
-    uint32_t P;      /**< PLLP: Division factor for main system clock (SYSCLK). */
-    uint32_t Q;      /**< PLLQ: Division factor for OTG FS, SDIO and RNG clocks.  */
-    uint32_t R;      /**< PLLR: PLL division factor for I2S, SAI, SYSTEM, SPDIFRX clocks. */
+    Reg32_t State;  /**< The new state of the PLL.*/
+    Reg32_t Source; /**< RCC_PLLSource: PLL entry clock source. */
+    Reg32_t M;      /**< PLLM: Division factor for PLL VCO input clock. */
+    Reg32_t N;      /**< PLLN: Multiplication factor for PLL VCO output clock. */
+    Reg32_t P;      /**< PLLP: Division factor for main system clock (SYSCLK). */
+    Reg32_t Q;      /**< PLLQ: Division factor for OTG FS, SDIO and RNG clocks.  */
+    Reg32_t R;      /**< PLLR: PLL division factor for I2S, SAI, SYSTEM, SPDIFRX clocks. */
   };
 
   /**
@@ -874,11 +875,11 @@ namespace Thor::Driver::RCC
    */
   struct PLLI2SInit
   {
-    uint32_t M; /**< Specifies division factor for PLL VCO input clock. */
-    uint32_t N; /**< Specifies the multiplication factor for PLLI2S VCO output clock. */
-    uint32_t P; /**< Specifies division factor for SPDIFRX Clock. */
-    uint32_t Q; /**< Specifies the division factor for SAI clock. */
-    uint32_t R; /**< Specifies the division factor for I2S clock. */
+    Reg32_t M; /**< Specifies division factor for PLL VCO input clock. */
+    Reg32_t N; /**< Specifies the multiplication factor for PLLI2S VCO output clock. */
+    Reg32_t P; /**< Specifies division factor for SPDIFRX Clock. */
+    Reg32_t Q; /**< Specifies the division factor for SAI clock. */
+    Reg32_t R; /**< Specifies the division factor for I2S clock. */
   };
 
   /**
@@ -888,10 +889,10 @@ namespace Thor::Driver::RCC
    */
   struct PLLSAIInit
   {
-    uint32_t M; /**< Spcifies division factor for PLL VCO input clock. */
-    uint32_t N; /**< Specifies the multiplication factor for PLLI2S VCO output clock. */
-    uint32_t P; /**< Specifies division factor for OTG FS, SDIO and RNG clocks. */
-    uint32_t Q; /**< Specifies the division factor for SAI clock. */
+    Reg32_t M; /**< Spcifies division factor for PLL VCO input clock. */
+    Reg32_t N; /**< Specifies the multiplication factor for PLLI2S VCO output clock. */
+    Reg32_t P; /**< Specifies division factor for OTG FS, SDIO and RNG clocks. */
+    Reg32_t Q; /**< Specifies the division factor for SAI clock. */
   };
 
   /**
@@ -901,11 +902,11 @@ namespace Thor::Driver::RCC
   {
     Configuration::OscillatorType_t
         source;        /**< The oscillators to be configured. Can be multiple values of OscillatorType  OR'd together */
-    uint32_t HSEState; /**< The new state of the HSE. Can be value of CR::HSEConfig */
-    uint32_t LSEState; /**< The new state of the LSE. */
-    uint32_t HSIState; /**< The new state of the HSI. Can be value of CR::HSIConfig */
-    uint32_t LSIState; /**< The new state of the LSI. */
-    uint32_t HSICalibrationValue; /**< The HSI calibration trimming value */
+    Reg32_t HSEState; /**< The new state of the HSE. Can be value of CR::HSEConfig */
+    Reg32_t LSEState; /**< The new state of the LSE. */
+    Reg32_t HSIState; /**< The new state of the HSI. Can be value of CR::HSIConfig */
+    Reg32_t LSIState; /**< The new state of the LSI. */
+    Reg32_t HSICalibrationValue; /**< The HSI calibration trimming value */
     PLLInit PLL;                  /**< Main PLL initialization parameters */
   };
 
@@ -919,7 +920,7 @@ namespace Thor::Driver::RCC
     CFGR::HPRE::AHBPrescale_t AHBCLKDivider;    /**< The AHB clock (HCLK) divider */
     CFGR::PPRE1::APB1Prescale_t APB1CLKDivider; /**< The APB1 clock (PCLK1) divider */
     CFGR::PPRE2::APB2Prescale_t APB2CLKDivider; /**< The APB2 clock (PCLK2) divider */
-    uint32_t FlashLatency;                      /**< The new number of flash wait states given the updated system clock */
+    Reg32_t FlashLatency;                      /**< The new number of flash wait states given the updated system clock */
   };
 
   /**
@@ -927,8 +928,8 @@ namespace Thor::Driver::RCC
    */
   struct RegisterConfig
   {
-    volatile uint32_t *reg; /**< Clock enable register */
-    uint32_t mask;          /**< Bit mask that will enable/disable the peripheral's clock */
+    volatile Reg32_t *reg; /**< Clock enable register */
+    Reg32_t mask;          /**< Bit mask that will enable/disable the peripheral's clock */
   };
 
   /**

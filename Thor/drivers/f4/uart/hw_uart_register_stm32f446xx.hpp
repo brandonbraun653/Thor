@@ -17,6 +17,9 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Chimera Includes */
+#include <Chimera/types/common_types.hpp>
+
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
@@ -28,12 +31,12 @@
 
 namespace Thor::Driver::UART
 {
-  static constexpr uint32_t UART4_BASE_ADDR  = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x4C00U;
-  static constexpr uint32_t UART5_BASE_ADDR  = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x5000U;
+  static constexpr Reg32_t UART4_BASE_ADDR  = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x4C00U;
+  static constexpr Reg32_t UART5_BASE_ADDR  = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x5000U;
 
-  static constexpr uint32_t NUM_UART_PERIPHS = 2u;
+  static constexpr Reg32_t NUM_UART_PERIPHS = 2u;
 
-  static constexpr std::array<uint32_t, NUM_UART_PERIPHS> periphAddressList = { UART4_BASE_ADDR, UART5_BASE_ADDR };
+  static constexpr std::array<Reg32_t, NUM_UART_PERIPHS> periphAddressList = { UART4_BASE_ADDR, UART5_BASE_ADDR };
 }    // namespace Thor::Driver::USART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_UART */

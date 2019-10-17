@@ -15,6 +15,9 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Chimera Includes */
+#include <Chimera/types/common_types.hpp>
+
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/uart/hw_uart_prj.hpp>

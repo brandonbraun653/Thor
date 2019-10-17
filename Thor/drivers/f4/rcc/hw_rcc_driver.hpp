@@ -35,7 +35,7 @@ namespace Thor::Driver::RCC
    *  
    *  @return void 
    */
-  void init();
+  void initializeDriver();
 
   /**
    *  Project specific declaration of the default HSI oscillator frequency in Hz
