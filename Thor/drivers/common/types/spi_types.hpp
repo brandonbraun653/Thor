@@ -14,6 +14,7 @@
 
 /* C++ Includes */
 #include <cstdint>
+#include <memory>
 
 namespace Thor::Driver::SPI
 {
@@ -21,6 +22,10 @@ namespace Thor::Driver::SPI
    *  Forward declaration to ease compilation
    */
   struct RegisterMap;
+
+  class Driver;
+  using Driver_sPtr = std::shared_ptr<Driver>;
+  using Driver_uPtr = std::unique_ptr<Driver>;
 
   using StatusFlags_t = uint32_t;
   using ErrorFlags_t  = uint32_t;

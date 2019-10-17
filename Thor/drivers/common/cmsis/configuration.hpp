@@ -15,14 +15,20 @@
 /* Thor Includes */
 #include <Thor/preprocessor.hpp>
 
-#if defined( CORTEX_M4 )
+#if defined( CORTEX_M4 ) && defined( _EMBEDDED )
 #include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
 
 #define __CM4_REV 0x0001U         /*!< Core revision r0p1                            */
 #define __MPU_PRESENT 1U          /*!< STM32F4XX provides an MPU                     */
 #define __NVIC_PRIO_BITS 4U       /*!< STM32F4XX uses 4 Bits for the Priority Levels */
 #define __Vendor_SysTickConfig 0U /*!< Set to 1 if different SysTick Config is used  */
-#define __FPU_PRESENT 1U          /*!< FPU present                                   */
+#define __FPU_PRESENT 1U          /*!< FPU present */
+
+#elif defined( CORTEX_M4 ) && defined( _SIM )
+#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
+
 #endif
+
+
 
 #endif /* !THOR_CMSIS_CONFIGURATION_HPP */

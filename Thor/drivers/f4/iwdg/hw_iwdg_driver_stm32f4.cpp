@@ -95,7 +95,7 @@ namespace Thor::Driver::IWDG
 
     if ( !validity )
     {
-      return hwCounterMax;
+      return static_cast<uint32_t>( hwCounterMax );
     }
 
     /*------------------------------------------------
@@ -105,13 +105,13 @@ namespace Thor::Driver::IWDG
     float calcTimeout_mS = std::numeric_limits<float>::max();
     float absError       = std::numeric_limits<float>::max();
     float clockPeriod_mS = ( 1000.0f / hwClockFreqHz ) * prescalerActVals[ index ];
-    uint32_t reloadVal   = hwCounterMax;
+    uint32_t reloadVal   = static_cast<uint32_t>( hwCounterMax );
 
     /*------------------------------------------------
     Iterate through all counter values to figure out which one
     produces the closest timeout
     ------------------------------------------------*/
-    for ( uint32_t testVal = hwCounterMin; testVal <= hwCounterMax; testVal++ )
+    for ( uint32_t testVal = static_cast<uint32_t>( hwCounterMin ); testVal <= hwCounterMax; testVal++ )
     {
       calcTimeout_mS = clockPeriod_mS * ( static_cast<float>( testVal ) + 1.0f );
       absError       = fabs( ms - calcTimeout_mS );

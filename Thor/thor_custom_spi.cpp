@@ -9,20 +9,99 @@
  ********************************************************************************/
 
 /* C++ Includes */
-
+#include <array>
 
 /* Chimera Includes */
-
+#include <Chimera/constants/common.hpp>
+#include <Chimera/threading.hpp>
+#include <Chimera/interface/spi_intf.hpp>
 
 /* Thor Includes */
+#include <Thor/drivers/common/types/spi_types.hpp>
+#include <Thor/drivers/spi.hpp>
 #include <Thor/spi.hpp>
+
+
+
+
+static std::array<Thor::SPI::SPIClass *, Thor::Driver::SPI::NUM_SPI_PERIPHS> spiobjects;
+static std::array<TaskHandle_t, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorHandles;
+static std::array<SemaphoreHandle_t, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorSignals;
+
+
+static void SPI1ISRPostProcessorThread( void *argument );
+static void SPI2ISRPostProcessorThread( void *argument );
+static void SPI3ISRPostProcessorThread( void *argument );
+static void SPI4ISRPostProcessorThread( void *argument );
+
+
+namespace Chimera::SPI
+{
+  static size_t s_driver_initialized;
+
+
+  Chimera::Status_t initialize()
+  {
+    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+
+    /*------------------------------------------------
+    Reset driver object memory
+    ------------------------------------------------*/
+    for ( size_t x = 0; x < spiobjects.size(); x++ )
+    {
+      if ( spiobjects[ x ] ) 
+      {
+        spiobjects[ x ]->deInit();
+        vPortFree( spiobjects[ x ] );
+      }
+
+      spiobjects[ x ] = nullptr;
+    }
+
+    /*------------------------------------------------
+    Reset thread handle memory
+    ------------------------------------------------*/
+    for ( size_t x = 0; x < postProcessorHandles.size(); x++ )
+    {
+      if ( postProcessorHandles[ x ] )
+      {
+        vTaskDelete( postProcessorHandles[ x ] );
+        vPortFree( postProcessorHandles[ x ] );
+      }
+
+      postProcessorHandles[ x ] = nullptr;
+    }
+
+    /*------------------------------------------------
+    Reset semaphore signal memory
+    ------------------------------------------------*/
+    for ( size_t x = 0; x < postProcessorSignals.size(); x++ )
+    {
+      if ( postProcessorSignals[ x ] )
+      {
+        vPortFree( postProcessorSignals[ x ] );
+      }
+
+      postProcessorSignals[ x ] = nullptr;
+    }
+
+    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return Chimera::CommonStatusCodes::OK;
+  }
+}
 
 
 namespace Thor::SPI
 {
   SPIClass::SPIClass()
   {
-
+    /*------------------------------------------------
+    Lazy initialize all driver memory in case the user forgot
+    ------------------------------------------------*/
+    if ( Chimera::SPI::s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY )
+    {
+      Chimera::SPI::initialize();
+    }
   }
 
   SPIClass::~SPIClass()

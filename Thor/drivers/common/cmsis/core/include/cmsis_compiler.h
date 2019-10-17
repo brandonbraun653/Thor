@@ -262,6 +262,10 @@
   #endif
 
 
+
+#elif defined( WIN32 ) || defined( WIN64 )
+  #include <Thor/drivers/common/cmsis/core/include/cmsis_windows.h>
+
 #else
   #error Unknown compiler.
 #endif

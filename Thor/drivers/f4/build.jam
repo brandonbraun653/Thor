@@ -73,6 +73,7 @@ local propagated_link_flags =
     -mcpu=cortex-m4
     -specs=nano.specs 
     -specs=nosys.specs
+    --gc-sections
     ;
   
 # ------------------------------------------
