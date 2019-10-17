@@ -15,6 +15,17 @@
 
 namespace Thor::Driver::UART
 {
+#if defined( _EMBEDDED )
+  RegisterMap *const UART4_PERIPH = reinterpret_cast<RegisterMap *const>( UART4_BASE_ADDR );
+  RegisterMap *const UART5_PERIPH = reinterpret_cast<RegisterMap *const>( UART5_BASE_ADDR );
+
+#elif defined( _SIM )
+  RegisterMap *const UART4_PERIPH = new RegisterMap;
+  RegisterMap *const UART5_PERIPH = new RegisterMap;
+
+#endif
+
+
   /* clang-format off */
 
   const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex

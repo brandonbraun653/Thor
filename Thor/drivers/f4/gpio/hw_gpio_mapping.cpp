@@ -15,6 +15,28 @@
 
 namespace Thor::Driver::GPIO
 {
+#if defined( _EMBEDDED )
+  RegisterMap *const GPIOA_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOA_BASE_ADDR );
+  RegisterMap *const GPIOB_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOB_BASE_ADDR );
+  RegisterMap *const GPIOC_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOC_BASE_ADDR );
+  RegisterMap *const GPIOD_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOD_BASE_ADDR );
+  RegisterMap *const GPIOE_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOE_BASE_ADDR );
+  RegisterMap *const GPIOF_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOF_BASE_ADDR );
+  RegisterMap *const GPIOG_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOG_BASE_ADDR );
+  RegisterMap *const GPIOH_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOH_BASE_ADDR );
+
+#elif defined( _SIM )
+  RegisterMap *const GPIOA_PERIPH = new RegisterMap;
+  RegisterMap *const GPIOB_PERIPH = new RegisterMap;
+  RegisterMap *const GPIOC_PERIPH = new RegisterMap;
+  RegisterMap *const GPIOD_PERIPH = new RegisterMap;
+  RegisterMap *const GPIOE_PERIPH = new RegisterMap;
+  RegisterMap *const GPIOF_PERIPH = new RegisterMap;
+  RegisterMap *const GPIOG_PERIPH = new RegisterMap;
+  RegisterMap *const GPIOH_PERIPH = new RegisterMap;
+
+#endif 
+
   /* clang-format off */
 
   const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Pull::NUM_OPTIONS)> PullMap =

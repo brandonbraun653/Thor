@@ -25,6 +25,9 @@
 
 namespace Thor::Driver::UART
 {
+  extern RegisterMap *const UART4_PERIPH;
+  extern RegisterMap *const UART5_PERIPH;
+
   /**
    *  Maps a UART peripheral into the corresponding resource index
    */

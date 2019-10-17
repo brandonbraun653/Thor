@@ -17,6 +17,7 @@
 
 /* Thor Includes */
 #include <Thor/watchdog.hpp>
+#include <Thor/drivers/watchdog.hpp>
 
 namespace Thor::Watchdog
 {

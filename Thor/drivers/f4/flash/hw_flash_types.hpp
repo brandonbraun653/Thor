@@ -34,8 +34,6 @@ namespace Thor::Driver::Flash
     volatile uint32_t OPTCR1;  /**< FLASH option control register 1, Address offset: 0x18 */
   };
 
-  static RegisterMap *const FLASH_PERIPH = reinterpret_cast<RegisterMap *const>( FLASH_BASE_ADDR );
-
   /*------------------------------------------------
   Access Control Register (ACR)
   ------------------------------------------------*/
@@ -43,97 +41,97 @@ namespace Thor::Driver::Flash
   {
     struct DCRST
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return FLASH_PERIPH->ACR & ACR_DCRST;
+        return periph->ACR & ACR_DCRST;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = FLASH_PERIPH->ACR;
+        uint32_t tmp = periph->ACR;
         tmp &= ~( ACR_DCRST );
         tmp |= val;
-        FLASH_PERIPH->ACR = tmp;
+        periph->ACR = tmp;
       }
     };
 
     struct ICRST
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return FLASH_PERIPH->ACR & ACR_ICRST;
+        return periph->ACR & ACR_ICRST;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = FLASH_PERIPH->ACR;
+        uint32_t tmp = periph->ACR;
         tmp &= ~( ACR_ICRST );
         tmp |= val & ACR_ICRST;
-        FLASH_PERIPH->ACR = tmp;
+        periph->ACR = tmp;
       }
     };
 
     struct DCEN
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return FLASH_PERIPH->ACR & ACR_DCEN;
+        return periph->ACR & ACR_DCEN;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = FLASH_PERIPH->ACR;
+        uint32_t tmp = periph->ACR;
         tmp &= ~( ACR_DCEN );
         tmp |= val & ACR_DCEN;
-        FLASH_PERIPH->ACR = tmp;
+        periph->ACR = tmp;
       }
     };
 
     struct ICEN
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return FLASH_PERIPH->ACR & ACR_ICEN;
+        return periph->ACR & ACR_ICEN;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = FLASH_PERIPH->ACR;
+        uint32_t tmp = periph->ACR;
         tmp &= ~( ACR_ICEN );
         tmp |= val & ACR_ICEN;
-        FLASH_PERIPH->ACR = tmp;
+        periph->ACR = tmp;
       }
     };
 
     struct PRFTEN
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return FLASH_PERIPH->ACR & ACR_PRFTEN;
+        return periph->ACR & ACR_PRFTEN;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = FLASH_PERIPH->ACR;
+        uint32_t tmp = periph->ACR;
         tmp &= ~( ACR_PRFTEN );
         tmp |= val & ACR_PRFTEN;
-        FLASH_PERIPH->ACR = tmp;
+        periph->ACR = tmp;
       }
     };
 
     struct LATENCY
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return FLASH_PERIPH->ACR & ACR_LATENCY;
+        return periph->ACR & ACR_LATENCY;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = FLASH_PERIPH->ACR;
+        uint32_t tmp = periph->ACR;
         tmp &= ~( ACR_LATENCY );
         tmp |= val & ACR_LATENCY;
-        FLASH_PERIPH->ACR = tmp;
+        periph->ACR = tmp;
       }
     };
   }    // namespace ACR

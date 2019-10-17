@@ -27,6 +27,15 @@
 
 namespace Thor::Driver::GPIO
 {
+  extern RegisterMap *const GPIOA_PERIPH;
+  extern RegisterMap *const GPIOB_PERIPH;
+  extern RegisterMap *const GPIOC_PERIPH;
+  extern RegisterMap *const GPIOD_PERIPH;
+  extern RegisterMap *const GPIOE_PERIPH;
+  extern RegisterMap *const GPIOF_PERIPH;
+  extern RegisterMap *const GPIOG_PERIPH;
+  extern RegisterMap *const GPIOH_PERIPH;
+
   /**
    *  Maps a Chimera GPIO Pull type into the appropriate register configuration value
    */

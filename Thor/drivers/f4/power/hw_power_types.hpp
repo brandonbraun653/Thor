@@ -3,7 +3,7 @@
  *    hw_power_types.hpp
  *
  *   Description:
- *    Declares types specific to the PWR peripehral
+ *    Declares types specific to the PWR peripheral
  *
  *   2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -28,8 +28,6 @@ namespace Thor::Driver::PWR
     volatile uint32_t CSR; /**< PWR control status register,  Address offset: 0x04 */
   };
 
-  static RegisterMap *const PWR_PERIPH = reinterpret_cast<RegisterMap *const>( PWR_BASE_ADDR );
-
   /*------------------------------------------------
   PWR_CR Register Interaction Model
   ------------------------------------------------*/
@@ -37,177 +35,177 @@ namespace Thor::Driver::PWR
   {
     struct LPDS
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_LPDS;
+        return periph->CR & CR_LPDS;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_LPDS );
         tmp |= ( val & CR_LPDS );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct PDDS
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_PDDS;
+        return periph->CR & CR_PDDS;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_PDDS );
         tmp |= ( val & CR_PDDS );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct CWUF
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_CWUF;
+        return periph->CR & CR_CWUF;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_CWUF );
         tmp |= ( val & CR_CWUF );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct CSBF
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_CSBF;
+        return periph->CR & CR_CSBF;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_CSBF );
         tmp |= ( val & CR_CSBF );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct PVDE
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_PVDE;
+        return periph->CR & CR_PVDE;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_PVDE );
         tmp |= ( val & CR_PVDE );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct PLS
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_PLS;
+        return periph->CR & CR_PLS;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_PLS );
         tmp |= ( val & CR_PLS );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct DBP
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_DBP;
+        return periph->CR & CR_DBP;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_DBP );
         tmp |= ( val & CR_DBP );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct FPDS
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_FPDS;
+        return periph->CR & CR_FPDS;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_FPDS );
         tmp |= ( val & CR_FPDS );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct LPUDS
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_LPLVDS;
+        return periph->CR & CR_LPLVDS;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_LPLVDS );
         tmp |= ( val & CR_LPLVDS );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct MRUDS
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_MRLVDS;
+        return periph->CR & CR_MRLVDS;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_MRLVDS );
         tmp |= ( val & CR_MRLVDS );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct ADCDC1
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_ADCDC1;
+        return periph->CR & CR_ADCDC1;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_ADCDC1 );
         tmp |= ( val & CR_ADCDC1 );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
@@ -217,97 +215,97 @@ namespace Thor::Driver::PWR
       static constexpr uint32_t VOLTAGE_SCALE_2 = CR_VOS_1;
       static constexpr uint32_t VOLTAGE_SCALE_3 = CR_VOS_0;
 
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_VOS;
+        return periph->CR & CR_VOS;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_VOS );
         tmp |= ( val & CR_VOS );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct ODEN
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_ODEN;
+        return periph->CR & CR_ODEN;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_ODEN );
         tmp |= ( val & CR_ODEN );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct ODSWEN
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_ODSWEN;
+        return periph->CR & CR_ODSWEN;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_ODSWEN );
         tmp |= ( val & CR_ODSWEN );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct UDEN
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_UDEN;
+        return periph->CR & CR_UDEN;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_UDEN );
         tmp |= ( val & CR_UDEN );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct FMSSR
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_FMSSR;
+        return periph->CR & CR_FMSSR;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_FMSSR );
         tmp |= ( val & CR_FMSSR );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct FISSR
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CR & CR_FISSR;
+        return periph->CR & CR_FISSR;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CR;
+        uint32_t tmp = periph->CR;
         tmp &= ~( CR_FISSR );
         tmp |= ( val & CR_FISSR );
-        PWR_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
   }    // namespace CR
@@ -319,121 +317,121 @@ namespace Thor::Driver::PWR
   {
     struct WUF
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CSR & CSR_WUF;
+        return periph->CSR & CSR_WUF;
       }
     };
 
     struct SBF
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CSR & CSR_SBF;
+        return periph->CSR & CSR_SBF;
       }
     };
 
     struct PVDO
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CSR & CSR_PVDO;
+        return periph->CSR & CSR_PVDO;
       }
     };
 
     struct BRR
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CSR & CSR_BRR;
+        return periph->CSR & CSR_BRR;
       }
     };
 
     struct EWUP2
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CSR & CSR_EWUP2;
+        return periph->CSR & CSR_EWUP2;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CSR;
+        uint32_t tmp = periph->CSR;
         tmp &= ~( CSR_EWUP2 );
         tmp |= ( val & CSR_EWUP2 );
-        PWR_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 
     struct EWUP1
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CSR & CSR_EWUP1;
+        return periph->CSR & CSR_EWUP1;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CSR;
+        uint32_t tmp = periph->CSR;
         tmp &= ~( CSR_EWUP1 );
         tmp |= ( val & CSR_EWUP1 );
-        PWR_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 
     struct BRE
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CSR & CSR_BRE;
+        return periph->CSR & CSR_BRE;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CSR;
+        uint32_t tmp = periph->CSR;
         tmp &= ~( CSR_BRE );
         tmp |= ( val & CSR_BRE );
-        PWR_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 
     struct VOSRDY
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CSR & CSR_VOSRDY;
+        return periph->CSR & CSR_VOSRDY;
       }
     };
 
     struct ODRDY
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CSR & CSR_ODRDY;
+        return periph->CSR & CSR_ODRDY;
       }
     };
 
     struct ODSWRDY
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CSR & CSR_ODSWRDY;
+        return periph->CSR & CSR_ODSWRDY;
       }
     };
 
     struct UDRDY
     {
-      static inline uint32_t get()
+      static inline uint32_t get( const RegisterMap *const periph )
       {
-        return PWR_PERIPH->CSR & CSR_UDRDY;
+        return periph->CSR & CSR_UDRDY;
       }
 
-      static inline void set( const uint32_t val )
+      static inline void set( RegisterMap *const periph, const uint32_t val )
       {
-        uint32_t tmp = PWR_PERIPH->CSR;
+        uint32_t tmp = periph->CSR;
         tmp &= ~( CSR_UDRDY );
         tmp |= ( val & CSR_UDRDY );
-        PWR_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 

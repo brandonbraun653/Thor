@@ -195,7 +195,7 @@ namespace Thor::USART
     MCU specific register configuration settings. If these lookup
     tables fail, you might have something wrong with the mappings.
     ------------------------------------------------*/
-    cfg.BaudRate   = config.baud;
+    cfg.BaudRate   = static_cast<uint32_t>( config.baud );
     cfg.Mode       = USARTDriver::Configuration::Modes::TX_RX;
     cfg.Parity     = USARTDriver::ParityToRegConfig[ static_cast<size_t>( config.parity ) ];
     cfg.StopBits   = USARTDriver::StopBitsToRegConfig[ static_cast<size_t>( config.stopBits ) ];

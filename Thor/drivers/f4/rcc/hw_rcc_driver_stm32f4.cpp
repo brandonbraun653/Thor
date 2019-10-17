@@ -30,8 +30,9 @@
 #include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
 #include <Thor/drivers/model/rcc_model.hpp>
 
-#include <Thor/drivers/f4/flash/hw_flash_driver.hpp>
+#include <Thor/drivers/f4/flash/hw_flash_mapping.hpp>
 #include <Thor/drivers/f4/gpio/hw_gpio_mapping.hpp>
+#include <Thor/drivers/f4/power/hw_power_mapping.hpp>
 #include <Thor/drivers/f4/uart/hw_uart_mapping.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
 #include <Thor/drivers/f4/wwdg/hw_wwdg_mapping.hpp>
@@ -370,7 +371,7 @@ namespace Thor::Driver::RCC
     /*------------------------------------------------
     Set the voltage scaling to allow us to achieve max clock
     ------------------------------------------------*/
-    PWR::CR::VOS::set( PWR::CR::VOS::VOLTAGE_SCALE_1 );
+    PWR::CR::VOS::set( Thor::Driver::PWR::PWR_PERIPH, PWR::CR::VOS::VOLTAGE_SCALE_1 );
 
     /*------------------------------------------------
     Configure the system clocks
@@ -780,7 +781,7 @@ namespace Thor::Driver::RCC
     using namespace BDCR;
 
     bool pwrclkchanged = false;
-    uint32_t tickstart = 0u;
+    size_t tickstart = 0u;
 
     /*------------------------------------------------
     Updating the LSE configuration requires write access
@@ -794,14 +795,14 @@ namespace Thor::Driver::RCC
     /*------------------------------------------------
     Enable write access to RTC and RTC Backup registers
     ------------------------------------------------*/
-    if ( !PWR::CR::DBP::get() )
+    if ( !PWR::CR::DBP::get( Thor::Driver::PWR::PWR_PERIPH ) )
     {
-      PWR::CR::DBP::set( PWR::CR_DBP );
+      PWR::CR::DBP::set( Thor::Driver::PWR::PWR_PERIPH, PWR::CR_DBP );
 
       /* Wait for Backup domain Write protection disable */
       tickstart = Chimera::millis();
 
-      while ( !PWR::CR::DBP::get() )
+      while ( !PWR::CR::DBP::get( Thor::Driver::PWR::PWR_PERIPH ) )
       {
         if ( ( Chimera::millis() - tickstart ) > DBP_TIMEOUT_VALUE_MS )
         {
@@ -1033,8 +1034,8 @@ namespace Thor::Driver::RCC
     Validate latency configuration since this is such
     a critical operating parameter.
     ------------------------------------------------*/
-    ACR::LATENCY::set( value );
-    while ( ACR::LATENCY::get() != value )
+    ACR::LATENCY::set( Thor::Driver::Flash::FLASH_PERIPH, value );
+    while ( ACR::LATENCY::get( Thor::Driver::Flash::FLASH_PERIPH ) != value )
     {
       ;
     }
@@ -1110,9 +1111,6 @@ namespace Thor::Driver::RCC
         PCLK2Config( init );
       }
 
-      /* Update the SystemCoreClock global variable. FreeRTOS defines this as uint32_t, so make
-         sure that our sizing matches otherwise we might run into addressing issues. */
-      static_assert( sizeof( uint32_t ) == sizeof( size_t ), "" );
       prjGetSysClockFreq( reinterpret_cast<size_t *>( &SystemCoreClock ) );
     }
 

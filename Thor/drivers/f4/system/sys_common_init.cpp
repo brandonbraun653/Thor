@@ -18,6 +18,7 @@
 
 using namespace Thor::Driver::RCC;
 
+#if defined( _EMBEDDED )
 void SystemInit()
 {
 
@@ -52,3 +53,11 @@ void SystemInit()
               Thor::System::MemoryMap::VECT_TAB_OFFSET; /* Vector Table Relocation in Internal FLASH */
 #endif
 }
+
+#elif defined( _SIM )
+void SystemInit()
+{
+
+}
+
+#endif 

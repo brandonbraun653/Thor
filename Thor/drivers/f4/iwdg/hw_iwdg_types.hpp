@@ -21,7 +21,6 @@
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
 namespace Thor::Driver::IWDG
 {
-
   struct RegisterMap
   {
     volatile uint32_t KR;   /**< IWDG Key Register,       Address offset: 0x00 */
@@ -29,8 +28,6 @@ namespace Thor::Driver::IWDG
     volatile uint32_t RLR;  /**< IWDG Reload Register,    Address offset: 0x08 */
     volatile uint32_t SR;   /**< IWDG Status Register,    Address offset: 0x0C */
   };
-
-  static RegisterMap *const IWDG_PERIPH = reinterpret_cast<RegisterMap *const>( IWDG_BASE_ADDR );
 
   /*------------------------------------------------
   Configuration Options

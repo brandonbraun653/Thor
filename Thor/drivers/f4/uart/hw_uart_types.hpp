@@ -29,9 +29,6 @@ namespace Thor::Driver::UART
   ------------------------------------------------*/
   using RegisterMap = Thor::Driver::USART::RegisterMap;
 
-  static RegisterMap *const UART4_PERIPH = reinterpret_cast<RegisterMap *const>( UART4_BASE_ADDR );
-  static RegisterMap *const UART5_PERIPH = reinterpret_cast<RegisterMap *const>( UART5_BASE_ADDR );
-
   /**
    *  Checks if the given address belongs to a peripheral instance
    *

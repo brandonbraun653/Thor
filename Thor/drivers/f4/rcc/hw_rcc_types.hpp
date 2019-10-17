@@ -64,7 +64,7 @@ namespace Thor::Driver::RCC
     volatile uint32_t DCKCFGR2;   /**< RCC Dedicated Clocks configuration register 2,               Address offset: 0x94 */
   };
 
-  static RegisterMap *const RCC_PERIPH = reinterpret_cast<RegisterMap *const>( RCC_BASE_ADDR );
+  extern RegisterMap *const RCC_PERIPH;
 
   /*------------------------------------------------
   Configuration Options

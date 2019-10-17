@@ -74,6 +74,6 @@ namespace Thor::Driver::Interrupt
   {
     NVIC_SystemReset();
   }
-}
+}    // namespace Thor::Driver::Interrupt
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_NVIC */

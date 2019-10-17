@@ -37,11 +37,6 @@ namespace Thor::Driver::USART
     volatile uint32_t GTPR; /**< USART Guard time and prescaler register, Address offset: 0x18 */
   };
 
-  static RegisterMap *const USART1_PERIPH = reinterpret_cast<RegisterMap *const>( USART1_BASE_ADDR );
-  static RegisterMap *const USART2_PERIPH = reinterpret_cast<RegisterMap *const>( USART2_BASE_ADDR );
-  static RegisterMap *const USART3_PERIPH = reinterpret_cast<RegisterMap *const>( USART3_BASE_ADDR );
-  static RegisterMap *const USART6_PERIPH = reinterpret_cast<RegisterMap *const>( USART6_BASE_ADDR );
-
   /**
    *  Checks if the given address belongs to a peripheral instance
    *

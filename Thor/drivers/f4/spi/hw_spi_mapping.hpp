@@ -26,10 +26,10 @@ namespace Thor::Driver::SPI
 /*------------------------------------------------
   Peripheral Memory Mapping
   ------------------------------------------------*/
-  static RegisterMap *const SPI1_PERIPH = reinterpret_cast<RegisterMap *const>( SPI1_BASE_ADDR );
-  static RegisterMap *const SPI2_PERIPH = reinterpret_cast<RegisterMap *const>( SPI2_BASE_ADDR );
-  static RegisterMap *const SPI3_PERIPH = reinterpret_cast<RegisterMap *const>( SPI3_BASE_ADDR );
-  static RegisterMap *const SPI4_PERIPH = reinterpret_cast<RegisterMap *const>( SPI4_BASE_ADDR );
+  extern RegisterMap *const SPI1_PERIPH;
+  extern RegisterMap *const SPI2_PERIPH;
+  extern RegisterMap *const SPI3_PERIPH;
+  extern RegisterMap *const SPI4_PERIPH;
 
   /*------------------------------------------------
   Peripheral DMA Signals

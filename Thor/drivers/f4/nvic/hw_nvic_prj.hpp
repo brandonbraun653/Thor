@@ -23,4 +23,8 @@
 #include <Thor/drivers/f4/nvic/hw_nvic_register_stm32f446xx.hpp>
 #endif
 
+#if defined( _SIM ) && ( defined( WIN32 ) || defined( WIN64 ) )
+#include <Thor/drivers/common/cmsis/core/include/cmsis_windows.h>
+#endif 
+
 #endif /* !THOR_HW_DRIVER_NVIC_HPP */

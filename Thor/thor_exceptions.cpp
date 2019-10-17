@@ -26,6 +26,8 @@ namespace Thor::Exception
 }    // namespace Thor::Exception
 
 
+#if defined( _EMBEDDED )
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -125,3 +127,5 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* _EMBEDDED */

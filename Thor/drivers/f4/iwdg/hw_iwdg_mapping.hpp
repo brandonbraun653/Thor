@@ -19,13 +19,16 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/drivers/f4/iwdg/hw_iwdg_types.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
 
 namespace Thor::Driver::IWDG
 {
+  extern RegisterMap *const IWDG_PERIPH;
+
   /**
-   *  Maps a Watchdog perihperal into the corresponding resource index for lookup tables.
+   *  Maps a Watchdog peripheral into the corresponding resource index for lookup tables.
    */
   extern const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
 }

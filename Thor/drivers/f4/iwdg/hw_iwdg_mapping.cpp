@@ -16,6 +16,14 @@
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
 namespace Thor::Driver::IWDG
 {
+#if defined( _EMBEDDED )
+  RegisterMap *const IWDG_PERIPH = reinterpret_cast<RegisterMap *const>( IWDG_BASE_ADDR );
+
+#elif defined( _SIM )
+  RegisterMap *const IWDG_PERIPH = new RegisterMap;
+
+#endif
+
   const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex = {
     { reinterpret_cast<std::uintptr_t>( IWDG_PERIPH ), 0u }
   };

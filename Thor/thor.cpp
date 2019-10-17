@@ -18,44 +18,6 @@
 #include <Thor/print.hpp>
 #include <Thor/definitions/interrupt_definitions.hpp>
 
-#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
-void ThorInit()
-{
-  /* This absolutely must be called first to setup the HAL system properly */
-#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
-  HAL_Init();
-#endif 
-
-  /* Set the clock and peripheral settings to max performance */
-  ThorSystemClockConfig();
-
-  /* Enforce the system interrupt priority structure */
-  HAL_NVIC_SetPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
-
-
-#if WRITE_BUFFERING_DISABLED
-  DISABLE_WRITE_BUFFERING;
-#endif
-
-
-/* Set up the EXTI handler for passing messages from
- * from high priority to low priority interrupts. */
-#ifdef USING_FREERTOS
-  // setupEXTI0_Interrupt();
-#endif
-
-#if USE_SERIAL_DEBUG_OUTPUT && !defined( USING_VISUALGDB_PROFILER )
-//  setupSTDIO();
-#endif
-}
-
-void cSystemInit()
-{
-  ThorInit();
-}
-
-#endif
-
 namespace Thor
 {
   static size_t systemTick = 0u;

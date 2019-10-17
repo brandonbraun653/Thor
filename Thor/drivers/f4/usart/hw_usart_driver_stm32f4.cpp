@@ -672,7 +672,7 @@ namespace Thor::Driver::USART
     Calculate the BRR value. Mostly this was taken directly from
     the STM32 HAL Macros.
     ------------------------------------------------*/
-    uint32_t over8Compensator = 2u;
+    size_t over8Compensator = 2u;
 
     if ( CR1::OVER8::get( periph ) )
     {
@@ -684,7 +684,7 @@ namespace Thor::Driver::USART
     auto fraction_divisor = ( ( divisor - ( mantissa_divisor * 100u ) ) * 16u + 50u ) / 100u;
     calculatedBRR         = ( mantissa_divisor << BRR_DIV_Mantissa_Pos ) | ( fraction_divisor & BRR_DIV_Fraction );
 
-    return calculatedBRR;
+    return static_cast<uint32_t>( calculatedBRR );
   }
 
   inline void Driver::enterCriticalSection()

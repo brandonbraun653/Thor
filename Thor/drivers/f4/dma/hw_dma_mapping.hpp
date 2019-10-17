@@ -30,6 +30,32 @@
 
 namespace Thor::Driver::DMA
 {
+  extern RegisterMap *const DMA1_PERIPH;
+  extern RegisterMap *const DMA2_PERIPH;
+
+  extern StreamX *const DMA1_STREAM0;
+  extern StreamX *const DMA1_STREAM1;
+  extern StreamX *const DMA1_STREAM2;
+  extern StreamX *const DMA1_STREAM3;
+  extern StreamX *const DMA1_STREAM4;
+  extern StreamX *const DMA1_STREAM5;
+  extern StreamX *const DMA1_STREAM6;
+  extern StreamX *const DMA1_STREAM7;
+
+  extern StreamX *const DMA2_STREAM0;
+  extern StreamX *const DMA2_STREAM1;
+  extern StreamX *const DMA2_STREAM2;
+  extern StreamX *const DMA2_STREAM3;
+  extern StreamX *const DMA2_STREAM4;
+  extern StreamX *const DMA2_STREAM5;
+  extern StreamX *const DMA2_STREAM6;
+  extern StreamX *const DMA2_STREAM7;
+
+  extern const std::array<RegisterMap *const, NUM_DMA_PERIPHS> periphInstanceList;
+
+  extern const std::array<StreamX *const, NUM_DMA_STREAMS> streamInstanceList;
+
+
   /**
    *  Maps a DMA peripheral into the corresponding resource index
    */

@@ -298,7 +298,7 @@ namespace Thor::DMA
     TCB tcb;
     tcb.srcAddress   = transfer.srcAddress;
     tcb.dstAddress   = transfer.dstAddress;
-    tcb.transferSize = transfer.transferSize;
+    tcb.transferSize = static_cast<uint32_t>( transfer.transferSize );
 
     return tcb;
   }

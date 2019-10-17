@@ -1,6 +1,6 @@
 /********************************************************************************
  *   File Name:
- *    hw_power_mapping.hpp
+ *    hw_flash_mapping.hpp
  *
  *   Description:
  *    Provides structures for conversion and mapping between data types for fast
@@ -9,20 +9,22 @@
  *   2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-#pragma once 
-#ifndef THOR_HW_POWER_MAPPING_HPP
-#define THOR_HW_POWER_MAPPING_HPP
-
 /* Driver Includes */
 #include <Thor/headers.hpp>
-#include <Thor/drivers/f4/power/hw_power_types.hpp>
+#include <Thor/drivers/f4/flash/hw_flash_mapping.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_PWR == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_FLASH == 1 )
 
-namespace Thor::Driver::PWR
+namespace Thor::Driver::Flash
 {
-  extern RegisterMap *const PWR_PERIPH;
+#if defined( _EMBEDDED )
+  RegisterMap *const FLASH_PERIPH = reinterpret_cast<RegisterMap *const>( FLASH_BASE_ADDR );
+
+#elif defined( _SIM )
+  RegisterMap *const FLASH_PERIPH = new RegisterMap;
+
+#endif
+
 }
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_PWR */
-#endif /* !THOR_HW_POWER_MAPPING_HPP */
+#endif /* TARGET_STM32F4 && THOR_DRIVER_FLASH */

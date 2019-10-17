@@ -29,6 +29,11 @@
 
 namespace Thor::Driver::USART
 {
+  extern RegisterMap *const USART1_PERIPH;
+  extern RegisterMap *const USART2_PERIPH;
+  extern RegisterMap *const USART3_PERIPH;
+  extern RegisterMap *const USART6_PERIPH;
+
   /**
    *  Maps a USART peripheral into the corresponding resource index
    */

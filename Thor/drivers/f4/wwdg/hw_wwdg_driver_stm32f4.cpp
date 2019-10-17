@@ -94,12 +94,12 @@ namespace Thor::Driver::WWDG
     correlates to the actual prescaler numerical divisor.
     ------------------------------------------------*/
     auto pair     = Chimera::Utilities::findInVector( prescalerRegVals, prescaler );
-    int index     = pair.second;
+    size_t index  = pair.second;
     bool validity = pair.first;
 
     if ( !validity )
     {
-      return hwCounterMax;
+      return static_cast<uint32_t>( hwCounterMax );
     }
 
     /*------------------------------------------------
@@ -115,13 +115,13 @@ namespace Thor::Driver::WWDG
     float calcTimeout_mS = std::numeric_limits<float>::max();
     float absError       = std::numeric_limits<float>::max();
     float clockPeriod_mS = ( 1000.0f / pclk1 ) * pclk1div * prescalerActVals[ index ];
-    uint32_t reloadVal   = hwCounterMax;
+    uint32_t reloadVal   = static_cast<uint32_t>( hwCounterMax );
 
     /*------------------------------------------------
     Iterate through all counter values to figure out which one
     produces the closest timeout
     ------------------------------------------------*/
-    for ( uint32_t testVal = hwCounterMin; testVal <= hwCounterMax; testVal++ )
+    for ( uint32_t testVal = static_cast<uint32_t>( hwCounterMin ); testVal <= hwCounterMax; testVal++ )
     {
       calcTimeout_mS = clockPeriod_mS * static_cast<float>( testVal ) + 1.0f;
       absError       = fabs( ms - calcTimeout_mS );
@@ -147,7 +147,7 @@ namespace Thor::Driver::WWDG
 
     if ( !validity )
     {
-      return hwCounterMax;
+      return static_cast<uint32_t>( hwCounterMax );
     }
 
     /*------------------------------------------------

@@ -28,8 +28,6 @@ namespace Thor::Driver::WWDG
     volatile uint32_t SR;   /**< WWDG Status Register,          Address offset: 0x08 */
   };
 
-  static RegisterMap *const WWDG_PERIPH = reinterpret_cast<RegisterMap *const>( WWDG_BASE_ADDR );
-
   /*------------------------------------------------
   Configuration Options
   ------------------------------------------------*/

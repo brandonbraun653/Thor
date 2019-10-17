@@ -17,6 +17,20 @@
 
 namespace Thor::Driver::USART
 {
+#if defined( _EMBEDDED )
+  RegisterMap *const USART1_PERIPH = reinterpret_cast<RegisterMap *const>( USART1_BASE_ADDR );
+  RegisterMap *const USART2_PERIPH = reinterpret_cast<RegisterMap *const>( USART2_BASE_ADDR );
+  RegisterMap *const USART3_PERIPH = reinterpret_cast<RegisterMap *const>( USART3_BASE_ADDR );
+  RegisterMap *const USART6_PERIPH = reinterpret_cast<RegisterMap *const>( USART6_BASE_ADDR );
+
+#elif defined( _SIM )
+  RegisterMap *const USART1_PERIPH = new RegisterMap;
+  RegisterMap *const USART2_PERIPH = new RegisterMap;
+  RegisterMap *const USART3_PERIPH = new RegisterMap;
+  RegisterMap *const USART6_PERIPH = new RegisterMap;
+
+#endif
+
   const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex{
     { reinterpret_cast<std::uintptr_t>( USART1_PERIPH ), 0 },
     { reinterpret_cast<std::uintptr_t>( USART2_PERIPH ), 1 },
