@@ -1,37 +1,39 @@
 /********************************************************************************
  *   File Name:
- *    hw_spi_mapping.cpp
+ *    hw_rcc_mapping.cpp
  *
  *   Description:
- *    Useful maps for the SPI peripherals
+ *    Useful maps for the RCC peripherals
  *
  *   2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_mapping.hpp>
+#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
 
-namespace Thor::Driver::SPI
+namespace Thor::Driver::RCC
 {
   /*------------------------------------------------
   Chip Specific Resources
   ------------------------------------------------*/
   PeriphRegisterList PeripheralList;
-  DMASignalList RXDMASignals;
-  DMASignalList TXDMASignals;
-  DriverInstanceList spiObjects;
 
 
   void initializeMapping()
   {
-    spiObjects.fill( nullptr );
+    LookupTables::DMAInit();
+    LookupTables::GPIOInit();
+    LookupTables::SPIInit();
+    LookupTables::UARTInit();
+    LookupTables::USARTInit();
+    LookupTables::WWDGInit();
   }
 
-  bool isSPI( const std::uintptr_t address )
+  bool isRCC( const std::uintptr_t address )
   {
     bool result = false;
 
@@ -47,6 +49,6 @@ namespace Thor::Driver::SPI
     return result;
   }
 
-}    // namespace Thor::Driver::SPI
+}    // namespace Thor::Driver::RCC
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_SPI */
+#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */

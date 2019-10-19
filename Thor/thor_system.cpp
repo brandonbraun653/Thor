@@ -19,6 +19,7 @@
 #include <Thor/headers.hpp>
 #include <Thor/system.hpp>
 #include <Thor/dma.hpp>
+#include <Thor/spi.hpp>
 
 /* Driver Includes */
 #include <Thor/drivers/nvic.hpp>
@@ -52,10 +53,12 @@ namespace Chimera::System
 {
   Chimera::Status_t prjSystemStartup()
   {
+    Thor::SPI::initialize();
+
     /*------------------------------------------------
     Initialize the system clocks
     ------------------------------------------------*/
-    Thor::Driver::RCC::initializeDriver();
+    Thor::Driver::RCC::initialize();
     auto sys = Thor::Driver::RCC::SystemClock::get();
     sys->configureProjectClocks();
 

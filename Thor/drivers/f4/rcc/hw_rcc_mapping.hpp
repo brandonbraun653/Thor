@@ -34,11 +34,41 @@
 
 namespace Thor::Driver::RCC
 {
+#if defined( STM32_RCC1_PERIPH_AVAILABLE )
+  extern RegisterMap *RCC1_PERIPH;
+#endif 
+  
+  /*------------------------------------------------
+  Peripheral Memory Mapping
+  ------------------------------------------------*/
+  extern PeriphRegisterList PeripheralList; /**< Memory mapped structs to each RCC instance */
+
+  /*------------------------------------------------
+  Maps a RCC peripheral into the corresponding resource index
+  ------------------------------------------------*/
+  extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+
+  /**
+   *  Initializes memory associated with mapping
+   *  
+   *  @return void
+   */
+  extern void initializeMapping();
+
+  /**
+   *  Checks if the given address belongs to a peripheral instance
+   *
+   *  @return bool
+   */
+  extern bool isRCC( const std::uintptr_t address );
+
   namespace LookupTables
   {
     /**
      *  DMA Peripheral Config Lookup Tables
      */
+    extern void DMAInit();
+
 #if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
     static constexpr size_t dmaTableSize = Thor::Driver::DMA::NUM_DMA_PERIPHS;
 
@@ -49,13 +79,13 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig DMA_ResetConfig[ dmaTableSize ];
 
     extern const Configuration::ClockType_t DMA_SourceClock[ dmaTableSize ];
-
-    extern void DMAInitTables();
 #endif 
 
     /**
      *  GPIO Peripheral Config Lookup Tables
      */
+    extern void GPIOInit();
+
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
 
     static constexpr size_t gpioTableSize = Thor::Driver::GPIO::NUM_GPIO_PERIPHS;
@@ -67,13 +97,13 @@ namespace Thor::Driver::RCC
     extern const RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
 
     extern const Configuration::ClockType_t GPIO_SourceClock[ gpioTableSize ];
-
-    extern void GPIOInitTables();
 #endif
 
     /**
      *  SPI Peripheral Config Lookup Tables
      */
+    extern void SPIInit();
+
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
 
     static constexpr size_t spiTableSize = Thor::Driver::SPI::NUM_SPI_PERIPHS;
@@ -87,9 +117,11 @@ namespace Thor::Driver::RCC
     extern const Configuration::ClockType_t SPI_SourceClock[ spiTableSize ];
 #endif 
 
-/**
- *  UART Peripheral Config Lookup Tables
- */
+    /**
+     *  UART Peripheral Config Lookup Tables
+     */
+    extern void UARTInit();
+
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
     static constexpr size_t uartTableSize = Thor::Driver::UART::NUM_UART_PERIPHS;
 
@@ -102,9 +134,11 @@ namespace Thor::Driver::RCC
     extern const Configuration::ClockType_t UART_SourceClock[ uartTableSize ];
 #endif
 
-/**
- *  USART Peripheral Config Lookup Tables
- */
+    /**
+     *  USART Peripheral Config Lookup Tables
+     */
+    extern void USARTInit();
+
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
     static constexpr size_t usartTableSize = Thor::Driver::USART::NUM_USART_PERIPHS;
 
@@ -120,6 +154,8 @@ namespace Thor::Driver::RCC
     /**
      *  WWDG Peripheral Config Lookup Tables
      */
+    extern void WWDGInit();
+
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
     static constexpr size_t wwdgTableSize = Thor::Driver::WWDG::NUM_WWDG_PERIPHS;
 

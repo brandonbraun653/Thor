@@ -26,12 +26,14 @@
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
 
 #define STM32_SPI1_PERIPH_AVAILABLE
-#define STM32_SPI2_PERIPH_AVAILABLE 
+#define STM32_SPI2_PERIPH_AVAILABLE
 #define STM32_SPI3_PERIPH_AVAILABLE
 #define STM32_SPI4_PERIPH_AVAILABLE
 
 namespace Thor::Driver::SPI
 {
+  extern void initializeRegisters();
+
   static constexpr Reg32_t SPI1_BASE_ADDR = Thor::System::MemoryMap::APB2PERIPH_BASE_ADDR + 0x3000U;
   static constexpr Reg32_t SPI2_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x3800U;
   static constexpr Reg32_t SPI3_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x3C00U;
@@ -40,7 +42,7 @@ namespace Thor::Driver::SPI
   static constexpr Reg32_t NUM_SPI_PERIPHS = 4;
 
   static constexpr std::array<Reg32_t, NUM_SPI_PERIPHS> periphAddressList = { SPI1_BASE_ADDR, SPI2_BASE_ADDR, SPI3_BASE_ADDR,
-                                                                               SPI4_BASE_ADDR };
+                                                                              SPI4_BASE_ADDR };
 
   static constexpr uint8_t SPI1_RESOURCE_INDEX = 0u;
   static constexpr uint8_t SPI2_RESOURCE_INDEX = 1u;
@@ -50,31 +52,31 @@ namespace Thor::Driver::SPI
   /*------------------------------------------------
   Control Register 1
   ------------------------------------------------*/
-  static constexpr Reg32_t CR1_Msk          = 0xFFFF;
-  static constexpr Reg32_t CR1_Rst          = 0x0000;
-  static constexpr Reg32_t CR1_CPHA_Pos     = ( 0U );
-  static constexpr Reg32_t CR1_CPHA_Msk     = ( 0x1U << CR1_CPHA_Pos );
-  static constexpr Reg32_t CR1_CPHA         = CR1_CPHA_Msk;
-  static constexpr Reg32_t CR1_CPOL_Pos     = ( 1U );
-  static constexpr Reg32_t CR1_CPOL_Msk     = ( 0x1U << CR1_CPOL_Pos );
-  static constexpr Reg32_t CR1_CPOL         = CR1_CPOL_Msk;
-  static constexpr Reg32_t CR1_MSTR_Pos     = ( 2U );
-  static constexpr Reg32_t CR1_MSTR_Msk     = ( 0x1U << CR1_MSTR_Pos );
-  static constexpr Reg32_t CR1_MSTR         = CR1_MSTR_Msk;
-  static constexpr Reg32_t CR1_BR_Pos       = ( 3U );
-  static constexpr Reg32_t CR1_BR_Msk       = ( 0x7U << CR1_BR_Pos );
-  static constexpr Reg32_t CR1_BR           = CR1_BR_Msk;
-  static constexpr Reg32_t CR1_BR_0         = ( 0x1U << CR1_BR_Pos );
-  static constexpr Reg32_t CR1_BR_1         = ( 0x2U << CR1_BR_Pos );
-  static constexpr Reg32_t CR1_BR_2         = ( 0x4U << CR1_BR_Pos );
-  static constexpr Reg32_t CR1_BR_DIV_2     = ( 0U << CR1_BR_Pos );
-  static constexpr Reg32_t CR1_BR_DIV_4     = ( 1U << CR1_BR_Pos );
-  static constexpr Reg32_t CR1_BR_DIV_8     = ( 2U << CR1_BR_Pos );
-  static constexpr Reg32_t CR1_BR_DIV_16    = ( 3U << CR1_BR_Pos );
-  static constexpr Reg32_t CR1_BR_DIV_32    = ( 4U << CR1_BR_Pos );
-  static constexpr Reg32_t CR1_BR_DIV_64    = ( 5U << CR1_BR_Pos );
-  static constexpr Reg32_t CR1_BR_DIV_128   = ( 6U << CR1_BR_Pos );
-  static constexpr Reg32_t CR1_BR_DIV_256   = ( 7U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_Msk        = 0xFFFF;
+  static constexpr Reg32_t CR1_Rst        = 0x0000;
+  static constexpr Reg32_t CR1_CPHA_Pos   = ( 0U );
+  static constexpr Reg32_t CR1_CPHA_Msk   = ( 0x1U << CR1_CPHA_Pos );
+  static constexpr Reg32_t CR1_CPHA       = CR1_CPHA_Msk;
+  static constexpr Reg32_t CR1_CPOL_Pos   = ( 1U );
+  static constexpr Reg32_t CR1_CPOL_Msk   = ( 0x1U << CR1_CPOL_Pos );
+  static constexpr Reg32_t CR1_CPOL       = CR1_CPOL_Msk;
+  static constexpr Reg32_t CR1_MSTR_Pos   = ( 2U );
+  static constexpr Reg32_t CR1_MSTR_Msk   = ( 0x1U << CR1_MSTR_Pos );
+  static constexpr Reg32_t CR1_MSTR       = CR1_MSTR_Msk;
+  static constexpr Reg32_t CR1_BR_Pos     = ( 3U );
+  static constexpr Reg32_t CR1_BR_Msk     = ( 0x7U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_BR         = CR1_BR_Msk;
+  static constexpr Reg32_t CR1_BR_0       = ( 0x1U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_BR_1       = ( 0x2U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_BR_2       = ( 0x4U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_BR_DIV_2   = ( 0U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_BR_DIV_4   = ( 1U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_BR_DIV_8   = ( 2U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_BR_DIV_16  = ( 3U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_BR_DIV_32  = ( 4U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_BR_DIV_64  = ( 5U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_BR_DIV_128 = ( 6U << CR1_BR_Pos );
+  static constexpr Reg32_t CR1_BR_DIV_256 = ( 7U << CR1_BR_Pos );
 
   static constexpr Reg32_t CR1_SPE_Pos      = ( 6U );
   static constexpr Reg32_t CR1_SPE_Msk      = ( 0x1U << CR1_SPE_Pos );

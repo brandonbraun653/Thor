@@ -132,7 +132,7 @@ namespace Thor::Driver::RCC
 
     if ( projectValue && ( prjGetHSIValue( &hsiValue ) == prjResult ) && ( prjGetHSEValue( &hseValue ) == prjResult ) )
     {
-      switch ( CFGR::SWS::get() )
+      switch ( CFGR::SWS::get( RCC1_PERIPH ) )
       {
         case CFGR::SWS::HSI:
           sysclockfreq = hsiValue;
@@ -143,22 +143,22 @@ namespace Thor::Driver::RCC
           break;
 
         case CFGR::SWS::PLL:
-          pllm = PLLCFGR::M::get();
+          pllm = PLLCFGR::M::get( RCC1_PERIPH );
 
-          if ( PLLCFGR::SRC::get() == PLLCFGR::SRC::HSE )
+          if ( PLLCFGR::SRC::get( RCC1_PERIPH ) == PLLCFGR::SRC::HSE )
           {
             pllvco = static_cast<size_t>(
-                ( ( static_cast<uint64_t>( hseValue ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
+                ( ( static_cast<uint64_t>( hseValue ) * ( static_cast<uint64_t>( PLLCFGR::N::get( RCC1_PERIPH ) >> PLLCFGR_PLLN_Pos ) ) ) ) /
                 static_cast<uint64_t>( pllm ) );
           }
           else
           {
             pllvco = static_cast<size_t>(
-                ( ( static_cast<uint64_t>( hsiValue ) * ( static_cast<uint64_t>( PLLCFGR::N::get() >> PLLCFGR_PLLN_Pos ) ) ) ) /
+                ( ( static_cast<uint64_t>( hsiValue ) * ( static_cast<uint64_t>( PLLCFGR::N::get( RCC1_PERIPH ) >> PLLCFGR_PLLN_Pos ) ) ) ) /
                 static_cast<uint64_t>( pllm ) );
           }
 
-          pllp = ( ( ( PLLCFGR::P::get() >> PLLCFGR_PLLP_Pos ) + 1U ) * 2U );
+          pllp = ( ( ( PLLCFGR::P::get( RCC1_PERIPH ) >> PLLCFGR_PLLP_Pos ) + 1U ) * 2U );
 
           sysclockfreq = pllvco / pllp;
           break;
@@ -197,7 +197,7 @@ namespace Thor::Driver::RCC
       size_t hclk = 0u;
       prjGetHCLKFreq( &hclk );
 
-      *projectValue = hclk >> APBPrescTable[ ( RCC_PERIPH->CFGR & CFGR_PPRE1 ) >> CFGR_PPRE1_Pos ];
+      *projectValue = hclk >> APBPrescTable[ ( RCC1_PERIPH->CFGR & CFGR_PPRE1 ) >> CFGR_PPRE1_Pos ];
       result        = Chimera::CommonStatusCodes::OK;
     }
 
@@ -213,7 +213,7 @@ namespace Thor::Driver::RCC
       size_t hclk = 0u;
       prjGetHCLKFreq( &hclk );
 
-      *projectValue = hclk >> APBPrescTable[ ( RCC_PERIPH->CFGR & CFGR_PPRE2 ) >> CFGR_PPRE2_Pos ];
+      *projectValue = hclk >> APBPrescTable[ ( RCC1_PERIPH->CFGR & CFGR_PPRE2 ) >> CFGR_PPRE2_Pos ];
       result        = Chimera::CommonStatusCodes::OK;
     }
 
@@ -295,7 +295,7 @@ namespace Thor::Driver::RCC
   /*------------------------------------------------
   Standalone Functions
   ------------------------------------------------*/
-  void initializeDriver()
+  void initialize()
   {
     using namespace Chimera::Peripheral;
     using namespace LookupTables;
@@ -304,6 +304,13 @@ namespace Thor::Driver::RCC
 
     if ( !initialized )
     {
+      /*------------------------------------------------
+      Initialize the low level driver
+      ------------------------------------------------*/
+      initializeMapping();
+      initializeRegisters();
+
+
       /*------------------------------------------------
       Register the lookup tables with the system
       ------------------------------------------------*/
@@ -339,7 +346,7 @@ namespace Thor::Driver::RCC
   ------------------------------------------------*/
   SystemClock::SystemClock()
   {
-    initializeDriver();
+    initialize();
   }
 
   SystemClock::~SystemClock()
@@ -368,7 +375,7 @@ namespace Thor::Driver::RCC
     /*------------------------------------------------
     Turn on the main internal regulator output voltage
     ------------------------------------------------*/
-    APB1ENR::PWREN::set( APB1ENR::PWRENConfig::ON );
+    APB1ENR::PWREN::set( RCC1_PERIPH, APB1ENR::PWRENConfig::ON );
 
     /*------------------------------------------------
     Set the voltage scaling to allow us to achieve max clock
@@ -489,7 +496,7 @@ namespace Thor::Driver::RCC
 
   PeripheralController::PeripheralController()
   {
-    initializeDriver();
+    initialize();
   }
 
   PeripheralController::~PeripheralController()
@@ -576,15 +583,15 @@ namespace Thor::Driver::RCC
     using namespace PLLCFGR;
     using namespace CR;
 
-    const auto clockSource = SWS::get();
-    const auto pllSource   = SRC::get();
+    const auto clockSource = SWS::get( RCC1_PERIPH );
+    const auto pllSource   = SRC::get( RCC1_PERIPH );
 
     if ( ( clockSource == SWS::HSE ) || ( ( clockSource == SWS::PLL ) && ( pllSource == SRC::HSE ) ) )
     {
       /*------------------------------------------------
       When HSE is used as system clock it will not be disabled.
       ------------------------------------------------*/
-      if ( ( ( HSERDY::get() == locked ) || ( HSEON::get() == enabled ) ) && ( init->HSEState == HSEConfig::OFF ) )
+      if ( ( ( HSERDY::get( RCC1_PERIPH ) == locked ) || ( HSEON::get( RCC1_PERIPH ) == enabled ) ) && ( init->HSEState == HSEConfig::OFF ) )
       {
         return Chimera::CommonStatusCodes::FAIL;
       }
@@ -597,17 +604,17 @@ namespace Thor::Driver::RCC
       switch ( init->HSEState )
       {
         case HSEConfig::ON:
-          RCC_PERIPH->CR |= CR_HSEON;
+          RCC1_PERIPH->CR |= CR_HSEON;
           break;
 
         case HSEConfig::BYPASS:
-          RCC_PERIPH->CR |= CR_HSEBYP;
-          RCC_PERIPH->CR |= CR_HSEON;
+          RCC1_PERIPH->CR |= CR_HSEBYP;
+          RCC1_PERIPH->CR |= CR_HSEON;
 
         case HSEConfig::OFF:
         default:
-          RCC_PERIPH->CR &= ~CR_HSEON;
-          RCC_PERIPH->CR &= ~CR_HSEBYP;
+          RCC1_PERIPH->CR &= ~CR_HSEON;
+          RCC1_PERIPH->CR &= ~CR_HSEBYP;
           break;
       }
 
@@ -618,7 +625,7 @@ namespace Thor::Driver::RCC
 
       if ( init->HSEState != HSEConfig::OFF )
       {
-        while ( ( HSERDY::get() == locked ) || ( HSEON::get() == disabled ) )
+        while ( ( HSERDY::get( RCC1_PERIPH ) == locked ) || ( HSEON::get( RCC1_PERIPH ) == disabled ) )
         {
           if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
           {
@@ -628,7 +635,7 @@ namespace Thor::Driver::RCC
       }
       else
       {
-        while ( HSEON::get() != disabled )
+        while ( HSEON::get( RCC1_PERIPH ) != disabled )
         {
           if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
           {
@@ -653,8 +660,8 @@ namespace Thor::Driver::RCC
     using namespace PLLCFGR;
     using namespace CR;
 
-    const auto clockSource = SWS::get();
-    const auto pllSource   = SRC::get();
+    const auto clockSource = SWS::get( RCC1_PERIPH );
+    const auto pllSource   = SRC::get( RCC1_PERIPH );
 
     /*------------------------------------------------
     Check if HSI is used as system clock or as PLL source when PLL is selected as system clock
@@ -664,13 +671,13 @@ namespace Thor::Driver::RCC
       /*------------------------------------------------
       When HSI is used as system clock it will not be disabled.
       ------------------------------------------------*/
-      if ( ( ( HSIRDY::get() == locked ) || ( HSION::get() == enabled ) ) && ( init->HSIState != HSIConfig::ON ) )
+      if ( ( ( HSIRDY::get( RCC1_PERIPH ) == locked ) || ( HSION::get( RCC1_PERIPH ) == enabled ) ) && ( init->HSIState != HSIConfig::ON ) )
       {
         return Chimera::CommonStatusCodes::FAIL;
       }
       else
       {
-        HSITRIM::set( init->HSICalibrationValue );
+        HSITRIM::set( RCC1_PERIPH, init->HSICalibrationValue );
       }
     }
     else
@@ -685,12 +692,12 @@ namespace Thor::Driver::RCC
         /*------------------------------------------------
         Enable the Internal High Speed oscillator
         ------------------------------------------------*/
-        HSION::set( HSIConfig::ON );
+        HSION::set( RCC1_PERIPH, HSIConfig::ON );
 
         /*------------------------------------------------
         Wait till HSI has achieved the desired state
         ------------------------------------------------*/
-        while ( HSIRDY::get() == unlocked )
+        while ( HSIRDY::get( RCC1_PERIPH ) == unlocked )
         {
           if ( ( Chimera::millis() - tickstart ) > HSI_TIMEOUT_VALUE_MS )
           {
@@ -701,19 +708,19 @@ namespace Thor::Driver::RCC
         /*------------------------------------------------
         Adjusts the Internal High Speed oscillator calibration value.
         ------------------------------------------------*/
-        HSITRIM::set( init->HSICalibrationValue );
+        HSITRIM::set( RCC1_PERIPH, init->HSICalibrationValue );
       }
       else
       {
         /*------------------------------------------------
         Disable the Internal High Speed oscillator
         ------------------------------------------------*/
-        HSION::set( HSIConfig::OFF );
+        HSION::set( RCC1_PERIPH, HSIConfig::OFF );
 
         /*------------------------------------------------
         Wait till HSI has achieved the desired state
         ------------------------------------------------*/
-        while ( HSIRDY::get() == locked )
+        while ( HSIRDY::get( RCC1_PERIPH ) == locked )
         {
           if ( ( Chimera::millis() - tickstart ) > HSI_TIMEOUT_VALUE_MS )
           {
@@ -743,10 +750,10 @@ namespace Thor::Driver::RCC
 
     if ( init->LSIState != LSIConfig::OFF )
     {
-      LSION::set( LSIConfig::ON );
+      LSION::set( RCC1_PERIPH, LSIConfig::ON );
 
       /* Wait till LSI is ready */
-      while ( LSION::get() == unlocked )
+      while ( LSION::get( RCC1_PERIPH ) == unlocked )
       {
         if ( ( Chimera::millis() - tickstart ) > LSI_TIMEOUT_VALUE_MS )
         {
@@ -756,10 +763,10 @@ namespace Thor::Driver::RCC
     }
     else
     {
-      LSION::set( LSIConfig::OFF );
+      LSION::set( RCC1_PERIPH, LSIConfig::OFF );
 
       /* Wait till LSI is ready */
-      while ( LSION::get() == locked )
+      while ( LSION::get( RCC1_PERIPH ) == locked )
       {
         if ( ( Chimera::millis() - tickstart ) > LSI_TIMEOUT_VALUE_MS )
         {
@@ -788,9 +795,9 @@ namespace Thor::Driver::RCC
     /*------------------------------------------------
     Updating the LSE configuration requires write access
     ------------------------------------------------*/
-    if ( PWREN::get() == PWRENConfig::OFF )
+    if ( PWREN::get( RCC1_PERIPH ) == PWRENConfig::OFF )
     {
-      PWREN::set( PWRENConfig::ON );
+      PWREN::set( RCC1_PERIPH, PWRENConfig::ON );
       pwrclkchanged = true;
     }
 
@@ -819,17 +826,17 @@ namespace Thor::Driver::RCC
     switch ( init->LSEState )
     {
       case LSEConfig::ON:
-        RCC_PERIPH->BDCR |= BDCR_LSEON;
+        RCC1_PERIPH->BDCR |= BDCR_LSEON;
         break;
 
       case LSEConfig::BYPASS:
-        RCC_PERIPH->BDCR |= BDCR_LSEBYP;
-        RCC_PERIPH->BDCR |= BDCR_LSEON;
+        RCC1_PERIPH->BDCR |= BDCR_LSEBYP;
+        RCC1_PERIPH->BDCR |= BDCR_LSEON;
 
       case LSEConfig::OFF:
       default:
-        RCC_PERIPH->BDCR &= ~BDCR_LSEON;
-        RCC_PERIPH->BDCR &= ~BDCR_LSEBYP;
+        RCC1_PERIPH->BDCR &= ~BDCR_LSEON;
+        RCC1_PERIPH->BDCR &= ~BDCR_LSEBYP;
         break;
     }
 
@@ -840,7 +847,7 @@ namespace Thor::Driver::RCC
       ------------------------------------------------*/
       tickstart = Chimera::millis();
 
-      while ( LSERDY::get() )
+      while ( LSERDY::get( RCC1_PERIPH ) )
       {
         if ( ( Chimera::millis() - tickstart ) > LSE_TIMEOUT_VALUE_MS )
         {
@@ -855,7 +862,7 @@ namespace Thor::Driver::RCC
       ------------------------------------------------*/
       tickstart = Chimera::millis();
 
-      while ( !LSERDY::get() )
+      while ( !LSERDY::get( RCC1_PERIPH ) )
       {
         if ( ( Chimera::millis() - tickstart ) > LSE_TIMEOUT_VALUE_MS )
         {
@@ -869,7 +876,7 @@ namespace Thor::Driver::RCC
     ------------------------------------------------*/
     if ( pwrclkchanged )
     {
-      PWREN::set( PWRENConfig::OFF );
+      PWREN::set( RCC1_PERIPH, PWRENConfig::OFF );
     }
   }
 
@@ -896,9 +903,9 @@ namespace Thor::Driver::RCC
       Turn off the PLL and wait for ready signal
       ------------------------------------------------*/
       auto tickstart = Chimera::millis();
-      PLLON::set( PLLConfig::OFF );
+      PLLON::set( RCC1_PERIPH, PLLConfig::OFF );
 
-      while ( PLLRDY::get() )
+      while ( PLLRDY::get( RCC1_PERIPH ) )
       {
         if ( ( Chimera::millis() - tickstart ) > PLL_TIMEOUT_VALUE_MS )
         {
@@ -918,19 +925,19 @@ namespace Thor::Driver::RCC
         const auto Q   = init->PLL.Q << PLLCFGR_PLLQ_Pos;
         const auto R   = init->PLL.R << PLLCFGR_PLLR_Pos;
 
-        uint32_t tmp = RCC_PERIPH->PLLCFGR;
+        uint32_t tmp = RCC1_PERIPH->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLSRC | PLLCFGR_PLLM | PLLCFGR_PLLN | PLLCFGR_PLLP | PLLCFGR_PLLQ | PLLCFGR_PLLR );
         tmp |= ( src | M | N | P | Q | R );
-        RCC_PERIPH->PLLCFGR = tmp;
+        RCC1_PERIPH->PLLCFGR = tmp;
 
         /*------------------------------------------------
         Turn on the PLL and wait for ready signal
         ------------------------------------------------*/
         tickstart = Chimera::millis();
-        PLLON::set( PLLConfig::ON );
+        PLLON::set( RCC1_PERIPH, PLLConfig::ON );
 
         #if defined( _EMBEDDED )
-        while ( !PLLRDY::get() )
+        while ( !PLLRDY::get( RCC1_PERIPH ) )
         {
           if ( ( Chimera::millis() - tickstart ) > PLL_TIMEOUT_VALUE_MS )
           {
@@ -956,15 +963,15 @@ namespace Thor::Driver::RCC
     ------------------------------------------------*/
     if ( ( init->clock & Configuration::ClockType::PCLK1 ) == Configuration::ClockType::PCLK1 )
     {
-      CFGR::PPRE1::set( CFGR::PPRE1::DIV16 );
+      CFGR::PPRE1::set( RCC1_PERIPH, CFGR::PPRE1::DIV16 );
     }
 
     if ( ( init->clock & Configuration::ClockType::PCLK2 ) == Configuration::ClockType::PCLK2 )
     {
-      CFGR::PPRE2::set( CFGR::PPRE2::DIV16 );
+      CFGR::PPRE2::set( RCC1_PERIPH, CFGR::PPRE2::DIV16 );
     }
 
-    CFGR::HPRE::set( init->AHBCLKDivider );
+    CFGR::HPRE::set( RCC1_PERIPH, init->AHBCLKDivider );
   }
 
   /**
@@ -977,15 +984,15 @@ namespace Thor::Driver::RCC
     ------------------------------------------------*/
     auto sysClkSrc = init->SYSCLKSource;
 
-    if ( ( sysClkSrc == CFGR::SW::HSE ) && !CR::HSERDY::get() )
+    if ( ( sysClkSrc == CFGR::SW::HSE ) && !CR::HSERDY::get( RCC1_PERIPH ) )
     {
       return Chimera::CommonStatusCodes::FAIL;
     }
-    else if ( ( ( sysClkSrc == CFGR::SW::PLLCLK ) || ( sysClkSrc == CFGR::SW::PLLRCLK ) ) && !CR::PLLRDY::get() )
+    else if ( ( ( sysClkSrc == CFGR::SW::PLLCLK ) || ( sysClkSrc == CFGR::SW::PLLRCLK ) ) && !CR::PLLRDY::get( RCC1_PERIPH ) )
     {
       return Chimera::CommonStatusCodes::FAIL;
     }
-    else if ( ( sysClkSrc == CFGR::SW::HSI ) && !CR::HSIRDY::get() )
+    else if ( ( sysClkSrc == CFGR::SW::HSI ) && !CR::HSIRDY::get( RCC1_PERIPH ) )
     {
       return Chimera::CommonStatusCodes::FAIL;
     }
@@ -994,7 +1001,7 @@ namespace Thor::Driver::RCC
     Configure the system clock and wait for the ready signal
     ------------------------------------------------*/
     auto tickstart = Chimera::millis();
-    CFGR::SW::set( init->SYSCLKSource );
+    CFGR::SW::set( RCC1_PERIPH, init->SYSCLKSource );
 
     /* Assumes SW and SWS config bits mean the same thing */
     while ( CFGR::SWS::getRS() != init->SYSCLKSource )
@@ -1013,7 +1020,7 @@ namespace Thor::Driver::RCC
    */
   static inline Chimera::Status_t PCLK1Config( const ClockInit *init )
   {
-    CFGR::PPRE1::set( init->APB1CLKDivider );
+    CFGR::PPRE1::set( RCC1_PERIPH, init->APB1CLKDivider );
     return Chimera::CommonStatusCodes::OK;
   }
 
@@ -1022,7 +1029,7 @@ namespace Thor::Driver::RCC
    */
   static inline Chimera::Status_t PCLK2Config( const ClockInit *init )
   {
-    CFGR::PPRE2::set( init->APB2CLKDivider );
+    CFGR::PPRE2::set( RCC1_PERIPH, init->APB2CLKDivider );
     return Chimera::CommonStatusCodes::OK;
   }
 

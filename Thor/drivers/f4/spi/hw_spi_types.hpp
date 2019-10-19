@@ -39,19 +39,12 @@ namespace Thor::Driver::SPI
     volatile Reg32_t RXCRCR;  /**< RX CRC Register,               Address Offset: 0x14 */
     volatile Reg32_t TXCRCR;  /**< TX CRC Register,               Address Offset: 0x18 */
     volatile Reg32_t I2SCFGR; /**< I2S Configuration Register,    Address Offset: 0x1C */
-    volatile Reg32_t I2SPR;   /**< I2S Prescale Register,         Address Offset: 0x20 */
+    volatile Reg32_t I2SPR;   /**< I2S Pre-scale Register,        Address Offset: 0x20 */
   };
 
   using DriverInstanceList = std::array<Driver *, NUM_SPI_PERIPHS>;
+  using PeriphRegisterList = std::array<RegisterMap *, NUM_SPI_PERIPHS>;
   using DMASignalList      = std::array<Reg32_t, NUM_SPI_PERIPHS>;
-
-
-  /**
-   *  Checks if the given address belongs to a peripheral instance
-   *
-   *  @return bool
-   */
-  bool isSPI( const std::uintptr_t address );
 
   /*------------------------------------------------
   Configuration

@@ -65,7 +65,8 @@ namespace Thor::Driver::RCC
     volatile Reg32_t DCKCFGR2;   /**< RCC Dedicated Clocks configuration register 2,               Address offset: 0x94 */
   };
 
-  extern RegisterMap *const RCC_PERIPH;
+  
+  using PeriphRegisterList = std::array<RegisterMap *, NUM_RCC_PERIPHS>;
 
   /*------------------------------------------------
   Configuration Options
@@ -113,65 +114,65 @@ namespace Thor::Driver::RCC
 
     struct SAIRDY
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_PLLSAIRDY;
+        return periph->CR & CR_PLLSAIRDY;
       }
     };
 
     struct SAION
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_PLLSAION;
+        return periph->CR & CR_PLLSAION;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
       }
     };
 
     struct I2SRDY
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_PLLI2SRDY;
+        return periph->CR & CR_PLLI2SRDY;
       }
     };
 
     struct I2SON
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_PLLI2SON;
+        return periph->CR & CR_PLLI2SON;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
       }
     };
 
     struct PLLRDY
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_PLLRDY;
+        return periph->CR & CR_PLLRDY;
       }
     };
 
     struct PLLON
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_PLLON;
+        return periph->CR & CR_PLLON;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CR;
+        Reg32_t tmp = periph->CR;
         tmp &= ~( CR_PLLON );
         tmp |= ( val & CR_PLLON );
-        RCC_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
@@ -192,49 +193,49 @@ namespace Thor::Driver::RCC
 
     struct CSSON
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_CSSON;
+        return periph->CR & CR_CSSON;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
       }
     };
 
     struct HSEBYP
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_HSEBYP;
+        return periph->CR & CR_HSEBYP;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
       }
     };
 
     struct HSERDY
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_HSERDY;
+        return periph->CR & CR_HSERDY;
       }
     };
 
     struct HSEON
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_HSEON;
+        return periph->CR & CR_HSEON;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CR;
+        Reg32_t tmp = periph->CR;
         tmp &= ~( CR_HSEON );
         tmp |= ( val & CR_HSEON );
-        RCC_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
@@ -247,49 +248,49 @@ namespace Thor::Driver::RCC
 
     struct HSIRDY
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_HSIRDY;
+        return periph->CR & CR_HSIRDY;
       }
     };
 
     struct HSION
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_HSION;
+        return periph->CR & CR_HSION;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CR;
+        Reg32_t tmp = periph->CR;
         tmp &= ~( CR_HSION );
         tmp |= ( val & CR_HSION );
-        RCC_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
     struct HSICAL
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_HSICAL;
+        return periph->CR & CR_HSICAL;
       }
     };
 
     struct HSITRIM
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CR & CR_HSITRIM;
+        return periph->CR & CR_HSITRIM;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CR;
+        Reg32_t tmp = periph->CR;
         tmp &= ~( CR_HSITRIM );
         tmp |= ( val << CR_HSITRIM_Pos ) & CR_HSITRIM;
-        RCC_PERIPH->CR = tmp;
+        periph->CR = tmp;
       }
     };
 
@@ -310,97 +311,97 @@ namespace Thor::Driver::RCC
       static constexpr Reg32_t HSI = PLLCFGR_PLLSRC_HSI;
       static constexpr Reg32_t HSE = PLLCFGR_PLLSRC_HSE;
 
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLSRC;
+        return periph->PLLCFGR & PLLCFGR_PLLSRC;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = periph->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLSRC );
         tmp |= ( val & PLLCFGR_PLLSRC );
-        RCC_PERIPH->PLLCFGR = tmp;
+        periph->PLLCFGR = tmp;
       }
     };
 
     struct M
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLM;
+        return periph->PLLCFGR & PLLCFGR_PLLM;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = periph->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLM );
         tmp |= ( val & PLLCFGR_PLLM );
-        RCC_PERIPH->PLLCFGR = tmp;
+        periph->PLLCFGR = tmp;
       }
     };
 
     struct N
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLN;
+        return periph->PLLCFGR & PLLCFGR_PLLN;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = periph->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLN );
         tmp |= ( val & PLLCFGR_PLLN );
-        RCC_PERIPH->PLLCFGR = tmp;
+        periph->PLLCFGR = tmp;
       }
     };
 
     struct P
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLP;
+        return periph->PLLCFGR & PLLCFGR_PLLP;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = periph->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLP );
         tmp |= ( val & PLLCFGR_PLLP );
-        RCC_PERIPH->PLLCFGR = tmp;
+        periph->PLLCFGR = tmp;
       }
     };
 
     struct Q
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLQ;
+        return periph->PLLCFGR & PLLCFGR_PLLQ;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = periph->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLQ );
         tmp |= ( val & PLLCFGR_PLLQ );
-        RCC_PERIPH->PLLCFGR = tmp;
+        periph->PLLCFGR = tmp;
       }
     };
 
     struct R
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->PLLCFGR & PLLCFGR_PLLR;
+        return periph->PLLCFGR & PLLCFGR_PLLR;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->PLLCFGR;
+        Reg32_t tmp = periph->PLLCFGR;
         tmp &= ~( PLLCFGR_PLLR );
         tmp |= ( val & PLLCFGR_PLLR );
-        RCC_PERIPH->PLLCFGR = tmp;
+        periph->PLLCFGR = tmp;
       }
     };
 
@@ -420,17 +421,17 @@ namespace Thor::Driver::RCC
       static constexpr SysOscSrc_t PLLCLK  = CFGR_SW_PLL;
       static constexpr SysOscSrc_t PLLRCLK = CFGR_SW_PLLR;
 
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CFGR & CFGR_SW;
+        return periph->CFGR & CFGR_SW;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CFGR;
+        Reg32_t tmp = periph->CFGR;
         tmp &= ~( CFGR_SW );
         tmp |= ( val & CFGR_SW );
-        RCC_PERIPH->CFGR = tmp;
+        periph->CFGR = tmp;
       }
     };
 
@@ -441,9 +442,9 @@ namespace Thor::Driver::RCC
       static constexpr Reg32_t PLL  = CFGR_SWS_PLL;
       static constexpr Reg32_t PLLR = CFGR_SWS_PLLR;
 
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CFGR & CFGR_SWS;
+        return periph->CFGR & CFGR_SWS;
       }
 
       /**
@@ -451,7 +452,7 @@ namespace Thor::Driver::RCC
        */
       static inline Reg32_t getRS()
       {
-        return ( RCC_PERIPH->CFGR & CFGR_SWS ) >> CFGR_SWS_Pos;
+        return ( periph->CFGR & CFGR_SWS ) >> CFGR_SWS_Pos;
       }
     };
 
@@ -469,17 +470,17 @@ namespace Thor::Driver::RCC
       static constexpr AHBPrescale_t DIV256 = CFGR_HPRE_DIV256;
       static constexpr AHBPrescale_t DIV512 = CFGR_HPRE_DIV512;
 
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CFGR & CFGR_HPRE;
+        return periph->CFGR & CFGR_HPRE;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CFGR;
+        Reg32_t tmp = periph->CFGR;
         tmp &= ~( CFGR_HPRE );
         tmp |= ( val & CFGR_HPRE );
-        RCC_PERIPH->CFGR = tmp;
+        periph->CFGR = tmp;
       }
     };
 
@@ -493,17 +494,17 @@ namespace Thor::Driver::RCC
       static constexpr APB1Prescale_t DIV8  = CFGR_PPRE1_DIV8;
       static constexpr APB1Prescale_t DIV16 = CFGR_PPRE1_DIV16;
 
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CFGR & CFGR_PPRE1;
+        return periph->CFGR & CFGR_PPRE1;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CFGR;
+        Reg32_t tmp = periph->CFGR;
         tmp &= ~( CFGR_PPRE1 );
         tmp |= ( val & CFGR_PPRE1 );
-        RCC_PERIPH->CFGR = tmp;
+        periph->CFGR = tmp;
       }
     };
 
@@ -517,17 +518,17 @@ namespace Thor::Driver::RCC
       static constexpr APB2Prescale_t DIV8  = CFGR_PPRE2_DIV8;
       static constexpr APB2Prescale_t DIV16 = CFGR_PPRE2_DIV16;
 
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CFGR & CFGR_PPRE2;
+        return periph->CFGR & CFGR_PPRE2;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CFGR;
+        Reg32_t tmp = periph->CFGR;
         tmp &= ~( CFGR_PPRE2 );
         tmp |= ( val & CFGR_PPRE2 );
-        RCC_PERIPH->CFGR = tmp;
+        periph->CFGR = tmp;
       }
     };
   }    // namespace CFGR
@@ -539,17 +540,17 @@ namespace Thor::Driver::RCC
   {
     struct PWREN
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->APB1ENR & APB1ENR_PWREN;
+        return periph->APB1ENR & APB1ENR_PWREN;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->APB1ENR;
+        Reg32_t tmp = periph->APB1ENR;
         tmp &= ~( APB1ENR_PWREN );
         tmp |= ( val & APB1ENR_PWREN );
-        RCC_PERIPH->APB1ENR = tmp;
+        periph->APB1ENR = tmp;
       }
     };
 
@@ -568,25 +569,25 @@ namespace Thor::Driver::RCC
   {
     struct LSEON
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->BDCR & BDCR_LSEON;
+        return periph->BDCR & BDCR_LSEON;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = periph->BDCR;
         tmp &= ~( BDCR_LSEON );
         tmp |= ( val & BDCR_LSEON );
-        RCC_PERIPH->BDCR = tmp;
+        periph->BDCR = tmp;
       }
     };
 
     struct LSERDY
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->BDCR & BDCR_LSERDY;
+        return periph->BDCR & BDCR_LSERDY;
       }
     };
 
@@ -599,81 +600,81 @@ namespace Thor::Driver::RCC
 
     struct LSEBYP
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->BDCR & BDCR_LSEBYP;
+        return periph->BDCR & BDCR_LSEBYP;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = periph->BDCR;
         tmp &= ~( BDCR_LSEBYP );
         tmp |= ( val & BDCR_LSEBYP );
-        RCC_PERIPH->BDCR = tmp;
+        periph->BDCR = tmp;
       }
     };
 
     struct LSEMOD
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->BDCR & BDCR_LSEMOD;
+        return periph->BDCR & BDCR_LSEMOD;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = periph->BDCR;
         tmp &= ~( BDCR_LSEMOD );
         tmp |= ( val & BDCR_LSEMOD );
-        RCC_PERIPH->BDCR = tmp;
+        periph->BDCR = tmp;
       }
     };
 
     struct RTCSEL
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->BDCR & BDCR_RTCSEL;
+        return periph->BDCR & BDCR_RTCSEL;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = periph->BDCR;
         tmp &= ~( BDCR_RTCSEL );
         tmp |= ( val & BDCR_RTCSEL );
-        RCC_PERIPH->BDCR = tmp;
+        periph->BDCR = tmp;
       }
     };
 
     struct RTCEN
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->BDCR & BDCR_RTCEN;
+        return periph->BDCR & BDCR_RTCEN;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = periph->BDCR;
         tmp &= ~( BDCR_RTCEN );
         tmp |= ( val & BDCR_RTCEN );
-        RCC_PERIPH->BDCR = tmp;
+        periph->BDCR = tmp;
       }
     };
 
     struct BDRST
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->BDCR & BDCR_BDRST;
+        return periph->BDCR & BDCR_BDRST;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->BDCR;
+        Reg32_t tmp = periph->BDCR;
         tmp &= ~( BDCR_BDRST );
         tmp |= ( val & BDCR_BDRST );
-        RCC_PERIPH->BDCR = tmp;
+        periph->BDCR = tmp;
       }
     };
   }    // namespace BDCR
@@ -691,153 +692,153 @@ namespace Thor::Driver::RCC
 
     struct LPWRRSTF
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CSR & CSR_LPWRRSTF;
+        return periph->CSR & CSR_LPWRRSTF;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = periph->CSR;
         tmp &= ~( CSR_LPWRRSTF );
         tmp |= ( val & CSR_LPWRRSTF );
-        RCC_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 
     struct WWDGRSTF
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CSR & CSR_WWDGRSTF;
+        return periph->CSR & CSR_WWDGRSTF;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = periph->CSR;
         tmp &= ~( CSR_WWDGRSTF );
         tmp |= ( val & CSR_WWDGRSTF );
-        RCC_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 
     struct IWDGRSTF
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CSR & CSR_IWDGRSTF;
+        return periph->CSR & CSR_IWDGRSTF;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = periph->CSR;
         tmp &= ~( CSR_IWDGRSTF );
         tmp |= ( val & CSR_IWDGRSTF );
-        RCC_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 
     struct SFTRSTF
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CSR & CSR_SFTRSTF;
+        return periph->CSR & CSR_SFTRSTF;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = periph->CSR;
         tmp &= ~( CSR_SFTRSTF );
         tmp |= ( val & CSR_SFTRSTF );
-        RCC_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 
     struct PORRSTF
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CSR & CSR_PORRSTF;
+        return periph->CSR & CSR_PORRSTF;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = periph->CSR;
         tmp &= ~( CSR_PORRSTF );
         tmp |= ( val & CSR_PORRSTF );
-        RCC_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 
     struct PINRSTF
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CSR & CSR_PINRSTF;
+        return periph->CSR & CSR_PINRSTF;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = periph->CSR;
         tmp &= ~( CSR_PINRSTF );
         tmp |= ( val & CSR_PINRSTF );
-        RCC_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 
     struct BORRSTF
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CSR & CSR_BORRSTF;
+        return periph->CSR & CSR_BORRSTF;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = periph->CSR;
         tmp &= ~( CSR_BORRSTF );
         tmp |= ( val & CSR_BORRSTF );
-        RCC_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 
     struct RMVF
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CSR & CSR_RMVF;
+        return periph->CSR & CSR_RMVF;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = periph->CSR;
         tmp &= ~( CSR_RMVF );
         tmp |= ( val & CSR_RMVF );
-        RCC_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 
     struct LSIRDY
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CSR & CSR_LSIRDY;
+        return periph->CSR & CSR_LSIRDY;
       }
     };
 
     struct LSION
     {
-      static inline Reg32_t get()
+      static inline Reg32_t get( const RegisterMap *const periph )
       {
-        return RCC_PERIPH->CSR & CSR_LSION;
+        return periph->CSR & CSR_LSION;
       }
 
-      static inline void set( const Reg32_t val )
+      static inline void set( RegisterMap *const periph, const Reg32_t val )
       {
-        Reg32_t tmp = RCC_PERIPH->CSR;
+        Reg32_t tmp = periph->CSR;
         tmp &= ~( CSR_LSION );
         tmp |= ( val & CSR_LSION );
-        RCC_PERIPH->CSR = tmp;
+        periph->CSR = tmp;
       }
     };
 

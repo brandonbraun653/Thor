@@ -28,31 +28,21 @@
 
 namespace Thor::Driver::SPI
 {
-  bool isSPI( const std::uintptr_t address )
+  
+
+  void initialize()
   {
-    bool result = false;
-
-    for ( auto &val : periphAddressList )
-    {
-      if ( val == address )
-      {
-        result = true;
-        break;
-      }
-    }
-
-    return result;
+    initializeMapping();
+    initializeRegisters();
   }
 
   Driver::Driver()
   {
-
   }
 
   Driver::~Driver()
   {
-
   }
-}
+}    // namespace Thor::Driver::SPI
 
-#endif  /* TARGET_STM32F4 && THOR_DRIVER_SPI */
+#endif /* TARGET_STM32F4 && THOR_DRIVER_SPI */

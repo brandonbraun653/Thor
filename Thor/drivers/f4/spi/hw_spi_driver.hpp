@@ -35,7 +35,7 @@ namespace Thor::Driver::SPI
    *
    *  @return void
    */
-  extern void initializeSystemDriver();
+  extern void initialize();
 
 
   class Driver

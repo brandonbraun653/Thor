@@ -29,13 +29,30 @@ static std::array<TaskHandle_t, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcesso
 static std::array<SemaphoreHandle_t, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorSignals;
 
 
+#if defined( STM32_SPI1_PERIPH_AVAILABLE )
 static void SPI1ISRPostProcessorThread( void *argument );
+#endif 
+#if defined( STM32_SPI2_PERIPH_AVAILABLE )
 static void SPI2ISRPostProcessorThread( void *argument );
+#endif 
+#if defined( STM32_SPI3_PERIPH_AVAILABLE )
 static void SPI3ISRPostProcessorThread( void *argument );
+#endif 
+#if defined( STM32_SPI4_PERIPH_AVAILABLE )
 static void SPI4ISRPostProcessorThread( void *argument );
+#endif 
 
 
 namespace Chimera::SPI
+{
+  Chimera::Status_t initialize()
+  {
+    return Thor::SPI::initialize();
+  }
+}
+
+
+namespace Thor::SPI
 {
   static size_t s_driver_initialized;
 
@@ -43,6 +60,11 @@ namespace Chimera::SPI
   Chimera::Status_t initialize()
   {
     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+
+    /*------------------------------------------------
+    Initialize the low level driver
+    ------------------------------------------------*/
+    Thor::Driver::SPI::initialize();
 
     /*------------------------------------------------
     Reset driver object memory
@@ -88,19 +110,15 @@ namespace Chimera::SPI
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::CommonStatusCodes::OK;
   }
-}
 
-
-namespace Thor::SPI
-{
   SPIClass::SPIClass()
   {
     /*------------------------------------------------
     Lazy initialize all driver memory in case the user forgot
     ------------------------------------------------*/
-    if ( Chimera::SPI::s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY )
+    if ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY )
     {
-      Chimera::SPI::initialize();
+      initialize();
     }
   }
 
@@ -195,3 +213,27 @@ namespace Thor::SPI
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 }
+
+#if defined( STM32_SPI1_PERIPH_AVAILABLE )
+static void SPI1ISRPostProcessorThread( void *argument )
+{
+}
+#endif
+
+#if defined( STM32_SPI2_PERIPH_AVAILABLE )
+static void SPI2ISRPostProcessorThread( void *argument )
+{
+}
+#endif
+
+#if defined( STM32_SPI3_PERIPH_AVAILABLE )
+static void SPI3ISRPostProcessorThread( void *argument )
+{
+}
+#endif
+
+#if defined( STM32_SPI4_PERIPH_AVAILABLE )
+static void SPI4ISRPostProcessorThread( void *argument )
+{
+}
+#endif 

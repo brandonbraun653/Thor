@@ -14,18 +14,19 @@
 
 namespace Thor::Driver::RCC::LookupTables
 {
-/*------------------------------------------------
-DMA Peripheral RCC Configuration Resources
-------------------------------------------------*/
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
-
+  /*------------------------------------------------
+  DMA Peripheral RCC Configuration Resources
+  ------------------------------------------------*/
   void DMAInitTables()
   {
-    RegisterConfig *cfg = const_cast<RegisterConfig *>( &DMA_ClockConfig[ 0 ] );
+    //RegisterConfig *cfg = const_cast<RegisterConfig *>( &DMA_ClockConfig[ 0 ] );
 
-    cfg->reg = 
+    //cfg->reg = 
+
+    //TODO: These need to be placed project side and made non-const
   }
 
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
   /**
    *  DMA clock enable register access lookup table
    *

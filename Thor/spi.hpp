@@ -30,6 +30,14 @@
 #if defined( THOR_CUSTOM_DRIVERS ) && ( THOR_DRIVER_SPI == 1 )
 namespace Thor::SPI
 {
+  /**
+   *  Initialize the SPI driver
+   *  
+   *  @return Chimera::Status_t 
+   */
+  Chimera::Status_t initialize();
+
+
   class SPIClass : public Chimera::SPI::HWInterface,
                    public Chimera::Event::ListenerInterface,
                    public Chimera::Threading::AsyncIOInterface,
