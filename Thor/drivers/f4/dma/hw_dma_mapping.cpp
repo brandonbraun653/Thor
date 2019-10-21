@@ -14,108 +14,40 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/dma/hw_dma_mapping.hpp>
+#include <Thor/drivers/f4/dma/hw_dma_types.hpp>
 
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
 
 namespace Thor::Driver::DMA
 {
-#if defined( _EMBEDDED )
-  RegisterMap *const DMA1_PERIPH = reinterpret_cast<RegisterMap *const>( DMA1_BASE_ADDR );
-  RegisterMap *const DMA2_PERIPH = reinterpret_cast<RegisterMap *const>( DMA2_BASE_ADDR );
+  /*------------------------------------------------
+  Chip Specific Resources 
+  ------------------------------------------------*/
+  PeriphRegisterList periphInstanceList;
+  StreamRegisterList streamInstanceList;
+  DriverInstanceList dmaObjects;
 
-  StreamX *const DMA1_STREAM0 = reinterpret_cast<StreamX *const>( DMA1_STREAM0_BASE_ADDR );
-  StreamX *const DMA1_STREAM1 = reinterpret_cast<StreamX *const>( DMA1_STREAM1_BASE_ADDR );
-  StreamX *const DMA1_STREAM2 = reinterpret_cast<StreamX *const>( DMA1_STREAM2_BASE_ADDR );
-  StreamX *const DMA1_STREAM3 = reinterpret_cast<StreamX *const>( DMA1_STREAM3_BASE_ADDR );
-  StreamX *const DMA1_STREAM4 = reinterpret_cast<StreamX *const>( DMA1_STREAM4_BASE_ADDR );
-  StreamX *const DMA1_STREAM5 = reinterpret_cast<StreamX *const>( DMA1_STREAM5_BASE_ADDR );
-  StreamX *const DMA1_STREAM6 = reinterpret_cast<StreamX *const>( DMA1_STREAM6_BASE_ADDR );
-  StreamX *const DMA1_STREAM7 = reinterpret_cast<StreamX *const>( DMA1_STREAM7_BASE_ADDR );
+  void initializeMapping()
+  {
+    dmaObjects.fill( nullptr );
+  }
 
-  StreamX *const DMA2_STREAM0 = reinterpret_cast<StreamX *const>( DMA2_STREAM0_BASE_ADDR );
-  StreamX *const DMA2_STREAM1 = reinterpret_cast<StreamX *const>( DMA2_STREAM1_BASE_ADDR );
-  StreamX *const DMA2_STREAM2 = reinterpret_cast<StreamX *const>( DMA2_STREAM2_BASE_ADDR );
-  StreamX *const DMA2_STREAM3 = reinterpret_cast<StreamX *const>( DMA2_STREAM3_BASE_ADDR );
-  StreamX *const DMA2_STREAM4 = reinterpret_cast<StreamX *const>( DMA2_STREAM4_BASE_ADDR );
-  StreamX *const DMA2_STREAM5 = reinterpret_cast<StreamX *const>( DMA2_STREAM5_BASE_ADDR );
-  StreamX *const DMA2_STREAM6 = reinterpret_cast<StreamX *const>( DMA2_STREAM6_BASE_ADDR );
-  StreamX *const DMA2_STREAM7 = reinterpret_cast<StreamX *const>( DMA2_STREAM7_BASE_ADDR );
+  bool isDMA( const std::uintptr_t address )
+  {
+    bool result = false;
 
-#elif defined( _SIM )
-  RegisterMap *const DMA1_PERIPH = new RegisterMap;
-  RegisterMap *const DMA2_PERIPH = new RegisterMap;
+    for ( auto &val : periphAddressList )
+    {
+      if ( val == address )
+      {
+        result = true;
+        break;
+      }
+    }
 
-  StreamX *const DMA1_STREAM0 = new StreamX;
-  StreamX *const DMA1_STREAM1 = new StreamX;
-  StreamX *const DMA1_STREAM2 = new StreamX;
-  StreamX *const DMA1_STREAM3 = new StreamX;
-  StreamX *const DMA1_STREAM4 = new StreamX;
-  StreamX *const DMA1_STREAM5 = new StreamX;
-  StreamX *const DMA1_STREAM6 = new StreamX;
-  StreamX *const DMA1_STREAM7 = new StreamX;
-
-  StreamX *const DMA2_STREAM0 = new StreamX;
-  StreamX *const DMA2_STREAM1 = new StreamX;
-  StreamX *const DMA2_STREAM2 = new StreamX;
-  StreamX *const DMA2_STREAM3 = new StreamX;
-  StreamX *const DMA2_STREAM4 = new StreamX;
-  StreamX *const DMA2_STREAM5 = new StreamX;
-  StreamX *const DMA2_STREAM6 = new StreamX;
-  StreamX *const DMA2_STREAM7 = new StreamX;
-
-#endif 
-
-  const std::array<RegisterMap *const, NUM_DMA_PERIPHS> periphInstanceList = { DMA1_PERIPH, DMA2_PERIPH };
-
-  const std::array<StreamX *const, NUM_DMA_STREAMS> streamInstanceList = {
-    DMA1_STREAM0, DMA1_STREAM1, DMA1_STREAM2, DMA1_STREAM3, DMA1_STREAM4, DMA1_STREAM5, DMA1_STREAM6, DMA1_STREAM7,
-    DMA2_STREAM0, DMA2_STREAM1, DMA2_STREAM2, DMA2_STREAM3, DMA2_STREAM4, DMA2_STREAM5, DMA2_STREAM6, DMA2_STREAM7
-  };
-
-  /* clang-format off */
-  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex{
-    { reinterpret_cast<std::uintptr_t>( DMA1_PERIPH ), 0 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_PERIPH ), 1 }
-  };
-
-  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> StreamToResourceIndex{
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM0 ), DMA1_STREAM0_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM1 ), DMA1_STREAM1_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM2 ), DMA1_STREAM2_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM3 ), DMA1_STREAM3_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM4 ), DMA1_STREAM4_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM5 ), DMA1_STREAM5_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM6 ), DMA1_STREAM6_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM7 ), DMA1_STREAM7_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM0 ), DMA2_STREAM0_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM1 ), DMA2_STREAM1_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM2 ), DMA2_STREAM2_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM3 ), DMA2_STREAM3_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM4 ), DMA2_STREAM4_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM5 ), DMA2_STREAM5_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM6 ), DMA2_STREAM6_RESOURCE_INDEX }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM7 ), DMA2_STREAM7_RESOURCE_INDEX }, 
-  };
-
-  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> StreamToRegisterIndex{
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM0 ), 0 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM1 ), 1 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM2 ), 2 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM3 ), 3 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM4 ), 4 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM5 ), 5 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM6 ), 6 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA1_STREAM7 ), 7 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM0 ), 0 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM1 ), 1 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM2 ), 2 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM3 ), 3 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM4 ), 4 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM5 ), 5 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM6 ), 6 }, 
-    { reinterpret_cast<std::uintptr_t>( DMA2_STREAM7 ), 7 }, 
-  };
+    return result;
+  }
 
   const std::array<uint32_t, static_cast<uint8_t>(Chimera::DMA::TransferDirection::NUM_OPTIONS)> TransferMap{
     Configuration::TransferDirection::P2M,   

@@ -14,7 +14,6 @@
 
 #if defined( STM32F446xx )
 #include <Thor/drivers/f4/dma/hw_dma_register_stm32f446xx.hpp>
-#include <Thor/drivers/f4/dma/hw_dma_mapping.hpp>
 #endif
 
 #endif /* !THOR_HW_DMA_PROJECT_HPP */

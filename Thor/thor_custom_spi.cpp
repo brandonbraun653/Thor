@@ -22,6 +22,7 @@
 #include <Thor/spi.hpp>
 
 
+#if defined( THOR_CUSTOM_DRIVERS ) && ( THOR_DRIVER_SPI == 1 )
 
 
 static std::array<Thor::SPI::SPIClass *, Thor::Driver::SPI::NUM_SPI_PERIPHS> spiobjects;
@@ -237,3 +238,5 @@ static void SPI4ISRPostProcessorThread( void *argument )
 {
 }
 #endif 
+
+#endif /* THOR_CUSTOM_DRIVERS && THOR_DRIVER_SPI */

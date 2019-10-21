@@ -14,6 +14,7 @@
 
 /* C++ Includes */
 #include <cstdint>
+#include <array>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
@@ -49,23 +50,46 @@ namespace Thor::Driver::DMA
     StreamX STREAM7;         /**< DMA Stream control registers, Address offset: 0x18 x stream number */
   };
 
-  static inline StreamX *const getStreamRegisters( RegisterMap *const periph, const uint32_t streamNum )
+  class Driver;
+
+  using DriverInstanceList = std::array<Driver *, NUM_DMA_PERIPHS>;
+  using PeriphRegisterList = std::array<RegisterMap *, NUM_DMA_PERIPHS>;
+  using StreamRegisterList = std::array<StreamX *, NUM_DMA_STREAMS>;
+
+
+  static inline StreamX *const getStreamRegisters( RegisterMap *const periph, const size_t streamNum )
   {
     /*------------------------------------------------
     This equation taken directly from register spec in datasheet.
     See 9.5.5 in RM0390
     ------------------------------------------------*/
-    auto address = reinterpret_cast<std::uintptr_t>( periph ) + 0x10u + ( 0x18u * streamNum );
+#if defined( _EMBEDDED )
+    static constexpr size_t fixedOffset = 0x10;
+    static constexpr size_t streamOffset = 0x18;
+
+    auto address = reinterpret_cast<std::uintptr_t>( periph ) + fixedOffset + ( streamOffset * streamNum );
     return reinterpret_cast<StreamX *const>( address );
+
+#elif defined( _SIM )
+    auto start = reinterpret_cast<std::uintptr_t>( periph );
+    auto stream0Offset = offsetof( RegisterMap, STREAM0 );
+    auto streamXSize   = sizeof( StreamX );
+
+    auto address = start + stream0Offset + ( streamNum * streamXSize );
+    return reinterpret_cast<StreamX *const>( address );
+#endif 
   }
 
-  static inline const StreamX *const getStreamRegisters( const RegisterMap *const periph, const uint32_t streamNum )
+  static inline const StreamX *const getStreamRegisters( const RegisterMap *const periph, const size_t streamNum )
   {
     /*------------------------------------------------
     This equation taken directly from register spec in datasheet.
     See 9.5.5 in RM0390
     ------------------------------------------------*/
-    auto address = reinterpret_cast<std::uintptr_t>( periph ) + 0x10u + ( 0x18u * streamNum );
+    static constexpr size_t fixedOffset  = 0x10;
+    static constexpr size_t streamOffset = 0x18;
+
+    auto address = reinterpret_cast<std::uintptr_t>( periph ) + fixedOffset + ( streamOffset * streamNum );
     return reinterpret_cast<const StreamX *const>( address );
   }
 

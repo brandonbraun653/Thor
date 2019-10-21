@@ -53,14 +53,19 @@ namespace Chimera::System
 {
   Chimera::Status_t prjSystemStartup()
   {
-    Thor::SPI::initialize();
-
     /*------------------------------------------------
     Initialize the system clocks
     ------------------------------------------------*/
     Thor::Driver::RCC::initialize();
     auto sys = Thor::Driver::RCC::SystemClock::get();
     sys->configureProjectClocks();
+
+    /*------------------------------------------------
+    Hardware Specific Initialization
+    ------------------------------------------------*/
+#if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
+    Thor::DMA::initialize();
+#endif
 
     /*------------------------------------------------
     Initialize interrupt settings

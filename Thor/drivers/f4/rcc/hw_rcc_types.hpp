@@ -450,7 +450,7 @@ namespace Thor::Driver::RCC
       /**
        *  Gets the right shifted value instead of the masked value
        */
-      static inline Reg32_t getRS()
+      static inline Reg32_t getRightShifted( const RegisterMap *const periph )
       {
         return ( periph->CFGR & CFGR_SWS ) >> CFGR_SWS_Pos;
       }

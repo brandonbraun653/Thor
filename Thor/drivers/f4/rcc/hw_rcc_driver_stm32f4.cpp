@@ -298,18 +298,19 @@ namespace Thor::Driver::RCC
   void initialize()
   {
     using namespace Chimera::Peripheral;
-    using namespace LookupTables;
+    using namespace Thor::Driver::RCC;
 
     static bool initialized = false;
 
     if ( !initialized )
     {
       /*------------------------------------------------
-      Initialize the low level driver
+      Initialize the low level driver. Order is important:
+        1. Registers
+        2. Mapping
       ------------------------------------------------*/
-      initializeMapping();
       initializeRegisters();
-
+      initializeMapping();
 
       /*------------------------------------------------
       Register the lookup tables with the system
@@ -317,8 +318,7 @@ namespace Thor::Driver::RCC
       memset( periphLookupTables.data(), 0, sizeof( periphLookupTables ) );
 
 #if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
-      DMAInitTables();
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ] = &DMALookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ] = &LookupTables::DMALookup;
 #endif
 
 #if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
@@ -1004,7 +1004,7 @@ namespace Thor::Driver::RCC
     CFGR::SW::set( RCC1_PERIPH, init->SYSCLKSource );
 
     /* Assumes SW and SWS config bits mean the same thing */
-    while ( CFGR::SWS::getRS() != init->SYSCLKSource )
+    while ( CFGR::SWS::getRightShifted( RCC1_PERIPH ) != init->SYSCLKSource )
     {
       if ( ( Chimera::millis() - tickstart ) > CLOCKSWITCH_TIMEOUT_VALUE_MS )
       {

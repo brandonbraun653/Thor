@@ -23,6 +23,13 @@
 
 namespace Thor::DMA
 {
+  /**
+   *  Initialize the DMA driver
+   *  
+   *  @return Chimera::Status_t 
+   */
+  Chimera::Status_t initialize();
+
   class DMAClass : public Chimera::DMA::HWInterface, public Chimera::Threading::Lockable
   {
   public:

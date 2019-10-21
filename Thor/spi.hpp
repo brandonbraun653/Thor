@@ -23,6 +23,7 @@
 #include <Chimera/types/event_types.hpp>
 
 /* Thor Includes */
+#include <Thor/headers.hpp>
 #include <Thor/drivers/common/interrupts/spi_interrupt_vectors.hpp>
 #include <Thor/types/spi_types.hpp>
 

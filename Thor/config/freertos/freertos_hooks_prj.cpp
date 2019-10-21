@@ -13,7 +13,12 @@
 #include <Thor/thor.hpp>
 
 /* Chimera Includes */
+#include <Chimera/interface/compiler_intf.hpp>
 #include <Chimera/modules/freertos/freertos_hooks.hpp>
+
+#define WIN32_LEAN_AND_MEAN
+#define _X64_
+#include "debugapi.h"
 
 namespace Chimera::Modules::FreeRTOS
 {
@@ -31,6 +36,8 @@ namespace Chimera::Modules::FreeRTOS
 
   void ApplicationMallocFailedHook()
   {
+    DebugBreak();
+
     while ( 1 )
     {
     }

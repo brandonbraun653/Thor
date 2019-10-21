@@ -139,6 +139,13 @@ namespace Thor::Driver::DMA
     }
   }
 
+  void initialize()
+  {
+    initializeRegisters();
+    initializeMapping();
+  }
+
+
   Stream::Stream() :
       stream( nullptr ), parent( nullptr ), streamRegisterIndex( 0 ), streamResourceIndex( 0 ), wakeupSignal( nullptr ),
       listenerIDCount( 0 )
@@ -646,7 +653,7 @@ namespace Thor::Driver::DMA
         if ( !streamObjects[ x ] )
         {
           /* x is already zero indexed, no need to convert it to get the proper stream */
-          auto streamInstance = getStreamRegisters( periph, x );
+          StreamX * streamInstance = getStreamRegisters( periph, x );
           streamObjects[ x ]  = new Stream();
           streamObjects[ x ]->attach( streamInstance, periph );
         }

@@ -25,12 +25,30 @@ namespace Thor::Driver::RCC
 
   void initializeMapping()
   {
+
+#if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
     LookupTables::DMAInit();
+#endif
+
+#if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
     LookupTables::GPIOInit();
+#endif
+
+#if defined( THOR_DRIVER_SPI ) && ( THOR_DRIVER_SPI == 1 )
     LookupTables::SPIInit();
+#endif 
+
+#if defined( THOR_DRIVER_UART ) && ( THOR_DRIVER_UART == 1 )
     LookupTables::UARTInit();
+#endif
+
+#if defined( THOR_DRIVER_USART ) && ( THOR_DRIVER_USART == 1 )
     LookupTables::USARTInit();
+#endif
+
+#if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )
     LookupTables::WWDGInit();
+#endif
   }
 
   bool isRCC( const std::uintptr_t address )

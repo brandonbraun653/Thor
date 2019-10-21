@@ -23,6 +23,7 @@ Using the custom STM32 driver
 #if defined( TARGET_STM32F4 )
 #include <Thor/drivers/f4/dma/hw_dma_driver.hpp>
 #include <Thor/drivers/f4/dma/hw_dma_prj.hpp>
+#include <Thor/drivers/f4/dma/hw_dma_mapping.hpp>
 #endif
 
 #if defined( TARGET_STM32F7 )
