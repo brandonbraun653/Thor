@@ -29,6 +29,8 @@
 
 namespace Thor::Driver::WWDG
 {
+  void initializeRegisters();
+
   static constexpr Reg32_t WWDG1_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x2C00U;
   static constexpr Reg32_t NUM_WWDG_PERIPHS = 1u;
 

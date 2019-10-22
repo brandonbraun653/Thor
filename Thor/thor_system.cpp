@@ -21,6 +21,9 @@
 #include <Thor/dma.hpp>
 #include <Thor/gpio.hpp>
 #include <Thor/spi.hpp>
+#include <Thor/uart.hpp>
+#include <Thor/usart.hpp>
+#include <Thor/watchdog.hpp>
 
 /* Driver Includes */
 #include <Thor/drivers/nvic.hpp>
@@ -72,16 +75,31 @@ namespace Chimera::System
     Thor::GPIO::initialize();
 #endif 
 
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
+    Thor::Watchdog::initializeIWDG();
+#endif 
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
+    Thor::SPI::initialize();
+#endif 
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
+    Thor::UART::initialize();
+#endif
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
+    Thor::USART::initialize();
+#endif
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
+    Thor::Watchdog::initializeWWDG();
+#endif 
 
     /*------------------------------------------------
     Initialize interrupt settings
     ------------------------------------------------*/
     Thor::Driver::Interrupt::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
 
-    /*------------------------------------------------
-    Initialize the DMA Driver
-    ------------------------------------------------*/
-    
 
     return Chimera::CommonStatusCodes::OK;
   }

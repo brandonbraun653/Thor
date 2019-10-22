@@ -31,7 +31,7 @@
 
 namespace Thor::Driver::RCC
 {
-  extern void initializeRegisters();
+  void initializeRegisters();
 
 
   static constexpr Reg32_t NUM_RCC_PERIPHS = 1;

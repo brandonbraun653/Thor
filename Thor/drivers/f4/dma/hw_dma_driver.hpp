@@ -40,6 +40,11 @@ namespace Thor::Driver::DMA
    */
   bool streamIsOnPeripheral( RegisterMap *const controller, StreamX *const stream );
 
+  /**
+   *  Initializes the low level driver
+   *
+   *  @return void
+   */
   void initialize();
 
   class Stream : public StreamModel, public Chimera::Threading::Lockable

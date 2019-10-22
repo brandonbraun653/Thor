@@ -43,7 +43,6 @@ namespace Thor::GPIO
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::CommonStatusCodes::OK;
-    
   }
 
 

@@ -37,6 +37,13 @@ namespace Thor::UART
 {
 #if ( THOR_CUSTOM_DRIVERS == 1 ) && ( THOR_DRIVER_UART == 1 )
 
+  /**
+   *  Initialize the driver
+   *  
+   *  @return Chimera::Status_t 
+   */
+  Chimera::Status_t initialize();
+
   class UARTClass : public Chimera::Serial::HWInterface,
                     public Chimera::Event::ListenerInterface,
                     public Chimera::Threading::AsyncIOInterface,

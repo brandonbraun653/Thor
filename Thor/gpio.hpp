@@ -29,7 +29,7 @@ namespace Thor::GPIO
 #if ( THOR_DRIVER_GPIO == 1 ) && ( THOR_DRIVER_GPIO == 1 )
 
   /**
-   *  Initialize the GPIO peripheral
+   *  Initialize the driver
    *  
    *  @return Chimera::Status_t
    */

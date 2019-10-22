@@ -27,6 +27,13 @@
 namespace Thor::Driver::UART
 {
   /**
+   *  Initializes the low level driver
+   *
+   *  @return void
+   */
+  void initialize();
+
+  /**
    *  On the STM32F4 chips, the UART and USART peripherals share the
    *  same registers and configuration settings. To eliminate duplicate
    *  code, this UART variant simply inherits the USART driver functionality.

@@ -62,6 +62,12 @@ namespace Thor::Driver::USART
     return result;
   }
 
+  void initialize()
+  {
+    initializeRegisters();
+    initializeMapping();
+  }
+
   Driver::Driver( RegisterMap *const peripheral ) : periph( peripheral ), ISRWakeup_external( nullptr )
   {
     auto address   = reinterpret_cast<std::uintptr_t>( peripheral );

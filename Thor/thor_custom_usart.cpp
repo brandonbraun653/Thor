@@ -15,6 +15,7 @@
 #include <boost/circular_buffer.hpp>
 
 /* Chimera Includes */
+#include <Chimera/constants/common.hpp>
 #include <Chimera/threading.hpp>
 
 /* Thor Includes */
@@ -71,8 +72,31 @@ static std::array<Chimera::Function::void_func_void_ptr, USARTDriver::NUM_USART_
 };
 /* clang-format on */
 
+namespace Chimera::USART
+{
+  Chimera::Status_t initialize()
+  {
+    return Thor::USART::initialize();
+  }
+}    // namespace Chimera::USART
+
 namespace Thor::USART
 {
+  static size_t s_driver_initialized;
+
+  Chimera::Status_t initialize()
+  {
+    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+
+    /*------------------------------------------------
+    Initialize the low level driver
+    ------------------------------------------------*/
+    Thor::Driver::USART::initialize();
+
+    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return Chimera::CommonStatusCodes::OK;
+  }
+
   USARTClass::USARTClass() : channel( 0 ), resourceIndex( 0 ), listenerIDCount( 0 )
   {
     using namespace Chimera::Hardware;

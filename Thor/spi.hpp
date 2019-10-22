@@ -32,7 +32,7 @@
 namespace Thor::SPI
 {
   /**
-   *  Initialize the SPI driver
+   *  Initialize the driver
    *  
    *  @return Chimera::Status_t 
    */

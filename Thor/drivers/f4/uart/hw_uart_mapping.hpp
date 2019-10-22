@@ -18,6 +18,7 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
 #include <Thor/drivers/f4/uart/hw_uart_types.hpp>
 
@@ -25,13 +26,39 @@
 
 namespace Thor::Driver::UART
 {
-  extern RegisterMap *const UART4_PERIPH;
-  extern RegisterMap *const UART5_PERIPH;
+#if defined( STM32_UART4_PERIPH_AVAILABLE )
+  extern RegisterMap * UART4_PERIPH;
+#endif 
+
+#if defined( STM32_UART5_PERIPH_AVAILABLE )
+  extern RegisterMap * UART5_PERIPH;
+#endif 
+
+  /*------------------------------------------------
+  Peripheral Memory Mapping
+  ------------------------------------------------*/
+  extern PeriphRegisterList PeripheralList;
+  extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  extern Chimera::Container::LightFlatMap<size_t, RegisterMap *const> ChanneltoInstance;
+
+  /*------------------------------------------------
+  Gets the interrupt request number tied to a UART instance.
+  ------------------------------------------------*/
+  extern const IRQn_Type USART_IRQn[ NUM_USART_PERIPHS ];
 
   /**
-   *  Maps a UART peripheral into the corresponding resource index
+   *  Initializes memory associated with mapping
+   *  
+   *  @return void
    */
-  extern const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  void initializeMapping();
+
+  /**
+   *  Checks if the given address belongs to a peripheral instance
+   *
+   *  @return bool
+   */
+  bool isUART( const std::uintptr_t address );
 
 }    // namespace Thor::Driver::UART
 

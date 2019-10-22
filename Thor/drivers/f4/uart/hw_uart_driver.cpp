@@ -35,6 +35,12 @@ namespace Thor::Driver::UART
     return result;
   }
 
+  void initialize()
+  {
+    initializeRegisters();
+    initializeMapping();
+  }
+
 }    // namespace Thor::Driver::UART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_UART */

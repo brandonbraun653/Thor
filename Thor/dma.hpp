@@ -24,7 +24,7 @@
 namespace Thor::DMA
 {
   /**
-   *  Initialize the DMA driver
+   *  Initialize the driver
    *  
    *  @return Chimera::Status_t 
    */

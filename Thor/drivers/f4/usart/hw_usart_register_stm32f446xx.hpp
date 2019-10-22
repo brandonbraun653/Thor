@@ -34,6 +34,8 @@
 
 namespace Thor::Driver::USART
 {
+  void initializeRegisters();
+
   static constexpr Reg32_t USART1_BASE_ADDR = Thor::System::MemoryMap::APB2PERIPH_BASE_ADDR + 0x1000U;
   static constexpr Reg32_t USART2_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x4400U;
   static constexpr Reg32_t USART3_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x4800U;
@@ -41,8 +43,13 @@ namespace Thor::Driver::USART
 
   static constexpr Reg32_t NUM_USART_PERIPHS = 4u;
 
+  static constexpr uint32_t USART1_RESOURCE_INDEX = 0u;
+  static constexpr uint32_t USART2_RESOURCE_INDEX = 1u;
+  static constexpr uint32_t USART3_RESOURCE_INDEX = 2u;
+  static constexpr uint32_t USART6_RESOURCE_INDEX = 3u;
+
   static constexpr std::array<Reg32_t, NUM_USART_PERIPHS> periphAddressList = { USART1_BASE_ADDR, USART2_BASE_ADDR,
-                                                                                 USART3_BASE_ADDR, USART6_BASE_ADDR };
+                                                                                USART3_BASE_ADDR, USART6_BASE_ADDR };
 
   /*------------------------------------------------
   USART Status Register

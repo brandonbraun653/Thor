@@ -35,6 +35,13 @@
 
 namespace Thor::Driver::USART
 {
+  /**
+   *  Initializes the low level driver
+   *
+   *  @return void
+   */
+  void initialize();
+
   class Driver : public Thor::Driver::Serial::Basic,
                  public Thor::Driver::Serial::Extended
   {

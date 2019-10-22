@@ -31,10 +31,15 @@
 
 namespace Thor::Driver::UART
 {
+  void initializeRegisters();
+
   static constexpr Reg32_t UART4_BASE_ADDR  = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x4C00U;
   static constexpr Reg32_t UART5_BASE_ADDR  = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x5000U;
 
   static constexpr Reg32_t NUM_UART_PERIPHS = 2u;
+
+  static constexpr uint32_t UART4_RESOURCE_INDEX = 0u;
+  static constexpr uint32_t UART5_RESOURCE_INDEX = 1u;
 
   static constexpr std::array<Reg32_t, NUM_UART_PERIPHS> periphAddressList = { UART4_BASE_ADDR, UART5_BASE_ADDR };
 }    // namespace Thor::Driver::USART

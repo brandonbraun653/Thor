@@ -38,6 +38,13 @@
 namespace Thor::USART
 {
 #if ( THOR_CUSTOM_DRIVERS == 1 ) && ( THOR_DRIVER_USART == 1 )
+  
+  /**
+   *  Initialize the driver
+   *  
+   *  @return Chimera::Status_t 
+   */
+  Chimera::Status_t initialize();
 
   class USARTClass : public Chimera::Serial::HWInterface,
                      public Chimera::Event::ListenerInterface,

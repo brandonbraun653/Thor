@@ -44,7 +44,7 @@
 
 namespace Thor::Driver::DMA
 {
-  extern void initializeRegisters();
+  void initializeRegisters();
 
   static constexpr Reg32_t DMA1_BASE_ADDR         = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x6000U;
   static constexpr Reg32_t DMA1_STREAM0_BASE_ADDR = DMA1_BASE_ADDR + 0x010u;

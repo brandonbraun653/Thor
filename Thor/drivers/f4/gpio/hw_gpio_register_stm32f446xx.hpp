@@ -31,7 +31,7 @@
 
 namespace Thor::Driver::GPIO
 {
-  extern void initializeRegisters();
+  void initializeRegisters();
 
   static constexpr uint32_t GPIOA_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0000U;
   static constexpr uint32_t GPIOB_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0400U;

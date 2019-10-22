@@ -17,7 +17,7 @@
 namespace Thor::Driver::IWDG
 {
 #if defined( _EMBEDDED )
-  RegisterMap *const IWDG_PERIPH = reinterpret_cast<RegisterMap *const>( IWDG_BASE_ADDR );
+  RegisterMap *const IWDG_PERIPH = reinterpret_cast<RegisterMap *const>( IWDG1_BASE_ADDR );
 
 #elif defined( _SIM )
   RegisterMap *const IWDG_PERIPH = new RegisterMap;

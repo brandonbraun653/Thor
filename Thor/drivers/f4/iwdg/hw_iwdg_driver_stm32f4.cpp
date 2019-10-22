@@ -43,6 +43,12 @@ namespace Thor::Driver::IWDG
                                                        PR::PRESCALE_64, PR::PRESCALE_128, PR::PRESCALE_256 };
 
 
+  void initialize()
+  {
+    initializeRegisters();
+    initializeMapping();
+  }
+
   Driver::Driver( RegisterMap *const periph ) : periph( periph )
   {
     resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;

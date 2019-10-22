@@ -30,12 +30,11 @@
 namespace Thor::Driver::SPI
 {
   /**
-   *  Takes care of initializing any resources from a system perspective. 
-   *  Each supported chip will have a different implementation of this function.
+   *  Initializes the low level driver
    *
    *  @return void
    */
-  extern void initialize();
+  void initialize();
 
 
   class Driver

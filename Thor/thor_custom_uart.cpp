@@ -9,14 +9,40 @@
  ********************************************************************************/
 
 
+/* Chimera Includes */
+#include <Chimera/constants/common.hpp>
+
 /* Thor Includes */
 #include <Thor/uart.hpp>
 #include <Thor/drivers/uart.hpp>
 
 #if defined( THOR_DRIVER_UART ) && ( THOR_DRIVER_UART == 1 )
 
+namespace Chimera::UART
+{
+  Chimera::Status_t initialize()
+  {
+    return Thor::UART::initialize();
+  }
+}    // namespace Chimera::UART
+
 namespace Thor::UART
 {
+  static size_t s_driver_initialized;
+
+  Chimera::Status_t initialize()
+  {
+    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+
+    /*------------------------------------------------
+    Initialize the low level driver
+    ------------------------------------------------*/
+    Thor::Driver::UART::initialize();
+
+    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return Chimera::CommonStatusCodes::OK;
+  }
+
   UARTClass::UARTClass()
   {
   }
