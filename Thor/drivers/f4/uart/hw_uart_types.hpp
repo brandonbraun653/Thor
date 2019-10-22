@@ -32,12 +32,12 @@ namespace Thor::Driver::UART
   ------------------------------------------------*/
   using RegisterMap = Thor::Driver::USART::RegisterMap;
 
-  /**
-   *  Checks if the given address belongs to a peripheral instance
-   *
-   *  @return bool
-   */
-  bool isUART( const std::uintptr_t address );
+  class Driver;
+
+  using DriverInstanceList = std::array<Driver *, NUM_UART_PERIPHS>;
+  using PeriphRegisterList = std::array<RegisterMap *, NUM_UART_PERIPHS>;
+  using DMASignalList      = std::array<Reg32_t, NUM_UART_PERIPHS>;
+
 
 }    // namespace Thor::Driver::UART
 

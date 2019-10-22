@@ -14,6 +14,7 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/uart/hw_uart_driver.hpp>
+#include <Thor/drivers/f4/uart/hw_uart_mapping.hpp>
 #include <Thor/drivers/f4/uart/hw_uart_prj.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
@@ -21,19 +22,7 @@
 namespace Thor::Driver::UART
 {
  
-  bool isUART( const std::uintptr_t address )
-  {
-    bool result = false;
-
-    for ( auto &val : periphAddressList )
-    {
-      if ( val == address )
-      {
-        result = true;
-      }
-    }
-    return result;
-  }
+  
 
   void initialize()
   {

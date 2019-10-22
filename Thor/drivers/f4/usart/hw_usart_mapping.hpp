@@ -48,9 +48,13 @@ namespace Thor::Driver::USART
   /*------------------------------------------------
   Peripheral Memory Mapping
   ------------------------------------------------*/
-  extern PeriphRegisterList PeripheralList;
+  extern PeriphRegisterList PeripheralList; /**< Memory mapped structs to each USART instance */
+  extern DMASignalList RXDMASignals;        /**< RX DMA signal identifiers for each USART instance */
+  extern DMASignalList TXDMASignals;        /**< RX DMA signal identifiers for each USART instance */
+  extern DriverInstanceList usartObjects;     /**< Driver objects for each USART Instance */
+
   extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
-  extern Chimera::Container::LightFlatMap<size_t, RegisterMap *const> ChanneltoInstance;
+  extern Chimera::Container::LightFlatMap<size_t, RegisterMap *> ChanneltoInstance;
 
   /*------------------------------------------------
   Gets the interrupt request number tied to a USART instance.

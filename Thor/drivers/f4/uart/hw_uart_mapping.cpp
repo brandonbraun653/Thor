@@ -15,26 +15,35 @@
 
 namespace Thor::Driver::UART
 {
-#if defined( _EMBEDDED )
-  RegisterMap *const UART4_PERIPH = reinterpret_cast<RegisterMap *const>( UART4_BASE_ADDR );
-  RegisterMap *const UART5_PERIPH = reinterpret_cast<RegisterMap *const>( UART5_BASE_ADDR );
+  /*------------------------------------------------
+  Chip Specific Resources
+  ------------------------------------------------*/
+  PeriphRegisterList PeripheralList;
+  DMASignalList RXDMASignals;
+  DMASignalList TXDMASignals;
+  DriverInstanceList uartObjects;
 
-#elif defined( _SIM )
-  RegisterMap *const UART4_PERIPH = new RegisterMap;
-  RegisterMap *const UART5_PERIPH = new RegisterMap;
-
-#endif
+  const IRQn_Type UART_IRQn[ NUM_UART_PERIPHS ] = { UART4_IRQn, UART5_IRQn };
 
 
-  /* clang-format off */
-
-  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex
+  void initializeMapping()
   {
-    { reinterpret_cast<std::uintptr_t>( UART4_PERIPH ), 0 },
-    { reinterpret_cast<std::uintptr_t>( UART5_PERIPH ), 1 }
-  };
+    uartObjects.fill( nullptr );
+  }
 
-  /* clang-format on */
+  bool isUART( const std::uintptr_t address )
+  {
+    bool result = false;
+
+    for ( auto &val : periphAddressList )
+    {
+      if ( val == address )
+      {
+        result = true;
+      }
+    }
+    return result;
+  }
 }    // namespace Thor::Driver::UART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

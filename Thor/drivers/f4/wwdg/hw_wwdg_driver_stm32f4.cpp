@@ -40,6 +40,12 @@ namespace Thor::Driver::WWDG
   static const std::vector<uint32_t> prescalerRegVals{ CFR::CLK_DIV_1, CFR::CLK_DIV_2, CFR::CLK_DIV_4, CFR::CLK_DIV_8 };
 
 
+  void initialize()
+  {
+    initializeRegisters();
+    initializeMapping();
+  }
+
   Driver::Driver( RegisterMap *const periph ) : periph( periph ), reloadValue( 0u )
   {
     resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;

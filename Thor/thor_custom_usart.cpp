@@ -40,7 +40,7 @@ static void USART6ISRPostProcessorThread( void *argument );
 Static Data
 ------------------------------------------------*/
 /* clang-format off */
-static std::array<Thor::USART::USARTClass *, USARTDriver::NUM_USART_PERIPHS> usartObjects = { 
+static std::array<Thor::USART::USARTClass *, USARTDriver::NUM_USART_PERIPHS> usartClassObjects = { 
   nullptr,
   nullptr,
   nullptr,
@@ -127,7 +127,7 @@ namespace Thor::USART
 
   USARTClass::~USARTClass()
   {
-    usartObjects[ channel ] = nullptr;
+    usartClassObjects[ channel ] = nullptr;
   }
 
   Chimera::Status_t USARTClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
@@ -166,7 +166,7 @@ namespace Thor::USART
     listenerIDCount = 0u;
     eventListeners.clear();
 
-    usartObjects[ resourceIndex ] = this;
+    usartClassObjects[ resourceIndex ] = this;
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -688,7 +688,7 @@ static void USART1ISRPostProcessorThread( void *argument )
     ------------------------------------------------*/
     if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
     {
-      if ( auto usart = usartObjects[ resourceIndex ]; usart )
+      if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
       {
         usart->postISRProcessing();
       }
@@ -710,7 +710,7 @@ static void USART2ISRPostProcessorThread( void *argument )
     ------------------------------------------------*/
     if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
     {
-      if ( auto usart = usartObjects[ resourceIndex ]; usart )
+      if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
       {
         usart->postISRProcessing();
       }
@@ -732,7 +732,7 @@ static void USART3ISRPostProcessorThread( void *argument )
     ------------------------------------------------*/
     if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
     {
-      if ( auto usart = usartObjects[ resourceIndex ]; usart )
+      if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
       {
         usart->postISRProcessing();
       }
@@ -754,7 +754,7 @@ static void USART6ISRPostProcessorThread( void *argument )
     ------------------------------------------------*/
     if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
     {
-      if ( auto usart = usartObjects[ resourceIndex ]; usart )
+      if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
       {
         usart->postISRProcessing();
       }

@@ -38,12 +38,11 @@ namespace Thor::Driver::USART
     volatile Reg32_t GTPR; /**< USART Guard time and prescaler register, Address offset: 0x18 */
   };
 
-  /**
-   *  Checks if the given address belongs to a peripheral instance
-   *
-   *  @return bool
-   */
-  bool isUSART( const std::uintptr_t address );
+  class Driver;
+
+  using DriverInstanceList = std::array<Driver *, NUM_USART_PERIPHS>;
+  using PeriphRegisterList = std::array<RegisterMap *, NUM_USART_PERIPHS>;
+  using DMASignalList      = std::array<Reg32_t, NUM_USART_PERIPHS>;
 
   /*------------------------------------------------
   Configuration Options

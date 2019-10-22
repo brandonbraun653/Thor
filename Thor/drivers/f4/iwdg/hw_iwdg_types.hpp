@@ -28,6 +28,10 @@ namespace Thor::Driver::IWDG
     volatile uint32_t RLR;  /**< IWDG Reload Register,    Address offset: 0x08 */
     volatile uint32_t SR;   /**< IWDG Status Register,    Address offset: 0x0C */
   };
+  class Driver;
+
+  using DriverInstanceList = std::array<Driver *, NUM_IWDG_PERIPHS>;
+  using PeriphRegisterList = std::array<RegisterMap *, NUM_IWDG_PERIPHS>;
 
   /*------------------------------------------------
   Configuration Options

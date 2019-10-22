@@ -10,6 +10,7 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
 
@@ -17,30 +18,13 @@
 
 namespace Thor::Driver::USART
 {
-#if defined( _EMBEDDED )
-  RegisterMap *const USART1_PERIPH = reinterpret_cast<RegisterMap *const>( USART1_BASE_ADDR );
-  RegisterMap *const USART2_PERIPH = reinterpret_cast<RegisterMap *const>( USART2_BASE_ADDR );
-  RegisterMap *const USART3_PERIPH = reinterpret_cast<RegisterMap *const>( USART3_BASE_ADDR );
-  RegisterMap *const USART6_PERIPH = reinterpret_cast<RegisterMap *const>( USART6_BASE_ADDR );
-
-#elif defined( _SIM )
-  RegisterMap *const USART1_PERIPH = new RegisterMap;
-  RegisterMap *const USART2_PERIPH = new RegisterMap;
-  RegisterMap *const USART3_PERIPH = new RegisterMap;
-  RegisterMap *const USART6_PERIPH = new RegisterMap;
-
-#endif
-
-  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex{
-    { reinterpret_cast<std::uintptr_t>( USART1_PERIPH ), 0 },
-    { reinterpret_cast<std::uintptr_t>( USART2_PERIPH ), 1 },
-    { reinterpret_cast<std::uintptr_t>( USART3_PERIPH ), 2 },
-    { reinterpret_cast<std::uintptr_t>( USART6_PERIPH ), 3 }
-  };
-
-  const Chimera::Container::LightFlatMap<size_t, RegisterMap *const> ChanneltoInstance{
-    { 1, USART1_PERIPH }, { 2, USART2_PERIPH }, { 3, USART3_PERIPH }, { 6, USART6_PERIPH }
-  };
+  /*------------------------------------------------
+  Chip Specific Resources
+  ------------------------------------------------*/
+  PeriphRegisterList PeripheralList;
+  DMASignalList RXDMASignals;
+  DMASignalList TXDMASignals;
+  DriverInstanceList usartObjects;
 
 
   const IRQn_Type USART_IRQn[ NUM_USART_PERIPHS ] = { USART1_IRQn, USART2_IRQn, USART3_IRQn, USART6_IRQn };
@@ -54,6 +38,27 @@ namespace Thor::Driver::USART
   const std::array<uint32_t, NUM_USART_PERIPHS> StopBitsToRegConfig = { Configuration::Stop::BIT_1,
                                                                         Configuration::Stop::BIT_1_5,
                                                                         Configuration::Stop::BIT_2 };
+
+  void initializeMapping()
+  {
+    usartObjects.fill( nullptr );
+  }
+
+  bool isUSART( const std::uintptr_t address )
+  {
+    bool result = false;
+
+    for ( auto &val : periphAddressList )
+    {
+      if ( val == address )
+      {
+        result = true;
+        break;
+      }
+    }
+
+    return result;
+  }
 }    // namespace Thor::Driver::USART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

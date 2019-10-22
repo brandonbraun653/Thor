@@ -34,34 +34,8 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
 
-static std::array<Thor::Driver::USART::Driver *, Thor::Driver::USART::NUM_USART_PERIPHS> usartObjects{};
-
-static std::array<uint32_t, Thor::Driver::USART::NUM_USART_PERIPHS> usartDMATXRequestSignals = {
-  Thor::DMA::Source::S_USART1_TX, Thor::DMA::Source::S_USART2_TX, Thor::DMA::Source::S_USART3_TX, Thor::DMA::Source::S_USART6_TX
-};
-
-static std::array<uint32_t, Thor::Driver::USART::NUM_USART_PERIPHS> usartDMARXRequestSignals = {
-  Thor::DMA::Source::S_USART1_RX, Thor::DMA::Source::S_USART2_RX, Thor::DMA::Source::S_USART3_RX, Thor::DMA::Source::S_USART6_RX
-};
-
 namespace Thor::Driver::USART
 {
-  bool isUSART( const std::uintptr_t address )
-  {
-    bool result = false;
-
-    for ( auto &val : periphAddressList )
-    {
-      if ( val == address )
-      {
-        result = true;
-        break;
-      }
-    }
-
-    return result;
-  }
-
   void initialize()
   {
     initializeRegisters();
@@ -74,8 +48,8 @@ namespace Thor::Driver::USART
     peripheralType = Chimera::Peripheral::Type::PERIPH_USART;
     resourceIndex  = Thor::Driver::USART::InstanceToResourceIndex.find( address )->second;
     periphIRQn     = USART_IRQn[ resourceIndex ];
-    dmaTXSignal    = usartDMATXRequestSignals[ resourceIndex ];
-    dmaRXSignal    = usartDMARXRequestSignals[ resourceIndex ];
+    dmaTXSignal    = TXDMASignals[ resourceIndex ];
+    dmaRXSignal    = RXDMASignals[ resourceIndex ];
 
     usartObjects[ resourceIndex ] = this;
 
@@ -93,7 +67,7 @@ namespace Thor::Driver::USART
   Chimera::Status_t Driver::init( const Thor::Driver::Serial::Config &cfg )
   {
     /*------------------------------------------------
-    First de-initialize the driver so we know we are
+    First deinitialize the driver so we know we are
     starting from a clean slate. There are no guarantees
     on what state the system is in when this is called.
     ------------------------------------------------*/
@@ -708,9 +682,9 @@ void USART1_IRQHandler( void )
 {
   static constexpr size_t index = 0;
 
-  if ( usartObjects[ index ] )
+  if ( Thor::Driver::USART::usartObjects[ index ] )
   {
-    usartObjects[ index ]->IRQHandler();
+    Thor::Driver::USART::usartObjects[ index ]->IRQHandler();
   }
 }
 
@@ -718,9 +692,9 @@ void USART2_IRQHandler( void )
 {
   static constexpr size_t index = 1;
 
-  if ( usartObjects[ index ] )
+  if ( Thor::Driver::USART::usartObjects[ index ] )
   {
-    usartObjects[ index ]->IRQHandler();
+    Thor::Driver::USART::usartObjects[ index ]->IRQHandler();
   }
 }
 
@@ -728,9 +702,9 @@ void USART3_IRQHandler( void )
 {
   static constexpr size_t index = 2;
 
-  if ( usartObjects[ index ] )
+  if ( Thor::Driver::USART::usartObjects[ index ] )
   {
-    usartObjects[ index ]->IRQHandler();
+    Thor::Driver::USART::usartObjects[ index ]->IRQHandler();
   }
 }
 
@@ -738,9 +712,9 @@ void USART6_IRQHandler( void )
 {
   static constexpr size_t index = 3;
 
-  if ( usartObjects[ index ] )
+  if ( Thor::Driver::USART::usartObjects[ index ] )
   {
-    usartObjects[ index ]->IRQHandler();
+    Thor::Driver::USART::usartObjects[ index ]->IRQHandler();
   }
 }
 

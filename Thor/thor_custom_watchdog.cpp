@@ -39,7 +39,7 @@ namespace Chimera::Watchdog
 
     if ( ( resultIWDG == Chimera::CommonStatusCodes::OK ) && ( resultWWDG == Chimera::CommonStatusCodes::OK ) )
     {
-      return Chimera::CommonStatusCodes::OK
+      return Chimera::CommonStatusCodes::OK;
     }
     else
     {
@@ -164,7 +164,7 @@ namespace Thor::Watchdog
 
   Independent::Independent() : currentPrescaler( 0u )
   {
-    hwDriver = std::make_unique<Thor::Driver::IWDG::Driver>( Thor::Driver::IWDG::IWDG_PERIPH );
+    hwDriver = std::make_unique<Thor::Driver::IWDG::Driver>( Thor::Driver::IWDG::IWDG1_PERIPH );
   }
 
   Independent::~Independent()

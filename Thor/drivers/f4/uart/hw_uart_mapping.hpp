@@ -38,13 +38,17 @@ namespace Thor::Driver::UART
   Peripheral Memory Mapping
   ------------------------------------------------*/
   extern PeriphRegisterList PeripheralList;
+  extern DMASignalList RXDMASignals;        /**< RX DMA signal identifiers for each UART instance */
+  extern DMASignalList TXDMASignals;        /**< RX DMA signal identifiers for each UART instance */
+  extern DriverInstanceList spiObjects;     /**< Driver objects for each UART Instance */
+
   extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
-  extern Chimera::Container::LightFlatMap<size_t, RegisterMap *const> ChanneltoInstance;
+  extern Chimera::Container::LightFlatMap<size_t, RegisterMap *> ChanneltoInstance;
 
   /*------------------------------------------------
   Gets the interrupt request number tied to a UART instance.
   ------------------------------------------------*/
-  extern const IRQn_Type USART_IRQn[ NUM_USART_PERIPHS ];
+  extern const IRQn_Type UART_IRQn[ NUM_UART_PERIPHS ];
 
   /**
    *  Initializes memory associated with mapping
