@@ -13,6 +13,7 @@
 
 /* C++ Includes */
 #include <cstdint>
+#include <array>
 
 /* Chimera Includes */
 #include <Chimera/types/common_types.hpp>
@@ -30,6 +31,11 @@ namespace Thor::Driver::WWDG
     volatile Reg32_t CFR;  /**< WWDG Configuration Register,   Address offset: 0x04 */
     volatile Reg32_t SR;   /**< WWDG Status Register,          Address offset: 0x08 */
   };
+
+  class Driver;
+
+  using DriverInstanceList = std::array<Driver *, NUM_WWDG_PERIPHS>;
+  using PeriphRegisterList = std::array<RegisterMap *, NUM_WWDG_PERIPHS>;
 
   /*------------------------------------------------
   Configuration Options

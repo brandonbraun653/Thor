@@ -28,6 +28,13 @@ namespace Thor::GPIO
 {
 #if ( THOR_DRIVER_GPIO == 1 ) && ( THOR_DRIVER_GPIO == 1 )
 
+  /**
+   *  Initialize the GPIO peripheral
+   *  
+   *  @return Chimera::Status_t
+   */
+  Chimera::Status_t initialize();
+
   class GPIOClass : public Chimera::GPIO::HWInterface
   {
   public:
@@ -53,7 +60,7 @@ namespace Thor::GPIO
     Chimera::GPIO::PinInit initSettings;
   };
 
-#endif  /* THOR_DRIVER_GPIO */
+#endif /* THOR_DRIVER_GPIO */
 
 }    // namespace Thor::GPIO
 

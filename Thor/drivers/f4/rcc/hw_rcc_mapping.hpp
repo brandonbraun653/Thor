@@ -41,11 +41,7 @@ namespace Thor::Driver::RCC
   /*------------------------------------------------
   Peripheral Memory Mapping
   ------------------------------------------------*/
-  extern PeriphRegisterList PeripheralList; /**< Memory mapped structs to each RCC instance */
-
-  /*------------------------------------------------
-  Maps a RCC peripheral into the corresponding resource index
-  ------------------------------------------------*/
+  extern PeriphRegisterList PeripheralList;
   extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
 
   /**
@@ -90,7 +86,7 @@ namespace Thor::Driver::RCC
 
     static constexpr size_t gpioTableSize = Thor::Driver::GPIO::NUM_GPIO_PERIPHS;
 
-    extern PCC GPIOLookup;
+    extern const PCC GPIOLookup;
 
     extern RegisterConfig GPIO_ClockConfig[ gpioTableSize ];
     extern RegisterConfig GPIO_ClockConfigLP[ gpioTableSize ];

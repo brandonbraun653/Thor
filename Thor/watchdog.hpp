@@ -22,6 +22,13 @@
 namespace Thor::Watchdog
 {
 #if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )
+  
+  /**
+   *  Initialize the WWDG driver
+   *  
+   *  @return Chimera::Status_t 
+   */
+  Chimera::Status_t initializeWWDG();
 
   /**
    *   A high resolution Watchdog peripheral driven by PCLK1 off the AHB bus. This
@@ -57,6 +64,13 @@ namespace Thor::Watchdog
 #endif  /* THOR_DRIVER_WWDG */
 
 #if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
+
+  /**
+   *  Initialize the WWDG driver
+   *  
+   *  @return Chimera::Status_t 
+   */
+  Chimera::Status_t initializeIWDG();
 
   /**
    *   A low resolution Watchdog peripheral driven by the LSI clock, which is

@@ -19,6 +19,7 @@
 #include <Thor/headers.hpp>
 #include <Thor/system.hpp>
 #include <Thor/dma.hpp>
+#include <Thor/gpio.hpp>
 #include <Thor/spi.hpp>
 
 /* Driver Includes */
@@ -57,15 +58,20 @@ namespace Chimera::System
     Initialize the system clocks
     ------------------------------------------------*/
     Thor::Driver::RCC::initialize();
-    auto sys = Thor::Driver::RCC::SystemClock::get();
-    sys->configureProjectClocks();
+    Thor::Driver::RCC::SystemClock::get()->configureProjectClocks();
 
     /*------------------------------------------------
     Hardware Specific Initialization
     ------------------------------------------------*/
 #if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
     Thor::DMA::initialize();
+    Thor::DMA::DMAClass::get()->init();
 #endif
+
+#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+    Thor::GPIO::initialize();
+#endif 
+
 
     /*------------------------------------------------
     Initialize interrupt settings
@@ -75,8 +81,7 @@ namespace Chimera::System
     /*------------------------------------------------
     Initialize the DMA Driver
     ------------------------------------------------*/
-    auto dma = Thor::DMA::DMAClass::get();
-    dma->init();
+    
 
     return Chimera::CommonStatusCodes::OK;
   }

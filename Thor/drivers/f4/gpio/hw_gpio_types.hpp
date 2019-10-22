@@ -14,6 +14,7 @@
 
 /* C++ Includes */
 #include <cstdint>
+#include <array>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
@@ -37,24 +38,7 @@ namespace Thor::Driver::GPIO
     volatile uint64_t AFR; /**< GPIO alternate function registers,     Address offset: 0x20-0x24 */
   };
 
-  static constexpr uint32_t PIN_0        = 0x0001; /**< Pin 0 selected    */
-  static constexpr uint32_t PIN_1        = 0x0002; /**< Pin 1 selected    */
-  static constexpr uint32_t PIN_2        = 0x0004; /**< Pin 2 selected    */
-  static constexpr uint32_t PIN_3        = 0x0008; /**< Pin 3 selected    */
-  static constexpr uint32_t PIN_4        = 0x0010; /**< Pin 4 selected    */
-  static constexpr uint32_t PIN_5        = 0x0020; /**< Pin 5 selected    */
-  static constexpr uint32_t PIN_6        = 0x0040; /**< Pin 6 selected    */
-  static constexpr uint32_t PIN_7        = 0x0080; /**< Pin 7 selected    */
-  static constexpr uint32_t PIN_8        = 0x0100; /**< Pin 8 selected    */
-  static constexpr uint32_t PIN_9        = 0x0200; /**< Pin 9 selected    */
-  static constexpr uint32_t PIN_10       = 0x0400; /**< Pin 10 selected   */
-  static constexpr uint32_t PIN_11       = 0x0800; /**< Pin 11 selected   */
-  static constexpr uint32_t PIN_12       = 0x1000; /**< Pin 12 selected   */
-  static constexpr uint32_t PIN_13       = 0x2000; /**< Pin 13 selected   */
-  static constexpr uint32_t PIN_14       = 0x4000; /**< Pin 14 selected   */
-  static constexpr uint32_t PIN_15       = 0x8000; /**< Pin 15 selected   */
-  static constexpr uint32_t PIN_All      = 0xFFFF; /**< All pins selected */
-  static constexpr uint32_t MAX_NUM_PINS = 16;
+   using PeriphRegisterList = std::array<RegisterMap *, NUM_GPIO_PERIPHS>;
 
   /**
    *  Mode register configuration options
@@ -103,13 +87,6 @@ namespace Thor::Driver::GPIO
     PULLUP   = 0x01u, /**< Pull up activation */
     PULLDOWN = 0x02u  /**< Pull down activation */
   };
-
-  /**
-   *  Checks if the given address belongs to a peripheral instance
-   *
-   *  @return bool
-   */
-  bool isGPIO( const std::uintptr_t address );
 }    // namespace Thor::Driver::GPIO
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

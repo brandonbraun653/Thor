@@ -16,14 +16,13 @@
 #include <Chimera/interface/compiler_intf.hpp>
 #include <Chimera/modules/freertos/freertos_hooks.hpp>
 
-#define WIN32_LEAN_AND_MEAN
-#define _X64_
-#include "debugapi.h"
+
 
 namespace Chimera::Modules::FreeRTOS
 {
   void ApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
   {
+    CHIMERA_INSERT_BREAKPOINT;
     while ( 1 )
     {
     }
@@ -36,8 +35,7 @@ namespace Chimera::Modules::FreeRTOS
 
   void ApplicationMallocFailedHook()
   {
-    DebugBreak();
-
+    CHIMERA_INSERT_BREAKPOINT;
     while ( 1 )
     {
     }

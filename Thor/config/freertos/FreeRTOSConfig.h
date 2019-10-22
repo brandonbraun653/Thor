@@ -85,6 +85,18 @@ mission critical applications that require provable dependability.
 extern uint32_t SystemCoreClock;
 #endif
 
+/*------------------------------------------------
+Figure out how much RAM we want to allocate
+------------------------------------------------*/
+#if defined( _EMBEDDED )
+#define configTOTAL_HEAP_SIZE ( ( size_t )( 75 * 1024 ) )
+#elif defined( _SIM )
+#define configTOTAL_HEAP_SIZE ( ( size_t )( 1024 * 1024 ) )
+#else
+#error Cannot configure FreeRTOS heap. Unknown environment.
+#endif
+
+
 
 #define configUSE_PREEMPTION 1
 #define configUSE_IDLE_HOOK 0
@@ -93,7 +105,6 @@ extern uint32_t SystemCoreClock;
 #define configTICK_RATE_HZ ( ( TickType_t )1000 )
 #define configMAX_PRIORITIES ( 8 )
 #define configMINIMAL_STACK_SIZE ( ( uint16_t )128 )
-#define configTOTAL_HEAP_SIZE ( ( size_t )( 75 * 1024 ) )
 #define configMAX_TASK_NAME_LEN ( 16 )
 #define configUSE_TRACE_FACILITY 1
 #define configUSE_16_BIT_TICKS 0

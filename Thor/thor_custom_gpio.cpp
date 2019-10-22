@@ -11,13 +11,41 @@
 /* C++ Includes */
 #include <cstring>
 
+/* Chimera Includes */
+#include <Chimera/constants/common.hpp>
+
 /* Thor Includes */
 #include <Thor/gpio.hpp>
 #include <Thor/drivers/gpio.hpp>
 
+#if ( THOR_DRIVER_GPIO == 1 ) && ( THOR_DRIVER_GPIO == 1 )
+
+namespace Chimera::GPIO
+{
+  Chimera::Status_t initialize()
+  {
+    return Thor::GPIO::initialize();
+  }
+}
+
 namespace Thor::GPIO
 {
-#if ( THOR_DRIVER_GPIO == 1 ) && ( THOR_DRIVER_GPIO == 1 )
+  static size_t s_driver_initialized;
+
+  Chimera::Status_t initialize()
+  {
+    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+
+    /*------------------------------------------------
+    Initialize the low level driver
+    ------------------------------------------------*/
+    Thor::Driver::GPIO::initialize();
+
+    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return Chimera::CommonStatusCodes::OK;
+    
+  }
+
 
   GPIOClass::GPIOClass() : driver( nullptr ) 
   {

@@ -57,7 +57,6 @@ namespace Thor::SPI
 {
   static size_t s_driver_initialized;
 
-
   Chimera::Status_t initialize()
   {
     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;

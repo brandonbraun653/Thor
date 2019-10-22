@@ -22,6 +22,8 @@
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
 namespace Thor::Driver::IWDG
 {
+  extern void initialize();
+
   class Driver : public Thor::Driver::Watchdog::Basic
   {
   public:

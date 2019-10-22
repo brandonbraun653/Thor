@@ -39,6 +39,12 @@ namespace Thor::Driver::GPIO
     return result;
   }
 
+  void initialize()
+  {
+    initializeRegisters();
+    initializeMapping();
+  }
+
   /*-----------------------------------------------------
   Bare Metal Implementation
   -----------------------------------------------------*/

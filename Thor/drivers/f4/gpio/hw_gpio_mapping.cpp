@@ -15,27 +15,16 @@
 
 namespace Thor::Driver::GPIO
 {
-#if defined( _EMBEDDED )
-  RegisterMap *const GPIOA_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOA_BASE_ADDR );
-  RegisterMap *const GPIOB_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOB_BASE_ADDR );
-  RegisterMap *const GPIOC_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOC_BASE_ADDR );
-  RegisterMap *const GPIOD_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOD_BASE_ADDR );
-  RegisterMap *const GPIOE_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOE_BASE_ADDR );
-  RegisterMap *const GPIOF_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOF_BASE_ADDR );
-  RegisterMap *const GPIOG_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOG_BASE_ADDR );
-  RegisterMap *const GPIOH_PERIPH = reinterpret_cast<RegisterMap *const>( GPIOH_BASE_ADDR );
+  /*------------------------------------------------
+  Chip Specific Resources
+  ------------------------------------------------*/
+  PeriphRegisterList PeripheralList;
 
-#elif defined( _SIM )
-  RegisterMap *const GPIOA_PERIPH = new RegisterMap;
-  RegisterMap *const GPIOB_PERIPH = new RegisterMap;
-  RegisterMap *const GPIOC_PERIPH = new RegisterMap;
-  RegisterMap *const GPIOD_PERIPH = new RegisterMap;
-  RegisterMap *const GPIOE_PERIPH = new RegisterMap;
-  RegisterMap *const GPIOF_PERIPH = new RegisterMap;
-  RegisterMap *const GPIOG_PERIPH = new RegisterMap;
-  RegisterMap *const GPIOH_PERIPH = new RegisterMap;
 
-#endif 
+  void initializeMapping()
+  {
+  }
+
 
   /* clang-format off */
 
@@ -66,52 +55,16 @@ namespace Thor::Driver::GPIO
     OPT_OSPEEDR::VERY_HIGH
   };
 
-  const std::array<uint8_t, static_cast<size_t>(Chimera::GPIO::Port::NUM_OPTIONS)> PortToIteratorMap =
+  const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Port::NUM_OPTIONS)> PortToIteratorMap =
   {
-    0u,
-    1u,
-    2u,
-    3u,
-    4u,
-    5u,
-    6u,
-    7u
-  };
-  
-  const Chimera::Container::LightFlatMap<std::uintptr_t, Chimera::GPIO::Port> InstanceToPortMap
-  {
-    { reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ), Chimera::GPIO::Port::PORTA },
-    { reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ), Chimera::GPIO::Port::PORTB },
-    { reinterpret_cast<std::uintptr_t>( GPIOC_PERIPH ), Chimera::GPIO::Port::PORTC },
-    { reinterpret_cast<std::uintptr_t>( GPIOD_PERIPH ), Chimera::GPIO::Port::PORTD },
-    { reinterpret_cast<std::uintptr_t>( GPIOE_PERIPH ), Chimera::GPIO::Port::PORTE },
-    { reinterpret_cast<std::uintptr_t>( GPIOF_PERIPH ), Chimera::GPIO::Port::PORTF },
-    { reinterpret_cast<std::uintptr_t>( GPIOG_PERIPH ), Chimera::GPIO::Port::PORTG },
-    { reinterpret_cast<std::uintptr_t>( GPIOH_PERIPH ), Chimera::GPIO::Port::PORTH }
-  };
-
-  const Chimera::Container::LightFlatMap<Chimera::GPIO::Port, decltype( GPIOA_PERIPH )> PortToInstanceMap
-  {
-    { Chimera::GPIO::Port::PORTA, GPIOA_PERIPH },
-    { Chimera::GPIO::Port::PORTB, GPIOB_PERIPH },
-    { Chimera::GPIO::Port::PORTC, GPIOC_PERIPH },
-    { Chimera::GPIO::Port::PORTD, GPIOD_PERIPH },
-    { Chimera::GPIO::Port::PORTE, GPIOE_PERIPH },
-    { Chimera::GPIO::Port::PORTF, GPIOF_PERIPH },
-    { Chimera::GPIO::Port::PORTG, GPIOG_PERIPH },
-    { Chimera::GPIO::Port::PORTH, GPIOH_PERIPH }
-  };
-
-  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex
-  {
-    { reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ), 0 },
-    { reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ), 1 },
-    { reinterpret_cast<std::uintptr_t>( GPIOC_PERIPH ), 2 },
-    { reinterpret_cast<std::uintptr_t>( GPIOD_PERIPH ), 3 },
-    { reinterpret_cast<std::uintptr_t>( GPIOE_PERIPH ), 4 },
-    { reinterpret_cast<std::uintptr_t>( GPIOF_PERIPH ), 5 },
-    { reinterpret_cast<std::uintptr_t>( GPIOG_PERIPH ), 6 },
-    { reinterpret_cast<std::uintptr_t>( GPIOH_PERIPH ), 7 }
+    GPIOA_RESOURCE_INDEX,
+    GPIOB_RESOURCE_INDEX,
+    GPIOC_RESOURCE_INDEX,
+    GPIOD_RESOURCE_INDEX,
+    GPIOE_RESOURCE_INDEX,
+    GPIOF_RESOURCE_INDEX,
+    GPIOG_RESOURCE_INDEX,
+    GPIOH_RESOURCE_INDEX
   };
 
   /* clang-format on */

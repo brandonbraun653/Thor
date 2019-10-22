@@ -22,7 +22,8 @@
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
 namespace Thor::Driver::WWDG
 {
-  
+  extern void initialize();
+
   /**
    *  @note Most of the Window watchdog driver has been prototyped
    *        but left untested because the functionality frankly isn't even

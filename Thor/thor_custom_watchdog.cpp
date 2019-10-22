@@ -15,9 +15,39 @@
 #include <limits>
 #include <memory>
 
+/* Chimera Includes */
+#include <Chimera/constants/common.hpp>
+
 /* Thor Includes */
 #include <Thor/watchdog.hpp>
 #include <Thor/drivers/watchdog.hpp>
+
+namespace Chimera::Watchdog
+{
+  Chimera::Status_t initialize()
+  {
+    Chimera::Status_t resultWWDG = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t resultIWDG = Chimera::CommonStatusCodes::OK;
+
+    #if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )
+    resultWWDG = Thor::Watchdog::initializeWWDG();
+    #endif 
+
+    #if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
+    resultIWDG = Thor::Watchdog::initializeIWDG();
+    #endif 
+
+    if ( ( resultIWDG == Chimera::CommonStatusCodes::OK ) && ( resultWWDG == Chimera::CommonStatusCodes::OK ) )
+    {
+      return Chimera::CommonStatusCodes::OK
+    }
+    else
+    {
+      return Chimera::CommonStatusCodes::FAIL;
+    }
+  }
+}
+
 
 namespace Thor::Watchdog
 {
@@ -26,9 +56,25 @@ namespace Thor::Watchdog
   ------------------------------------------------*/
 #if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )
 
+  static size_t s_wwdg_driver_initialized;
+
+  Chimera::Status_t initializeWWDG()
+  {
+    s_wwdg_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+
+    /*------------------------------------------------
+    Initialize the low level driver
+    ------------------------------------------------*/
+    Thor::Driver::WWDG::initialize();
+
+
+    s_wwdg_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return Chimera::CommonStatusCodes::OK;
+  }
+
   Window::Window() : currentPrescaler( 0u )
   {
-    hwDriver = std::make_unique<Thor::Driver::WWDG::Driver>( Thor::Driver::WWDG::WWDG_PERIPH );
+    hwDriver = std::make_unique<Thor::Driver::WWDG::Driver>( Thor::Driver::WWDG::WWDG1_PERIPH );
   }
 
   Window::~Window()
@@ -93,12 +139,28 @@ namespace Thor::Watchdog
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-#endif  /* THOR_DRIVER_WWDG */
+#endif /* THOR_DRIVER_WWDG */
 
   /*------------------------------------------------
-  Independent Watchdog Driver 
+  Independent Watchdog Driver
   ------------------------------------------------*/
 #if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
+
+  static size_t s_iwdg_driver_initialized;
+
+  Chimera::Status_t initializeIWDG()
+  {
+    s_iwdg_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+
+    /*------------------------------------------------
+    Initialize the low level driver
+    ------------------------------------------------*/
+    Thor::Driver::IWDG::initialize();
+
+
+    s_iwdg_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return Chimera::CommonStatusCodes::OK;
+  }
 
   Independent::Independent() : currentPrescaler( 0u )
   {
@@ -165,6 +227,6 @@ namespace Thor::Watchdog
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-#endif  /* THOR_DRIVER_IWDG */
+#endif /* THOR_DRIVER_IWDG */
 
 }    // namespace Thor::Watchdog

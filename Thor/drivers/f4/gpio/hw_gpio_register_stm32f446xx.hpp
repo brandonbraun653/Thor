@@ -31,6 +31,8 @@
 
 namespace Thor::Driver::GPIO
 {
+  extern void initializeRegisters();
+
   static constexpr uint32_t GPIOA_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0000U;
   static constexpr uint32_t GPIOB_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0400U;
   static constexpr uint32_t GPIOC_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0800U;
@@ -41,6 +43,15 @@ namespace Thor::Driver::GPIO
   static constexpr uint32_t GPIOH_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x1C00U;
 
   static constexpr size_t NUM_GPIO_PERIPHS = 8;
+
+  static constexpr uint32_t GPIOA_RESOURCE_INDEX = 0u;
+  static constexpr uint32_t GPIOB_RESOURCE_INDEX = 1u;
+  static constexpr uint32_t GPIOC_RESOURCE_INDEX = 2u;
+  static constexpr uint32_t GPIOD_RESOURCE_INDEX = 3u;
+  static constexpr uint32_t GPIOE_RESOURCE_INDEX = 4u;
+  static constexpr uint32_t GPIOF_RESOURCE_INDEX = 5u;
+  static constexpr uint32_t GPIOG_RESOURCE_INDEX = 6u;
+  static constexpr uint32_t GPIOH_RESOURCE_INDEX = 7u;
 
   static constexpr std::array<uint32_t, NUM_GPIO_PERIPHS> periphAddressList = { GPIOA_BASE_ADDR, GPIOB_BASE_ADDR,
                                                                                 GPIOC_BASE_ADDR, GPIOD_BASE_ADDR,

@@ -25,12 +25,30 @@
 
 namespace Thor::Driver::WWDG
 {
-  extern RegisterMap *const WWDG_PERIPH;
+#if defined( STM32_WWDG1_PERIPH_AVAILABLE )
+  extern RegisterMap *WWDG1_PERIPH;
+#endif 
+  
+  /*------------------------------------------------
+  Peripheral Memory Mapping
+  ------------------------------------------------*/
+  extern PeriphRegisterList PeripheralList;
+  extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
 
   /**
-   *  Maps a Watchdog peripheral into the corresponding resource index for lookup tables.
+   *  Initializes memory associated with mapping
+   *  
+   *  @return void
    */
-  extern const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  extern void initializeMapping();
+
+  /**
+   *  Checks if the given address belongs to a peripheral instance
+   *
+   *  @return bool
+   */
+  extern bool isWWDG( const std::uintptr_t address );
+
 }
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */

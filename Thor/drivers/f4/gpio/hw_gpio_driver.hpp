@@ -28,6 +28,13 @@
 
 namespace Thor::Driver::GPIO
 {
+  /**
+   *  Initialize the low level driver
+   *
+   *  @return void 
+   */
+  void initialize();
+
 
   class DriverBare : public Model
   {
@@ -66,8 +73,7 @@ namespace Thor::Driver::GPIO
   };
 
 
-  class DriverThreaded : public Model,
-                         public Chimera::Threading::Lockable
+  class DriverThreaded : public Model, public Chimera::Threading::Lockable
   {
   public:
     DriverThreaded();
@@ -79,7 +85,7 @@ namespace Thor::Driver::GPIO
 
     void clockDisable() final override;
 
-    Chimera::Status_t driveSet(  const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout ) final override;
+    Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout ) final override;
 
     Chimera::Status_t speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout ) final override;
 

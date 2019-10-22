@@ -29,10 +29,12 @@
 
 namespace Thor::Driver::WWDG
 {
-  static constexpr Reg32_t WWDG_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x2C00U;
+  static constexpr Reg32_t WWDG1_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x2C00U;
   static constexpr Reg32_t NUM_WWDG_PERIPHS = 1u;
 
-  static constexpr std::array<Reg32_t, NUM_WWDG_PERIPHS> periphAddressList = { WWDG_BASE_ADDR };
+  static constexpr uint32_t WWDG1_RESOURCE_INDEX = 0u;
+
+  static constexpr std::array<Reg32_t, NUM_WWDG_PERIPHS> periphAddressList = { WWDG1_BASE_ADDR };
 
   /*-------------------------------------------------
   WWDG Control Register

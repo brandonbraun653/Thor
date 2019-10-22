@@ -304,11 +304,6 @@ namespace Thor::Driver::RCC
 
     if ( !initialized )
     {
-      /*------------------------------------------------
-      Initialize the low level driver. Order is important:
-        1. Registers
-        2. Mapping
-      ------------------------------------------------*/
       initializeRegisters();
       initializeMapping();
 
@@ -322,19 +317,19 @@ namespace Thor::Driver::RCC
 #endif
 
 #if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ]  = &GPIOLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ]  = &LookupTables::GPIOLookup;
 #endif
 
 #if defined( THOR_DRIVER_UART ) && ( THOR_DRIVER_UART == 1 )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ] = &UARTLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ] = &LookupTables::UARTLookup;
 #endif
 
 #if defined( THOR_DRIVER_USART ) && ( THOR_DRIVER_USART == 1 )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USART ) ] = &USARTLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USART ) ] = &LookupTables::USARTLookup;
 #endif
 
 #if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )  
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_WWDG ) ]  = &WWDGLookup;
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_WWDG ) ]  = &LookupTables::WWDGLookup;
 #endif
 
       initialized = true;

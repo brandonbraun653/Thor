@@ -16,17 +16,32 @@
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
 namespace Thor::Driver::WWDG
 {
-#if defined( _EMBEDDED )
-  RegisterMap *const WWDG_PERIPH = reinterpret_cast<RegisterMap *const>( WWDG_BASE_ADDR );
+  /*------------------------------------------------
+  Chip Specific Resources
+  ------------------------------------------------*/
+  PeriphRegisterList PeripheralList;
 
-#elif defined( _SIM )
-  RegisterMap *const WWDG_PERIPH = new RegisterMap;
+  void initializeMapping()
+  {
+  
+  
+  }
+  
+  bool isWWDG( const std::uintptr_t address )
+  {
+    bool result = false;
 
-#endif
+    for ( auto &val : periphAddressList )
+    {
+      if ( val == address )
+      {
+        result = true;
+        break;
+      }
+    }
 
+    return result;
+  }
 
-  const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex = {
-    { reinterpret_cast<std::uintptr_t>( WWDG_PERIPH ), 0u } 
-  };
 }
 #endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */
