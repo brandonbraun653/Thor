@@ -10,6 +10,7 @@
 
 /* Thor Includes */
 #include "thor_config_prj.hpp"
+#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_prj.hpp>
 
@@ -28,22 +29,22 @@ void SystemInit()
 #endif
   /* Reset the RCC clock configuration to the default reset state ------------*/
   /* Set HSION bit */
-  RCC_PERIPH->CR |= ( uint32_t )0x00000001;
+  RCC1_PERIPH->CR |= ( uint32_t )0x00000001;
 
   /* Reset CFGR register */
-  RCC_PERIPH->CFGR = 0x00000000;
+  RCC1_PERIPH->CFGR = 0x00000000;
 
   /* Reset HSEON, CSSON and PLLON bits */
-  RCC_PERIPH->CR &= ( uint32_t )0xFEF6FFFF;
+  RCC1_PERIPH->CR &= ( uint32_t )0xFEF6FFFF;
 
   /* Reset PLLCFGR register */
-  RCC_PERIPH->PLLCFGR = 0x24003010;
+  RCC1_PERIPH->PLLCFGR = 0x24003010;
 
   /* Reset HSEBYP bit */
-  RCC_PERIPH->CR &= ( uint32_t )0xFFFBFFFF;
+  RCC1_PERIPH->CR &= ( uint32_t )0xFFFBFFFF;
 
   /* Disable all interrupts */
-  RCC_PERIPH->CIR = 0x00000000;
+  RCC1_PERIPH->CIR = 0x00000000;
 
   /* Configure the Vector Table location add offset address ------------------*/
 #ifdef VECT_TAB_SRAM
