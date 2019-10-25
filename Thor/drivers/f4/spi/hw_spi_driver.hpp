@@ -24,6 +24,7 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/model/spi_model.hpp>
+#include <Thor/drivers/f4/spi/hw_spi_types.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
 
@@ -37,13 +38,27 @@ namespace Thor::Driver::SPI
   void initialize();
 
 
-  class Driver
+  class Driver : public Thor::Driver::SPI::Model
   {
   public:
     Driver();
     ~Driver();
 
+    Chimera::Status_t attach( RegisterMap *const peripheral ) final override;
+    Chimera::Status_t reset() final override;
+    void clockEnable() final override;
+    void clockDisable() final override;
+    size_t getErrorFlags() override;
+    size_t getStatusFlags() override;
+    Chimera::Status_t configure( const Chimera::SPI::DriverConfig &setup ) final override;
+    Chimera::Status_t transfer( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) final override;
+    Chimera::Status_t transferIT( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) final override;
+    Chimera::Status_t transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) final override;
+    Chimera::Status_t killTransfer() final override;
+
   private:
+    RegisterMap *periph;
+    size_t resourceIndex;
   };
 }    // namespace Thor::Driver::SPI
 

@@ -20,6 +20,14 @@
 
 namespace Thor::Driver::SPI
 {
+  /**
+   *  Checks if the given hardware channel is supported on this device.
+   *
+   *  @param[in]  channel   The channel number to be checked 
+   *  @return bool
+   */
+  bool isChannelSupported( const size_t channel );
+
   class Model
   {
   public:
@@ -59,14 +67,14 @@ namespace Thor::Driver::SPI
      *
      *  @return ErrorFlags_t
      */
-    virtual ErrorFlags_t getErrorFlags() = 0;
+    virtual size_t getErrorFlags() = 0;
 
     /**
      *  Gets any status flags (bitfield) that might be set
      *
      *  @return StatusFlags_t
      */
-    virtual StatusFlags_t getStatusFlags() = 0;
+    virtual size_t getStatusFlags() = 0;
 
     virtual Chimera::Status_t configure( const Chimera::SPI::DriverConfig &setup ) = 0;
 

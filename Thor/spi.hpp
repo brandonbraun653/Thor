@@ -25,7 +25,7 @@
 /* Thor Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/common/interrupts/spi_interrupt_vectors.hpp>
-#include <Thor/types/spi_types.hpp>
+#include <Thor/drivers/spi.hpp>
 
 
 #if defined( THOR_CUSTOM_DRIVERS ) && ( THOR_DRIVER_SPI == 1 )
@@ -89,6 +89,15 @@ namespace Thor::SPI
                                         size_t &registrationID ) final override;
 
     Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
+
+  private:
+    Chimera::SPI::DriverConfig config;  /**< Configuration used to set up the class */
+    Thor::GPIO::GPIOClass_uPtr SCK;
+    Thor::GPIO::GPIOClass_uPtr MOSI;
+    Thor::GPIO::GPIOClass_uPtr MISO;
+    Thor::GPIO::GPIOClass_uPtr CS;
+
+    Thor::Driver::SPI::Driver_uPtr driver;
   };
 
 }    // namespace Thor::SPI

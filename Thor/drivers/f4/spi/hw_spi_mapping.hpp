@@ -14,6 +14,7 @@
 
 /* Chimera Includes */
 #include <Chimera/container.hpp>
+#include <Chimera/types/spi_types.hpp>
 
 /* Thor Includes */
 #include <Thor/headers.hpp>
@@ -49,6 +50,16 @@ namespace Thor::Driver::SPI
   Maps a SPI peripheral into the corresponding resource index
   ------------------------------------------------*/
   extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  extern Chimera::Container::LightFlatMap<size_t, RegisterMap*> ChannelToInstance;
+
+  /*------------------------------------------------
+  Maps Chimera SPI configuration options into register values
+  ------------------------------------------------*/
+  extern const std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::BitOrder::NUM_OPTIONS )> BitOrderToRegConfig;  
+  extern const std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::ClockMode::NUM_OPTIONS )> ClockModeToRegConfig;
+  extern const std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::ControlMode::NUM_OPTIONS )> ControlModeToRegConfig;
+  extern const std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::DataSize::NUM_OPTIONS )> DataSizeToRegConfig;
+
 
   /**
    *  Initializes memory associated with mapping

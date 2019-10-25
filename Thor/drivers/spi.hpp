@@ -23,6 +23,7 @@ Using the custom STM32 driver
 #if defined( TARGET_STM32F4 )
 #include <Thor/drivers/f4/spi/hw_spi_driver.hpp>
 #include <Thor/drivers/f4/spi/hw_spi_prj.hpp>
+#include <Thor/drivers/f4/spi/hw_spi_mapping.hpp>
 #endif
 
 /*-------------------------------------------------

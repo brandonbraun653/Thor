@@ -10,6 +10,8 @@
 
 /* C++ Includes */
 #include <array>
+#include <cstring>
+#include <limits>
 
 /* Chimera Includes */
 #include <Chimera/constants/common.hpp>
@@ -17,15 +19,16 @@
 #include <Chimera/interface/spi_intf.hpp>
 
 /* Thor Includes */
-#include <Thor/drivers/common/types/spi_types.hpp>
-#include <Thor/drivers/spi.hpp>
+#include <Thor/gpio.hpp>
 #include <Thor/spi.hpp>
+
+#include <Thor/drivers/common/types/spi_types.hpp>
 
 
 #if defined( THOR_CUSTOM_DRIVERS ) && ( THOR_DRIVER_SPI == 1 )
 
 
-static std::array<Thor::SPI::SPIClass *, Thor::Driver::SPI::NUM_SPI_PERIPHS> spiobjects;
+static std::array<Thor::SPI::SPIClass *, Thor::Driver::SPI::NUM_SPI_PERIPHS> SPIClassObjects;
 static std::array<TaskHandle_t, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorHandles;
 static std::array<SemaphoreHandle_t, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorSignals;
 
@@ -57,6 +60,39 @@ namespace Thor::SPI
 {
   static size_t s_driver_initialized;
 
+
+  static void destroyClassObject( const size_t channel )
+  {
+    if ( ( channel < SPIClassObjects.size() ) && SPIClassObjects[ channel ] )
+    {
+      SPIClassObjects[ channel ]->deInit();
+      vPortFree( SPIClassObjects[ channel ] );
+    }
+
+    SPIClassObjects[ channel ] = nullptr;
+  }
+
+  static void destroyThreadHandle( const size_t channel )
+  {
+    if ( ( channel < postProcessorHandles.size() ) && postProcessorHandles[ channel ] )
+    {
+      vTaskDelete( postProcessorHandles[ channel ] );
+      vPortFree( postProcessorHandles[ channel ] );
+    }
+
+    postProcessorHandles[ channel ] = nullptr;
+  }
+
+  static void destroyThreadSemaphore( const size_t channel )
+  {
+    if ( ( channel < postProcessorSignals.size() ) && postProcessorSignals[ channel ] )
+    {
+      vPortFree( postProcessorSignals[ channel ] );
+    }
+
+    postProcessorSignals[ channel ] = nullptr;
+  }
+
   Chimera::Status_t initialize()
   {
     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
@@ -69,15 +105,9 @@ namespace Thor::SPI
     /*------------------------------------------------
     Reset driver object memory
     ------------------------------------------------*/
-    for ( size_t x = 0; x < spiobjects.size(); x++ )
+    for ( size_t x = 0; x < SPIClassObjects.size(); x++ )
     {
-      if ( spiobjects[ x ] ) 
-      {
-        spiobjects[ x ]->deInit();
-        vPortFree( spiobjects[ x ] );
-      }
-
-      spiobjects[ x ] = nullptr;
+      destroyClassObject( x );
     }
 
     /*------------------------------------------------
@@ -85,13 +115,7 @@ namespace Thor::SPI
     ------------------------------------------------*/
     for ( size_t x = 0; x < postProcessorHandles.size(); x++ )
     {
-      if ( postProcessorHandles[ x ] )
-      {
-        vTaskDelete( postProcessorHandles[ x ] );
-        vPortFree( postProcessorHandles[ x ] );
-      }
-
-      postProcessorHandles[ x ] = nullptr;
+      destroyThreadHandle( x );
     }
 
     /*------------------------------------------------
@@ -99,12 +123,7 @@ namespace Thor::SPI
     ------------------------------------------------*/
     for ( size_t x = 0; x < postProcessorSignals.size(); x++ )
     {
-      if ( postProcessorSignals[ x ] )
-      {
-        vPortFree( postProcessorSignals[ x ] );
-      }
-
-      postProcessorSignals[ x ] = nullptr;
+      destroyThreadSemaphore( x );
     }
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
@@ -120,6 +139,11 @@ namespace Thor::SPI
     {
       initialize();
     }
+
+    /*------------------------------------------------
+    Default initialize class member variables 
+    ------------------------------------------------*/
+    memset( &config, 0, sizeof( config ) );
   }
 
   SPIClass::~SPIClass()
@@ -132,12 +156,55 @@ namespace Thor::SPI
   ------------------------------------------------*/
   Chimera::Status_t SPIClass::init( const Chimera::SPI::DriverConfig &setupStruct )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+
+    /*------------------------------------------------
+    Should we even bother creating this?
+    ------------------------------------------------*/
+    if ( !Thor::Driver::SPI::isChannelSupported( setupStruct.HWInit.hwChannel ) )
+    {
+      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    }
+
+    /*------------------------------------------------
+    First register the driver and initialize class vars
+    ------------------------------------------------*/
+    config = setupStruct;
+    SPIClassObjects[ setupStruct.HWInit.hwChannel ] = this;
+
+    /*------------------------------------------------
+    Configure the GPIO
+    ------------------------------------------------*/
+    SCK = std::make_unique<Thor::GPIO::GPIOClass>();
+    MOSI = std::make_unique<Thor::GPIO::GPIOClass>();
+    MISO = std::make_unique<Thor::GPIO::GPIOClass>();
+    CS = std::make_unique<Thor::GPIO::GPIOClass>();
+
+    result |= SCK->init( config.SCKInit );
+    result |= MOSI->init( config.MOSIInit );
+    result |= MISO->init( config.MISOInit );
+    result |= CS->init( config.CSInit );
+
+    if (result != Chimera::CommonStatusCodes::OK)
+    {
+      return Chimera::CommonStatusCodes::FAILED_INIT;
+    }
+
+    /*------------------------------------------------
+    Configure the SPI hardware
+    ------------------------------------------------*/
+    auto instance = Thor::Driver::SPI::ChannelToInstance.find( config.HWInit.hwChannel )->second;
+
+    driver = std::make_unique<Thor::Driver::SPI::Driver>();
+    result |= driver->attach( instance );
+    result |= driver->configure( config );
+
+    return result;
   }
 
   Chimera::SPI::DriverConfig SPIClass::getInit()
   {
-    return Chimera::SPI::DriverConfig();
+    return config;
   }
 
   Chimera::Status_t SPIClass::deInit()

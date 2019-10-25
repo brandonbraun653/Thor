@@ -64,6 +64,7 @@ namespace Thor::Driver::USART
   /*------------------------------------------------
   Map Chimera options into Register configuration values
   ------------------------------------------------*/
+  // TODO: The length of these arrays are SO wrong. They need to be sized to the number of options!
   extern const std::array<uint32_t, NUM_USART_PERIPHS> CharWidToRegConfig;
   extern const std::array<uint32_t, NUM_USART_PERIPHS> ParityToRegConfig;
   extern const std::array<uint32_t, NUM_USART_PERIPHS> StopBitsToRegConfig;
