@@ -25,6 +25,35 @@ namespace Thor::Driver::SPI
   DMASignalList TXDMASignals;
   DriverInstanceList spiObjects;
 
+  /*------------------------------------------------
+  Chimera Configuration
+  ------------------------------------------------*/
+  const std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::BitOrder::NUM_OPTIONS )> BitOrderToRegConfig = {
+    Configuration::DataFormat::MSB, Configuration::DataFormat::LSB
+  };
+
+  const std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::ClockMode::NUM_OPTIONS )> ClockModeToRegConfig = {
+    Configuration::ClockFormat::MODE0, Configuration::ClockFormat::MODE1, Configuration::ClockFormat::MODE2,
+    Configuration::ClockFormat::MODE3
+  };
+
+  const std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::ControlMode::NUM_OPTIONS )> ControlModeToRegConfig = {
+    Configuration::Mode::MASTER,
+    Configuration::Mode::SLAVE
+  };
+
+  const std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::DataSize::NUM_OPTIONS )> DataSizeToRegConfig = {
+    Configuration::Width::WIDTH_8_BIT,
+    Configuration::Width::WIDTH_16_BIT,
+    Configuration::Width::WIDTH_16_BIT,
+    Configuration::Width::WIDTH_16_BIT, 
+    Configuration::Width::WIDTH_16_BIT,
+    Configuration::Width::WIDTH_16_BIT,
+    Configuration::Width::WIDTH_16_BIT, 
+    Configuration::Width::WIDTH_16_BIT, 
+    Configuration::Width::WIDTH_16_BIT
+  };
+
 
   void initializeMapping()
   {

@@ -320,6 +320,10 @@ namespace Thor::Driver::RCC
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ]  = &LookupTables::GPIOLookup;
 #endif
 
+#if defined( THOR_DRIVER_SPI ) && ( THOR_DRIVER_SPI == 1 )
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_SPI ) ] = &LookupTables::SPILookup;
+#endif
+
 #if defined( THOR_DRIVER_UART ) && ( THOR_DRIVER_UART == 1 )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ] = &LookupTables::UARTLookup;
 #endif

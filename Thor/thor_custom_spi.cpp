@@ -35,16 +35,16 @@ static std::array<SemaphoreHandle_t, Thor::Driver::SPI::NUM_SPI_PERIPHS> postPro
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
 static void SPI1ISRPostProcessorThread( void *argument );
-#endif 
+#endif
 #if defined( STM32_SPI2_PERIPH_AVAILABLE )
 static void SPI2ISRPostProcessorThread( void *argument );
-#endif 
+#endif
 #if defined( STM32_SPI3_PERIPH_AVAILABLE )
 static void SPI3ISRPostProcessorThread( void *argument );
-#endif 
+#endif
 #if defined( STM32_SPI4_PERIPH_AVAILABLE )
 static void SPI4ISRPostProcessorThread( void *argument );
-#endif 
+#endif
 
 
 namespace Chimera::SPI
@@ -53,11 +53,13 @@ namespace Chimera::SPI
   {
     return Thor::SPI::initialize();
   }
-}
+}    // namespace Chimera::SPI
 
 
 namespace Thor::SPI
 {
+  using namespace Chimera::Threading;
+
   static size_t s_driver_initialized;
 
 
@@ -141,14 +143,13 @@ namespace Thor::SPI
     }
 
     /*------------------------------------------------
-    Default initialize class member variables 
+    Default initialize class member variables
     ------------------------------------------------*/
     memset( &config, 0, sizeof( config ) );
   }
 
   SPIClass::~SPIClass()
   {
-
   }
 
   /*------------------------------------------------
@@ -169,23 +170,27 @@ namespace Thor::SPI
     /*------------------------------------------------
     First register the driver and initialize class vars
     ------------------------------------------------*/
-    config = setupStruct;
-    SPIClassObjects[ setupStruct.HWInit.hwChannel ] = this;
+    auto instance      = Thor::Driver::SPI::ChannelToInstance[ setupStruct.HWInit.hwChannel ];
+    auto resourceIndex = Thor::Driver::SPI::InstanceToResourceIndex[ reinterpret_cast<std::uintptr_t>( instance ) ];
+
+    SPIClassObjects[ resourceIndex ] = this;
 
     /*------------------------------------------------
     Configure the GPIO
     ------------------------------------------------*/
-    SCK = std::make_unique<Thor::GPIO::GPIOClass>();
+    config = setupStruct;
+
+    SCK  = std::make_unique<Thor::GPIO::GPIOClass>();
     MOSI = std::make_unique<Thor::GPIO::GPIOClass>();
     MISO = std::make_unique<Thor::GPIO::GPIOClass>();
-    CS = std::make_unique<Thor::GPIO::GPIOClass>();
+    CS   = std::make_unique<Thor::GPIO::GPIOClass>();
 
     result |= SCK->init( config.SCKInit );
     result |= MOSI->init( config.MOSIInit );
     result |= MISO->init( config.MISOInit );
     result |= CS->init( config.CSInit );
 
-    if (result != Chimera::CommonStatusCodes::OK)
+    if ( result != Chimera::CommonStatusCodes::OK )
     {
       return Chimera::CommonStatusCodes::FAILED_INIT;
     }
@@ -193,11 +198,14 @@ namespace Thor::SPI
     /*------------------------------------------------
     Configure the SPI hardware
     ------------------------------------------------*/
-    auto instance = Thor::Driver::SPI::ChannelToInstance.find( config.HWInit.hwChannel )->second;
-
     driver = std::make_unique<Thor::Driver::SPI::Driver>();
     result |= driver->attach( instance );
     result |= driver->configure( config );
+
+    if ( result != Chimera::CommonStatusCodes::OK )
+    {
+      config.validity = false;
+    }
 
     return result;
   }
@@ -214,22 +222,33 @@ namespace Thor::SPI
 
   Chimera::Status_t SPIClass::setChipSelect( const Chimera::GPIO::State value )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    if ( LockGuard( *this ).lock() && CS )
+    {
+      return CS->setState( value );
+    }
+
+    return Chimera::CommonStatusCodes::FAIL;
   }
 
   Chimera::Status_t SPIClass::setChipSelectControlMode( const Chimera::SPI::CSMode mode )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    if ( LockGuard( *this ).lock() )
+    {
+      config.HWInit.csMode = mode;
+      return Chimera::CommonStatusCodes::OK;
+    }
+
+    return Chimera::CommonStatusCodes::LOCKED;
   }
 
   Chimera::Status_t SPIClass::writeBytes( const void *const txBuffer, const size_t length, const size_t timeoutMS )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return readWriteBytes( txBuffer, nullptr, length, timeoutMS );
   }
 
   Chimera::Status_t SPIClass::readBytes( void *const rxBuffer, const size_t length, const size_t timeoutMS )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return readWriteBytes( nullptr, rxBuffer, length, timeoutMS );
   }
 
   Chimera::Status_t SPIClass::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length,
@@ -279,7 +298,7 @@ namespace Thor::SPI
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
-}
+}    // namespace Thor::SPI
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
 static void SPI1ISRPostProcessorThread( void *argument )
@@ -303,6 +322,6 @@ static void SPI3ISRPostProcessorThread( void *argument )
 static void SPI4ISRPostProcessorThread( void *argument )
 {
 }
-#endif 
+#endif
 
 #endif /* THOR_CUSTOM_DRIVERS && THOR_DRIVER_SPI */

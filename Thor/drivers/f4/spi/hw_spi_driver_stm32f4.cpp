@@ -52,9 +52,9 @@ namespace Thor::Driver::SPI
   Driver::Driver()
   {
     /*------------------------------------------------
-    Initialize class variables 
+    Initialize class variables
     ------------------------------------------------*/
-    periph = nullptr;
+    periph        = nullptr;
     resourceIndex = std::numeric_limits<decltype( resourceIndex )>::max();
   }
 
@@ -64,7 +64,7 @@ namespace Thor::Driver::SPI
 
   Chimera::Status_t Driver::attach( RegisterMap *const peripheral )
   {
-    periph = peripheral;
+    periph        = peripheral;
     resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
     return Chimera::CommonStatusCodes::OK;
   }
@@ -100,22 +100,66 @@ namespace Thor::Driver::SPI
     auto rcc = Thor::Driver::RCC::PeripheralController::get();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
 
+
+    // TODO: Calculate the baud rate needed once the driver is working
+
+
     /*------------------------------------------------
     Follow the configuration sequence from RM0390
     ------------------------------------------------*/
+    /* Destroy all previous settings */
+    CR1::set( periph, CR1::resetValue );
+    CR2::set( periph, CR1::resetValue );
+    CRCPR::set( periph, CRCPR::resetValue );
+    RXCRCR::set( periph, RXCRCR::resetValue );
+    TXCRCR::set( periph, TXCRCR::resetValue );
 
-    // TODO: need to create the configuration mappings and options
+    /* Bit Transfer Order */
+    CR1::LSBFIRST::set( periph, BitOrderToRegConfig[ static_cast<size_t>( setup.HWInit.bitOrder ) ] );
 
-    /* Configure CR1 */
+    /* Transfer Bit Width */
+    CR1::DFF::set( periph, DataSizeToRegConfig[ static_cast<size_t>( setup.HWInit.dataSize ) ] );
 
+    /* Peripheral Clock Divisor */
+    CR1::BR::set( periph, Configuration::ClockDivisor::DIV_32 );
 
+    /* Master/Slave Control Mode */
+    CR1::MSTR::set( periph, ControlModeToRegConfig[ static_cast<size_t>( setup.HWInit.controlMode ) ] );
+
+    /* Clock Phase and Polarity */
+    switch ( setup.HWInit.clockMode )
+    {
+      case Chimera::SPI::ClockMode::MODE0:
+        CR1::CPOL::set( periph, 0u );
+        CR1::CPHA::set( periph, 0u );
+        break;
+
+      case Chimera::SPI::ClockMode::MODE1:
+        CR1::CPOL::set( periph, 0u );
+        CR1::CPHA::set( periph, CR1_CPHA );
+        break;
+
+      case Chimera::SPI::ClockMode::MODE2:
+        CR1::CPOL::set( periph, CR1_CPOL );
+        CR1::CPHA::set( periph, 0u );
+        break;
+
+      case Chimera::SPI::ClockMode::MODE3:
+        CR1::CPOL::set( periph, CR1_CPOL );
+        CR1::CPHA::set( periph, CR1_CPHA );
+        break;
+
+      default:
+        break;
+    }
 
     /* Configure CR2 */
+    //TODO: Eventually setup DMA/Interrupts/CRC
 
+    /* Finally enable the peripheral */
+    CR1::SPE::set( periph, CR1_SPE );
 
-
-
-    return Chimera::Status_t();
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t Driver::transfer( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
