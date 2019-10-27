@@ -78,6 +78,8 @@ namespace Thor::Driver::SPI
 
     virtual Chimera::Status_t configure( const Chimera::SPI::DriverConfig &setup ) = 0;
 
+    virtual Chimera::Status_t registerConfig( Chimera::SPI::DriverConfig *config ) = 0;
+
     virtual Chimera::Status_t transfer( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) = 0;
 
     virtual Chimera::Status_t transferIT( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) = 0;

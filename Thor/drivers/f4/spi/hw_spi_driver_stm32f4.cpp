@@ -54,6 +54,7 @@ namespace Thor::Driver::SPI
     /*------------------------------------------------
     Initialize class variables
     ------------------------------------------------*/
+    periphConfig  = nullptr;
     periph        = nullptr;
     resourceIndex = std::numeric_limits<decltype( resourceIndex )>::max();
   }
@@ -107,6 +108,13 @@ namespace Thor::Driver::SPI
     /*------------------------------------------------
     Follow the configuration sequence from RM0390
     ------------------------------------------------*/
+    /* Clear any faults */
+    if ( SR::MODF::get( periph ) )
+    {
+      volatile Reg32_t dummyRead = SR::get( periph );
+    }
+
+
     /* Destroy all previous settings */
     CR1::set( periph, CR1::resetValue );
     CR2::set( periph, CR1::resetValue );
@@ -154,7 +162,7 @@ namespace Thor::Driver::SPI
     }
 
     /* Configure CR2 */
-    //TODO: Eventually setup DMA/Interrupts/CRC
+    CR2::SSOE::set( periph, CR2_SSOE );
 
     /* Finally enable the peripheral */
     CR1::SPE::set( periph, CR1_SPE );
@@ -162,9 +170,119 @@ namespace Thor::Driver::SPI
     return Chimera::CommonStatusCodes::OK;
   }
 
+  Chimera::Status_t Driver::registerConfig( Chimera::SPI::DriverConfig *config )
+  {
+    if ( !config )
+    {
+      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+
+    this->periphConfig = config;
+    return Chimera::CommonStatusCodes::OK;
+  }
+
   Chimera::Status_t Driver::transfer( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
   {
-    return Chimera::Status_t();
+    uint16_t txData                  = 0u;
+    uint16_t rxData                  = 0u;
+    size_t bytesTransfered           = 0u;
+    size_t bytesPerTransfer          = 0u;
+    const uint8_t *const txBufferPtr = reinterpret_cast<const uint8_t *const>( txBuffer );
+    uint8_t *const rxBufferPtr       = reinterpret_cast<uint8_t *const>( rxBuffer );
+
+    /*------------------------------------------------
+    Runtime configuration
+    ------------------------------------------------*/
+    if ( !periphConfig )
+    {
+      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+    }
+
+    switch ( periphConfig->HWInit.dataSize )
+    {
+      case Chimera::SPI::DataSize::SZ_8BIT:
+        bytesPerTransfer = 1u;
+        break;
+
+      case Chimera::SPI::DataSize::SZ_9BIT:
+      case Chimera::SPI::DataSize::SZ_10BIT:
+      case Chimera::SPI::DataSize::SZ_11BIT:
+      case Chimera::SPI::DataSize::SZ_12BIT:
+      case Chimera::SPI::DataSize::SZ_13BIT:
+      case Chimera::SPI::DataSize::SZ_14BIT:
+      case Chimera::SPI::DataSize::SZ_15BIT:
+      case Chimera::SPI::DataSize::SZ_16BIT:
+        bytesPerTransfer = 2u;
+        break;
+
+      default:
+        return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+        break;
+    }
+
+    /*------------------------------------------------
+    Do any flags indicate an ongoing transfer or error?
+    ------------------------------------------------*/
+
+    /*------------------------------------------------
+    Write the data in a blocking fashion
+    ------------------------------------------------*/
+    while ( bytesTransfered < bufferSize )
+    {
+      /*------------------------------------------------
+      Wait for the hw transmit buffer to be empty, then
+      assign the next set of data to be transfered
+      ------------------------------------------------*/
+#if defined( _EMBEDDED )
+      while ( !SR::TXE::get( periph ) )
+        continue;
+#endif
+
+      txData = 0u;
+      if ( txBufferPtr )
+      {
+        if ( ( bytesTransfered + 1u ) == bufferSize )
+        {
+          memcpy( &txData, txBufferPtr + bytesTransfered, 1u );
+        }
+        else
+        {
+          memcpy( &txData, txBufferPtr + bytesTransfered, bytesPerTransfer );
+        }
+      }
+
+      periph->DR = txData;
+
+      /*------------------------------------------------
+      Wait for the hw receive buffer to indicate data has
+      arrived, then read it out.
+      ------------------------------------------------*/
+      if ( rxBufferPtr )
+      {
+#if defined( _EMBEDDED )
+        while ( !SR::RXNE::get( periph ) )
+          continue;
+#endif
+
+        rxData = periph->DR;
+
+        if ( ( bytesTransfered + 1u ) == bufferSize )
+        {
+          memcpy( rxBufferPtr + bytesTransfered, &rxData, 1u );
+        }
+        else
+        {
+          memcpy( rxBufferPtr + bytesTransfered, &rxData, bytesPerTransfer );
+        }
+      }
+
+      /*------------------------------------------------
+      Update the loop counters
+      ------------------------------------------------*/
+      bytesTransfered += bytesPerTransfer;
+    }
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t Driver::transferIT( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )

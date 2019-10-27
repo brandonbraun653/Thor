@@ -158,6 +158,7 @@ namespace Thor::SPI
   Chimera::Status_t SPIClass::init( const Chimera::SPI::DriverConfig &setupStruct )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    auto lockGuard           = LockGuard(*this);
 
     /*------------------------------------------------
     Should we even bother creating this?
@@ -165,6 +166,11 @@ namespace Thor::SPI
     if ( !Thor::Driver::SPI::isChannelSupported( setupStruct.HWInit.hwChannel ) )
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    }
+
+    if ( !lockGuard.lock() )
+    {
+      return Chimera::CommonStatusCodes::LOCKED;
     }
 
     /*------------------------------------------------
@@ -201,6 +207,7 @@ namespace Thor::SPI
     driver = std::make_unique<Thor::Driver::SPI::Driver>();
     result |= driver->attach( instance );
     result |= driver->configure( config );
+    result |= driver->registerConfig( &config );
 
     if ( result != Chimera::CommonStatusCodes::OK )
     {
@@ -254,22 +261,84 @@ namespace Thor::SPI
   Chimera::Status_t SPIClass::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length,
                                               const size_t timeoutMS )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    auto lockguard = LockGuard( *this );
+
+    /*------------------------------------------------
+    Input protection & resource acquisition
+    ------------------------------------------------*/
+    if ( !lockguard.lock( timeoutMS ) )
+    {
+      return Chimera::CommonStatusCodes::LOCKED;
+    }
+    else if ( ( !txBuffer && !rxBuffer ) || !length || !driver )
+    {
+      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+
+    /*------------------------------------------------
+    Call the proper transfer method
+    ------------------------------------------------*/
+    switch ( config.HWInit.txfrMode )
+    {
+      case Chimera::SPI::TransferMode::BLOCKING:
+        return driver->transfer( txBuffer, rxBuffer, length );
+        break;
+
+      case Chimera::SPI::TransferMode::INTERRUPT:
+        return driver->transferIT( txBuffer, rxBuffer, length );
+        break;
+
+      case Chimera::SPI::TransferMode::DMA:
+        return driver->transferDMA( txBuffer, rxBuffer, length );
+        break;
+
+      default:
+        return Chimera::CommonStatusCodes::FAIL;
+        break;
+    }
   }
 
   Chimera::Status_t SPIClass::setPeripheralMode( const Chimera::Hardware::PeripheralMode mode )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    if ( LockGuard( *this ).lock() )
+    {
+      config.HWInit.txfrMode = mode;
+      return Chimera::CommonStatusCodes::OK;
+    }
+
+    return Chimera::CommonStatusCodes::LOCKED;
   }
 
   Chimera::Status_t SPIClass::setClockFrequency( const size_t freq, const size_t tolerance )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    /*------------------------------------------------
+    Acquire resources
+    ------------------------------------------------*/
+    auto lockguard = LockGuard( *this );
+    if ( !lockguard.lock() )
+    {
+      return Chimera::CommonStatusCodes::LOCKED;
+    }
+
+    /*------------------------------------------------
+    Input protection
+    ------------------------------------------------*/
+    if ( !driver || !freq )
+    {
+      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+    }
+
+    /*------------------------------------------------
+    Assign the new clock frequency and re-initialize the driver
+    ------------------------------------------------*/
+    config.HWInit.clockFreq = freq;
+    return driver->configure( config );
   }
 
   size_t SPIClass::getClockFrequency()
   {
-    return 0;
+    /* Shouldn't need a lock as this is atomic on 32-bit ARM processors */
+    return config.HWInit.clockFreq;
   }
 
   /*------------------------------------------------
