@@ -77,10 +77,14 @@ namespace Thor::Driver::SPI
 
   void Driver::clockEnable()
   {
+    auto rcc = Thor::Driver::RCC::PeripheralController::get();
+    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
   void Driver::clockDisable()
   {
+    auto rcc = Thor::Driver::RCC::PeripheralController::get();
+    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
   size_t Driver::getErrorFlags()
@@ -98,9 +102,7 @@ namespace Thor::Driver::SPI
     /*------------------------------------------------
     Configure the clocks
     ------------------------------------------------*/
-    auto rcc = Thor::Driver::RCC::PeripheralController::get();
-    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
-
+    clockEnable();
 
     // TODO: Calculate the baud rate needed once the driver is working
 
@@ -113,7 +115,6 @@ namespace Thor::Driver::SPI
     {
       volatile Reg32_t dummyRead = SR::get( periph );
     }
-
 
     /* Destroy all previous settings */
     CR1::set( periph, CR1::resetValue );
@@ -133,6 +134,9 @@ namespace Thor::Driver::SPI
 
     /* Master/Slave Control Mode */
     CR1::MSTR::set( periph, ControlModeToRegConfig[ static_cast<size_t>( setup.HWInit.controlMode ) ] );
+
+    CR1::SSM::set( periph, CR1_SSM );
+    CR1::SSI::set( periph, CR1_SSI );
 
     /* Clock Phase and Polarity */
     switch ( setup.HWInit.clockMode )
@@ -234,7 +238,7 @@ namespace Thor::Driver::SPI
       assign the next set of data to be transfered
       ------------------------------------------------*/
 #if defined( _EMBEDDED )
-      while ( !SR::TXE::get( periph ) )
+      while ( !SR::TXE::get( periph ) && SR::BSY::get( periph ) )
         continue;
 #endif
 
@@ -257,15 +261,15 @@ namespace Thor::Driver::SPI
       Wait for the hw receive buffer to indicate data has
       arrived, then read it out.
       ------------------------------------------------*/
-      if ( rxBufferPtr )
-      {
 #if defined( _EMBEDDED )
-        while ( !SR::RXNE::get( periph ) )
-          continue;
+      while ( !SR::RXNE::get( periph ) )
+        continue;
 #endif
 
-        rxData = periph->DR;
+      rxData = periph->DR;
 
+      if ( rxBufferPtr )
+      {
         if ( ( bytesTransfered + 1u ) == bufferSize )
         {
           memcpy( rxBufferPtr + bytesTransfered, &rxData, 1u );

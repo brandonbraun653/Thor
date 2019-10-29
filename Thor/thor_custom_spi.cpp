@@ -201,6 +201,9 @@ namespace Thor::SPI
       return Chimera::CommonStatusCodes::FAILED_INIT;
     }
 
+    /* Make sure we aren't selecting a device by accident */
+    CS->setState( Chimera::GPIO::State::HIGH );
+
     /*------------------------------------------------
     Configure the SPI hardware
     ------------------------------------------------*/
@@ -262,6 +265,7 @@ namespace Thor::SPI
                                               const size_t timeoutMS )
   {
     auto lockguard = LockGuard( *this );
+    auto result    = Chimera::CommonStatusCodes::OK;
 
     /*------------------------------------------------
     Input protection & resource acquisition
@@ -276,12 +280,27 @@ namespace Thor::SPI
     }
 
     /*------------------------------------------------
+    Handle the chip select controller behavior
+    ------------------------------------------------*/
+    if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL ) 
+    {
+      CS->setState( Chimera::GPIO::State::LOW );
+    }
+
+    /*------------------------------------------------
     Call the proper transfer method
     ------------------------------------------------*/
     switch ( config.HWInit.txfrMode )
     {
       case Chimera::SPI::TransferMode::BLOCKING:
-        return driver->transfer( txBuffer, rxBuffer, length );
+        result = driver->transfer( txBuffer, rxBuffer, length );
+
+        if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
+        {
+          CS->setState( Chimera::GPIO::State::HIGH );
+        }
+
+        return result;
         break;
 
       case Chimera::SPI::TransferMode::INTERRUPT:
@@ -293,6 +312,14 @@ namespace Thor::SPI
         break;
 
       default:
+        /*------------------------------------------------
+        Disable the chip select for anything other than manual control
+        ------------------------------------------------*/
+        if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
+        {
+          CS->setState( Chimera::GPIO::State::HIGH );
+        }
+
         return Chimera::CommonStatusCodes::FAIL;
         break;
     }

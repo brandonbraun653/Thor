@@ -110,6 +110,11 @@ namespace Thor::GPIO
     result |= driver->pullSet( initSettings.pin, pull, timeout );
 
     /*------------------------------------------------
+    Configure the GPIO speed
+    ------------------------------------------------*/
+    result |= driver->speedSet( initSettings.pin, Thor::Driver::GPIO::Speed::HIGH, timeout );
+
+    /*------------------------------------------------
     Configure the alternate function options
     ------------------------------------------------*/
     if ( ( drive == Chimera::GPIO::Drive::ALTERNATE_OPEN_DRAIN ) || ( drive == Chimera::GPIO::Drive::ALTERNATE_PUSH_PULL ) ) 
