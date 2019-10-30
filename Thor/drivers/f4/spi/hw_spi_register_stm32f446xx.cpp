@@ -11,6 +11,7 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/dma.hpp>
+#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
 #include <Thor/drivers/f4/spi/hw_spi_driver.hpp>
 #include <Thor/drivers/f4/spi/hw_spi_mapping.hpp>
@@ -52,6 +53,21 @@ namespace Thor::Driver::SPI
   const std::array<uint8_t, NUM_SPI_PERIPHS> supportedChannels = { SPI1_CHANNEL_NUMBER, SPI2_CHANNEL_NUMBER,
                                                                    SPI3_CHANNEL_NUMBER, SPI4_CHANNEL_NUMBER };
 
+  const DMASignalList RXDMASignals = {
+    Thor::DMA::Source::S_SPI1_RX,
+    Thor::DMA::Source::S_SPI2_RX,
+    Thor::DMA::Source::S_SPI3_RX,
+    Thor::DMA::Source::S_SPI4_RX,
+  };
+
+  const DMASignalList TXDMASignals = {
+    Thor::DMA::Source::S_SPI1_TX,
+    Thor::DMA::Source::S_SPI2_TX,
+    Thor::DMA::Source::S_SPI3_TX,
+    Thor::DMA::Source::S_SPI4_TX,
+  };
+
+  const IRQSignalList IRQSignals = { SPI1_IRQn, SPI2_IRQn, SPI3_IRQn, SPI4_IRQn };
 
   void initializeRegisters()
   {
@@ -85,22 +101,6 @@ namespace Thor::Driver::SPI
     PeripheralList[ SPI2_RESOURCE_INDEX ] = SPI2_PERIPH;
     PeripheralList[ SPI3_RESOURCE_INDEX ] = SPI3_PERIPH;
     PeripheralList[ SPI4_RESOURCE_INDEX ] = SPI4_PERIPH;
-
-    /*------------------------------------------------
-    Initialize RX DMA Signals
-    ------------------------------------------------*/
-    RXDMASignals[ SPI1_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI1_RX;
-    RXDMASignals[ SPI2_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI2_RX;
-    RXDMASignals[ SPI3_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI3_RX;
-    RXDMASignals[ SPI4_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI4_RX;
-
-    /*------------------------------------------------
-    Initialize TX DMA Signals
-    ------------------------------------------------*/
-    TXDMASignals[ SPI1_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI1_TX;
-    TXDMASignals[ SPI2_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI2_TX;
-    TXDMASignals[ SPI3_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI3_TX;
-    TXDMASignals[ SPI4_RESOURCE_INDEX ] = Thor::DMA::Source::S_SPI4_TX;
   }
 }    // namespace Thor::Driver::SPI
 

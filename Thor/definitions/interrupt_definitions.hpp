@@ -17,7 +17,7 @@
 
 /* Thor Includes */
 #include <Thor/headers.hpp>
-#include <Thor/drivers/NVIC.hpp>
+#include <Thor/drivers/nvic.hpp>
 
 namespace Thor::Interrupt
 {
@@ -34,9 +34,11 @@ namespace Thor::Interrupt
   static constexpr uint32_t EXTI0_MAX_IRQn_PRIORITY = configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY;
   static_assert( EXTI0_MAX_IRQn_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
 
-
   static constexpr uint32_t DMA_STREAM_PREEMPT_PRIORITY = 5;
   static_assert( DMA_STREAM_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
+
+  static constexpr uint32_t SPI_IT_PREEMPT_PRIORITY = 5;
+  static_assert( SPI_IT_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
 
   static constexpr uint32_t UART_IT_PREEMPT_PRIORITY = 5;
   static_assert( UART_IT_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );

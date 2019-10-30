@@ -95,7 +95,7 @@ namespace Thor::SPI
     Thor::GPIO::GPIOClass_uPtr SCK;
     Thor::GPIO::GPIOClass_uPtr MOSI;
     Thor::GPIO::GPIOClass_uPtr MISO;
-    Thor::GPIO::GPIOClass_uPtr CS;
+    Thor::GPIO::GPIOClass_sPtr CS;
 
     Thor::Driver::SPI::Driver_uPtr driver;
   };

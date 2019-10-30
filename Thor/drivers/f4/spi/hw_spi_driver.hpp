@@ -23,8 +23,9 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
-#include <Thor/drivers/model/spi_model.hpp>
+#include <Thor/drivers/common/interrupts/spi_interrupt_vectors.hpp>
 #include <Thor/drivers/f4/spi/hw_spi_types.hpp>
+#include <Thor/drivers/model/spi_model.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
 
@@ -57,10 +58,34 @@ namespace Thor::Driver::SPI
     Chimera::Status_t transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) final override;
     Chimera::Status_t killTransfer() final override;
 
+    //Thor::GPIO::GPIOClass_sPtr chipSelect;
+
+  protected:
+    friend void(::SPI1_IRQHandler )();
+    friend void(::SPI2_IRQHandler )();
+    friend void(::SPI3_IRQHandler )();
+    friend void(::SPI4_IRQHandler )();
+    friend void(::SPI5_IRQHandler )();
+    friend void(::SPI6_IRQHandler )();
+
+    /**
+     *  Generic interrupt handler for SPI ISR signals
+     *  @return void
+     */
+    void IRQHandler();
+
+    void enterCriticalSection();
+    void exitCriticalSection();
+
   private:
-    RegisterMap *periph;
-    size_t resourceIndex;
+    RegisterMap *periph;  /**< Memory mapped struct to instance registers */
+    uint32_t dmaTXSignal; /**< DMA request signal ID for TX operations */
+    uint32_t dmaRXSignal; /**< DMA request signal ID for RX operations */
+    IRQn_Type periphIRQn; /**< Instance interrupt request signal number */
+    size_t resourceIndex; /**< Derived lookup table index for resource access */
     Chimera::SPI::DriverConfig *periphConfig;
+
+    HWTransfer txfr;
   };
 }    // namespace Thor::Driver::SPI
 

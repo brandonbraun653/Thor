@@ -21,8 +21,6 @@ namespace Thor::Driver::SPI
   Chip Specific Resources
   ------------------------------------------------*/
   PeriphRegisterList PeripheralList;
-  DMASignalList RXDMASignals;
-  DMASignalList TXDMASignals;
   DriverInstanceList spiObjects;
 
   /*------------------------------------------------

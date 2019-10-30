@@ -15,11 +15,13 @@
 /* Chimera Includes */
 #include <Chimera/chimera.hpp>
 #include <Chimera/threading.hpp>
+#include <Chimera/interface/compiler_intf.hpp>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/definitions/interrupt_definitions.hpp>
 #include <Thor/dma.hpp>
-
+#include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
 #include <Thor/drivers/f4/spi/hw_spi_driver.hpp>
 #include <Thor/drivers/f4/spi/hw_spi_mapping.hpp>
@@ -65,8 +67,27 @@ namespace Thor::Driver::SPI
 
   Chimera::Status_t Driver::attach( RegisterMap *const peripheral )
   {
+    /*------------------------------------------------
+    Get peripheral descriptor settings
+    ------------------------------------------------*/
     periph        = peripheral;
     resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
+    periphIRQn    = IRQSignals[ resourceIndex ];
+    dmaTXSignal   = TXDMASignals[ resourceIndex ];
+    dmaRXSignal   = RXDMASignals[ resourceIndex ];
+
+    /*------------------------------------------------
+    Handle the ISR configuration
+    ------------------------------------------------*/
+    Thor::Driver::Interrupt::disableIRQ( periphIRQn );
+    Thor::Driver::Interrupt::clearPendingIRQ( periphIRQn );
+    Thor::Driver::Interrupt::setPriority( periphIRQn, Thor::Interrupt::SPI_IT_PREEMPT_PRIORITY, 0u );
+
+    /*------------------------------------------------
+    Driver registration with the backend 
+    ------------------------------------------------*/
+    Thor::Driver::SPI::spiObjects[ resourceIndex ] = this;
+
     return Chimera::CommonStatusCodes::OK;
   }
 
@@ -229,6 +250,12 @@ namespace Thor::Driver::SPI
     ------------------------------------------------*/
 
     /*------------------------------------------------
+    Disable all interrupts
+    ------------------------------------------------*/
+    Thor::Driver::Interrupt::disableIRQ( periphIRQn );
+    CR2::clear( periph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
+
+    /*------------------------------------------------
     Write the data in a blocking fashion
     ------------------------------------------------*/
     while ( bytesTransfered < bufferSize )
@@ -291,7 +318,40 @@ namespace Thor::Driver::SPI
 
   Chimera::Status_t Driver::transferIT( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
   {
-    return Chimera::Status_t();
+    /*------------------------------------------------
+    Make sure the transfer can begin
+    ------------------------------------------------*/
+    if ( SR::BSY::get( periph ) )
+    {
+      return Chimera::CommonStatusCodes::BUSY;
+    }
+
+    /*------------------------------------------------
+    Configure the interrupts
+    ------------------------------------------------*/
+    Thor::Driver::Interrupt::enableIRQ( periphIRQn );
+    enterCriticalSection();
+    CR2::set( periph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
+
+    /*------------------------------------------------
+    Queue up the transfer
+    ------------------------------------------------*/
+    txfr.txBuffer        = reinterpret_cast<uint8_t *>( const_cast<void *>( txBuffer ) );
+    txfr.txTransferCount = 0u;
+    txfr.txTransferSize  = bufferSize;
+
+    txfr.rxBuffer        = reinterpret_cast<uint8_t *>( const_cast<void *>( rxBuffer ) );
+    txfr.rxTransferCount = 0u;
+    txfr.rxTransferSize  = bufferSize;
+
+    /*------------------------------------------------
+    Start the transfer
+    ------------------------------------------------*/
+    periph->DR = txfr.txBuffer[ txfr.txTransferCount ];
+    txfr.txTransferCount++;
+    exitCriticalSection();
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t Driver::transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
@@ -303,6 +363,142 @@ namespace Thor::Driver::SPI
   {
     return Chimera::Status_t();
   }
+
+  inline void Driver::enterCriticalSection()
+  {
+    Thor::Driver::Interrupt::disableIRQ( periphIRQn );
+  }
+
+  inline void Driver::exitCriticalSection()
+  {
+    Thor::Driver::Interrupt::enableIRQ( periphIRQn );
+  }
+
+  void Driver::IRQHandler()
+  {
+    /*------------------------------------------------
+    Save critical register information
+    ------------------------------------------------*/
+    const Reg32_t SR = SR::get( periph );
+    const Reg32_t CR2 = CR2::get( periph );
+
+    /*------------------------------------------------
+    HW TX Buffer Empty (Next frame can be buffered)
+    ------------------------------------------------*/
+    if ( ( CR2 & CR2_TXEIE ) && ( SR & SR_TXE ) )
+    {
+      if ( txfr.txTransferCount < txfr.txTransferSize ) 
+      {
+        periph->DR = txfr.txBuffer[ txfr.txTransferCount ];
+        txfr.txTransferCount++;
+      }
+      else
+      {
+        CR2::TXEIE::set( periph, ~CR2_TXEIE );
+      }
+    }
+
+    /*------------------------------------------------
+    HW RX Buffer Full (Data is ready to be copied out)
+    ------------------------------------------------*/
+    if ( ( CR2 & CR2_RXNEIE ) && ( SR & SR_RXNE ) )
+    {
+      if ( txfr.rxTransferCount < txfr.rxTransferSize )
+      {
+        txfr.rxBuffer[ txfr.rxTransferCount ] = periph->DR;
+        txfr.rxTransferCount++;
+      }
+      else
+      {
+        CR2::RXNEIE::set( periph, ~CR2_RXNEIE );
+      }
+    }
+
+    //TODO: Devise a scheme to disable the chip select from inside the ISR. Cannot use
+    //      the class instance as it is to heavy...might want to look at bit banding
+    //      or storing the instance/pin and modifying the registers.
+
+    /*------------------------------------------------
+    Handle Any Errors
+    ------------------------------------------------*/
+    if ( ( CR2 & CR2_ERRIE ) && ( SR & ( SR_CRCERR | SR_FRE | SR_MODF | SR_OVR ) ) ) 
+    {
+      CHIMERA_INSERT_BREAKPOINT;
+    }
+  }
 }    // namespace Thor::Driver::SPI
+
+
+#if defined( STM32_SPI1_PERIPH_AVAILABLE )
+void SPI1_IRQHandler()
+{
+  static constexpr size_t index = 0;
+
+  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  {
+    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+  }
+}
+#endif 
+
+#if defined( STM32_SPI2_PERIPH_AVAILABLE )
+void SPI2_IRQHandler()
+{
+  static constexpr size_t index = 1;
+
+  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  {
+    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+  }
+}
+#endif 
+
+#if defined( STM32_SPI3_PERIPH_AVAILABLE )
+void SPI3_IRQHandler()
+{
+  static constexpr size_t index = 2;
+
+  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  {
+    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+  }
+}
+#endif 
+
+#if defined( STM32_SPI4_PERIPH_AVAILABLE )
+void SPI4_IRQHandler()
+{
+  static constexpr size_t index = 3;
+
+  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  {
+    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+  }
+}
+#endif 
+
+#if defined( STM32_SPI5_PERIPH_AVAILABLE )
+void SPI5_IRQHandler()
+{
+  static constexpr size_t index = 4;
+
+  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  {
+    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+  }
+}
+#endif 
+
+#if defined( STM32_SPI6_PERIPH_AVAILABLE )
+void SPI6_IRQHandler()
+{
+  static constexpr size_t index = 5;
+
+  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  {
+    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+  }
+}
+#endif 
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_SPI */

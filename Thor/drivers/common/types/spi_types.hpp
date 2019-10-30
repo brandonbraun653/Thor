@@ -23,6 +23,23 @@ namespace Thor::Driver::SPI
    */
   struct RegisterMap;
 
+  /**
+   *  Control block for an ongoing SPI transfer
+   */
+  struct HWTransfer
+  {
+    uint8_t *txBuffer;    /**< Pointer to the SPI TX buffer */
+    size_t txTransferCount; /**< TX bytes currently transfered */
+    size_t txTransferSize;  /**< TX transfer total byte size */
+
+    uint8_t *rxBuffer;    /**< Pointer to the SPI RX buffer */
+    size_t rxTransferCount; /**< TX bytes currently transfered */
+    size_t rxTransferSize;  /**< TX transfer total byte size */
+
+    uint8_t bytesPerTransfer;
+  };
+
+
   class Driver;
   using Driver_sPtr = std::shared_ptr<Driver>;
   using Driver_uPtr = std::unique_ptr<Driver>;

@@ -42,9 +42,10 @@ namespace Thor::Driver::SPI
   Peripheral Memory Mapping
   ------------------------------------------------*/
   extern PeriphRegisterList PeripheralList; /**< Memory mapped structs to each SPI instance */
-  extern DMASignalList RXDMASignals;        /**< RX DMA signal identifiers for each SPI instance */
-  extern DMASignalList TXDMASignals;        /**< RX DMA signal identifiers for each SPI instance */
   extern DriverInstanceList spiObjects;     /**< Driver objects for each SPI Instance */
+  extern const DMASignalList RXDMASignals;  /**< RX DMA signal identifiers for each SPI instance */
+  extern const DMASignalList TXDMASignals;  /**< RX DMA signal identifiers for each SPI instance */
+  extern const IRQSignalList IRQSignals;    /**< IRQ signal identifiers for each SPI instance */
 
   /*------------------------------------------------
   Maps a SPI peripheral into the corresponding resource index

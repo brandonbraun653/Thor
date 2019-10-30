@@ -22,6 +22,7 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/spi/hw_spi_prj.hpp>
+#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
 
@@ -45,6 +46,7 @@ namespace Thor::Driver::SPI
   using DriverInstanceList = std::array<Driver *, NUM_SPI_PERIPHS>;
   using PeriphRegisterList = std::array<RegisterMap *, NUM_SPI_PERIPHS>;
   using DMASignalList      = std::array<Reg32_t, NUM_SPI_PERIPHS>;
+  using IRQSignalList      = std::array<IRQn_Type, NUM_SPI_PERIPHS>;
 
   /*------------------------------------------------
   Configuration
@@ -492,7 +494,16 @@ namespace Thor::Driver::SPI
 
     static inline void set( RegisterMap *const periph, const Reg32_t val )
     {
-      periph->CR2 = val & CR2_Msk;
+      Reg32_t tmp = periph->CR2;
+      tmp |= val;
+      periph->CR2 = tmp & CR2_Msk;
+    }
+
+    static inline void clear( RegisterMap *const periph, const Reg32_t val )
+    {
+      Reg32_t tmp = periph->CR2;
+      tmp &= ~val;
+      periph->CR2 = tmp & CR2_Msk;
     }
 
     class TXEIE
