@@ -59,6 +59,9 @@ namespace Thor::Driver::SPI
     periphConfig  = nullptr;
     periph        = nullptr;
     resourceIndex = std::numeric_limits<decltype( resourceIndex )>::max();
+
+    memset( &txfr, 0, sizeof( txfr ) );
+    txfr.status = Chimera::SPI::Status::TRANSFER_COMPLETE;
   }
 
   Driver::~Driver()
@@ -321,7 +324,7 @@ namespace Thor::Driver::SPI
     /*------------------------------------------------
     Make sure the transfer can begin
     ------------------------------------------------*/
-    if ( SR::BSY::get( periph ) )
+    if ( SR::BSY::get( periph ) || ( txfr.status != Chimera::SPI::Status::TRANSFER_COMPLETE ) )
     {
       return Chimera::CommonStatusCodes::BUSY;
     }
@@ -344,10 +347,14 @@ namespace Thor::Driver::SPI
     txfr.rxTransferCount = 0u;
     txfr.rxTransferSize  = bufferSize;
 
+    txfr.status = Chimera::SPI::Status::TRANSFER_IN_PROGRESS;
+
     /*------------------------------------------------
     Start the transfer
     ------------------------------------------------*/
     periph->DR = txfr.txBuffer[ txfr.txTransferCount ];
+    txfr.waitingOnTX = false;
+    txfr.waitingOnRX = true;
     txfr.txTransferCount++;
     exitCriticalSection();
 
@@ -362,6 +369,23 @@ namespace Thor::Driver::SPI
   Chimera::Status_t Driver::killTransfer()
   {
     return Chimera::Status_t();
+  }
+
+  void Driver::attachISRWakeup( SemaphoreHandle_t wakeup )
+  {
+    ISRWakeup_external = wakeup;
+  }
+
+  HWTransfer Driver::getTransferBlock()
+  {
+    HWTransfer copy;
+    memset( &copy, 0, sizeof( HWTransfer ) );
+
+    enterCriticalSection();
+    memcpy( &copy, &txfr, sizeof( HWTransfer ) );
+    exitCriticalSection();
+
+    return copy;
   }
 
   inline void Driver::enterCriticalSection()
@@ -379,14 +403,17 @@ namespace Thor::Driver::SPI
     /*------------------------------------------------
     Save critical register information
     ------------------------------------------------*/
-    const Reg32_t SR = SR::get( periph );
-    const Reg32_t CR2 = CR2::get( periph );
+    const volatile Reg32_t SR = SR::get( periph );
+    const volatile Reg32_t CR2 = CR2::get( periph );
 
     /*------------------------------------------------
     HW TX Buffer Empty (Next frame can be buffered)
     ------------------------------------------------*/
-    if ( ( CR2 & CR2_TXEIE ) && ( SR & SR_TXE ) )
+    if ( txfr.waitingOnTX && ( CR2 & CR2_TXEIE ) && ( SR & SR_TXE ) )
     {
+      txfr.waitingOnTX = false;
+      txfr.waitingOnRX = true;
+
       if ( txfr.txTransferCount < txfr.txTransferSize ) 
       {
         periph->DR = txfr.txBuffer[ txfr.txTransferCount ];
@@ -401,22 +428,23 @@ namespace Thor::Driver::SPI
     /*------------------------------------------------
     HW RX Buffer Full (Data is ready to be copied out)
     ------------------------------------------------*/
-    if ( ( CR2 & CR2_RXNEIE ) && ( SR & SR_RXNE ) )
+    if ( txfr.waitingOnRX && ( CR2 & CR2_RXNEIE ) && ( SR & SR_RXNE ) )
     {
+      txfr.waitingOnTX = true;
+      txfr.waitingOnRX = false;
+
       if ( txfr.rxTransferCount < txfr.rxTransferSize )
       {
         txfr.rxBuffer[ txfr.rxTransferCount ] = periph->DR;
         txfr.rxTransferCount++;
       }
-      else
+
+      if ( txfr.rxTransferCount == txfr.rxTransferSize )
       {
         CR2::RXNEIE::set( periph, ~CR2_RXNEIE );
+        txfr.status = Chimera::SPI::Status::TRANSFER_COMPLETE;
       }
     }
-
-    //TODO: Devise a scheme to disable the chip select from inside the ISR. Cannot use
-    //      the class instance as it is to heavy...might want to look at bit banding
-    //      or storing the instance/pin and modifying the registers.
 
     /*------------------------------------------------
     Handle Any Errors
@@ -424,6 +452,18 @@ namespace Thor::Driver::SPI
     if ( ( CR2 & CR2_ERRIE ) && ( SR & ( SR_CRCERR | SR_FRE | SR_MODF | SR_OVR ) ) ) 
     {
       CHIMERA_INSERT_BREAKPOINT;
+      txfr.status = Chimera::SPI::Status::TRANSFER_ERROR;
+    }
+
+    /*------------------------------------------------
+    Detect the end of transfer and wake up the post processor thread
+    ------------------------------------------------*/
+    if ( ISRWakeup_external && ( ( txfr.status == Chimera::SPI::Status::TRANSFER_COMPLETE ) ||
+                                 ( txfr.status == Chimera::SPI::Status::TRANSFER_ERROR ) ) )
+    {
+      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+      xSemaphoreGiveFromISR( ISRWakeup_external, &xHigherPriorityTaskWoken );
+      portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
     }
   }
 }    // namespace Thor::Driver::SPI

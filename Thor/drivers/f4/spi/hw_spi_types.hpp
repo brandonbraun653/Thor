@@ -139,25 +139,6 @@ namespace Thor::Driver::SPI
   ------------------------------------------------*/
   namespace Runtime
   {
-    using Flag_t = Reg32_t;
-    namespace Flag
-    {
-      //      /* Let the first 16 bits match the Status Register for consistency */
-      //      static constexpr Flag_t RX_PARITY_ERROR   = Configuration::Flags::FLAG_PE;
-      //      static constexpr Flag_t RX_FRAMING_ERROR  = Configuration::Flags::FLAG_FE;
-      //      static constexpr Flag_t RX_NOISE_ERROR    = Configuration::Flags::FLAG_NF;
-      //      static constexpr Flag_t RX_OVERRUN        = Configuration::Flags::FLAG_ORE;
-      //      static constexpr Flag_t RX_IDLE_DETECTED  = Configuration::Flags::FLAG_IDLE;
-      //      static constexpr Flag_t RX_BYTE_READY     = Configuration::Flags::FLAG_RXNE;
-      //      static constexpr Flag_t TX_COMPLETE       = Configuration::Flags::FLAG_TC;
-      //      static constexpr Flag_t TX_DR_EMPTY       = Configuration::Flags::FLAG_TXE;
-      //      static constexpr Flag_t RX_LINE_IN_BREAK  = Configuration::Flags::FLAG_LBD;
-      //      static constexpr Flag_t CTL_CLEAR_TO_SEND = Configuration::Flags::FLAG_CTS;
-      //
-      //      /* Use the remaining 16 bits for other signals */
-      //      static constexpr Flag_t RX_LINE_IDLE_ABORT = ( 1u << 16 );
-      //      static constexpr Flag_t RX_COMPLETE        = ( 1u << 17 );
-    }    // namespace Flag
   }      // namespace Runtime
 
   /*------------------------------------------------
@@ -165,21 +146,6 @@ namespace Thor::Driver::SPI
   ------------------------------------------------*/
   namespace StateMachine
   {
-    enum TX : Chimera::Status_t
-    {
-      TX_READY    = Chimera::Serial::Status::TX_READY,
-      TX_ONGOING  = Chimera::Serial::Status::TX_IN_PROGRESS,
-      TX_ABORTED  = Chimera::Serial::Status::TX_ABORTED,
-      TX_COMPLETE = Chimera::Serial::Status::TX_COMPLETE
-    };
-
-    enum RX : Chimera::Status_t
-    {
-      RX_READY    = Chimera::Serial::Status::RX_READY,
-      RX_ONGOING  = Chimera::Serial::Status::RX_IN_PROGRESS,
-      RX_COMPLETE = Chimera::Serial::Status::RX_COMPLETE,
-      RX_ABORTED  = Chimera::Serial::Status::RX_ABORTED
-    };
   }    // namespace StateMachine
 
   /*------------------------------------------------

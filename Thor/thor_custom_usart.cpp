@@ -21,7 +21,7 @@
 /* Thor Includes */
 #include <Thor/event.hpp>
 #include <Thor/usart.hpp>
-#include <Thor/drivers/Usart.hpp>
+#include <Thor/drivers/usart.hpp>
 #include <Thor/defaults/serial_defaults.hpp>
 
 #if defined( THOR_DRIVER_USART ) && ( THOR_DRIVER_USART == 1 )

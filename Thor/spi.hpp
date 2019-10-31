@@ -90,6 +90,11 @@ namespace Thor::SPI
 
     Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
 
+    /*------------------------------------------------
+    Non-Standardized Interface
+    ------------------------------------------------*/
+    void postISRProcessing();
+
   private:
     Chimera::SPI::DriverConfig config;  /**< Configuration used to set up the class */
     Thor::GPIO::GPIOClass_uPtr SCK;

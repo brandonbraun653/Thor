@@ -58,7 +58,9 @@ namespace Thor::Driver::SPI
     Chimera::Status_t transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) final override;
     Chimera::Status_t killTransfer() final override;
 
-    //Thor::GPIO::GPIOClass_sPtr chipSelect;
+    void attachISRWakeup( SemaphoreHandle_t wakeup );
+
+    HWTransfer getTransferBlock();
 
   protected:
     friend void(::SPI1_IRQHandler )();
@@ -85,6 +87,14 @@ namespace Thor::Driver::SPI
     size_t resourceIndex; /**< Derived lookup table index for resource access */
     Chimera::SPI::DriverConfig *periphConfig;
 
+    /*------------------------------------------------
+    Asynchronous Event Listeners
+    ------------------------------------------------*/
+    SemaphoreHandle_t ISRWakeup_external;
+
+    /*------------------------------------------------
+    Transfer Control Blocks
+    ------------------------------------------------*/
     HWTransfer txfr;
   };
 }    // namespace Thor::Driver::SPI

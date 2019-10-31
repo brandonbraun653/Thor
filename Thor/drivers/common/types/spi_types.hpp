@@ -28,15 +28,17 @@ namespace Thor::Driver::SPI
    */
   struct HWTransfer
   {
-    uint8_t *txBuffer;    /**< Pointer to the SPI TX buffer */
+    uint8_t *txBuffer;      /**< Pointer to the SPI TX buffer */
     size_t txTransferCount; /**< TX bytes currently transfered */
     size_t txTransferSize;  /**< TX transfer total byte size */
 
-    uint8_t *rxBuffer;    /**< Pointer to the SPI RX buffer */
+    uint8_t *rxBuffer;      /**< Pointer to the SPI RX buffer */
     size_t rxTransferCount; /**< TX bytes currently transfered */
     size_t rxTransferSize;  /**< TX transfer total byte size */
 
-    uint8_t bytesPerTransfer;
+    bool waitingOnTX;
+    bool waitingOnRX;
+    Chimera::Status_t status; /**< Current state of the transfer */
   };
 
 

@@ -31,7 +31,7 @@
 static std::array<Thor::SPI::SPIClass *, Thor::Driver::SPI::NUM_SPI_PERIPHS> SPIClassObjects;
 static std::array<TaskHandle_t, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorHandles;
 static std::array<SemaphoreHandle_t, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorSignals;
-
+static std::array<Chimera::Function::void_func_void_ptr, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorThreads;
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
 static void SPI1ISRPostProcessorThread( void *argument );
@@ -95,6 +95,14 @@ namespace Thor::SPI
     postProcessorSignals[ channel ] = nullptr;
   }
 
+  static void destroyThreadFunction( const size_t channel )
+  {
+    if ( channel < postProcessorThreads.size() )
+    {
+      postProcessorThreads[ channel ] = nullptr;
+    }
+  }
+
   Chimera::Status_t initialize()
   {
     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
@@ -127,6 +135,27 @@ namespace Thor::SPI
     {
       destroyThreadSemaphore( x );
     }
+
+    /*------------------------------------------------
+    Reset and register the post processor threads
+    ------------------------------------------------*/
+    for ( size_t x = 0; x < postProcessorThreads.size(); x++ )
+    {
+      destroyThreadFunction( x );
+    }
+
+#if defined( STM32_SPI1_PERIPH_AVAILABLE )
+    postProcessorThreads[ Thor::Driver::SPI::SPI1_RESOURCE_INDEX ] = SPI1ISRPostProcessorThread;
+#endif
+#if defined( STM32_SPI2_PERIPH_AVAILABLE )
+    postProcessorThreads[ Thor::Driver::SPI::SPI2_RESOURCE_INDEX ] = SPI2ISRPostProcessorThread;
+#endif
+#if defined( STM32_SPI3_PERIPH_AVAILABLE )
+    postProcessorThreads[ Thor::Driver::SPI::SPI3_RESOURCE_INDEX ] = SPI3ISRPostProcessorThread;
+#endif
+#if defined( STM32_SPI4_PERIPH_AVAILABLE )
+    postProcessorThreads[ Thor::Driver::SPI::SPI4_RESOURCE_INDEX ] = SPI4ISRPostProcessorThread;
+#endif
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::CommonStatusCodes::OK;
@@ -167,8 +196,7 @@ namespace Thor::SPI
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
-
-    if ( !lockGuard.lock() )
+    else if ( !lockGuard.lock() )
     {
       return Chimera::CommonStatusCodes::LOCKED;
     }
@@ -215,6 +243,20 @@ namespace Thor::SPI
     if ( result != Chimera::CommonStatusCodes::OK )
     {
       config.validity = false;
+    }
+
+    /*------------------------------------------------
+    Register the ISR post processor thread
+    ------------------------------------------------*/
+    if ( postProcessorThreads[ resourceIndex ] )
+    {
+      postProcessorSignals[ resourceIndex ] = xSemaphoreCreateBinary();
+      postProcessorHandles[ resourceIndex ] = nullptr;
+
+      driver->attachISRWakeup( postProcessorSignals[ resourceIndex ] );
+
+      Chimera::Threading::addThread( postProcessorThreads[ resourceIndex ], "", 500, NULL, 5,
+                                     &postProcessorHandles[ resourceIndex ] );
     }
 
     return result;
@@ -394,29 +436,101 @@ namespace Thor::SPI
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
+
+  /*------------------------------------------------
+  Non-Standardized Interface
+  ------------------------------------------------*/
+  void SPIClass::postISRProcessing()
+  {
+    setChipSelect( Chimera::GPIO::State::HIGH );
+  }
 }    // namespace Thor::SPI
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
 static void SPI1ISRPostProcessorThread( void *argument )
 {
+  using namespace Thor::Driver::SPI;
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignals[ SPI1_RESOURCE_INDEX ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto spi = SPIClassObjects[ SPI1_RESOURCE_INDEX ]; spi )
+      {
+        spi->postISRProcessing();
+      }
+    }
+  }
 }
 #endif
 
 #if defined( STM32_SPI2_PERIPH_AVAILABLE )
 static void SPI2ISRPostProcessorThread( void *argument )
 {
+  using namespace Thor::Driver::SPI;
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignals[ SPI2_RESOURCE_INDEX ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto spi = SPIClassObjects[ SPI2_RESOURCE_INDEX ]; spi )
+      {
+        spi->postISRProcessing();
+      }
+    }
+  }
 }
 #endif
 
 #if defined( STM32_SPI3_PERIPH_AVAILABLE )
 static void SPI3ISRPostProcessorThread( void *argument )
 {
+  using namespace Thor::Driver::SPI;
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignals[ SPI3_RESOURCE_INDEX ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto spi = SPIClassObjects[ SPI3_RESOURCE_INDEX ]; spi )
+      {
+        spi->postISRProcessing();
+      }
+    }
+  }
 }
 #endif
 
 #if defined( STM32_SPI4_PERIPH_AVAILABLE )
 static void SPI4ISRPostProcessorThread( void *argument )
 {
+  using namespace Thor::Driver::SPI;
+  Chimera::Threading::signalSetupComplete();
+
+  while ( 1 )
+  {
+    /*------------------------------------------------
+    Wait for the ISR to wake up this thread before doing any processing
+    ------------------------------------------------*/
+    if ( xSemaphoreTake( postProcessorSignals[ SPI4_RESOURCE_INDEX ], portMAX_DELAY ) == pdPASS )
+    {
+      if ( auto spi = SPIClassObjects[ SPI4_RESOURCE_INDEX ]; spi )
+      {
+        spi->postISRProcessing();
+      }
+    }
+  }
 }
 #endif
 
