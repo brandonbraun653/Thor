@@ -45,40 +45,34 @@ namespace Thor::SPI
                    public Chimera::Threading::Lockable
   {
   public:
+    /*------------------------------------------------
+    Class Specific Functions
+    ------------------------------------------------*/
     SPIClass();
     ~SPIClass();
+
+    void postISRProcessing();
 
     /*------------------------------------------------
     HW Interface
     ------------------------------------------------*/
     Chimera::Status_t init( const Chimera::SPI::DriverConfig &setupStruct ) final override;
-
     Chimera::SPI::DriverConfig getInit() final override;
-
     Chimera::Status_t deInit() final override;
-
     Chimera::Status_t setChipSelect( const Chimera::GPIO::State value ) final override;
-
     Chimera::Status_t setChipSelectControlMode( const Chimera::SPI::CSMode mode ) final override;
-
     Chimera::Status_t writeBytes( const void *const txBuffer, const size_t length, const size_t timeoutMS ) final override;
-
     Chimera::Status_t readBytes( void *const rxBuffer, const size_t length, const size_t timeoutMS ) final override;
-
     Chimera::Status_t readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length,
-                                              const size_t timeoutMS ) final override;
-
+                                      const size_t timeoutMS ) final override;
     Chimera::Status_t setPeripheralMode( const Chimera::Hardware::PeripheralMode mode ) final override;
-
     Chimera::Status_t setClockFrequency( const size_t freq, const size_t tolerance ) final override;
-
     size_t getClockFrequency() final override;
 
     /*------------------------------------------------
     Async IO Interface
     ------------------------------------------------*/
     Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout ) final override;
-
     Chimera::Status_t await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier,
                              const size_t timeout ) final override;
 
@@ -87,22 +81,16 @@ namespace Thor::SPI
     ------------------------------------------------*/
     Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
                                         size_t &registrationID ) final override;
-
     Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
 
-    /*------------------------------------------------
-    Non-Standardized Interface
-    ------------------------------------------------*/
-    void postISRProcessing();
-
   private:
-    Chimera::SPI::DriverConfig config;  /**< Configuration used to set up the class */
-    Thor::GPIO::GPIOClass_uPtr SCK;
-    Thor::GPIO::GPIOClass_uPtr MOSI;
-    Thor::GPIO::GPIOClass_uPtr MISO;
-    Thor::GPIO::GPIOClass_sPtr CS;
-
-    Thor::Driver::SPI::Driver_uPtr driver;
+    Chimera::SPI::DriverConfig config;       /**< Configuration used to set up the class */
+    Thor::GPIO::GPIOClass_uPtr SCK;          /**< SPI clock gpio pin */
+    Thor::GPIO::GPIOClass_uPtr MOSI;         /**< SPI MOSI gpio pin */
+    Thor::GPIO::GPIOClass_uPtr MISO;         /**< SPI MISO gpio pin */
+    Thor::GPIO::GPIOClass_sPtr CS;           /**< SPI Chip Select gpio pin */
+    Thor::Driver::SPI::Driver_uPtr driver;   /**< Low level hardware SPI driver */
+    SemaphoreHandle_t awaitTransferComplete; /**< Internal signal for when the current transfer has completed */
   };
 
 }    // namespace Thor::SPI

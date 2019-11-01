@@ -130,6 +130,13 @@ namespace Thor::Driver::SPI
 
     // TODO: Calculate the baud rate needed once the driver is working
 
+    /*------------------------------------------------
+    Stop the config if there are any invalid config options
+    ------------------------------------------------*/
+    if ( setup.HWInit.csMode == Chimera::SPI::CSMode::AUTO_BETWEEN_TRANSFER )
+    {
+      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
 
     /*------------------------------------------------
     Follow the configuration sequence from RM0390

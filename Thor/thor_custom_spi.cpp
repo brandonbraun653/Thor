@@ -15,8 +15,9 @@
 
 /* Chimera Includes */
 #include <Chimera/constants/common.hpp>
-#include <Chimera/threading.hpp>
 #include <Chimera/interface/spi_intf.hpp>
+#include <Chimera/threading.hpp>
+#include <Chimera/types/event_types.hpp>
 
 /* Thor Includes */
 #include <Thor/gpio.hpp>
@@ -161,6 +162,9 @@ namespace Thor::SPI
     return Chimera::CommonStatusCodes::OK;
   }
 
+  /*------------------------------------------------
+  Class Specific Functions
+  ------------------------------------------------*/
   SPIClass::SPIClass()
   {
     /*------------------------------------------------
@@ -175,10 +179,29 @@ namespace Thor::SPI
     Default initialize class member variables
     ------------------------------------------------*/
     memset( &config, 0, sizeof( config ) );
+    awaitTransferComplete = xSemaphoreCreateBinary();
   }
 
   SPIClass::~SPIClass()
   {
+  }
+
+  void SPIClass::postISRProcessing()
+  {
+    // TODO: Add logic for listener invocation, error handling, CS toggling, and multiple transfers.
+
+    /*------------------------------------------------
+    Decide chip select behavior
+    ------------------------------------------------*/
+    if ( config.HWInit.csMode == Chimera::SPI::CSMode::AUTO_AFTER_TRANSFER )
+    {
+      setChipSelect( Chimera::GPIO::State::HIGH );
+    }
+
+    /*------------------------------------------------
+    Notifiy threads waiting on the transfer complete signal
+    ------------------------------------------------*/
+    xSemaphoreGive( awaitTransferComplete );
   }
 
   /*------------------------------------------------
@@ -415,12 +438,30 @@ namespace Thor::SPI
   ------------------------------------------------*/
   Chimera::Status_t SPIClass::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    if ( event != Chimera::Event::Trigger::TRANSFER_COMPLETE )
+    {
+      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    }
+    else if ( xSemaphoreTake( awaitTransferComplete, pdMS_TO_TICKS( timeout ) ) != pdPASS )
+    {
+      return Chimera::CommonStatusCodes::TIMEOUT;
+    }
+    else
+    {
+      return Chimera::CommonStatusCodes::OK;
+    }
   }
 
   Chimera::Status_t SPIClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    auto result = await( event, timeout );
+
+    if ( ( result == Chimera::CommonStatusCodes::OK ) && notifier )
+    {
+      xSemaphoreGive( notifier );
+    }
+
+    return result;
   }
 
   /*------------------------------------------------
@@ -437,13 +478,6 @@ namespace Thor::SPI
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  /*------------------------------------------------
-  Non-Standardized Interface
-  ------------------------------------------------*/
-  void SPIClass::postISRProcessing()
-  {
-    setChipSelect( Chimera::GPIO::State::HIGH );
-  }
 }    // namespace Thor::SPI
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
