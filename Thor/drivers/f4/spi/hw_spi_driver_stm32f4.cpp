@@ -13,6 +13,7 @@
 #include <limits>
 
 /* Chimera Includes */
+#include <Chimera/algorithm/register_optimizer.hpp>
 #include <Chimera/chimera.hpp>
 #include <Chimera/threading.hpp>
 #include <Chimera/interface/compiler_intf.hpp>
@@ -32,6 +33,29 @@
 
 namespace Thor::Driver::SPI
 {
+  static float calculate_clock_performance( const size_t goal, const size_t actVal, void *const data )
+  {
+    /*------------------------------------------------
+    Input checks: 
+      data    --  System's currently configured peripheral source clock
+      actVal  --  Peripheral clock divider under consideration
+    
+    If either are null, permanently indicate worst case performance.
+    ------------------------------------------------*/
+    if ( !data || !actVal)
+    {
+      return std::numeric_limits<float>::max();
+    }
+
+    size_t spi_periph_clock_freq = *( reinterpret_cast<size_t *const>( data ) );
+    size_t spi_output_clock_freq = spi_periph_clock_freq / actVal;
+
+    float fGoal = static_cast<float>( goal );
+    float fAchieved = static_cast<float>( spi_output_clock_freq );
+
+    return fAchieved - fGoal;
+  }
+
   void initialize()
   {
     initializeMapping();
@@ -123,12 +147,34 @@ namespace Thor::Driver::SPI
 
   Chimera::Status_t Driver::configure( const Chimera::SPI::DriverConfig &setup )
   {
+    using namespace Chimera::Algorithm::RegisterOptimization;
+
     /*------------------------------------------------
     Configure the clocks
     ------------------------------------------------*/
     clockEnable();
 
-    // TODO: Calculate the baud rate needed once the driver is working
+    /*------------------------------------------------
+    Find the best clock divisor need to achieve the desired clock frequency
+    ------------------------------------------------*/
+    size_t clockFreq  = std::numeric_limits<size_t>::max();
+    auto systemClock  = Thor::Driver::RCC::SystemClock::get();
+    auto periphAddr   = reinterpret_cast<std::uintptr_t>( periph );
+    auto updateStatus = systemClock->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SPI, periphAddr, &clockFreq );
+
+    if ( updateStatus != Chimera::CommonStatusCodes::OK )
+    {
+      return Chimera::CommonStatusCodes::FAIL;
+    }
+
+    RegOptimizerData cfg;
+    cfg.actVals      = Configuration::ClockDivisor::valOptions.data();
+    cfg.regVals      = Configuration::ClockDivisor::regOptions.data();
+    cfg.numOptions   = Configuration::ClockDivisor::NUM_OPTIONS;
+    cfg.desiredValue = setup.HWInit.clockFreq;
+    cfg.optimizer    = calculate_clock_performance;
+
+    Reg32_t clockDivisor = findOptimalSetting( cfg, Configuration::ClockDivisor::DIV_32, &clockFreq );
 
     /*------------------------------------------------
     Stop the config if there are any invalid config options
@@ -161,7 +207,7 @@ namespace Thor::Driver::SPI
     CR1::DFF::set( periph, DataSizeToRegConfig[ static_cast<size_t>( setup.HWInit.dataSize ) ] );
 
     /* Peripheral Clock Divisor */
-    CR1::BR::set( periph, Configuration::ClockDivisor::DIV_32 );
+    CR1::BR::set( periph, clockDivisor );
 
     /* Master/Slave Control Mode */
     CR1::MSTR::set( periph, ControlModeToRegConfig[ static_cast<size_t>( setup.HWInit.controlMode ) ] );

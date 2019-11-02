@@ -13,6 +13,7 @@
 #define THOR_HW_SPI_TYPES_HPP
 
 /* C++ Includes */
+#include <array>
 #include <cstdint>
 
 /* Chimera Includes */
@@ -99,14 +100,19 @@ namespace Thor::Driver::SPI
 
     namespace ClockDivisor
     {
-      static constexpr Reg32_t DIV_2   = CR1_BR_DIV_2;
-      static constexpr Reg32_t DIV_4   = CR1_BR_DIV_4;
-      static constexpr Reg32_t DIV_8   = CR1_BR_DIV_8;
-      static constexpr Reg32_t DIV_16  = CR1_BR_DIV_16;
-      static constexpr Reg32_t DIV_32  = CR1_BR_DIV_32;
-      static constexpr Reg32_t DIV_64  = CR1_BR_DIV_64;
-      static constexpr Reg32_t DIV_128 = CR1_BR_DIV_128;
-      static constexpr Reg32_t DIV_256 = CR1_BR_DIV_256;
+      static constexpr Reg32_t DIV_2      = CR1_BR_DIV_2;
+      static constexpr Reg32_t DIV_4      = CR1_BR_DIV_4;
+      static constexpr Reg32_t DIV_8      = CR1_BR_DIV_8;
+      static constexpr Reg32_t DIV_16     = CR1_BR_DIV_16;
+      static constexpr Reg32_t DIV_32     = CR1_BR_DIV_32;
+      static constexpr Reg32_t DIV_64     = CR1_BR_DIV_64;
+      static constexpr Reg32_t DIV_128    = CR1_BR_DIV_128;
+      static constexpr Reg32_t DIV_256    = CR1_BR_DIV_256;
+      static constexpr size_t NUM_OPTIONS = 8u;
+
+      static constexpr std::array<Reg32_t, NUM_OPTIONS> regOptions = { DIV_2,  DIV_4,  DIV_8,   DIV_16,
+                                                                       DIV_32, DIV_64, DIV_128, DIV_256 };
+      static constexpr std::array<size_t, NUM_OPTIONS> valOptions  = { 2u, 4u, 8u, 16u, 32u, 64u, 128u, 256u };
     }    // namespace ClockDivisor
 
     namespace Mode
