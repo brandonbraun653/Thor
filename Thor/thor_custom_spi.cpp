@@ -240,12 +240,23 @@ namespace Thor::SPI
     SCK  = std::make_unique<Thor::GPIO::GPIOClass>();
     MOSI = std::make_unique<Thor::GPIO::GPIOClass>();
     MISO = std::make_unique<Thor::GPIO::GPIOClass>();
-    CS   = std::make_unique<Thor::GPIO::GPIOClass>();
 
     result |= SCK->init( config.SCKInit );
     result |= MOSI->init( config.MOSIInit );
     result |= MISO->init( config.MISOInit );
-    result |= CS->init( config.CSInit );
+
+    /* Are we supposed to take control of the CS pin? */
+    if ( !setupStruct.externalCS )
+    {
+      CS = std::make_unique<Thor::GPIO::GPIOClass>();
+      result |= CS->init( config.CSInit );
+    }
+    else
+    {
+      /* Disable the CS and force external control behavior */
+      CS.reset();
+      config.HWInit.csMode = Chimera::SPI::CSMode::MANUAL;
+    }
 
     if ( result != Chimera::CommonStatusCodes::OK )
     {
@@ -253,7 +264,7 @@ namespace Thor::SPI
     }
 
     /* Make sure we aren't selecting a device by accident */
-    CS->setState( Chimera::GPIO::State::HIGH );
+    setChipSelect( Chimera::GPIO::State::HIGH );
 
     /*------------------------------------------------
     Configure the SPI hardware
@@ -307,7 +318,10 @@ namespace Thor::SPI
 
   Chimera::Status_t SPIClass::setChipSelectControlMode( const Chimera::SPI::CSMode mode )
   {
-    if ( LockGuard( *this ).lock() )
+    /*------------------------------------------------
+    Only valid if the SPI driver has control of the chip select
+    ------------------------------------------------*/
+    if ( LockGuard( *this ).lock() && !config.externalCS )
     {
       config.HWInit.csMode = mode;
       return Chimera::CommonStatusCodes::OK;
@@ -349,7 +363,7 @@ namespace Thor::SPI
     ------------------------------------------------*/
     if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL ) 
     {
-      CS->setState( Chimera::GPIO::State::LOW );
+      setChipSelect( Chimera::GPIO::State::LOW );
     }
 
     /*------------------------------------------------
@@ -362,7 +376,7 @@ namespace Thor::SPI
 
         if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
         {
-          CS->setState( Chimera::GPIO::State::HIGH );
+          setChipSelect( Chimera::GPIO::State::HIGH );
         }
 
         return result;
