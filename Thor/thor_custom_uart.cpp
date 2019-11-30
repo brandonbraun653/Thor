@@ -56,7 +56,7 @@ namespace Thor::UART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t UARTClass::begin( const Chimera::Hardware::PeripheralMode,
+  Chimera::Status_t UARTClass::begin( const Chimera::Hardware::PeripheralMode txMode,
                                       const Chimera::Hardware::PeripheralMode rxMode )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;

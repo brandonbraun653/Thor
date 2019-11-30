@@ -25,6 +25,8 @@
 #include <Thor/spi.hpp>
 #include <Thor/sram.hpp>
 #include <Thor/system.hpp>
+#include <Thor/uart.hpp>
+#include <Thor/usart.hpp>
 #include <Thor/watchdog.hpp>
 
 
@@ -37,18 +39,22 @@
 
 #if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
 #define CHIMERA_INHERITED_GPIO                Thor::GPIO::GPIOClass
-#endif 
+#endif
 
-#if defined( THOR_DRIVER_SERIAL ) && ( THOR_DRIVER_SERIAL == 1 )
-#define CHIMERA_INHERITED_SERIAL              Thor::Serial::SerialClass
+#if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
+#define CHIMERA_INHERITED_WATCHDOG Thor::Watchdog::Independent
 #endif
 
 #if defined( THOR_DRIVER_SPI ) && ( THOR_DRIVER_SPI == 1 )
 #define CHIMERA_INHERITED_SPI                 Thor::SPI::SPIClass
-#endif 
+#endif
 
-#if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
-#define CHIMERA_INHERITED_WATCHDOG            Thor::Watchdog::Independent
+#if defined( THOR_DRIVER_UART ) && ( THOR_DRIVER_UART == 1 )
+//#define CHIMERA_INHERITED_SERIAL              Thor::UART::UARTClass
+#endif
+
+#if defined( THOR_DRIVER_USART ) && ( THOR_DRIVER_USART == 1 )
+#define CHIMERA_INHERITED_SERIAL              Thor::USART::USARTClass
 #endif
 
 #endif
