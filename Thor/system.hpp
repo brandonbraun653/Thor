@@ -24,16 +24,7 @@
 
 namespace Thor::System
 {
-    class Identifier : public Chimera::System::IdentifierInterface
-    {
-    public:
-      Identifier();
-      ~Identifier();
 
-      uint32_t deviceID() final override;
-
-      uint32_t uniqueID() final override;
-    };
 }
 
 #endif

@@ -8,6 +8,9 @@
  *   2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+/* Chimera Includes */
+#include <Chimera/threading.hpp>
+
 /* Thor Includes */
 #include <Thor/resources/dma_resources.hpp>
 #include <Chimera/types/peripheral_types.hpp>
@@ -162,7 +165,7 @@ namespace Thor::Driver::DMA
 
     auto result = Chimera::CommonStatusCodes::LOCKED;
 
-    if ( LockGuard( *this ).lock() )
+    if ( try_lock_for( 100 ) )
     {
       /*------------------------------------------------
       Initialize class level variables
@@ -181,8 +184,9 @@ namespace Thor::Driver::DMA
 
       wakeupSignal = postProcessorSignal[ streamResourceIndex ];
 
-      Chimera::Threading::addThread( postProcessorThread[ streamResourceIndex ], "", 500, NULL, 5,
-                                     &postProcessorHandle[ streamResourceIndex ] );
+#warning Thor DMA will not work until Thread support is added
+//      Chimera::Threading::addThread( postProcessorThread[ streamResourceIndex ], "", 500, NULL, 5,
+//                                     &postProcessorHandle[ streamResourceIndex ] );
 
       result = Chimera::CommonStatusCodes::OK;
     }
@@ -196,7 +200,7 @@ namespace Thor::Driver::DMA
 
     auto result = Chimera::CommonStatusCodes::LOCKED;
 
-    if ( LockGuard( *this ).lock() )
+    if ( try_lock_for( 100 ) )
     {
       enterCriticalSection();
 
@@ -215,7 +219,7 @@ namespace Thor::Driver::DMA
 
     auto result = Chimera::CommonStatusCodes::LOCKED;
 
-    if ( LockGuard( *this ).lock() )
+    if ( try_lock_for( 100 ) )
     {
       enterCriticalSection();
       result = Chimera::CommonStatusCodes::OK;
@@ -316,7 +320,7 @@ namespace Thor::Driver::DMA
 
     auto result = Chimera::CommonStatusCodes::LOCKED;
 
-    if ( LockGuard( *this ).lock() )
+    if ( try_lock_for( 100 ) )
     {
       result = Chimera::CommonStatusCodes::OK;
 
@@ -386,7 +390,7 @@ namespace Thor::Driver::DMA
     /*------------------------------------------------
     Make sure we gain exclusive access to the control block
     ------------------------------------------------*/
-    if ( LockGuard( *this ).lock() )
+    if ( try_lock_for( 100 ) )
     {
       enterCriticalSection();
       cb = controlBlock;
@@ -768,7 +772,7 @@ static void DMA1_Stream0_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA1_STREAM0_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -801,7 +805,7 @@ static void DMA1_Stream1_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA1_STREAM1_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -834,7 +838,7 @@ static void DMA1_Stream2_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA1_STREAM2_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -867,7 +871,7 @@ static void DMA1_Stream3_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA1_STREAM3_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -900,7 +904,7 @@ static void DMA1_Stream4_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA1_STREAM4_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -933,7 +937,7 @@ static void DMA1_Stream5_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA1_STREAM5_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -966,7 +970,7 @@ static void DMA1_Stream6_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA1_STREAM6_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -999,7 +1003,7 @@ static void DMA1_Stream7_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA1_STREAM7_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -1032,7 +1036,7 @@ static void DMA2_Stream0_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA2_STREAM0_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -1065,7 +1069,7 @@ static void DMA2_Stream1_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA2_STREAM1_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -1098,7 +1102,7 @@ static void DMA2_Stream2_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA2_STREAM2_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -1131,7 +1135,7 @@ static void DMA2_Stream3_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA2_STREAM3_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -1164,7 +1168,7 @@ static void DMA2_Stream4_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA2_STREAM4_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -1197,7 +1201,7 @@ static void DMA2_Stream5_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA2_STREAM5_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -1230,7 +1234,7 @@ static void DMA2_Stream6_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA2_STREAM6_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {
@@ -1263,7 +1267,7 @@ static void DMA2_Stream7_ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::DMA;
   constexpr auto resourceIndex = DMA2_STREAM7_RESOURCE_INDEX;
 
-  Chimera::Threading::signalSetupComplete();
+  
 
   while ( 1 )
   {

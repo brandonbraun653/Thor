@@ -31,25 +31,7 @@
 
 namespace Thor::System
 {
-  Identifier::Identifier()
-  {
-  }
 
-  Identifier::~Identifier()
-  {
-  }
-
-  uint32_t Identifier::deviceID()
-  {
-    return 0;
-  }
-
-  uint32_t Identifier::uniqueID()
-  {
-    /* Will likely need to switch this up as the unique ID is 96 bits */
-    // uint8_t * + length
-    return 0u;
-  }
 
 }    // namespace Thor::System
 

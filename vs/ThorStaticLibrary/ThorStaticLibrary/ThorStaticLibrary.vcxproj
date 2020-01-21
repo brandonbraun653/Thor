@@ -1,0 +1,325 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|STM32F446RE">
+      <Configuration>Debug</Configuration>
+      <Platform>STM32F446RE</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|VisualGDB">
+      <Configuration>Debug</Configuration>
+      <Platform>VisualGDB</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|STM32F446RE">
+      <Configuration>Release</Configuration>
+      <Platform>STM32F446RE</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|VisualGDB">
+      <Configuration>Release</Configuration>
+      <Platform>VisualGDB</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{D04A89DA-CD1B-41EC-9ACD-F31B0E675F14}</ProjectGuid>
+    <BSP_ID>com.sysprogs.arm.stm32</BSP_ID>
+    <BSP_VERSION>2019.12</BSP_VERSION>
+    <InPlaceBSPSubdir />
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|STM32F446RE'" Label="Configuration">
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|STM32F446RE'" Label="Configuration">
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|STM32F446RE'">
+    <Import Project="CommonProperties.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|STM32F446RE'">
+    <Import Project="CommonProperties.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
+    <Import Project="CommonProperties.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
+    <Import Project="CommonProperties.props" />
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
+    <GNUConfigurationType>Debug</GNUConfigurationType>
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
+    <GNUTargetType>StaticLibrary</GNUTargetType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|STM32F446RE'">
+    <GNUConfigurationType>Debug</GNUConfigurationType>
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
+    <GNUTargetType>StaticLibrary</GNUTargetType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
+    <GNUTargetType>StaticLibrary</GNUTargetType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|STM32F446RE'">
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
+    <GNUTargetType>StaticLibrary</GNUTargetType>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
+    <ClCompile>
+      <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|STM32F446RE'">
+    <ClCompile>
+      <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir)../../../../Thor;$(BOOST_ROOT)/boost_1_70_0;$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(ChimeraCompilerDefines);$(ProjectCompilerDefines);%(ClCompile.PreprocessorDefinitions);DEBUG=1</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
+    <ClCompile>
+      <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|STM32F446RE'">
+    <ClCompile>
+      <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir)../../../../Thor;$(BOOST_ROOT)/boost_1_70_0;$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(ChimeraCompilerDefines);$(ProjectCompilerDefines);%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ItemGroup>
+    <None Include="stm32.props" />
+    <None Include="ThorStaticLibrary-Debug.vgdbsettings" />
+    <None Include="ThorStaticLibrary-Release.vgdbsettings" />
+    <None Include="stm32.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Thor\sram.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_boost_stub.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_core.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_crc.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_custom_dma.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_custom_gpio.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_custom_spi.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_custom_uart.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_custom_usart.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_custom_watchdog.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_event.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_exceptions.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_exti.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_flash.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_gpio.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_power.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_print.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_serial.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_spi.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_sram.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_stm32hal_uart.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_stm32hal_usart.cpp" />
+    <ClCompile Include="..\..\..\Thor\thor_system.cpp" />
+    <ClInclude Include="..\..\..\Thor\boostStub.hpp" />
+    <ClInclude Include="..\..\..\Thor\config.hpp" />
+    <ClInclude Include="..\..\..\Thor\core.hpp" />
+    <ClInclude Include="..\..\..\Thor\crc.hpp" />
+    <ClInclude Include="..\..\..\Thor\dma.hpp" />
+    <ClInclude Include="..\..\..\Thor\ethernet.hpp" />
+    <ClInclude Include="..\..\..\Thor\event.hpp" />
+    <ClInclude Include="..\..\..\Thor\exceptions.hpp" />
+    <ClInclude Include="..\..\..\Thor\exti.hpp" />
+    <ClInclude Include="..\..\..\Thor\flash.hpp" />
+    <ClInclude Include="..\..\..\Thor\gpio.hpp" />
+    <ClInclude Include="..\..\..\Thor\headers.hpp" />
+    <ClInclude Include="..\..\..\Thor\macro.hpp" />
+    <ClInclude Include="..\..\..\Thor\nucleo.hpp" />
+    <ClInclude Include="..\..\..\Thor\power.hpp" />
+    <ClInclude Include="..\..\..\Thor\preprocessor.hpp" />
+    <ClInclude Include="..\..\..\Thor\print.hpp" />
+    <ClInclude Include="..\..\..\Thor\serial.hpp" />
+    <ClInclude Include="..\..\..\Thor\spi.hpp" />
+    <ClInclude Include="..\..\..\Thor\sram.hpp" />
+    <ClInclude Include="..\..\..\Thor\system.hpp" />
+    <ClInclude Include="..\..\..\Thor\thor.hpp" />
+    <ClInclude Include="..\..\..\Thor\uart.hpp" />
+    <ClInclude Include="..\..\..\Thor\usart.hpp" />
+    <ClInclude Include="..\..\..\Thor\watchdog.hpp" />
+    <ClInclude Include="..\..\..\Thor\config\chimera\chimeraPort.hpp" />
+    <ClCompile Include="..\..\..\Thor\config\freertos\thor_freertos_hooks_prj.cpp" />
+    <ClInclude Include="..\..\..\Thor\config\freertos\FreeRTOSConfig.h" />
+    <ClInclude Include="..\..\..\Thor\config\templates\thorDriverConfig.hpp" />
+    <ClCompile Include="..\..\..\Thor\defaults\serial_defaults.cpp" />
+    <ClCompile Include="..\..\..\Thor\defaults\spi_defaults.cpp" />
+    <ClInclude Include="..\..\..\Thor\defaults\serial_defaults.hpp" />
+    <ClInclude Include="..\..\..\Thor\defaults\spi_defaults.hpp" />
+    <ClInclude Include="..\..\..\Thor\definitions\dma_definitions.hpp" />
+    <ClInclude Include="..\..\..\Thor\definitions\interrupt_definitions.hpp" />
+    <ClInclude Include="..\..\..\Thor\definitions\serial_definitions.hpp" />
+    <ClInclude Include="..\..\..\Thor\definitions\spi_definitions.hpp" />
+    <ClInclude Include="..\..\..\Thor\definitions\system_checks.hpp" />
+    <ClInclude Include="..\..\..\Thor\definitions\uart_definitions.hpp" />
+    <ClInclude Include="..\..\..\Thor\definitions\usart_definitions.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\dma.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\gpio.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\interrupt.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\nvic.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\rcc.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\spi.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\uart.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\usart.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\watchdog.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\configuration.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\cmsis_compiler.h" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\cmsis_gcc.h" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\cmsis_version.h" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\cmsis_windows.h" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\core_cm4.h" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\mpu_armv7.h" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\cortex-m4\register.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\cortex-m4\utilities.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\cortex-m7\register.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\interrupts\dma_interrupt_vectors.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\interrupts\spi_interrupt_vectors.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\interrupts\usart_interrupt_vectors.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\common\mapping\peripheral_mapping.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\mapping\peripheral_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\types\callback_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\types\dma_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\types\gpio_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\types\interrupt_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\types\serial_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\common\types\spi_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\common\definitions.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\common\types.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\dma\hw_dma_driver_stm32f4.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\dma\hw_dma_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\dma\hw_dma_register_stm32f446xx.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\dma\hw_dma_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\dma\hw_dma_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\dma\hw_dma_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\dma\hw_dma_register_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\dma\hw_dma_types.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\flash\hw_flash_driver_stm32f4.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\flash\hw_flash_mapping.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\flash\hw_flash_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\flash\hw_flash_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\flash\hw_flash_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\flash\hw_flash_register_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\flash\hw_flash_types.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_driver_stm32f4.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_register_stm32f446xx.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_register_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\interrupt\hw_it_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\interrupt\hw_it_register_stm32f446xx.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_driver_stm32f4.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_register_stm32f446xx.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_register_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_types.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\nvic\hw_nvic_driver_stm32f4.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\nvic\hw_nvic_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\nvic\hw_nvic_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\nvic\hw_nvic_register_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\nvic\hw_nvic_types.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\power\hw_power_driver_stm32f4.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\power\hw_power_mapping.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\power\hw_power_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\power\hw_power_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\power\hw_power_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\power\hw_power_register_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\power\hw_power_types.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_config_stm32f446xx.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_driver_stm32f4.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_register_stm32f446xx.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_config_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_driver_prv.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_register_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_types.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\spi\hw_spi_driver_stm32f4.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\spi\hw_spi_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\spi\hw_spi_register_stm32f446xx.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\spi\hw_spi_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\spi\hw_spi_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\spi\hw_spi_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\spi\hw_spi_register_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\spi\hw_spi_types.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\startup\startup_common_init.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\startup\startup_stm32f446xx.c" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\system\sys_common_exit.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\system\sys_common_init.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\system\sys_memory_map_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\system\sys_memory_map_stm32f446xx.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\uart\hw_uart_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\uart\hw_uart_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\uart\hw_uart_register_stm32f446xx.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_register_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_stubs.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_types.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\usart\hw_usart_driver_stm32f4.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\usart\hw_usart_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\usart\hw_usart_register_stm32f446xx.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\usart\hw_usart_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\usart\hw_usart_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\usart\hw_usart_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\usart\hw_usart_register_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\usart\hw_usart_types.hpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_driver_stm32f4.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_register_stm32f446xx.cpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_register_stm32f446xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\model\callback_model.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\model\dma_model.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\model\gpio_model.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\model\interrupt_model.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\model\rcc_model.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\model\serial_model.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\model\spi_model.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\model\watchdog_model.hpp" />
+    <ClCompile Include="..\..\..\Thor\resources\thor_dma_resources.cpp" />
+    <ClInclude Include="..\..\..\Thor\resources\dma_resources.hpp" />
+    <ClInclude Include="..\..\..\Thor\types\clock_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\types\dma_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\types\gpio_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\types\interrupt_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\types\serial_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\types\spi_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\types\uart_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\types\usart_types.hpp" />
+  </ItemGroup>
+</Project>

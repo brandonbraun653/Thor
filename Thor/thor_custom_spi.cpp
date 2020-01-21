@@ -210,7 +210,7 @@ namespace Thor::SPI
   Chimera::Status_t SPIClass::init( const Chimera::SPI::DriverConfig &setupStruct )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
-    auto lockGuard           = LockGuard(*this);
+    auto lockGuard           = TimedLockGuard(*this);
 
     /*------------------------------------------------
     Should we even bother creating this?
@@ -219,7 +219,7 @@ namespace Thor::SPI
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
-    else if ( !lockGuard.lock() )
+    else if ( !lockGuard.try_lock_for( 100 ) )
     {
       return Chimera::CommonStatusCodes::LOCKED;
     }
@@ -289,8 +289,9 @@ namespace Thor::SPI
 
       driver->attachISRWakeup( postProcessorSignals[ resourceIndex ] );
 
-      Chimera::Threading::addThread( postProcessorThreads[ resourceIndex ], "", 500, NULL, 5,
-                                     &postProcessorHandles[ resourceIndex ] );
+#warning Thor SPI will not work until thread support is added
+//      Chimera::Threading::addThread( postProcessorThreads[ resourceIndex ], "", 500, NULL, 5,
+//                                     &postProcessorHandles[ resourceIndex ] );
     }
 
     return result;
@@ -308,7 +309,7 @@ namespace Thor::SPI
 
   Chimera::Status_t SPIClass::setChipSelect( const Chimera::GPIO::State value )
   {
-    if ( LockGuard( *this ).lock() && CS )
+    if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) && CS )
     {
       return CS->setState( value );
     }
@@ -321,7 +322,7 @@ namespace Thor::SPI
     /*------------------------------------------------
     Only valid if the SPI driver has control of the chip select
     ------------------------------------------------*/
-    if ( LockGuard( *this ).lock() && !config.externalCS )
+    if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) && !config.externalCS )
     {
       config.HWInit.csMode = mode;
       return Chimera::CommonStatusCodes::OK;
@@ -343,13 +344,13 @@ namespace Thor::SPI
   Chimera::Status_t SPIClass::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length,
                                               const size_t timeoutMS )
   {
-    auto lockguard = LockGuard( *this );
+    auto lockguard = TimedLockGuard( *this );
     auto result    = Chimera::CommonStatusCodes::OK;
 
     /*------------------------------------------------
     Input protection & resource acquisition
     ------------------------------------------------*/
-    if ( !lockguard.lock( timeoutMS ) )
+    if ( !lockguard.try_lock_for( timeoutMS ) )
     {
       return Chimera::CommonStatusCodes::LOCKED;
     }
@@ -406,7 +407,7 @@ namespace Thor::SPI
 
   Chimera::Status_t SPIClass::setPeripheralMode( const Chimera::Hardware::PeripheralMode mode )
   {
-    if ( LockGuard( *this ).lock() )
+    if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) )
     {
       config.HWInit.txfrMode = mode;
       return Chimera::CommonStatusCodes::OK;
@@ -420,8 +421,8 @@ namespace Thor::SPI
     /*------------------------------------------------
     Acquire resources
     ------------------------------------------------*/
-    auto lockguard = LockGuard( *this );
-    if ( !lockguard.lock() )
+    auto lockguard = TimedLockGuard( *this );
+    if ( !lockguard.try_lock_for( 10 ) )
     {
       return Chimera::CommonStatusCodes::LOCKED;
     }
@@ -498,7 +499,7 @@ namespace Thor::SPI
 static void SPI1ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::Driver::SPI;
-  Chimera::Threading::signalSetupComplete();
+  //Chimera::Threading::signalSetupComplete();
 
   while ( 1 )
   {
@@ -520,7 +521,6 @@ static void SPI1ISRPostProcessorThread( void *argument )
 static void SPI2ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::Driver::SPI;
-  Chimera::Threading::signalSetupComplete();
 
   while ( 1 )
   {
@@ -542,7 +542,6 @@ static void SPI2ISRPostProcessorThread( void *argument )
 static void SPI3ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::Driver::SPI;
-  Chimera::Threading::signalSetupComplete();
 
   while ( 1 )
   {
@@ -564,7 +563,6 @@ static void SPI3ISRPostProcessorThread( void *argument )
 static void SPI4ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::Driver::SPI;
-  Chimera::Threading::signalSetupComplete();
 
   while ( 1 )
   {

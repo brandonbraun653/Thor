@@ -54,7 +54,7 @@
 #endif
 
 #if defined( THOR_DRIVER_USART ) && ( THOR_DRIVER_USART == 1 )
-#define CHIMERA_INHERITED_SERIAL              Thor::USART::USARTClass
+//#define CHIMERA_INHERITED_SERIAL              Thor::USART::USARTClass
 #endif
 
 #endif

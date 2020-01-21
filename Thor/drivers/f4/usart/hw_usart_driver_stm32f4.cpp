@@ -331,7 +331,7 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Acquire exclusive access to the hardware and start the transfer
     ------------------------------------------------*/
-    if ( dma->lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    if ( dma->try_lock_for( timeout ) == Chimera::CommonStatusCodes::OK )
     {
       /*------------------------------------------------
       According to pg.32 of AN4031, the DMA must be initialized

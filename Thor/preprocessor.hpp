@@ -22,7 +22,7 @@ https://clang.llvm.org/docs/LanguageExtensions.html
 #endif
 
 #if __cpp_exceptions && ( !defined( _WIN32 ) && !defined( _WIN64 ) )
-#error FATAL ERROR: Please disable exceptions.
+#warning Please disable exceptions
 #endif
 
 /*-------------------------------------------
@@ -85,6 +85,8 @@ Custom STM32F4 Driver
 -------------------------------------------------*/
 // TODO
 
+#else
+#error Please select Thor driver implementation THOR_CUSTOM_DRIVERS or THOR_STM32HAL_DRIVERS
 #endif /* !THOR_CUSTOM_DRIVERS */
 
 #if !defined( TARGET_STM32F4 ) && !defined( TARGET_STM32F7 )

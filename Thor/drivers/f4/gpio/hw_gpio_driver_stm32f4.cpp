@@ -229,7 +229,7 @@ namespace Thor::Driver::GPIO
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    if ( lock( timeout ) != Chimera::CommonStatusCodes::OK )
+    if ( try_lock_for( timeout ) != Chimera::CommonStatusCodes::OK )
     {
       result = Chimera::CommonStatusCodes::LOCKED;
     }
@@ -246,7 +246,7 @@ namespace Thor::Driver::GPIO
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    if ( lock( timeout ) != Chimera::CommonStatusCodes::OK )
+    if ( try_lock_for( timeout ) != Chimera::CommonStatusCodes::OK )
     {
       result = Chimera::CommonStatusCodes::LOCKED;
     }
@@ -263,7 +263,7 @@ namespace Thor::Driver::GPIO
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    if ( lock( timeout ) != Chimera::CommonStatusCodes::OK )
+    if ( try_lock_for( timeout ) != Chimera::CommonStatusCodes::OK )
     {
       result = Chimera::CommonStatusCodes::LOCKED;
     }
@@ -280,7 +280,7 @@ namespace Thor::Driver::GPIO
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    if ( lock( timeout ) != Chimera::CommonStatusCodes::OK )
+    if ( try_lock_for( timeout ) != Chimera::CommonStatusCodes::OK )
     {
       result = Chimera::CommonStatusCodes::LOCKED;
     }
@@ -297,7 +297,7 @@ namespace Thor::Driver::GPIO
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    if ( lock( timeout ) != Chimera::CommonStatusCodes::OK )
+    if ( try_lock_for( timeout ) != Chimera::CommonStatusCodes::OK )
     {
       result = Chimera::CommonStatusCodes::LOCKED;
     }
@@ -314,7 +314,7 @@ namespace Thor::Driver::GPIO
   {
     size_t result = defaultError;
 
-    if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    if ( try_lock_for( timeout ) == Chimera::CommonStatusCodes::OK )
     {
       result = bareMetalDriver.read( timeout );
       unlock();
@@ -327,7 +327,7 @@ namespace Thor::Driver::GPIO
   {
     size_t result = defaultError;
 
-    if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    if ( try_lock_for( timeout ) == Chimera::CommonStatusCodes::OK )
     {
       result = bareMetalDriver.driveGet( pin, timeout );
       unlock();
@@ -340,7 +340,7 @@ namespace Thor::Driver::GPIO
   {
     size_t result = defaultError;
 
-    if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    if ( try_lock_for( timeout ) == Chimera::CommonStatusCodes::OK )
     {
       result = bareMetalDriver.speedGet( pin, timeout );
       unlock();
@@ -353,7 +353,7 @@ namespace Thor::Driver::GPIO
   {
     size_t result = defaultError;
 
-    if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    if ( try_lock_for( timeout ) == Chimera::CommonStatusCodes::OK )
     {
       result = bareMetalDriver.pullGet( pin, timeout );
       unlock();
@@ -366,7 +366,7 @@ namespace Thor::Driver::GPIO
   {
     size_t result = defaultError;
 
-    if ( lock( timeout ) == Chimera::CommonStatusCodes::OK )
+    if ( try_lock_for( timeout ) == Chimera::CommonStatusCodes::OK )
     {
       result = bareMetalDriver.alternateFunctionGet( pin, timeout );
       unlock();

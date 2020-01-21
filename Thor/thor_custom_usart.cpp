@@ -190,8 +190,9 @@ namespace Thor::USART
 
       hwDriver->attachISRWakeup( postProcessorSignal[ resourceIndex ] );
 
-      Chimera::Threading::addThread( postProcessorThread[ resourceIndex ], "", 500, NULL, 5,
-                                     &postProcessorHandle[ resourceIndex ] );
+#warning Thor USART will not work until Thread support is added
+//      Chimera::Threading::addThread( postProcessorThread[ resourceIndex ], "", 500, NULL, 5,
+//                                     &postProcessorHandle[ resourceIndex ] );
     }
 
     /*------------------------------------------------
@@ -537,7 +538,8 @@ namespace Thor::USART
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
 
-    if ( xSemaphoreTake( rxLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+#warning Need to replace semaphore locks with generic Chimera variants
+    if ( xSemaphoreTake( rxLock, 10000 ) == pdPASS )
     {
       error = hwDriver->receive( buffer, length, timeout_mS );
       xSemaphoreGive( rxLock );
@@ -556,7 +558,7 @@ namespace Thor::USART
     }
 
 
-    if ( ( length <= rxBuffers.linearSize() ) && ( xSemaphoreTake( rxLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS ) )
+    if ( ( length <= rxBuffers.linearSize() ) && ( xSemaphoreTake( rxLock, 10000 ) == pdPASS ) )
     {
       memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
 
@@ -585,7 +587,7 @@ namespace Thor::USART
     }
 
 
-    if ( ( length <= rxBuffers.linearSize() ) && ( xSemaphoreTake( rxLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS ) )
+    if ( ( length <= rxBuffers.linearSize() ) && ( xSemaphoreTake( rxLock, 10000 ) == pdPASS ) )
     { 
 
       memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
@@ -608,7 +610,7 @@ namespace Thor::USART
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
 
-    if ( xSemaphoreTake( txLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+    if ( xSemaphoreTake( txLock, 10000 ) == pdPASS )
     {
       error = hwDriver->transmit( buffer, length, timeout_mS );
       xSemaphoreGive( txLock );
@@ -630,7 +632,7 @@ namespace Thor::USART
     Hardware is free. Send the data directly. Otherwise
     queue everything up to send later.
     ------------------------------------------------*/
-    if ( xSemaphoreTake( txLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+    if ( xSemaphoreTake( txLock, 10000 ) == pdPASS )
     {
       error = hwDriver->transmitIT( buffer, length, timeout_mS );
     }
@@ -657,7 +659,7 @@ namespace Thor::USART
     Hardware is free. Send the data directly. Otherwise
     queue everything up to send later.
     ------------------------------------------------*/
-    if ( xSemaphoreTake( txLock, Chimera::Threading::TIMEOUT_DONT_WAIT ) == pdPASS )
+    if ( xSemaphoreTake( txLock, 10000 ) == pdPASS )
     {
       error = hwDriver->transmitDMA( buffer, length, timeout_mS );
     }
@@ -679,8 +681,6 @@ static void USART1ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART1_PERIPH ) )->second;
 
-  Chimera::Threading::signalSetupComplete();
-
   while ( 1 )
   {
     /*------------------------------------------------
@@ -700,8 +700,6 @@ static void USART2ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::Driver::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART2_PERIPH ) )->second;
-
-  Chimera::Threading::signalSetupComplete();
 
   while ( 1 )
   {
@@ -723,8 +721,6 @@ static void USART3ISRPostProcessorThread( void *argument )
   using namespace Thor::Driver::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART3_PERIPH ) )->second;
 
-  Chimera::Threading::signalSetupComplete();
-
   while ( 1 )
   {
     /*------------------------------------------------
@@ -744,8 +740,6 @@ static void USART6ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::Driver::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART6_PERIPH ) )->second;
-
-  Chimera::Threading::signalSetupComplete();
 
   while ( 1 )
   {

@@ -14,9 +14,9 @@
 
 /* Chimera Includes */
 #include <Chimera/threading.hpp>
+#include <Chimera/threading/types.hpp>
 #include <Chimera/types/common_types.hpp>
 #include <Chimera/types/gpio_types.hpp>
-#include <Chimera/types/threading_types.hpp>
 
 /* Thor Includes */
 #include <Thor/drivers/f4/gpio/hw_gpio_types.hpp>
