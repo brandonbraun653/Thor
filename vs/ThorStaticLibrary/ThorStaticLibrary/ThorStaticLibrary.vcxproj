@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{D04A89DA-CD1B-41EC-9ACD-F31B0E675F14}</ProjectGuid>
     <BSP_ID>com.sysprogs.arm.stm32</BSP_ID>
-    <BSP_VERSION>2019.12</BSP_VERSION>
+    <BSP_VERSION>2020.01</BSP_VERSION>
     <InPlaceBSPSubdir />
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -86,9 +86,15 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|STM32F446RE'">
     <ClCompile>
       <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir)../../../../Thor;$(BOOST_ROOT)/boost_1_70_0;$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(ChimeraCompilerDefines);$(ProjectCompilerDefines);%(ClCompile.PreprocessorDefinitions);DEBUG=1</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir)../../../../Thor;$(BOOST_ROOT)/boost_1_70_0;$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(ChimeraCompilerDefines);$(ProjectCompilerDefines);DEBUG=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <AdditionalLinkerInputs>;%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
+      <LibrarySearchDirectories>;%(Link.LibrarySearchDirectories)</LibrarySearchDirectories>
+      <AdditionalLibraryNames>;%(Link.AdditionalLibraryNames)</AdditionalLibraryNames>
+      <LinkerScript />
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
     <ClCompile>
@@ -106,7 +112,6 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
-    <None Include="stm32.props" />
     <None Include="ThorStaticLibrary-Debug.vgdbsettings" />
     <None Include="ThorStaticLibrary-Release.vgdbsettings" />
     <None Include="stm32.xml" />
@@ -141,6 +146,8 @@
     <ClInclude Include="..\..\..\Thor\core.hpp" />
     <ClInclude Include="..\..\..\Thor\crc.hpp" />
     <ClInclude Include="..\..\..\Thor\dma.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\f4\startup\startup_stm32f4xxxx.hpp" />
+    <ClInclude Include="..\..\..\Thor\drivers\startup.hpp" />
     <ClInclude Include="..\..\..\Thor\ethernet.hpp" />
     <ClInclude Include="..\..\..\Thor\event.hpp" />
     <ClInclude Include="..\..\..\Thor\exceptions.hpp" />
@@ -321,5 +328,9 @@
     <ClInclude Include="..\..\..\Thor\types\spi_types.hpp" />
     <ClInclude Include="..\..\..\Thor\types\uart_types.hpp" />
     <ClInclude Include="..\..\..\Thor\types\usart_types.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <LinkerScript Include="..\..\..\Thor\drivers\f4\linker\STM32F446RE_flash.lds" />
+    <LinkerScript Include="..\..\..\Thor\drivers\f4\linker\STM32F446RE_sram.lds" />
   </ItemGroup>
 </Project>

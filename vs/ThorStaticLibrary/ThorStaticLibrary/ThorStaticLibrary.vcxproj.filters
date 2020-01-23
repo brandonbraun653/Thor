@@ -123,11 +123,11 @@
     <Filter Include="Thor\types">
       <UniqueIdentifier>{2a921d0a-f4cc-488c-9e06-a9f05a7a3602}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Thor\drivers\f4\linker">
+      <UniqueIdentifier>{cdc2f2c6-c1de-42c8-a010-c796f49e702a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="stm32.props">
-      <Filter>Source files\Device-specific files</Filter>
-    </None>
     <None Include="ThorStaticLibrary-Debug.vgdbsettings">
       <Filter>VisualGDB settings</Filter>
     </None>
@@ -764,5 +764,21 @@
     <ClInclude Include="..\..\..\Thor\types\usart_types.hpp">
       <Filter>Thor\types</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Thor\drivers\startup.hpp">
+      <Filter>Thor\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\drivers\f4\startup\startup_stm32f4xxxx.hpp">
+      <Filter>Thor\drivers\f4\startup</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <LinkerScript Include="..\..\..\Thor\drivers\f4\linker\STM32F446RE_flash.lds">
+      <Filter>Thor\drivers\f4\linker</Filter>
+    </LinkerScript>
+    <LinkerScript Include="..\..\..\Thor\drivers\f4\linker\STM32F446RE_sram.lds">
+      <Filter>Thor\drivers\f4\linker</Filter>
+    </LinkerScript>
   </ItemGroup>
 </Project>

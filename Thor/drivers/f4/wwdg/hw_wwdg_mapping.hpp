@@ -19,6 +19,7 @@
 
 /* Driver Includes */
 #include <Thor/headers.hpp>
+#include <Thor/drivers/f4/wwdg/hw_wwdg_prj.hpp>
 #include <Thor/drivers/f4/wwdg/hw_wwdg_types.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )

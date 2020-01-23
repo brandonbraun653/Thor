@@ -28,6 +28,7 @@
 /* Driver Includes */
 #include <Thor/drivers/nvic.hpp>
 #include <Thor/drivers/rcc.hpp>
+#include <Thor/drivers/startup.hpp>
 
 namespace Thor::System
 {
@@ -39,6 +40,16 @@ namespace Chimera::System
 {
   Chimera::Status_t prjSystemStartup()
   {
+    /*------------------------------------------------
+    Force a reference to the ISR vector table so it doesn't get thrown out in the linker stage of compiling
+    a larger project with Thor consumed as a static library. It's expected this function will get called 
+    through Chimera in the main project via ChimeraInit();
+
+    For more info, see:
+    https://stackoverflow.com/questions/1202494/why-doesnt-attribute-constructor-work-in-a-static-library
+    ------------------------------------------------*/
+    volatile auto _do_not_remove_me = THOR_SYSTEM_ISR_VECTOR_SYMBOL;
+
     /*------------------------------------------------
     Initialize the system clocks
     ------------------------------------------------*/
@@ -84,5 +95,20 @@ namespace Chimera::System
 
 
     return Chimera::CommonStatusCodes::OK;
+  }
+
+  InterruptMask prjDisableInterrupts()
+  {
+    return InterruptMask();
+  }
+
+  void prjEnableInterrupts( InterruptMask &interruptMask )
+  {
+
+  }
+
+  int prjMaxConcurrentThreads()
+  {
+    return 1;
   }
 }

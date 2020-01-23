@@ -5,14 +5,6 @@
 #include <Thor/config.hpp>
 #include <Thor/core.hpp>
 
-extern void ThorInit();
-
-#if defined( USING_CHIMERA )
-/** A function Chimera expects to exist in order to initialize the host system properly */
-extern void cSystemInit();
-#endif
-
-/** @namespace Thor */
 namespace Thor
 {
   void prjIncSysTick();

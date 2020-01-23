@@ -1,16 +1,22 @@
-/*
-    This file contains the entry point (Reset_Handler) of your firmware project.
-    The reset handled initializes the RAM and calls system library initializers as well as
-    the platform-specific initializer and the main() function.
-*/
+/********************************************************************************
+ *  File Name:
+ *    startup_stm32f446xx.c
+ *
+ *  Description:
+ *    This file contains the entry point (Reset_Handler) of your firmware project.
+ *    The reset handled initializes the RAM and calls system library initializers 
+ *    as well as the platform-specific initializer and the main() function.
+ *
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
 
 #if defined( _EMBEDDED )
 
 #include <stddef.h>
 extern void *_estack;
 
-void Reset_Handler();
-void Default_Handler();
+extern void Reset_Handler();
+extern void Default_Handler();
 
 #ifdef DEBUG_DEFAULT_INTERRUPT_HANDLERS
 void __attribute__( ( weak ) ) NMI_Handler()
@@ -871,6 +877,17 @@ void FMPI2C1_Event_IRQHandler() __attribute__( ( weak, alias( "Default_Handler" 
 void FMPI2C1_Error_IRQHandler() __attribute__( ( weak, alias( "Default_Handler" ) ) );
 #endif
 
+
+void __attribute__( ( noreturn ) ) Default_Handler()
+{
+  // If you get stuck here, your code is missing a handler for some interrupt.
+  // Define a 'DEBUG_DEFAULT_INTERRUPT_HANDLERS' macro via VisualGDB Project Properties and rebuild your project.
+  // This will pinpoint a specific missing vector.
+  asm( "bkpt 255" );
+  for ( ;; )
+    ;
+}
+
 void *g_pfnVectors[ 0x71 ] __attribute__( ( section( ".isr_vector" ), used ) ) = {
   &_estack,
   &Reset_Handler,
@@ -986,14 +1003,5 @@ void *g_pfnVectors[ 0x71 ] __attribute__( ( section( ".isr_vector" ), used ) ) =
   &FMPI2C1_Event_IRQHandler,
   &FMPI2C1_Error_IRQHandler,
 };
-
-void __attribute__( ( naked, noreturn ) ) Default_Handler()
-{
-  // If you get stuck here, your code is missing a handler for some interrupt.
-  // Define a 'DEBUG_DEFAULT_INTERRUPT_HANDLERS' macro via VisualGDB Project Properties and rebuild your project.
-  // This will pinpoint a specific missing vector.
-  for ( ;; )
-    ;
-}
 
 #endif /* _EMBEDDED */

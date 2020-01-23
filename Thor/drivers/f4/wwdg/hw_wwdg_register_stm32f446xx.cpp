@@ -21,10 +21,10 @@
 namespace Thor::Driver::WWDG
 {
 #if defined( _EMBEDDED )
-  RegisterMap * WWDG_PERIPH = reinterpret_cast<RegisterMap *>( WWDG1_BASE_ADDR );
+  RegisterMap * WWDG1_PERIPH = reinterpret_cast<RegisterMap *>( WWDG1_BASE_ADDR );
 
   Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex = {
-    { reinterpret_cast<std::uintptr_t>( WWDG_PERIPH ), WWDG1_RESOURCE_INDEX } 
+    { reinterpret_cast<std::uintptr_t>( WWDG1_PERIPH ), WWDG1_RESOURCE_INDEX } 
   };
 
 #elif defined( _SIM )

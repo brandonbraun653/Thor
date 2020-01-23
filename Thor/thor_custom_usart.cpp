@@ -190,9 +190,10 @@ namespace Thor::USART
 
       hwDriver->attachISRWakeup( postProcessorSignal[ resourceIndex ] );
 
-#warning Thor USART will not work until Thread support is added
-//      Chimera::Threading::addThread( postProcessorThread[ resourceIndex ], "", 500, NULL, 5,
-//                                     &postProcessorHandle[ resourceIndex ] );
+      Chimera::Threading::Thread thread;
+      thread.initialize( postProcessorThread[ resourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500, "" );
+      thread.start();
+      postProcessorHandle[ resourceIndex ] = thread.native_handle();
     }
 
     /*------------------------------------------------

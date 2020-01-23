@@ -289,9 +289,10 @@ namespace Thor::SPI
 
       driver->attachISRWakeup( postProcessorSignals[ resourceIndex ] );
 
-#warning Thor SPI will not work until thread support is added
-//      Chimera::Threading::addThread( postProcessorThreads[ resourceIndex ], "", 500, NULL, 5,
-//                                     &postProcessorHandles[ resourceIndex ] );
+      Chimera::Threading::Thread thread;
+      thread.initialize( postProcessorThreads[ resourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500, "" );
+      thread.start();
+      postProcessorHandles[ resourceIndex ] = thread.native_handle();
     }
 
     return result;

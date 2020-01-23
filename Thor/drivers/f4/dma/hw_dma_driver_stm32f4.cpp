@@ -184,9 +184,10 @@ namespace Thor::Driver::DMA
 
       wakeupSignal = postProcessorSignal[ streamResourceIndex ];
 
-#warning Thor DMA will not work until Thread support is added
-//      Chimera::Threading::addThread( postProcessorThread[ streamResourceIndex ], "", 500, NULL, 5,
-//                                     &postProcessorHandle[ streamResourceIndex ] );
+      Chimera::Threading::Thread thread;
+      thread.initialize( postProcessorThread[ streamResourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500, "" );
+      thread.start();
+      postProcessorHandle[ streamResourceIndex ] = thread.native_handle();
 
       result = Chimera::CommonStatusCodes::OK;
     }
