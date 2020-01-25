@@ -91,7 +91,7 @@ namespace Thor::Driver::USART
 
     void killReceive() final override;
 
-    void attachISRWakeup( SemaphoreHandle_t wakeup );
+    void attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup );
 
     CDTCB getTCB_TX();
 
@@ -124,7 +124,7 @@ namespace Thor::Driver::USART
     /*------------------------------------------------
     Asynchronous Event Listeners
     ------------------------------------------------*/
-    SemaphoreHandle_t ISRWakeup_external;
+    Chimera::Threading::BinarySemaphore * ISRWakeup_external;
 
     /*------------------------------------------------
     Transfer Control Blocks

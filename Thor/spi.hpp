@@ -73,7 +73,7 @@ namespace Thor::SPI
     Async IO Interface
     ------------------------------------------------*/
     Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout ) final override;
-    Chimera::Status_t await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier,
+    Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
                              const size_t timeout ) final override;
 
     /*------------------------------------------------

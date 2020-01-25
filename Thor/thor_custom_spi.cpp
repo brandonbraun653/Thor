@@ -468,13 +468,14 @@ namespace Thor::SPI
     }
   }
 
-  Chimera::Status_t SPIClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier, const size_t timeout )
+  Chimera::Status_t SPIClass::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+                                     const size_t timeout )
   {
     auto result = await( event, timeout );
 
-    if ( ( result == Chimera::CommonStatusCodes::OK ) && notifier )
+    if ( result == Chimera::CommonStatusCodes::OK )
     {
-      xSemaphoreGive( notifier );
+      notifier.release();
     }
 
     return result;

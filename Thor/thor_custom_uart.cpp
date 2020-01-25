@@ -129,7 +129,8 @@ namespace Thor::UART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t UARTClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier, const size_t timeout )
+  Chimera::Status_t UARTClass::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+                                      const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }

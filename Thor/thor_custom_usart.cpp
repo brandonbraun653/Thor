@@ -48,20 +48,10 @@ static std::array<Thor::USART::USARTClass *, USARTDriver::NUM_USART_PERIPHS> usa
 };
 
 /* Post Processor Thread Handles */
-static std::array<TaskHandle_t, USARTDriver::NUM_USART_PERIPHS> postProcessorHandle = { 
-  nullptr,  
-  nullptr, 
-  nullptr, 
-  nullptr 
-};
+static std::array<Chimera::Threading::detail::native_thread_handle_type, USARTDriver::NUM_USART_PERIPHS> postProcessorHandle = {};
 
 /* Post Processor Thread Wakeup Signals */
-static std::array<SemaphoreHandle_t, USARTDriver::NUM_USART_PERIPHS> postProcessorSignal = { 
-  nullptr, 
-  nullptr, 
-  nullptr,
-  nullptr 
-};
+static std::array<Chimera::Threading::BinarySemaphore, USARTDriver::NUM_USART_PERIPHS> postProcessorSignal = {};
 
 /* Post Processor Thread Function Pointers */
 static std::array<Chimera::Function::void_func_void_ptr, USARTDriver::NUM_USART_PERIPHS> postProcessorThread = {
@@ -97,7 +87,8 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::OK;
   }
 
-  USARTClass::USARTClass() : channel( 0 ), resourceIndex( 0 ), listenerIDCount( 0 )
+  USARTClass::USARTClass() : channel( 0 ), resourceIndex( 0 ), listenerIDCount( 0 ),
+    awaitRXComplete( 1 ), awaitTXComplete( 1 ), rxLock( 1 ), txLock( 1 )
   {
     using namespace Chimera::Hardware;
 
@@ -114,15 +105,6 @@ namespace Thor::USART
     writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::BLOCKING ) ]  = &USARTClass::writeBlocking;
     writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::INTERRUPT ) ] = &USARTClass::writeInterrupt;
     writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::DMA ) ]       = &USARTClass::writeDMA;
-
-    /*------------------------------------------------
-    Binary semaphores used as signaling mechanism from the ISR and 
-    post processing handler threads.
-    ------------------------------------------------*/
-    rxLock          = xSemaphoreCreateBinary();
-    txLock          = xSemaphoreCreateBinary();
-    awaitRXComplete = xSemaphoreCreateBinary();
-    awaitTXComplete = xSemaphoreCreateBinary();
   }
 
   USARTClass::~USARTClass()
@@ -185,24 +167,16 @@ namespace Thor::USART
     ------------------------------------------------*/
     if ( postProcessorThread[ resourceIndex ] )
     {
-      postProcessorSignal[ resourceIndex ] = xSemaphoreCreateBinary();
-      postProcessorHandle[ resourceIndex ] = nullptr;
+      // postProcessorSignal[ resourceIndex ] = xSemaphoreCreateBinary();
+      postProcessorHandle[ resourceIndex ] = {};
 
-      hwDriver->attachISRWakeup( postProcessorSignal[ resourceIndex ] );
+      hwDriver->attachISRWakeup( &postProcessorSignal[ resourceIndex ] );
 
       Chimera::Threading::Thread thread;
       thread.initialize( postProcessorThread[ resourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500, "" );
       thread.start();
       postProcessorHandle[ resourceIndex ] = thread.native_handle();
     }
-
-    /*------------------------------------------------
-    Unlock all the processes. Leave the TX/RX event driven
-    semaphores in a default locked state to force an event
-    to 'give' to the semaphore first.
-    ------------------------------------------------*/
-    xSemaphoreGive( rxLock );
-    xSemaphoreGive( txLock );
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -338,8 +312,8 @@ namespace Thor::USART
       Process Event Listeners. Semaphores unlocked in preparation
       for the listeners to possibly try and write more data.
       ------------------------------------------------*/
-      xSemaphoreGive( txLock );
-      xSemaphoreGive( awaitTXComplete );
+      awaitTXComplete.release();
+      txLock.release();
 
       processListeners( Chimera::Event::Trigger::WRITE_COMPLETE );
     }
@@ -347,7 +321,7 @@ namespace Thor::USART
     if ( flags & Runtime::Flag::RX_COMPLETE )
     {
       hwDriver->clearFlags( Runtime::Flag::RX_COMPLETE );
-      //auto tcb = hwDriver->getTCB_RX();
+      // auto tcb = hwDriver->getTCB_RX();
 
       /*------------------------------------------------
       Process Receive Buffers
@@ -359,8 +333,8 @@ namespace Thor::USART
       Process Event Listeners. Semaphores unlocked in preparation
       for the listeners to possibly try and read more data.
       ------------------------------------------------*/
-      xSemaphoreGive( rxLock );
-      xSemaphoreGive( awaitRXComplete );
+      awaitRXComplete.release();
+      rxLock.release();
 
       processListeners( Chimera::Event::Trigger::READ_COMPLETE );
     }
@@ -468,27 +442,29 @@ namespace Thor::USART
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
 
-    if ( ( event == Trigger::WRITE_COMPLETE ) &&
-         ( xSemaphoreTake( awaitTXComplete, pdMS_TO_TICKS( timeout ) ) != pdPASS ) )
+    if ( ( event == Trigger::WRITE_COMPLETE ) && !awaitTXComplete.try_acquire_for( timeout ) )
     {
       return Chimera::CommonStatusCodes::TIMEOUT;
     }
-    else if ( ( event == Trigger::READ_COMPLETE ) &&
-              ( xSemaphoreTake( awaitRXComplete, pdMS_TO_TICKS( timeout ) ) != pdPASS ) )
+    else if ( ( event == Trigger::READ_COMPLETE ) && !awaitRXComplete.try_acquire_for( timeout ) )
     {
       return Chimera::CommonStatusCodes::TIMEOUT;
     }
+
+    awaitRXComplete.release();
+    awaitTXComplete.release();
 
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t USARTClass::await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier, const size_t timeout )
+  Chimera::Status_t USARTClass::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+                                       const size_t timeout )
   {
     auto result = await( event, timeout );
 
-    if ( ( result == Chimera::CommonStatusCodes::OK ) && notifier )
+    if ( result == Chimera::CommonStatusCodes::OK )
     {
-      xSemaphoreGive( notifier );
+      notifier.release();
     }
 
     return result;
@@ -539,11 +515,9 @@ namespace Thor::USART
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
 
-#warning Need to replace semaphore locks with generic Chimera variants
-    if ( xSemaphoreTake( rxLock, 10000 ) == pdPASS )
+    if ( rxLock.try_acquire_for( 1000 ))
     {
       error = hwDriver->receive( buffer, length, timeout_mS );
-      xSemaphoreGive( rxLock );
     }
 
     return error;
@@ -559,7 +533,7 @@ namespace Thor::USART
     }
 
 
-    if ( ( length <= rxBuffers.linearSize() ) && ( xSemaphoreTake( rxLock, 10000 ) == pdPASS ) )
+    if ( ( length <= rxBuffers.linearSize() ) && rxLock.try_acquire_for( 1000 ) )
     {
       memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
 
@@ -588,7 +562,7 @@ namespace Thor::USART
     }
 
 
-    if ( ( length <= rxBuffers.linearSize() ) && ( xSemaphoreTake( rxLock, 10000 ) == pdPASS ) )
+    if ( ( length <= rxBuffers.linearSize() ) && rxLock.try_acquire_for( 1000 ) )
     { 
 
       memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
@@ -609,12 +583,12 @@ namespace Thor::USART
 
   Chimera::Status_t USARTClass::writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
+    using namespace Chimera::Threading;
     Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
 
-    if ( xSemaphoreTake( txLock, 10000 ) == pdPASS )
+    if ( txLock.try_acquire_for( 1000 ) )
     {
       error = hwDriver->transmit( buffer, length, timeout_mS );
-      xSemaphoreGive( txLock );
     }
 
     return error;
@@ -633,7 +607,7 @@ namespace Thor::USART
     Hardware is free. Send the data directly. Otherwise
     queue everything up to send later.
     ------------------------------------------------*/
-    if ( xSemaphoreTake( txLock, 10000 ) == pdPASS )
+    if ( txLock.try_acquire() )
     {
       error = hwDriver->transmitIT( buffer, length, timeout_mS );
     }
@@ -660,7 +634,7 @@ namespace Thor::USART
     Hardware is free. Send the data directly. Otherwise
     queue everything up to send later.
     ------------------------------------------------*/
-    if ( xSemaphoreTake( txLock, 10000 ) == pdPASS )
+    if ( txLock.try_acquire() )
     {
       error = hwDriver->transmitDMA( buffer, length, timeout_mS );
     }
@@ -687,12 +661,10 @@ static void USART1ISRPostProcessorThread( void *argument )
     /*------------------------------------------------
     Wait for the ISR to wake up this thread before doing any processing
     ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
     {
-      if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
-      {
-        usart->postISRProcessing();
-      }
+      usart->postISRProcessing();
     }
   }
 }
@@ -707,12 +679,10 @@ static void USART2ISRPostProcessorThread( void *argument )
     /*------------------------------------------------
     Wait for the ISR to wake up this thread before doing any processing
     ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
     {
-      if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
-      {
-        usart->postISRProcessing();
-      }
+      usart->postISRProcessing();
     }
   }
 }
@@ -727,12 +697,10 @@ static void USART3ISRPostProcessorThread( void *argument )
     /*------------------------------------------------
     Wait for the ISR to wake up this thread before doing any processing
     ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
     {
-      if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
-      {
-        usart->postISRProcessing();
-      }
+      usart->postISRProcessing();
     }
   }
 }
@@ -747,12 +715,10 @@ static void USART6ISRPostProcessorThread( void *argument )
     /*------------------------------------------------
     Wait for the ISR to wake up this thread before doing any processing
     ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
     {
-      if ( auto usart = usartClassObjects[ resourceIndex ]; usart )
-      {
-        usart->postISRProcessing();
-      }
+      usart->postISRProcessing();
     }
   }
 }

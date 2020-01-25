@@ -91,7 +91,7 @@ namespace Thor::USART
 
     Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout ) final override;
 
-    Chimera::Status_t await( const Chimera::Event::Trigger event, SemaphoreHandle_t notifier,
+    Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
                              const size_t timeout ) final override;
 
     void postISRProcessing() final override;
@@ -108,10 +108,10 @@ namespace Thor::USART
     size_t listenerIDCount;
     std::vector<Chimera::Event::Actionable> eventListeners;
 
-    SemaphoreHandle_t awaitRXComplete;
-    SemaphoreHandle_t awaitTXComplete;
-    SemaphoreHandle_t rxLock;
-    SemaphoreHandle_t txLock;
+    Chimera::Threading::BinarySemaphore awaitRXComplete;
+    Chimera::Threading::BinarySemaphore awaitTXComplete;
+    Chimera::Threading::BinarySemaphore rxLock;
+    Chimera::Threading::BinarySemaphore txLock;
 
     Chimera::Buffer::PeripheralBuffer txBuffers;
     Chimera::Buffer::PeripheralBuffer rxBuffers;

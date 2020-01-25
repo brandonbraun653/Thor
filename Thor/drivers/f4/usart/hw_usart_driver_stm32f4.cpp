@@ -435,7 +435,7 @@ namespace Thor::Driver::USART
     exitCriticalSection();
   }
 
-  void Driver::attachISRWakeup( SemaphoreHandle_t wakeup )
+  void Driver::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )
   {
     ISRWakeup_external = wakeup;
   }
@@ -551,9 +551,7 @@ namespace Thor::Driver::USART
         ------------------------------------------------*/
         if ( ISRWakeup_external )
         {
-          BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-          xSemaphoreGiveFromISR( ISRWakeup_external, &xHigherPriorityTaskWoken );
-          portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+          ISRWakeup_external->releaseFromISR();
         }
       }
     }
@@ -612,9 +610,7 @@ namespace Thor::Driver::USART
       ------------------------------------------------*/
       if ( ( rxTCB.state == StateMachine::RX::RX_ABORTED || rxTCB.state == StateMachine::RX_COMPLETE ) && ISRWakeup_external )
       {
-        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-        xSemaphoreGiveFromISR( ISRWakeup_external, &xHigherPriorityTaskWoken );
-        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+        ISRWakeup_external->releaseFromISR();
       }
     }
 
