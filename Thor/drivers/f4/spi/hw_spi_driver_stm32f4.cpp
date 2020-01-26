@@ -75,7 +75,7 @@ namespace Thor::Driver::SPI
     return false;
   }
 
-  Driver::Driver()
+  Driver::Driver() : ISRWakeup_external( nullptr )
   {
     /*------------------------------------------------
     Initialize class variables
@@ -424,7 +424,7 @@ namespace Thor::Driver::SPI
     return Chimera::Status_t();
   }
 
-  void Driver::attachISRWakeup( SemaphoreHandle_t wakeup )
+  void Driver::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )
   {
     ISRWakeup_external = wakeup;
   }
@@ -514,9 +514,7 @@ namespace Thor::Driver::SPI
     if ( ISRWakeup_external && ( ( txfr.status == Chimera::SPI::Status::TRANSFER_COMPLETE ) ||
                                  ( txfr.status == Chimera::SPI::Status::TRANSFER_ERROR ) ) )
     {
-      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-      xSemaphoreGiveFromISR( ISRWakeup_external, &xHigherPriorityTaskWoken );
-      portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+      ISRWakeup_external->releaseFromISR();
     }
   }
 }    // namespace Thor::Driver::SPI

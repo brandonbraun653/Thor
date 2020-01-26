@@ -58,7 +58,7 @@ namespace Thor::Driver::SPI
     Chimera::Status_t transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) final override;
     Chimera::Status_t killTransfer() final override;
 
-    void attachISRWakeup( SemaphoreHandle_t wakeup );
+    void attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup );
 
     HWTransfer getTransferBlock();
 
@@ -90,7 +90,7 @@ namespace Thor::Driver::SPI
     /*------------------------------------------------
     Asynchronous Event Listeners
     ------------------------------------------------*/
-    SemaphoreHandle_t ISRWakeup_external;
+    Chimera::Threading::BinarySemaphore *ISRWakeup_external;
 
     /*------------------------------------------------
     Transfer Control Blocks
