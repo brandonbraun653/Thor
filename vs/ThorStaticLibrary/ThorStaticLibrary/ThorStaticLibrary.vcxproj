@@ -67,6 +67,7 @@
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
     <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
     <GNUTargetType>StaticLibrary</GNUTargetType>
+    <LinkAsWholeArchive>true</LinkAsWholeArchive>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
@@ -77,6 +78,7 @@
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
     <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
     <GNUTargetType>StaticLibrary</GNUTargetType>
+    <LinkAsWholeArchive>true</LinkAsWholeArchive>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">
     <ClCompile>
@@ -88,6 +90,7 @@
       <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir)../../../../Thor;$(BOOST_ROOT)/boost_1_70_0;$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>$(ChimeraCompilerDefines);$(ProjectCompilerDefines);DEBUG=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>Og</Optimization>
     </ClCompile>
     <Link>
       <AdditionalLinkerInputs>;%(Link.AdditionalLinkerInputs)</AdditionalLinkerInputs>
