@@ -5,7 +5,7 @@
  * Description:
  *	  Interface to the internal SRAM of the Thor MCU
  *
- * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ * 2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -15,11 +15,10 @@
 /* C++ Includes */
 #include <cstdint>
 
-/* Chimera Includes */
-#include <Chimera/modules/memory/device.hpp>
-
 /* Thor Includes */
 #include <Thor/headers.hpp>
+
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 
 namespace Thor
 {
@@ -51,3 +50,5 @@ namespace Thor
 }    // namespace Thor
 
 #endif /* THOR_INTERNAL_SRAM_HPP */
+
+#endif 

@@ -5,13 +5,13 @@
  * Description:
  *	  Interface to the internal SRAM of the Thor MCU
  *
- * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ * 2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Thor Includes */
 #include <Thor/sram.hpp>
 
-
+#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor
 {
   namespace Memory
@@ -60,3 +60,5 @@ namespace Thor
     }
   }
 }
+
+#endif 

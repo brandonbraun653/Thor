@@ -5,18 +5,19 @@
  * Description:
  *	  Interface to the internal flash of the Thor MCU
  *
- * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ * 2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_INTERNAL_FLASH_HPP
 #define THOR_INTERNAL_FLASH_HPP
 
+
+// TODO: Move this into Aurora
+
+
 /* C++ Includes */
 #include <cstdint>
-
-/* Chimera Includes */
-#include <Chimera/modules/memory/device.hpp>
 
 /* Thor Includes */
 #include <Thor/headers.hpp>

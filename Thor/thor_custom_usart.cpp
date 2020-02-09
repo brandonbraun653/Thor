@@ -5,7 +5,7 @@
  *   Description:
  *    Implements the custom driver variant of the Thor USART interface.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -14,8 +14,10 @@
 /* Boost Includes */
 #include <boost/circular_buffer.hpp>
 
+/* Aurora Includes */
+#include <Aurora/constants/common.hpp>
+
 /* Chimera Includes */
-#include <Chimera/constants/common.hpp>
 #include <Chimera/threading.hpp>
 
 /* Thor Includes */

@@ -5,11 +5,10 @@
  *   Description:
  *    Implements the low level driver for the GPIO peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
-#include <Chimera/assert.hpp>
 #include <Chimera/types/peripheral_types.hpp>
 
 /* Driver Includes */
@@ -84,7 +83,6 @@ namespace Thor::Driver::GPIO
 
   Chimera::Status_t DriverBare::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout )
   {
-    DBG_ASSERT( pin < MAX_NUM_PINS )
     auto const shift_val = pin * MODER_CFG_X_WID;
     auto tmp             = periph->MODER;
 
@@ -100,7 +98,6 @@ namespace Thor::Driver::GPIO
 
   Chimera::Status_t DriverBare::speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout )
   {
-    DBG_ASSERT( pin < MAX_NUM_PINS )
     auto const shift_val = pin * OSPEEDR_CFG_X_WID;
     auto tmp             = periph->OSPEEDR;
 
@@ -113,7 +110,6 @@ namespace Thor::Driver::GPIO
 
   Chimera::Status_t DriverBare::pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout )
   {
-    DBG_ASSERT( pin < MAX_NUM_PINS )
     auto const shift_val = pin * PUPDR_CFG_X_WID;
     auto tmp             = periph->PUPDR;
 
@@ -126,8 +122,6 @@ namespace Thor::Driver::GPIO
 
   Chimera::Status_t DriverBare::write( const uint8_t pin, const Chimera::GPIO::State state, const size_t timeout )
   {
-    DBG_ASSERT( pin < MAX_NUM_PINS )
-
     auto temp = periph->ODR;
 
     if ( static_cast<bool>( state ) )
@@ -171,14 +165,11 @@ namespace Thor::Driver::GPIO
 
   size_t DriverBare::driveGet( const uint8_t pin, const size_t timeout )
   {
-    DBG_ASSERT( pin < MAX_NUM_PINS )
     return 0;
   }
 
   size_t DriverBare::speedGet( const uint8_t pin, const size_t timeout )
   {
-    DBG_ASSERT( pin < MAX_NUM_PINS )
-
     auto const shift_val   = pin * OSPEEDR_CFG_X_WID;
     auto const current_val = periph->OSPEEDR & ( OSPEEDR_CFG_X_MSK << shift_val );
 
@@ -187,9 +178,6 @@ namespace Thor::Driver::GPIO
 
   size_t DriverBare::pullGet( const uint8_t pin, const size_t timeout )
   {
-    DBG_ASSERT( pin < MAX_NUM_PINS )
-
-
     return 0;
   }
 

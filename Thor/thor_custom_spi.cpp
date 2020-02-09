@@ -5,7 +5,7 @@
  *   Description:
  *    SPI driver for Thor
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -13,8 +13,10 @@
 #include <cstring>
 #include <limits>
 
+/* Aurora Includes */
+#include <Aurora/constants/common.hpp>
+
 /* Chimera Includes */
-#include <Chimera/constants/common.hpp>
 #include <Chimera/interface/spi_intf.hpp>
 #include <Chimera/threading.hpp>
 #include <Chimera/types/event_types.hpp>

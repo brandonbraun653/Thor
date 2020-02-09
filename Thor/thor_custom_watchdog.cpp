@@ -5,7 +5,7 @@
  *   Description:
  *       Implementation of the hardware watchdog interface
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C/C++ Includes */
@@ -15,8 +15,8 @@
 #include <limits>
 #include <memory>
 
-/* Chimera Includes */
-#include <Chimera/constants/common.hpp>
+/* Aurora Includes */
+#include <Aurora/constants/common.hpp>
 
 /* Thor Includes */
 #include <Thor/watchdog.hpp>

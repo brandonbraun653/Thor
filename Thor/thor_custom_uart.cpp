@@ -5,12 +5,11 @@
  *   Description:
  *    Implements the custom driver variant of the Thor UART interface.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-
-/* Chimera Includes */
-#include <Chimera/constants/common.hpp>
+/* Aurora Includes */
+#include <Aurora/constants/common.hpp>
 
 /* Thor Includes */
 #include <Thor/uart.hpp>

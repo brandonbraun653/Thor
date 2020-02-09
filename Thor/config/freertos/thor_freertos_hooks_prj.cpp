@@ -3,9 +3,9 @@
  *    freertos_hooks_prj.cpp
  *
  *  Description:
- *    Implements Thor hooks into common FreeRTOS functions
+ *    Implements Thor hooks into common FreeRTOS callback functions
  *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Thor Includes */
@@ -14,18 +14,15 @@
 
 /* Chimera Includes */
 #include <Chimera/interface/compiler_intf.hpp>
-#include <Chimera/modules/freertos/freertos_hooks.hpp>
+#include <Chimera/threading/freertos/freertos_hooks.hpp>
 
 
-
-namespace Chimera::Modules::FreeRTOS
+namespace Chimera::Threading::FreeRTOS
 {
   void ApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
   {
     CHIMERA_INSERT_BREAKPOINT;
-    while ( 1 )
-    {
-    }
+    while ( 1 ) {}
   }
 
   void ApplicationTickHook()
@@ -36,14 +33,11 @@ namespace Chimera::Modules::FreeRTOS
   void ApplicationMallocFailedHook()
   {
     CHIMERA_INSERT_BREAKPOINT;
-    while ( 1 )
-    {
-    }
+    while ( 1 ) {}
   }
 
   void ApplicationIdleHook()
   {
-    
   }
 
-}  // namespace Chimera::Modules::FreeRTOS
+}    // namespace Chimera::Threading::FreeRTOS

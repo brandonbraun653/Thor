@@ -5,15 +5,17 @@
  * Description:
  *   Implements DMA for Thor using the custom low level drivers.
  *
- * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ * 2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
 #include <array>
 #include <cstring>
 
+/* Aurora Includes */
+#include <Aurora/constants/common.hpp>
+
 /* Chimera Includes */
-#include <Chimera/constants/common.hpp>
 #include <Chimera/threading.hpp>
 
 /* Thor Includes */
