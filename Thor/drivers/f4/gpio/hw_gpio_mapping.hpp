@@ -14,8 +14,8 @@
 #define THOR_HW_GPIO_MAPPING_HPP
 
 /* Chimera Includes */
-#include <Chimera/container.hpp>
-#include <Chimera/types/gpio_types.hpp>
+#include <Chimera/container>
+#include <Chimera/gpio>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

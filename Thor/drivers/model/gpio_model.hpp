@@ -13,8 +13,8 @@
 #define THOR_GPIO_MODEL_HPP
 
 /* Chimera Includes */
-#include <Chimera/threading.hpp>
-#include <Chimera/types/gpio_types.hpp>
+#include <Chimera/gpio>
+#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/drivers/common/types/gpio_types.hpp>

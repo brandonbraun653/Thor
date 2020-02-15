@@ -20,7 +20,7 @@
 #include <boost/function.hpp>
 
 /* Chimera Includes */
-#include <Chimera/types/common_types.hpp>
+#include <Chimera/common>
 
 /* Driver Includes */
 #include <Thor/drivers/common/types/callback_types.hpp>

@@ -16,8 +16,8 @@
 #include <cstdint>
 
 /* Chimera/Includes */
-#include <Chimera/container.hpp>
-#include <Chimera/types/common_types.hpp>
+#include <Chimera/container>
+#include <Chimera/common>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

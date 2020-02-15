@@ -16,7 +16,7 @@
 #include <cstdint>
 
 /* Chimera Includes */
-#include <Chimera/types/event_types.hpp>
+#include <Chimera/event>
 
 /* Thor Includes */
 #include <Thor/definitions/dma_definitions.hpp>

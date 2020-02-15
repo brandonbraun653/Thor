@@ -13,7 +13,7 @@
 #define THOR_SYSTEM_POWER_HPP
 
 /* Chimera Includes */
-#include <Chimera/interface/power_intf.hpp>
+#include <Chimera/power>
 
 namespace Thor
 {

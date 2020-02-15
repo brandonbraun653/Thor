@@ -13,8 +13,8 @@
 #define THOR_DRIVER_COMMON_MAPPING_HPP
 
 /* Chimera Includes */
-#include <Chimera/types/peripheral_types.hpp>
-#include <Chimera/container.hpp>
+#include <Chimera/common>
+#include <Chimera/container>
 
 namespace Thor::Driver::Mapping
 {

@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 /* Chimera Includes */
-#include <Chimera/types/dma_types.hpp>
+#include <Chimera/dma>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

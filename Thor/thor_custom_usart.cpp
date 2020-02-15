@@ -18,7 +18,7 @@
 #include <Aurora/constants/common.hpp>
 
 /* Chimera Includes */
-#include <Chimera/threading.hpp>
+#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/event.hpp>
@@ -64,9 +64,9 @@ static std::array<Chimera::Function::void_func_void_ptr, USARTDriver::NUM_USART_
 };
 /* clang-format on */
 
-namespace Chimera::USART
+namespace Chimera::USART::Backend
 {
-  Chimera::Status_t initialize()
+  Chimera::Status_t prjInitialize()
   {
     return Thor::USART::initialize();
   }

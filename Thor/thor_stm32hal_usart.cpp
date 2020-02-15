@@ -15,7 +15,7 @@
 #include <boost/circular_buffer.hpp>
 
 /* Chimera Includes */
-#include <Chimera/threading.hpp>
+#include <Chimera/thread>
 #include <Chimera/watchdog.hpp>
 
 /* Thor Includes */

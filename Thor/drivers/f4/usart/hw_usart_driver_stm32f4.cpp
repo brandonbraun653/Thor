@@ -15,8 +15,8 @@
 #include <cstring>
 
 /* Chimera Includes */
-#include <Chimera/chimera.hpp>
-#include <Chimera/threading.hpp>
+#include <Chimera/common>
+#include <Chimera/thread>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

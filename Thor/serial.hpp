@@ -22,11 +22,10 @@
 #include <boost/circular_buffer_fwd.hpp>
 
 /* Chimera Includes */
-#include <Chimera/threading.hpp>
-#include <Chimera/interface/event_intf.hpp>
-#include <Chimera/interface/serial_intf.hpp>
-#include <Chimera/interface/threading_intf.hpp>
-#include <Chimera/types/callback_types.hpp>
+#include <Chimera/thread>
+#include <Chimera/event>
+#include <Chimera/serial>
+#include <Chimera/callback>
 
 /* Thor Includes */
 #include <Thor/types/uart_types.hpp>

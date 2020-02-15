@@ -11,7 +11,7 @@
 /* C++ Includes */
 
 /* Chimera Includes */
-#include <Chimera/interface/system_intf.hpp>
+#include <Chimera/system>
 
 /* Thor Includes */
 #include <Thor/preprocessor.hpp>

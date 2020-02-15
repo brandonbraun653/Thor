@@ -16,11 +16,10 @@
 #include <cstdint>
 
 /* Chimera Includes */
-#include <Chimera/interface/event_intf.hpp>
-#include <Chimera/interface/spi_intf.hpp>
-#include <Chimera/interface/threading_intf.hpp>
-#include <Chimera/threading.hpp>
-#include <Chimera/types/event_types.hpp>
+#include <Chimera/event>
+#include <Chimera/gpio>
+#include <Chimera/spi>
+#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/headers.hpp>
@@ -34,7 +33,8 @@ namespace Thor::SPI
 {
   void initialize();
 
-  class SPIClass : public Chimera::SPI::HardwareDriverInterface
+  class SPIClass : virtual public Chimera::SPI::ISPI,
+                   public Chimera::Threading::Lockable
   {
   public:
     /*------------------------------------------------
@@ -77,10 +77,10 @@ namespace Thor::SPI
 
   private:
     Chimera::SPI::DriverConfig config;       /**< Configuration used to set up the class */
-    Thor::GPIO::GPIOClass_uPtr SCK;          /**< SPI clock gpio pin */
-    Thor::GPIO::GPIOClass_uPtr MOSI;         /**< SPI MOSI gpio pin */
-    Thor::GPIO::GPIOClass_uPtr MISO;         /**< SPI MISO gpio pin */
-    Thor::GPIO::GPIOClass_sPtr CS;           /**< SPI Chip Select gpio pin */
+    Chimera::GPIO::GPIO_uPtr SCK;          /**< SPI clock gpio pin */
+    Chimera::GPIO::GPIO_uPtr MOSI;         /**< SPI MOSI gpio pin */
+    Chimera::GPIO::GPIO_uPtr MISO;         /**< SPI MISO gpio pin */
+    Chimera::GPIO::GPIO_sPtr CS;           /**< SPI Chip Select gpio pin */
     Thor::Driver::SPI::Driver_uPtr driver;   /**< Low level hardware SPI driver */
     
     Chimera::Threading::BinarySemaphore awaitTransferComplete; /**< Internal signal for when the current transfer has completed */

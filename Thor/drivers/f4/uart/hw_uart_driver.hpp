@@ -13,7 +13,7 @@
 #define THOR_HW_UART_DRIVER_HPP
 
 /* Chimera Includes */
-#include <Chimera/types/common_types.hpp>
+#include <Chimera/common>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

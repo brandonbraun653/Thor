@@ -15,7 +15,7 @@
 #include <array>
 
 /* Chimera Includes */
-#include <Chimera/container.hpp>
+#include <Chimera/container>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

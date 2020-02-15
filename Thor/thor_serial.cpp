@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 /* Chimera Includes */
-#include <Chimera/serial.hpp>
+#include <Chimera/serial>
 
 /* Thor Includes */
 #include <Thor/serial.hpp>

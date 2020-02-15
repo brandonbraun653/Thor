@@ -9,7 +9,8 @@
  ********************************************************************************/
 
 /* Chimera Includes */
-#include <Chimera/types/callback_types.hpp>
+#include <Chimera/callback>
+#include <Chimera/thread>
 
 /* Driver Includes */
 #include <Thor/event.hpp>

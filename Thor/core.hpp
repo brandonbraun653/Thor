@@ -3,7 +3,7 @@
 
 #include <Thor/headers.hpp>
 #include <Thor/preprocessor.hpp>
-#include <Chimera/types/common_types.hpp>
+#include <Chimera/common>
 
 #if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 #ifdef __cplusplus

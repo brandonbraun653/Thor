@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 /* Chimera Includes */
-#include <Chimera/types/peripheral_types.hpp>
+#include <Chimera/common>
 
 /* Driver Includes */
 #include <Thor/drivers/common/cortex-m4/utilities.hpp>

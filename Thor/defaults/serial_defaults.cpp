@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 /* Chimera Includes */
-#include <Chimera/types/serial_types.hpp>
+#include <Chimera/serial>
 
 /* Thor Includes */
 #include <Thor/definitions/interrupt_definitions.hpp>

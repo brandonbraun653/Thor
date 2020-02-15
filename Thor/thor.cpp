@@ -9,8 +9,8 @@
  ********************************************************************************/
 
 /* Chimera Includes */
-#include <Chimera/threading.hpp>
-#include <Chimera/interface/compiler_intf.hpp>
+#include <Chimera/thread>
+#include <Chimera/common>
 
 /* Thor Includes */
 #include <Thor/thor.hpp>

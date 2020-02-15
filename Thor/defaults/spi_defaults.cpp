@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 /* Chimera Includes */
-#include <Chimera/types/spi_types.hpp>
+#include <Chimera/spi>
 
 /* Thor Includes */
 #include <Thor/defaults/spi_defaults.hpp>

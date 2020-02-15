@@ -17,11 +17,11 @@
 #include <cstdlib>
 
 /* Chimera Includes */
-#include <Chimera/interface/event_intf.hpp>
-#include <Chimera/threading.hpp>
-#include <Chimera/types/common_types.hpp>
-#include <Chimera/types/event_types.hpp>
-#include <Chimera/types/dma_types.hpp>
+#include <Chimera/event>
+#include <Chimera/thread>
+#include <Chimera/common>
+#include <Chimera/event>
+#include <Chimera/dma>
 
 /* Thor Includes */
 #include <Thor/drivers/common/types/dma_types.hpp>

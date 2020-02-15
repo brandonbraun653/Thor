@@ -17,8 +17,8 @@
 #include <cstdlib>
 
 /* Chimera Includes */
-#include <Chimera/types/common_types.hpp>
-#include <Chimera/types/watchdog_types.hpp>
+#include <Chimera/common>
+#include <Chimera/watchdog>
 
 namespace Thor::Driver::Watchdog
 {

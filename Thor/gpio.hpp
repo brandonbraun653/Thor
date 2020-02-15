@@ -1,11 +1,11 @@
 /********************************************************************************
- * File Name:
- *   gpio.hpp
+ *  File Name:
+ *    gpio.hpp
  *
- * Description:
- *   Implements the Thor GPIO driver
+ *  Description:
+ *    Implements the Thor GPIO driver
  *
- * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -16,8 +16,8 @@
 #include <cstdint>
 
 /* Chimera Includes */
-#include <Chimera/types/common_types.hpp>
-#include <Chimera/interface/gpio_intf.hpp>
+#include <Chimera/common>
+#include <Chimera/gpio>
 
 /* Thor Includes */
 #include <Thor/drivers/gpio.hpp>
@@ -35,7 +35,8 @@ namespace Thor::GPIO
    */
   Chimera::Status_t initialize();
 
-  class GPIOClass : public Chimera::GPIO::HWInterface
+  class GPIOClass : virtual public Chimera::GPIO::IGPIO,
+                    public Chimera::Threading::Lockable
   {
   public:
     GPIOClass();

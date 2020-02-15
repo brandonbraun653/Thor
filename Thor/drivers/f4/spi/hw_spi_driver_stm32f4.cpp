@@ -13,10 +13,9 @@
 #include <limits>
 
 /* Chimera Includes */
-#include <Chimera/algorithm/register_optimizer.hpp>
-#include <Chimera/chimera.hpp>
-#include <Chimera/threading.hpp>
-#include <Chimera/interface/compiler_intf.hpp>
+#include <Chimera/algorithm>
+#include <Chimera/common>
+#include <Chimera/thread>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

@@ -16,7 +16,7 @@
 #include <Aurora/constants/common.hpp>
 
 /* Chimera Includes */
-#include <Chimera/threading.hpp>
+#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/thor.hpp>

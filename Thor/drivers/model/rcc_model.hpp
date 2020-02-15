@@ -16,9 +16,8 @@
 #include <memory>
 
 /* Chimera Includes */
-#include <Chimera/types/common_types.hpp>
-#include <Chimera/types/gpio_types.hpp>
-#include <Chimera/types/peripheral_types.hpp>
+#include <Chimera/common>
+#include <Chimera/gpio>
 
 /* Thor Includes */
 #include <Thor/types/clock_types.hpp>

@@ -9,11 +9,11 @@
  ********************************************************************************/
 
 /* Chimera Includes */
-#include <Chimera/threading.hpp>
+#include <Chimera/common>
+#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/resources/dma_resources.hpp>
-#include <Chimera/types/peripheral_types.hpp>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

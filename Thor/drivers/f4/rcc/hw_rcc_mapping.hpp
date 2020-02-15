@@ -17,8 +17,8 @@
 #include <array>
 
 /* Chimera Includes */
-#include <Chimera/types/peripheral_types.hpp>
-#include <Chimera/types/gpio_types.hpp>
+#include <Chimera/common>
+#include <Chimera/gpio>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

@@ -14,7 +14,7 @@
 #define THOR_HW_UART_MAPPING_HPP
 
 /* Chimera Includes */
-#include <Chimera/container.hpp>
+#include <Chimera/container>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

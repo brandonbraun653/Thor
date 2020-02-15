@@ -13,10 +13,9 @@
 #define THOR_HW_DRIVER_GPIO_HPP
 
 /* Chimera Includes */
-#include <Chimera/threading.hpp>
-#include <Chimera/threading/types.hpp>
-#include <Chimera/types/common_types.hpp>
-#include <Chimera/types/gpio_types.hpp>
+#include <Chimera/common>
+#include <Chimera/gpio>
+#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/drivers/f4/gpio/hw_gpio_types.hpp>

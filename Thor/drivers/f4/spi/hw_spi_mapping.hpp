@@ -13,8 +13,8 @@
 #define THOR_HW_SPI_MAPPING_HPP
 
 /* Chimera Includes */
-#include <Chimera/container.hpp>
-#include <Chimera/types/spi_types.hpp>
+#include <Chimera/container>
+#include <Chimera/spi>
 
 /* Thor Includes */
 #include <Thor/headers.hpp>

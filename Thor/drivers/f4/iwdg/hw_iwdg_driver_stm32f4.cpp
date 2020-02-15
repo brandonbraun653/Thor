@@ -12,7 +12,7 @@
 #include <cmath>
 
 /* Chimera Includes */
-#include <Chimera/utilities.hpp>
+#include <Chimera/utility>
 
 /* Driver Includes */
 #include <Thor/drivers/f4/iwdg/hw_iwdg_driver.hpp>

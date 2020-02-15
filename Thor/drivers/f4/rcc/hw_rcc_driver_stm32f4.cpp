@@ -13,10 +13,8 @@
 #include <cstring>
 
 /* Chimera Includes */
-#include <Chimera/chimera.hpp>
-#include <Chimera/interface/compiler_intf.hpp>
-#include <Chimera/interface/clock_intf.hpp>
-#include <Chimera/types/peripheral_types.hpp>
+#include <Chimera/common>
+#include <Chimera/clock>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

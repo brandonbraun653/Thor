@@ -17,7 +17,7 @@
 #include <Thor/definitions/system_checks.hpp>
 
 /* Chimera Includes */
-#include <Chimera/chimera.hpp>
+#include <Chimera/common>
 
 #ifdef __cplusplus
 extern "C"

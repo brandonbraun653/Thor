@@ -17,9 +17,9 @@
 #include <Aurora/constants/common.hpp>
 
 /* Chimera Includes */
-#include <Chimera/interface/spi_intf.hpp>
-#include <Chimera/threading.hpp>
-#include <Chimera/types/event_types.hpp>
+#include <Chimera/spi>
+#include <Chimera/thread>
+#include <Chimera/event>
 
 /* Thor Includes */
 #include <Thor/gpio.hpp>
@@ -217,19 +217,19 @@ namespace Thor::SPI
     ------------------------------------------------*/
     config = setupStruct;
 
-    SCK  = std::make_unique<Thor::GPIO::GPIOClass>();
-    MOSI = std::make_unique<Thor::GPIO::GPIOClass>();
-    MISO = std::make_unique<Thor::GPIO::GPIOClass>();
+    SCK  = Chimera::GPIO::create_unique_ptr();
+    MOSI = Chimera::GPIO::create_unique_ptr();
+    MISO = Chimera::GPIO::create_unique_ptr();
 
-    result |= SCK->init( config.SCKInit );
-    result |= MOSI->init( config.MOSIInit );
-    result |= MISO->init( config.MISOInit );
+    result |= SCK->init( config.SCKInit, 100 );
+    result |= MOSI->init( config.MOSIInit, 100 );
+    result |= MISO->init( config.MISOInit, 100 );
 
     /* Are we supposed to take control of the CS pin? */
     if ( !setupStruct.externalCS )
     {
-      CS = std::make_unique<Thor::GPIO::GPIOClass>();
-      result |= CS->init( config.CSInit );
+      CS = Chimera::GPIO::create_shared_ptr();
+      result |= CS->init( config.CSInit, 100 );
     }
     else
     {
@@ -291,7 +291,7 @@ namespace Thor::SPI
   {
     if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) && CS )
     {
-      return CS->setState( value );
+      return CS->setState( value, 100 );
     }
 
     return Chimera::CommonStatusCodes::FAIL;
@@ -377,7 +377,7 @@ namespace Thor::SPI
         ------------------------------------------------*/
         if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
         {
-          CS->setState( Chimera::GPIO::State::HIGH );
+          CS->setState( Chimera::GPIO::State::HIGH, 100 );
         }
 
         return Chimera::CommonStatusCodes::FAIL;

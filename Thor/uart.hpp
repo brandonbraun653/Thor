@@ -21,12 +21,10 @@
 #include <boost/circular_buffer_fwd.hpp>
 
 /* Chimera Includes */
-#include <Chimera/buffer.hpp>
-#include <Chimera/threading.hpp>
-#include <Chimera/interface/event_intf.hpp>
-#include <Chimera/interface/serial_intf.hpp>
-#include <Chimera/interface/threading_intf.hpp>
-#include <Chimera/types/event_types.hpp>
+#include <Chimera/buffer>
+#include <Chimera/thread>
+#include <Chimera/event>
+#include <Chimera/serial>
 
 /* Thor Includes */
 #include <Thor/gpio.hpp>

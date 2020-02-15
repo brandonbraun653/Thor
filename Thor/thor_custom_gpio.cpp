@@ -20,9 +20,9 @@
 
 #if ( THOR_DRIVER_GPIO == 1 ) && ( THOR_DRIVER_GPIO == 1 )
 
-namespace Chimera::GPIO
+namespace Chimera::GPIO::Backend
 {
-  Chimera::Status_t initialize()
+  Chimera::Status_t prjInitialize()
   {
     return Thor::GPIO::initialize();
   }

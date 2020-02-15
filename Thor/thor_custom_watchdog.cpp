@@ -22,9 +22,9 @@
 #include <Thor/watchdog.hpp>
 #include <Thor/drivers/watchdog.hpp>
 
-namespace Chimera::Watchdog
+namespace Chimera::Watchdog::Backend
 {
-  Chimera::Status_t initialize()
+  Chimera::Status_t prjInitialize()
   {
     Chimera::Status_t resultWWDG = Chimera::CommonStatusCodes::OK;
     Chimera::Status_t resultIWDG = Chimera::CommonStatusCodes::OK;

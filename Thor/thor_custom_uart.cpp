@@ -17,9 +17,9 @@
 
 #if defined( THOR_DRIVER_UART ) && ( THOR_DRIVER_UART == 1 )
 
-namespace Chimera::UART
+namespace Chimera::UART::Backend
 {
-  Chimera::Status_t initialize()
+  Chimera::Status_t prjInitialize()
   {
     return Thor::UART::initialize();
   }

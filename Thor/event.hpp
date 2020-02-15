@@ -17,7 +17,7 @@
 #include <vector>
 
 /* Chimera Includes */
-#include <Chimera/types/event_types.hpp>
+#include <Chimera/event>
 
 namespace Thor::Event
 {

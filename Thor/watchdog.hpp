@@ -12,8 +12,9 @@
 #include <cstdint>
 
 /* Chimera Includes */
-#include <Chimera/chimera.hpp>
-#include <Chimera/interface/watchdog_intf.hpp>
+#include <Chimera/common>
+#include <Chimera/thread>
+#include <Chimera/watchdog>
 
 /* Thor Includes */
 #include <Thor/thor.hpp>
@@ -35,7 +36,8 @@ namespace Thor::Watchdog
    *   watchdog is intended to protect against software faults and has more advanced
    *   capabilities than the Independent Watchdog.
    */
-  class Window : public Chimera::Watchdog::HWInterface
+  class Window : virtual public Chimera::Watchdog::IWatchdog,
+                 public Chimera::Threading::Lockable
   {
   public:
     Window();
@@ -78,7 +80,8 @@ namespace Thor::Watchdog
    *   to protect against issues deriving from a faulty system clock that would not
    *   trip the window watchdog.
    */
-  class Independent : public Chimera::Watchdog::HWInterface
+  class Independent : virtual public Chimera::Watchdog::IWatchdog,
+                      public Chimera::Threading::Lockable
   {
   public:
     Independent();

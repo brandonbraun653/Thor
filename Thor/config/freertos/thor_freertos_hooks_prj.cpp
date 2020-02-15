@@ -7,15 +7,14 @@
  *
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
+ 
+/* Chimera Includes */
+#include <Chimera/common>
+#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/headers.hpp>
 #include <Thor/thor.hpp>
-
-/* Chimera Includes */
-#include <Chimera/interface/compiler_intf.hpp>
-#include <Chimera/threading/freertos/freertos_hooks.hpp>
-
 
 namespace Chimera::Threading::FreeRTOS
 {

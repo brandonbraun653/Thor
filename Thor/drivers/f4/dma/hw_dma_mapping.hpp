@@ -16,8 +16,8 @@
 #include <unordered_map>
 
 /* Chimera Includes */
-#include <Chimera/dma.hpp>
-#include <Chimera/container.hpp>
+#include <Chimera/dma>
+#include <Chimera/container>
 
 /* Driver Includes */
 #include <Thor/headers.hpp>

@@ -13,7 +13,8 @@
 #define THOR_SPI_MODEL_HPP
 
 /* Chimera Includes */
-#include <Chimera/types/spi_types.hpp>
+#include <Chimera/common>
+#include <Chimera/spi>
 
 /* Thor Includes */
 #include <Thor/drivers/common/types/spi_types.hpp>

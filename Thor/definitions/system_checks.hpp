@@ -6,7 +6,7 @@
  *    Provides assertions on various assumptions made about the Chimera library
  *    so that random bugs don't suddenly show up.
  *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -14,8 +14,8 @@
 #define THOR_SYSTEM_CHECKS_HPP
 
 /* Chimera Includes */
-#include <Chimera/types/common_types.hpp>
-#include <Chimera/types/serial_types.hpp>
+#include <Chimera/common>
+#include <Chimera/serial>
 
 namespace Thor
 {

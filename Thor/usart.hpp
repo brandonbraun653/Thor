@@ -1,12 +1,12 @@
 /********************************************************************************
- * File Name:
+ *  File Name:
  *    usart.hpp
  *
- * Description:
+ *  Description:
  *    USART interface for Thor. This file supports the top level interface layer
  *    that all drivers for the underlying hardware must conform to.
  *
- * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -22,12 +22,10 @@
 #include <boost/circular_buffer_fwd.hpp>
 
 /* Chimera Includes */
-#include <Chimera/buffer.hpp>
-#include <Chimera/threading.hpp>
-#include <Chimera/interface/event_intf.hpp>
-#include <Chimera/interface/serial_intf.hpp>
-#include <Chimera/interface/threading_intf.hpp>
-#include <Chimera/types/event_types.hpp>
+#include <Chimera/buffer>
+#include <Chimera/thread>
+#include <Chimera/event>
+#include <Chimera/serial>
 
 /* Thor Includes */
 #include <Thor/drivers/usart.hpp>
@@ -46,10 +44,7 @@ namespace Thor::USART
    */
   Chimera::Status_t initialize();
 
-  class USARTClass : public Chimera::Serial::HWInterface,
-                     public Chimera::Event::ListenerInterface,
-                     public Chimera::Threading::AsyncIOInterface,
-                     public Chimera::Threading::Lockable
+  class USARTClass : virtual public Chimera::Serial::ISerial
   {
   public:
     USARTClass();

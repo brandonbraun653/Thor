@@ -16,7 +16,7 @@
 #include <cstdint>
 
 /* Chimera Includes */
-#include <Chimera/interface/crc_intf.hpp>
+#include <Chimera/crc>
 
 /* Thor Includes */
 #include <Thor/headers.hpp>

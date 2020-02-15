@@ -13,9 +13,8 @@
 #define THOR_DMA_HPP
 
 /* Chimera Includes */
-#include <Chimera/threading.hpp>
-#include <Chimera/interface/dma_intf.hpp>
-#include <Chimera/types/dma_types.hpp>
+#include <Chimera/thread>
+#include <Chimera/dma>
 
 /* Thor Includes */
 #include <Thor/definitions/dma_definitions.hpp>
