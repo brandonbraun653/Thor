@@ -27,7 +27,7 @@
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 
-namespace Thor::Driver::GPIO
+namespace Thor::LLD::GPIO
 {
 #if defined( STM32_GPIOA_PERIPH_AVAILABLE )
   extern RegisterMap *GPIOA_PERIPH;
@@ -74,7 +74,7 @@ namespace Thor::Driver::GPIO
   ------------------------------------------------*/
   extern const std::array<uint32_t, static_cast<size_t>( Chimera::GPIO::Pull::NUM_OPTIONS )> PullMap;
   extern const std::array<uint32_t, static_cast<size_t>( Chimera::GPIO::Drive::NUM_OPTIONS )> ModeMap;
-  extern const std::array<uint32_t, static_cast<size_t>( Thor::Driver::GPIO::Speed::NUM_OPTIONS )> SpeedMap;
+  extern const std::array<uint32_t, static_cast<size_t>( Thor::LLD::GPIO::Speed::NUM_OPTIONS )> SpeedMap;
   extern const std::array<uint32_t, static_cast<size_t>( Chimera::GPIO::Port::NUM_OPTIONS )> PortToIteratorMap;
 
 
@@ -112,7 +112,7 @@ namespace Thor::Driver::GPIO
    */
   bool isGPIO( const std::uintptr_t address );
 
-}    // namespace Thor::Driver::GPIO
+}    // namespace Thor::LLD::GPIO
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_GPIO_MAPPING_HPP */

@@ -16,7 +16,7 @@
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 
-namespace Thor::Driver::GPIO
+namespace Thor::LLD::GPIO
 {
   /*------------------------------------------------
   Chip Specific Resources
@@ -50,7 +50,7 @@ namespace Thor::Driver::GPIO
     OPT_MODER::INPUT
   };
 
-  const std::array<uint32_t, static_cast<size_t>( Thor::Driver::GPIO::Speed::NUM_OPTIONS )> SpeedMap =
+  const std::array<uint32_t, static_cast<size_t>( Thor::LLD::GPIO::Speed::NUM_OPTIONS )> SpeedMap =
   {
     OPT_OSPEEDR::LOW,
     OPT_OSPEEDR::MEDIUM,
@@ -72,6 +72,6 @@ namespace Thor::Driver::GPIO
 
   /* clang-format on */
 
-}    // namespace Thor::Driver::GPIO
+}    // namespace Thor::LLD::GPIO
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

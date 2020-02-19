@@ -19,7 +19,7 @@
 /* Thor Includes */
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 
-namespace Thor::Driver::GPIO
+namespace Thor::LLD::GPIO
 {
   /**
    *  STM32 Custom Thor GPIO Driver that can handle BareMetal, Atomic, and Threaded
@@ -86,7 +86,7 @@ namespace Thor::Driver::GPIO
      *  |       TIMEOUT | The resource lock timed-out        |
      *  | NOT_SUPPORTED | The speed is not supported         |
      */
-    virtual Chimera::Status_t speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout ) = 0;
+    virtual Chimera::Status_t speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed, const size_t timeout ) = 0;
 
     /**
      *  Set the pull up/down resistor configuration
@@ -184,6 +184,6 @@ namespace Thor::Driver::GPIO
     virtual size_t alternateFunctionGet( const uint8_t pin, const size_t timeout ) = 0;
   };
 
-}    // namespace Thor::Driver::GPIO
+}    // namespace Thor::LLD::GPIO
 
 #endif /* !THOR_GPIO_MODEL_HPP */

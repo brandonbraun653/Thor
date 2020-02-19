@@ -21,7 +21,7 @@
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 
-namespace Thor::Driver::GPIO
+namespace Thor::LLD::GPIO
 {
   bool isGPIO( const std::uintptr_t address )
   {
@@ -96,7 +96,7 @@ namespace Thor::Driver::GPIO
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t DriverBare::speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout )
+  Chimera::Status_t DriverBare::speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed, const size_t timeout )
   {
     auto const shift_val = pin * OSPEEDR_CFG_X_WID;
     auto tmp             = periph->OSPEEDR;
@@ -230,7 +230,7 @@ namespace Thor::Driver::GPIO
     return result;
   }
 
-  Chimera::Status_t DriverThreaded::speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout )
+  Chimera::Status_t DriverThreaded::speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed, const size_t timeout )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
@@ -392,7 +392,7 @@ namespace Thor::Driver::GPIO
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t DriverAtomic::speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout )
+  Chimera::Status_t DriverAtomic::speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed, const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -436,6 +436,6 @@ namespace Thor::Driver::GPIO
   {
     return 0;
   }
-}    // namespace Thor::Driver::GPIO
+}    // namespace Thor::LLD::GPIO
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

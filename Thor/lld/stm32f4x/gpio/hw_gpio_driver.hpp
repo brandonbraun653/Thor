@@ -25,7 +25,7 @@
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 
-namespace Thor::Driver::GPIO
+namespace Thor::LLD::GPIO
 {
   /**
    *  Initialize the low level driver
@@ -49,7 +49,7 @@ namespace Thor::Driver::GPIO
 
     Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout ) final override;
 
-    Chimera::Status_t speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout ) final override;
+    Chimera::Status_t speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed, const size_t timeout ) final override;
 
     Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout ) final override;
 
@@ -86,7 +86,7 @@ namespace Thor::Driver::GPIO
 
     Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout ) final override;
 
-    Chimera::Status_t speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout ) final override;
+    Chimera::Status_t speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed, const size_t timeout ) final override;
 
     Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout ) final override;
 
@@ -123,7 +123,7 @@ namespace Thor::Driver::GPIO
 
     Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout ) final override;
 
-    Chimera::Status_t speedSet( const uint8_t pin, const Thor::Driver::GPIO::Speed speed, const size_t timeout ) final override;
+    Chimera::Status_t speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed, const size_t timeout ) final override;
 
     Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout ) final override;
 
@@ -145,7 +145,7 @@ namespace Thor::Driver::GPIO
     volatile RegisterMap *periph;
   };
 
-}    // namespace Thor::Driver::GPIO
+}    // namespace Thor::LLD::GPIO
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_DRIVER_GPIO_HPP */

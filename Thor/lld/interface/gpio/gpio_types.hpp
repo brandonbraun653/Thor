@@ -15,7 +15,7 @@
 /* C++ Includes */
 #include <cstdint>
 
-namespace Thor::Driver::GPIO
+namespace Thor::LLD::GPIO
 {
   /**
    *  Effectively defines the drive strength of the GPIO output. Actual

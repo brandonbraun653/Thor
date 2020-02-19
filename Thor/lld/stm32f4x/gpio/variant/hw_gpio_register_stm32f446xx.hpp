@@ -29,7 +29,7 @@
 #define STM32_GPIOG_PERIPH_AVAILABLE
 #define STM32_GPIOH_PERIPH_AVAILABLE
 
-namespace Thor::Driver::GPIO
+namespace Thor::LLD::GPIO
 {
   void initializeRegisters();
 
@@ -867,7 +867,7 @@ namespace Thor::Driver::GPIO
   static constexpr uint32_t BRR_BR15_Pos = ( 15U );
   static constexpr uint32_t BRR_BR15_Msk = ( 0x1U << BRR_BR15_Pos );
   static constexpr uint32_t BRR_BR15     = BRR_BR15_Msk;
-}    // namespace Thor::Driver::GPIO
+}    // namespace Thor::LLD::GPIO
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_GPIO_REGISTER_HPP */

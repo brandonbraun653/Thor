@@ -20,20 +20,21 @@
 #include <Chimera/gpio>
 
 /* Thor Includes */
-#include <Thor/drivers/gpio.hpp>
-#include <Thor/types/gpio_types.hpp>
+#include <Thor/hld/gpio/hld_gpio_types.hpp>
+#include <Thor/lld/interface/gpio/gpio_model.hpp>
 
+#if defined( THOR_HLD_GPIO )
 
 namespace Thor::GPIO
 {
-#if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
+  Chimera::Status_t initialize();
 
-  class GPIOClass : virtual public Chimera::GPIO::IGPIO,
+  class Driver : virtual public Chimera::GPIO::IGPIO,
                     public Chimera::Threading::Lockable
   {
   public:
-    GPIOClass();
-    ~GPIOClass();
+    Driver();
+    ~Driver();
 
     Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit, const size_t timeout = ACCESS_TIMEOUT ) final override;
 
@@ -50,13 +51,11 @@ namespace Thor::GPIO
     Chimera::Status_t toggle( const size_t timeout = ACCESS_TIMEOUT ) final override;
 
   private:
-    Thor::Driver::GPIO::Model *driver;
+    Thor::LLD::GPIO::Model *driver;
     Chimera::GPIO::PinInit initSettings;
   };
-
-#endif /* THOR_DRIVER_GPIO */
-
 }    // namespace Thor::GPIO
 
+#endif /* THOR_DRIVER_GPIO */
 
 #endif    // !THOR_GPIO_HPP

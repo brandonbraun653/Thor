@@ -17,7 +17,7 @@
 
 #if defined( STM32F446xx ) && defined( THOR_LLD_GPIO )
 
-namespace Thor::Driver::GPIO
+namespace Thor::LLD::GPIO
 {
 #if defined( EMBEDDED )
   RegisterMap *GPIOA_PERIPH = reinterpret_cast<RegisterMap *>( GPIOA_BASE_ADDR );
@@ -134,7 +134,7 @@ namespace Thor::Driver::GPIO
 
 #endif
   }
-}    // namespace Thor::Driver::GPIO
+}    // namespace Thor::LLD::GPIO
 
 namespace Thor::Driver::RCC::LookupTables
 {
@@ -148,13 +148,13 @@ namespace Thor::Driver::RCC::LookupTables
   Configuration::ClockType_t GPIO_SourceClock[ gpioTableSize ];
 
   const PCC GPIOLookup = {
-    GPIO_ClockConfig, GPIO_ClockConfigLP, GPIO_ResetConfig, GPIO_SourceClock, &Thor::Driver::GPIO::InstanceToResourceIndex,
+    GPIO_ClockConfig, GPIO_ClockConfigLP, GPIO_ResetConfig, GPIO_SourceClock, &Thor::LLD::GPIO::InstanceToResourceIndex,
     gpioTableSize
   };
 
   void GPIOInit()
   {
-    using namespace Thor::Driver::GPIO;
+    using namespace Thor::LLD::GPIO;
 
     /*------------------------------------------------
     GPIO clock enable register access lookup table

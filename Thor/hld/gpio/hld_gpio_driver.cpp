@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    thor_custom_gpio.cpp
  *
- *   Description:
+ *  Description:
  *    Implements the custom driver variant of the Thor GPIO interface.
  *
- *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -22,7 +22,7 @@
 #include <Thor/hld/gpio/hld_gpio_driver.hpp>
 #include <Thor/lld/interface/gpio/gpio.hpp>
 
-#if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
+#if defined( THOR_HLD_GPIO )
 
 namespace Thor::GPIO
 {
@@ -35,26 +35,26 @@ namespace Thor::GPIO
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    Thor::Driver::GPIO::initialize();
+    Thor::LLD::GPIO::initialize();
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::CommonStatusCodes::OK;
   }
 
 
-  GPIOClass::GPIOClass() : driver( nullptr ) 
+  Driver::Driver() : driver( nullptr ) 
   {
     initSettings.clear();
   }
 
-  GPIOClass::~GPIOClass()
+  Driver::~Driver()
   {
     free( driver );
   }
 
-  Chimera::Status_t GPIOClass::init( const Chimera::GPIO::PinInit &pinInit, const size_t timeout )
+  Chimera::Status_t Driver::init( const Chimera::GPIO::PinInit &pinInit, const size_t timeout )
   {
-    using namespace Thor::Driver::GPIO;
+    using namespace Thor::LLD::GPIO;
     
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
     initSettings = pinInit;
@@ -62,15 +62,15 @@ namespace Thor::GPIO
     switch ( pinInit.accessMode )
     {
       case Chimera::Hardware::AccessMode::BARE_METAL:
-        driver = new Thor::Driver::GPIO::DriverBare();
+        driver = new Thor::LLD::GPIO::DriverBare();
         break;
         
       case Chimera::Hardware::AccessMode::THREADED:
-        driver = new Thor::Driver::GPIO::DriverThreaded();
+        driver = new Thor::LLD::GPIO::DriverThreaded();
         break;
         
       case Chimera::Hardware::AccessMode::ATOMIC:
-        driver = new Thor::Driver::GPIO::DriverAtomic();
+        driver = new Thor::LLD::GPIO::DriverAtomic();
         break;
         
       default:
@@ -87,13 +87,13 @@ namespace Thor::GPIO
     return result;
   }
 
-  Chimera::Status_t GPIOClass::init( const Chimera::GPIO::Port port, const uint8_t pin, const size_t timeout )
+  Chimera::Status_t Driver::init( const Chimera::GPIO::Port port, const uint8_t pin, const size_t timeout )
   {
     // TODO
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t GPIOClass::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull, const size_t timeout )
+  Chimera::Status_t Driver::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull, const size_t timeout )
   {
     /*------------------------------------------------
     Set the basic IO mode type
@@ -108,7 +108,7 @@ namespace Thor::GPIO
     /*------------------------------------------------
     Configure the GPIO speed
     ------------------------------------------------*/
-    result |= driver->speedSet( initSettings.pin, Thor::Driver::GPIO::Speed::HIGH, timeout );
+    result |= driver->speedSet( initSettings.pin, Thor::LLD::GPIO::Speed::HIGH, timeout );
 
     /*------------------------------------------------
     Configure the alternate function options
@@ -121,17 +121,17 @@ namespace Thor::GPIO
     return result;
   }
 
-  Chimera::Status_t GPIOClass::setState( const Chimera::GPIO::State state, const size_t timeout )
+  Chimera::Status_t Driver::setState( const Chimera::GPIO::State state, const size_t timeout )
   {
     return driver->write( initSettings.pin, state, timeout );
   }
 
-  Chimera::Status_t GPIOClass::getState( Chimera::GPIO::State &state, const size_t timeout )
+  Chimera::Status_t Driver::getState( Chimera::GPIO::State &state, const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t GPIOClass::toggle( const size_t timeout )
+  Chimera::Status_t Driver::toggle( const size_t timeout )
   {
     // TODO
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;

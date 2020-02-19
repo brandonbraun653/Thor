@@ -82,7 +82,7 @@ namespace Thor::Driver::RCC
      */
     extern void GPIOInit();
 
-    static constexpr size_t gpioTableSize = Thor::Driver::GPIO::NUM_GPIO_PERIPHS;
+    static constexpr size_t gpioTableSize = Thor::LLD::GPIO::NUM_GPIO_PERIPHS;
 
     extern const PCC GPIOLookup;
 

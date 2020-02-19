@@ -21,7 +21,7 @@
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 
-namespace Thor::Driver::GPIO
+namespace Thor::LLD::GPIO
 {
   struct RegisterMap
   {
@@ -85,7 +85,7 @@ namespace Thor::Driver::GPIO
     PULLUP   = 0x01u, /**< Pull up activation */
     PULLDOWN = 0x02u  /**< Pull down activation */
   };
-}    // namespace Thor::Driver::GPIO
+}    // namespace Thor::LLD::GPIO
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_GPIO_TYPEGPIOHS_HPP */

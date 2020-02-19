@@ -76,42 +76,6 @@ local propagated_link_flags =
     --gc-sections
     ;
   
-# ------------------------------------------
-# Source Files
-# ------------------------------------------
-local cmn_src         = [ glob common/*.cpp ] ;
-local dma_src         = [ glob dma/*.cpp ] ;
-local flash_src       = [ glob flash/*.cpp ] ;
-local gpio_src        = [ glob gpio/*.cpp ] ;
-local interrupt_src   = [ glob interrupt/*.cpp ] ;
-local iwdg_src        = [ glob iwdg/*.cpp ] ;
-local nvic_src        = [ glob nvic/*.cpp ] ;
-local power_src       = [ glob power/*.cpp ] ;
-local rcc_src         = [ glob rcc/*.cpp ] ;
-local spi_src         = [ glob spi/*.cpp ] ;
-local startup_src     = [ glob startup/*.cpp ] ;
-local system_src      = [ glob system/*.cpp ] ;
-local uart_src        = [ glob uart/*.cpp ] ;
-local usart_src       = [ glob usart/*.cpp ] ;
-local wwdg_src        = [ glob wwdg/*.cpp ] ;
-
-local f4_src =  $(cmn_src)
-                $(dma_src)
-                $(flash_src)
-                $(gpio_src)
-                $(interrupt_src)
-                $(iwdg_src)
-                $(nvic_src)
-                $(power_src)
-                $(rcc_src)
-                $(spi_src)
-                $(startup_src)
-                $(system_src)
-                $(uart_src)
-                $(usart_src)
-                $(wwdg_src)
-                ;   
-
 # ====================================================
 # Device Specific Libs: 
 #   Figures out what device we are actually compiling for. By default

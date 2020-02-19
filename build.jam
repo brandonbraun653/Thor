@@ -104,6 +104,8 @@ explicit_alias _CHIMERA : : <Chimera>enabled :
 use-project /STM32F4 : Thor/lld/stm32f4x ;
 
 
+use-project /GPIO : Thor/hld/gpio ;
+
 # ------------------------------------------
 # Includes all common Thor headers
 # -----------------------------------------
@@ -198,3 +200,9 @@ alias TARGET_PROPAGATED_OPTIONS
 
 explicit CORE ;                                     # Core library
 explicit TARGET_PROPAGATED_OPTIONS ;                # Thor chip specific options that should be propagated to all targets using Thor
+
+
+
+explicit_alias TEST_COMPILE_HLD
+    :   /GPIO//LIB
+    ;
