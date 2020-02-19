@@ -26,14 +26,7 @@
 
 namespace Thor::GPIO
 {
-#if ( THOR_DRIVER_GPIO == 1 ) && ( THOR_DRIVER_GPIO == 1 )
-
-  /**
-   *  Initialize the driver
-   *  
-   *  @return Chimera::Status_t
-   */
-  Chimera::Status_t initialize();
+#if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
 
   class GPIOClass : virtual public Chimera::GPIO::IGPIO,
                     public Chimera::Threading::Lockable

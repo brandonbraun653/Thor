@@ -14,19 +14,15 @@
 /* Aurora Includes */
 #include <Aurora/constants/common.hpp>
 
+/* Chimera Includes */
+#include <Chimera/common>
+#include <Chimera/gpio>
+
 /* Thor Includes */
-#include <Thor/gpio.hpp>
-#include <Thor/drivers/gpio.hpp>
+#include <Thor/hld/gpio/hld_gpio_driver.hpp>
+#include <Thor/lld/interface/gpio/gpio.hpp>
 
-#if ( THOR_DRIVER_GPIO == 1 ) && ( THOR_DRIVER_GPIO == 1 )
-
-namespace Chimera::GPIO::Backend
-{
-  Chimera::Status_t prjInitialize()
-  {
-    return Thor::GPIO::initialize();
-  }
-}
+#if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
 
 namespace Thor::GPIO
 {
