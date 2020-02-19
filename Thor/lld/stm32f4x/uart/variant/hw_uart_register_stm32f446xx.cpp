@@ -21,7 +21,7 @@
 
 namespace Thor::Driver::UART
 {
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
   RegisterMap *UART4_PERIPH = reinterpret_cast<RegisterMap *>( UART4_BASE_ADDR );
   RegisterMap *UART5_PERIPH = reinterpret_cast<RegisterMap *>( UART5_BASE_ADDR );
 

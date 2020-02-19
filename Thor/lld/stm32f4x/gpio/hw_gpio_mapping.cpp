@@ -1,17 +1,20 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_gpio_mapping.cpp
  *
- *   Description:
+ *  Description:
  *    Useful maps for the GPIO peripherals
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* Driver Includes */
-#include <Thor/drivers/f4/gpio/hw_gpio_mapping.hpp>
+/* STL Includes */
+#include <array>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+/* Driver Includes */
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_mapping.hpp>
+
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 
 namespace Thor::Driver::GPIO
 {
@@ -28,7 +31,7 @@ namespace Thor::Driver::GPIO
 
   /* clang-format off */
 
-  const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Pull::NUM_OPTIONS)> PullMap =
+  const std::array<uint32_t, static_cast<size_t>( Chimera::GPIO::Pull::NUM_OPTIONS )> PullMap =
   {
     OPT_PUPDR::NOPULL, 
     OPT_PUPDR::PULLDOWN,
@@ -36,7 +39,7 @@ namespace Thor::Driver::GPIO
     OPT_PUPDR::NOPULL  
   };
 
-  const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Drive::NUM_OPTIONS)> ModeMap =
+  const std::array<uint32_t, static_cast<size_t>( Chimera::GPIO::Drive::NUM_OPTIONS )> ModeMap =
   { 
     OPT_MODER::INPUT,
     OPT_MODER::OUTPUT,
@@ -47,7 +50,7 @@ namespace Thor::Driver::GPIO
     OPT_MODER::INPUT
   };
 
-  const std::array<uint32_t, static_cast<size_t>(Thor::Driver::GPIO::Speed::NUM_OPTIONS)> SpeedMap =
+  const std::array<uint32_t, static_cast<size_t>( Thor::Driver::GPIO::Speed::NUM_OPTIONS )> SpeedMap =
   {
     OPT_OSPEEDR::LOW,
     OPT_OSPEEDR::MEDIUM,
@@ -55,7 +58,7 @@ namespace Thor::Driver::GPIO
     OPT_OSPEEDR::VERY_HIGH
   };
 
-  const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Port::NUM_OPTIONS)> PortToIteratorMap =
+  const std::array<uint32_t, static_cast<size_t>( Chimera::GPIO::Port::NUM_OPTIONS )> PortToIteratorMap =
   {
     GPIOA_RESOURCE_INDEX,
     GPIOB_RESOURCE_INDEX,

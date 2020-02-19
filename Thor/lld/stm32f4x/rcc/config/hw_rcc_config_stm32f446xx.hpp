@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_rcc_config_stm32f446xx.hpp
  *
- *   Description:
+ *  Description:
  *    Contains reset and clock configuration options for the STM32F446xx
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -15,10 +15,7 @@
 /* C++ Includes */
 #include <cstdint>
 
-/* Driver Includes */
-#include <Thor/headers.hpp>
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
+#if defined( TARGET_STM32F4 )
 
 #ifdef __cplusplus
 extern "C"
@@ -39,5 +36,5 @@ extern "C"
 }
 #endif
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */
+#endif /* TARGET_STM32F4 */
 #endif /* !THOR_DRIVER_RCC_CONFIG_STM32F446XX_HPP */

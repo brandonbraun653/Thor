@@ -13,7 +13,7 @@
 #define THOR_DRIVER_SYS_MEMORY_MAP_PRJ_HPP
 
 #if defined( STM32F446xx )
-#include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 #endif
 
 #endif /* !THOR_DRIVER_SYS_MEMORY_MAP_PRJ_HPP */

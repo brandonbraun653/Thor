@@ -50,9 +50,9 @@ extern "C"
     @{
    */
 
-#include <Thor/drivers/common/cmsis/core/include/cmsis_version.h>
-#include <Thor/drivers/common/cmsis/core/include/cmsis_compiler.h>
-#include <Thor/drivers/common/cmsis/configuration.hpp>
+#include <Thor/lld/common/cmsis/core/include/cmsis_version.h>
+#include <Thor/lld/common/cmsis/core/include/cmsis_compiler.h>
+#include <Thor/lld/common/cmsis/configuration.hpp>
 
 /* CMSIS CM4 definitions */
 #define __CM4_CMSIS_VERSION_MAIN ( __CM_CMSIS_VERSION_MAIN ) /*!< \deprecated [31:16] CMSIS HAL main version */
@@ -1955,7 +1955,7 @@ extern "C"
 
 #if defined( __MPU_PRESENT ) && ( __MPU_PRESENT == 1U )
 
-#include <Thor/drivers/common/cmsis/core/include/mpu_armv7.h>
+#include <Thor/lld/common/cmsis/core/include/mpu_armv7.h>
 
 #endif
 

@@ -20,7 +20,7 @@
 
 namespace Thor::Driver::IWDG
 {
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
   RegisterMap * IWDG1_PERIPH = reinterpret_cast<RegisterMap *>( IWDG1_BASE_ADDR );
 
   Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex = {

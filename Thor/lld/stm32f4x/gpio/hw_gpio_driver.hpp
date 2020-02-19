@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_gpio_driver.hpp
  *
- *   Description:
+ *  Description:
  *    Implements the interface to the STM32F4 series GPIO hardware.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -18,12 +18,12 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
-#include <Thor/drivers/f4/gpio/hw_gpio_types.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_mapping.hpp>
-#include <Thor/drivers/model/gpio_model.hpp>
-#include <Thor/drivers/model/interrupt_model.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_types.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_mapping.hpp>
+#include <Thor/lld/interface/gpio/gpio_model.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_model.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 
 namespace Thor::Driver::GPIO
 {

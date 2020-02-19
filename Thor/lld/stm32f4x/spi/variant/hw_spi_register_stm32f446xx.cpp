@@ -22,7 +22,7 @@
 
 namespace Thor::Driver::SPI
 {
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
   RegisterMap *SPI1_PERIPH = reinterpret_cast<RegisterMap *>( SPI1_BASE_ADDR );
   RegisterMap *SPI2_PERIPH = reinterpret_cast<RegisterMap *>( SPI2_BASE_ADDR );
   RegisterMap *SPI3_PERIPH = reinterpret_cast<RegisterMap *>( SPI3_BASE_ADDR );

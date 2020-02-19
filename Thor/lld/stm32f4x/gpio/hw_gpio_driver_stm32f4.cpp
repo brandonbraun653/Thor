@@ -12,14 +12,14 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/drivers/common/cortex-m4/utilities.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_driver.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_mapping.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_prj.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_types.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
+#include <Thor/lld/common/cortex-m4/utilities.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_driver.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_mapping.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_prj.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 
 namespace Thor::Driver::GPIO
 {

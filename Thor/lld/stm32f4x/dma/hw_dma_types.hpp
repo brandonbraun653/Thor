@@ -26,12 +26,12 @@ namespace Thor::Driver::DMA
 {
   struct StreamX
   {
-    volatile uint32_t CR;   /**< DMA stream x configuration register     , Address offset: 0x10 + 0x18 × stream number */
-    volatile uint32_t NDTR; /**< DMA stream x number of data register    , Address offset: 0x14 + 0x18 × stream number */
-    volatile uint32_t PAR;  /**< DMA stream x peripheral address register, Address offset: 0x18 + 0x18 × stream number */
-    volatile uint32_t M0AR; /**< DMA stream x memory 0 address register  , Address offset: 0x1C + 0x18 × stream number */
-    volatile uint32_t M1AR; /**< DMA stream x memory 1 address register  , Address offset: 0x20 + 0x18 × stream number */
-    volatile uint32_t FCR;  /**< DMA stream x FIFO control register      , Address offset: 0x24 + 0x18 × stream number */
+    volatile uint32_t CR;   /**< DMA stream x configuration register     , Address offset: 0x10 + 0x18 ï¿½ stream number */
+    volatile uint32_t NDTR; /**< DMA stream x number of data register    , Address offset: 0x14 + 0x18 ï¿½ stream number */
+    volatile uint32_t PAR;  /**< DMA stream x peripheral address register, Address offset: 0x18 + 0x18 ï¿½ stream number */
+    volatile uint32_t M0AR; /**< DMA stream x memory 0 address register  , Address offset: 0x1C + 0x18 ï¿½ stream number */
+    volatile uint32_t M1AR; /**< DMA stream x memory 1 address register  , Address offset: 0x20 + 0x18 ï¿½ stream number */
+    volatile uint32_t FCR;  /**< DMA stream x FIFO control register      , Address offset: 0x24 + 0x18 ï¿½ stream number */
   };
 
   struct RegisterMap
@@ -63,7 +63,7 @@ namespace Thor::Driver::DMA
     This equation taken directly from register spec in datasheet.
     See 9.5.5 in RM0390
     ------------------------------------------------*/
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
     static constexpr size_t fixedOffset = 0x10;
     static constexpr size_t streamOffset = 0x18;
 

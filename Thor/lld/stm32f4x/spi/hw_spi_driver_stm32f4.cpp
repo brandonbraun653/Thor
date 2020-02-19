@@ -319,7 +319,7 @@ namespace Thor::Driver::SPI
       Wait for the hw transmit buffer to be empty, then
       assign the next set of data to be transfered
       ------------------------------------------------*/
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
       while ( !SR::TXE::get( periph ) && SR::BSY::get( periph ) )
         continue;
 #endif
@@ -343,7 +343,7 @@ namespace Thor::Driver::SPI
       Wait for the hw receive buffer to indicate data has
       arrived, then read it out.
       ------------------------------------------------*/
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
       while ( !SR::RXNE::get( periph ) )
         continue;
 #endif

@@ -19,7 +19,7 @@
 
 using namespace Thor::Driver::RCC;
 
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
 void SystemInit()
 {
 

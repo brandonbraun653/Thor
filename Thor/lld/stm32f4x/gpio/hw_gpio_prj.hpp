@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_gpio_prj.hpp
  *
- *   Description:
+ *  Description:
  *    Pulls in target specific definitions and resources used in the actual driver
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -13,7 +13,7 @@
 #define THOR_HW_GPIO_PROJECT_HPP
 
 #if defined( STM32F446xx )
-#include <Thor/drivers/f4/gpio/hw_gpio_register_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/gpio/variant/hw_gpio_register_stm32f446xx.hpp>
 #endif
 
 #endif /* !THOR_HW_GPIO_PROJECT_HPP */

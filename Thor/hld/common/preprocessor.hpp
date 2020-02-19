@@ -70,9 +70,15 @@ STM32HAL_F4
 /*-------------------------------------------------
 Custom STM32F4 Driver
 -------------------------------------------------*/
-#if __has_include( "Thor/drivers/f4/common/definitions.hpp" )
+#if __has_include( "Thor/lld/stm32f4x/common/definitions.hpp" )
+
+#ifndef TARGET_STM32F4
 #define TARGET_STM32F4
+#endif
+
+#ifndef CORTEX_M4
 #define CORTEX_M4
+#endif 
 
 #if !defined( STM32F446xx ) // || !defined( <some_other_chip> )
 #error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)

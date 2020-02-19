@@ -22,7 +22,7 @@
 
 namespace Thor::Driver::DMA
 {
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
   RegisterMap *DMA1_PERIPH = reinterpret_cast<RegisterMap *>( DMA1_BASE_ADDR );
   RegisterMap *DMA2_PERIPH = reinterpret_cast<RegisterMap *>( DMA2_BASE_ADDR );
 

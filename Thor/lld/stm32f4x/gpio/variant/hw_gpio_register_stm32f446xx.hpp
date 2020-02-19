@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_gpio_register_stm32f446xx.hpp
  *
- *   Description:
+ *  Description:
  *    GPIO register definitions for the STM32F446xx series chips.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -16,9 +16,9 @@
 #include <cstdint>
 
 /* Driver Includes */
-#include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 
 #define STM32_GPIOA_PERIPH_AVAILABLE
 #define STM32_GPIOB_PERIPH_AVAILABLE

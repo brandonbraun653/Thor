@@ -18,7 +18,7 @@
 
 namespace Thor::Driver::RCC
 {
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
   RegisterMap * RCC1_PERIPH = reinterpret_cast<RegisterMap *>( RCC1_BASE_ADDR );
 
   Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex{

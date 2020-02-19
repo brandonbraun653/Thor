@@ -18,19 +18,19 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/container>
 #include <Chimera/gpio>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/dma/hw_dma_prj.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_prj.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_prj.hpp>
-#include <Thor/drivers/f4/uart/hw_uart_prj.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_prj.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_prj.hpp>
-#include <Thor/drivers/f4/system/sys_memory_map_prj.hpp>
+// #include <Thor/lld/stm32f4x/dma/hw_dma_prj.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_prj.hpp>
+// #include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
+// #include <Thor/lld/stm32f4x/uart/hw_uart_prj.hpp>
+// #include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
+// #include <Thor/lld/stm32f4x/wwdg/hw_wwdg_prj.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_prj.hpp>
+#include <Thor/lld/stm32f4x/system/sys_memory_map_prj.hpp>
 
 namespace Thor::Driver::RCC
 {
@@ -82,8 +82,6 @@ namespace Thor::Driver::RCC
      */
     extern void GPIOInit();
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
-
     static constexpr size_t gpioTableSize = Thor::Driver::GPIO::NUM_GPIO_PERIPHS;
 
     extern const PCC GPIOLookup;
@@ -93,7 +91,6 @@ namespace Thor::Driver::RCC
     extern RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
 
     extern Configuration::ClockType_t GPIO_SourceClock[ gpioTableSize ];
-#endif
 
     /**
      *  SPI Peripheral Config Lookup Tables

@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_gpio_types.hpp
  *
- *   Description:
+ *  Description:
  *    STM32F4 Types for the GPIO Peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -17,11 +17,9 @@
 #include <array>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/preprocessor.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_prj.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 
 namespace Thor::Driver::GPIO
 {

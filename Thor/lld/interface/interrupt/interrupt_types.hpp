@@ -30,7 +30,6 @@ namespace Thor::Driver
   static constexpr InterruptSignal_t UARTSigOffset = USARTSigOffset + USARTMaxSig + 1;
   static constexpr InterruptSignal_t UARTMaxSig    = 10;
 
-
 }    // namespace Thor::Driver
 
 

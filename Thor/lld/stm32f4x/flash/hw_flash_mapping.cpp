@@ -17,7 +17,7 @@
 
 namespace Thor::Driver::Flash
 {
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
   RegisterMap *const FLASH_PERIPH = reinterpret_cast<RegisterMap *const>( FLASH_BASE_ADDR );
 
 #elif defined( _SIM )

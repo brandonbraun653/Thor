@@ -1,0 +1,36 @@
+# ====================================================
+# Local Rules 
+# ====================================================
+local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
+    {
+    alias $(name) : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
+    explicit $(name) ;
+    }
+
+# ====================================================
+# Public Targets
+# ====================================================
+lib DEVICE_TARGET
+  : variant/hw_gpio_register_stm32f446xx.cpp
+
+  : <Thor>enabled-F446
+    <link>static
+    <use>/CHIMERA//PUB
+    <use>/STM32F4//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+  ;
+explicit DEVICE_TARGET ;
+
+
+lib LIB
+  : hw_gpio_driver_stm32f4.cpp
+    hw_gpio_mapping.cpp
+
+  : <link>static
+    <use>/CHIMERA//PUB
+    <use>/STM32F4//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+  ;
+explicit LIB ;
+
+explicit_alias TEST_COMPILE : LIB DEVICE_TARGET ;

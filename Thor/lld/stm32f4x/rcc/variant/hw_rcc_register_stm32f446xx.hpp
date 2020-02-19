@@ -19,13 +19,12 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/system/sys_memory_map_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
 /* ARM Includes */
-#include <Thor/drivers/common/cmsis/core/include/core_cm4.h>
+#include <Thor/lld/common/cmsis/core/include/core_cm4.h>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
+#if defined( TARGET_STM32F4 )
 
 #define STM32_RCC1_PERIPH_AVAILABLE
 

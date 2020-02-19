@@ -8,7 +8,7 @@
  *   2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-#if defined( _EMBEDDED ) && !defined( _SIM )
+#if defined( EMBEDDED ) && !defined( _SIM )
 
 /* C++ Includes */
 #include <cstdlib>
@@ -82,4 +82,4 @@ extern "C"
 }
 #endif
 
-#endif /* _EMBEDDED && !_SIM */
+#endif /* EMBEDDED && !_SIM */

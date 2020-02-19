@@ -128,7 +128,8 @@ alias ALIAS_MCU_OPTIONS
         <Thor>enabled-RE
     :
     # Expect all these to be propagated to all projects
-    :   <define>STM32F446xx                     
+    :   <define>STM32F446xx              
+        <define>EMBEDDED       
         <define>CHIMERA_LITTLE_ENDIAN                               # We are a little endian device 
         <define>THOR_CUSTOM_DRIVERS
         <cflags>$(propagated_cflags)                                   
@@ -215,5 +216,11 @@ explicit LIB ;
 # ====================================================
 # Public Components 
 # ====================================================
-explicit_alias PUB ;
+explicit_alias PUB 
+    : 
+    : 
+    : 
+    :   <define>TARGET_STM32F4
+        <define>THOR_LLD_GPIO  
+    ;
 

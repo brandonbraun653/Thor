@@ -20,12 +20,11 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
-#include <Thor/drivers/model/rcc_model.hpp>
-#include <Thor/types/clock_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
+#include <Thor/lld/interface/rcc/rcc_model.hpp>
+#include <Thor/hld/clock/clock_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
+#if defined( TARGET_STM32F4 )
 
 namespace Thor::Driver::RCC
 {

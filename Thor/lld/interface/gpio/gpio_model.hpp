@@ -17,7 +17,7 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
-#include <Thor/drivers/common/types/gpio_types.hpp>
+#include <Thor/lld/interface/gpio/gpio_types.hpp>
 
 namespace Thor::Driver::GPIO
 {

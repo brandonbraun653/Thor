@@ -17,7 +17,7 @@
 
 namespace Thor::Driver::PWR
 {
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
   RegisterMap *const PWR_PERIPH = reinterpret_cast<RegisterMap *const>( PWR_BASE_ADDR );
 
 #elif defined( _SIM )

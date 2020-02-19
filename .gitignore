@@ -10,6 +10,8 @@
 **/html
 **/rtf
 **.dump
+**.o 
+**.lib
 
 cppcheck/*
 

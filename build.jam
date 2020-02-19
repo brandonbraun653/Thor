@@ -100,10 +100,17 @@ explicit_alias _CHIMERA : : <Chimera>enabled :
 # ====================================================
 # Public Thor Library Components
 # ====================================================
+
+use-project /STM32F4 : Thor/lld/stm32f4x ;
+
+
 # ------------------------------------------
 # Includes all common Thor headers
 # -----------------------------------------
-explicit_alias PUB : : : 
+explicit_alias PUB 
+    : 
+    :   
+    : 
     :   <include>$(thor_inc_dir)
         <Thor>enabled-F4:<use>/STM32F4//PUB
         <Thor>enabled-F7:<use>/STM32F7//PUB 

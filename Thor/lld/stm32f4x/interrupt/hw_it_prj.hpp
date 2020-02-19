@@ -13,7 +13,7 @@
 #define THOR_HW_INTERRUPT_PROJECT_HPP
 
 #if defined( STM32F446xx )
-#include <Thor/drivers/f4/interrupt/hw_it_register_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/interrupt/variant/hw_it_register_stm32f446xx.hpp>
 #endif
 
 #endif /* !THOR_HW_INTERRUPT_PROJECT_HPP */

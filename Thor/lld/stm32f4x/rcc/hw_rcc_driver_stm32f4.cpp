@@ -933,7 +933,7 @@ namespace Thor::Driver::RCC
         tickstart = Chimera::millis();
         PLLON::set( RCC1_PERIPH, PLLConfig::ON );
 
-        #if defined( _EMBEDDED )
+        #if defined( EMBEDDED )
         while ( !PLLRDY::get( RCC1_PERIPH ) )
         {
           if ( ( Chimera::millis() - tickstart ) > PLL_TIMEOUT_VALUE_MS )

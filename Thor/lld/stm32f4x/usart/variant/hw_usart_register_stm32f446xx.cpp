@@ -21,7 +21,7 @@
 
 namespace Thor::Driver::USART
 {
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
   RegisterMap *USART1_PERIPH = reinterpret_cast<RegisterMap *>( USART1_BASE_ADDR );
   RegisterMap *USART2_PERIPH = reinterpret_cast<RegisterMap *>( USART2_BASE_ADDR );
   RegisterMap *USART3_PERIPH = reinterpret_cast<RegisterMap *>( USART3_BASE_ADDR );

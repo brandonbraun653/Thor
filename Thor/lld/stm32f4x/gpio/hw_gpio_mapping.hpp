@@ -1,29 +1,31 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_gpio_mapping.hpp
  *
- *   Description:
+ *  Description:
  *    Provides structures for conversion and mapping between data types for fast
  *    runtime performance of driver code.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_HW_GPIO_MAPPING_HPP
 #define THOR_HW_GPIO_MAPPING_HPP
 
+/* STL Includes */
+#include <array>
+
 /* Chimera Includes */
 #include <Chimera/container>
 #include <Chimera/gpio>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_types.hpp>
-#include <Thor/drivers/common/types/gpio_types.hpp>
+#include <Thor/lld/interface/gpio/gpio_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 
 namespace Thor::Driver::GPIO
 {
@@ -70,12 +72,12 @@ namespace Thor::Driver::GPIO
   /*------------------------------------------------
   Chimera Mapping From Config Option->Register Value
   ------------------------------------------------*/
-  extern const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Pull::NUM_OPTIONS)> PullMap;
-  extern const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Drive::NUM_OPTIONS)> ModeMap;
-  extern const std::array<uint32_t, static_cast<size_t>(Thor::Driver::GPIO::Speed::NUM_OPTIONS)> SpeedMap;
-  extern const std::array<uint32_t, static_cast<size_t>(Chimera::GPIO::Port::NUM_OPTIONS)> PortToIteratorMap;
+  extern const std::array<uint32_t, static_cast<size_t>( Chimera::GPIO::Pull::NUM_OPTIONS )> PullMap;
+  extern const std::array<uint32_t, static_cast<size_t>( Chimera::GPIO::Drive::NUM_OPTIONS )> ModeMap;
+  extern const std::array<uint32_t, static_cast<size_t>( Thor::Driver::GPIO::Speed::NUM_OPTIONS )> SpeedMap;
+  extern const std::array<uint32_t, static_cast<size_t>( Chimera::GPIO::Port::NUM_OPTIONS )> PortToIteratorMap;
 
-  
+
   static constexpr uint32_t PIN_0        = 0x0001; /**< Pin 0 selected    */
   static constexpr uint32_t PIN_1        = 0x0002; /**< Pin 1 selected    */
   static constexpr uint32_t PIN_2        = 0x0004; /**< Pin 2 selected    */
@@ -98,11 +100,11 @@ namespace Thor::Driver::GPIO
 
   /**
    *  Initializes memory associated with mapping
-   *  
+   *
    *  @return void
    */
   extern void initializeMapping();
-  
+
   /**
    *  Checks if the given address belongs to a peripheral instance
    *

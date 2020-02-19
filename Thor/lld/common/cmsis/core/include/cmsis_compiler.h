@@ -31,27 +31,27 @@
  * Arm Compiler 4/5
  */
 #if   defined ( __CC_ARM )
-  #include <Thor/drivers/common/cmsis/core/include/cmsis_armcc.h>
+  #include <Thor/lld/common/cmsis/core/include/cmsis_armcc.h>
 
 
 /*
  * Arm Compiler 6.6 LTM (armclang)
  */
 #elif defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050) && (__ARMCC_VERSION < 6100100)
-  #include <Thor/drivers/common/cmsis/core/include/cmsis_armclang_ltm.h>
+  #include <Thor/lld/common/cmsis/core/include/cmsis_armclang_ltm.h>
 
   /*
  * Arm Compiler above 6.10.1 (armclang)
  */
 #elif defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6100100)
-  #include <Thor/drivers/common/cmsis/core/include/cmsis_armclang.h>
+  #include <Thor/lld/common/cmsis/core/include/cmsis_armclang.h>
 
 
 /*
  * GNU Compiler
  */
 #elif defined ( __GNUC__ )
-  #include <Thor/drivers/common/cmsis/core/include/cmsis_gcc.h>
+  #include <Thor/lld/common/cmsis/core/include/cmsis_gcc.h>
 
 
 /*
@@ -264,7 +264,7 @@
 
 
 #elif defined( WIN32 ) || defined( WIN64 )
-  #include <Thor/drivers/common/cmsis/core/include/cmsis_windows.h>
+  #include <Thor/lld/common/cmsis/core/include/cmsis_windows.h>
 
 #else
   #error Unknown compiler.

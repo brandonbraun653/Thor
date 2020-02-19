@@ -5,22 +5,21 @@
  *  Description:
  *    Explicit STM32F446xx GPIO data and routines
  *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_driver.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_mapping.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_register_stm32f446xx.hpp>
-#include <Thor/drivers/f4/gpio/hw_gpio_types.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_driver.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_mapping.hpp>
+#include <Thor/lld/stm32f4x/gpio/variant/hw_gpio_register_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/gpio/hw_gpio_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 ) && defined( STM32F446xx )
+#if defined( STM32F446xx ) && defined( THOR_LLD_GPIO )
 
 namespace Thor::Driver::GPIO
 {
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
   RegisterMap *GPIOA_PERIPH = reinterpret_cast<RegisterMap *>( GPIOA_BASE_ADDR );
   RegisterMap *GPIOB_PERIPH = reinterpret_cast<RegisterMap *>( GPIOB_BASE_ADDR );
   RegisterMap *GPIOC_PERIPH = reinterpret_cast<RegisterMap *>( GPIOC_BASE_ADDR );

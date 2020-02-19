@@ -20,7 +20,7 @@
 #include <Chimera/gpio>
 
 /* Thor Includes */
-#include <Thor/types/clock_types.hpp>
+#include <Thor/hld/clock/clock_types.hpp>
 
 namespace Thor::Driver::RCC
 {
