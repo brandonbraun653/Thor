@@ -18,9 +18,6 @@
 /* Chimera Includes */
 #include <Chimera/system>
 
-/* Thor Includes */
-#include <Thor/preprocessor.hpp>
-
 
 namespace Thor::System
 {

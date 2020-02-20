@@ -10,10 +10,9 @@
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/power/hw_power_mapping.hpp>
+#include <Thor/lld/stm32f4x/power/hw_power_mapping.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_PWR == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_PWR )
 
 namespace Thor::Driver::PWR
 {

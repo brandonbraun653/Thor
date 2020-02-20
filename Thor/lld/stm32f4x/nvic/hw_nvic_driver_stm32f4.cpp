@@ -9,12 +9,11 @@
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
-#include <Thor/drivers/f4/nvic/hw_nvic_prj.hpp>
-#include <Thor/drivers/f4/nvic/hw_nvic_types.hpp>
+#include <Thor/lld/stm32f4x/nvic/hw_nvic_driver.hpp>
+#include <Thor/lld/stm32f4x/nvic/hw_nvic_prj.hpp>
+#include <Thor/lld/stm32f4x/nvic/hw_nvic_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_NVIC == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_NVIC )
 
 namespace Thor::Driver::Interrupt
 {

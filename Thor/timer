@@ -1,0 +1,15 @@
+/********************************************************************************
+ *  File Name:
+ *    timer
+ * 
+ *  Description:
+ *    Thor Timer Includes
+ * 
+ *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_INTERRUPT_INCLUDES
+#define THOR_INTERRUPT_INCLUDES
+
+#endif /* !THOR_INTERRUPT_INCLUDES */

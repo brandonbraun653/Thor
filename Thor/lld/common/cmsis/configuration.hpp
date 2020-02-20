@@ -15,11 +15,12 @@
 /* Thor Includes */
 #include <Thor/hld/common/preprocessor.hpp>
 
-#if defined( CORTEX_M4 ) && defined( EMBEDDED )
 
 #if defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
 #endif 
+
+#if defined( CORTEX_M4 ) && defined( EMBEDDED )
 
 #define __CM4_REV 0x0001U         /*!< Core revision r0p1                            */
 #define __MPU_PRESENT 1U          /*!< STM32F4XX provides an MPU                     */

@@ -13,7 +13,7 @@
 #define THOR_HW_POWER_PROJECT_HPP
 
 #if defined( STM32F446xx )
-#include <Thor/drivers/f4/power/hw_power_register_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/power/variant/hw_power_register_stm32f446xx.hpp>
 #endif
 
 #endif /* !THOR_HW_POWER_PROJECT_HPP */

@@ -41,15 +41,13 @@ namespace Thor::GPIO
     return Chimera::CommonStatusCodes::OK;
   }
 
-
-  Driver::Driver() : driver( nullptr ) 
+  Driver::Driver()
   {
     initSettings.clear();
   }
 
   Driver::~Driver()
   {
-    free( driver );
   }
 
   Chimera::Status_t Driver::init( const Chimera::GPIO::PinInit &pinInit, const size_t timeout )
@@ -58,29 +56,8 @@ namespace Thor::GPIO
     
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
     initSettings = pinInit;
-
-    switch ( pinInit.accessMode )
-    {
-      case Chimera::Hardware::AccessMode::BARE_METAL:
-        driver = new Thor::LLD::GPIO::DriverBare();
-        break;
-        
-      case Chimera::Hardware::AccessMode::THREADED:
-        driver = new Thor::LLD::GPIO::DriverThreaded();
-        break;
-        
-      case Chimera::Hardware::AccessMode::ATOMIC:
-        driver = new Thor::LLD::GPIO::DriverAtomic();
-        break;
-        
-      default:
-        driver = nullptr;
-        result = Chimera::CommonStatusCodes::FAIL;
-        return result;
-        break;
-    };
     
-    driver->attach( PortToInstanceMap.find( pinInit.port )->second );
+    lld.attach( PortToInstanceMap.find( pinInit.port )->second );
 
     result = setMode( pinInit.drive, pinInit.pull, timeout );
 
@@ -98,24 +75,24 @@ namespace Thor::GPIO
     /*------------------------------------------------
     Set the basic IO mode type
     ------------------------------------------------*/
-    auto result = driver->driveSet( initSettings.pin, drive, timeout );
+    auto result = lld.driveSet( initSettings.pin, drive, timeout );
 
     /*------------------------------------------------
     Configure the pullup/pulldown resistors
     ------------------------------------------------*/
-    result |= driver->pullSet( initSettings.pin, pull, timeout );
+    result |= lld.pullSet( initSettings.pin, pull, timeout );
 
     /*------------------------------------------------
     Configure the GPIO speed
     ------------------------------------------------*/
-    result |= driver->speedSet( initSettings.pin, Thor::LLD::GPIO::Speed::HIGH, timeout );
+    result |= lld.speedSet( initSettings.pin, Thor::LLD::GPIO::Speed::HIGH, timeout );
 
     /*------------------------------------------------
     Configure the alternate function options
     ------------------------------------------------*/
     if ( ( drive == Chimera::GPIO::Drive::ALTERNATE_OPEN_DRAIN ) || ( drive == Chimera::GPIO::Drive::ALTERNATE_PUSH_PULL ) ) 
     {
-      result |= driver->alternateFunctionSet( initSettings.pin, initSettings.alternate, timeout );
+      result |= lld.alternateFunctionSet( initSettings.pin, initSettings.alternate, timeout );
     }
 
     return result;
@@ -123,7 +100,7 @@ namespace Thor::GPIO
 
   Chimera::Status_t Driver::setState( const Chimera::GPIO::State state, const size_t timeout )
   {
-    return driver->write( initSettings.pin, state, timeout );
+    return lld.write( initSettings.pin, state, timeout );
   }
 
   Chimera::Status_t Driver::getState( Chimera::GPIO::State &state, const size_t timeout )

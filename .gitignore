@@ -12,6 +12,8 @@
 **.dump
 **.o 
 **.lib
+**.a
+**.exe
 
 cppcheck/*
 

@@ -16,9 +16,10 @@
 
 /* C/C++ Includes */
 #include <cstdint>
+#include <limits>
 
 /* Thor Includes */
-#include <Thor/drivers/common/cmsis/configuration.hpp>
+#include <Thor/lld/common/cmsis/configuration.hpp>
 
 
 /*------------------------------------------------

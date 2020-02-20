@@ -13,7 +13,7 @@
 #define THOR_HW_DRIVER_FLASH_PROJECT_HPP
 
 #if defined( STM32F446xx )
-#include <Thor/drivers/f4/flash/hw_flash_register_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/flash/variant/hw_flash_register_stm32f446xx.hpp>
 #endif 
 
 #endif /* !THOR_HW_DRIVER_FLASH_HPP */

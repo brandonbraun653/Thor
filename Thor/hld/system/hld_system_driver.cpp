@@ -5,7 +5,7 @@
  *  Description:
  *    Implements system interface functions for Thor
  *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -14,21 +14,21 @@
 #include <Chimera/system>
 
 /* Thor Includes */
-#include <Thor/preprocessor.hpp>
-#include <Thor/definitions/interrupt_definitions.hpp>
-#include <Thor/headers.hpp>
-#include <Thor/system.hpp>
-#include <Thor/dma.hpp>
-#include <Thor/gpio.hpp>
-#include <Thor/spi.hpp>
-#include <Thor/uart.hpp>
-#include <Thor/usart.hpp>
-#include <Thor/watchdog.hpp>
+// #include <Thor/preprocessor.hpp>
+#include <Thor/interrupt>
+// #include <Thor/headers.hpp>
+// #include <Thor/system.hpp>
+// #include <Thor/dma.hpp>
+#include <Thor/gpio>
+// #include <Thor/spi.hpp>
+// #include <Thor/uart.hpp>
+// #include <Thor/usart.hpp>
+// #include <Thor/watchdog.hpp>
 
 /* Driver Includes */
-#include <Thor/drivers/nvic.hpp>
-#include <Thor/drivers/rcc.hpp>
-#include <Thor/drivers/startup.hpp>
+#include <Thor/lld/interface/nvic/nvic.hpp>
+#include <Thor/lld/interface/rcc/rcc.hpp>
+#include <Thor/lld/interface/startup/startup.hpp>
 
 namespace Thor::System
 {
@@ -54,7 +54,7 @@ namespace Chimera::System
     Thor::DMA::DMAClass::get()->init();
 #endif
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_GPIO == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_HLD_GPIO )
     Thor::GPIO::initialize();
 #endif 
 

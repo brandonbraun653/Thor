@@ -17,6 +17,8 @@
 
 namespace Thor::System::MemoryMap
 {
+  // When simulating this space, I probably could allocate volatile arrays and grab their address at compile time.
+
   static constexpr uint32_t FLASH_BASE_ADDR      = 0x08000000U; /**< FLASH(up to 1 MB) BASE address in the alias region  */
   static constexpr uint32_t SRAM1_BASE_ADDR      = 0x20000000U; /**< SRAM1(112 KB) BASE address in the alias region  */
   static constexpr uint32_t SRAM2_BASE_ADDR      = 0x2001C000U; /**< SRAM2(16 KB) BASE address in the alias region  */

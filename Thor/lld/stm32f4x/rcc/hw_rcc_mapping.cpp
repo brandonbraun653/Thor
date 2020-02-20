@@ -9,11 +9,10 @@
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC )
 
 namespace Thor::Driver::RCC
 {
@@ -30,7 +29,7 @@ namespace Thor::Driver::RCC
     LookupTables::DMAInit();
 #endif
 
-#if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
+#if defined( THOR_LLD_GPIO )
     LookupTables::GPIOInit();
 #endif
 

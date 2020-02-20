@@ -12,10 +12,7 @@
 #ifndef THOR_HW_DRIVER_NVIC_TYPES_HPP
 #define THOR_HW_DRIVER_NVIC_TYPES_HPP
 
-/* Driver Includes */
-#include <Thor/headers.hpp>
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_NVIC == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_NVIC )
 
 namespace Thor::Driver::Interrupt
 {

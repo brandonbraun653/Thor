@@ -12,10 +12,7 @@
 #ifndef THOR_HW_DRIVER_PWR_HPP
 #define THOR_HW_DRIVER_PWR_HPP
 
-/* Driver Includes */
-#include <Thor/headers.hpp>
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_PWR == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_PWR )
 
 namespace Thor::Driver::PWR
 {

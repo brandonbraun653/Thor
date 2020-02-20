@@ -16,10 +16,9 @@
 #include <cstdint>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_PWR == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_PWR )
 
 #define STM32_PWR1_PERIPH_AVAILABLE
 

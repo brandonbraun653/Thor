@@ -15,7 +15,7 @@
 /* C++ Includes */
 #include <cstdint>
 
-#if defined( TARGET_STM32F4 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC ) && defined( STM32F446xx )
 
 #ifdef __cplusplus
 extern "C"

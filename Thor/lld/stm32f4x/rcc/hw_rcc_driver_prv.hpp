@@ -15,10 +15,7 @@
 /* C++ Includes */
 #include <cstdint>
 
-/* Driver Includes */
-#include <Thor/headers.hpp>
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_RCC == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC )
 
 namespace Thor::Driver::RCC
 {

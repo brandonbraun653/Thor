@@ -40,7 +40,7 @@ local lib_only_cxxflags =
     -ffunction-sections
     -fdata-sections
     -Wall
-    --std=gnu++17
+    --std=gnu++2a
     ;
 
 # Assumes all devices are Cortex-M4 processors with HW FPU.
@@ -75,6 +75,12 @@ local propagated_link_flags =
     -specs=nosys.specs
     --gc-sections
     ;
+
+use-project /THOR/STM32F4/FLASH : flash ;
+use-project /THOR/STM32F4/GPIO : gpio ;
+use-project /THOR/STM32F4/POWER : power ;
+use-project /THOR/STM32F4/RCC : rcc ;
+use-project /THOR/STM32F4/NVIC : nvic ;
   
 # ====================================================
 # Device Specific Libs: 
@@ -94,15 +100,26 @@ alias ALIAS_MCU_OPTIONS
     # Expect all these to be propagated to all projects
     :   <define>STM32F446xx              
         <define>EMBEDDED       
-        <define>CHIMERA_LITTLE_ENDIAN                               # We are a little endian device 
-        <define>THOR_CUSTOM_DRIVERS
+        <define>CHIMERA_LITTLE_ENDIAN
+        <define>TARGET_STM32F4
         <cflags>$(propagated_cflags)                                   
         <cxxflags>$(propagated_cxxflags)   
         <linkflags>$(propagated_link_flags)
         <cflags>-mfpu=fpv4-sp-d16        
         <cxxflags>-mfpu=fpv4-sp-d16
         <linkflags>-mfpu=fpv4-sp-d16
-        <linkflags>-T"linker/STM32F446RE_flash.lds"                 # Linker script    
+        <linkflags>-T"linker/STM32F446RE_flash.lds"
+    ;
+
+alias ALIAS_MCU_OPTIONS
+    :
+    :   <Thor>enabled-F446
+        <Thor>enabled-SIM
+    :
+    :   <define>STM32F446xx
+        <define>_SIM
+        <define>CHIMERA_LITTLE_ENDIAN
+        <define>TARGET_STM32F4
     ;
 
 lib LIB_TARGET_STARTUP 
@@ -123,61 +140,6 @@ explicit LIB_TARGET_STARTUP ;
 explicit ALIAS_MCU_OPTIONS ;
 
 # ====================================================
-# STM32F4 Driver Libraries
-# ====================================================
-# ------------------------------------------
-# Debug Variant
-# ------------------------------------------
-lib LIB 
-    :   $(f4_src)
-        LIB_TARGET_STARTUP
-
-    :   <variant>debug
-        <link>static
-        <define>$(f4_dbg_defs)
-        <cxxflags>$(lib_only_cxxflags)
-
-        <use>ALIAS_MCU_OPTIONS
-
-        <use>/CHIMERA//PUB
-        <use>/FREERTOS//PUB
-
-        <use>/PRJ//BOOST
-        <use>/PRJ//CHIMERA_PORT
-        <use>/PRJ//FREERTOS_CFG
-        <use>/PRJ//THOR_PRJ_PUB
-    :
-    :   <use>ALIAS_MCU_OPTIONS
-    ;
-
-# ------------------------------------------
-# Release Variant
-# ------------------------------------------
-lib LIB
-    :   $(f4_src)
-        LIB_TARGET_STARTUP
-
-    :   <variant>release
-        <link>static
-        <define>$(f4_rel_defs)
-        <cxxflags>$(lib_only_cxxflags)
-
-        <use>ALIAS_MCU_OPTIONS
-
-        <use>/CHIMERA//PUB
-        <use>/FREERTOS//PUB
-
-        <use>/PRJ//BOOST
-        <use>/PRJ//CHIMERA_PORT
-        <use>/PRJ//FREERTOS_CFG
-        <use>/PRJ//THOR_PRJ_PUB
-    :
-    :   <use>ALIAS_MCU_OPTIONS
-    ;
-
-explicit LIB ;
-
-# ====================================================
 # Public Components 
 # ====================================================
 explicit_alias PUB 
@@ -185,6 +147,11 @@ explicit_alias PUB
     : 
     : 
     :   <define>TARGET_STM32F4
-        <define>THOR_LLD_GPIO  
+        <define>THOR_LLD_GPIO
+        <define>THOR_LLD_RCC
+        <define>THOR_LLD_NVIC
+        <define>THOR_LLD_PWR
+        <define>THOR_LLD_FLASH
+        <define>THOR_LLD_NVIC
     ;
 
