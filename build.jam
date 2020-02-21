@@ -73,24 +73,28 @@ project ThorSource : usage-requirements <include>. ;
 # Public Thor Library Components
 # ====================================================
 
-use-project /STM32F4 : Thor/lld/stm32f4x ;
+use-project /STM32F4 : Thor/lld/stm32f4x ;      # Low level STM32F4xxx driver project
 
 
-use-project /THOR/GPIO : Thor/hld/gpio ;
-use-project /THOR/SYSTEM : Thor/hld/system ;
-use-project /THOR/TIMER : Thor/hld/timer ;
+use-project /THOR/GPIO : Thor/hld/gpio ;        # High level GPIO driver project
+use-project /THOR/SYSTEM : Thor/hld/system ;    # High level System driver project
+use-project /THOR/TIMER : Thor/hld/timer ;      # High level Timer driver project
 
 # ------------------------------------------
 # Includes all common Thor headers
 # -----------------------------------------
-explicit_alias PUB 
-    : 
-    :   
-    : 
-    :   <include>.
-        <define>BOOST_NO_EXCEPTIONS
-        <Thor>enabled-F4:<use>/STM32F4//PUB
-        <Thor>enabled-F7:<use>/STM32F7//PUB 
+explicit_alias PUB : : : : 
+    <include>.
+    <define>BOOST_NO_EXCEPTIONS
+    <Thor>enabled-F4:<use>/STM32F4//PUB
+    <Thor>enabled-F7:<use>/STM32F7//PUB 
+    ;
+
+# Core libraries needed by every low level driver. Do *not*
+# add to this list frivolously. It will increase build times.
+explicit_alias CORE_LIBS : : : :
+    <library>/THOR/SYSTEM//LIB
+    <library>/THOR/TIMER//LIB
     ;
 
 # ------------------------------------------

@@ -7,12 +7,18 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
     explicit $(name) ;
     }
 
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/hld/gpio ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/hld/gpio ;
+
 # ====================================================
 # Public Targets
 # ====================================================
 explicit_alias PUB : : : : <define>THOR_HLD_GPIO <define>THOR_LLD_GPIO ;
 
-lib LIB
+# ====================================================
+# Static Libraries
+# ====================================================
+lib hld_gpio
   : hld_gpio_chimera.cpp
     hld_gpio_driver.cpp
 
@@ -23,52 +29,27 @@ lib LIB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
   ;
-explicit LIB ;
-
-explicit_alias COMPILE_LIB : LIB ;
-
-# ====================================================
-# Test Driver Library
-# ====================================================
-# lib TEST 
-#   : 
-  
-#   : <link>static
-#     <use>PUB
-#     <use>/AURORA//PUB
-#     <use>/CHIMERA//PUB
-#     <use>/THOR//PUB
-#     <use>/THOR//TARGET_PROPAGATED_OPTIONS
-#     <use>/GOOGLE//TEST_PUB
-#   ;
-# explicit TEST ;
-# explicit_alias COMPILE_TEST : TEST ;
+explicit hld_gpio ;
+explicit_alias LIB : : : : <library>hld_gpio ;
 
 # ====================================================
 # Test Driver Executable
 # ====================================================
-exe HLD_GPIO_TEST
+exe hld_gpio_test
   : test/test_entry.cpp
     test/test_hld_gpio_chimera.cpp
 
-    LIB
-    /GOOGLE//gtest
-    /CHIMERA/COMMON//LIB
+
+    /CHIMERA//CORE_LIBS
     /CHIMERA/PERIPH/GPIO//LIB
-    /CHIMERA/PERIPH/TIMER//LIB
-    /CHIMERA/SYSTEM//LIB
-    /CHIMERA/THREADING//LIB
-    /THOR/STM32F4/FLASH//LIB
-    /THOR/STM32F4/GPIO//LIB
-    /THOR/STM32F4/GPIO//DEVICE_TARGET
-    /THOR/STM32F4/NVIC//LIB
-    /THOR/STM32F4/POWER//LIB
-    /THOR/STM32F4/RCC//LIB
-    /THOR/STM32F4/RCC//DEVICE_TARGET
-    /THOR/SYSTEM//LIB
-    /THOR/TIMER//LIB
+    /GOOGLE//gtest
+    /STM32F4//CORE_LIBS
+    /STM32F4/GPIO//LIB
+    /THOR//CORE_LIBS
+    /THOR/GPIO//LIB
   
   : <link>static
+    <Thor>enabled-F4
     <use>PUB
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
@@ -77,5 +58,19 @@ exe HLD_GPIO_TEST
     <use>/GOOGLE//TEST_PUB
     <linkflags>-Wl,--no-as-needed
   ;
-explicit HLD_GPIO_TEST ;
+explicit hld_gpio_test ;
 
+# ====================================================
+# Installation Targets
+# ====================================================
+install INSTALL_TEST : hld_gpio_test
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+install INSTALL_LIB : hld_gpio
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+install INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;
