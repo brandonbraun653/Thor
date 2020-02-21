@@ -21,9 +21,6 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
-/* ARM Includes */
-#include <Thor/lld/common/cmsis/core/include/core_cm4.h>
-
 #if defined( TARGET_STM32F4 )
 
 #define STM32_RCC1_PERIPH_AVAILABLE

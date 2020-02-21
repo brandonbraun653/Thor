@@ -12,7 +12,7 @@
 #ifndef __CMSIS_WINDOWS_H
 #define __CMSIS_WINDOWS_H
 
-#if defined( _SIM ) && ( defined( WIN32 ) || defined( WIN64 ) )
+#if defined( _SIM )
 
 /* C/C++ Includes */
 #include <cstdint>
@@ -145,6 +145,6 @@ __STATIC_INLINE void __NVIC_SystemReset( void )
 {
 }
 
-#endif /* _SIM && ( WIN32 || WIN64 ) */
+#endif /* _SIM */
 
 #endif /* !__CMSIS_WINDOWS_H */

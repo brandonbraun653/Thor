@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_nvic_prj.hpp
  *
- *   Description:
+ *  Description:
  *    Pulls in target specific definitions and resources used in the actual driver
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once 
@@ -15,16 +15,16 @@
 /* Driver Includes */
 #include <Thor/hld/common/preprocessor.hpp>
 
-#if defined( CORTEX_M4 )
+#if defined( CORTEX_M4 ) && defined( EMBEDDED )
 #include <Thor/lld/common/cmsis/core/include/core_cm4.h>
+#elif defined( _SIM )
+#include <Thor/lld/common/cmsis/core/include/cmsis_windows.h>
+#else
+#pragma message( "Unknown NVIC core definitions" )
 #endif
 
 #if defined( STM32F446xx )
 #include <Thor/lld/stm32f4x/nvic/variant/hw_nvic_register_stm32f446xx.hpp>
 #endif
-
-#if defined( _SIM ) && ( defined( WIN32 ) || defined( WIN64 ) )
-#include <Thor/lld/common/cmsis/core/include/cmsis_windows.h>
-#endif 
 
 #endif /* !THOR_HW_DRIVER_NVIC_HPP */
