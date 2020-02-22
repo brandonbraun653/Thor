@@ -18,6 +18,7 @@ lib DEVICE_TARGET
     <link>static
     <use>/CHIMERA//PUB
     <use>/STM32F4//PUB
+    <use>/STM32F4/GPIO//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
   ;
 explicit DEVICE_TARGET ;
@@ -30,6 +31,7 @@ lib LIB
   : <link>static
     <use>/CHIMERA//PUB
     <use>/STM32F4//PUB
+    <use>/STM32F4/GPIO//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
   ;
 explicit LIB ;

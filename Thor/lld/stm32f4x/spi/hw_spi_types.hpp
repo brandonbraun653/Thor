@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_spi_types.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Types for the SPI Peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -21,11 +21,10 @@
 #include <Chimera/spi>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_prj.hpp>
-#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
+#include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
+#include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
 
 namespace Thor::Driver::SPI
 {
@@ -145,7 +144,7 @@ namespace Thor::Driver::SPI
   ------------------------------------------------*/
   namespace Runtime
   {
-  }      // namespace Runtime
+  }    // namespace Runtime
 
   /*------------------------------------------------
   State Machine

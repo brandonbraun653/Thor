@@ -1,9 +1,9 @@
 /********************************************************************************
  *  File Name:
- *    test_lld_gpio_driver.cpp
+ *    test_lld_spi_driver.cpp
  *
  *	 Description:
- *    Tests the Thor GPIO low level driver
+ *    Tests the Thor SPI driver
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
@@ -16,12 +16,10 @@
 #include <Chimera/gpio>
 
 /* Thor Includes */
-#include <Thor/lld/interface/gpio/gpio.hpp>
 
 
 TEST(PleasePass, PrettyPlease)
 {
   EXPECT_EQ(0, 0);
-  Thor::LLD::GPIO::initialize();
 }
 

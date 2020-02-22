@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_spi_driver_stm32f4.cpp
  *
- *   Description:
+ *  Description:
  *    STM32F4 specific driver implementation for SPI
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -18,17 +18,15 @@
 #include <Chimera/thread>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/definitions/interrupt_definitions.hpp>
-#include <Thor/dma.hpp>
-#include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_driver.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_mapping.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_prj.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_types.hpp>
+#include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
+#include <Thor/lld/stm32f4x/nvic/hw_nvic_driver.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
+#include <Thor/lld/stm32f4x/spi/hw_spi_driver.hpp>
+#include <Thor/lld/stm32f4x/spi/hw_spi_mapping.hpp>
+#include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
+#include <Thor/lld/stm32f4x/spi/hw_spi_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
 
 namespace Thor::Driver::SPI
 {
@@ -503,7 +501,6 @@ namespace Thor::Driver::SPI
     ------------------------------------------------*/
     if ( ( CR2 & CR2_ERRIE ) && ( SR & ( SR_CRCERR | SR_FRE | SR_MODF | SR_OVR ) ) ) 
     {
-      CHIMERA_INSERT_BREAKPOINT;
       txfr.status = Chimera::SPI::Status::TRANSFER_ERROR;
     }
 

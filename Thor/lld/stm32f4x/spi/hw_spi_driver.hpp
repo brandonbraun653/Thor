@@ -21,12 +21,11 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/common/interrupts/spi_interrupt_vectors.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_types.hpp>
-#include <Thor/drivers/model/spi_model.hpp>
+#include <Thor/lld/common/interrupts/spi_interrupt_vectors.hpp>
+#include <Thor/lld/interface/spi/spi_model.hpp>
+#include <Thor/lld/stm32f4x/spi/hw_spi_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
 
 namespace Thor::Driver::SPI
 {

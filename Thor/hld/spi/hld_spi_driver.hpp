@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    spi.hpp
  *
- *   Description:
- *    Thor SPI Interface
+ *  Description:
+ *    Thor SPI high level driver
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -22,12 +22,10 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/common/interrupts/spi_interrupt_vectors.hpp>
-#include <Thor/drivers/spi.hpp>
+#include <Thor/lld/interface/spi/spi.hpp>
 
 
-#if defined( THOR_CUSTOM_DRIVERS ) && ( THOR_DRIVER_SPI == 1 )
+#if defined( THOR_HLD_SPI )
 
 namespace Thor::SPI
 {

@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    dma_definitions.hpp
  *
- *   Description:
+ *  Description:
  *    Thor DMA Definitions
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -16,14 +16,11 @@
 #include <cstdint>
 #include <limits>
 
-/* Thor Includes */
-#include <Thor/headers.hpp>
-
 namespace Thor::DMA
 {
   /*------------------------------------------------
   Describes the available sources from which a DMA operation can
-  be started with.
+  be started with. These definitions are shared across STM32 devices.
   ------------------------------------------------*/
   using Source_t = uint8_t;
   namespace Source

@@ -78,9 +78,10 @@ local propagated_link_flags =
 
 use-project /STM32F4/FLASH : flash ;
 use-project /STM32F4/GPIO : gpio ;
+use-project /STM32F4/NVIC : nvic ;
 use-project /STM32F4/POWER : power ;
 use-project /STM32F4/RCC : rcc ;
-use-project /STM32F4/NVIC : nvic ;
+use-project /STM32F4/SPI : spi ;
   
 # ====================================================
 # Device Specific Libs: 
@@ -144,12 +145,10 @@ explicit ALIAS_MCU_OPTIONS ;
 # ====================================================
 explicit_alias PUB : : : :
     <define>TARGET_STM32F4
-    <define>THOR_LLD_GPIO
-    <define>THOR_LLD_RCC
-    <define>THOR_LLD_NVIC
-    <define>THOR_LLD_PWR
     <define>THOR_LLD_FLASH
     <define>THOR_LLD_NVIC
+    <define>THOR_LLD_PWR
+    <define>THOR_LLD_RCC
     ;
 
 explicit_alias CORE_LIBS : : : :
@@ -158,4 +157,14 @@ explicit_alias CORE_LIBS : : : :
     <library>/STM32F4/POWER//LIB
     <library>/STM32F4/RCC//LIB
     <library>/STM32F4/RCC//DEVICE_TARGET
+    ;
+
+explicit_alias INSTALL_ALL_LIB 
+    : /STM32F4/GPIO//INSTALL_LIB
+      /STM32F4/SPI//INSTALL_LIB
+    ;
+
+explicit_alias INSTALL_ALL_TEST
+    :   /STM32F4/GPIO//INSTALL_TEST
+        /STM32F4/SPI//INSTALL_TEST
     ;

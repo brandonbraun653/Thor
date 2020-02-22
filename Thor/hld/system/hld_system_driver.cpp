@@ -20,7 +20,7 @@
 // #include <Thor/system.hpp>
 // #include <Thor/dma.hpp>
 #include <Thor/gpio>
-// #include <Thor/spi.hpp>
+#include <Thor/spi>
 // #include <Thor/uart.hpp>
 // #include <Thor/usart.hpp>
 // #include <Thor/watchdog.hpp>
@@ -62,7 +62,7 @@ namespace Chimera::System
     Thor::Watchdog::initializeIWDG();
 #endif 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
     Thor::SPI::initialize();
 #endif 
 

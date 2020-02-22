@@ -7,8 +7,13 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
     explicit $(name) ;
     }
 
-local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/lld/gpio ;
-local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/gpio ;
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/lld/stm32f4/gpio ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/stm32f4/gpio ;
+
+# ====================================================
+# Public Targets
+# ====================================================
+explicit_alias PUB : : : : <define>THOR_LLD_GPIO ;
 
 # ====================================================
 # Static Libraries
@@ -18,6 +23,7 @@ lib lld_gpio_chip
 
   : <Thor>enabled-F446
     <link>static
+    <use>PUB
     <use>/CHIMERA//PUB
     <use>/STM32F4//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
@@ -26,10 +32,10 @@ explicit lld_gpio_chip ;
 explicit_alias DEVICE_TARGET : : : : <library>lld_gpio_chip ;
 
 lib lld_gpio
-  : hw_gpio_driver_stm32f4.cpp
-    hw_gpio_mapping.cpp
+  : [ glob *.cpp ]
 
   : <link>static
+    <use>PUB
     <use>/CHIMERA//PUB
     <use>/STM32F4//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
@@ -41,8 +47,7 @@ explicit_alias LIB : : : : <library>lld_gpio <library>lld_gpio_chip ;
 # Test Driver Executable
 # ====================================================
 exe lld_gpio_test
-  : test/test_entry.cpp
-    test/test_lld_gpio_driver.cpp
+  : [ glob test/*.cpp ]
 
     /CHIMERA//CORE_LIBS
     /CHIMERA/PERIPH/GPIO//LIB
@@ -53,10 +58,12 @@ exe lld_gpio_test
   
   : <link>static
     <Thor>enabled-F4
+    <use>PUB
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
     <use>/GOOGLE//TEST_PUB
     <use>/THOR//PUB
+    <use>/STM32F4//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
     <linkflags>-Wl,--no-as-needed
   ;
@@ -75,4 +82,4 @@ install INSTALL_LIB : lld_gpio lld_gpio_chip
     <variant>debug:<location>$(dbg_install_dir)
   ;
 
-install INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;
+explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

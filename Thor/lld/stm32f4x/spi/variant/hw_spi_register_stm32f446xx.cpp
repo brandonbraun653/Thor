@@ -1,24 +1,23 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_spi_register_stm32f446xx.cpp
  *
- *   Description:
+ *  Description:
  *    Explicit STM32F446xx SPI data and routines
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/dma.hpp>
-#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_driver.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_mapping.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_register_stm32f446xx.hpp>
-#include <Thor/drivers/f4/spi/hw_spi_types.hpp>
+#include <Thor/hld/dma/dma_definitions.hpp>
+#include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
+#include <Thor/lld/stm32f4x/spi/hw_spi_driver.hpp>
+#include <Thor/lld/stm32f4x/spi/hw_spi_mapping.hpp>
+#include <Thor/lld/stm32f4x/spi/hw_spi_types.hpp>
+#include <Thor/lld/stm32f4x/spi/variant/hw_spi_register_stm32f446xx.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 ) && defined( STM32F446xx )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI ) && defined( STM32F446xx )
 
 namespace Thor::Driver::SPI
 {

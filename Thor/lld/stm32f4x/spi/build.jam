@@ -1,0 +1,91 @@
+# ====================================================
+# Local Rules 
+# ====================================================
+local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
+    {
+    alias $(name) : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
+    explicit $(name) ;
+    }
+
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/lld/stm32f4/spi ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/stm32f4/spi ;
+
+# ====================================================
+# Public Targets
+# ====================================================
+explicit_alias PUB : : : : <define>THOR_LLD_SPI ;
+
+# ====================================================
+# Static Libraries
+# ====================================================
+lib lld_spi_chip
+  : variant/hw_spi_register_stm32f446xx.cpp
+
+  : <Thor>enabled-F446
+    <link>static
+    <use>/CHIMERA//PUB
+    <use>/STM32F4//PUB
+    <use>/STM32F4/GPIO//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>PUB
+  ;
+explicit lld_spi_chip ;
+explicit_alias DEVICE_TARGET : : : : <library>lld_spi_chip ;
+
+lib lld_spi
+  : [ glob *.cpp ]
+
+  : <link>static
+    <use>/CHIMERA//PUB
+    <use>/STM32F4//PUB
+    <use>/STM32F4/GPIO//PUB
+    <use>PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+  ;
+explicit lld_spi ;
+explicit_alias LIB : : : : <library>lld_spi <library>lld_spi_chip ;
+
+# ====================================================
+# Test Driver Executable
+# ====================================================
+exe lld_spi_test
+  : [ glob test/*.cpp ]
+
+    /CHIMERA//CORE_LIBS
+    /CHIMERA/ALGORITHM//LIB
+    /CHIMERA/PERIPH/GPIO//LIB
+    /GOOGLE//gtest
+    /STM32F4//CORE_LIBS
+    /STM32F4/GPIO//LIB
+    /STM32F4/SPI//LIB
+    /THOR//CORE_LIBS
+    /THOR/GPIO//LIB
+    /THOR/SPI//LIB
+  
+  : <link>static
+    <Thor>enabled-F4
+    <use>/AURORA//PUB
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/STM32F4/GPIO//PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>PUB
+    <linkflags>-Wl,--no-as-needed
+  ;
+explicit lld_spi_test ;
+
+# ====================================================
+# Installation Targets
+# ====================================================
+install INSTALL_TEST : lld_spi_test
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+install INSTALL_LIB : lld_spi lld_spi_chip
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

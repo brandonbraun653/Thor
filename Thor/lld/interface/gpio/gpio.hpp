@@ -17,10 +17,10 @@
 
 #if defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_driver.hpp>
-#endif
-
-#if defined( TARGET_STM32F7 )
+#elif defined( TARGET_STM32F7 )
 #include <Thor/drivers/f7/gpio/hw_gpio_driver.hpp>
+#else
+#pragma message( "Unknown target device for GPIO low level driver" )
 #endif
 
 #endif /* !THOR_GPIO_CONFIG_HPP */

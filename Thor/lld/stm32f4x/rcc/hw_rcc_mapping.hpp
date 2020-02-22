@@ -24,7 +24,7 @@
 /* Driver Includes */
 // #include <Thor/lld/stm32f4x/dma/hw_dma_prj.hpp>
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_prj.hpp>
-// #include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
+#include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
 // #include <Thor/lld/stm32f4x/uart/hw_uart_prj.hpp>
 // #include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
 // #include <Thor/lld/stm32f4x/wwdg/hw_wwdg_prj.hpp>
@@ -97,7 +97,7 @@ namespace Thor::Driver::RCC
      */
     extern void SPIInit();
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
 
     static constexpr size_t spiTableSize = Thor::Driver::SPI::NUM_SPI_PERIPHS;
 

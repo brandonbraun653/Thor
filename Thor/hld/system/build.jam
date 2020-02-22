@@ -10,7 +10,7 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
 # ====================================================
 # Public Targets
 # ====================================================
-explicit_alias PUB : : : : <define>THOR_HLD_SYSTEM <define>THOR_LLD_SYSTEM ;
+explicit_alias PUB : : : : <define>THOR_HLD_SYSTEM ;
 
 lib LIB
   : hld_system_driver.cpp

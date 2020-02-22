@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    thor_custom_spi.cpp
  *
- *   Description:
+ *  Description:
  *    SPI driver for Thor
  *
- *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -22,16 +22,13 @@
 #include <Chimera/event>
 
 /* Thor Includes */
-#include <Thor/gpio.hpp>
-#include <Thor/spi.hpp>
+#include <Thor/gpio>
+#include <Thor/spi>
 
-#include <Thor/drivers/common/types/spi_types.hpp>
-
-
-#if defined( THOR_CUSTOM_DRIVERS ) && ( THOR_DRIVER_SPI == 1 )
+#if defined( THOR_HLD_SPI )
 
 static std::array<Thor::SPI::SPIClass *, Thor::Driver::SPI::NUM_SPI_PERIPHS> SPIClassObjects;
-static std::array<TaskHandle_t, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorHandles;
+static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorHandles;
 static std::array<Chimera::Threading::BinarySemaphore, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorSignals;
 static std::array<Chimera::Function::void_func_void_ptr, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorThreads;
 
@@ -64,35 +61,35 @@ namespace Thor::SPI
 
   static size_t s_driver_initialized;
 
-  static void destroyClassObject( const size_t channel )
-  {
-    if ( ( channel < SPIClassObjects.size() ) && SPIClassObjects[ channel ] )
-    {
-      SPIClassObjects[ channel ]->deInit();
-      vPortFree( SPIClassObjects[ channel ] );
-    }
+  // static void destroyClassObject( const size_t channel )
+  // {
+  //   // if ( ( channel < SPIClassObjects.size() ) && SPIClassObjects[ channel ] )
+  //   // {
+  //   //   SPIClassObjects[ channel ]->deInit();
+  //   //   vPortFree( SPIClassObjects[ channel ] );
+  //   // }
 
-    SPIClassObjects[ channel ] = nullptr;
-  }
+  //   // SPIClassObjects[ channel ] = nullptr;
+  // }
 
-  static void destroyThreadHandle( const size_t channel )
-  {
-    if ( ( channel < postProcessorHandles.size() ) && postProcessorHandles[ channel ] )
-    {
-      vTaskDelete( postProcessorHandles[ channel ] );
-      vPortFree( postProcessorHandles[ channel ] );
-    }
+  // static void destroyThreadHandle( const size_t channel )
+  // {
+  //   // if ( ( channel < postProcessorHandles.size() ) && postProcessorHandles[ channel ] )
+  //   // {
+  //   //   vTaskDelete( postProcessorHandles[ channel ] );
+  //   //   vPortFree( postProcessorHandles[ channel ] );
+  //   // }
 
-    postProcessorHandles[ channel ] = nullptr;
-  }
+  //   // postProcessorHandles[ channel ] = nullptr;
+  // }
 
-  static void destroyThreadFunction( const size_t channel )
-  {
-    if ( channel < postProcessorThreads.size() )
-    {
-      postProcessorThreads[ channel ] = nullptr;
-    }
-  }
+  // static void destroyThreadFunction( const size_t channel )
+  // {
+  //   // if ( channel < postProcessorThreads.size() )
+  //   // {
+  //   //   postProcessorThreads[ channel ] = nullptr;
+  //   // }
+  // }
 
   void initialize()
   {
@@ -106,26 +103,26 @@ namespace Thor::SPI
     /*------------------------------------------------
     Reset driver object memory
     ------------------------------------------------*/
-    for ( size_t x = 0; x < SPIClassObjects.size(); x++ )
-    {
-      destroyClassObject( x );
-    }
+    // for ( size_t x = 0; x < SPIClassObjects.size(); x++ )
+    // {
+    //   destroyClassObject( x );
+    // }
 
     /*------------------------------------------------
     Reset thread handle memory
     ------------------------------------------------*/
-    for ( size_t x = 0; x < postProcessorHandles.size(); x++ )
-    {
-      destroyThreadHandle( x );
-    }
+    // for ( size_t x = 0; x < postProcessorHandles.size(); x++ )
+    // {
+    //   destroyThreadHandle( x );
+    // }
 
     /*------------------------------------------------
     Reset and register the post processor threads
     ------------------------------------------------*/
-    for ( size_t x = 0; x < postProcessorThreads.size(); x++ )
-    {
-      destroyThreadFunction( x );
-    }
+    // for ( size_t x = 0; x < postProcessorThreads.size(); x++ )
+    // {
+    //   destroyThreadFunction( x );
+    // }
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
     postProcessorThreads[ Thor::Driver::SPI::SPI1_RESOURCE_INDEX ] = SPI1ISRPostProcessorThread;
@@ -159,7 +156,7 @@ namespace Thor::SPI
     /*------------------------------------------------
     Default initialize class member variables
     ------------------------------------------------*/
-    memset( &config, 0, sizeof( config ) );
+    config = {};
   }
 
   SPIClass::~SPIClass()
@@ -264,7 +261,8 @@ namespace Thor::SPI
     ------------------------------------------------*/
     if ( postProcessorThreads[ resourceIndex ] )
     {
-      postProcessorHandles[ resourceIndex ] = nullptr;
+      // Yeah this is gonna be bad if someone re-initializes the SPI driver....
+      //postProcessorHandles[ resourceIndex ] = nullptr;
 
       driver->attachISRWakeup( &postProcessorSignals[ resourceIndex ] );
 

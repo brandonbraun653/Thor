@@ -77,6 +77,7 @@ use-project /STM32F4 : Thor/lld/stm32f4x ;      # Low level STM32F4xxx driver pr
 
 
 use-project /THOR/GPIO : Thor/hld/gpio ;        # High level GPIO driver project
+use-project /THOR/SPI : Thor/hld/spi ;          # High level SPI driver project
 use-project /THOR/SYSTEM : Thor/hld/system ;    # High level System driver project
 use-project /THOR/TIMER : Thor/hld/timer ;      # High level Timer driver project
 
@@ -121,7 +122,12 @@ alias TARGET_PROPAGATED_OPTIONS
 explicit TARGET_PROPAGATED_OPTIONS ;                # Thor chip specific options that should be propagated to all targets using Thor
 
 
+explicit_alias INSTALL_ALL_HLD_LIB 
+    :   /THOR/GPIO//INSTALL_LIB
+        /THOR/SPI//INSTALL_LIB
+    ;
 
-explicit_alias TEST_COMPILE_HLD
-    :   /GPIO//LIB
+explicit_alias INSTALL_ALL_HLD_TEST
+    :   /THOR/GPIO//INSTALL_TEST
+        /THOR/SPI//INSTALL_TEST
     ;

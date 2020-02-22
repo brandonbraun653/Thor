@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    spi_model.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Driver SPI Model
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -17,14 +17,14 @@
 #include <Chimera/spi>
 
 /* Thor Includes */
-#include <Thor/drivers/common/types/spi_types.hpp>
+#include <Thor/lld/interface/spi/spi_types.hpp>
 
 namespace Thor::Driver::SPI
 {
   /**
    *  Checks if the given hardware channel is supported on this device.
    *
-   *  @param[in]  channel   The channel number to be checked 
+   *  @param[in]  channel   The channel number to be checked
    *  @return bool
    */
   bool isChannelSupported( const size_t channel );

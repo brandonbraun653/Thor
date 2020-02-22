@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_spi_register_stm32f446xx.hpp
  *
- *   Description:
+ *  Description:
  *    Explicit hardware register definitions for the STM32F446xx SPI peripherals
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -20,10 +20,9 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_SPI == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
 
 #define STM32_SPI1_PERIPH_AVAILABLE
 #define STM32_SPI2_PERIPH_AVAILABLE

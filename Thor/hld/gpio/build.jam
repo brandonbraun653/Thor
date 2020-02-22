@@ -13,21 +13,21 @@ local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/hld/gpio ;
 # ====================================================
 # Public Targets
 # ====================================================
-explicit_alias PUB : : : : <define>THOR_HLD_GPIO <define>THOR_LLD_GPIO ;
+explicit_alias PUB : : : : <define>THOR_HLD_GPIO ;
 
 # ====================================================
 # Static Libraries
 # ====================================================
 lib hld_gpio
-  : hld_gpio_chimera.cpp
-    hld_gpio_driver.cpp
+  : [ glob *.cpp ]
 
   : <link>static
-    <use>PUB
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
+    <use>/STM32F4/GPIO//PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>PUB
   ;
 explicit hld_gpio ;
 explicit_alias LIB : : : : <library>hld_gpio ;
@@ -36,9 +36,7 @@ explicit_alias LIB : : : : <library>hld_gpio ;
 # Test Driver Executable
 # ====================================================
 exe hld_gpio_test
-  : test/test_entry.cpp
-    test/test_hld_gpio_chimera.cpp
-
+  : [ glob test/*.cpp ]
 
     /CHIMERA//CORE_LIBS
     /CHIMERA/PERIPH/GPIO//LIB
@@ -54,6 +52,8 @@ exe hld_gpio_test
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
     <use>/THOR//PUB
+    <use>/THOR/GPIO//PUB
+    <use>/STM32F4/GPIO//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
     <use>/GOOGLE//TEST_PUB
     <linkflags>-Wl,--no-as-needed
@@ -73,4 +73,4 @@ install INSTALL_LIB : hld_gpio
     <variant>debug:<location>$(dbg_install_dir)
   ;
 
-install INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;
+explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;
