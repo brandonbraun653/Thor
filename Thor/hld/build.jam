@@ -21,6 +21,6 @@ explicit_alias INSTALL_ALL_LIB
     ;
 
 explicit_alias INSTALL_ALL_TST
-    :   /THOR/HDL/GPIO//INSTALL_TEST
-        /THOR/HDL/SPI//INSTALL_TEST
+    :   /THOR/HLD/GPIO//INSTALL_TEST
+        /THOR/HLD/SPI//INSTALL_TEST
     ;
