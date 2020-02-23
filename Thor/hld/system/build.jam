@@ -7,29 +7,68 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
     explicit $(name) ;
     }
 
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/hld/system ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/hld/system ;
+
 # ====================================================
 # Public Targets
 # ====================================================
 explicit_alias PUB : : : : <define>THOR_HLD_SYSTEM ;
 
-lib LIB
-  : hld_system_driver.cpp
+lib hld_system
+  : [ glob *.cpp ]
 
-  : <Thor>enabled-F4
-    <link>static
-    <use>PUB
+  : <link>static
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
-    #<use>/THOR/HLD/SPI//PUB
-    <use>/THOR/LLD/STM32F4//PUB
-    <use>/THOR/LLD/STM32F4/GPIO//PUB
-    <use>/THOR/LLD/STM32F4/FLASH//PUB
-    <use>/THOR/LLD/STM32F4/NVIC//PUB
-    <use>/THOR/LLD/STM32F4/POWER//PUB
-    <use>/THOR/LLD/STM32F4/RCC//PUB
-    #<use>/THOR/LLD/STM32F4/SPI//PUB
   ;
-explicit LIB ;
-explicit_alias COMPILE_LIB : LIB ;
+explicit hld_system ;
+explicit_alias LIB : hld_system : : : <library>hld_system ;
+
+# ====================================================
+# Test Driver Executable
+# ====================================================
+exe hld_system_test
+  : [ glob test/*.cpp ]
+
+    /CHIMERA/COMMON//LIB
+    /CHIMERA/SYSTEM//LIB
+    /CHIMERA/THREADING//LIB
+    /GOOGLE//gtest
+    /THOR/HLD/GPIO//LIB
+    /THOR/HLD/SPI//LIB
+    /THOR/HLD/SYSTEM//LIB
+    /THOR/LLD/STM32F4/FLASH//LIB
+    /THOR/LLD/STM32F4/GPIO//LIB
+    /THOR/LLD/STM32F4/NVIC//LIB 
+    /THOR/LLD/STM32F4/POWER//LIB
+    /THOR/LLD/STM32F4/RCC//LIB
+  
+  : <link>static
+    <Thor>enabled-F4
+    <use>/AURORA//PUB
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <linkflags>-Wl,--no-as-needed
+  ;
+explicit hld_system_test ;
+explicit_alias TEST : hld_system_test : : : <source>hld_system_test ;
+
+# ====================================================
+# Installation Targets
+# ====================================================
+install INSTALL_TEST : hld_system_test
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+install INSTALL_LIB : hld_system
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

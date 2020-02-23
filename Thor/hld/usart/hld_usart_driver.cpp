@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    thor_custom_usart.cpp
  *
- *   Description:
+ *  Description:
  *    Implements the custom driver variant of the Thor USART interface.
  *
- *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -21,12 +21,9 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
-#include <Thor/event.hpp>
-#include <Thor/usart.hpp>
-#include <Thor/drivers/usart.hpp>
-#include <Thor/defaults/serial_defaults.hpp>
-
-#if defined( THOR_DRIVER_USART ) && ( THOR_DRIVER_USART == 1 )
+#include <Thor/event>
+#include <Thor/usart>
+#include <Thor/lld/interface/usart/usart.hpp>
 
 namespace USARTDriver = Thor::Driver::USART;
 
@@ -724,5 +721,3 @@ static void USART6ISRPostProcessorThread( void *argument )
     }
   }
 }
-
-#endif /* THOR_DRIVER_USART */

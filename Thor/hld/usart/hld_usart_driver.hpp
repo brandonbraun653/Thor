@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    usart.hpp
+ *    hld_usart_driver.hpp
  *
  *  Description:
  *    USART interface for Thor. This file supports the top level interface layer
@@ -28,15 +28,10 @@
 #include <Chimera/serial>
 
 /* Thor Includes */
-#include <Thor/drivers/usart.hpp>
-#include <Thor/gpio.hpp>
-#include <Thor/types/interrupt_types.hpp>
-
+#include <Thor/gpio>
 
 namespace Thor::USART
 {
-#if ( THOR_CUSTOM_DRIVERS == 1 ) && ( THOR_DRIVER_USART == 1 )
-  
   /**
    *  Initialize the driver
    *  
@@ -129,8 +124,6 @@ namespace Thor::USART
 
   using USARTClass_sPtr = std::shared_ptr<USARTClass>;
   using USARTClass_uPtr = std::unique_ptr<USARTClass>;
-
-#endif /* THOR_CUSTOM_DRIVERS && THOR_DRIVER_USART */
-
 }    // namespace Thor::USART
+
 #endif /* !THOR_USART_HPP */

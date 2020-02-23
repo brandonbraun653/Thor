@@ -1,0 +1,19 @@
+/********************************************************************************
+ *  File Name:
+ *    uart
+ * 
+ *  Description:
+ *    Thor UART Includes
+ * 
+ *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_UART_INCLUDES
+#define THOR_UART_INCLUDES
+
+#include <Thor/hld/uart/hld_uart_driver.hpp>
+#include <Thor/hld/uart/hld_uart_intf.hpp>
+#include <Thor/hld/uart/hld_uart_types.hpp>
+
+#endif /* !THOR_UART_INCLUDES */

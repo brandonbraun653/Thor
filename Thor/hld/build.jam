@@ -8,19 +8,34 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
     }
 
 
+# ====================================================
+# Public Thor Components
+# ====================================================
+use-project /THOR/HLD/GPIO    : gpio ;  
+use-project /THOR/HLD/SPI     : spi ;   
+use-project /THOR/HLD/SYSTEM  : system ;
+use-project /THOR/HLD/TIMER   : timer ; 
+use-project /THOR/HLD/SYSTEM  : system ;
+use-project /THOR/HLD/UART    : uart ;
+use-project /THOR/HLD/USART   : usart ;
 
-use-project /THOR/HLD/GPIO : gpio ;        # High level GPIO driver project
-use-project /THOR/HLD/SPI : spi ;          # High level SPI driver project
-use-project /THOR/HLD/SYSTEM : system ;    # High level System driver project
-use-project /THOR/HLD/TIMER : timer ;      # High level Timer driver project
+# ====================================================
+# Helpful Targets
+# ====================================================
+explicit_alias INSTALL_ALL_LIB :
+  /THOR/HLD/GPIO//INSTALL_LIB
+  /THOR/HLD/SPI//INSTALL_LIB
+  /THOR/HLD/SYSTEM//INSTALL_LIB
+  /THOR/HLD/TIMER//INSTALL_LIB
+  /THOR/HLD/UART//INSTALL_LIB
+  /THOR/HLD/USART//INSTALL_LIB
+  ;
 
-
-explicit_alias INSTALL_ALL_LIB 
-    :   /THOR/HLD/GPIO//INSTALL_LIB
-        /THOR/HLD/SPI//INSTALL_LIB
-    ;
-
-explicit_alias INSTALL_ALL_TST
-    :   /THOR/HLD/GPIO//INSTALL_TEST
-        /THOR/HLD/SPI//INSTALL_TEST
-    ;
+explicit_alias INSTALL_ALL_TST :
+  /THOR/HLD/GPIO//INSTALL_TEST
+  /THOR/HLD/SPI//INSTALL_TEST
+  /THOR/HLD/SYSTEM//INSTALL_TEST
+  /THOR/HLD/TIMER//INSTALL_TEST
+  /THOR/HLD/UART//INSTALL_TEST
+  /THOR/HLD/USART//INSTALL_TEST
+  ;

@@ -54,17 +54,13 @@ namespace Chimera::System
     Thor::DMA::DMAClass::get()->init();
 #endif
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_HLD_GPIO )
     Thor::GPIO::initialize();
-#endif 
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
     Thor::Watchdog::initializeIWDG();
 #endif 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
     Thor::SPI::initialize();
-#endif 
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
     Thor::UART::initialize();

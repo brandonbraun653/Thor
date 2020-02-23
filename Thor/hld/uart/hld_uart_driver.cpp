@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
- *    thor_custom_UART.cpp
+ *  File Name:
+ *    hld_uart_driver.cpp
  *
- *   Description:
+ *  Description:
  *    Implements the custom driver variant of the Thor UART interface.
  *
- *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Aurora Includes */
@@ -14,8 +14,6 @@
 /* Thor Includes */
 #include <Thor/uart.hpp>
 #include <Thor/drivers/uart.hpp>
-
-#if defined( THOR_DRIVER_UART ) && ( THOR_DRIVER_UART == 1 )
 
 namespace Chimera::UART::Backend
 {
