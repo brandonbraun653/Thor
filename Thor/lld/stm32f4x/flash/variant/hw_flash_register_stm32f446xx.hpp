@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_flash_register_stm32f446xx.hpp
  *
- *   Description:
+ *  Description:
  *    Implements Flash register definitions for the STM32F446xx chips
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -18,11 +18,9 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/system/sys_memory_map_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_FLASH )
-
 #define STM32_FLASH1_AVAILABLE
 
-namespace Thor::Driver::Flash
+namespace Thor::LLD::FLASH
 {
   static constexpr uint32_t FLASH_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x3C00U;
 
@@ -214,7 +212,6 @@ namespace Thor::Driver::Flash
   static constexpr uint32_t OPTCR1_nWRP_9   = ( 0x200U << OPTCR1_nWRP_Pos );
   static constexpr uint32_t OPTCR1_nWRP_10  = ( 0x400U << OPTCR1_nWRP_Pos );
   static constexpr uint32_t OPTCR1_nWRP_11  = ( 0x800U << OPTCR1_nWRP_Pos );
-}
+}    // namespace Thor::LLD::FLASH
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_FLASH */
 #endif /* !THOR_HW_DRIVER_FLASH_REGISTER_STM32F446XX_HPP */

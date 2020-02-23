@@ -7,30 +7,58 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
     explicit $(name) ;
     }
 
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/lld/stm32f4/nvic ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/stm32f4/nvic ;
+
 # ====================================================
 # Public Targets
 # ====================================================
-# lib DEVICE_TARGET
-#   : variant/hw_rcc_register_stm32f446xx.cpp
-#     config/hw_rcc_config_stm32f446xx.cpp
+explicit_alias PUB : : : : <define>THOR_LLD_NVIC ;
 
-#   : <Thor>enabled-F446
-#     <link>static
-#     <use>/CHIMERA//PUB
-#     <use>/STM32F4//PUB
-#     <use>/THOR//TARGET_PROPAGATED_OPTIONS
-#   ;
-# explicit DEVICE_TARGET ;
-
-
-lib LIB
-  : hw_nvic_driver_stm32f4.cpp
+lib lld_nvic
+  : [ glob *.cpp ]
 
   : <link>static
     <use>/CHIMERA//PUB
-    <use>/STM32F4//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32F4//PUB
+    <use>/THOR/LLD/STM32F4/NVIC//PUB
   ;
-explicit LIB ;
+explicit lld_nvic ;
+explicit_alias LIB : lld_nvic : : : <library>lld_nvic ;
 
-explicit_alias COMPILE_LIB : LIB ;
+# ====================================================
+# Test Driver Executable
+# ====================================================
+exe lld_nvic_test
+  : [ glob test/*.cpp ]
+
+    /GOOGLE//gtest
+    /THOR/LLD/STM32F4/NVIC//LIB
+  
+  : <link>static
+    <Thor>enabled-F4
+    <use>/AURORA//PUB
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <linkflags>-Wl,--no-as-needed
+  ;
+explicit lld_nvic_test ;
+explicit_alias TEST : lld_nvic_test : : : <source>lld_nvic_test ;
+
+# ====================================================
+# Installation Targets
+# ====================================================
+install INSTALL_TEST : lld_nvic_test
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+install INSTALL_LIB : lld_nvic
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

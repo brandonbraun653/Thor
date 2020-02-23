@@ -19,8 +19,6 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
-
 namespace Thor::LLD::GPIO
 {
   struct RegisterMap
@@ -87,5 +85,4 @@ namespace Thor::LLD::GPIO
   };
 }    // namespace Thor::LLD::GPIO
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_GPIO_TYPEGPIOHS_HPP */

@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_gpio_driver_stm32f4.cpp
  *
- *   Description:
+ *  Description:
  *    Implements the low level driver for the GPIO peripheral
  *
- *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
@@ -63,7 +63,7 @@ namespace Thor::LLD::GPIO
 
   void Driver::clockEnable()
   {
-    auto rcc   = Thor::Driver::RCC::PeripheralController::get();
+    auto rcc   = Thor::LLD::RCC::PeripheralController::get();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
@@ -71,7 +71,7 @@ namespace Thor::LLD::GPIO
 
   void Driver::clockDisable()
   {
-    auto rcc   = Thor::Driver::RCC::PeripheralController::get();
+    auto rcc   = Thor::LLD::RCC::PeripheralController::get();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );

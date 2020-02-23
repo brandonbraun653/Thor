@@ -37,7 +37,7 @@
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC )
 
-namespace Thor::Driver::RCC
+namespace Thor::LLD::RCC
 {
   /*------------------------------------------------
   Local Variables and Constants
@@ -295,7 +295,7 @@ namespace Thor::Driver::RCC
   void initialize()
   {
     using namespace Chimera::Peripheral;
-    using namespace Thor::Driver::RCC;
+    using namespace Thor::LLD::RCC;
 
     static bool initialized = false;
 
@@ -376,7 +376,7 @@ namespace Thor::Driver::RCC
     /*------------------------------------------------
     Set the voltage scaling to allow us to achieve max clock
     ------------------------------------------------*/
-    PWR::CR::VOS::set( Thor::Driver::PWR::PWR_PERIPH, PWR::CR::VOS::VOLTAGE_SCALE_1 );
+    PWR::CR::VOS::set( Thor::LLD::PWR::PWR_PERIPH, PWR::CR::VOS::VOLTAGE_SCALE_1 );
 
     /*------------------------------------------------
     Configure the system clocks
@@ -617,26 +617,17 @@ namespace Thor::Driver::RCC
       /*------------------------------------------------
       Wait for the oscillator to achieve the desired state
       ------------------------------------------------*/
-      auto tickstart = Chimera::millis();
 
       if ( init->HSEState != HSEConfig::OFF )
       {
         while ( ( HSERDY::get( RCC1_PERIPH ) == locked ) || ( HSEON::get( RCC1_PERIPH ) == disabled ) )
         {
-          if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
-          {
-            return Chimera::CommonStatusCodes::TIMEOUT;
-          }
         }
       }
       else
       {
         while ( HSEON::get( RCC1_PERIPH ) != disabled )
         {
-          if ( ( Chimera::millis() - tickstart ) > HSE_TIMEOUT_VALUE_MS )
-          {
-            return Chimera::CommonStatusCodes::TIMEOUT;
-          }
         }
       }
     }
@@ -681,8 +672,6 @@ namespace Thor::Driver::RCC
       /*------------------------------------------------
       Try to enter the desired configuration state
       ------------------------------------------------*/
-      auto tickstart = Chimera::millis();
-
       if ( init->HSIState != HSIConfig::OFF )
       {
         /*------------------------------------------------
@@ -695,10 +684,6 @@ namespace Thor::Driver::RCC
         ------------------------------------------------*/
         while ( HSIRDY::get( RCC1_PERIPH ) == unlocked )
         {
-          if ( ( Chimera::millis() - tickstart ) > HSI_TIMEOUT_VALUE_MS )
-          {
-            return Chimera::CommonStatusCodes::TIMEOUT;
-          }
         }
 
         /*------------------------------------------------
@@ -718,10 +703,6 @@ namespace Thor::Driver::RCC
         ------------------------------------------------*/
         while ( HSIRDY::get( RCC1_PERIPH ) == locked )
         {
-          if ( ( Chimera::millis() - tickstart ) > HSI_TIMEOUT_VALUE_MS )
-          {
-            return Chimera::CommonStatusCodes::TIMEOUT;
-          }
         }
       }
     }
@@ -742,8 +723,6 @@ namespace Thor::Driver::RCC
     /*------------------------------------------------
     Set the clock configuration to the desired state
     ------------------------------------------------*/
-    auto tickstart = Chimera::millis();
-
     if ( init->LSIState != LSIConfig::OFF )
     {
       LSION::set( RCC1_PERIPH, LSIConfig::ON );
@@ -751,10 +730,6 @@ namespace Thor::Driver::RCC
       /* Wait till LSI is ready */
       while ( LSION::get( RCC1_PERIPH ) == unlocked )
       {
-        if ( ( Chimera::millis() - tickstart ) > LSI_TIMEOUT_VALUE_MS )
-        {
-          return Chimera::CommonStatusCodes::TIMEOUT;
-        }
       }
     }
     else
@@ -764,10 +739,6 @@ namespace Thor::Driver::RCC
       /* Wait till LSI is ready */
       while ( LSION::get( RCC1_PERIPH ) == locked )
       {
-        if ( ( Chimera::millis() - tickstart ) > LSI_TIMEOUT_VALUE_MS )
-        {
-          return Chimera::CommonStatusCodes::TIMEOUT;
-        }
       }
     }
 
@@ -786,7 +757,6 @@ namespace Thor::Driver::RCC
     using namespace BDCR;
 
     bool pwrclkchanged = false;
-    size_t tickstart = 0u;
 
     /*------------------------------------------------
     Updating the LSE configuration requires write access
@@ -800,19 +770,13 @@ namespace Thor::Driver::RCC
     /*------------------------------------------------
     Enable write access to RTC and RTC Backup registers
     ------------------------------------------------*/
-    if ( !PWR::CR::DBP::get( Thor::Driver::PWR::PWR_PERIPH ) )
+    if ( !Thor::LLD::PWR::CR::DBP::get( Thor::LLD::PWR::PWR_PERIPH ) )
     {
-      PWR::CR::DBP::set( Thor::Driver::PWR::PWR_PERIPH, PWR::CR_DBP );
+      PWR::CR::DBP::set( Thor::LLD::PWR::PWR_PERIPH, Thor::LLD::PWR::CR_DBP );
 
       /* Wait for Backup domain Write protection disable */
-      tickstart = Chimera::millis();
-
-      while ( !PWR::CR::DBP::get( Thor::Driver::PWR::PWR_PERIPH ) )
+      while ( !Thor::LLD::PWR::CR::DBP::get( Thor::LLD::PWR::PWR_PERIPH ) )
       {
-        if ( ( Chimera::millis() - tickstart ) > DBP_TIMEOUT_VALUE_MS )
-        {
-          return Chimera::CommonStatusCodes::TIMEOUT;
-        }
       }
     }
 
@@ -841,14 +805,8 @@ namespace Thor::Driver::RCC
       /*------------------------------------------------
       Wait until the flag goes low to indicate the clock has been disabled
       ------------------------------------------------*/
-      tickstart = Chimera::millis();
-
       while ( LSERDY::get( RCC1_PERIPH ) )
       {
-        if ( ( Chimera::millis() - tickstart ) > LSE_TIMEOUT_VALUE_MS )
-        {
-          return Chimera::CommonStatusCodes::TIMEOUT;
-        }
       }
     }
     else
@@ -856,14 +814,8 @@ namespace Thor::Driver::RCC
       /*------------------------------------------------
       Wait until the flag goes high to indicate the clock is ready
       ------------------------------------------------*/
-      tickstart = Chimera::millis();
-
       while ( !LSERDY::get( RCC1_PERIPH ) )
       {
-        if ( ( Chimera::millis() - tickstart ) > LSE_TIMEOUT_VALUE_MS )
-        {
-          return Chimera::CommonStatusCodes::TIMEOUT;
-        }
       }
     }
 
@@ -874,6 +826,8 @@ namespace Thor::Driver::RCC
     {
       PWREN::set( RCC1_PERIPH, PWRENConfig::OFF );
     }
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   /**
@@ -898,15 +852,10 @@ namespace Thor::Driver::RCC
       /*------------------------------------------------
       Turn off the PLL and wait for ready signal
       ------------------------------------------------*/
-      auto tickstart = Chimera::millis();
       PLLON::set( RCC1_PERIPH, PLLConfig::OFF );
 
       while ( PLLRDY::get( RCC1_PERIPH ) )
       {
-        if ( ( Chimera::millis() - tickstart ) > PLL_TIMEOUT_VALUE_MS )
-        {
-          return Chimera::CommonStatusCodes::TIMEOUT;
-        }
       }
 
       /*------------------------------------------------
@@ -929,16 +878,11 @@ namespace Thor::Driver::RCC
         /*------------------------------------------------
         Turn on the PLL and wait for ready signal
         ------------------------------------------------*/
-        tickstart = Chimera::millis();
         PLLON::set( RCC1_PERIPH, PLLConfig::ON );
 
         #if defined( EMBEDDED )
         while ( !PLLRDY::get( RCC1_PERIPH ) )
         {
-          if ( ( Chimera::millis() - tickstart ) > PLL_TIMEOUT_VALUE_MS )
-          {
-            return Chimera::CommonStatusCodes::TIMEOUT;
-          }
         }
         #endif 
       }
@@ -996,16 +940,11 @@ namespace Thor::Driver::RCC
     /*------------------------------------------------
     Configure the system clock and wait for the ready signal
     ------------------------------------------------*/
-    auto tickstart = Chimera::millis();
     CFGR::SW::set( RCC1_PERIPH, init->SYSCLKSource );
 
     /* Assumes SW and SWS config bits mean the same thing */
     while ( CFGR::SWS::getRightShifted( RCC1_PERIPH ) != init->SYSCLKSource )
     {
-      if ( ( Chimera::millis() - tickstart ) > CLOCKSWITCH_TIMEOUT_VALUE_MS )
-      {
-        return Chimera::CommonStatusCodes::TIMEOUT;
-      }
     }
 
     return Chimera::CommonStatusCodes::OK;
@@ -1034,15 +973,15 @@ namespace Thor::Driver::RCC
    */
   static Chimera::Status_t UpdateFlashLatency( const uint32_t value )
   {
-    using namespace Thor::Driver::Flash;
+    using namespace Thor::LLD::FLASH;
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
     /*------------------------------------------------
     Validate latency configuration since this is such
     a critical operating parameter.
     ------------------------------------------------*/
-    ACR::LATENCY::set( Thor::Driver::Flash::FLASH_PERIPH, value );
-    while ( ACR::LATENCY::get( Thor::Driver::Flash::FLASH_PERIPH ) != value )
+    ACR::LATENCY::set( Thor::LLD::FLASH::FLASH_PERIPH, value );
+    while ( ACR::LATENCY::get( Thor::LLD::FLASH::FLASH_PERIPH ) != value )
     {
       ;
     }
@@ -1123,6 +1062,6 @@ namespace Thor::Driver::RCC
 
     return result;
   }
-}    // namespace Thor::Driver::RCC
+}    // namespace Thor::LLD::RCC
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */

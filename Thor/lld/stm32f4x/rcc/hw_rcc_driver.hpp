@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_rcc_driver.hpp
  *
- *   Description:
+ *  Description:
  *    STM32F4 RCC driver interface
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -24,9 +24,7 @@
 #include <Thor/lld/interface/rcc/rcc_model.hpp>
 #include <Thor/hld/clock/clock_types.hpp>
 
-#if defined( TARGET_STM32F4 )
-
-namespace Thor::Driver::RCC
+namespace Thor::LLD::RCC
 {
   /**
    *  Initializes all system resources to their default state.
@@ -187,7 +185,6 @@ namespace Thor::Driver::RCC
 
   using PeripheralController_sPtr = std::shared_ptr<PeripheralController>;
 
-}    // namespace Thor::Driver::RCC
+}    // namespace Thor::LLD::RCC
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */
 #endif /* !THOR_HW_DRIVER_RCC_HPP */

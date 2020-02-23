@@ -28,7 +28,7 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
 
-namespace Thor::Driver::SPI
+namespace Thor::LLD::SPI
 {
   static float calculate_clock_performance( const size_t goal, const size_t actVal, void *const data )
   {
@@ -103,14 +103,14 @@ namespace Thor::Driver::SPI
     /*------------------------------------------------
     Handle the ISR configuration
     ------------------------------------------------*/
-    Thor::Driver::Interrupt::disableIRQ( periphIRQn );
-    Thor::Driver::Interrupt::clearPendingIRQ( periphIRQn );
-    Thor::Driver::Interrupt::setPriority( periphIRQn, Thor::Interrupt::SPI_IT_PREEMPT_PRIORITY, 0u );
+    Thor::LLD::NVIC::disableIRQ( periphIRQn );
+    Thor::LLD::NVIC::clearPendingIRQ( periphIRQn );
+    Thor::LLD::NVIC::setPriority( periphIRQn, Thor::Interrupt::SPI_IT_PREEMPT_PRIORITY, 0u );
 
     /*------------------------------------------------
     Driver registration with the backend 
     ------------------------------------------------*/
-    Thor::Driver::SPI::spiObjects[ resourceIndex ] = this;
+    Thor::LLD::SPI::spiObjects[ resourceIndex ] = this;
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -122,13 +122,13 @@ namespace Thor::Driver::SPI
 
   void Driver::clockEnable()
   {
-    auto rcc = Thor::Driver::RCC::PeripheralController::get();
+    auto rcc = Thor::LLD::RCC::PeripheralController::get();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
   void Driver::clockDisable()
   {
-    auto rcc = Thor::Driver::RCC::PeripheralController::get();
+    auto rcc = Thor::LLD::RCC::PeripheralController::get();
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
@@ -155,7 +155,7 @@ namespace Thor::Driver::SPI
     Find the best clock divisor need to achieve the desired clock frequency
     ------------------------------------------------*/
     size_t clockFreq  = std::numeric_limits<size_t>::max();
-    auto systemClock  = Thor::Driver::RCC::SystemClock::get();
+    auto systemClock  = Thor::LLD::RCC::SystemClock::get();
     auto periphAddr   = reinterpret_cast<std::uintptr_t>( periph );
     auto updateStatus = systemClock->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SPI, periphAddr, &clockFreq );
 
@@ -305,7 +305,7 @@ namespace Thor::Driver::SPI
     /*------------------------------------------------
     Disable all interrupts
     ------------------------------------------------*/
-    Thor::Driver::Interrupt::disableIRQ( periphIRQn );
+    Thor::LLD::NVIC::disableIRQ( periphIRQn );
     CR2::clear( periph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
 
     /*------------------------------------------------
@@ -382,7 +382,7 @@ namespace Thor::Driver::SPI
     /*------------------------------------------------
     Configure the interrupts
     ------------------------------------------------*/
-    Thor::Driver::Interrupt::enableIRQ( periphIRQn );
+    Thor::LLD::NVIC::enableIRQ( periphIRQn );
     enterCriticalSection();
     CR2::set( periph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
 
@@ -440,12 +440,12 @@ namespace Thor::Driver::SPI
 
   inline void Driver::enterCriticalSection()
   {
-    Thor::Driver::Interrupt::disableIRQ( periphIRQn );
+    Thor::LLD::NVIC::disableIRQ( periphIRQn );
   }
 
   inline void Driver::exitCriticalSection()
   {
-    Thor::Driver::Interrupt::enableIRQ( periphIRQn );
+    Thor::LLD::NVIC::enableIRQ( periphIRQn );
   }
 
   void Driver::IRQHandler()
@@ -513,7 +513,7 @@ namespace Thor::Driver::SPI
       ISRWakeup_external->releaseFromISR();
     }
   }
-}    // namespace Thor::Driver::SPI
+}    // namespace Thor::LLD::SPI
 
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
@@ -521,9 +521,9 @@ void SPI1_IRQHandler()
 {
   static constexpr size_t index = 0;
 
-  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  if ( Thor::LLD::SPI::spiObjects[ index ] )
   {
-    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+    Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
 #endif 
@@ -533,9 +533,9 @@ void SPI2_IRQHandler()
 {
   static constexpr size_t index = 1;
 
-  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  if ( Thor::LLD::SPI::spiObjects[ index ] )
   {
-    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+    Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
 #endif 
@@ -545,9 +545,9 @@ void SPI3_IRQHandler()
 {
   static constexpr size_t index = 2;
 
-  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  if ( Thor::LLD::SPI::spiObjects[ index ] )
   {
-    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+    Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
 #endif 
@@ -557,9 +557,9 @@ void SPI4_IRQHandler()
 {
   static constexpr size_t index = 3;
 
-  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  if ( Thor::LLD::SPI::spiObjects[ index ] )
   {
-    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+    Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
 #endif 
@@ -569,9 +569,9 @@ void SPI5_IRQHandler()
 {
   static constexpr size_t index = 4;
 
-  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  if ( Thor::LLD::SPI::spiObjects[ index ] )
   {
-    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+    Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
 #endif 
@@ -581,9 +581,9 @@ void SPI6_IRQHandler()
 {
   static constexpr size_t index = 5;
 
-  if ( Thor::Driver::SPI::spiObjects[ index ] )
+  if ( Thor::LLD::SPI::spiObjects[ index ] )
   {
-    Thor::Driver::SPI::spiObjects[ index ]->IRQHandler();
+    Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
 #endif 

@@ -75,7 +75,7 @@ namespace Thor::Driver::UART
 }    // namespace Thor::Driver::UART
 
 
-namespace Thor::Driver::RCC::LookupTables
+namespace Thor::LLD::RCC::LookupTables
 {
   /*------------------------------------------------
   Lookup tables for register access on a peripheral by peripheral basis.

@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    spi_types.hpp
  *
- *   Description:
+ *  Description:
  *    Common SPI types used in Thor drivers
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once 
@@ -16,7 +16,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace Thor::Driver::SPI
+namespace Thor::LLD::SPI
 {
   /**
    *  Forward declaration to ease compilation

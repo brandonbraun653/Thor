@@ -25,8 +25,6 @@
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
-
 namespace Thor::LLD::GPIO
 {
 #if defined( STM32_GPIOA_PERIPH_AVAILABLE )
@@ -114,5 +112,4 @@ namespace Thor::LLD::GPIO
 
 }    // namespace Thor::LLD::GPIO
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_GPIO_MAPPING_HPP */

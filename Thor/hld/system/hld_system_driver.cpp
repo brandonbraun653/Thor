@@ -43,8 +43,8 @@ namespace Chimera::System
     /*------------------------------------------------
     Initialize the system clocks
     ------------------------------------------------*/
-    Thor::Driver::RCC::initialize();
-    Thor::Driver::RCC::SystemClock::get()->configureProjectClocks();
+    Thor::LLD::RCC::initialize();
+    Thor::LLD::RCC::SystemClock::get()->configureProjectClocks();
 
     /*------------------------------------------------
     Hardware Specific Initialization
@@ -81,7 +81,7 @@ namespace Chimera::System
     /*------------------------------------------------
     Initialize interrupt settings
     ------------------------------------------------*/
-    Thor::Driver::Interrupt::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
+    Thor::LLD::NVIC::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
 
 
     return Chimera::CommonStatusCodes::OK;

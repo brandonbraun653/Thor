@@ -6,7 +6,7 @@
  *    Common header for Thor RCC that configures the driver based on which
  *    chip family is being compiled against.
  *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once

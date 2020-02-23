@@ -117,7 +117,7 @@ enum IRQn_Type
 };
 
 
-namespace Thor::Driver::Interrupt
+namespace Thor::LLD::NVIC
 {
   
 }

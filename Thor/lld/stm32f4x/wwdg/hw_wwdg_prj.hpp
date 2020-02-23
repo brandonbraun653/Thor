@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_wwdg_prj.hpp
  *
- *   Description:
+ *  Description:
  *    Imports the register definitions for the watchdog hardware.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #ifndef THOR_HW_WWDG_PROJECT_HPP

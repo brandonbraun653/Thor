@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_rcc_register_stm32f446xx.hpp
  *
- *   Description:
+ *  Description:
  *    RCC register definitions for the STM32F446xx series chips.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -18,11 +18,9 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_PWR )
-
 #define STM32_PWR1_PERIPH_AVAILABLE
 
-namespace Thor::Driver::PWR
+namespace Thor::LLD::PWR
 {
   static constexpr uint32_t PWR_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x7000U;
 
@@ -132,7 +130,6 @@ namespace Thor::Driver::PWR
   static constexpr uint32_t CSR_UDRDY_Pos   = ( 18U );
   static constexpr uint32_t CSR_UDRDY_Msk   = ( 0x3U << CSR_UDRDY_Pos ); /**< 0x000C0000 */
   static constexpr uint32_t CSR_UDRDY       = CSR_UDRDY_Msk; /**< Under Drive ready                                */
-}    // namespace Thor::Driver::PWR
+}    // namespace Thor::LLD::PWR
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_PWR */
 #endif /* !THOR_HW_POWER_REGISTER_HPP */

@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_wwdg_mapping.hpp
  *
- *   Description:
+ *  Description:
  *    Mappings for the watchdog timer resources
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #ifndef THOR_HW_WWDG_MAPPING_HPP
@@ -21,8 +21,6 @@
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/wwdg/hw_wwdg_prj.hpp>
 #include <Thor/drivers/f4/wwdg/hw_wwdg_types.hpp>
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
 
 namespace Thor::Driver::WWDG
 {
@@ -52,5 +50,4 @@ namespace Thor::Driver::WWDG
 
 }
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */
 #endif /* !THOR_HW_WWDG_MAPPING_HPP */

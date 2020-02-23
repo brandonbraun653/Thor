@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_rcc_driver_prv.hpp
  *
- *   Description:
+ *  Description:
  *    Private declarations for internal use with the RCC driver
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -15,9 +15,7 @@
 /* C++ Includes */
 #include <cstdint>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC )
-
-namespace Thor::Driver::RCC
+namespace Thor::LLD::RCC
 {
   static constexpr uint32_t PLL_TIMEOUT_VALUE_MS          = 2u;
   static constexpr uint32_t DBP_TIMEOUT_VALUE_MS          = 2u;
@@ -28,5 +26,4 @@ namespace Thor::Driver::RCC
   static constexpr uint32_t CLOCKSWITCH_TIMEOUT_VALUE_MS  = 5000u;
 }
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */
 #endif /* !THOR_DRIVER_RCC_PRIVATE_HPP */

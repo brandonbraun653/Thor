@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_spi_mapping.hpp
  *
- *   Description:
+ *  Description:
  *    Useful mappings for the SPI peripherals
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -23,9 +23,7 @@
 #include <Thor/lld/stm32f4x/spi/hw_spi_types.hpp>
 #include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
-
-namespace Thor::Driver::SPI
+namespace Thor::LLD::SPI
 {
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
   extern RegisterMap *SPI1_PERIPH;
@@ -63,7 +61,6 @@ namespace Thor::Driver::SPI
   extern std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::ControlMode::NUM_OPTIONS )> ControlModeToRegConfig;
   extern std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::DataSize::NUM_OPTIONS )> DataSizeToRegConfig;
 
-
   /**
    *  Initializes memory associated with mapping
    *  
@@ -79,5 +76,4 @@ namespace Thor::Driver::SPI
   extern bool isSPI( const std::uintptr_t address );
 }
 
-#endif  /* TARGET_STM32F4 && THOR_DRIVER_SPI */
 #endif  /* THOR_HW_SPI_MAPPING_HPP */

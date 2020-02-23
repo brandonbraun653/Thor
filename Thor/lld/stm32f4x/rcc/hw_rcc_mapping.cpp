@@ -1,20 +1,19 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_rcc_mapping.cpp
  *
- *   Description:
+ *  Description:
  *    Useful maps for the RCC peripherals
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 
-
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC )
 
-namespace Thor::Driver::RCC
+namespace Thor::LLD::RCC
 {
   /*------------------------------------------------
   Chip Specific Resources
@@ -66,6 +65,6 @@ namespace Thor::Driver::RCC
     return result;
   }
 
-}    // namespace Thor::Driver::RCC
+}    // namespace Thor::LLD::RCC
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */

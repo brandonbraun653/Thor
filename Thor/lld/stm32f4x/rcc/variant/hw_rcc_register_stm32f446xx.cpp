@@ -15,7 +15,7 @@
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC ) && defined( STM32F446xx )
 
-namespace Thor::Driver::RCC
+namespace Thor::LLD::RCC
 {
 #if defined( EMBEDDED )
   RegisterMap * RCC1_PERIPH = reinterpret_cast<RegisterMap *>( RCC1_BASE_ADDR );

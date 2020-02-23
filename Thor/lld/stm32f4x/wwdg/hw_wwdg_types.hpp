@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_wwdg_types.hpp
  *
- *   Description:
+ *  Description:
  *
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #ifndef THOR_HW_WATCHDOG_TYPES_HPP
@@ -22,7 +22,6 @@
 #include <Thor/headers.hpp>
 #include <Thor/drivers/f4/wwdg/hw_wwdg_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
 namespace Thor::Driver::WWDG
 {
   struct RegisterMap
@@ -243,5 +242,4 @@ namespace Thor::Driver::WWDG
 
 }    // namespace Thor::Driver::WWDG
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */
 #endif /* !THOR_HW_WATCHDOG_TYPES_HPP */

@@ -533,7 +533,7 @@ namespace Thor::Driver::DMA
     /*------------------------------------------------
     Make sure the interrupt priority has been set to correctly
     ------------------------------------------------*/
-    Thor::Driver::Interrupt::setPriority( streamIRQn, Thor::Interrupt::DMA_STREAM_PREEMPT_PRIORITY, 0 );
+    Thor::LLD::NVIC::setPriority( streamIRQn, Thor::Interrupt::DMA_STREAM_PREEMPT_PRIORITY, 0 );
 
     /*------------------------------------------------
     - Transfer complete
@@ -563,12 +563,12 @@ namespace Thor::Driver::DMA
 
   void Stream::enterCriticalSection()
   {
-    Thor::Driver::Interrupt::disableIRQ( streamIRQn );
+    Thor::LLD::NVIC::disableIRQ( streamIRQn );
   }
 
   void Stream::exitCriticalSection()
   {
-    Thor::Driver::Interrupt::enableIRQ( streamIRQn );
+    Thor::LLD::NVIC::enableIRQ( streamIRQn );
   }
 
   void Stream::processListeners( const Chimera::Event::Trigger event )
@@ -606,7 +606,7 @@ namespace Thor::Driver::DMA
 
   Chimera::Status_t Driver::clockEnable()
   {
-    auto rcc   = Thor::Driver::RCC::PeripheralController::get();
+    auto rcc   = Thor::LLD::RCC::PeripheralController::get();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_DMA, index );
@@ -615,7 +615,7 @@ namespace Thor::Driver::DMA
 
   Chimera::Status_t Driver::clockDisable()
   {
-    auto rcc   = Thor::Driver::RCC::PeripheralController::get();
+    auto rcc   = Thor::LLD::RCC::PeripheralController::get();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_DMA, index );
@@ -624,7 +624,7 @@ namespace Thor::Driver::DMA
 
   Chimera::Status_t Driver::reset()
   {
-    auto rcc   = Thor::Driver::RCC::PeripheralController::get();
+    auto rcc   = Thor::LLD::RCC::PeripheralController::get();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->reset( Chimera::Peripheral::Type::PERIPH_DMA, index );

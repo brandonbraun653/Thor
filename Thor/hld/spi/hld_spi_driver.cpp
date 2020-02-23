@@ -24,13 +24,12 @@
 /* Thor Includes */
 #include <Thor/gpio>
 #include <Thor/spi>
+#include <Thor/lld/interface/spi/spi.hpp>
 
-#if defined( THOR_HLD_SPI )
-
-static std::array<Thor::SPI::SPIClass *, Thor::Driver::SPI::NUM_SPI_PERIPHS> SPIClassObjects;
-static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorHandles;
-static std::array<Chimera::Threading::BinarySemaphore, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorSignals;
-static std::array<Chimera::Function::void_func_void_ptr, Thor::Driver::SPI::NUM_SPI_PERIPHS> postProcessorThreads;
+static std::array<Thor::SPI::SPIClass *, Thor::LLD::SPI::NUM_SPI_PERIPHS> SPIClassObjects;
+static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::LLD::SPI::NUM_SPI_PERIPHS> postProcessorHandles;
+static std::array<Chimera::Threading::BinarySemaphore, Thor::LLD::SPI::NUM_SPI_PERIPHS> postProcessorSignals;
+static std::array<Chimera::Function::void_func_void_ptr, Thor::LLD::SPI::NUM_SPI_PERIPHS> postProcessorThreads;
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
 static void SPI1ISRPostProcessorThread( void *argument );
@@ -98,7 +97,7 @@ namespace Thor::SPI
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    Thor::Driver::SPI::initialize();
+    Thor::LLD::SPI::initialize();
 
     /*------------------------------------------------
     Reset driver object memory
@@ -125,16 +124,16 @@ namespace Thor::SPI
     // }
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
-    postProcessorThreads[ Thor::Driver::SPI::SPI1_RESOURCE_INDEX ] = SPI1ISRPostProcessorThread;
+    postProcessorThreads[ Thor::LLD::SPI::SPI1_RESOURCE_INDEX ] = SPI1ISRPostProcessorThread;
 #endif
 #if defined( STM32_SPI2_PERIPH_AVAILABLE )
-    postProcessorThreads[ Thor::Driver::SPI::SPI2_RESOURCE_INDEX ] = SPI2ISRPostProcessorThread;
+    postProcessorThreads[ Thor::LLD::SPI::SPI2_RESOURCE_INDEX ] = SPI2ISRPostProcessorThread;
 #endif
 #if defined( STM32_SPI3_PERIPH_AVAILABLE )
-    postProcessorThreads[ Thor::Driver::SPI::SPI3_RESOURCE_INDEX ] = SPI3ISRPostProcessorThread;
+    postProcessorThreads[ Thor::LLD::SPI::SPI3_RESOURCE_INDEX ] = SPI3ISRPostProcessorThread;
 #endif
 #if defined( STM32_SPI4_PERIPH_AVAILABLE )
-    postProcessorThreads[ Thor::Driver::SPI::SPI4_RESOURCE_INDEX ] = SPI4ISRPostProcessorThread;
+    postProcessorThreads[ Thor::LLD::SPI::SPI4_RESOURCE_INDEX ] = SPI4ISRPostProcessorThread;
 #endif
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
@@ -192,7 +191,7 @@ namespace Thor::SPI
     /*------------------------------------------------
     Should we even bother creating this?
     ------------------------------------------------*/
-    if ( !Thor::Driver::SPI::isChannelSupported( setupStruct.HWInit.hwChannel ) )
+    if ( !Thor::LLD::SPI::isChannelSupported( setupStruct.HWInit.hwChannel ) )
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
@@ -204,8 +203,8 @@ namespace Thor::SPI
     /*------------------------------------------------
     First register the driver and initialize class vars
     ------------------------------------------------*/
-    auto instance      = Thor::Driver::SPI::ChannelToInstance[ setupStruct.HWInit.hwChannel ];
-    auto resourceIndex = Thor::Driver::SPI::InstanceToResourceIndex[ reinterpret_cast<std::uintptr_t>( instance ) ];
+    auto instance      = Thor::LLD::SPI::ChannelToInstance[ setupStruct.HWInit.hwChannel ];
+    auto resourceIndex = Thor::LLD::SPI::InstanceToResourceIndex[ reinterpret_cast<std::uintptr_t>( instance ) ];
 
     SPIClassObjects[ resourceIndex ] = this;
 
@@ -214,9 +213,9 @@ namespace Thor::SPI
     ------------------------------------------------*/
     config = setupStruct;
 
-    SCK  = Chimera::GPIO::create_unique_ptr();
-    MOSI = Chimera::GPIO::create_unique_ptr();
-    MISO = Chimera::GPIO::create_unique_ptr();
+    SCK  = std::make_unique<Thor::GPIO::Driver>();
+    MOSI = std::make_unique<Thor::GPIO::Driver>();
+    MISO = std::make_unique<Thor::GPIO::Driver>();
 
     result |= SCK->init( config.SCKInit, 100 );
     result |= MOSI->init( config.MOSIInit, 100 );
@@ -225,7 +224,7 @@ namespace Thor::SPI
     /* Are we supposed to take control of the CS pin? */
     if ( !setupStruct.externalCS )
     {
-      CS = Chimera::GPIO::create_shared_ptr();
+      CS = std::make_shared<Thor::GPIO::Driver>();
       result |= CS->init( config.CSInit, 100 );
     }
     else
@@ -246,7 +245,7 @@ namespace Thor::SPI
     /*------------------------------------------------
     Configure the SPI hardware
     ------------------------------------------------*/
-    driver = std::make_unique<Thor::Driver::SPI::Driver>();
+    driver = std::make_unique<Thor::LLD::SPI::Driver>();
     result |= driver->attach( instance );
     result |= driver->configure( config );
     result |= driver->registerConfig( &config );
@@ -477,7 +476,7 @@ namespace Thor::SPI
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
 static void SPI1ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::SPI;
+  using namespace Thor::LLD::SPI;
   constexpr auto index = SPI1_RESOURCE_INDEX;
 
   while ( 1 )
@@ -494,7 +493,7 @@ static void SPI1ISRPostProcessorThread( void *argument )
 #if defined( STM32_SPI2_PERIPH_AVAILABLE )
 static void SPI2ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::SPI;
+  using namespace Thor::LLD::SPI;
   constexpr auto index = SPI2_RESOURCE_INDEX;
 
   while ( 1 )
@@ -511,7 +510,7 @@ static void SPI2ISRPostProcessorThread( void *argument )
 #if defined( STM32_SPI3_PERIPH_AVAILABLE )
 static void SPI3ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::SPI;
+  using namespace Thor::LLD::SPI;
   constexpr auto index = SPI3_RESOURCE_INDEX;
 
   while ( 1 )
@@ -528,7 +527,7 @@ static void SPI3ISRPostProcessorThread( void *argument )
 #if defined( STM32_SPI4_PERIPH_AVAILABLE )
 static void SPI4ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::SPI;
+  using namespace Thor::LLD::SPI;
   constexpr auto index = SPI4_RESOURCE_INDEX;
 
   while ( 1 )
@@ -541,5 +540,3 @@ static void SPI4ISRPostProcessorThread( void *argument )
   }
 }
 #endif
-
-#endif /* THOR_CUSTOM_DRIVERS && THOR_DRIVER_SPI */

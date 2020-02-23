@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_nvic_driver_stm32f4.cpp
  *
- *   Description:
+ *  Description:
  *    Implements the STM32F4 NVIC driver
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Driver Includes */
@@ -15,8 +15,13 @@
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_NVIC )
 
-namespace Thor::Driver::Interrupt
+namespace Thor::LLD::NVIC
 {
+  void initialize()
+  {
+    // Perhaps reset a bunch of registers to defaults? 
+  }
+
   void setPriorityGrouping( const PriorityGrouping_t priorityGroup )
   {
     NVIC_SetPriorityGrouping( priorityGroup );
@@ -73,6 +78,6 @@ namespace Thor::Driver::Interrupt
   {
     NVIC_SystemReset();
   }
-}    // namespace Thor::Driver::Interrupt
+}    // namespace Thor::LLD::NVIC
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_NVIC */

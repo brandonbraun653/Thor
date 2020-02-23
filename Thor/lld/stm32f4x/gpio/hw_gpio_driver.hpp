@@ -23,8 +23,6 @@
 #include <Thor/lld/interface/gpio/gpio_model.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_model.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
-
 namespace Thor::LLD::GPIO
 {
   /**
@@ -71,5 +69,4 @@ namespace Thor::LLD::GPIO
   };
 }    // namespace Thor::LLD::GPIO
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_DRIVER_GPIO_HPP */

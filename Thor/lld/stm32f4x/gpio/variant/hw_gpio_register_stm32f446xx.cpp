@@ -136,7 +136,7 @@ namespace Thor::LLD::GPIO
   }
 }    // namespace Thor::LLD::GPIO
 
-namespace Thor::Driver::RCC::LookupTables
+namespace Thor::LLD::RCC::LookupTables
 {
   /*------------------------------------------------
   Lookup tables for register access on a peripheral by peripheral basis.
@@ -250,6 +250,6 @@ namespace Thor::Driver::RCC::LookupTables
     GPIO_SourceClock[ GPIOH_RESOURCE_INDEX ] = Configuration::ClockType::PCLK1;
   };
 
-}    // namespace Thor::Driver::RCC::LookupTables
+}    // namespace Thor::LLD::RCC::LookupTables
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

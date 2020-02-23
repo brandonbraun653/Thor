@@ -1,12 +1,12 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_wwdg_register_stm32f446xx.hpp
  *
- *   Description:
+ *  Description:
  *    Explicit hardware register definitions for the STM32F446xx Watchdog
  *    peripherals.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #ifndef THOR_HW_WWDG_REGISTER_HPP
@@ -22,8 +22,6 @@
 /* Driver Includes */
 #include <Thor/headers.hpp>
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
 
 #define STM32_WWDG1_PERIPH_AVAILABLE
 
@@ -103,5 +101,4 @@ namespace Thor::Driver::WWDG
 
 }    // namespace Thor::Driver::WWDG
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */
 #endif /* !THOR_HW_WWDG_REGISTER_HPP */

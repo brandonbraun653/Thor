@@ -1,12 +1,12 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_usart_mapping.hpp
  *
- *   Description:
+ *  Description:
  *    Provides structures for conversion and mapping between data types for fast
  *    runtime performance of driver code.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -24,8 +24,6 @@
 #include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
 
 namespace Thor::Driver::USART
 {
@@ -85,5 +83,4 @@ namespace Thor::Driver::USART
 
 }    // namespace Thor::Driver::USART
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_USART */
 #endif /* !THOR_HW_USART_MAPPING_HPP */

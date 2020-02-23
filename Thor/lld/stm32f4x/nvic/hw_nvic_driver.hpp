@@ -1,15 +1,15 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_nvic_driver.hpp
  *
- *   Description:
+ *  Description:
  *    Implements the STM32F4 NVIC driver interface. 
  *
- *   Notes:
+ *  Notes:
  *    These functions are simply wrappers around the CMSIS NVIC driver as they 
  *    provide all the low level Cortex-M4 specific implementation details.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -24,10 +24,10 @@
 #include <Thor/lld/stm32f4x/nvic/hw_nvic_types.hpp>
 #include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_NVIC )
-
-namespace Thor::Driver::Interrupt
+namespace Thor::LLD::NVIC
 {
+  void initialize();
+
   /**
    *  Sets the priority grouping field (preemption priority and subpriority)
    *
@@ -123,5 +123,4 @@ namespace Thor::Driver::Interrupt
   void SystemReset();
 }
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_NVIC */
 #endif /* !THOR_HW_DRIVER_NVIC_HPP */

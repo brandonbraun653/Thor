@@ -17,7 +17,7 @@
 /* ARM Includes: Must come last so the Thor Includes can configure various macros */
 #include <Thor/drivers/common/cmsis/core/include/core_cm4.h>
 
-using namespace Thor::Driver::RCC;
+using namespace Thor::LLD::RCC;
 
 #if defined( EMBEDDED )
 void SystemInit()

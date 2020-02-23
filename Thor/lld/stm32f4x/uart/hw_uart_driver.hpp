@@ -22,8 +22,6 @@
 #include <Thor/drivers/f4/uart/hw_uart_stubs.hpp>
 #include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
-
 namespace Thor::Driver::UART
 {
   /**
@@ -62,5 +60,4 @@ extern "C"
 }
 #endif
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_UART */
 #endif /* !THOR_HW_UART_DRIVER_HPP */

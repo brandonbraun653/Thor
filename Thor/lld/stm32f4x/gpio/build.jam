@@ -23,25 +23,25 @@ lib lld_gpio_chip
 
   : <Thor>enabled-F446
     <link>static
-    <use>PUB
     <use>/CHIMERA//PUB
-    <use>/STM32F4//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32F4//PUB
+    <use>/THOR/LLD/STM32F4/GPIO//PUB
   ;
 explicit lld_gpio_chip ;
-explicit_alias DEVICE_TARGET : : : : <library>lld_gpio_chip ;
+explicit_alias DEVICE_TARGET : lld_gpio_chip : : : <library>lld_gpio_chip ;
 
 lib lld_gpio
   : [ glob *.cpp ]
 
   : <link>static
-    <use>PUB
     <use>/CHIMERA//PUB
-    <use>/STM32F4//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32F4//PUB
+    <use>/THOR/LLD/STM32F4/GPIO//PUB
   ;
 explicit lld_gpio ;
-explicit_alias LIB : : : : <library>lld_gpio <library>lld_gpio_chip ;
+explicit_alias LIB : lld_gpio lld_gpio_chip : : : <library>lld_gpio <library>lld_gpio_chip ;
 
 # ====================================================
 # Test Driver Executable
@@ -49,25 +49,24 @@ explicit_alias LIB : : : : <library>lld_gpio <library>lld_gpio_chip ;
 exe lld_gpio_test
   : [ glob test/*.cpp ]
 
-    /CHIMERA//CORE_LIBS
-    /CHIMERA/PERIPH/GPIO//LIB
     /GOOGLE//gtest
-    /STM32F4//CORE_LIBS
-    /STM32F4/GPIO//LIB
-    /THOR//CORE_LIBS
+    /THOR/LLD/STM32F4/FLASH//LIB
+    /THOR/LLD/STM32F4/GPIO//LIB
+    /THOR/LLD/STM32F4/NVIC//LIB
+    /THOR/LLD/STM32F4/POWER//LIB
+    /THOR/LLD/STM32F4/RCC//LIB
   
   : <link>static
     <Thor>enabled-F4
-    <use>PUB
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
     <use>/GOOGLE//TEST_PUB
     <use>/THOR//PUB
-    <use>/STM32F4//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
     <linkflags>-Wl,--no-as-needed
   ;
 explicit lld_gpio_test ;
+explicit_alias TEST : lld_gpio_test : : : <source>lld_gpio_test ;
 
 # ====================================================
 # Installation Targets

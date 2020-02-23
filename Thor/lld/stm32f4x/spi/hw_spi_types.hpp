@@ -24,9 +24,7 @@
 #include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
 #include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
-
-namespace Thor::Driver::SPI
+namespace Thor::LLD::SPI
 {
   class Driver;
 
@@ -1095,7 +1093,6 @@ namespace Thor::Driver::SPI
     };
   }    // namespace I2SPR
 
-}    // namespace Thor::Driver::SPI
+}    // namespace Thor::LLD::SPI
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_SPI */
 #endif /* THOR_HW_SPI_REGISTER_HPP */

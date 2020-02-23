@@ -95,7 +95,7 @@ namespace Thor::Driver::USART
 }    // namespace Thor::Driver::USART
 
 
-namespace Thor::Driver::RCC::LookupTables
+namespace Thor::LLD::RCC::LookupTables
 {
   /*------------------------------------------------
   Lookup tables for register access on a peripheral by peripheral basis.

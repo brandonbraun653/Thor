@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_rcc_types.hpp
  *
- *   Description:
+ *  Description:
  *    Declares types specific to the RCC peripehral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -22,9 +22,7 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prj.hpp>
 
-#if defined( TARGET_STM32F4 )
-
-namespace Thor::Driver::RCC
+namespace Thor::LLD::RCC
 {
   struct RegisterMap
   {
@@ -64,7 +62,6 @@ namespace Thor::Driver::RCC
     volatile Reg32_t DCKCFGR2;   /**< RCC Dedicated Clocks configuration register 2,               Address offset: 0x94 */
   };
 
-  
   using PeriphRegisterList = std::array<RegisterMap *, NUM_RCC_PERIPHS>;
 
   /*------------------------------------------------
@@ -951,7 +948,6 @@ namespace Thor::Driver::RCC
   };
 
 
-}    // namespace Thor::Driver::RCC
+}    // namespace Thor::LLD::RCC
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */
 #endif /* !THOR_HW_RCC_TYPES_HPP */

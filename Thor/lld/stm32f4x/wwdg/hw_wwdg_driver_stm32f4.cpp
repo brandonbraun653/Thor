@@ -65,7 +65,7 @@ namespace Thor::Driver::WWDG
     const float desiredTimeout_mS = static_cast<float>( ms );
 
     size_t pclk1FreqHz = 0u;
-    Thor::Driver::RCC::prjGetPCLK1Freq( &pclk1FreqHz );
+    Thor::LLD::RCC::prjGetPCLK1Freq( &pclk1FreqHz );
 
     float pclk1          = static_cast<float>( pclk1FreqHz );
     float clockPeriod_mS = 0.0f;
@@ -112,7 +112,7 @@ namespace Thor::Driver::WWDG
     Initialize algorithm variables
     ------------------------------------------------*/
     size_t pclk1FreqHz = 0u;
-    Thor::Driver::RCC::prjGetPCLK1Freq( &pclk1FreqHz );
+    Thor::LLD::RCC::prjGetPCLK1Freq( &pclk1FreqHz );
 
     const float pclk1div          = static_cast<float>( CFR::PCLK_1_DIV );
     const float pclk1 = static_cast<float>( pclk1FreqHz );
@@ -197,7 +197,7 @@ namespace Thor::Driver::WWDG
 
   void Driver::enableClock()
   {
-    auto rcc = Thor::Driver::RCC::PeripheralController::get();
+    auto rcc = Thor::LLD::RCC::PeripheralController::get();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_WWDG, resourceIndex );
   }
 

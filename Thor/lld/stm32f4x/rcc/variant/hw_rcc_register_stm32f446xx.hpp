@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_rcc_register_stm32f446xx.hpp
  *
- *   Description:
+ *  Description:
  *    RCC register definitions for the STM32F446xx series chips.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -21,11 +21,9 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
-#if defined( TARGET_STM32F4 )
-
 #define STM32_RCC1_PERIPH_AVAILABLE
 
-namespace Thor::Driver::RCC
+namespace Thor::LLD::RCC
 {
   void initializeRegisters();
 
@@ -1166,7 +1164,6 @@ namespace Thor::Driver::RCC
   static constexpr Reg32_t PLLN_MIN_VALUE       = 50U;
   static constexpr Reg32_t PLLN_MAX_VALUE       = 432U;
 
-}    // namespace Thor::Driver::RCC
+}    // namespace Thor::LLD::RCC
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */
 #endif /* !THOR_HW_RCC_REGISTER_HPP */

@@ -22,10 +22,8 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
-#include <Thor/lld/interface/spi/spi.hpp>
-
-
-#if defined( THOR_HLD_SPI )
+#include <Thor/gpio>
+#include <Thor/lld/interface/spi/spi_types.hpp>
 
 namespace Thor::SPI
 {
@@ -74,19 +72,16 @@ namespace Thor::SPI
     Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
 
   private:
-    Chimera::SPI::DriverConfig config;       /**< Configuration used to set up the class */
-    Chimera::GPIO::GPIO_uPtr SCK;          /**< SPI clock gpio pin */
-    Chimera::GPIO::GPIO_uPtr MOSI;         /**< SPI MOSI gpio pin */
-    Chimera::GPIO::GPIO_uPtr MISO;         /**< SPI MISO gpio pin */
-    Chimera::GPIO::GPIO_sPtr CS;           /**< SPI Chip Select gpio pin */
-    Thor::Driver::SPI::Driver_uPtr driver;   /**< Low level hardware SPI driver */
-    
+    Chimera::SPI::DriverConfig config;  /**< Configuration used to set up the class */
+    Thor::GPIO::Driver_uPtr SCK;          /**< SPI clock gpio pin */
+    Thor::GPIO::Driver_uPtr MOSI;         /**< SPI MOSI gpio pin */
+    Thor::GPIO::Driver_uPtr MISO;         /**< SPI MISO gpio pin */
+    Thor::GPIO::Driver_sPtr CS;           /**< SPI Chip Select gpio pin */
+    Thor::LLD::SPI::Driver_uPtr driver; /**< Low level hardware SPI driver */
+
     Chimera::Threading::BinarySemaphore awaitTransferComplete; /**< Internal signal for when the current transfer has completed */
   };
 
 }    // namespace Thor::SPI
-
-#endif /* THOR_CUSTOM_DRIVERS && THOR_DRIVER_SPI */
-
 
 #endif /* SPI_H_*/

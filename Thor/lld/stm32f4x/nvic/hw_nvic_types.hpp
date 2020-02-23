@@ -1,20 +1,18 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_nvic_types.hpp
  *
- *   Description:
+ *  Description:
  *    Implements NVIC peripheral types
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_HW_DRIVER_NVIC_TYPES_HPP
 #define THOR_HW_DRIVER_NVIC_TYPES_HPP
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_NVIC )
-
-namespace Thor::Driver::Interrupt
+namespace Thor::LLD::NVIC
 {
   using PriorityGrouping_t = uint32_t;
 
@@ -24,7 +22,6 @@ namespace Thor::Driver::Interrupt
   static constexpr PriorityGrouping_t GROUP3 = 0x00000004u; /**< 3 bits for pre-emption priority 1 bits for subpriority */
   static constexpr PriorityGrouping_t GROUP4 = 0x00000003u; /**< 4 bits for pre-emption priority 0 bits for subpriority */
 
-}    // namespace Thor::Driver::Interrupt
+}    // namespace Thor::LLD::NVIC
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_NVIC */
 #endif /* !THOR_HW_DRIVER_NVIC_TYPES_HPP */

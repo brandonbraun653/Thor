@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_usart_driver.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Driver for the USART Peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -29,8 +29,6 @@
 #include <Thor/drivers/f4/usart/hw_usart_types.hpp>
 #include <Thor/drivers/model/interrupt_model.hpp>
 #include <Thor/drivers/model/serial_model.hpp>
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
 
 namespace Thor::Driver::USART
 {
@@ -155,5 +153,4 @@ namespace Thor::Driver::USART
 
 }    // namespace Thor::Driver::USART
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_USART */
 #endif /* !THOR_HW_USART_DRIVER_HPP */

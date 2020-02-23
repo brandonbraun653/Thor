@@ -7,33 +7,80 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
     explicit $(name) ;
     }
 
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/lld/stm32f4/rcc ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/stm32f4/rcc ;
+
 # ====================================================
 # Public Targets
 # ====================================================
-lib DEVICE_TARGET
+explicit_alias PUB : : : : <define>THOR_LLD_RCC ;
+
+# ====================================================
+# Static Libraries
+# ====================================================
+lib lld_rcc_chip
   : variant/hw_rcc_register_stm32f446xx.cpp
     config/hw_rcc_config_stm32f446xx.cpp
 
   : <Thor>enabled-F446
     <link>static
     <use>/CHIMERA//PUB
-    <use>/STM32F4//PUB
-    <use>/STM32F4/GPIO//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32F4//PUB
+    <use>/THOR/LLD/STM32F4/RCC//PUB
   ;
-explicit DEVICE_TARGET ;
+explicit lld_rcc_chip ;
+explicit_alias DEVICE_TARGET : lld_rcc_chip : : : <library>lld_rcc_chip ;
 
-
-lib LIB
-  : hw_rcc_driver_stm32f4.cpp
-    hw_rcc_mapping.cpp
+lib lld_rcc
+  : [ glob *.cpp ]
 
   : <link>static
     <use>/CHIMERA//PUB
-    <use>/STM32F4//PUB
-    <use>/STM32F4/GPIO//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32F4//PUB
+    <use>/THOR/LLD/STM32F4/RCC//PUB
   ;
-explicit LIB ;
+explicit lld_rcc ;
+explicit_alias LIB : lld_rcc lld_rcc_chip : : : <library>lld_rcc <library>lld_rcc_chip ;
 
-explicit_alias COMPILE_LIB : LIB DEVICE_TARGET ;
+# ====================================================
+# Test Driver Executable
+# ====================================================
+exe lld_rcc_test
+  : [ glob test/*.cpp ]
+
+    /GOOGLE//gtest
+    /THOR/LLD/STM32F4/FLASH//LIB
+    /THOR/LLD/STM32F4/GPIO//LIB
+    /THOR/LLD/STM32F4/NVIC//LIB
+    /THOR/LLD/STM32F4/POWER//LIB
+    /THOR/LLD/STM32F4/RCC//LIB
+    /THOR/LLD/STM32F4/SPI//LIB
+  
+  : <link>static
+    <Thor>enabled-F4
+    <use>/AURORA//PUB
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <linkflags>-Wl,--no-as-needed
+  ;
+explicit lld_rcc_test ;
+explicit_alias TEST : lld_rcc_test : : : <source>lld_rcc_test ;
+
+# ====================================================
+# Installation Targets
+# ====================================================
+install INSTALL_TEST : lld_rcc_test
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+install INSTALL_LIB : lld_rcc lld_rcc_chip
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

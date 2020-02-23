@@ -19,7 +19,7 @@
 /* Thor Includes */
 #include <Thor/lld/interface/spi/spi_types.hpp>
 
-namespace Thor::Driver::SPI
+namespace Thor::LLD::SPI
 {
   /**
    *  Checks if the given hardware channel is supported on this device.
@@ -89,6 +89,6 @@ namespace Thor::Driver::SPI
 
     virtual Chimera::Status_t killTransfer() = 0;
   };
-}    // namespace Thor::Driver::SPI
+}    // namespace Thor::LLD::SPI
 
 #endif /* THOR_SPI_MODEL_HPP */

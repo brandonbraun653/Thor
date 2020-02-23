@@ -1,12 +1,12 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_rcc_mapping.hpp
  *
- *   Description:
+ *  Description:
  *    Provides structures for conversion and mapping between data types for fast
  *    runtime performance of driver code.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -32,7 +32,7 @@
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32f4x/system/sys_memory_map_prj.hpp>
 
-namespace Thor::Driver::RCC
+namespace Thor::LLD::RCC
 {
 #if defined( STM32_RCC1_PERIPH_AVAILABLE )
   extern RegisterMap *RCC1_PERIPH;
@@ -81,7 +81,6 @@ namespace Thor::Driver::RCC
      *  GPIO Peripheral Config Lookup Tables
      */
     extern void GPIOInit();
-
     static constexpr size_t gpioTableSize = Thor::LLD::GPIO::NUM_GPIO_PERIPHS;
 
     extern const PCC GPIOLookup;
@@ -96,10 +95,7 @@ namespace Thor::Driver::RCC
      *  SPI Peripheral Config Lookup Tables
      */
     extern void SPIInit();
-
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
-
-    static constexpr size_t spiTableSize = Thor::Driver::SPI::NUM_SPI_PERIPHS;
+    static constexpr size_t spiTableSize = Thor::LLD::SPI::NUM_SPI_PERIPHS;
 
     extern const PCC SPILookup;
 
@@ -108,13 +104,12 @@ namespace Thor::Driver::RCC
     extern RegisterConfig SPI_ResetConfig[ spiTableSize ];
 
     extern Configuration::ClockType_t SPI_SourceClock[ spiTableSize ];
-#endif 
 
     /**
      *  UART Peripheral Config Lookup Tables
      */
     extern void UARTInit();
-
+    
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
     static constexpr size_t uartTableSize = Thor::Driver::UART::NUM_UART_PERIPHS;
 
@@ -163,6 +158,6 @@ namespace Thor::Driver::RCC
 
   }    // namespace LookupTables
 
-}    // namespace Thor::Driver::RCC
+}    // namespace Thor::LLD::RCC
 
 #endif /* !THOR_HW_RCC_MAPPING_HPP */

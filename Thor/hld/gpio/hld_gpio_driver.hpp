@@ -25,8 +25,6 @@
 #include <Thor/hld/gpio/hld_gpio_types.hpp>
 #include <Thor/lld/interface/gpio/gpio.hpp>
 
-#if defined( THOR_HLD_GPIO )
-
 namespace Thor::GPIO
 {
   Chimera::Status_t initialize();
@@ -57,5 +55,4 @@ namespace Thor::GPIO
   };
 }    // namespace Thor::GPIO
 
-#endif /* THOR_HLD_GPIO */
 #endif /* THOR_GPIO_HPP */

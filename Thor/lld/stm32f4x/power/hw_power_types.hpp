@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_power_types.hpp
  *
- *   Description:
+ *  Description:
  *    Declares types specific to the PWR peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -18,9 +18,7 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/power/hw_power_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_PWR )
-
-namespace Thor::Driver::PWR
+namespace Thor::LLD::PWR
 {
   struct RegisterMap
   {
@@ -438,5 +436,4 @@ namespace Thor::Driver::PWR
   }    // namespace CSR
 }
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_PWR */
 #endif /* !THOR_HW_POWER_TYPES_HPP */

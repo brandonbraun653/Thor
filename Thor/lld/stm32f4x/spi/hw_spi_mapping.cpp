@@ -20,7 +20,7 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
 
-namespace Thor::Driver::SPI
+namespace Thor::LLD::SPI
 {
   /*------------------------------------------------
   Chip Specific Resources
@@ -79,6 +79,6 @@ namespace Thor::Driver::SPI
     return result;
   }
 
-}    // namespace Thor::Driver::SPI
+}    // namespace Thor::LLD::SPI
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_SPI */

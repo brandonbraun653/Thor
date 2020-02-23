@@ -15,12 +15,21 @@ explicit_alias PUB : : : : <define>THOR_HLD_SYSTEM ;
 lib LIB
   : hld_system_driver.cpp
 
-  : <link>static
+  : <Thor>enabled-F4
+    <link>static
     <use>PUB
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    #<use>/THOR/HLD/SPI//PUB
+    <use>/THOR/LLD/STM32F4//PUB
+    <use>/THOR/LLD/STM32F4/GPIO//PUB
+    <use>/THOR/LLD/STM32F4/FLASH//PUB
+    <use>/THOR/LLD/STM32F4/NVIC//PUB
+    <use>/THOR/LLD/STM32F4/POWER//PUB
+    <use>/THOR/LLD/STM32F4/RCC//PUB
+    #<use>/THOR/LLD/STM32F4/SPI//PUB
   ;
 explicit LIB ;
 explicit_alias COMPILE_LIB : LIB ;

@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_flash_driver.hpp
  *
- *   Description:
+ *  Description:
  *    Implements the STM32F4 Flash driver interface
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -18,12 +18,9 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/flash/hw_flash_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_FLASH )
-
-namespace Thor::Driver::Flash
+namespace Thor::LLD::FLASH
 {
-
+  void initialize();
 }
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_FLASH */
 #endif /* !THOR_HW_DRIVER_FLASH_HPP */

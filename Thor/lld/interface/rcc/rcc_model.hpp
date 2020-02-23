@@ -22,7 +22,7 @@
 /* Thor Includes */
 #include <Thor/hld/clock/clock_types.hpp>
 
-namespace Thor::Driver::RCC
+namespace Thor::LLD::RCC
 {
   class ClockTree
   {
@@ -86,6 +86,6 @@ namespace Thor::Driver::RCC
     virtual Chimera::Status_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz ) = 0;
   };
 
-}    // namespace Thor::Driver::RCC
+}    // namespace Thor::LLD::RCC
 
 #endif /* !THOR_DRIVER_RCC_MODEL_HPP */

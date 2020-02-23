@@ -22,14 +22,12 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
-
 #define STM32_SPI1_PERIPH_AVAILABLE
 #define STM32_SPI2_PERIPH_AVAILABLE
 #define STM32_SPI3_PERIPH_AVAILABLE
 #define STM32_SPI4_PERIPH_AVAILABLE
 
-namespace Thor::Driver::SPI
+namespace Thor::LLD::SPI
 {
   void initializeRegisters();
 
@@ -271,7 +269,6 @@ namespace Thor::Driver::SPI
   static constexpr Reg32_t I2SPR_MCKOE_Msk = ( 0x1U << I2SPR_MCKOE_Pos );
   static constexpr Reg32_t I2SPR_MCKOE     = I2SPR_MCKOE_Msk;
 
-}    // namespace Thor::Driver::SPI
+}    // namespace Thor::LLD::SPI
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_SPI */
 #endif /* THOR_HW_SPI_REGISTER_HPP */

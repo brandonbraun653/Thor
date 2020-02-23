@@ -178,7 +178,7 @@ namespace Thor::Driver::DMA
 
 }    // namespace Thor::Driver::DMA
 
-namespace Thor::Driver::RCC::LookupTables
+namespace Thor::LLD::RCC::LookupTables
 {
   /*------------------------------------------------
   Lookup tables for register access on a peripheral by peripheral basis.
@@ -232,6 +232,6 @@ namespace Thor::Driver::RCC::LookupTables
     DMA_SourceClock[ DMA2_RESOURCE_INDEX ] = Configuration::ClockType::HCLK;
   };
 
-}    // namespace Thor::Driver::RCC::LookupTables
+}    // namespace Thor::LLD::RCC::LookupTables
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_DMA */

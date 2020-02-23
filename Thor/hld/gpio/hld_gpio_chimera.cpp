@@ -20,25 +20,6 @@
 
 namespace Chimera::GPIO::Backend
 {
-  Chimera::Status_t registerDriver( Chimera::GPIO::Backend::DriverConfig &registry )
-  {
-#if defined( THOR_HLD_GPIO )
-    registry.isSupported  = true;
-    registry.createShared = create_shared_ptr;
-    registry.createUnique = create_unique_ptr;
-    registry.initialize   = initialize;
-    registry.reset        = reset;
-    return Chimera::CommonStatusCodes::OK;
-#else
-    registry.isSupported  = false;
-    registry.createShared = nullptr;
-    registry.createUnique = nullptr;
-    registry.initialize   = nullptr;
-    registry.reset        = nullptr;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-#endif /* THOR_DRIVER_GPIO == 1*/
-  }
-
   Chimera::Status_t initialize()
   {
     return Thor::GPIO::initialize();
@@ -57,5 +38,24 @@ namespace Chimera::GPIO::Backend
   Chimera::GPIO::GPIO_uPtr create_unique_ptr()
   {
     return std::make_unique<Thor::GPIO::Driver>();
+  }
+
+  Chimera::Status_t registerDriver( Chimera::GPIO::Backend::DriverConfig &registry )
+  {
+#if defined( THOR_HLD_GPIO )
+    registry.isSupported  = true;
+    registry.createShared = create_shared_ptr;
+    registry.createUnique = create_unique_ptr;
+    registry.initialize   = initialize;
+    registry.reset        = reset;
+    return Chimera::CommonStatusCodes::OK;
+#else
+    registry.isSupported  = false;
+    registry.createShared = nullptr;
+    registry.createUnique = nullptr;
+    registry.initialize   = nullptr;
+    registry.reset        = nullptr;
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+#endif /* THOR_DRIVER_GPIO == 1*/
   }
 }    // namespace Chimera::GPIO::Backend

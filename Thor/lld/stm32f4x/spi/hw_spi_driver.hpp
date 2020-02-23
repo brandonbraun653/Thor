@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_spi_driver.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Driver for the SPI Peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -25,9 +25,7 @@
 #include <Thor/lld/interface/spi/spi_model.hpp>
 #include <Thor/lld/stm32f4x/spi/hw_spi_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
-
-namespace Thor::Driver::SPI
+namespace Thor::LLD::SPI
 {
   /**
    *  Initializes the low level driver
@@ -37,7 +35,7 @@ namespace Thor::Driver::SPI
   void initialize();
 
 
-  class Driver : public Thor::Driver::SPI::Model
+  class Driver : public Thor::LLD::SPI::Model
   {
   public:
     Driver();
@@ -95,7 +93,6 @@ namespace Thor::Driver::SPI
     ------------------------------------------------*/
     HWTransfer txfr;
   };
-}    // namespace Thor::Driver::SPI
+}    // namespace Thor::LLD::SPI
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_SPI */
 #endif /* THOR_HW_SPI_DRIVER_HPP */

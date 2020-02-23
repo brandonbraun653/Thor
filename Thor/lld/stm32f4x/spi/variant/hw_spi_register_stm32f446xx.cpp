@@ -19,7 +19,7 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI ) && defined( STM32F446xx )
 
-namespace Thor::Driver::SPI
+namespace Thor::LLD::SPI
 {
 #if defined( EMBEDDED )
   RegisterMap *SPI1_PERIPH = reinterpret_cast<RegisterMap *>( SPI1_BASE_ADDR );
@@ -101,10 +101,10 @@ namespace Thor::Driver::SPI
     PeripheralList[ SPI3_RESOURCE_INDEX ] = SPI3_PERIPH;
     PeripheralList[ SPI4_RESOURCE_INDEX ] = SPI4_PERIPH;
   }
-}    // namespace Thor::Driver::SPI
+}    // namespace Thor::LLD::SPI
 
 
-namespace Thor::Driver::RCC::LookupTables
+namespace Thor::LLD::RCC::LookupTables
 {
   /*------------------------------------------------
   Lookup tables for register access on a peripheral by peripheral basis.
@@ -117,13 +117,13 @@ namespace Thor::Driver::RCC::LookupTables
   Configuration::ClockType_t SPI_SourceClock[ spiTableSize ];
 
   const PCC SPILookup = {
-    SPI_ClockConfig, SPI_ClockConfigLP, SPI_ResetConfig, SPI_SourceClock, &Thor::Driver::SPI::InstanceToResourceIndex,
+    SPI_ClockConfig, SPI_ClockConfigLP, SPI_ResetConfig, SPI_SourceClock, &Thor::LLD::SPI::InstanceToResourceIndex,
     gpioTableSize
   };
 
   void SPIInit()
   {
-    using namespace Thor::Driver::SPI;
+    using namespace Thor::LLD::SPI;
 
     /*------------------------------------------------
     SPI clock enable register access lookup table
@@ -179,6 +179,6 @@ namespace Thor::Driver::RCC::LookupTables
     SPI_SourceClock[ SPI4_RESOURCE_INDEX ] = Configuration::ClockType::PCLK2;
   }
 
-}    // namespace Thor::Driver::RCC::LookupTables
+}    // namespace Thor::LLD::RCC::LookupTables
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_SPI */

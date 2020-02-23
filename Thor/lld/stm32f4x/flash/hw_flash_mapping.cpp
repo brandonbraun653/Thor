@@ -14,7 +14,7 @@
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_FLASH )
 
-namespace Thor::Driver::Flash
+namespace Thor::LLD::FLASH
 {
 #if defined( EMBEDDED )
   RegisterMap *const FLASH_PERIPH = reinterpret_cast<RegisterMap *const>( FLASH_BASE_ADDR );

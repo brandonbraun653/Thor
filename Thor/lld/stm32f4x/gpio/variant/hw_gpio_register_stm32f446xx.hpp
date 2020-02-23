@@ -18,8 +18,6 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
-
 #define STM32_GPIOA_PERIPH_AVAILABLE
 #define STM32_GPIOB_PERIPH_AVAILABLE
 #define STM32_GPIOC_PERIPH_AVAILABLE
@@ -869,5 +867,4 @@ namespace Thor::LLD::GPIO
   static constexpr uint32_t BRR_BR15     = BRR_BR15_Msk;
 }    // namespace Thor::LLD::GPIO
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */
 #endif /* !THOR_HW_GPIO_REGISTER_HPP */
