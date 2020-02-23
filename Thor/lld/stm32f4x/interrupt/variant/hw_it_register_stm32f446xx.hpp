@@ -117,7 +117,7 @@ enum IRQn_Type
 };
 
 
-namespace Thor::LLD::NVIC
+namespace Thor::LLD::IT
 {
   
 }

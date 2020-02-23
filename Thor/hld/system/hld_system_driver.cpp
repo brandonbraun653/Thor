@@ -81,7 +81,7 @@ namespace Chimera::System
     /*------------------------------------------------
     Initialize interrupt settings
     ------------------------------------------------*/
-    Thor::LLD::NVIC::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
+    Thor::LLD::IT::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
 
 
     return Chimera::CommonStatusCodes::OK;

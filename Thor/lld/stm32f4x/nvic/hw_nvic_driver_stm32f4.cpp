@@ -15,7 +15,7 @@
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_NVIC )
 
-namespace Thor::LLD::NVIC
+namespace Thor::LLD::IT
 {
   void initialize()
   {
@@ -78,6 +78,6 @@ namespace Thor::LLD::NVIC
   {
     NVIC_SystemReset();
   }
-}    // namespace Thor::LLD::NVIC
+}    // namespace Thor::LLD::IT
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_NVIC */

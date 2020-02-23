@@ -21,6 +21,6 @@
 TEST(PleasePass, PrettyPlease)
 {
   EXPECT_EQ(0, 0);
-  Thor::LLD::NVIC::initialize();
+  Thor::LLD::IT::initialize();
 }
 

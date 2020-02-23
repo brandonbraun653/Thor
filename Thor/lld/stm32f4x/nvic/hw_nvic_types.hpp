@@ -12,7 +12,7 @@
 #ifndef THOR_HW_DRIVER_NVIC_TYPES_HPP
 #define THOR_HW_DRIVER_NVIC_TYPES_HPP
 
-namespace Thor::LLD::NVIC
+namespace Thor::LLD::IT
 {
   using PriorityGrouping_t = uint32_t;
 
@@ -22,6 +22,6 @@ namespace Thor::LLD::NVIC
   static constexpr PriorityGrouping_t GROUP3 = 0x00000004u; /**< 3 bits for pre-emption priority 1 bits for subpriority */
   static constexpr PriorityGrouping_t GROUP4 = 0x00000003u; /**< 4 bits for pre-emption priority 0 bits for subpriority */
 
-}    // namespace Thor::LLD::NVIC
+}    // namespace Thor::LLD::IT
 
 #endif /* !THOR_HW_DRIVER_NVIC_TYPES_HPP */

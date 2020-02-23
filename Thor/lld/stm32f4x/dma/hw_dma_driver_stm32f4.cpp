@@ -533,7 +533,7 @@ namespace Thor::Driver::DMA
     /*------------------------------------------------
     Make sure the interrupt priority has been set to correctly
     ------------------------------------------------*/
-    Thor::LLD::NVIC::setPriority( streamIRQn, Thor::Interrupt::DMA_STREAM_PREEMPT_PRIORITY, 0 );
+    Thor::LLD::IT::setPriority( streamIRQn, Thor::Interrupt::DMA_STREAM_PREEMPT_PRIORITY, 0 );
 
     /*------------------------------------------------
     - Transfer complete
@@ -563,12 +563,12 @@ namespace Thor::Driver::DMA
 
   void Stream::enterCriticalSection()
   {
-    Thor::LLD::NVIC::disableIRQ( streamIRQn );
+    Thor::LLD::IT::disableIRQ( streamIRQn );
   }
 
   void Stream::exitCriticalSection()
   {
-    Thor::LLD::NVIC::enableIRQ( streamIRQn );
+    Thor::LLD::IT::enableIRQ( streamIRQn );
   }
 
   void Stream::processListeners( const Chimera::Event::Trigger event )

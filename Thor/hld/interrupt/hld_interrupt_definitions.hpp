@@ -23,7 +23,7 @@ namespace Thor::Interrupt
   /*------------------------------------------------
   DO NOT CHANGE: Sets the priority grouping to use all 4 preempt bits with no subpriority bits.
   ------------------------------------------------*/
-  static constexpr uint32_t SYSTEM_NVIC_PRIORITY_GROUPING = Thor::LLD::NVIC::NVIC_PRIORITYGROUP_4;
+  static constexpr uint32_t SYSTEM_NVIC_PRIORITY_GROUPING = Thor::LLD::IT::NVIC_PRIORITYGROUP_4;
 
   /*------------------------------------------------
   These values can utilize the full range of priority grouping bits

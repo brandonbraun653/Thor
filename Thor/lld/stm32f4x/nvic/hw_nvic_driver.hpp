@@ -24,7 +24,7 @@
 #include <Thor/lld/stm32f4x/nvic/hw_nvic_types.hpp>
 #include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
 
-namespace Thor::LLD::NVIC
+namespace Thor::LLD::IT
 {
   void initialize();
 
