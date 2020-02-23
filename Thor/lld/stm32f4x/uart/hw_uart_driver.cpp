@@ -12,24 +12,21 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/uart/hw_uart_driver.hpp>
-#include <Thor/drivers/f4/uart/hw_uart_mapping.hpp>
-#include <Thor/drivers/f4/uart/hw_uart_prj.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_driver.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_mapping.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_prj.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_UART )
 
-namespace Thor::Driver::UART
+namespace Thor::LLD::UART
 {
- 
-  
-
   void initialize()
   {
     initializeRegisters();
     initializeMapping();
   }
 
-}    // namespace Thor::Driver::UART
+}    // namespace Thor::LLD::UART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_UART */

@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    dma_resources.hpp
+ *    hld_prv_dma_resources.hpp
  *
  *  Description:
  *    Thor resources used in the DMA driver. Chip agnostic.
  *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -15,12 +15,9 @@
 /* C++ Includes */
 #include <array>
 
-/* Boost Includes */
-#include <boost/function.hpp>
-
 /* Thor Includes */
-#include <Thor/definitions/dma_definitions.hpp>
-#include <Thor/drivers/common/types/dma_types.hpp>
+#include <Thor/hld/dma/hld_dma_types.hpp>
+#include <Thor/lld/interface/dma/dma_types.hpp>
 
 namespace Thor::DMA
 {
@@ -30,7 +27,7 @@ namespace Thor::DMA
    *  actually been used in project code. This minimizes memory usage nicely.
    */
   static constexpr size_t NUM_REQUEST_GENERATORS = 9u;
-  extern std::array<Thor::Driver::DMA::StreamResources, NUM_REQUEST_GENERATORS> RequestGenerators;
+  extern std::array<Thor::LLD::DMA::StreamResources, NUM_REQUEST_GENERATORS> RequestGenerators;
 
 }    // namespace Thor::DMA
 

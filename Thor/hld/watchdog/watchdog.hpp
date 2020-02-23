@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
- *       watchdog.hpp
+ *  File Name:
+ *    watchdog.hpp
  *
- *   Description:
- *       Thor interface to the STM32 watchdog hardware.
+ *  Description:
+ *    Thor interface to the STM32 watchdog hardware.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -17,13 +17,10 @@
 #include <Chimera/watchdog>
 
 /* Thor Includes */
-#include <Thor/thor.hpp>
-#include <Thor/drivers/watchdog.hpp>
+#include <Thor/lld/interface/watchdog/watchdog.hpp>
 
 namespace Thor::Watchdog
 {
-#if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )
-  
   /**
    *  Initialize the WWDG driver
    *  
@@ -61,11 +58,8 @@ namespace Thor::Watchdog
 
   private:
     uint32_t currentPrescaler;
-    Thor::Driver::WWDG::Driver_uPtr hwDriver;
+    Thor::LLD::WWDG::Driver_uPtr hwDriver;
   };
-#endif  /* THOR_DRIVER_WWDG */
-
-#if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
 
   /**
    *  Initialize the WWDG driver
@@ -107,6 +101,5 @@ namespace Thor::Watchdog
     uint32_t currentPrescaler;
     Thor::Driver::IWDG::Driver_uPtr hwDriver;
   };
-#endif  /* THOR_DRIVER_IWDG */
 
 }    // namespace Thor::Watchdog

@@ -20,12 +20,11 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
 #define STM32_WWDG1_PERIPH_AVAILABLE
 
-namespace Thor::Driver::WWDG
+namespace Thor::LLD::WWDG
 {
   void initializeRegisters();
 
@@ -99,6 +98,6 @@ namespace Thor::Driver::WWDG
   static constexpr Reg32_t SR_EWIF_Msk = ( 0x1U << SR_EWIF_Pos );
   static constexpr Reg32_t SR_EWIF     = SR_EWIF_Msk;
 
-}    // namespace Thor::Driver::WWDG
+}    // namespace Thor::LLD::WWDG
 
 #endif /* !THOR_HW_WWDG_REGISTER_HPP */

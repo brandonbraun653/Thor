@@ -65,7 +65,7 @@ namespace Thor::Watchdog
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    Thor::Driver::WWDG::initialize();
+    Thor::LLD::WWDG::initialize();
 
 
     s_wwdg_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
@@ -74,7 +74,7 @@ namespace Thor::Watchdog
 
   Window::Window() : currentPrescaler( 0u )
   {
-    hwDriver = std::make_unique<Thor::Driver::WWDG::Driver>( Thor::Driver::WWDG::WWDG1_PERIPH );
+    hwDriver = std::make_unique<Thor::LLD::WWDG::Driver>( Thor::LLD::WWDG::WWDG1_PERIPH );
   }
 
   Window::~Window()
@@ -126,12 +126,12 @@ namespace Thor::Watchdog
 
   size_t Window::maxTimeout()
   {
-    return hwDriver->getMaxTimeout( Thor::Driver::WWDG::CFR::CLK_DIV_MIN );
+    return hwDriver->getMaxTimeout( Thor::LLD::WWDG::CFR::CLK_DIV_MIN );
   }
 
   size_t Window::minTimeout()
   {
-    return hwDriver->getMinTimeout( Thor::Driver::WWDG::CFR::CLK_DIV_MAX );
+    return hwDriver->getMinTimeout( Thor::LLD::WWDG::CFR::CLK_DIV_MAX );
   }
 
   Chimera::Status_t Window::pauseOnDebugHalt( const bool enable )

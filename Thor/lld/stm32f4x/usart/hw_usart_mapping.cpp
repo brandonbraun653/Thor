@@ -1,22 +1,21 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_usart_mapping.cpp
  *
- *   Description:
+ *  Description:
  *    Useful maps for the USART peripherals
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_types.hpp>
+#include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_USART )
 
-namespace Thor::Driver::USART
+namespace Thor::LLD::USART
 {
   /*------------------------------------------------
   Chip Specific Resources
@@ -59,6 +58,6 @@ namespace Thor::Driver::USART
 
     return result;
   }
-}    // namespace Thor::Driver::USART
+}    // namespace Thor::LLD::USART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

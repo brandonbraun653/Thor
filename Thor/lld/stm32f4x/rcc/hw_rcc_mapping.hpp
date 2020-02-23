@@ -22,12 +22,12 @@
 #include <Chimera/gpio>
 
 /* Driver Includes */
-// #include <Thor/lld/stm32f4x/dma/hw_dma_prj.hpp>
+#include <Thor/lld/stm32f4x/dma/hw_dma_prj.hpp>
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
-// #include <Thor/lld/stm32f4x/uart/hw_uart_prj.hpp>
-// #include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
-// #include <Thor/lld/stm32f4x/wwdg/hw_wwdg_prj.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_prj.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_prj.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32f4x/system/sys_memory_map_prj.hpp>
@@ -64,9 +64,7 @@ namespace Thor::LLD::RCC
      *  DMA Peripheral Config Lookup Tables
      */
     extern void DMAInit();
-
-#if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
-    static constexpr size_t dmaTableSize = Thor::Driver::DMA::NUM_DMA_PERIPHS;
+    static constexpr size_t dmaTableSize = Thor::LLD::DMA::NUM_DMA_PERIPHS;
 
     extern const PCC DMALookup;
 
@@ -75,7 +73,6 @@ namespace Thor::LLD::RCC
     extern RegisterConfig DMA_ResetConfig[ dmaTableSize ];
 
     extern Configuration::ClockType_t DMA_SourceClock[ dmaTableSize ];
-#endif 
 
     /**
      *  GPIO Peripheral Config Lookup Tables
@@ -109,9 +106,7 @@ namespace Thor::LLD::RCC
      *  UART Peripheral Config Lookup Tables
      */
     extern void UARTInit();
-    
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
-    static constexpr size_t uartTableSize = Thor::Driver::UART::NUM_UART_PERIPHS;
+    static constexpr size_t uartTableSize = Thor::LLD::UART::NUM_UART_PERIPHS;
 
     extern const PCC UARTLookup;
 
@@ -120,15 +115,12 @@ namespace Thor::LLD::RCC
     extern RegisterConfig UART_ResetConfig[ uartTableSize ];
 
     extern Configuration::ClockType_t UART_SourceClock[ uartTableSize ];
-#endif
 
     /**
      *  USART Peripheral Config Lookup Tables
      */
     extern void USARTInit();
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
-    static constexpr size_t usartTableSize = Thor::Driver::USART::NUM_USART_PERIPHS;
+    static constexpr size_t usartTableSize = Thor::LLD::USART::NUM_USART_PERIPHS;
 
     extern const PCC USARTLookup;
 
@@ -137,15 +129,12 @@ namespace Thor::LLD::RCC
     extern RegisterConfig USART_ResetConfig[ usartTableSize ];
 
     extern Configuration::ClockType_t USART_SourceClock[ usartTableSize ];
-#endif
 
     /**
      *  WWDG Peripheral Config Lookup Tables
      */
     extern void WWDGInit();
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
-    static constexpr size_t wwdgTableSize = Thor::Driver::WWDG::NUM_WWDG_PERIPHS;
+    static constexpr size_t wwdgTableSize = Thor::LLD::WWDG::NUM_WWDG_PERIPHS;
 
     extern const PCC WWDGLookup;
 
@@ -154,7 +143,6 @@ namespace Thor::LLD::RCC
     extern RegisterConfig WWDG_ResetConfig[ wwdgTableSize ];
 
     extern Configuration::ClockType_t WWDG_SourceClock[ wwdgTableSize ];
-#endif
 
   }    // namespace LookupTables
 

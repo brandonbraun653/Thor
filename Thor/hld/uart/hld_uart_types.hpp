@@ -1,25 +1,25 @@
 /********************************************************************************
  *   File Name:
- *    usart_types.hpp
+ *    uart_types.hpp
  *
  *   Description:
- *    Types associated with the Thor USART driver
+ *    Types associated with the Thor UART driver
  *
  *   2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_USART_TYPES_HPP
-#define THOR_USART_TYPES_HPP
+#ifndef THOR_UART_TYPES_HPP
+#define THOR_UART_TYPES_HPP
 
 /* C++ Includes */
 #include <memory>
 
-namespace Thor::USART
+namespace Thor::UART
 {
-  class USARTClass;
-  using USARTClass_sPtr = std::shared_ptr<USARTClass>;
-  using USARTClass_uPtr = std::unique_ptr<USARTClass>;
+  class Driver;
+  using UARTClass_sPtr = std::shared_ptr<Driver>;
+  using UARTClass_uPtr = std::unique_ptr<Driver>;
 }    // namespace Thor::UART
 
-#endif /* !THOR_USART_TYPES_HPP */
+#endif /* !THOR_UART_TYPES_HPP */

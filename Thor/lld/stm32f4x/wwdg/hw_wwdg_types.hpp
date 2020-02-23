@@ -19,10 +19,9 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_prj.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_prj.hpp>
 
-namespace Thor::Driver::WWDG
+namespace Thor::LLD::WWDG
 {
   struct RegisterMap
   {
@@ -240,6 +239,6 @@ namespace Thor::Driver::WWDG
     };
   }
 
-}    // namespace Thor::Driver::WWDG
+}    // namespace Thor::LLD::WWDG
 
 #endif /* !THOR_HW_WATCHDOG_TYPES_HPP */

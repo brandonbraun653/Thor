@@ -1,25 +1,22 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_usart_register_stm32f446xx.cpp
  *
- *   Description:
+ *  Description:
  *    Explicit STM32F446xx USART data and routines
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/dma.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_register_stm32f446xx.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_types.hpp>
+#include <Thor/hld/dma/hld_dma_intf.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 ) && defined( STM32F446xx )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_USART ) && defined( STM32F446xx )
 
-namespace Thor::Driver::USART
+namespace Thor::LLD::USART
 {
 #if defined( EMBEDDED )
   RegisterMap *USART1_PERIPH = reinterpret_cast<RegisterMap *>( USART1_BASE_ADDR );
@@ -92,7 +89,7 @@ namespace Thor::Driver::USART
     InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( USART6_PERIPH ), USART6_RESOURCE_INDEX );
 #endif
   }
-}    // namespace Thor::Driver::USART
+}    // namespace Thor::LLD::USART
 
 
 namespace Thor::LLD::RCC::LookupTables
@@ -108,13 +105,13 @@ namespace Thor::LLD::RCC::LookupTables
   Configuration::ClockType_t USART_SourceClock[ usartTableSize ];
 
   const PCC USARTLookup = {
-    USART_ClockConfig, USART_ClockConfigLP, USART_ResetConfig, USART_SourceClock, &Thor::Driver::USART::InstanceToResourceIndex,
+    USART_ClockConfig, USART_ClockConfigLP, USART_ResetConfig, USART_SourceClock, &Thor::LLD::USART::InstanceToResourceIndex,
     gpioTableSize
   };
 
   void USARTInit()
   {
-    using namespace Thor::Driver::USART;
+    using namespace Thor::LLD::USART;
 
     /*------------------------------------------------
     USART clock enable register access lookup table

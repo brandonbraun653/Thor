@@ -1,36 +1,35 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_dma_mapping.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Mappings for the DMA Peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
 #include <Chimera/dma>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/dma/hw_dma_mapping.hpp>
-#include <Thor/drivers/f4/dma/hw_dma_types.hpp>
+#include <Thor/lld/stm32f4x/dma/hw_dma_mapping.hpp>
+#include <Thor/lld/stm32f4x/dma/hw_dma_types.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_DMA )
 
-namespace Thor::Driver::DMA
+namespace Thor::LLD::DMA
 {
   /*------------------------------------------------
   Chip Specific Resources 
   ------------------------------------------------*/
   PeriphRegisterList periphInstanceList;
   StreamRegisterList streamInstanceList;
-  DriverInstanceList dmaObjects;
+  DriverInstanceList driverInstanceList;
 
   void initializeMapping()
   {
-    dmaObjects.fill( nullptr );
+    driverInstanceList.fill( nullptr );
   }
 
   bool isDMA( const std::uintptr_t address )
@@ -206,5 +205,5 @@ namespace Thor::Driver::DMA
   };
 
   /* clang-format on */
-}    // namespace Thor::Driver::DMA
+}    // namespace Thor::LLD::DMA
 #endif /* TARGET_STM32F4 && THOR_DRIVER_DMA */

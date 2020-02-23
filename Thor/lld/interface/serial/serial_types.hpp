@@ -16,7 +16,7 @@
 #include <cstdint>
 
 /* Driver Includes */
-#include <Thor/drivers/common/types/interrupt_types.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_types.hpp>
 
 namespace Thor::Driver::Serial
 {

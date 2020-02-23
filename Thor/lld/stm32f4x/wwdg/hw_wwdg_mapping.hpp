@@ -18,11 +18,10 @@
 #include <Chimera/container>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_prj.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_types.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_prj.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_types.hpp>
 
-namespace Thor::Driver::WWDG
+namespace Thor::LLD::WWDG
 {
 #if defined( STM32_WWDG1_PERIPH_AVAILABLE )
   extern RegisterMap *WWDG1_PERIPH;

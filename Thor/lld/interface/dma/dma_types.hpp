@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    dma_types.hpp
  *
- *   Description:
+ *  Description:
  *    Common DMA types used in Thor drivers
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once 
@@ -19,9 +19,9 @@
 #include <Chimera/event>
 
 /* Thor Includes */
-#include <Thor/definitions/dma_definitions.hpp>
+#include <Thor/hld/dma/hld_dma_intf.hpp>
 
-namespace Thor::Driver::DMA
+namespace Thor::LLD::DMA
 {
   using Config_t = uint16_t;
   namespace ConfigBitFields
@@ -74,7 +74,7 @@ namespace Thor::Driver::DMA
     /*------------------------------------------------
     Specifies the channel used for the specified stream. 
 
-    Can be a value of Thor::Driver::DMA::Configuration::ChannelSelect
+    Can be a value of Thor::LLD::DMA::Configuration::ChannelSelect
     ------------------------------------------------*/
     uint32_t Channel;
 
@@ -82,35 +82,35 @@ namespace Thor::Driver::DMA
     Specifies if the data will be transferred from memory 
     to peripheral, from memory to memory or from peripheral to memory.
 
-    Can be a value of Thor::Driver::DMA::Configuration::TransferDirection
+    Can be a value of Thor::LLD::DMA::Configuration::TransferDirection
     ------------------------------------------------*/
     uint32_t Direction;
     
     /*------------------------------------------------
     Specifies whether the Peripheral address register should be incremented or not
 
-    Can be a value of Thor::Driver::DMA::Configuration::PeriphIncrementMode
+    Can be a value of Thor::LLD::DMA::Configuration::PeriphIncrementMode
     ------------------------------------------------*/
     uint32_t PeriphInc;
     
     /*------------------------------------------------
     Specifies whether the memory address register should be incremented or not.
 
-    Can be a value of Thor::Driver::DMA::Configuration::MemoryIncrementMode
+    Can be a value of Thor::LLD::DMA::Configuration::MemoryIncrementMode
     ------------------------------------------------*/
     uint32_t MemInc;
     
     /*------------------------------------------------
     Specifies the Peripheral data width.
 
-    Can be a value of Thor::Driver::DMA::Configuration::PeriphDataSize
+    Can be a value of Thor::LLD::DMA::Configuration::PeriphDataSize
     ------------------------------------------------*/
     uint32_t PeriphDataAlignment;
 
     /*------------------------------------------------
     Specifies the Memory data width
 
-    Can be a value of Thor::Driver::DMA::Configuration::MemoryDataSize
+    Can be a value of Thor::LLD::DMA::Configuration::MemoryDataSize
     ------------------------------------------------*/
     uint32_t MemDataAlignment;
 
@@ -120,13 +120,13 @@ namespace Thor::Driver::DMA
     @note The circular buffer mode cannot be used if the memory-to-memory
           data transfer is configured on the selected Stream  
 
-    Can be a value of Thor::Driver::DMA::Configuration::Mode
+    Can be a value of Thor::LLD::DMA::Configuration::Mode
     ------------------------------------------------*/
     uint32_t Mode;
 
     /*------------------------------------------------
     Specifies the software priority for the transfer
-    Can be a value of Thor::Driver::DMA::Configuration::PriorityLevel
+    Can be a value of Thor::LLD::DMA::Configuration::PriorityLevel
     ------------------------------------------------*/
     uint32_t Priority;
 
@@ -136,14 +136,14 @@ namespace Thor::Driver::DMA
     @note The Direct mode (FIFO mode disabled) cannot be used if the 
           memory-to-memory data transfer is configured on the selected stream
 
-    Can be a value of Thor::Driver::DMA::Configuration::FIFODirectMode
+    Can be a value of Thor::LLD::DMA::Configuration::FIFODirectMode
     ------------------------------------------------*/
     uint32_t FIFOMode; 
 
     /*------------------------------------------------
     Specifies the FIFO threshold level.
     
-    Can be a value of Thor::Driver::DMA::Configuration::FIFOThreshold
+    Can be a value of Thor::LLD::DMA::Configuration::FIFOThreshold
     ------------------------------------------------*/
     uint32_t FIFOThreshold;
 
@@ -154,7 +154,7 @@ namespace Thor::Driver::DMA
 
     @note The burst mode is possible only if the address Increment mode is enabled.
 
-    Can be a value of Thor::Driver::DMA::Configuration::MemoryBurst
+    Can be a value of Thor::LLD::DMA::Configuration::MemoryBurst
     ------------------------------------------------*/
     uint32_t MemBurst;
 
@@ -165,7 +165,7 @@ namespace Thor::Driver::DMA
 
     @note The burst mode is possible only if the address Increment mode is enabled.
 
-    Can be a value of Thor::Driver::DMA::Configuration::PeriphBurst
+    Can be a value of Thor::LLD::DMA::Configuration::PeriphBurst
     ------------------------------------------------*/
     uint32_t PeriphBurst;
   };
@@ -214,6 +214,6 @@ namespace Thor::Driver::DMA
       transferError    = false;
     }
   };
-}    // namespace Thor::Driver::DMA
+}    // namespace Thor::LLD::DMA
 
 #endif /* !THOR_DRIVER_DMA_COMMON_TYPES_HPP */

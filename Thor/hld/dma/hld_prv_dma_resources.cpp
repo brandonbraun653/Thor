@@ -1,29 +1,30 @@
 /********************************************************************************
  *  File Name:
- *    dma_resources.cpp
+ *    hld_prv_dma_resources.cpp
  *
  *  Description:
  *    Thor resources used in the DMA driver
  *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Thor Includes */
-#include <Thor/resources/dma_resources.hpp>
-#include <Thor/definitions/dma_definitions.hpp>
-
+#include <Thor/dma>
+#include <Thor/hld/dma/hld_prv_dma_resources.hpp>
+#include <Thor/lld/interface/dma/dma.hpp>
+#include <Thor/lld/interface/dma/dma_types.hpp>
 
 namespace Thor::DMA
 {
-  using namespace Thor::Driver::DMA;
-  using namespace Thor::Driver::DMA::ConfigBitFields;
+  using namespace ::Thor::LLD::DMA;
+  using namespace ::Thor::LLD::DMA::ConfigBitFields;
 
   /* clang-format off */
   #if defined( TARGET_STM32F4 ) || defined( TARGET_STM32F7 )
   /*------------------------------------------------
   Taken from tables 28 & 29 on RM0390 datasheet
   ------------------------------------------------*/
-  std::array<Thor::Driver::DMA::StreamResources, NUM_REQUEST_GENERATORS> RequestGenerators = {{
+  std::array<Thor::LLD::DMA::StreamResources, NUM_REQUEST_GENERATORS> RequestGenerators = {{
     { Source::NONE,           ConfigBitFields::EMPTY_CONFIG,                    {} },
     /* USART */
     { Source::S_USART1_RX,    DMA_ON_DMA2 | DMA_STREAM_2 | DMA_CHANNEL_4,       {} },

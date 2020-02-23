@@ -1,0 +1,16 @@
+/********************************************************************************
+ *  File Name:
+ *    event
+ * 
+ *  Description:
+ *    Thor Event Includes
+ * 
+ *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_EVENT_INCLUDES
+#define THOR_EVENT_INCLUDES
+
+
+#endif /* !THOR_EVENT_INCLUDES */

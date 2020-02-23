@@ -1,0 +1,19 @@
+/********************************************************************************
+ *  File Name:
+ *    dma
+ * 
+ *  Description:
+ *    Thor DMA Includes
+ * 
+ *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_DMA_INCLUDES
+#define THOR_DMA_INCLUDES
+
+#include <Thor/hld/dma/hld_dma_driver.hpp>
+#include <Thor/hld/dma/hld_dma_intf.hpp>
+#include <Thor/hld/dma/hld_dma_types.hpp>
+
+#endif /* !THOR_DMA_INCLUDES */

@@ -26,7 +26,7 @@
 #include <Thor/spi>
 #include <Thor/lld/interface/spi/spi.hpp>
 
-static std::array<Thor::SPI::SPIClass *, Thor::LLD::SPI::NUM_SPI_PERIPHS> SPIClassObjects;
+static std::array<Thor::SPI::Driver *, Thor::LLD::SPI::NUM_SPI_PERIPHS> SPIClassObjects;
 static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::LLD::SPI::NUM_SPI_PERIPHS> postProcessorHandles;
 static std::array<Chimera::Threading::BinarySemaphore, Thor::LLD::SPI::NUM_SPI_PERIPHS> postProcessorSignals;
 static std::array<Chimera::Function::void_func_void_ptr, Thor::LLD::SPI::NUM_SPI_PERIPHS> postProcessorThreads;
@@ -90,7 +90,7 @@ namespace Thor::SPI
   //   // }
   // }
 
-  void initialize()
+  Chimera::Status_t initialize()
   {
     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
 
@@ -137,12 +137,13 @@ namespace Thor::SPI
 #endif
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return Chimera::CommonStatusCodes::OK;
   }
 
   /*------------------------------------------------
   Class Specific Functions
   ------------------------------------------------*/
-  SPIClass::SPIClass()
+  Driver::Driver()
   {
     /*------------------------------------------------
     Lazy initialize all driver memory in case the user forgot
@@ -158,11 +159,11 @@ namespace Thor::SPI
     config = {};
   }
 
-  SPIClass::~SPIClass()
+  Driver::~Driver()
   {
   }
 
-  void SPIClass::postISRProcessing()
+  void Driver::postISRProcessing()
   {
     // TODO: Add logic for listener invocation, error handling, CS toggling, and multiple transfers.
 
@@ -183,7 +184,7 @@ namespace Thor::SPI
   /*------------------------------------------------
   HW Interface
   ------------------------------------------------*/
-  Chimera::Status_t SPIClass::init( const Chimera::SPI::DriverConfig &setupStruct )
+  Chimera::Status_t Driver::init( const Chimera::SPI::DriverConfig &setupStruct )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
     auto lockGuard           = TimedLockGuard(*this);
@@ -274,17 +275,17 @@ namespace Thor::SPI
     return result;
   }
 
-  Chimera::SPI::DriverConfig SPIClass::getInit()
+  Chimera::SPI::DriverConfig Driver::getInit()
   {
     return config;
   }
 
-  Chimera::Status_t SPIClass::deInit()
+  Chimera::Status_t Driver::deInit()
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t SPIClass::setChipSelect( const Chimera::GPIO::State value )
+  Chimera::Status_t Driver::setChipSelect( const Chimera::GPIO::State value )
   {
     if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) && CS )
     {
@@ -294,7 +295,7 @@ namespace Thor::SPI
     return Chimera::CommonStatusCodes::FAIL;
   }
 
-  Chimera::Status_t SPIClass::setChipSelectControlMode( const Chimera::SPI::CSMode mode )
+  Chimera::Status_t Driver::setChipSelectControlMode( const Chimera::SPI::CSMode mode )
   {
     /*------------------------------------------------
     Only valid if the SPI driver has control of the chip select
@@ -308,17 +309,17 @@ namespace Thor::SPI
     return Chimera::CommonStatusCodes::LOCKED;
   }
 
-  Chimera::Status_t SPIClass::writeBytes( const void *const txBuffer, const size_t length, const size_t timeoutMS )
+  Chimera::Status_t Driver::writeBytes( const void *const txBuffer, const size_t length, const size_t timeoutMS )
   {
     return readWriteBytes( txBuffer, nullptr, length, timeoutMS );
   }
 
-  Chimera::Status_t SPIClass::readBytes( void *const rxBuffer, const size_t length, const size_t timeoutMS )
+  Chimera::Status_t Driver::readBytes( void *const rxBuffer, const size_t length, const size_t timeoutMS )
   {
     return readWriteBytes( nullptr, rxBuffer, length, timeoutMS );
   }
 
-  Chimera::Status_t SPIClass::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length,
+  Chimera::Status_t Driver::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length,
                                               const size_t timeoutMS )
   {
     auto lockguard = TimedLockGuard( *this );
@@ -382,7 +383,7 @@ namespace Thor::SPI
     }
   }
 
-  Chimera::Status_t SPIClass::setPeripheralMode( const Chimera::Hardware::PeripheralMode mode )
+  Chimera::Status_t Driver::setPeripheralMode( const Chimera::Hardware::PeripheralMode mode )
   {
     if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) )
     {
@@ -393,7 +394,7 @@ namespace Thor::SPI
     return Chimera::CommonStatusCodes::LOCKED;
   }
 
-  Chimera::Status_t SPIClass::setClockFrequency( const size_t freq, const size_t tolerance )
+  Chimera::Status_t Driver::setClockFrequency( const size_t freq, const size_t tolerance )
   {
     /*------------------------------------------------
     Acquire resources
@@ -419,7 +420,7 @@ namespace Thor::SPI
     return driver->configure( config );
   }
 
-  size_t SPIClass::getClockFrequency()
+  size_t Driver::getClockFrequency()
   {
     /* Shouldn't need a lock as this is atomic on 32-bit ARM processors */
     return config.HWInit.clockFreq;
@@ -428,7 +429,7 @@ namespace Thor::SPI
   /*------------------------------------------------
   Async IO Interface
   ------------------------------------------------*/
-  Chimera::Status_t SPIClass::await( const Chimera::Event::Trigger event, const size_t timeout )
+  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
     if ( event != Chimera::Event::Trigger::TRANSFER_COMPLETE )
     {
@@ -444,7 +445,7 @@ namespace Thor::SPI
     }
   }
 
-  Chimera::Status_t SPIClass::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
                                      const size_t timeout )
   {
     auto result = await( event, timeout );
@@ -460,13 +461,13 @@ namespace Thor::SPI
   /*------------------------------------------------
   Listener Interface
   ------------------------------------------------*/
-  Chimera::Status_t SPIClass::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
+  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
                                                 size_t &registrationID )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t SPIClass::removeListener( const size_t registrationID, const size_t timeout )
+  Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }

@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_uart_driver.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Driver for the UART Peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -16,13 +16,12 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/common/types.hpp>
-#include <Thor/drivers/f4/uart/hw_uart_types.hpp>
-#include <Thor/drivers/f4/uart/hw_uart_stubs.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
+#include <Thor/lld/common/interrupts/usart_interrupt_vectors.hpp>
+#include <Thor/lld/stm32f4x/common/types.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_types.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_driver.hpp>
 
-namespace Thor::Driver::UART
+namespace Thor::LLD::UART
 {
   /**
    *  Initializes the low level driver
@@ -36,11 +35,11 @@ namespace Thor::Driver::UART
    *  same registers and configuration settings. To eliminate duplicate
    *  code, this UART variant simply inherits the USART driver functionality.
    */
-  class Driver : public Thor::Driver::USART::Driver
+  class Driver : public Thor::LLD::USART::Driver
   {
   public:
     Driver( RegisterMap *const peripheral ) :
-        Thor::Driver::USART::Driver( peripheral )
+        Thor::LLD::USART::Driver( peripheral )
     {
     }
 
@@ -48,16 +47,6 @@ namespace Thor::Driver::UART
     {
     }
   };
-}    // namespace Thor::Driver::UART
-
-#if defined( __cplusplus )
-extern "C"
-{
-#endif
-  void UART4_IRQHandler();
-  void UART5_IRQHandler();
-#if defined( __cplusplus )
-}
-#endif
+}    // namespace Thor::LLD::UART
 
 #endif /* !THOR_HW_UART_DRIVER_HPP */

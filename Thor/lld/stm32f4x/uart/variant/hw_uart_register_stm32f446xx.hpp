@@ -21,13 +21,12 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
 #define STM32_UART4_PERIPH_AVAILABLE
 #define STM32_UART5_PERIPH_AVAILABLE
 
-namespace Thor::Driver::UART
+namespace Thor::LLD::UART
 {
   void initializeRegisters();
 
@@ -40,6 +39,6 @@ namespace Thor::Driver::UART
   static constexpr uint32_t UART5_RESOURCE_INDEX = 1u;
 
   static constexpr std::array<Reg32_t, NUM_UART_PERIPHS> periphAddressList = { UART4_BASE_ADDR, UART5_BASE_ADDR };
-}    // namespace Thor::Driver::USART
+}    // namespace Thor::LLD::USART
 
 #endif /* !THOR_HW_UART_REGISTER_HPP */

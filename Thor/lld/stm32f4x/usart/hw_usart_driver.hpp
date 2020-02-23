@@ -21,16 +21,12 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/common/interrupts/usart_interrupt_vectors.hpp>
-#include <Thor/drivers/common/types/serial_types.hpp>
-#include <Thor/drivers/f4/common/types.hpp>
-#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_types.hpp>
-#include <Thor/drivers/model/interrupt_model.hpp>
-#include <Thor/drivers/model/serial_model.hpp>
+#include <Thor/lld/common/interrupts/usart_interrupt_vectors.hpp>
+#include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
+#include <Thor/lld/interface/serial/serial_model.hpp>
 
-namespace Thor::Driver::USART
+namespace Thor::LLD::USART
 {
   /**
    *  Initializes the low level driver
@@ -151,6 +147,6 @@ namespace Thor::Driver::USART
   using Driver_sPtr = std::shared_ptr<Driver>;
   using Driver_uPtr = std::unique_ptr<Driver>;
 
-}    // namespace Thor::Driver::USART
+}    // namespace Thor::LLD::USART
 
 #endif /* !THOR_HW_USART_DRIVER_HPP */

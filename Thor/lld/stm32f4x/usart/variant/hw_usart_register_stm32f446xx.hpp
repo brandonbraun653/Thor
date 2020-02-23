@@ -22,7 +22,6 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
 #define STM32_USART1_PERIPH_AVAILABLE
@@ -30,7 +29,7 @@
 #define STM32_USART3_PERIPH_AVAILABLE
 #define STM32_USART6_PERIPH_AVAILABLE
 
-namespace Thor::Driver::USART
+namespace Thor::LLD::USART
 {
   void initializeRegisters();
 
@@ -251,6 +250,6 @@ namespace Thor::Driver::USART
   static constexpr Reg32_t GTPR_GT_Pos  = ( 8U );
   static constexpr Reg32_t GTPR_GT_Msk  = ( 0xFFU << GTPR_GT_Pos );
   static constexpr Reg32_t GTPR_GT      = GTPR_GT_Msk;
-}    // namespace Thor::Driver::USART
+}    // namespace Thor::LLD::USART
 
 #endif /* !THOR_HW_USART_REGISTER_HPP */

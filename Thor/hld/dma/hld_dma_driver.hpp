@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    dma.hpp
+ *    hld_dma_driver.hpp
  *
  *  Description:
  *    Thor implementation of the DMA driver
  *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -17,26 +17,18 @@
 #include <Chimera/dma>
 
 /* Thor Includes */
-#include <Thor/definitions/dma_definitions.hpp>
-#include <Thor/drivers/common/types/dma_types.hpp>
+#include <Thor/hld/dma/hld_dma_intf.hpp>
+#include <Thor/hld/dma/hld_dma_types.hpp>
 
 namespace Thor::DMA
 {
-  /**
-   *  Initialize the driver
-   *  
-   *  @return Chimera::Status_t 
-   */
   Chimera::Status_t initialize();
 
-  class DMAClass : public Chimera::DMA::HWInterface, public Chimera::Threading::Lockable
+  class DMAClass : virtual public Chimera::DMA::IDMA, public Chimera::Threading::Lockable
   {
   public:
     ~DMAClass();
 
-    /**
-     *
-     */
     static std::shared_ptr<DMAClass> get();
 
     Chimera::Status_t init() final override;
@@ -55,31 +47,29 @@ namespace Thor::DMA
     /**
      *  Registers a listener to a specific DMA stream
      *
-     *  @param[in]  stream            The stream to register the listener against
+     *  @param[in]  stream            The stream to register the listener against (zero indexed)
      *  @param[in]  listener          The listener to be registered
      *  @param[in]  timeout           How long to wait for the registration sink to become available
      *  @param[out] registrationID    Returned ID that uniquely identifies the registrated listener
      *
      *  @return Chimera::Status_t
      */
-    Chimera::Status_t registerListener( Driver::DMA::StreamX *const stream, Chimera::Event::Actionable &listener,
+    Chimera::Status_t registerListener( const size_t stream, Chimera::Event::Actionable &listener,
                                         const size_t timeout, size_t &registrationID );
 
     /**
      *  Removes a previously registered listener on a specific DMA stream
      *
-     *  @param[in]  stream            The stream to remove the listener from
+     *  @param[in]  stream            The stream to remove the listener from (zero indexed)
      *  @param[in]  registrationID    ID returned when the listener was registered
      *  @param[in]  timeout           How long to wait for the registration sink to become available
      *
      *  @return Chimera::Status_t
      */
-    Chimera::Status_t removeListener( Driver::DMA::StreamX *const stream, const size_t registrationID, const size_t timeout );
+    Chimera::Status_t removeListener( const size_t stream, const size_t registrationID, const size_t timeout );
 
   private:
     DMAClass();
-
-    Thor::Driver::DMA::StreamResources lastLookup;
 
     size_t listenerIDCount;
     std::vector<Chimera::Event::Actionable> eventListeners;

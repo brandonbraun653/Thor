@@ -20,10 +20,9 @@
 #include <Chimera/serial>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
 
-namespace Thor::Driver::USART
+namespace Thor::LLD::USART
 {
   struct RegisterMap
   {
@@ -1288,6 +1287,6 @@ namespace Thor::Driver::USART
       state  = StateMachine::RX::RX_READY;
     }
   };
-}    // namespace Thor::Driver::USART
+}    // namespace Thor::LLD::USART
 
 #endif /* !THOR_HW_USART_TYPES_HPP */

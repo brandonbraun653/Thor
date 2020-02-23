@@ -1,19 +1,19 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_uart_mapping.cpp
  *
- *   Description:
+ *  Description:
  *    Useful maps for the UART peripherals
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/drivers/f4/uart/hw_uart_mapping.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_mapping.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_UART )
 
-namespace Thor::Driver::UART
+namespace Thor::LLD::UART
 {
   /*------------------------------------------------
   Chip Specific Resources
@@ -44,6 +44,6 @@ namespace Thor::Driver::UART
     }
     return result;
   }
-}    // namespace Thor::Driver::UART
+}    // namespace Thor::LLD::UART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

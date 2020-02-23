@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    uart_definitions.hpp
  *
- *   Description:
+ *  Description:
  *    Thor UART Definitions
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -14,11 +14,6 @@
 
 /* C++ Includes */
 #include <cstdint>
-
-/* Thor Includes */
-#include <Thor/headers.hpp>
-
-
 
 namespace Thor::UART
 {

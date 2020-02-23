@@ -15,13 +15,12 @@
 #include <memory>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/model/watchdog_model.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_types.hpp>
+#include <Thor/lld/interface/watchdog/watchdog_model.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_types.hpp>
 
-namespace Thor::Driver::WWDG
+namespace Thor::LLD::WWDG
 {
-  extern void initialize();
+  void initialize();
 
   /**
    *  @note Most of the Window watchdog driver has been prototyped
@@ -73,6 +72,6 @@ namespace Thor::Driver::WWDG
 
   using Driver_sPtr = std::shared_ptr<Driver>;
   using Driver_uPtr = std::shared_ptr<Driver>;
-}    // namespace Thor::Driver::WWDG
+}    // namespace Thor::LLD::WWDG
 
 #endif /* !THOR_HW_WWDG_DRIVER_HPP */

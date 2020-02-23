@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    dma_model.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Driver DMA Model
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -24,9 +24,9 @@
 #include <Chimera/dma>
 
 /* Thor Includes */
-#include <Thor/drivers/common/types/dma_types.hpp>
+#include <Thor/lld/interface/dma/dma_types.hpp>
 
-namespace Thor::Driver::DMA
+namespace Thor::LLD::DMA
 {
   class PeripheralModel
   {
@@ -89,7 +89,7 @@ namespace Thor::Driver::DMA
     virtual Chimera::Status_t abort( StreamX *const stream ) = 0;
   };
 
-  class StreamModel : public Chimera::Event::ListenerInterface
+  class StreamModel : virtual public Chimera::Event::ListenerInterface
   {
   public:
     virtual ~StreamModel() = default;
@@ -104,7 +104,7 @@ namespace Thor::Driver::DMA
      *  @param[in]  wakeup    Signal to be given to upon ISR events
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t attachISRWakeup( SemaphoreHandle_t wakeup ) = 0;
+    virtual Chimera::Status_t attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup ) = 0;
     
     /**
      *  Reconfigures a stream for a new transfer
@@ -124,6 +124,6 @@ namespace Thor::Driver::DMA
 
     virtual Chimera::Status_t abort() = 0;
   };
-}    // namespace Thor::Driver::DMA
+}    // namespace Thor::LLD::DMA
 
 #endif /* !THOR_DRIVER_MODEL_DMA_HPP */

@@ -19,16 +19,15 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/uart/hw_uart_prj.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_types.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_prj.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
 
-namespace Thor::Driver::UART
+namespace Thor::LLD::UART
 {
   /*------------------------------------------------
   For the F4, the UART and USART peripherals are synonymous
   ------------------------------------------------*/
-  using RegisterMap = Thor::Driver::USART::RegisterMap;
+  using RegisterMap = Thor::LLD::USART::RegisterMap;
 
   class Driver;
 
@@ -37,6 +36,6 @@ namespace Thor::Driver::UART
   using DMASignalList      = std::array<Reg32_t, NUM_UART_PERIPHS>;
 
 
-}    // namespace Thor::Driver::UART
+}    // namespace Thor::LLD::UART
 
 #endif /* !THOR_HW_UART_TYPES_HPP */
