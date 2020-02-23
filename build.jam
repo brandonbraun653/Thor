@@ -73,13 +73,9 @@ project ThorSource : usage-requirements <include>. ;
 # Public Thor Library Components
 # ====================================================
 
-use-project /STM32F4 : Thor/lld/stm32f4x ;      # Low level STM32F4xxx driver project
+use-project /THOR/LLD/STM32F4 : Thor/lld/stm32f4x ;      # Low level STM32F4xxx driver project
+use-project /THOR/HLD : Thor/hld ;
 
-
-use-project /THOR/GPIO : Thor/hld/gpio ;        # High level GPIO driver project
-use-project /THOR/SPI : Thor/hld/spi ;          # High level SPI driver project
-use-project /THOR/SYSTEM : Thor/hld/system ;    # High level System driver project
-use-project /THOR/TIMER : Thor/hld/timer ;      # High level Timer driver project
 
 # ------------------------------------------
 # Includes all common Thor headers
@@ -87,25 +83,15 @@ use-project /THOR/TIMER : Thor/hld/timer ;      # High level Timer driver projec
 explicit_alias PUB : : : : 
     <include>.
     <define>BOOST_NO_EXCEPTIONS
-    <Thor>enabled-F4:<use>/STM32F4//PUB
-    <Thor>enabled-F7:<use>/STM32F7//PUB 
+    <Thor>enabled-F4:<use>/THOR/LLD/STM32F4//PUB
     ;
 
 # Core libraries needed by every low level driver. Do *not*
 # add to this list frivolously. It will increase build times.
-explicit_alias CORE_LIBS : : : :
-    <library>/THOR/SYSTEM//LIB
-    <library>/THOR/TIMER//LIB
-    ;
-
-# ------------------------------------------
-# Includes the Thor variant of chimeraPort.hpp
-# -----------------------------------------
-explicit_alias CHIMERA_PORT : : :
-    :   <include>$(thor_hdr_dir)/config/chimera
-        <define>CHIMERA_LITTLE_ENDIAN
-    ;
-
+# explicit_alias CORE_LIBS : : : :
+#     <library>/THOR/HLD/SYSTEM//LIB
+#     <library>/THOR/HLD/TIMER//LIB
+#     ;
 
 # -----------------------------------------
 # STM32F4 Public Headers
@@ -116,18 +102,7 @@ alias TARGET_PROPAGATED_OPTIONS
     :
     :   <use>PUB
         <use>/PRJ//BOOST
-        <use>/STM32F4//ALIAS_MCU_OPTIONS        
+        <use>/THOR/LLD/STM32F4//ALIAS_MCU_OPTIONS        
         <cxxflags>$(thor_usage_requirements_cxxflags)
     ;
 explicit TARGET_PROPAGATED_OPTIONS ;                # Thor chip specific options that should be propagated to all targets using Thor
-
-
-explicit_alias INSTALL_ALL_HLD_LIB 
-    :   /THOR/GPIO//INSTALL_LIB
-        /THOR/SPI//INSTALL_LIB
-    ;
-
-explicit_alias INSTALL_ALL_HLD_TEST
-    :   /THOR/GPIO//INSTALL_TEST
-        /THOR/SPI//INSTALL_TEST
-    ;
