@@ -1,23 +1,18 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_usart_register_stm32f446xx.cpp
  *
- *   Description:
+ *  Description:
  *    Explicit STM32F446xx USART data and routines
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/dma.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_register_stm32f446xx.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
+#include <Thor/usart>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 ) && defined( STM32F446xx )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_USART ) && defined( STM32F446xx )
 
 namespace Thor::Driver::USART
 {

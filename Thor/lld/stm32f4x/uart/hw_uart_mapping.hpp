@@ -1,12 +1,12 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_uart_mapping.hpp
  *
- *   Description:
+ *  Description:
  *    Provides structures for conversion and mapping between data types for fast
  *    runtime performance of driver code.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -17,12 +17,11 @@
 #include <Chimera/container>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
-#include <Thor/drivers/f4/uart/hw_uart_types.hpp>
+#include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_types.hpp>
 
-namespace Thor::Driver::UART
+namespace Thor::LLD::UART
 {
 #if defined( STM32_UART4_PERIPH_AVAILABLE )
   extern RegisterMap * UART4_PERIPH;
@@ -62,6 +61,6 @@ namespace Thor::Driver::UART
    */
   bool isUART( const std::uintptr_t address );
 
-}    // namespace Thor::Driver::UART
+}    // namespace Thor::LLD::UART
 
 #endif /* !THOR_HW_UART_MAPPING_HPP */

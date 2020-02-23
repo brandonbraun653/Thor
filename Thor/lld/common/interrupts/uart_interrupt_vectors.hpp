@@ -19,10 +19,8 @@ extern "C"
 {
 #endif
 
-  void USART1_IRQHandler();
-  void USART2_IRQHandler();
-  void USART3_IRQHandler();
-  void USART6_IRQHandler();
+  void UART4_IRQHandler();
+  void UART5_IRQHandler();
 
 #if defined( __cplusplus )
 }

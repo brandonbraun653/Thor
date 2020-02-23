@@ -20,10 +20,9 @@
 #include <Chimera/container>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_types.hpp>
+#include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
 
 namespace Thor::Driver::USART
 {

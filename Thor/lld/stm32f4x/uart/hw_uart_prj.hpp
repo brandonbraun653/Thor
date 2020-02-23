@@ -13,7 +13,7 @@
 #define THOR_HW_UART_PROJECT_HPP
 
 #if defined( STM32F446xx )
-#include <Thor/drivers/f4/uart/hw_uart_register_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/uart/variant/hw_uart_register_stm32f446xx.hpp>
 #endif
 
 #endif /* !THOR_HW_UART_PROJECT_HPP */

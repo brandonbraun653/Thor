@@ -20,8 +20,7 @@
 #include <Chimera/serial>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
 
 namespace Thor::Driver::USART
 {

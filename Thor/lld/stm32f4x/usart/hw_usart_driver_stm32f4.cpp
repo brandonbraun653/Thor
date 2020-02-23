@@ -1,13 +1,13 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_usart_driver_stm32f4.cpp
  *
- *   Description:
+ *  Description:
  *    STM32F4 specific driver implementation for the UART/USART driver. Both drivers
  *    are merged into one as the datasheet does not make a distinction between the
  *    two. In practice with the STM32HAL this was also found to be true.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -19,20 +19,15 @@
 #include <Chimera/thread>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/dma.hpp>
-
-#include <Thor/definitions/interrupt_definitions.hpp>
-#include <Thor/drivers/dma.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
-#include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_driver.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_mapping.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_prj.hpp>
-#include <Thor/drivers/f4/usart/hw_usart_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
+#include <Thor/lld/stm32f4x/nvic/hw_nvic_driver.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_driver.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_USART )
 
 namespace Thor::Driver::USART
 {

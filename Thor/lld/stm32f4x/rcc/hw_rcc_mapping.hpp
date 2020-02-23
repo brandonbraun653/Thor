@@ -110,8 +110,8 @@ namespace Thor::LLD::RCC
      */
     extern void UARTInit();
     
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
-    static constexpr size_t uartTableSize = Thor::Driver::UART::NUM_UART_PERIPHS;
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_UART )
+    static constexpr size_t uartTableSize = Thor::LLD::UART::NUM_UART_PERIPHS;
 
     extern const PCC UARTLookup;
 
@@ -127,7 +127,7 @@ namespace Thor::LLD::RCC
      */
     extern void USARTInit();
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_USART )
     static constexpr size_t usartTableSize = Thor::Driver::USART::NUM_USART_PERIPHS;
 
     extern const PCC USARTLookup;

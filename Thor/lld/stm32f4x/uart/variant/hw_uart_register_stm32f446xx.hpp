@@ -21,13 +21,12 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
 #define STM32_UART4_PERIPH_AVAILABLE
 #define STM32_UART5_PERIPH_AVAILABLE
 
-namespace Thor::Driver::UART
+namespace Thor::LLD::UART
 {
   void initializeRegisters();
 

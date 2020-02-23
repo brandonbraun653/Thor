@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    serial_model.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Driver Model for Serial Communication
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -21,7 +21,7 @@
 #include <Chimera/serial>
 
 /* Driver Includes */
-#include <Thor/drivers/common/types/serial_types.hpp>
+#include <Thor/lld/interface/serial/serial_types.hpp>
 
 
 namespace Thor::Driver::Serial

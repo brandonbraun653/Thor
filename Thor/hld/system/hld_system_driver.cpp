@@ -62,11 +62,11 @@ namespace Chimera::System
 
     Thor::SPI::initialize();
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_UART == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_UART )
     Thor::UART::initialize();
 #endif
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_USART == 1 )
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_USART )
     Thor::USART::initialize();
 #endif
 

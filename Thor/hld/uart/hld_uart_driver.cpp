@@ -34,7 +34,7 @@ namespace Thor::UART
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    Thor::Driver::UART::initialize();
+    Thor::LLD::UART::initialize();
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::CommonStatusCodes::OK;
