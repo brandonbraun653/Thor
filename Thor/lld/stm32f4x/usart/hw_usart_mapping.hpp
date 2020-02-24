@@ -24,7 +24,7 @@
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
 
-namespace Thor::Driver::USART
+namespace Thor::LLD::USART
 {
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
   extern RegisterMap * USART1_PERIPH;
@@ -80,6 +80,6 @@ namespace Thor::Driver::USART
    */
   bool isUSART( const std::uintptr_t address );
 
-}    // namespace Thor::Driver::USART
+}    // namespace Thor::LLD::USART
 
 #endif /* !THOR_HW_USART_MAPPING_HPP */

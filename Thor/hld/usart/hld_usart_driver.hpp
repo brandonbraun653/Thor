@@ -87,7 +87,7 @@ namespace Thor::USART
     void postISRProcessing() final override;
 
   private:
-    Thor::Driver::USART::Driver_uPtr hwDriver;
+    Thor::LLD::USART::Driver_uPtr hwDriver;
     Thor::GPIO::GPIOClass_uPtr rxPin;
     Thor::GPIO::GPIOClass_uPtr txPin;
 

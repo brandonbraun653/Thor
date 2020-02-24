@@ -26,7 +26,7 @@
 #include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
 #include <Thor/lld/interface/serial/serial_model.hpp>
 
-namespace Thor::Driver::USART
+namespace Thor::LLD::USART
 {
   /**
    *  Initializes the low level driver
@@ -147,6 +147,6 @@ namespace Thor::Driver::USART
   using Driver_sPtr = std::shared_ptr<Driver>;
   using Driver_uPtr = std::unique_ptr<Driver>;
 
-}    // namespace Thor::Driver::USART
+}    // namespace Thor::LLD::USART
 
 #endif /* !THOR_HW_USART_DRIVER_HPP */

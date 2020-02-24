@@ -27,7 +27,7 @@ namespace Thor::LLD::UART
   /*------------------------------------------------
   For the F4, the UART and USART peripherals are synonymous
   ------------------------------------------------*/
-  using RegisterMap = Thor::Driver::USART::RegisterMap;
+  using RegisterMap = Thor::LLD::USART::RegisterMap;
 
   class Driver;
 

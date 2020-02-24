@@ -15,12 +15,8 @@
 /* C++ Includes */
 #include <array>
 
-/* Boost Includes */
-#include <boost/function.hpp>
-
 /* Thor Includes */
-#include <Thor/definitions/dma_definitions.hpp>
-#include <Thor/drivers/common/types/dma_types.hpp>
+#include <Thor/hld/dma/hld_dma_types.hpp>
 
 namespace Thor::DMA
 {
@@ -30,7 +26,7 @@ namespace Thor::DMA
    *  actually been used in project code. This minimizes memory usage nicely.
    */
   static constexpr size_t NUM_REQUEST_GENERATORS = 9u;
-  extern std::array<Thor::Driver::DMA::StreamResources, NUM_REQUEST_GENERATORS> RequestGenerators;
+  extern std::array<Thor::LLD::DMA::StreamResources, NUM_REQUEST_GENERATORS> RequestGenerators;
 
 }    // namespace Thor::DMA
 

@@ -3,24 +3,20 @@
  *    hw_dma_register_stm32f446xx.cpp
  *
  *  Description:
+ *    Register definitions for the DMA peripheral
  *
- *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* C/C++ Includes */
-
-
 /* Thor Includes */
+#include <Thor/lld/stm32f4x/dma/hw_dma_mapping.hpp>
+#include <Thor/lld/stm32f4x/dma/variant/hw_dma_register_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 
-#include <Thor/drivers/f4/dma/hw_dma_mapping.hpp>
-#include <Thor/drivers/f4/dma/hw_dma_register_stm32f446xx.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
 
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_DMA )
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
-
-namespace Thor::Driver::DMA
+namespace Thor::LLD::DMA
 {
 #if defined( EMBEDDED )
   RegisterMap *DMA1_PERIPH = reinterpret_cast<RegisterMap *>( DMA1_BASE_ADDR );
@@ -176,7 +172,7 @@ namespace Thor::Driver::DMA
     StreamToRegisterIndex.append( reinterpret_cast<std::uintptr_t>( DMA2_STREAM7 ), 7 );
   }
 
-}    // namespace Thor::Driver::DMA
+}    // namespace Thor::LLD::DMA
 
 namespace Thor::LLD::RCC::LookupTables
 {
@@ -190,13 +186,13 @@ namespace Thor::LLD::RCC::LookupTables
   Configuration::ClockType_t DMA_SourceClock[ dmaTableSize ];
 
   const PCC DMALookup = {
-    DMA_ClockConfig, DMA_ClockConfigLP, DMA_ResetConfig, DMA_SourceClock, &Thor::Driver::DMA::InstanceToResourceIndex,
+    DMA_ClockConfig, DMA_ClockConfigLP, DMA_ResetConfig, DMA_SourceClock, &Thor::LLD::DMA::InstanceToResourceIndex,
     dmaTableSize
   };
 
   void DMAInit()
   {
-    using namespace Thor::Driver::DMA;
+    using namespace Thor::LLD::DMA;
 
     /*------------------------------------------------
     DMA clock enable register access lookup table

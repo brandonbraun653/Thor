@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    dma_types.hpp
  *
- *   Description:
+ *  Description:
  *    Thor DMA types
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -14,9 +14,6 @@
 
 /* C++ Includes */
 #include <cstdint>
-
-/* Thor Includes */
-#include <Thor/headers.hpp>
 
 namespace Thor::DMA
 {

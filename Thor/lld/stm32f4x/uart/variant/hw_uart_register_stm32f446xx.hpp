@@ -39,6 +39,6 @@ namespace Thor::LLD::UART
   static constexpr uint32_t UART5_RESOURCE_INDEX = 1u;
 
   static constexpr std::array<Reg32_t, NUM_UART_PERIPHS> periphAddressList = { UART4_BASE_ADDR, UART5_BASE_ADDR };
-}    // namespace Thor::Driver::USART
+}    // namespace Thor::LLD::USART
 
 #endif /* !THOR_HW_UART_REGISTER_HPP */

@@ -76,12 +76,15 @@ local propagated_link_flags =
   --gc-sections
   ;
 
+use-project /THOR/LLD/STM32F4/DMA   : dma ;
 use-project /THOR/LLD/STM32F4/FLASH : flash ;
 use-project /THOR/LLD/STM32F4/GPIO  : gpio ;
 use-project /THOR/LLD/STM32F4/NVIC  : nvic ;
 use-project /THOR/LLD/STM32F4/POWER : power ;
 use-project /THOR/LLD/STM32F4/RCC   : rcc ;
 use-project /THOR/LLD/STM32F4/SPI   : spi ;
+use-project /THOR/LLD/STM32F4/UART  : uart ;
+use-project /THOR/LLD/STM32F4/USART : usart ;
 
 # ====================================================
 # Figures out what device we are actually compiling for. By default it will
@@ -142,19 +145,25 @@ explicit LIB_TARGET_STARTUP ;
 explicit_alias PUB : : : : <define>TARGET_STM32F4 ;
 
 explicit_alias INSTALL_ALL_LIB : 
+  /THOR/LLD/STM32F4/DMA//INSTALL_LIB
   /THOR/LLD/STM32F4/FLASH//INSTALL_LIB
   /THOR/LLD/STM32F4/GPIO//INSTALL_LIB
   /THOR/LLD/STM32F4/NVIC//INSTALL_LIB
   /THOR/LLD/STM32F4/POWER//INSTALL_LIB
   /THOR/LLD/STM32F4/RCC//INSTALL_LIB
   /THOR/LLD/STM32F4/SPI//INSTALL_LIB
+  /THOR/LLD/STM32F4/UART//INSTALL_LIB 
+  /THOR/LLD/STM32F4/USART//INSTALL_LIB 
   ;
 
 explicit_alias INSTALL_ALL_TST : 
+  /THOR/LLD/STM32F4/DMA//INSTALL_TEST
   /THOR/LLD/STM32F4/FLASH//INSTALL_TEST
   /THOR/LLD/STM32F4/GPIO//INSTALL_TEST
   /THOR/LLD/STM32F4/NVIC//INSTALL_TEST
   /THOR/LLD/STM32F4/POWER//INSTALL_TEST
   /THOR/LLD/STM32F4/RCC//INSTALL_TEST
   /THOR/LLD/STM32F4/SPI//INSTALL_TEST
+  /THOR/LLD/STM32F4/UART//INSTALL_TEST
+  /THOR/LLD/STM32F4/USART//INSTALL_TEST
   ;

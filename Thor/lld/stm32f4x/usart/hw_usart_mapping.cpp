@@ -15,7 +15,7 @@
 
 #if defined( TARGET_STM32F4 ) && ( THOR_LLD_USART )
 
-namespace Thor::Driver::USART
+namespace Thor::LLD::USART
 {
   /*------------------------------------------------
   Chip Specific Resources
@@ -58,6 +58,6 @@ namespace Thor::Driver::USART
 
     return result;
   }
-}    // namespace Thor::Driver::USART
+}    // namespace Thor::LLD::USART
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_GPIO */

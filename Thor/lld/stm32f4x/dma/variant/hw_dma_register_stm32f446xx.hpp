@@ -16,11 +16,11 @@
 #include <array>
 #include <cstdint>
 
-/* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
+/* Chimera Includes */
+#include <Chimera/common>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
+/* Driver Includes */
+#include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
 #define STM32_DMA1_PERIPH_AVAILABLE
 #define STM32_DMA1_STREAM0_AVAILABLE
@@ -42,7 +42,7 @@
 #define STM32_DMA2_STREAM6_AVAILABLE
 #define STM32_DMA2_STREAM7_AVAILABLE
 
-namespace Thor::Driver::DMA
+namespace Thor::LLD::DMA
 {
   void initializeRegisters();
 
@@ -519,7 +519,6 @@ namespace Thor::Driver::DMA
   static constexpr Reg32_t SxFCR_FTH_0     = ( 0x1U << SxFCR_FTH_Pos );
   static constexpr Reg32_t SxFCR_FTH_1     = ( 0x2U << SxFCR_FTH_Pos );
 
-}    // namespace Thor::Driver::DMA
+}    // namespace Thor::LLD::DMA
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_DMA */
 #endif /* !THOR_HW_DMA_REGISTER_HPP */

@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_dma_driver_stm32f4.cpp
  *
- *   Description:
+ *  Description:
  *    STM32F4 DMA Driver Implementation
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
@@ -13,24 +13,18 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
-#include <Thor/resources/dma_resources.hpp>
+#include <Thor/lld/stm32f4x/dma/hw_dma_driver.hpp>
+#include <Thor/lld/stm32f4x/dma/hw_dma_mapping.hpp>
+#include <Thor/lld/stm32f4x/dma/hw_dma_prj.hpp>
+#include <Thor/lld/stm32f4x/dma/hw_dma_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
+#include <Thor/lld/stm32f4x/nvic/hw_nvic_driver.hpp>
 
-/* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/event.hpp>
-#include <Thor/definitions/interrupt_definitions.hpp>
-#include <Thor/drivers/f4/dma/hw_dma_driver.hpp>
-#include <Thor/drivers/f4/dma/hw_dma_mapping.hpp>
-#include <Thor/drivers/f4/dma/hw_dma_prj.hpp>
-#include <Thor/drivers/f4/dma/hw_dma_types.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
-#include <Thor/drivers/f4/nvic/hw_nvic_driver.hpp>
+namespace DMADriver = Thor::LLD::DMA;
 
-namespace DMADriver = Thor::Driver::DMA;
+#if defined( TARGET_STM32F4 ) && ( THOR_LLD_DMA )
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
-
-static std::array<Thor::Driver::DMA::Stream *, Thor::Driver::DMA::NUM_DMA_STREAMS> streamObjects;
+static std::array<Thor::LLD::DMA::Stream *, Thor::LLD::DMA::NUM_DMA_STREAMS> streamObjects;
 
 static void DMA1_Stream0_ISRPostProcessorThread( void *argument );
 static void DMA1_Stream1_ISRPostProcessorThread( void *argument );
@@ -114,7 +108,7 @@ static std::array<Chimera::Function::void_func_void_ptr, DMADriver::NUM_DMA_STRE
 };
 /* clang-format on */
 
-namespace Thor::Driver::DMA
+namespace Thor::LLD::DMA
 {
   bool streamIsOnPeripheral( RegisterMap *const controller, StreamX *const stream )
   {
@@ -750,11 +744,11 @@ namespace Thor::Driver::DMA
     return result;
   }
 
-}    // namespace Thor::Driver::DMA
+}    // namespace Thor::LLD::DMA
 
 
 using namespace Thor::DMA;
-using namespace Thor::Driver::DMA;
+using namespace Thor::LLD::DMA;
 
 
 void DMA1_Stream0_IRQHandler( void )
@@ -770,7 +764,7 @@ void DMA1_Stream0_IRQHandler( void )
 
 static void DMA1_Stream0_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA1_STREAM0_RESOURCE_INDEX;
 
   
@@ -803,7 +797,7 @@ void DMA1_Stream1_IRQHandler( void )
 
 static void DMA1_Stream1_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA1_STREAM1_RESOURCE_INDEX;
 
   
@@ -836,7 +830,7 @@ void DMA1_Stream2_IRQHandler( void )
 
 static void DMA1_Stream2_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA1_STREAM2_RESOURCE_INDEX;
 
   
@@ -869,7 +863,7 @@ void DMA1_Stream3_IRQHandler( void )
 
 static void DMA1_Stream3_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA1_STREAM3_RESOURCE_INDEX;
 
   
@@ -902,7 +896,7 @@ void DMA1_Stream4_IRQHandler( void )
 
 static void DMA1_Stream4_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA1_STREAM4_RESOURCE_INDEX;
 
   
@@ -935,7 +929,7 @@ void DMA1_Stream5_IRQHandler( void )
 
 static void DMA1_Stream5_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA1_STREAM5_RESOURCE_INDEX;
 
   
@@ -968,7 +962,7 @@ void DMA1_Stream6_IRQHandler( void )
 
 static void DMA1_Stream6_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA1_STREAM6_RESOURCE_INDEX;
 
   
@@ -1001,7 +995,7 @@ void DMA1_Stream7_IRQHandler( void )
 
 static void DMA1_Stream7_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA1_STREAM7_RESOURCE_INDEX;
 
   
@@ -1034,7 +1028,7 @@ void DMA2_Stream0_IRQHandler( void )
 
 static void DMA2_Stream0_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA2_STREAM0_RESOURCE_INDEX;
 
   
@@ -1067,7 +1061,7 @@ void DMA2_Stream1_IRQHandler( void )
 
 static void DMA2_Stream1_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA2_STREAM1_RESOURCE_INDEX;
 
   
@@ -1100,7 +1094,7 @@ void DMA2_Stream2_IRQHandler( void )
 
 static void DMA2_Stream2_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA2_STREAM2_RESOURCE_INDEX;
 
   
@@ -1133,7 +1127,7 @@ void DMA2_Stream3_IRQHandler( void )
 
 static void DMA2_Stream3_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA2_STREAM3_RESOURCE_INDEX;
 
   
@@ -1166,7 +1160,7 @@ void DMA2_Stream4_IRQHandler( void )
 
 static void DMA2_Stream4_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA2_STREAM4_RESOURCE_INDEX;
 
   
@@ -1199,7 +1193,7 @@ void DMA2_Stream5_IRQHandler( void )
 
 static void DMA2_Stream5_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA2_STREAM5_RESOURCE_INDEX;
 
   
@@ -1232,7 +1226,7 @@ void DMA2_Stream6_IRQHandler( void )
 
 static void DMA2_Stream6_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA2_STREAM6_RESOURCE_INDEX;
 
   
@@ -1265,7 +1259,7 @@ void DMA2_Stream7_IRQHandler( void )
 
 static void DMA2_Stream7_ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::DMA;
+  using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA2_STREAM7_RESOURCE_INDEX;
 
   

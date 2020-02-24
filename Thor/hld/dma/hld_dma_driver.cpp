@@ -24,7 +24,7 @@
 #include <Thor/drivers/dma.hpp>
 #include <Thor/resources/dma_resources.hpp>
 
-namespace DMADriver = Thor::Driver::DMA;
+namespace DMADriver = Thor::LLD::DMA;
 
 static std::shared_ptr<Thor::DMA::DMAClass> dmaSingleton = nullptr;
 
@@ -62,7 +62,7 @@ namespace Thor::DMA
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    Thor::Driver::DMA::initialize();
+    Thor::LLD::DMA::initialize();
 
     /*------------------------------------------------
     Reset driver object memory

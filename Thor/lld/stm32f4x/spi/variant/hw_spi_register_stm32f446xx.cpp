@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/hld/dma/dma_definitions.hpp>
+#include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 #include <Thor/lld/stm32f4x/spi/hw_spi_driver.hpp>

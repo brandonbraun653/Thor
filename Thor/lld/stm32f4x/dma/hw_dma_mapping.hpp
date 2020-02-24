@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_dma_mapping.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Mappings for the DMA Peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
  #pragma once
@@ -20,15 +20,11 @@
 #include <Chimera/container>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/interrupt/hw_it_prj.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
-#include <Thor/drivers/f4/dma/hw_dma_types.hpp>
+#include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
+#include <Thor/lld/stm32f4x/dma/hw_dma_types.hpp>
 
-
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
-
-namespace Thor::Driver::DMA
+namespace Thor::LLD::DMA
 {
 /*------------------------------------------------
 DMA1 Register and Stream Memory Mappings 
@@ -161,5 +157,4 @@ DMA2 Register and Stream Memory Mappings
   extern bool isDMA( const std::uintptr_t address );
 }
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_DMA */
 #endif /* !THOR_HW_DMA_MAPPING_HPP */

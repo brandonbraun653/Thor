@@ -25,7 +25,7 @@
 #include <Thor/usart>
 #include <Thor/lld/interface/usart/usart.hpp>
 
-namespace USARTDriver = Thor::Driver::USART;
+namespace USARTDriver = Thor::LLD::USART;
 
 /*------------------------------------------------
 Static Functions
@@ -80,7 +80,7 @@ namespace Thor::USART
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    Thor::Driver::USART::initialize();
+    Thor::LLD::USART::initialize();
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::CommonStatusCodes::OK;
@@ -113,7 +113,7 @@ namespace Thor::USART
 
   Chimera::Status_t USARTClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
   {
-    using namespace Thor::Driver::USART;
+    using namespace Thor::LLD::USART;
 
     /*------------------------------------------------
     Make sure the channel is actually supported
@@ -652,7 +652,7 @@ namespace Thor::USART
 
 static void USART1ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::USART;
+  using namespace Thor::LLD::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART1_PERIPH ) )->second;
 
   while ( 1 )
@@ -670,7 +670,7 @@ static void USART1ISRPostProcessorThread( void *argument )
 
 static void USART2ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::USART;
+  using namespace Thor::LLD::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART2_PERIPH ) )->second;
 
   while ( 1 )
@@ -688,7 +688,7 @@ static void USART2ISRPostProcessorThread( void *argument )
 
 static void USART3ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::USART;
+  using namespace Thor::LLD::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART3_PERIPH ) )->second;
 
   while ( 1 )
@@ -706,7 +706,7 @@ static void USART3ISRPostProcessorThread( void *argument )
 
 static void USART6ISRPostProcessorThread( void *argument )
 {
-  using namespace Thor::Driver::USART;
+  using namespace Thor::LLD::USART;
   static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART6_PERIPH ) )->second;
 
   while ( 1 )

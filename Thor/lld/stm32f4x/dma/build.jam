@@ -1,0 +1,93 @@
+# ====================================================
+# Local Rules 
+# ====================================================
+local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
+    {
+    alias $(name) : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
+    explicit $(name) ;
+    }
+
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/lld/stm32f4/dma ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/stm32f4/dma ;
+
+# ====================================================
+# Public Targets
+# ====================================================
+explicit_alias PUB : : : : <define>THOR_LLD_DMA ;
+
+# ====================================================
+# Static Libraries
+# ====================================================
+lib lld_dma_chip
+  : variant/hw_dma_register_stm32f446xx.cpp
+
+  : <Thor>enabled-F446
+    <link>static
+    <use>/CHIMERA//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32F4//PUB
+    <use>/THOR/LLD/STM32F4/DMA//PUB
+  ;
+explicit lld_dma_chip ;
+explicit_alias DEVICE_TARGET : lld_dma_chip : : : <library>lld_dma_chip ;
+
+lib lld_dma
+  : [ glob *.cpp ]
+
+  : <link>static
+    <use>/CHIMERA//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32F4//PUB
+    <use>/THOR/LLD/STM32F4/DMA//PUB
+  ;
+explicit lld_dma ;
+explicit_alias LIB : lld_dma lld_dma_chip : : : <library>lld_dma <library>lld_dma_chip ;
+
+# ====================================================
+# Test Driver Executable
+# ====================================================
+exe lld_dma_test
+  : [ glob test/*.cpp ]
+    
+    /CHIMERA/ALGORITHM//LIB 
+    /CHIMERA/COMMON//LIB 
+    /CHIMERA/SYSTEM//LIB
+    /CHIMERA/THREADING//LIB
+    /GOOGLE//gtest
+    /THOR/HLD/GPIO//LIB
+    /THOR/HLD/SPI//LIB
+    /THOR/HLD/SYSTEM//LIB
+    /THOR/LLD/STM32F4/FLASH//LIB
+    /THOR/LLD/STM32F4/GPIO//LIB
+    /THOR/LLD/STM32F4/NVIC//LIB
+    /THOR/LLD/STM32F4/POWER//LIB
+    /THOR/LLD/STM32F4/RCC//LIB
+    /THOR/LLD/STM32F4/SPI//LIB
+    /THOR/LLD/STM32F4/DMA//LIB
+  
+  : <link>static
+    <Thor>enabled-F4
+    <use>/AURORA//PUB
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <linkflags>-Wl,--no-as-needed
+  ;
+explicit lld_dma_test ;
+explicit_alias TEST : lld_dma_test : : : <source>lld_dma_test ;
+
+# ====================================================
+# Installation Targets
+# ====================================================
+install INSTALL_TEST : lld_dma_test
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+install INSTALL_LIB : lld_dma lld_dma_chip
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

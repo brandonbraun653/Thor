@@ -17,12 +17,9 @@
 #include <array>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/dma/hw_dma_prj.hpp>
+#include <Thor/lld/stm32f4x/dma/hw_dma_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_DMA == 1 )
-
-namespace Thor::Driver::DMA
+namespace Thor::LLD::DMA
 {
   struct StreamX
   {
@@ -1657,7 +1654,6 @@ namespace Thor::Driver::DMA
 
   }    // namespace SxFCR
 
-}    // namespace Thor::Driver::DMA
+}    // namespace Thor::LLD::DMA
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_DMA */
 #endif /* !THOR_HW_DMA_TYPES_HPP */

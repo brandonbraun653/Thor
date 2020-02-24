@@ -9,12 +9,14 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
-#include <Thor/usart>
+#include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_LLD_USART ) && defined( STM32F446xx )
 
-namespace Thor::Driver::USART
+namespace Thor::LLD::USART
 {
 #if defined( EMBEDDED )
   RegisterMap *USART1_PERIPH = reinterpret_cast<RegisterMap *>( USART1_BASE_ADDR );
@@ -87,7 +89,7 @@ namespace Thor::Driver::USART
     InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( USART6_PERIPH ), USART6_RESOURCE_INDEX );
 #endif
   }
-}    // namespace Thor::Driver::USART
+}    // namespace Thor::LLD::USART
 
 
 namespace Thor::LLD::RCC::LookupTables
@@ -103,13 +105,13 @@ namespace Thor::LLD::RCC::LookupTables
   Configuration::ClockType_t USART_SourceClock[ usartTableSize ];
 
   const PCC USARTLookup = {
-    USART_ClockConfig, USART_ClockConfigLP, USART_ResetConfig, USART_SourceClock, &Thor::Driver::USART::InstanceToResourceIndex,
+    USART_ClockConfig, USART_ClockConfigLP, USART_ResetConfig, USART_SourceClock, &Thor::LLD::USART::InstanceToResourceIndex,
     gpioTableSize
   };
 
   void USARTInit()
   {
-    using namespace Thor::Driver::USART;
+    using namespace Thor::LLD::USART;
 
     /*------------------------------------------------
     USART clock enable register access lookup table

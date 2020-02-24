@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    dma.hpp
+ *    hld_dma_driver.hpp
  *
  *  Description:
  *    Thor implementation of the DMA driver
  *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -17,8 +17,10 @@
 #include <Chimera/dma>
 
 /* Thor Includes */
-#include <Thor/definitions/dma_definitions.hpp>
-#include <Thor/drivers/common/types/dma_types.hpp>
+#include <Thor/hld/dma/hld_dma_intf.hpp>
+#include <Thor/hld/dma/hld_dma_types.hpp>
+#include <Thor/lld/interface/dma/dma.hpp>
+#include <Thor/lld/interface/dma/dma_types.hpp>
 
 namespace Thor::DMA
 {
@@ -62,7 +64,7 @@ namespace Thor::DMA
      *
      *  @return Chimera::Status_t
      */
-    Chimera::Status_t registerListener( Driver::DMA::StreamX *const stream, Chimera::Event::Actionable &listener,
+    Chimera::Status_t registerListener( Thor::LLD::DMA::StreamX *const stream, Chimera::Event::Actionable &listener,
                                         const size_t timeout, size_t &registrationID );
 
     /**
@@ -74,12 +76,12 @@ namespace Thor::DMA
      *
      *  @return Chimera::Status_t
      */
-    Chimera::Status_t removeListener( Driver::DMA::StreamX *const stream, const size_t registrationID, const size_t timeout );
+    Chimera::Status_t removeListener( Thor::LLD::DMA::StreamX *const stream, const size_t registrationID, const size_t timeout );
 
   private:
     DMAClass();
 
-    Thor::Driver::DMA::StreamResources lastLookup;
+    Thor::LLD::DMA::StreamResources lastLookup;
 
     size_t listenerIDCount;
     std::vector<Chimera::Event::Actionable> eventListeners;

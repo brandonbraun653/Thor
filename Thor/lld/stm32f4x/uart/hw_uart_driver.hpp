@@ -35,11 +35,11 @@ namespace Thor::LLD::UART
    *  same registers and configuration settings. To eliminate duplicate
    *  code, this UART variant simply inherits the USART driver functionality.
    */
-  class Driver : public Thor::Driver::USART::Driver
+  class Driver : public Thor::LLD::USART::Driver
   {
   public:
     Driver( RegisterMap *const peripheral ) :
-        Thor::Driver::USART::Driver( peripheral )
+        Thor::LLD::USART::Driver( peripheral )
     {
     }
 
