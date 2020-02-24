@@ -13,6 +13,8 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/event>
+#include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_driver.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_mapping.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_prj.hpp>
@@ -24,89 +26,8 @@ namespace DMADriver = Thor::LLD::DMA;
 
 #if defined( TARGET_STM32F4 ) && ( THOR_LLD_DMA )
 
+
 static std::array<Thor::LLD::DMA::Stream *, Thor::LLD::DMA::NUM_DMA_STREAMS> streamObjects;
-
-static void DMA1_Stream0_ISRPostProcessorThread( void *argument );
-static void DMA1_Stream1_ISRPostProcessorThread( void *argument );
-static void DMA1_Stream2_ISRPostProcessorThread( void *argument );
-static void DMA1_Stream3_ISRPostProcessorThread( void *argument );
-static void DMA1_Stream4_ISRPostProcessorThread( void *argument );
-static void DMA1_Stream5_ISRPostProcessorThread( void *argument );
-static void DMA1_Stream6_ISRPostProcessorThread( void *argument );
-static void DMA1_Stream7_ISRPostProcessorThread( void *argument );
-static void DMA2_Stream0_ISRPostProcessorThread( void *argument );
-static void DMA2_Stream1_ISRPostProcessorThread( void *argument );
-static void DMA2_Stream2_ISRPostProcessorThread( void *argument );
-static void DMA2_Stream3_ISRPostProcessorThread( void *argument );
-static void DMA2_Stream4_ISRPostProcessorThread( void *argument );
-static void DMA2_Stream5_ISRPostProcessorThread( void *argument );
-static void DMA2_Stream6_ISRPostProcessorThread( void *argument );
-static void DMA2_Stream7_ISRPostProcessorThread( void *argument );
-
-/*------------------------------------------------
-Static Data
-------------------------------------------------*/
-/* clang-format off */
-/* Post Processor Thread Handles */
-static std::array<TaskHandle_t, DMADriver::NUM_DMA_STREAMS> postProcessorHandle = { 
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,
-  nullptr
-};
-
-/* Post Processor Thread Wakeup Signals */
-static std::array<SemaphoreHandle_t, DMADriver::NUM_DMA_STREAMS> postProcessorSignal = { 
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,  
-  nullptr,
-  nullptr,
-  nullptr
-};
-
-/* Post Processor Thread Function Pointers */
-static std::array<Chimera::Function::void_func_void_ptr, DMADriver::NUM_DMA_STREAMS> postProcessorThread = {
-  DMA1_Stream0_ISRPostProcessorThread,
-  DMA1_Stream1_ISRPostProcessorThread,
-  DMA1_Stream2_ISRPostProcessorThread,
-  DMA1_Stream3_ISRPostProcessorThread,
-  DMA1_Stream4_ISRPostProcessorThread,
-  DMA1_Stream5_ISRPostProcessorThread,
-  DMA1_Stream6_ISRPostProcessorThread,
-  DMA1_Stream7_ISRPostProcessorThread,
-  DMA2_Stream0_ISRPostProcessorThread,
-  DMA2_Stream1_ISRPostProcessorThread,
-  DMA2_Stream2_ISRPostProcessorThread,
-  DMA2_Stream3_ISRPostProcessorThread,
-  DMA2_Stream4_ISRPostProcessorThread,
-  DMA2_Stream5_ISRPostProcessorThread,
-  DMA2_Stream6_ISRPostProcessorThread,
-  DMA2_Stream7_ISRPostProcessorThread
-};
-/* clang-format on */
 
 namespace Thor::LLD::DMA
 {
@@ -138,10 +59,12 @@ namespace Thor::LLD::DMA
 
   void initialize()
   {
+    /*------------------------------------------------
+    Initialize the low level driver
+    ------------------------------------------------*/
     initializeRegisters();
     initializeMapping();
   }
-
 
   Stream::Stream() :
       stream( nullptr ), parent( nullptr ), streamRegisterIndex( 0 ), streamResourceIndex( 0 ), wakeupSignal( nullptr ),
@@ -170,26 +93,13 @@ namespace Thor::LLD::DMA
       streamResourceIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
       streamIRQn          = DMAStream_IRQn[ streamResourceIndex ];
 
-      /*------------------------------------------------
-      Initialize ISR handler thread resources
-      ------------------------------------------------*/
-      postProcessorSignal[ streamResourceIndex ] = xSemaphoreCreateBinary();
-      postProcessorHandle[ streamResourceIndex ] = new TaskHandle_t;
-
-      wakeupSignal = postProcessorSignal[ streamResourceIndex ];
-
-      Chimera::Threading::Thread thread;
-      thread.initialize( postProcessorThread[ streamResourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500, "" );
-      thread.start();
-      postProcessorHandle[ streamResourceIndex ] = thread.native_handle();
-
       result = Chimera::CommonStatusCodes::OK;
     }
 
     return result;
   }
 
-  Chimera::Status_t Stream::attachISRWakeup( SemaphoreHandle_t wakeup )
+  Chimera::Status_t Stream::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )
   {
     using namespace Chimera::Threading;
 
@@ -399,7 +309,7 @@ namespace Thor::LLD::DMA
     /*------------------------------------------------
     Transfer Complete
     ------------------------------------------------*/
-    if ( cb.transferState & Runtime::Flag::TRANSFER_COMPLETE ) 
+    if ( cb.transferState & Runtime::Flag::TRANSFER_COMPLETE )
     {
       processListeners( Chimera::Event::Trigger::TRANSFER_COMPLETE );
     }
@@ -483,7 +393,7 @@ namespace Thor::LLD::DMA
       ------------------------------------------------*/
       if ( !semaphoreGiven && wakeupSignal )
       {
-        xSemaphoreGiveFromISR( wakeupSignal, nullptr );
+        wakeupSignal->releaseFromISR();
         semaphoreGiven = true;
       }
     }
@@ -517,7 +427,7 @@ namespace Thor::LLD::DMA
       ------------------------------------------------*/
       if ( !semaphoreGiven && wakeupSignal )
       {
-        xSemaphoreGiveFromISR( wakeupSignal, nullptr );
+        wakeupSignal->releaseFromISR();
       }
     }
   }
@@ -574,9 +484,10 @@ namespace Thor::LLD::DMA
         continue;
       }
 
-      Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
-      Thor::Event::notifyThread( event, listener );
-      Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
+#pragma message ("I don't think this works yet")
+      // Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
+      // Thor::Event::notifyThread( event, listener );
+      // Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
     }
   }
 
@@ -652,8 +563,8 @@ namespace Thor::LLD::DMA
         if ( !streamObjects[ x ] )
         {
           /* x is already zero indexed, no need to convert it to get the proper stream */
-          StreamX * streamInstance = getStreamRegisters( periph, x );
-          streamObjects[ x ]  = new Stream();
+          StreamX *streamInstance = getStreamRegisters( periph, x );
+          streamObjects[ x ]      = new Stream();
           streamObjects[ x ]->attach( streamInstance, periph );
         }
       }
@@ -733,7 +644,7 @@ namespace Thor::LLD::DMA
 
   Chimera::Status_t Driver::removeListener( StreamX *const stream, const size_t registrationID, const size_t timeout )
   {
-    auto result = Chimera::CommonStatusCodes::FAIL;
+    auto result          = Chimera::CommonStatusCodes::FAIL;
     size_t resourceIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
 
     if ( ( resourceIndex < streamObjects.size() ) && streamObjects[ resourceIndex ] )
@@ -750,7 +661,6 @@ namespace Thor::LLD::DMA
 using namespace Thor::DMA;
 using namespace Thor::LLD::DMA;
 
-
 void DMA1_Stream0_IRQHandler( void )
 {
   constexpr auto resourceIndex = DMA1_STREAM0_RESOURCE_INDEX;
@@ -759,28 +669,6 @@ void DMA1_Stream0_IRQHandler( void )
   if ( streamObjects[ resourceIndex ] )
   {
     streamObjects[ resourceIndex ]->IRQHandler( channel );
-  }
-}
-
-static void DMA1_Stream0_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA1_STREAM0_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
   }
 }
 
@@ -795,28 +683,6 @@ void DMA1_Stream1_IRQHandler( void )
   }
 }
 
-static void DMA1_Stream1_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA1_STREAM1_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
-  }
-}
-
 void DMA1_Stream2_IRQHandler( void )
 {
   constexpr auto resourceIndex = DMA1_STREAM2_RESOURCE_INDEX;
@@ -825,28 +691,6 @@ void DMA1_Stream2_IRQHandler( void )
   if ( streamObjects[ resourceIndex ] )
   {
     streamObjects[ resourceIndex ]->IRQHandler( channel );
-  }
-}
-
-static void DMA1_Stream2_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA1_STREAM2_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
   }
 }
 
@@ -861,28 +705,6 @@ void DMA1_Stream3_IRQHandler( void )
   }
 }
 
-static void DMA1_Stream3_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA1_STREAM3_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
-  }
-}
-
 void DMA1_Stream4_IRQHandler( void )
 {
   constexpr auto resourceIndex = DMA1_STREAM4_RESOURCE_INDEX;
@@ -891,28 +713,6 @@ void DMA1_Stream4_IRQHandler( void )
   if ( streamObjects[ resourceIndex ] )
   {
     streamObjects[ resourceIndex ]->IRQHandler( channel );
-  }
-}
-
-static void DMA1_Stream4_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA1_STREAM4_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
   }
 }
 
@@ -926,29 +726,6 @@ void DMA1_Stream5_IRQHandler( void )
     streamObjects[ resourceIndex ]->IRQHandler( channel );
   }
 }
-
-static void DMA1_Stream5_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA1_STREAM5_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
-  }
-}
-
 void DMA1_Stream6_IRQHandler( void )
 {
   constexpr auto resourceIndex = DMA1_STREAM6_RESOURCE_INDEX;
@@ -957,28 +734,6 @@ void DMA1_Stream6_IRQHandler( void )
   if ( streamObjects[ resourceIndex ] )
   {
     streamObjects[ resourceIndex ]->IRQHandler( channel );
-  }
-}
-
-static void DMA1_Stream6_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA1_STREAM6_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
   }
 }
 
@@ -993,28 +748,6 @@ void DMA1_Stream7_IRQHandler( void )
   }
 }
 
-static void DMA1_Stream7_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA1_STREAM7_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
-  }
-}
-
 void DMA2_Stream0_IRQHandler( void )
 {
   constexpr auto resourceIndex = DMA2_STREAM0_RESOURCE_INDEX;
@@ -1023,28 +756,6 @@ void DMA2_Stream0_IRQHandler( void )
   if ( streamObjects[ resourceIndex ] )
   {
     streamObjects[ resourceIndex ]->IRQHandler( channel );
-  }
-}
-
-static void DMA2_Stream0_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA2_STREAM0_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
   }
 }
 
@@ -1059,28 +770,6 @@ void DMA2_Stream1_IRQHandler( void )
   }
 }
 
-static void DMA2_Stream1_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA2_STREAM1_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
-  }
-}
-
 void DMA2_Stream2_IRQHandler( void )
 {
   constexpr auto resourceIndex = DMA2_STREAM2_RESOURCE_INDEX;
@@ -1089,28 +778,6 @@ void DMA2_Stream2_IRQHandler( void )
   if ( streamObjects[ resourceIndex ] )
   {
     streamObjects[ resourceIndex ]->IRQHandler( channel );
-  }
-}
-
-static void DMA2_Stream2_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA2_STREAM2_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
   }
 }
 
@@ -1125,28 +792,6 @@ void DMA2_Stream3_IRQHandler( void )
   }
 }
 
-static void DMA2_Stream3_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA2_STREAM3_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
-  }
-}
-
 void DMA2_Stream4_IRQHandler( void )
 {
   constexpr auto resourceIndex = DMA2_STREAM4_RESOURCE_INDEX;
@@ -1155,28 +800,6 @@ void DMA2_Stream4_IRQHandler( void )
   if ( streamObjects[ resourceIndex ] )
   {
     streamObjects[ resourceIndex ]->IRQHandler( channel );
-  }
-}
-
-static void DMA2_Stream4_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA2_STREAM4_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
   }
 }
 
@@ -1191,28 +814,6 @@ void DMA2_Stream5_IRQHandler( void )
   }
 }
 
-static void DMA2_Stream5_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA2_STREAM5_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
-  }
-}
-
 void DMA2_Stream6_IRQHandler( void )
 {
   constexpr auto resourceIndex = DMA2_STREAM6_RESOURCE_INDEX;
@@ -1224,28 +825,6 @@ void DMA2_Stream6_IRQHandler( void )
   }
 }
 
-static void DMA2_Stream6_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA2_STREAM6_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
-  }
-}
-
 void DMA2_Stream7_IRQHandler( void )
 {
   constexpr auto resourceIndex = DMA2_STREAM7_RESOURCE_INDEX;
@@ -1254,28 +833,6 @@ void DMA2_Stream7_IRQHandler( void )
   if ( streamObjects[ resourceIndex ] )
   {
     streamObjects[ resourceIndex ]->IRQHandler( channel );
-  }
-}
-
-static void DMA2_Stream7_ISRPostProcessorThread( void *argument )
-{
-  using namespace Thor::LLD::DMA;
-  constexpr auto resourceIndex = DMA2_STREAM7_RESOURCE_INDEX;
-
-  
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    if ( xSemaphoreTake( postProcessorSignal[ resourceIndex ], portMAX_DELAY ) == pdPASS )
-    {
-      if ( auto stream = streamObjects[ resourceIndex ]; stream )
-      {
-        stream->postISRProcessing();
-      }
-    }
   }
 }
 

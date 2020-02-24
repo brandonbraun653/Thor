@@ -104,7 +104,7 @@ namespace Thor::LLD::DMA
     TCB controlBlock;
     size_t streamRegisterIndex;
     size_t streamResourceIndex;
-    Chimera::Threading::BinarySemaphore * wakeupSignal;
+    Chimera::Threading::BinarySemaphore * wakeupSignal; 
     IRQn_Type streamIRQn;
 
     size_t listenerIDCount;

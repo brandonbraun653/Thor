@@ -1,11 +1,11 @@
 /********************************************************************************
- * File Name:
+ *  File Name:
  *   thor_custom_dma.cpp
  *
- * Description:
+ *  Description:
  *   Implements DMA for Thor using the custom low level drivers.
  *
- * 2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -16,20 +16,86 @@
 #include <Aurora/constants/common.hpp>
 
 /* Chimera Includes */
+#include <Chimera/common>
 #include <Chimera/thread>
 
 /* Thor Includes */
-#include <Thor/thor.hpp>
-#include <Thor/dma.hpp>
-#include <Thor/drivers/dma.hpp>
-#include <Thor/resources/dma_resources.hpp>
+#include <Thor/lld/interface/dma/dma.hpp>
 
-namespace DMADriver = Thor::LLD::DMA;
 
 static std::shared_ptr<Thor::DMA::DMAClass> dmaSingleton = nullptr;
 
-static DMADriver::Driver *currentDMAInstance = nullptr;
-static DMADriver::StreamX *currentStream     = nullptr;
+static Thor::LLD::DMA::Driver *currentDMAInstance = nullptr;
+static Thor::LLD::DMA::StreamX *currentStream     = nullptr;
+
+
+static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::LLD::DMA::NUM_DMA_STREAMS> postProcessorHandle;
+static std::array<Chimera::Threading::BinarySemaphore, Thor::LLD::DMA::NUM_DMA_STREAMS> postProcessorSignal;
+static std::array<Chimera::Function::void_func_void_ptr, Thor::LLD::DMA::NUM_DMA_STREAMS> postProcessorThread;
+
+#ifdef STM32_DMA1_STREAM0_AVAILABLE
+static void DMA1_Stream0_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA1_STREAM1_AVAILABLE
+static void DMA1_Stream1_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA1_STREAM2_AVAILABLE
+static void DMA1_Stream2_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA1_STREAM3_AVAILABLE
+static void DMA1_Stream3_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA1_STREAM4_AVAILABLE
+static void DMA1_Stream4_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA1_STREAM5_AVAILABLE
+static void DMA1_Stream5_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA1_STREAM6_AVAILABLE
+static void DMA1_Stream6_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA1_STREAM7_AVAILABLE
+static void DMA1_Stream7_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA2_STREAM0_AVAILABLE
+static void DMA2_Stream0_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA2_STREAM1_AVAILABLE
+static void DMA2_Stream1_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA2_STREAM2_AVAILABLE
+static void DMA2_Stream2_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA2_STREAM3_AVAILABLE
+static void DMA2_Stream3_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA2_STREAM4_AVAILABLE
+static void DMA2_Stream4_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA2_STREAM5_AVAILABLE
+static void DMA2_Stream5_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA2_STREAM6_AVAILABLE
+static void DMA2_Stream6_ISRPostProcessorThread( void *argument );
+#endif
+
+#ifdef STM32_DMA2_STREAM7_AVAILABLE
+static void DMA2_Stream7_ISRPostProcessorThread( void *argument );
+#endif
 
 
 namespace Chimera::DMA
@@ -42,12 +108,12 @@ namespace Chimera::DMA
 
 namespace Thor::DMA
 {
-  static DMADriver::Driver *const getDriver( const Chimera::DMA::Init &config );
-  static DMADriver::StreamX *const getStream( const Chimera::DMA::Init &config );
-  static DMADriver::StreamConfig convertConfig( const Chimera::DMA::Init &config );
-  static DMADriver::TCB convertTCB( const Chimera::DMA::TCB &transfer );
+  static Thor::LLD::DMA::Driver *const getDriver( const Chimera::DMA::Init &config );
+  static Thor::LLD::DMA::StreamX *const getStream( const Chimera::DMA::Init &config );
+  static Thor::LLD::DMA::StreamConfig convertConfig( const Chimera::DMA::Init &config );
+  static Thor::LLD::DMA::TCB convertTCB( const Chimera::DMA::TCB &transfer );
 
-  static bool compareFunction( DMADriver::StreamResources &a, DMADriver::StreamResources &b )
+  static bool compareFunction( Thor::LLD::DMA::StreamResources &a, Thor::LLD::DMA::StreamResources &b )
   {
     return a.requestID > b.requestID;
   }
@@ -67,15 +133,82 @@ namespace Thor::DMA
     /*------------------------------------------------
     Reset driver object memory
     ------------------------------------------------*/
-    for ( size_t x = 0; x < DMADriver::dmaObjects.size(); x++ )
+    for ( size_t x = 0; x < Thor::LLD::DMA::dmaObjects.size(); x++ )
     {
-      if ( DMADriver::dmaObjects[ x ] ) 
+      if ( Thor::LLD::DMA::dmaObjects[ x ] ) 
       {
-        vPortFree( DMADriver::dmaObjects[ x ] );
+        vPortFree( Thor::LLD::DMA::dmaObjects[ x ] );
       }
 
-      DMADriver::dmaObjects[ x ] = nullptr;
+      Thor::LLD::DMA::dmaObjects[ x ] = nullptr;
     }
+
+    /*-------------------------------------------------
+    Register callback threads
+    -------------------------------------------------*/
+#ifdef STM32_DMA1_STREAM0_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA1_STREAM0_RESOURCE_INDEX ] = DMA1_Stream0_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA1_STREAM1_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA1_STREAM1_RESOURCE_INDEX ] = DMA1_Stream1_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA1_STREAM2_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA1_STREAM2_RESOURCE_INDEX ] = DMA1_Stream2_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA1_STREAM3_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA1_STREAM3_RESOURCE_INDEX ] = DMA1_Stream3_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA1_STREAM4_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA1_STREAM4_RESOURCE_INDEX ] = DMA1_Stream4_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA1_STREAM5_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA1_STREAM5_RESOURCE_INDEX ] = DMA1_Stream5_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA1_STREAM6_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA1_STREAM6_RESOURCE_INDEX ] = DMA1_Stream6_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA1_STREAM7_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA1_STREAM7_RESOURCE_INDEX ] = DMA1_Stream7_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA2_STREAM0_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA2_STREAM0_RESOURCE_INDEX ] = DMA2_Stream0_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA2_STREAM1_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA2_STREAM1_RESOURCE_INDEX ] = DMA2_Stream1_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA2_STREAM2_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA2_STREAM2_RESOURCE_INDEX ] = DMA2_Stream2_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA2_STREAM3_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA2_STREAM3_RESOURCE_INDEX ] = DMA2_Stream3_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA2_STREAM4_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA2_STREAM4_RESOURCE_INDEX ] = DMA2_Stream4_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA2_STREAM5_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA2_STREAM5_RESOURCE_INDEX ] = DMA2_Stream5_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA2_STREAM6_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA2_STREAM6_RESOURCE_INDEX ] = DMA2_Stream6_ISRPostProcessorThread;
+#endif
+
+#ifdef STM32_DMA2_STREAM7_AVAILABLE
+    postProcessorThread[ Thor::LLD::DMA::DMA2_STREAM7_RESOURCE_INDEX ] = DMA2_Stream7_ISRPostProcessorThread;
+#endif
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::CommonStatusCodes::OK;
@@ -119,24 +252,39 @@ namespace Thor::DMA
     /*------------------------------------------------
     Ensure an instance of DMA peripherals are created and initialized properly.
     ------------------------------------------------*/
-    for ( uint8_t resourceIndex = 0; resourceIndex < DMADriver::dmaObjects.size(); resourceIndex++ )
+    for ( uint8_t resourceIndex = 0; resourceIndex < Thor::LLD::DMA::dmaObjects.size(); resourceIndex++ )
     {
       /*------------------------------------------------
       Dynamically allocate peripheral drivers
       ------------------------------------------------*/
-      if ( !DMADriver::dmaObjects[ resourceIndex ] )
+      if ( !Thor::LLD::DMA::dmaObjects[ resourceIndex ] )
       {
-        DMADriver::dmaObjects[ resourceIndex ] = new DMADriver::Driver();
-        DMADriver::dmaObjects[ resourceIndex ]->attach( DMADriver::periphInstanceList[ resourceIndex ] );
+        Thor::LLD::DMA::dmaObjects[ resourceIndex ] = new Thor::LLD::DMA::Driver();
+        Thor::LLD::DMA::dmaObjects[ resourceIndex ]->attach( Thor::LLD::DMA::periphInstanceList[ resourceIndex ] );
       }
 
       /*------------------------------------------------
       Initialize the drivers
       ------------------------------------------------*/
-      if ( DMADriver::dmaObjects[ resourceIndex ]->init() != Chimera::CommonStatusCodes::OK )
+      if ( Thor::LLD::DMA::dmaObjects[ resourceIndex ]->init() != Chimera::CommonStatusCodes::OK )
       {
         return Chimera::CommonStatusCodes::FAIL;
       }
+
+      // TODO: This is going to fail big time
+      force me to fix 
+      /*------------------------------------------------
+      Initialize ISR handler thread resources
+      ------------------------------------------------*/
+      if ( postProcessorThread[ streamResourceIndex ] )
+      {
+        Chimera::Threading::Thread thread;
+        thread.initialize( postProcessorThread[ streamResourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500,
+                           "" );
+        thread.start();
+        postProcessorHandle[ streamResourceIndex ] = thread.native_handle();
+      }
+
     }
 
     /*------------------------------------------------
@@ -206,13 +354,13 @@ namespace Thor::DMA
   {
     auto result = Chimera::CommonStatusCodes::OK;
 
-    if ( streamIsOnPeripheral( DMADriver::DMA1_PERIPH, stream ) && DMADriver::dmaObjects[ 0 ] )
+    if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA1_PERIPH, stream ) && Thor::LLD::DMA::dmaObjects[ 0 ] )
     {
-      result = DMADriver::dmaObjects[ 0 ]->registerListener( stream, listener, timeout, registrationID );
+      result = Thor::LLD::DMA::dmaObjects[ 0 ]->registerListener( stream, listener, timeout, registrationID );
     }
-    else if ( streamIsOnPeripheral( DMADriver::DMA2_PERIPH, stream ) && DMADriver::dmaObjects[ 1 ] )
+    else if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA2_PERIPH, stream ) && Thor::LLD::DMA::dmaObjects[ 1 ] )
     {
-      result = DMADriver::dmaObjects[ 1 ]->registerListener( stream, listener, timeout, registrationID );
+      result = Thor::LLD::DMA::dmaObjects[ 1 ]->registerListener( stream, listener, timeout, registrationID );
     }
     else
     {
@@ -227,13 +375,13 @@ namespace Thor::DMA
   {
     auto result = Chimera::CommonStatusCodes::OK;
 
-    if ( streamIsOnPeripheral( DMADriver::DMA1_PERIPH, stream ) && DMADriver::dmaObjects[ 0 ] )
+    if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA1_PERIPH, stream ) && Thor::LLD::DMA::dmaObjects[ 0 ] )
     {
-      result = DMADriver::dmaObjects[ 0 ]->removeListener( stream, registrationID, timeout );
+      result = Thor::LLD::DMA::dmaObjects[ 0 ]->removeListener( stream, registrationID, timeout );
     }
-    else if ( streamIsOnPeripheral( DMADriver::DMA2_PERIPH, stream ) && DMADriver::dmaObjects[ 1 ] )
+    else if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA2_PERIPH, stream ) && Thor::LLD::DMA::dmaObjects[ 1 ] )
     {
-      result = DMADriver::dmaObjects[ 1 ]->removeListener( stream, registrationID, timeout );
+      result = Thor::LLD::DMA::dmaObjects[ 1 ]->removeListener( stream, registrationID, timeout );
     }
     else
     {
@@ -243,20 +391,20 @@ namespace Thor::DMA
     return result;
   }
 
-  static DMADriver::Driver *const getDriver( const Chimera::DMA::Init &config )
+  static Thor::LLD::DMA::Driver *const getDriver( const Chimera::DMA::Init &config )
   {
-    DMADriver::Driver *driver = nullptr;
+    Thor::LLD::DMA::Driver *driver = nullptr;
 
     /*------------------------------------------------
     Find the request meta info using binary search of sorted list
     ------------------------------------------------*/
-    DMADriver::StreamResources c;
+    Thor::LLD::DMA::StreamResources c;
     c.clear();
     c.requestID = config.request;
 
     auto metaInfo = std::lower_bound(
         RequestGenerators.begin(), RequestGenerators.end(), c,
-        []( const DMADriver::StreamResources &a, const DMADriver::StreamResources &b ) { return b.requestID < a.requestID; } );
+        []( const Thor::LLD::DMA::StreamResources &a, const Thor::LLD::DMA::StreamResources &b ) { return b.requestID < a.requestID; } );
 
     if ( metaInfo->requestID != config.request )
     {
@@ -266,33 +414,33 @@ namespace Thor::DMA
     /*------------------------------------------------
     Pull out the stream object
     ------------------------------------------------*/
-    if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA1 )
+    if ( metaInfo->cfgBitField & Thor::LLD::DMA::ConfigBitFields::DMA_ON_DMA1 )
     {
-      driver = DMADriver::dmaObjects[ 0 ];
+      driver = Thor::LLD::DMA::dmaObjects[ 0 ];
     }
-    else if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA2 )
+    else if ( metaInfo->cfgBitField & Thor::LLD::DMA::ConfigBitFields::DMA_ON_DMA2 )
     {
-      driver = DMADriver::dmaObjects[ 1 ];
+      driver = Thor::LLD::DMA::dmaObjects[ 1 ];
     }
 
     return driver;
   }
 
-  static DMADriver::StreamX *const getStream( const Chimera::DMA::Init &config )
+  static Thor::LLD::DMA::StreamX *const getStream( const Chimera::DMA::Init &config )
   {
-    DMADriver::StreamX *stream = nullptr;
+    Thor::LLD::DMA::StreamX *stream = nullptr;
     uint32_t streamNum         = 0;
 
     /*------------------------------------------------
     Find the request meta info using binary search of sorted list
     ------------------------------------------------*/
-    DMADriver::StreamResources c;
+    Thor::LLD::DMA::StreamResources c;
     c.clear();
     c.requestID = config.request;
 
     auto metaInfo = std::lower_bound(
         RequestGenerators.begin(), RequestGenerators.end(), c,
-        []( const DMADriver::StreamResources &a, const DMADriver::StreamResources &b ) { return b.requestID < a.requestID; } );
+        []( const Thor::LLD::DMA::StreamResources &a, const Thor::LLD::DMA::StreamResources &b ) { return b.requestID < a.requestID; } );
 
     if ( metaInfo->requestID != config.request )
     {
@@ -303,20 +451,20 @@ namespace Thor::DMA
     Pull out the stream object
     ------------------------------------------------*/
     streamNum =
-        ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_STREAM ) >> DMADriver::ConfigBitFields::DMA_STREAM_POS;
-    if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA1 )
+        ( metaInfo->cfgBitField & Thor::LLD::DMA::ConfigBitFields::DMA_STREAM ) >> Thor::LLD::DMA::ConfigBitFields::DMA_STREAM_POS;
+    if ( metaInfo->cfgBitField & Thor::LLD::DMA::ConfigBitFields::DMA_ON_DMA1 )
     {
-      stream = DMADriver::getStreamRegisters( DMADriver::DMA1_PERIPH, streamNum );
+      stream = Thor::LLD::DMA::getStreamRegisters( Thor::LLD::DMA::DMA1_PERIPH, streamNum );
     }
-    else if ( metaInfo->cfgBitField & DMADriver::ConfigBitFields::DMA_ON_DMA2 )
+    else if ( metaInfo->cfgBitField & Thor::LLD::DMA::ConfigBitFields::DMA_ON_DMA2 )
     {
-      stream = DMADriver::getStreamRegisters( DMADriver::DMA2_PERIPH, streamNum );
+      stream = Thor::LLD::DMA::getStreamRegisters( Thor::LLD::DMA::DMA2_PERIPH, streamNum );
     }
 
     return stream;
   }
 
-  static DMADriver::StreamConfig convertConfig( const Chimera::DMA::Init &config )
+  static Thor::LLD::DMA::StreamConfig convertConfig( const Chimera::DMA::Init &config )
   {
     using namespace DMADriver;
 
@@ -340,7 +488,7 @@ namespace Thor::DMA
     return scfg;
   }
 
-  static DMADriver::TCB convertTCB( const Chimera::DMA::TCB &transfer )
+  static Thor::LLD::DMA::TCB convertTCB( const Chimera::DMA::TCB &transfer )
   {
     using namespace DMADriver;
 
@@ -352,3 +500,246 @@ namespace Thor::DMA
     return tcb;
   }
 }    // namespace Thor::DMA
+
+
+
+static void DMA1_Stream0_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM0_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA1_Stream1_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM1_RESOURCE_INDEX;
+  
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA1_Stream2_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM2_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA1_Stream3_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM3_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA1_Stream4_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM4_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA1_Stream5_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM5_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA1_Stream6_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM6_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA1_Stream7_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA1_STREAM7_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA2_Stream0_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM0_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA2_Stream1_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM1_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA2_Stream2_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM2_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA2_Stream3_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM3_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA2_Stream4_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM4_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA2_Stream5_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM5_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA2_Stream6_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM6_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
+static void DMA2_Stream7_ISRPostProcessorThread( void *argument )
+{
+  using namespace Thor::LLD::DMA;
+  constexpr auto resourceIndex = DMA2_STREAM7_RESOURCE_INDEX;
+
+  while ( 1 )
+  {
+    postProcessorSignal[ resourceIndex ].acquire();
+    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+      {
+        stream->postISRProcessing();
+      }
+  }
+}
+
