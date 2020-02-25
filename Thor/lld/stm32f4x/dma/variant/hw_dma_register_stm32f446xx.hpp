@@ -102,6 +102,9 @@ namespace Thor::LLD::DMA
   static constexpr uint8_t DMA2_STREAM7_RESOURCE_INDEX = 15u;
   static constexpr uint8_t DMA2_RESOURCE_INDEX_END     = DMA2_STREAM7_RESOURCE_INDEX;
 
+  static constexpr uint8_t DMA_RESOURCE_INDEX_START = DMA1_RESOURCE_INDEX_START;
+  static constexpr uint8_t DMA_RESOURCE_INDEX_END   = DMA2_RESOURCE_INDEX_END;
+
 
   /*------------------------------------------------
   Low Interrupt Status Register

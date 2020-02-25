@@ -20,12 +20,13 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/dma>
 #include <Thor/lld/interface/dma/dma.hpp>
+#include <Thor/lld/interface/dma/dma_types.hpp>
 
 
 static std::shared_ptr<Thor::DMA::DMAClass> dmaSingleton = nullptr;
-
-static Thor::LLD::DMA::Driver *currentDMAInstance = nullptr;
+static Thor::LLD::DMA::ChannelController *currentDMAInstance = nullptr;
 static Thor::LLD::DMA::StreamX *currentStream     = nullptr;
 
 
@@ -98,18 +99,10 @@ static void DMA2_Stream7_ISRPostProcessorThread( void *argument );
 #endif
 
 
-namespace Chimera::DMA
-{
-  Chimera::Status_t initialize()
-  {
-    return Thor::DMA::initialize();
-  }
-}
-
 namespace Thor::DMA
 {
-  static Thor::LLD::DMA::Driver *const getDriver( const Chimera::DMA::Init &config );
-  static Thor::LLD::DMA::StreamX *const getStream( const Chimera::DMA::Init &config );
+  static Thor::LLD::DMA::ChannelController *const getController( const Chimera::DMA::Init &config );
+  static Thor::LLD::DMA::StreamX *const getMemoryMappedStream( const Chimera::DMA::Init &config );
   static Thor::LLD::DMA::StreamConfig convertConfig( const Chimera::DMA::Init &config );
   static Thor::LLD::DMA::TCB convertTCB( const Chimera::DMA::TCB &transfer );
 
@@ -133,15 +126,15 @@ namespace Thor::DMA
     /*------------------------------------------------
     Reset driver object memory
     ------------------------------------------------*/
-    for ( size_t x = 0; x < Thor::LLD::DMA::dmaObjects.size(); x++ )
-    {
-      if ( Thor::LLD::DMA::dmaObjects[ x ] ) 
-      {
-        vPortFree( Thor::LLD::DMA::dmaObjects[ x ] );
-      }
+    // for ( size_t x = 0; x < Thor::LLD::DMA::dmaObjects.size(); x++ )
+    // {
+    //   if ( Thor::LLD::DMA::dmaObjects[ x ] ) 
+    //   {
+    //     vPortFree( Thor::LLD::DMA::dmaObjects[ x ] );
+    //   }
 
-      Thor::LLD::DMA::dmaObjects[ x ] = nullptr;
-    }
+    //   Thor::LLD::DMA::dmaObjects[ x ] = nullptr;
+    // }
 
     /*-------------------------------------------------
     Register callback threads
@@ -224,8 +217,6 @@ namespace Thor::DMA
     {
       initialize();
     }
-
-    lastLookup.clear();
   }
 
   DMAClass::~DMAClass()
@@ -249,40 +240,47 @@ namespace Thor::DMA
 
   Chimera::Status_t DMAClass::init()
   {
+    using namespace Chimera::Threading;
+    using namespace Thor::LLD::DMA;
+
     /*------------------------------------------------
     Ensure an instance of DMA peripherals are created and initialized properly.
     ------------------------------------------------*/
-    for ( uint8_t resourceIndex = 0; resourceIndex < Thor::LLD::DMA::dmaObjects.size(); resourceIndex++ )
+    for ( uint8_t resourceIndex = 0; resourceIndex < Thor::LLD::DMA::driverInstanceList.size(); resourceIndex++ )
     {
       /*------------------------------------------------
       Dynamically allocate peripheral drivers
       ------------------------------------------------*/
-      if ( !Thor::LLD::DMA::dmaObjects[ resourceIndex ] )
+      if ( !driverInstanceList[ resourceIndex ] )
       {
-        Thor::LLD::DMA::dmaObjects[ resourceIndex ] = new Thor::LLD::DMA::Driver();
-        Thor::LLD::DMA::dmaObjects[ resourceIndex ]->attach( Thor::LLD::DMA::periphInstanceList[ resourceIndex ] );
+        driverInstanceList[ resourceIndex ] = new ChannelController();
+        driverInstanceList[ resourceIndex ]->attach( periphInstanceList[ resourceIndex ] );
       }
 
       /*------------------------------------------------
       Initialize the drivers
       ------------------------------------------------*/
-      if ( Thor::LLD::DMA::dmaObjects[ resourceIndex ]->init() != Chimera::CommonStatusCodes::OK )
+      if ( driverInstanceList[ resourceIndex ]->init() != Chimera::CommonStatusCodes::OK )
       {
         return Chimera::CommonStatusCodes::FAIL;
       }
+      else
+      {
+        
+      }
+      
 
-      // TODO: This is going to fail big time
-      force me to fix 
       /*------------------------------------------------
       Initialize ISR handler thread resources
       ------------------------------------------------*/
-      if ( postProcessorThread[ streamResourceIndex ] )
+      if ( postProcessorThread[ resourceIndex ] )
       {
-        Chimera::Threading::Thread thread;
-        thread.initialize( postProcessorThread[ streamResourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500,
-                           "" );
+        Thread thread;
+        thread.initialize( postProcessorThread[ resourceIndex ], nullptr, Priority::LEVEL_5, 500, "" );
         thread.start();
-        postProcessorHandle[ streamResourceIndex ] = thread.native_handle();
+        postProcessorHandle[ resourceIndex ] = thread.native_handle();
+
+
       }
 
     }
@@ -325,8 +323,8 @@ namespace Thor::DMA
     /*------------------------------------------------
     Lookup the associated DMA peripheral and Stream to be configured
     ------------------------------------------------*/
-    currentDMAInstance = getDriver( config );
-    currentStream      = getStream( config );
+    currentDMAInstance = getController( config );
+    currentStream      = getMemoryMappedStream( config );
 
     /*------------------------------------------------
     Perform the configuration
@@ -349,98 +347,101 @@ namespace Thor::DMA
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t DMAClass::registerListener( Driver::DMA::StreamX *const stream, Chimera::Event::Actionable &listener,
-                                                const size_t timeout, size_t &registrationID )
+  Chimera::Status_t DMAClass::registerListener( const size_t stream, Chimera::Event::Actionable &listener, const size_t timeout,
+                                                size_t &registrationID )
   {
-    auto result = Chimera::CommonStatusCodes::OK;
+    using namespace Thor::LLD::DMA;
+    auto result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
 
-    if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA1_PERIPH, stream ) && Thor::LLD::DMA::dmaObjects[ 0 ] )
-    {
-      result = Thor::LLD::DMA::dmaObjects[ 0 ]->registerListener( stream, listener, timeout, registrationID );
-    }
-    else if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA2_PERIPH, stream ) && Thor::LLD::DMA::dmaObjects[ 1 ] )
-    {
-      result = Thor::LLD::DMA::dmaObjects[ 1 ]->registerListener( stream, listener, timeout, registrationID );
-    }
-    else
-    {
-      result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
-    }
+    // if ( streamIsOnPeripheral( DMA1_PERIPH, stream ) && driverInstanceList[ 0 ] )
+    // {
+    //   result = Thor::LLD::DMA::driverInstanceList[ 0 ]->registerListener( stream, listener, timeout, registrationID );
+    // }
+    // else if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA2_PERIPH, stream ) && Thor::LLD::DMA::driverInstanceList[ 1 ] )
+    // {
+    //   result = Thor::LLD::DMA::driverInstanceList[ 1 ]->registerListener( stream, listener, timeout, registrationID );
+    // }
+    // else
+    // {
+    //   result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    // }
 
     return result;
   }
 
-  Chimera::Status_t DMAClass::removeListener( Driver::DMA::StreamX *const stream, const size_t registrationID,
-                                              const size_t timeout )
+  Chimera::Status_t DMAClass::removeListener( const size_t stream, const size_t registrationID, const size_t timeout )
   {
-    auto result = Chimera::CommonStatusCodes::OK;
+    auto result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
 
-    if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA1_PERIPH, stream ) && Thor::LLD::DMA::dmaObjects[ 0 ] )
-    {
-      result = Thor::LLD::DMA::dmaObjects[ 0 ]->removeListener( stream, registrationID, timeout );
-    }
-    else if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA2_PERIPH, stream ) && Thor::LLD::DMA::dmaObjects[ 1 ] )
-    {
-      result = Thor::LLD::DMA::dmaObjects[ 1 ]->removeListener( stream, registrationID, timeout );
-    }
-    else
-    {
-      result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
-    }
+    // if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA1_PERIPH, stream ) && Thor::LLD::DMA::driverInstanceList[ 0 ] )
+    // {
+    //   result = Thor::LLD::DMA::driverInstanceList[ 0 ]->removeListener( stream, registrationID, timeout );
+    // }
+    // else if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA2_PERIPH, stream ) && Thor::LLD::DMA::driverInstanceList[ 1 ] )
+    // {
+    //   result = Thor::LLD::DMA::driverInstanceList[ 1 ]->removeListener( stream, registrationID, timeout );
+    // }
+    // else
+    // {
+    //   result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    // }
 
     return result;
   }
 
-  static Thor::LLD::DMA::Driver *const getDriver( const Chimera::DMA::Init &config )
+  static Thor::LLD::DMA::ChannelController *const getController( const Chimera::DMA::Init &config )
   {
-    Thor::LLD::DMA::Driver *driver = nullptr;
+    using namespace Thor::LLD::DMA;
+    ChannelController *controller = nullptr;
 
     /*------------------------------------------------
     Find the request meta info using binary search of sorted list
     ------------------------------------------------*/
-    Thor::LLD::DMA::StreamResources c;
+    StreamResources c;
     c.clear();
     c.requestID = config.request;
 
     auto metaInfo = std::lower_bound(
         RequestGenerators.begin(), RequestGenerators.end(), c,
-        []( const Thor::LLD::DMA::StreamResources &a, const Thor::LLD::DMA::StreamResources &b ) { return b.requestID < a.requestID; } );
+        []( const StreamResources &a, const StreamResources &b ) { return b.requestID < a.requestID; } );
 
     if ( metaInfo->requestID != config.request )
     {
-      return driver;
+      return controller;
     }
 
     /*------------------------------------------------
     Pull out the stream object
     ------------------------------------------------*/
-    if ( metaInfo->cfgBitField & Thor::LLD::DMA::ConfigBitFields::DMA_ON_DMA1 )
+    if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA1 )
     {
-      driver = Thor::LLD::DMA::dmaObjects[ 0 ];
+      controller = Thor::LLD::DMA::driverInstanceList[ 0 ];
     }
-    else if ( metaInfo->cfgBitField & Thor::LLD::DMA::ConfigBitFields::DMA_ON_DMA2 )
+    else if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA2 )
     {
-      driver = Thor::LLD::DMA::dmaObjects[ 1 ];
+      controller = Thor::LLD::DMA::driverInstanceList[ 1 ];
     }
 
-    return driver;
+    return controller;
   }
 
-  static Thor::LLD::DMA::StreamX *const getStream( const Chimera::DMA::Init &config )
+  static Thor::LLD::DMA::StreamX *const getMemoryMappedStream( const Chimera::DMA::Init &config )
   {
-    Thor::LLD::DMA::StreamX *stream = nullptr;
-    uint32_t streamNum         = 0;
+    using namespace Thor::LLD::DMA;
+
+    StreamX *stream    = nullptr;
+    uint32_t streamNum = 0;
 
     /*------------------------------------------------
     Find the request meta info using binary search of sorted list
     ------------------------------------------------*/
-    Thor::LLD::DMA::StreamResources c;
+    StreamResources c;
     c.clear();
     c.requestID = config.request;
 
     auto metaInfo = std::lower_bound(
         RequestGenerators.begin(), RequestGenerators.end(), c,
-        []( const Thor::LLD::DMA::StreamResources &a, const Thor::LLD::DMA::StreamResources &b ) { return b.requestID < a.requestID; } );
+        []( const StreamResources &a, const StreamResources &b ) { return b.requestID < a.requestID; } );
 
     if ( metaInfo->requestID != config.request )
     {
@@ -450,15 +451,15 @@ namespace Thor::DMA
     /*------------------------------------------------
     Pull out the stream object
     ------------------------------------------------*/
-    streamNum =
-        ( metaInfo->cfgBitField & Thor::LLD::DMA::ConfigBitFields::DMA_STREAM ) >> Thor::LLD::DMA::ConfigBitFields::DMA_STREAM_POS;
-    if ( metaInfo->cfgBitField & Thor::LLD::DMA::ConfigBitFields::DMA_ON_DMA1 )
+    streamNum = ( metaInfo->cfgBitField & ConfigBitFields::DMA_STREAM ) >> ConfigBitFields::DMA_STREAM_POS;
+    
+    if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA1 )
     {
-      stream = Thor::LLD::DMA::getStreamRegisters( Thor::LLD::DMA::DMA1_PERIPH, streamNum );
+      stream = getStreamRegisters( DMA1_PERIPH, streamNum );
     }
-    else if ( metaInfo->cfgBitField & Thor::LLD::DMA::ConfigBitFields::DMA_ON_DMA2 )
+    else if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA2 )
     {
-      stream = Thor::LLD::DMA::getStreamRegisters( Thor::LLD::DMA::DMA2_PERIPH, streamNum );
+      stream = getStreamRegisters( DMA2_PERIPH, streamNum );
     }
 
     return stream;
@@ -466,7 +467,7 @@ namespace Thor::DMA
 
   static Thor::LLD::DMA::StreamConfig convertConfig( const Chimera::DMA::Init &config )
   {
-    using namespace DMADriver;
+    using namespace Thor::LLD::DMA;
 
     StreamConfig scfg;
 
@@ -490,7 +491,7 @@ namespace Thor::DMA
 
   static Thor::LLD::DMA::TCB convertTCB( const Chimera::DMA::TCB &transfer )
   {
-    using namespace DMADriver;
+    using namespace Thor::LLD::DMA;
 
     TCB tcb;
     tcb.srcAddress   = transfer.srcAddress;
@@ -502,7 +503,6 @@ namespace Thor::DMA
 }    // namespace Thor::DMA
 
 
-
 static void DMA1_Stream0_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -511,7 +511,7 @@ static void DMA1_Stream0_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -526,7 +526,7 @@ static void DMA1_Stream1_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -541,7 +541,7 @@ static void DMA1_Stream2_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -556,7 +556,7 @@ static void DMA1_Stream3_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -571,7 +571,7 @@ static void DMA1_Stream4_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -586,7 +586,7 @@ static void DMA1_Stream5_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -601,7 +601,7 @@ static void DMA1_Stream6_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -616,7 +616,7 @@ static void DMA1_Stream7_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -631,7 +631,7 @@ static void DMA2_Stream0_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -646,7 +646,7 @@ static void DMA2_Stream1_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -661,7 +661,7 @@ static void DMA2_Stream2_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -676,7 +676,7 @@ static void DMA2_Stream3_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -691,7 +691,7 @@ static void DMA2_Stream4_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -706,7 +706,7 @@ static void DMA2_Stream5_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -721,7 +721,7 @@ static void DMA2_Stream6_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }
@@ -736,7 +736,7 @@ static void DMA2_Stream7_ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();
-    if ( auto stream = streamObjects[ resourceIndex ]; stream )
+    if ( auto stream = getStreamController( resourceIndex ); stream )
       {
         stream->postISRProcessing();
       }

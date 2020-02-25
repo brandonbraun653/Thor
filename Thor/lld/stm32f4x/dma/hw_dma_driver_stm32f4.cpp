@@ -22,16 +22,14 @@
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
 #include <Thor/lld/stm32f4x/nvic/hw_nvic_driver.hpp>
 
-namespace DMADriver = Thor::LLD::DMA;
-
 #if defined( TARGET_STM32F4 ) && ( THOR_LLD_DMA )
-
-
-static std::array<Thor::LLD::DMA::Stream *, Thor::LLD::DMA::NUM_DMA_STREAMS> streamObjects;
 
 namespace Thor::LLD::DMA
 {
-  bool streamIsOnPeripheral( RegisterMap *const controller, StreamX *const stream )
+  static std::array<StreamController *, Thor::LLD::DMA::NUM_DMA_STREAMS> streamObjects;
+
+
+  bool streamIsOnController( RegisterMap *const controller, StreamX *const stream )
   {
     auto streamAddress = reinterpret_cast<std::uintptr_t>( stream );
 
@@ -66,17 +64,27 @@ namespace Thor::LLD::DMA
     initializeMapping();
   }
 
-  Stream::Stream() :
+  StreamController * getStreamController( const uint8_t resourceIndex )
+  {
+    if( ( resourceIndex < DMA_RESOURCE_INDEX_START) && ( resourceIndex > DMA_RESOURCE_INDEX_END ) )
+    {
+      return nullptr;
+    }
+
+    return streamObjects[ resourceIndex ];
+  }
+
+  StreamController::StreamController() :
       stream( nullptr ), parent( nullptr ), streamRegisterIndex( 0 ), streamResourceIndex( 0 ), wakeupSignal( nullptr ),
       listenerIDCount( 0 )
   {
   }
 
-  Stream::~Stream()
+  StreamController::~StreamController()
   {
   }
 
-  Chimera::Status_t Stream::attach( StreamX *const peripheral, RegisterMap *const parent )
+  Chimera::Status_t StreamController::attach( StreamX *const peripheral, RegisterMap *const parent )
   {
     using namespace Chimera::Threading;
 
@@ -99,7 +107,7 @@ namespace Thor::LLD::DMA
     return result;
   }
 
-  Chimera::Status_t Stream::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )
+  Chimera::Status_t StreamController::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )
   {
     using namespace Chimera::Threading;
 
@@ -118,7 +126,7 @@ namespace Thor::LLD::DMA
     return result;
   }
 
-  Chimera::Status_t Stream::configure( StreamConfig *const config, TCB *const cb )
+  Chimera::Status_t StreamController::configure( StreamConfig *const config, TCB *const cb )
   {
     using namespace Chimera::Threading;
 
@@ -219,7 +227,7 @@ namespace Thor::LLD::DMA
     return result;
   }
 
-  Chimera::Status_t Stream::start()
+  Chimera::Status_t StreamController::start()
   {
     using namespace Chimera::Threading;
 
@@ -250,14 +258,14 @@ namespace Thor::LLD::DMA
     return result;
   }
 
-  Chimera::Status_t Stream::abort()
+  Chimera::Status_t StreamController::abort()
   {
     // Should abruptly disable the hardware and fire an ISR if there is an ongoing transfer.
     SxCR::EN::set( stream, 0 );
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t Stream::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
+  Chimera::Status_t StreamController::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
                                               size_t &registrationID )
   {
     registrationID = ++listenerIDCount;
@@ -268,7 +276,7 @@ namespace Thor::LLD::DMA
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t Stream::removeListener( const size_t registrationID, const size_t timeout )
+  Chimera::Status_t StreamController::removeListener( const size_t registrationID, const size_t timeout )
   {
     for ( auto iterator = eventListeners.begin(); iterator != eventListeners.end(); iterator++ )
     {
@@ -283,7 +291,7 @@ namespace Thor::LLD::DMA
     return Chimera::CommonStatusCodes::NOT_FOUND;
   }
 
-  Chimera::Status_t Stream::postISRProcessing()
+  Chimera::Status_t StreamController::postISRProcessing()
   {
     using namespace Chimera::Threading;
 
@@ -325,7 +333,7 @@ namespace Thor::LLD::DMA
     return result;
   }
 
-  void Stream::IRQHandler( const uint8_t channel )
+  void StreamController::IRQHandler( const uint8_t channel )
   {
     /* Indicates the split between the LISR and HISR registers */
     static constexpr uint32_t LOW_HIGH_REGISTER_STREAM_BOUNDARY = 3u;
@@ -432,7 +440,7 @@ namespace Thor::LLD::DMA
     }
   }
 
-  void Stream::enableTransferIRQ()
+  void StreamController::enableTransferIRQ()
   {
     /*------------------------------------------------
     Make sure the interrupt priority has been set to correctly
@@ -451,7 +459,7 @@ namespace Thor::LLD::DMA
     SxFCR::FEIE::set( stream, SxFCR_FEIE );
   }
 
-  void Stream::disableTransferIRQ()
+  void StreamController::disableTransferIRQ()
   {
     /*------------------------------------------------
     - Transfer complete
@@ -465,17 +473,17 @@ namespace Thor::LLD::DMA
     SxFCR::FEIE::set( stream, 0 );
   }
 
-  void Stream::enterCriticalSection()
+  void StreamController::enterCriticalSection()
   {
     Thor::LLD::IT::disableIRQ( streamIRQn );
   }
 
-  void Stream::exitCriticalSection()
+  void StreamController::exitCriticalSection()
   {
     Thor::LLD::IT::enableIRQ( streamIRQn );
   }
 
-  void Stream::processListeners( const Chimera::Event::Trigger event )
+  void StreamController::processListeners( const Chimera::Event::Trigger event )
   {
     for ( auto &listener : eventListeners )
     {
@@ -494,22 +502,22 @@ namespace Thor::LLD::DMA
   /*------------------------------------------------
   Driver Implementation
   ------------------------------------------------*/
-  Driver::Driver() : periph( nullptr )
+  ChannelController::ChannelController() : periph( nullptr )
   {
   }
 
-  Driver::~Driver()
+  ChannelController::~ChannelController()
   {
   }
 
-  Chimera::Status_t Driver::attach( RegisterMap *const peripheral )
+  Chimera::Status_t ChannelController::attach( RegisterMap *const peripheral )
   {
     periph = peripheral;
     clockEnable();
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t Driver::clockEnable()
+  Chimera::Status_t ChannelController::clockEnable()
   {
     auto rcc   = Thor::LLD::RCC::PeripheralController::get();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
@@ -518,7 +526,7 @@ namespace Thor::LLD::DMA
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t Driver::clockDisable()
+  Chimera::Status_t ChannelController::clockDisable()
   {
     auto rcc   = Thor::LLD::RCC::PeripheralController::get();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
@@ -527,7 +535,7 @@ namespace Thor::LLD::DMA
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t Driver::reset()
+  Chimera::Status_t ChannelController::reset()
   {
     auto rcc   = Thor::LLD::RCC::PeripheralController::get();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
@@ -536,7 +544,7 @@ namespace Thor::LLD::DMA
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t Driver::init()
+  Chimera::Status_t ChannelController::init()
   {
     if ( !periph )
     {
@@ -554,17 +562,17 @@ namespace Thor::LLD::DMA
     Initialize all the stream objects for the DMA
     peripherals if one hasn't been created yet.
     ------------------------------------------------*/
-    static_assert( DMA1_RESOURCE_INDEX_START == 0, "DMA1 resource index invalid" );
+    static_assert( DMA_RESOURCE_INDEX_START == 0, "DMA1 resource index invalid" );
 
     if ( periph == DMA1_PERIPH )
     {
-      for ( uint8_t x = DMA1_RESOURCE_INDEX_START; x < DMA1_RESOURCE_INDEX_END; x++ )
+      for ( uint8_t x = DMA_RESOURCE_INDEX_START; x < DMA1_RESOURCE_INDEX_END; x++ )
       {
         if ( !streamObjects[ x ] )
         {
           /* x is already zero indexed, no need to convert it to get the proper stream */
           StreamX *streamInstance = getStreamRegisters( periph, x );
-          streamObjects[ x ]      = new Stream();
+          streamObjects[ x ]      = new StreamController();
           streamObjects[ x ]->attach( streamInstance, periph );
         }
       }
@@ -577,7 +585,7 @@ namespace Thor::LLD::DMA
         {
           /* Need to convert back to zero index to get the stream properly */
           auto streamInstance = getStreamRegisters( periph, ( x - DMA2_RESOURCE_INDEX_START ) );
-          streamObjects[ x ]  = new Stream();
+          streamObjects[ x ]  = new StreamController();
           streamObjects[ x ]->attach( streamInstance, periph );
         }
       }
@@ -586,7 +594,7 @@ namespace Thor::LLD::DMA
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t Driver::configure( StreamX *const stream, StreamConfig *const config, TCB *const controlBlock )
+  Chimera::Status_t ChannelController::configure( StreamX *const stream, StreamConfig *const config, TCB *const controlBlock )
   {
     auto streamIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
 
@@ -600,7 +608,7 @@ namespace Thor::LLD::DMA
     }
   }
 
-  Chimera::Status_t Driver::start( StreamX *const stream )
+  Chimera::Status_t ChannelController::start( StreamX *const stream )
   {
     auto streamIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
 
@@ -614,7 +622,7 @@ namespace Thor::LLD::DMA
     }
   }
 
-  Chimera::Status_t Driver::abort( StreamX *const stream )
+  Chimera::Status_t ChannelController::abort( StreamX *const stream )
   {
     auto streamIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
 
@@ -628,7 +636,7 @@ namespace Thor::LLD::DMA
     }
   }
 
-  Chimera::Status_t Driver::registerListener( StreamX *const stream, Chimera::Event::Actionable &listener, const size_t timeout,
+  Chimera::Status_t ChannelController::registerListener( StreamX *const stream, Chimera::Event::Actionable &listener, const size_t timeout,
                                               size_t &registrationID )
   {
     auto result          = Chimera::CommonStatusCodes::FAIL;
@@ -642,7 +650,7 @@ namespace Thor::LLD::DMA
     return result;
   }
 
-  Chimera::Status_t Driver::removeListener( StreamX *const stream, const size_t registrationID, const size_t timeout )
+  Chimera::Status_t ChannelController::removeListener( StreamX *const stream, const size_t registrationID, const size_t timeout )
   {
     auto result          = Chimera::CommonStatusCodes::FAIL;
     size_t resourceIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;

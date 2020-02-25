@@ -111,7 +111,7 @@ DMA2 Register and Stream Memory Mappings
   ------------------------------------------------*/
   extern PeriphRegisterList periphInstanceList;
   extern StreamRegisterList streamInstanceList;
-  extern DriverInstanceList dmaObjects;
+  extern DriverInstanceList driverInstanceList;
 
   /*------------------------------------------------
   Maps a DMA peripheral or Stream into the corresponding resource index

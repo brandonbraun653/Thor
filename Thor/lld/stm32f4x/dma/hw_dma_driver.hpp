@@ -32,7 +32,7 @@ namespace Thor::LLD::DMA
    *  @param[in]  stream        The stream to check if on the controller
    *  @return bool
    */
-  bool streamIsOnPeripheral( RegisterMap *const controller, StreamX *const stream );
+  bool streamIsOnController( RegisterMap *const controller, StreamX *const stream );
 
   /**
    *  Initializes the low level driver
@@ -41,11 +41,22 @@ namespace Thor::LLD::DMA
    */
   void initialize();
 
-  class Stream : public StreamModel, public Chimera::Threading::Lockable
+  /**
+   *  Gets the current stream controller instance via lookup
+   * 
+   *  @param[in]  resourceIndex   LLD defined resource lookup index for a stream
+   *  @return StreamController *  The instance of the controller
+   */
+  StreamController * getStreamController( const uint8_t resourceIndex );
+
+  /**
+   *  Models a stream within a DMA controller peripheral (channel)
+   */
+  class StreamController : public StreamModel, public Chimera::Threading::Lockable
   {
   public:
-    Stream();
-    ~Stream();
+    StreamController();
+    ~StreamController();
 
     Chimera::Status_t attach( StreamX *const peripheral, RegisterMap *const parent ) final override;
 
@@ -72,22 +83,22 @@ namespace Thor::LLD::DMA
     Chimera::Status_t postISRProcessing();
 
   protected:
-    friend void(::DMA1_Stream0_IRQHandler )();
-    friend void(::DMA1_Stream1_IRQHandler )();
-    friend void(::DMA1_Stream2_IRQHandler )();
-    friend void(::DMA1_Stream3_IRQHandler )();
-    friend void(::DMA1_Stream4_IRQHandler )();
-    friend void(::DMA1_Stream5_IRQHandler )();
-    friend void(::DMA1_Stream6_IRQHandler )();
-    friend void(::DMA1_Stream7_IRQHandler )();
-    friend void(::DMA2_Stream0_IRQHandler )();
-    friend void(::DMA2_Stream1_IRQHandler )();
-    friend void(::DMA2_Stream2_IRQHandler )();
-    friend void(::DMA2_Stream3_IRQHandler )();
-    friend void(::DMA2_Stream4_IRQHandler )();
-    friend void(::DMA2_Stream5_IRQHandler )();
-    friend void(::DMA2_Stream6_IRQHandler )();
-    friend void(::DMA2_Stream7_IRQHandler )();
+    friend void( ::DMA1_Stream0_IRQHandler )();
+    friend void( ::DMA1_Stream1_IRQHandler )();
+    friend void( ::DMA1_Stream2_IRQHandler )();
+    friend void( ::DMA1_Stream3_IRQHandler )();
+    friend void( ::DMA1_Stream4_IRQHandler )();
+    friend void( ::DMA1_Stream5_IRQHandler )();
+    friend void( ::DMA1_Stream6_IRQHandler )();
+    friend void( ::DMA1_Stream7_IRQHandler )();
+    friend void( ::DMA2_Stream0_IRQHandler )();
+    friend void( ::DMA2_Stream1_IRQHandler )();
+    friend void( ::DMA2_Stream2_IRQHandler )();
+    friend void( ::DMA2_Stream3_IRQHandler )();
+    friend void( ::DMA2_Stream4_IRQHandler )();
+    friend void( ::DMA2_Stream5_IRQHandler )();
+    friend void( ::DMA2_Stream6_IRQHandler )();
+    friend void( ::DMA2_Stream7_IRQHandler )();
 
     /**
      *  Stream interrupt request handler
@@ -104,7 +115,7 @@ namespace Thor::LLD::DMA
     TCB controlBlock;
     size_t streamRegisterIndex;
     size_t streamResourceIndex;
-    Chimera::Threading::BinarySemaphore * wakeupSignal; 
+    Chimera::Threading::BinarySemaphore *wakeupSignal;
     IRQn_Type streamIRQn;
 
     size_t listenerIDCount;
@@ -118,11 +129,15 @@ namespace Thor::LLD::DMA
     void processListeners( const Chimera::Event::Trigger event );
   };
 
-  class Driver : public PeripheralModel
+  /**
+   *  Models the interface to a full DMA controller, which is composed of many streams.
+   *  For the STM32F4xxx chips, there is typically seven streams per channel.
+   */
+  class ChannelController : public PeripheralModel
   {
   public:
-    Driver();
-    ~Driver();
+    ChannelController();
+    ~ChannelController();
 
     Chimera::Status_t attach( RegisterMap *const peripheral ) final override;
 
@@ -136,9 +151,11 @@ namespace Thor::LLD::DMA
 
     Chimera::Status_t configure( StreamX *const stream, StreamConfig *const config, TCB *const controlBlock ) final override;
 
-    Chimera::Status_t start( StreamX *const stream) final override;
+    Chimera::Status_t start( StreamX *const stream ) final override;
 
-    Chimera::Status_t abort( StreamX *const stream) final override;
+    Chimera::Status_t abort( StreamX *const stream ) final override;
+
+    //Chimera::Status_t attachWakeup( StreamX *const stream, )
 
     /**
      *  Registers a listener to a specific DMA stream
@@ -165,7 +182,7 @@ namespace Thor::LLD::DMA
     Chimera::Status_t removeListener( StreamX *const stream, const size_t registrationID, const size_t timeout );
 
   private:
-    RegisterMap *periph;
+    RegisterMap *periph; /**< Memory mapped struct to the DMA controller peripheral */
   };
 
 }    // namespace Thor::LLD::DMA

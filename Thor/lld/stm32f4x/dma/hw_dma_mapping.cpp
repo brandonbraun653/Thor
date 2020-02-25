@@ -25,11 +25,11 @@ namespace Thor::LLD::DMA
   ------------------------------------------------*/
   PeriphRegisterList periphInstanceList;
   StreamRegisterList streamInstanceList;
-  DriverInstanceList dmaObjects;
+  DriverInstanceList driverInstanceList;
 
   void initializeMapping()
   {
-    dmaObjects.fill( nullptr );
+    driverInstanceList.fill( nullptr );
   }
 
   bool isDMA( const std::uintptr_t address )

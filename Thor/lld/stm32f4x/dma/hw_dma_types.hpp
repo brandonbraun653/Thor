@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_dma_types.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Driver for the DMA Peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -47,9 +47,9 @@ namespace Thor::LLD::DMA
     StreamX STREAM7;         /**< DMA Stream control registers, Address offset: 0x18 x stream number */
   };
 
-  class Driver;
+  class ChannelController;
 
-  using DriverInstanceList = std::array<Driver *, NUM_DMA_PERIPHS>;
+  using DriverInstanceList = std::array<ChannelController *, NUM_DMA_PERIPHS>;
   using PeriphRegisterList = std::array<RegisterMap *, NUM_DMA_PERIPHS>;
   using StreamRegisterList = std::array<StreamX *, NUM_DMA_STREAMS>;
 
