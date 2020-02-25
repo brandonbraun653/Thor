@@ -1,9 +1,9 @@
 /********************************************************************************
  *  File Name:
- *    test_hld_gpio_chimera.cpp
+ *    test_hld_spi_chimera.cpp
  *
  *	 Description:
- *    Tests the Chimera interface to Thor GPIO
+ *    Tests the Chimera interface to Thor SPI
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
@@ -13,17 +13,17 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/gpio>
+#include <Chimera/spi>
 
 /* Thor Includes */
-#include <Thor/gpio>
-#include <Thor/hld/gpio/hld_gpio_chimera.hpp>
+#include <Thor/spi>
+#include <Thor/hld/spi/hld_spi_chimera.hpp>
 
 
 TEST(PleasePass, PrettyPlease)
 {
   EXPECT_EQ(0, 0);
 
-  Chimera::GPIO::Backend::initialize();
+  Chimera::SPI::Backend::initialize();
 }
 

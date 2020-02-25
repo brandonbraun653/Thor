@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *   thor_custom_dma.cpp
+ *   hld_dma_driver.cpp
  *
  *  Description:
  *   Implements DMA for Thor using the custom low level drivers.
@@ -21,6 +21,7 @@
 
 /* Thor Includes */
 #include <Thor/dma>
+#include <Thor/hld/dma/hld_prv_dma_resources.hpp>
 #include <Thor/lld/interface/dma/dma.hpp>
 #include <Thor/lld/interface/dma/dma_types.hpp>
 
@@ -244,47 +245,38 @@ namespace Thor::DMA
     using namespace Thor::LLD::DMA;
 
     /*------------------------------------------------
-    Ensure an instance of DMA peripherals are created and initialized properly.
+    Create and initialize the DMA controllers
     ------------------------------------------------*/
-    for ( uint8_t resourceIndex = 0; resourceIndex < Thor::LLD::DMA::driverInstanceList.size(); resourceIndex++ )
+    for ( size_t channel = 0; channel < driverInstanceList.size(); channel++ )
     {
-      /*------------------------------------------------
-      Dynamically allocate peripheral drivers
-      ------------------------------------------------*/
-      if ( !driverInstanceList[ resourceIndex ] )
+      if ( !driverInstanceList[ channel ] )
       {
-        driverInstanceList[ resourceIndex ] = new ChannelController();
-        driverInstanceList[ resourceIndex ]->attach( periphInstanceList[ resourceIndex ] );
+        driverInstanceList[ channel ] = new ChannelController();
+        driverInstanceList[ channel ]->attach( periphInstanceList[ channel ] );
+        driverInstanceList[ channel ]->init();
       }
-
-      /*------------------------------------------------
-      Initialize the drivers
-      ------------------------------------------------*/
-      if ( driverInstanceList[ resourceIndex ]->init() != Chimera::CommonStatusCodes::OK )
-      {
-        return Chimera::CommonStatusCodes::FAIL;
-      }
-      else
-      {
-        
-      }
-      
-
-      /*------------------------------------------------
-      Initialize ISR handler thread resources
-      ------------------------------------------------*/
-      if ( postProcessorThread[ resourceIndex ] )
-      {
-        Thread thread;
-        thread.initialize( postProcessorThread[ resourceIndex ], nullptr, Priority::LEVEL_5, 500, "" );
-        thread.start();
-        postProcessorHandle[ resourceIndex ] = thread.native_handle();
-
-
-      }
-
     }
 
+    /*-------------------------------------------------
+    For each stream available, attach their post-processor wakeup signal
+    -------------------------------------------------*/
+    Thor::LLD::DMA::StreamController * streamInstance = nullptr;
+
+    for( size_t stream = 0; stream < streamInstanceList.size(); stream++ )
+    {
+      streamInstance = getStreamController( stream );
+
+      if ( streamInstance && postProcessorThread[ stream ] )
+      {
+        streamInstance->attachISRWakeup( &postProcessorSignal[ stream ] );
+
+        Thread thread;
+        thread.initialize( postProcessorThread[ stream ], nullptr, Priority::LEVEL_5, 500, "" );
+        thread.start();
+        postProcessorHandle[ stream ] = thread.native_handle();
+      }
+    }
+      
     /*------------------------------------------------
     Sort the request resources such that lookup becomes O(log(N))
     ------------------------------------------------*/

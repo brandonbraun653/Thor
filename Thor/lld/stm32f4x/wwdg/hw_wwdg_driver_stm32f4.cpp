@@ -1,29 +1,30 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_wwdg_driver_stm32f4.cpp
  *
- *   Description:
+ *  Description:
  *    Window watchdog driver for the STM32F4 series chips
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
 #include <cmath>
 
 /* Chimera Includes */
+#include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_driver.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_mapping.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_prj.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_driver.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_mapping.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_prj.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_types.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_WWDG )
 
-namespace Thor::Driver::WWDG
+namespace Thor::LLD::WWDG
 {
   static constexpr float hwCounterMax = static_cast<float>( CR_T_MAX );
   static constexpr float hwCounterMin = static_cast<float>( CR_T_MIN );

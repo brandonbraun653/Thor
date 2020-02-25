@@ -11,6 +11,7 @@
 /* C++ Includes */
 #include <array>
 #include <cstring>
+#include <cstdlib>
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -31,9 +32,9 @@
 #include <Thor/lld/stm32f4x/flash/hw_flash_mapping.hpp>
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_mapping.hpp>
 #include <Thor/lld/stm32f4x/power/hw_power_mapping.hpp>
-// #include <Thor/lld/stm32f4x/uart/hw_uart_mapping.hpp>
-// #include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
-// #include <Thor/lld/stm32f4x/wwdg/hw_wwdg_mapping.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_mapping.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_mapping.hpp>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC )
 
@@ -52,15 +53,15 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   Local Function Declarations
   ------------------------------------------------*/
-  static inline Chimera::Status_t HSEOscillatorConfig( const OscillatorInit *const init );
-  static inline Chimera::Status_t HSIOscillatorConfig( const OscillatorInit *const init );
-  static inline Chimera::Status_t LSIOscillatorConfig( const OscillatorInit *const init );
-  static inline Chimera::Status_t LSEOsciallatorConfig( const OscillatorInit *const init );
+  static Chimera::Status_t HSEOscillatorConfig( const OscillatorInit *const init );
+  static Chimera::Status_t HSIOscillatorConfig( const OscillatorInit *const init );
+  static Chimera::Status_t LSIOscillatorConfig( const OscillatorInit *const init );
+  static Chimera::Status_t LSEOsciallatorConfig( const OscillatorInit *const init );
   static Chimera::Status_t PLLOscillatorConfig( const OscillatorInit *const init );
   static void HCLKConfig( const ClockInit *const init );
   static Chimera::Status_t SYSCLKConfig( const ClockInit *const init );
-  static inline Chimera::Status_t PCLK1Config( const ClockInit *init );
-  static inline Chimera::Status_t PCLK2Config( const ClockInit *init );
+  static Chimera::Status_t PCLK1Config( const ClockInit *init );
+  static Chimera::Status_t PCLK2Config( const ClockInit *init );
   static Chimera::Status_t UpdateFlashLatency( const uint32_t value );
   static Chimera::Status_t OscillatorConfig( OscillatorInit *const init );
   static Chimera::Status_t ClockConfig( const ClockInit *const init );
@@ -68,7 +69,7 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   Default implementations of project level functions
   ------------------------------------------------*/
-  WEAKDECL Chimera::Status_t prjGetHSIValue( size_t *const projectValue )
+  Chimera::Status_t prjGetHSIValue( size_t *const projectValue )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
@@ -84,7 +85,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  WEAKDECL Chimera::Status_t prjGetHSEValue( size_t *const projectValue )
+  Chimera::Status_t prjGetHSEValue( size_t *const projectValue )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
@@ -100,7 +101,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  WEAKDECL Chimera::Status_t prjGetLSIValue( size_t *const projectValue )
+  Chimera::Status_t prjGetLSIValue( size_t *const projectValue )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
@@ -116,7 +117,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  WEAKDECL Chimera::Status_t prjGetSysClockFreq( size_t *const projectValue )
+  Chimera::Status_t prjGetSysClockFreq( size_t *const projectValue )
   {
     const Chimera::Status_t prjResult = Chimera::CommonStatusCodes::OK;
     Chimera::Status_t result          = Chimera::CommonStatusCodes::FAIL;
@@ -172,7 +173,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  WEAKDECL Chimera::Status_t prjGetHCLKFreq( size_t *const projectValue )
+  Chimera::Status_t prjGetHCLKFreq( size_t *const projectValue )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
@@ -185,7 +186,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  WEAKDECL Chimera::Status_t prjGetPCLK1Freq( size_t *const projectValue )
+  Chimera::Status_t prjGetPCLK1Freq( size_t *const projectValue )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
@@ -201,7 +202,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  WEAKDECL Chimera::Status_t prjGetPCLK2Freq( size_t *const projectValue )
+  Chimera::Status_t prjGetPCLK2Freq( size_t *const projectValue )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
@@ -217,7 +218,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  WEAKDECL Chimera::Status_t prjGetOscillatorConfig( OscillatorInit *const projectValue )
+  Chimera::Status_t prjGetOscillatorConfig( OscillatorInit *const projectValue )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
@@ -265,7 +266,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  WEAKDECL Chimera::Status_t prjGetClockConfig( ClockInit *const projectValue )
+  Chimera::Status_t prjGetClockConfig( ClockInit *const projectValue )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
@@ -309,29 +310,13 @@ namespace Thor::LLD::RCC
       ------------------------------------------------*/
       memset( periphLookupTables.data(), 0, sizeof( periphLookupTables ) );
 
-#if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
+
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ] = &LookupTables::DMALookup;
-#endif
-
-#if defined( THOR_DRIVER_GPIO ) && ( THOR_DRIVER_GPIO == 1 )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ]  = &LookupTables::GPIOLookup;
-#endif
-
-#if defined( THOR_DRIVER_SPI ) && ( THOR_DRIVER_SPI == 1 )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_SPI ) ] = &LookupTables::SPILookup;
-#endif
-
-#if defined( THOR_DRIVER_UART ) && ( THOR_DRIVER_UART == 1 )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ] = &LookupTables::UARTLookup;
-#endif
-
-#if defined( THOR_DRIVER_USART ) && ( THOR_DRIVER_USART == 1 )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USART ) ] = &LookupTables::USARTLookup;
-#endif
-
-#if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )  
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_WWDG ) ]  = &LookupTables::WWDGLookup;
-#endif
 
       initialized = true;
     }

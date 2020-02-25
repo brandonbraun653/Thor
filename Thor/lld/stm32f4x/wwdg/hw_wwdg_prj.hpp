@@ -12,7 +12,7 @@
 #define THOR_HW_WWDG_PROJECT_HPP
 
 #if defined( STM32F446xx )
-#include <Thor/drivers/f4/wwdg/hw_wwdg_register_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/wwdg/variant/hw_wwdg_register_stm32f446xx.hpp>
 #endif
 
 #endif /* !THOR_HW_WWDG_PROJECT_HPP */

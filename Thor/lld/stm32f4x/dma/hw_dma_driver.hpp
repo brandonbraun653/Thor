@@ -25,6 +25,8 @@
 
 namespace Thor::LLD::DMA
 {
+  class StreamController;
+
   /**
    *  Checks if a stream is on a given DMA controller
    *
@@ -154,8 +156,6 @@ namespace Thor::LLD::DMA
     Chimera::Status_t start( StreamX *const stream ) final override;
 
     Chimera::Status_t abort( StreamX *const stream ) final override;
-
-    //Chimera::Status_t attachWakeup( StreamX *const stream, )
 
     /**
      *  Registers a listener to a specific DMA stream

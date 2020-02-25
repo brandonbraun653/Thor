@@ -8,6 +8,9 @@
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+/* STL Includes */
+#include <array>
+
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/thread>
@@ -26,7 +29,7 @@
 
 namespace Thor::LLD::DMA
 {
-  static std::array<StreamController *, Thor::LLD::DMA::NUM_DMA_STREAMS> streamObjects;
+  static std::array<StreamController *, NUM_DMA_STREAMS> streamObjects;
 
 
   bool streamIsOnController( RegisterMap *const controller, StreamX *const stream )
@@ -90,7 +93,7 @@ namespace Thor::LLD::DMA
 
     auto result = Chimera::CommonStatusCodes::LOCKED;
 
-    if ( try_lock_for( 100 ) )
+    if ( this->try_lock_for( 100 ) )
     {
       /*------------------------------------------------
       Initialize class level variables

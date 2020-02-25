@@ -9,7 +9,9 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/dma>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_mapping.hpp>
 #include <Thor/uart>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_LLD_UART ) && defined( STM32F446xx )

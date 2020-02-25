@@ -1,9 +1,9 @@
 /********************************************************************************
  *  File Name:
- *    test_hld_system_chimera.cpp
+ *    test_lld_dma_driver.cpp
  *
  *	 Description:
- *    Tests the Chimera interface to Thor System
+ *    Tests the Thor DMA low level driver
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
@@ -13,17 +13,15 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/system>
+#include <Chimera/dma>
 
 /* Thor Includes */
-#include <Thor/system>
-#include <Thor/hld/system/hld_system_chimera.hpp>
+#include <Thor/lld/interface/dma/dma.hpp>
 
 
 TEST(PleasePass, PrettyPlease)
 {
   EXPECT_EQ(0, 0);
-
-  Chimera::System::prjSystemStartup();
+  Thor::LLD::DMA::initialize();
 }
 

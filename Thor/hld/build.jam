@@ -11,6 +11,7 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
 # ====================================================
 # Public Thor Components
 # ====================================================
+use-project /THOR/HLD/DMA     : dma ;
 use-project /THOR/HLD/GPIO    : gpio ;  
 use-project /THOR/HLD/SPI     : spi ;   
 use-project /THOR/HLD/SYSTEM  : system ;
@@ -23,6 +24,7 @@ use-project /THOR/HLD/USART   : usart ;
 # Helpful Targets
 # ====================================================
 explicit_alias INSTALL_ALL_LIB :
+  /THOR/HLD/DMA//INSTALL_LIB 
   /THOR/HLD/GPIO//INSTALL_LIB
   /THOR/HLD/SPI//INSTALL_LIB
   /THOR/HLD/SYSTEM//INSTALL_LIB
@@ -32,10 +34,11 @@ explicit_alias INSTALL_ALL_LIB :
   ;
 
 explicit_alias INSTALL_ALL_TST :
+  /THOR/HLD/DMA//INSTALL_TEST
   /THOR/HLD/GPIO//INSTALL_TEST
   /THOR/HLD/SPI//INSTALL_TEST
   /THOR/HLD/SYSTEM//INSTALL_TEST
-  /THOR/HLD/TIMER//INSTALL_TEST
+  #/THOR/HLD/TIMER//INSTALL_TEST
   /THOR/HLD/UART//INSTALL_TEST
   /THOR/HLD/USART//INSTALL_TEST
   ;

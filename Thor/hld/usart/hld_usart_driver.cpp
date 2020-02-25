@@ -21,11 +21,10 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/dma>
 #include <Thor/event>
 #include <Thor/usart>
 #include <Thor/lld/interface/usart/usart.hpp>
-
-namespace USARTDriver = Thor::LLD::USART;
 
 /*------------------------------------------------
 Static Functions
@@ -39,7 +38,7 @@ static void USART6ISRPostProcessorThread( void *argument );
 Static Data
 ------------------------------------------------*/
 /* clang-format off */
-static std::array<Thor::USART::USARTClass *, USARTDriver::NUM_USART_PERIPHS> usartClassObjects = { 
+static std::array<Thor::USART::Driver *, Thor::LLD::USART::NUM_USART_PERIPHS> usartClassObjects = { 
   nullptr,
   nullptr,
   nullptr,
@@ -47,13 +46,13 @@ static std::array<Thor::USART::USARTClass *, USARTDriver::NUM_USART_PERIPHS> usa
 };
 
 /* Post Processor Thread Handles */
-static std::array<Chimera::Threading::detail::native_thread_handle_type, USARTDriver::NUM_USART_PERIPHS> postProcessorHandle = {};
+static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::LLD::USART::NUM_USART_PERIPHS> postProcessorHandle = {};
 
 /* Post Processor Thread Wakeup Signals */
-static std::array<Chimera::Threading::BinarySemaphore, USARTDriver::NUM_USART_PERIPHS> postProcessorSignal = {};
+static std::array<Chimera::Threading::BinarySemaphore, Thor::LLD::USART::NUM_USART_PERIPHS> postProcessorSignal = {};
 
 /* Post Processor Thread Function Pointers */
-static std::array<Chimera::Function::void_func_void_ptr, USARTDriver::NUM_USART_PERIPHS> postProcessorThread = {
+static std::array<Chimera::Function::void_func_void_ptr, Thor::LLD::USART::NUM_USART_PERIPHS> postProcessorThread = {
   USART1ISRPostProcessorThread, 
   USART2ISRPostProcessorThread, 
   USART3ISRPostProcessorThread,
@@ -86,7 +85,7 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::OK;
   }
 
-  USARTClass::USARTClass() : channel( 0 ), resourceIndex( 0 ), listenerIDCount( 0 ),
+  Driver::Driver() : channel( 0 ), resourceIndex( 0 ), listenerIDCount( 0 ),
     awaitRXComplete( 1 ), awaitTXComplete( 1 ), rxLock( 1 ), txLock( 1 )
   {
     using namespace Chimera::Hardware;
@@ -94,24 +93,24 @@ namespace Thor::USART
     /*------------------------------------------------
     Register the read function pointers
     ------------------------------------------------*/
-    readFuncPtrs[ static_cast<uint8_t>( PeripheralMode::BLOCKING ) ]  = &USARTClass::readBlocking;
-    readFuncPtrs[ static_cast<uint8_t>( PeripheralMode::INTERRUPT ) ] = &USARTClass::readInterrupt;
-    readFuncPtrs[ static_cast<uint8_t>( PeripheralMode::DMA ) ]       = &USARTClass::readDMA;
+    readFuncPtrs[ static_cast<uint8_t>( PeripheralMode::BLOCKING ) ]  = &Driver::readBlocking;
+    readFuncPtrs[ static_cast<uint8_t>( PeripheralMode::INTERRUPT ) ] = &Driver::readInterrupt;
+    readFuncPtrs[ static_cast<uint8_t>( PeripheralMode::DMA ) ]       = &Driver::readDMA;
 
     /*------------------------------------------------
     Register the write function pointers
     ------------------------------------------------*/
-    writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::BLOCKING ) ]  = &USARTClass::writeBlocking;
-    writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::INTERRUPT ) ] = &USARTClass::writeInterrupt;
-    writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::DMA ) ]       = &USARTClass::writeDMA;
+    writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::BLOCKING ) ]  = &Driver::writeBlocking;
+    writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::INTERRUPT ) ] = &Driver::writeInterrupt;
+    writeFuncPtrs[ static_cast<uint8_t>( PeripheralMode::DMA ) ]       = &Driver::writeDMA;
   }
 
-  USARTClass::~USARTClass()
+  Driver::~Driver()
   {
     usartClassObjects[ channel ] = nullptr;
   }
 
-  Chimera::Status_t USARTClass::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
+  Chimera::Status_t Driver::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
   {
     using namespace Thor::LLD::USART;
 
@@ -131,9 +130,9 @@ namespace Thor::USART
     /*------------------------------------------------
     Create the hardware drivers
     ------------------------------------------------*/
-    hwDriver = std::make_unique<USARTDriver::Driver>( instance );
-    txPin = std::make_unique<Thor::GPIO::GPIOClass>();
-    rxPin = std::make_unique<Thor::GPIO::GPIOClass>();
+    hwDriver = std::make_unique<Thor::LLD::USART::Driver>( instance );
+    txPin = std::make_unique<Thor::GPIO::Driver>();
+    rxPin = std::make_unique<Thor::GPIO::Driver>();
 
     /*------------------------------------------------
     Initialize/Configure hardware drivers
@@ -152,7 +151,7 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t USARTClass::begin( const Chimera::Hardware::PeripheralMode txMode,
+  Chimera::Status_t Driver::begin( const Chimera::Hardware::PeripheralMode txMode,
                                        const Chimera::Hardware::PeripheralMode rxMode )
   {
     /*------------------------------------------------
@@ -166,7 +165,6 @@ namespace Thor::USART
     ------------------------------------------------*/
     if ( postProcessorThread[ resourceIndex ] )
     {
-      // postProcessorSignal[ resourceIndex ] = xSemaphoreCreateBinary();
       postProcessorHandle[ resourceIndex ] = {};
 
       hwDriver->attachISRWakeup( &postProcessorSignal[ resourceIndex ] );
@@ -180,12 +178,12 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t USARTClass::end()
+  Chimera::Status_t Driver::end()
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t USARTClass::configure( const Chimera::Serial::Config &config )
+  Chimera::Status_t Driver::configure( const Chimera::Serial::Config &config )
   {
     Thor::Driver::Serial::Config cfg = hwDriver->getConfiguration();
 
@@ -195,15 +193,15 @@ namespace Thor::USART
     tables fail, you might have something wrong with the mappings.
     ------------------------------------------------*/
     cfg.BaudRate   = static_cast<uint32_t>( config.baud );
-    cfg.Mode       = USARTDriver::Configuration::Modes::TX_RX;
-    cfg.Parity     = USARTDriver::ParityToRegConfig[ static_cast<size_t>( config.parity ) ];
-    cfg.StopBits   = USARTDriver::StopBitsToRegConfig[ static_cast<size_t>( config.stopBits ) ];
-    cfg.WordLength = USARTDriver::CharWidToRegConfig[ static_cast<size_t>( config.width ) ];
+    cfg.Mode       = Thor::LLD::USART::Configuration::Modes::TX_RX;
+    cfg.Parity     = Thor::LLD::USART::ParityToRegConfig[ static_cast<size_t>( config.parity ) ];
+    cfg.StopBits   = Thor::LLD::USART::StopBitsToRegConfig[ static_cast<size_t>( config.stopBits ) ];
+    cfg.WordLength = Thor::LLD::USART::CharWidToRegConfig[ static_cast<size_t>( config.width ) ];
 
     return hwDriver->init( cfg );
   }
 
-  Chimera::Status_t USARTClass::setBaud( const uint32_t baud )
+  Chimera::Status_t Driver::setBaud( const uint32_t baud )
   {
     auto currentConfig = hwDriver->getConfiguration();
     currentConfig.BaudRate = baud;
@@ -211,7 +209,7 @@ namespace Thor::USART
     return hwDriver->init( currentConfig );
   }
 
-  Chimera::Status_t USARTClass::setMode( const Chimera::Hardware::SubPeripheral periph,
+  Chimera::Status_t Driver::setMode( const Chimera::Hardware::SubPeripheral periph,
                                          const Chimera::Hardware::PeripheralMode mode )
   {
     using namespace Chimera::Hardware;
@@ -229,7 +227,7 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t USARTClass::write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
     auto error = Chimera::CommonStatusCodes::OK;
     auto iter  = static_cast<uint8_t>( txMode );
@@ -246,7 +244,7 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
     auto error = Chimera::CommonStatusCodes::OK;
     auto iter  = static_cast<uint8_t>( rxMode );
@@ -263,7 +261,7 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::flush( const Chimera::Hardware::SubPeripheral periph )
+  Chimera::Status_t Driver::flush( const Chimera::Hardware::SubPeripheral periph )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
@@ -283,9 +281,9 @@ namespace Thor::USART
     return error;
   }
 
-  void USARTClass::postISRProcessing()
+  void Driver::postISRProcessing()
   {
-    using namespace USARTDriver;
+    using namespace Thor::LLD::USART;
 
     const auto flags = hwDriver->getFlags();
     //auto event       = Chimera::Event::Trigger::INVALID;
@@ -339,7 +337,7 @@ namespace Thor::USART
     }
   }
 
-  Chimera::Status_t USARTClass::readAsync( uint8_t *const buffer, const size_t len )
+  Chimera::Status_t Driver::readAsync( uint8_t *const buffer, const size_t len )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
@@ -371,7 +369,7 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
+  Chimera::Status_t Driver::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                                  boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
                                                  const uint32_t hwBufferSize )
   {
@@ -395,7 +393,7 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::disableBuffering( const Chimera::Hardware::SubPeripheral periph )
+  Chimera::Status_t Driver::disableBuffering( const Chimera::Hardware::SubPeripheral periph )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
@@ -415,7 +413,7 @@ namespace Thor::USART
     return error;
   }
 
-  bool USARTClass::available( size_t *const bytes )
+  bool Driver::available( size_t *const bytes )
   {
     bool retval = false;
 
@@ -432,7 +430,7 @@ namespace Thor::USART
     return retval;
   }
 
-  Chimera::Status_t USARTClass::await( const Chimera::Event::Trigger event, const size_t timeout )
+  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
     using namespace Chimera::Event;
 
@@ -456,7 +454,7 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t USARTClass::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
                                        const size_t timeout )
   {
     auto result = await( event, timeout );
@@ -469,7 +467,7 @@ namespace Thor::USART
     return result;
   }
 
-  Chimera::Status_t USARTClass::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
+  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
                                                   size_t &registrationID )
   {
     registrationID = ++listenerIDCount;
@@ -480,7 +478,7 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t USARTClass::removeListener( const size_t registrationID, const size_t timeout )
+  Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
   {
     for ( auto iterator = eventListeners.begin(); iterator != eventListeners.end(); iterator++ )
     {
@@ -495,7 +493,7 @@ namespace Thor::USART
     return Chimera::CommonStatusCodes::NOT_FOUND;
   }
 
-  void USARTClass::processListeners( const Chimera::Event::Trigger event )
+  void Driver::processListeners( const Chimera::Event::Trigger event )
   {
     for ( auto &listener : eventListeners )
     {
@@ -504,13 +502,14 @@ namespace Thor::USART
         continue;
       }
 
-      Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
-      Thor::Event::notifyThread( event, listener );
-      Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
+#pragma message("I don't think this is gonna work yet")
+      // Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
+      // Thor::Event::notifyThread( event, listener );
+      // Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
     }
   }
 
-  Chimera::Status_t USARTClass::readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
 
@@ -522,7 +521,7 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::readInterrupt( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::readInterrupt( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
@@ -551,7 +550,7 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::readDMA( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::readDMA( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
@@ -580,7 +579,7 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
     using namespace Chimera::Threading;
     Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
@@ -593,7 +592,7 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::writeInterrupt( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::writeInterrupt( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 
@@ -620,7 +619,7 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t USARTClass::writeDMA( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::writeDMA( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 

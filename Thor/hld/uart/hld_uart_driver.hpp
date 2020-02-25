@@ -25,6 +25,7 @@
 #include <Chimera/thread>
 #include <Chimera/event>
 #include <Chimera/serial>
+#include <Chimera/uart>
 
 /* Thor Includes */
 #include <Thor/gpio>
@@ -38,14 +39,12 @@ namespace Thor::UART
    */
   Chimera::Status_t initialize();
 
-  class UARTClass : public Chimera::Serial::HWInterface,
-                    public Chimera::Event::ListenerInterface,
-                    public Chimera::Threading::AsyncIOInterface,
-                    public Chimera::Threading::Lockable
+  class Driver : virtual public Chimera::UART::IUART,
+                 public Chimera::Threading::Lockable
   {
   public:
-    UARTClass();
-    ~UARTClass();
+    Driver();
+    ~Driver();
 
     Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 

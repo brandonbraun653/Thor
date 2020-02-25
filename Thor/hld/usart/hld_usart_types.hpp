@@ -17,9 +17,9 @@
 
 namespace Thor::USART
 {
-  class USARTClass;
-  using USARTClass_sPtr = std::shared_ptr<USARTClass>;
-  using USARTClass_uPtr = std::unique_ptr<USARTClass>;
+  class Driver;
+  using USARTClass_sPtr = std::shared_ptr<Driver>;
+  using USARTClass_uPtr = std::unique_ptr<Driver>;
 }    // namespace Thor::UART
 
 #endif /* !THOR_USART_TYPES_HPP */

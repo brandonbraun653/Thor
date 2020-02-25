@@ -33,6 +33,7 @@ explicit_alias LIB : hld_system : : : <library>hld_system ;
 exe hld_system_test
   : [ glob test/*.cpp ]
 
+    /CHIMERA/ALGORITHM//LIB
     /CHIMERA/COMMON//LIB
     /CHIMERA/SYSTEM//LIB
     /CHIMERA/THREADING//LIB
@@ -42,9 +43,14 @@ exe hld_system_test
     /THOR/HLD/SYSTEM//LIB
     /THOR/LLD/STM32F4/FLASH//LIB
     /THOR/LLD/STM32F4/GPIO//LIB
-    /THOR/LLD/STM32F4/NVIC//LIB 
+    /THOR/LLD/STM32F4/NVIC//LIB
     /THOR/LLD/STM32F4/POWER//LIB
     /THOR/LLD/STM32F4/RCC//LIB
+    /THOR/LLD/STM32F4/SPI//LIB
+    /THOR/LLD/STM32F4/DMA//LIB
+    /THOR/LLD/STM32F4/UART//LIB
+    /THOR/LLD/STM32F4/USART//LIB
+    /THOR/LLD/STM32F4/WWDG//LIB
   
   : <link>static
     <Thor>enabled-F4

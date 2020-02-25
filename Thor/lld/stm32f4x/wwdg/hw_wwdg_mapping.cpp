@@ -1,20 +1,20 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_wwdg_mapping.cpp
  *
- *   Description:
+ *  Description:
  *    Mappings for the watchdog timer resources
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/drivers/f4/wwdg/hw_wwdg_mapping.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_types.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_mapping.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_types.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
-namespace Thor::Driver::WWDG
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_WWDG )
+namespace Thor::LLD::WWDG
 {
   /*------------------------------------------------
   Chip Specific Resources

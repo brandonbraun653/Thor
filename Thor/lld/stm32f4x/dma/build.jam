@@ -64,6 +64,9 @@ exe lld_dma_test
     /THOR/LLD/STM32F4/RCC//LIB
     /THOR/LLD/STM32F4/SPI//LIB
     /THOR/LLD/STM32F4/DMA//LIB
+    /THOR/LLD/STM32F4/UART//LIB
+    /THOR/LLD/STM32F4/USART//LIB
+    /THOR/LLD/STM32F4/WWDG//LIB
   
   : <link>static
     <Thor>enabled-F4

@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    dma_resources.hpp
+ *    hld_prv_dma_resources.hpp
  *
  *  Description:
  *    Thor resources used in the DMA driver. Chip agnostic.
  *
- *  2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -17,6 +17,7 @@
 
 /* Thor Includes */
 #include <Thor/hld/dma/hld_dma_types.hpp>
+#include <Thor/lld/interface/dma/dma_types.hpp>
 
 namespace Thor::DMA
 {

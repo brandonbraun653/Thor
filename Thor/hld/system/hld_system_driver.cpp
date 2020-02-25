@@ -70,7 +70,7 @@ namespace Chimera::System
     Thor::USART::initialize();
 #endif
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_WWDG )
     Thor::Watchdog::initializeWWDG();
 #endif 
 

@@ -27,17 +27,17 @@
 
 namespace Thor::SPI
 {
-  void initialize();
+  Chimera::Status_t initialize();
 
-  class SPIClass : virtual public Chimera::SPI::ISPI,
+  class Driver : virtual public Chimera::SPI::ISPI,
                    public Chimera::Threading::Lockable
   {
   public:
     /*------------------------------------------------
     Class Specific Functions
     ------------------------------------------------*/
-    SPIClass();
-    ~SPIClass();
+    Driver();
+    ~Driver();
 
     void postISRProcessing();
 

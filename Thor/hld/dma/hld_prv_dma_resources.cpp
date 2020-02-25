@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    dma_resources.cpp
+ *    hld_prv_dma_resources.cpp
  *
  *  Description:
  *    Thor resources used in the DMA driver
@@ -10,11 +10,14 @@
 
 /* Thor Includes */
 #include <Thor/dma>
+#include <Thor/hld/dma/hld_prv_dma_resources.hpp>
+#include <Thor/lld/interface/dma/dma.hpp>
+#include <Thor/lld/interface/dma/dma_types.hpp>
 
 namespace Thor::DMA
 {
-  using namespace Thor::LLD::DMA;
-  using namespace Thor::LLD::DMA::ConfigBitFields;
+  using namespace ::Thor::LLD::DMA;
+  using namespace ::Thor::LLD::DMA::ConfigBitFields;
 
   /* clang-format off */
   #if defined( TARGET_STM32F4 ) || defined( TARGET_STM32F7 )

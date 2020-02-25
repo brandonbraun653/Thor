@@ -85,6 +85,7 @@ use-project /THOR/LLD/STM32F4/RCC   : rcc ;
 use-project /THOR/LLD/STM32F4/SPI   : spi ;
 use-project /THOR/LLD/STM32F4/UART  : uart ;
 use-project /THOR/LLD/STM32F4/USART : usart ;
+use-project /THOR/LLD/STM32F4/WWDG  : wwdg ;
 
 # ====================================================
 # Figures out what device we are actually compiling for. By default it will
@@ -154,6 +155,7 @@ explicit_alias INSTALL_ALL_LIB :
   /THOR/LLD/STM32F4/SPI//INSTALL_LIB
   /THOR/LLD/STM32F4/UART//INSTALL_LIB 
   /THOR/LLD/STM32F4/USART//INSTALL_LIB 
+  /THOR/LLD/STM32F4/WWDG//INSTALL_LIB
   ;
 
 explicit_alias INSTALL_ALL_TST : 
@@ -166,4 +168,5 @@ explicit_alias INSTALL_ALL_TST :
   /THOR/LLD/STM32F4/SPI//INSTALL_TEST
   /THOR/LLD/STM32F4/UART//INSTALL_TEST
   /THOR/LLD/STM32F4/USART//INSTALL_TEST
+  /THOR/LLD/STM32F4/WWDG//INSTALL_TEST
   ;

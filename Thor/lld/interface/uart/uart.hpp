@@ -14,7 +14,7 @@
 #define THOR_UART_CONFIG_HPP
 
 #if defined( TARGET_STM32F4 )
-#include <Thor/drivers/f4/uart/hw_uart_driver.hpp>
+#include <Thor/lld/stm32f4x/uart/hw_uart_driver.hpp>
 #endif
 
 #endif /* !THOR_UART_CONFIG_HPP */

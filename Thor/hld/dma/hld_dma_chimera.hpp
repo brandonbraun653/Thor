@@ -1,34 +1,33 @@
 /********************************************************************************
  *  File Name:
- *    hld_uart_chimera.hpp
+ *    hld_dma_chimera.hpp
  *
  *	 Description:
- *    Chimera hooks for implementing UART
+ *    Chimera hooks for implementing DMA
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_UART_CHIMERA_HOOKS_HPP
-#define THOR_UART_CHIMERA_HOOKS_HPP
+#ifndef THOR_DMA_CHIMERA_HOOKS_HPP
+#define THOR_DMA_CHIMERA_HOOKS_HPP
 
 /* STL Includes */
 #include <memory>
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/uart>
+#include <Chimera/dma>
 
-namespace Chimera::UART::Backend
+namespace Chimera::DMA::Backend
 {
   Chimera::Status_t initialize();
 
   Chimera::Status_t reset();
 
-  Chimera::UART::UART_sPtr create_shared_ptr();
+  Chimera::DMA::DMA_sPtr create_shared_ptr();
 
-  Chimera::UART::UART_uPtr create_unique_ptr();
-}    // namespace Chimera::UART::Backend
+  Chimera::DMA::DMA_uPtr create_unique_ptr();
+}    // namespace Chimera::DMA::Backend
 
-#endif /* !THOR_UART_CHIMERA_HOOKS_HPP */
-
+#endif /* !THOR_DMA_CHIMERA_HOOKS_HPP */

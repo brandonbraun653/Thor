@@ -24,7 +24,7 @@ namespace Thor::DMA
 {
   Chimera::Status_t initialize();
 
-  class DMAClass : public Chimera::DMA::HWInterface, public Chimera::Threading::Lockable
+  class DMAClass : virtual public Chimera::DMA::IDMA, public Chimera::Threading::Lockable
   {
   public:
     ~DMAClass();

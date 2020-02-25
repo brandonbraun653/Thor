@@ -1,30 +1,29 @@
 /********************************************************************************
-  *  File Name:
-  *    hw_wwdg_register_stm32f446xx.cpp
-  *
-  *  Description:
-  *    Explicit STM32F446xx WWDG data and routines
-  *
-  *  2019 | Brandon Braun | brandonbraun653@gmail.com
-  ********************************************************************************/
+ *  File Name:
+ *    hw_wwdg_register_stm32f446xx.cpp
+ *
+ *  Description:
+ *    Explicit STM32F446xx WWDG data and routines
+ *
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_driver.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_mapping.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_register_stm32f446xx.hpp>
-#include <Thor/drivers/f4/wwdg/hw_wwdg_types.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_driver.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_mapping.hpp>
+#include <Thor/lld/stm32f4x/wwdg/variant/hw_wwdg_register_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_WWDG == 1 ) && defined( STM32F446xx )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_WWDG ) && defined( STM32F446xx )
 
-namespace Thor::Driver::WWDG
+namespace Thor::LLD::WWDG
 {
 #if defined( EMBEDDED )
-  RegisterMap * WWDG1_PERIPH = reinterpret_cast<RegisterMap *>( WWDG1_BASE_ADDR );
+  RegisterMap *WWDG1_PERIPH = reinterpret_cast<RegisterMap *>( WWDG1_BASE_ADDR );
 
   Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex = {
-    { reinterpret_cast<std::uintptr_t>( WWDG1_PERIPH ), WWDG1_RESOURCE_INDEX } 
+    { reinterpret_cast<std::uintptr_t>( WWDG1_PERIPH ), WWDG1_RESOURCE_INDEX }
   };
 
 #elif defined( _SIM )
@@ -53,7 +52,7 @@ namespace Thor::Driver::WWDG
 
 #endif
   }
-}    // namespace Thor::Driver::WWDG
+}    // namespace Thor::LLD::WWDG
 
 namespace Thor::LLD::RCC::LookupTables
 {
@@ -67,13 +66,13 @@ namespace Thor::LLD::RCC::LookupTables
   Configuration::ClockType_t WWDG_SourceClock[ wwdgTableSize ];
 
   const PCC WWDGLookup = {
-    WWDG_ClockConfig, WWDG_ClockConfigLP, WWDG_ResetConfig, WWDG_SourceClock, &Thor::Driver::WWDG::InstanceToResourceIndex,
+    WWDG_ClockConfig, WWDG_ClockConfigLP, WWDG_ResetConfig, WWDG_SourceClock, &Thor::LLD::WWDG::InstanceToResourceIndex,
     wwdgTableSize
   };
 
   void WWDGInit()
   {
-    using namespace Thor::Driver::WWDG;
+    using namespace Thor::LLD::WWDG;
 
     /*------------------------------------------------
     WWDG clock enable register access lookup table

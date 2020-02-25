@@ -1,9 +1,9 @@
 /********************************************************************************
  *  File Name:
- *    hld_usart_chimera.cpp
+ *    hld_gpio_chimera.cpp
  *
  *	 Description:
- *    Implementation of Chimera USART driver hooks
+ *    Implementation of Chimera DMA driver hooks
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -13,16 +13,16 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/usart>
+#include <Chimera/dma>
 
 /* Thor Includes */
-#include <Thor/usart>
+#include <Thor/dma>
 
-namespace Chimera::USART::Backend
+namespace Chimera::DMA::Backend
 {
   Chimera::Status_t initialize()
   {
-    return Thor::USART::initialize();
+    return Thor::DMA::initialize();
   }
 
   Chimera::Status_t reset()
@@ -30,19 +30,20 @@ namespace Chimera::USART::Backend
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::USART::USART_sPtr create_shared_ptr()
+  Chimera::DMA::DMA_sPtr create_shared_ptr()
   {
-    return std::make_shared<Thor::USART::Driver>();
+    return Thor::DMA::DMAClass::get();
   }
 
-  Chimera::USART::USART_uPtr create_unique_ptr()
+  Chimera::DMA::DMA_uPtr create_unique_ptr()
   {
-    return std::make_unique<Thor::USART::Driver>();
+    // This is not allowed because Thor DMA is a singleton
+    return nullptr;
   }
 
-  Chimera::Status_t registerDriver( Chimera::USART::Backend::DriverConfig &registry )
+  Chimera::Status_t registerDriver( Chimera::DMA::Backend::DriverConfig &registry )
   {
-#if defined( THOR_HLD_USART )
+#if defined( THOR_HLD_DMA )
     registry.isSupported  = true;
     registry.createShared = create_shared_ptr;
     registry.createUnique = create_unique_ptr;
@@ -56,6 +57,6 @@ namespace Chimera::USART::Backend
     registry.initialize   = nullptr;
     registry.reset        = nullptr;
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-#endif /* THOR_DRIVER_USART == 1*/
+#endif /* THOR_HLD_DMA */
   }
-}    // namespace Chimera::USART::Backend
+}    // namespace Chimera::DMA::Backend

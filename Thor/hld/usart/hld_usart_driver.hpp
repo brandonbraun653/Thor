@@ -26,9 +26,11 @@
 #include <Chimera/thread>
 #include <Chimera/event>
 #include <Chimera/serial>
+#include <Chimera/usart>
 
 /* Thor Includes */
 #include <Thor/gpio>
+#include <Thor/lld/interface/usart/usart.hpp>
 
 namespace Thor::USART
 {
@@ -39,11 +41,12 @@ namespace Thor::USART
    */
   Chimera::Status_t initialize();
 
-  class USARTClass : virtual public Chimera::Serial::ISerial
+  class Driver : virtual public Chimera::USART::IUSART,
+                 public Chimera::Threading::Lockable
   {
   public:
-    USARTClass();
-    ~USARTClass();
+    Driver();
+    ~Driver();
 
     Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
 
@@ -88,8 +91,8 @@ namespace Thor::USART
 
   private:
     Thor::LLD::USART::Driver_uPtr hwDriver;
-    Thor::GPIO::GPIOClass_uPtr rxPin;
-    Thor::GPIO::GPIOClass_uPtr txPin;
+    Thor::GPIO::Driver_uPtr rxPin;
+    Thor::GPIO::Driver_uPtr txPin;
 
     uint8_t channel;      /**< Hardware channel associated with this driver */
     size_t resourceIndex; /**< Lookup table index for USART resources */
@@ -111,19 +114,19 @@ namespace Thor::USART
 
     void processListeners( const Chimera::Event::Trigger event );
 
-    std::array<Chimera::Status_t ( USARTClass::* )( uint8_t *const, const size_t, const uint32_t ), 3> readFuncPtrs;
+    std::array<Chimera::Status_t (Thor::USART::Driver::*)( uint8_t *const, const size_t, const uint32_t ), 3> readFuncPtrs;
     Chimera::Status_t readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
     Chimera::Status_t readInterrupt( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
     Chimera::Status_t readDMA( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
 
-    std::array<Chimera::Status_t ( USARTClass::* )( const uint8_t *const, const size_t, const uint32_t ), 3> writeFuncPtrs;
+    std::array<Chimera::Status_t (Thor::USART::Driver::*)( const uint8_t *const, const size_t, const uint32_t ), 3> writeFuncPtrs;
     Chimera::Status_t writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
     Chimera::Status_t writeInterrupt( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
     Chimera::Status_t writeDMA( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS );
   };
 
-  using USARTClass_sPtr = std::shared_ptr<USARTClass>;
-  using USARTClass_uPtr = std::unique_ptr<USARTClass>;
+  using USARTClass_sPtr = std::shared_ptr<Driver>;
+  using USARTClass_uPtr = std::unique_ptr<Driver>;
 }    // namespace Thor::USART
 
 #endif /* !THOR_USART_HPP */
