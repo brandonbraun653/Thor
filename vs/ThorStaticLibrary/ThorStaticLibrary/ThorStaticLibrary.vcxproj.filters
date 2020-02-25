@@ -1,130 +1,296 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source files">
-      <UniqueIdentifier>{ffd52710-29c8-4d75-9e19-35f782078762}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Resource files">
-      <UniqueIdentifier>{bed7d326-1c5b-4eb2-8452-30c7ac4deea1}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
-    </Filter>
-    <Filter Include="Source files\Device-specific files">
-      <UniqueIdentifier>{8f5b646b-1baf-469b-a785-1b45f66204f1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="VisualGDB settings">
       <UniqueIdentifier>{7223d921-cee8-481e-a6dd-ca7968edc0b9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor">
-      <UniqueIdentifier>{8780aefe-fe79-40e1-a253-e443cdb3b6a9}</UniqueIdentifier>
+    <Filter Include="hld">
+      <UniqueIdentifier>{c4d5a53e-5042-42cf-b760-fb9473ad1755}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\config">
-      <UniqueIdentifier>{3f730396-d4e0-4109-893e-5c22fa2cad6f}</UniqueIdentifier>
+    <Filter Include="hld\clock">
+      <UniqueIdentifier>{dc975f26-9315-4b0c-bfef-42002fa39ef9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\config\chimera">
-      <UniqueIdentifier>{20fef167-e0ba-4063-b30e-1ed16d32cc71}</UniqueIdentifier>
+    <Filter Include="hld\common">
+      <UniqueIdentifier>{af9497f4-9328-41e2-bd75-42b661440dff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\config\freertos">
-      <UniqueIdentifier>{e446e610-53b6-4f6e-bb25-8ce78ae2222c}</UniqueIdentifier>
+    <Filter Include="hld\crc">
+      <UniqueIdentifier>{4547a643-5c53-48b2-a5d8-c38aa31318ef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\config\templates">
-      <UniqueIdentifier>{6edc72ff-b615-4bb6-9864-001f05c08c2f}</UniqueIdentifier>
+    <Filter Include="hld\dma">
+      <UniqueIdentifier>{cd2f65e1-3ba7-414d-9109-e22284054b43}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\defaults">
-      <UniqueIdentifier>{613683d4-a5ec-4934-965f-214ae0b25ee7}</UniqueIdentifier>
+    <Filter Include="hld\dma\test">
+      <UniqueIdentifier>{7a5f0e9d-0d50-469a-8871-53bbb82166af}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\definitions">
-      <UniqueIdentifier>{e78ba05b-e960-46a4-a850-ec11bfae3d22}</UniqueIdentifier>
+    <Filter Include="hld\exti">
+      <UniqueIdentifier>{f520fa42-735e-4550-8e0a-7bbb355fcbee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers">
-      <UniqueIdentifier>{ed04af8a-bfc2-4ca9-8538-6dac02a22e1c}</UniqueIdentifier>
+    <Filter Include="hld\flash">
+      <UniqueIdentifier>{e96050cd-f126-41c2-a78d-aeff68f04084}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\common">
-      <UniqueIdentifier>{5699623f-a9cf-4b66-ba20-806066dbaafa}</UniqueIdentifier>
+    <Filter Include="hld\gpio">
+      <UniqueIdentifier>{d99f3776-7abf-4d1e-99b5-3e149a68ac33}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\common\cmsis">
-      <UniqueIdentifier>{fb43540d-7457-4b75-ba4c-9809929e5ad0}</UniqueIdentifier>
+    <Filter Include="hld\gpio\test">
+      <UniqueIdentifier>{867b8768-e3b1-474b-8b0c-b645f39a04c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\common\cmsis\core">
-      <UniqueIdentifier>{82bf77c8-e1ac-49f0-ab07-877511c6f980}</UniqueIdentifier>
+    <Filter Include="hld\interrupt">
+      <UniqueIdentifier>{a0f09165-7827-4e7c-bb2d-7ccef0ff9f39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\common\cmsis\core\include">
-      <UniqueIdentifier>{6a5239d9-5ff3-429f-a324-8c1f88716754}</UniqueIdentifier>
+    <Filter Include="hld\power">
+      <UniqueIdentifier>{f4fda81c-fcc0-40cb-ad76-d38455dc866f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\common\cortex-m4">
-      <UniqueIdentifier>{8ac4103f-396d-41c4-8ebd-d810a994570f}</UniqueIdentifier>
+    <Filter Include="hld\spi">
+      <UniqueIdentifier>{1039975c-e6e2-47c1-a262-879e8a6b0841}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\common\cortex-m7">
-      <UniqueIdentifier>{c4e1609f-7caa-4793-a1c2-d83a81addb0e}</UniqueIdentifier>
+    <Filter Include="hld\spi\test">
+      <UniqueIdentifier>{3ed452ee-dc40-449b-831a-9388bb0b3f2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\common\interrupts">
-      <UniqueIdentifier>{7de8dd9f-5bd5-4c27-a41e-2235bb893d6a}</UniqueIdentifier>
+    <Filter Include="hld\sram">
+      <UniqueIdentifier>{5bc2eb1c-0cfb-4ac6-9ef7-1cf95d0b6fe6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\common\mapping">
-      <UniqueIdentifier>{f9387d0d-5de9-41ef-bac2-d0a510dc5d0a}</UniqueIdentifier>
+    <Filter Include="hld\system">
+      <UniqueIdentifier>{7b43c64e-ef3b-4850-9564-f9b49036b9e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\common\types">
-      <UniqueIdentifier>{ea36eddb-715d-4fa3-8bab-fe9c915b0b29}</UniqueIdentifier>
+    <Filter Include="hld\system\test">
+      <UniqueIdentifier>{00689d5a-b6ca-4712-b95f-3c4e040f854b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4">
-      <UniqueIdentifier>{31b640e5-b7d8-42bc-93cf-dc98a3a073a1}</UniqueIdentifier>
+    <Filter Include="hld\timer">
+      <UniqueIdentifier>{d57645dc-885e-4ea2-85c3-47afb7cb132e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\common">
-      <UniqueIdentifier>{05ad080a-59aa-4ce0-8030-605103ea5e62}</UniqueIdentifier>
+    <Filter Include="hld\uart">
+      <UniqueIdentifier>{56e03ebe-71fa-4a0b-814d-34f042db8b1a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\dma">
-      <UniqueIdentifier>{dc022596-2440-42a8-8966-5026c05edba1}</UniqueIdentifier>
+    <Filter Include="hld\uart\test">
+      <UniqueIdentifier>{fec7441d-6e02-4d8e-bd3e-1d530b6fffa7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\flash">
-      <UniqueIdentifier>{a6edc290-1c23-4d64-94e4-117fe17edff8}</UniqueIdentifier>
+    <Filter Include="hld\usart">
+      <UniqueIdentifier>{7995e876-46b9-4e0f-b9bf-30b71116765c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\gpio">
-      <UniqueIdentifier>{072f99a7-4397-4e35-932f-4b2230b899eb}</UniqueIdentifier>
+    <Filter Include="hld\usart\test">
+      <UniqueIdentifier>{b1e0e27a-766f-4409-b7c8-76d8d8705380}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\interrupt">
-      <UniqueIdentifier>{42e405e1-6ea5-41b9-a8b4-6ad42a2d7f5e}</UniqueIdentifier>
+    <Filter Include="hld\watchdog">
+      <UniqueIdentifier>{3f7f8e48-27c9-452b-9d5b-4ce00877e4c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\iwdg">
-      <UniqueIdentifier>{d526da8e-6843-4d0b-8db0-3ca3feda4204}</UniqueIdentifier>
+    <Filter Include="config">
+      <UniqueIdentifier>{571aecee-4679-4e1a-bf7b-78d3e8400373}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\nvic">
-      <UniqueIdentifier>{8c58098e-5006-4954-a6fe-c03a0ee10231}</UniqueIdentifier>
+    <Filter Include="config\boost">
+      <UniqueIdentifier>{8daba95c-7683-42e0-89b4-795239ca8ecb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\power">
-      <UniqueIdentifier>{20e64b0f-6ad8-4578-bf83-f2d3540ea868}</UniqueIdentifier>
+    <Filter Include="config\chimera">
+      <UniqueIdentifier>{ceea84d0-2056-4fc2-8549-9e66dd992d3a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\rcc">
-      <UniqueIdentifier>{3d01fa0a-c4f2-4b3f-81e7-63033c81df79}</UniqueIdentifier>
+    <Filter Include="config\freertos">
+      <UniqueIdentifier>{388a75c6-ab4a-493a-a63e-08bb30d409e0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\spi">
-      <UniqueIdentifier>{c53d78c1-2c3a-4a7f-9ebd-5e92881606fa}</UniqueIdentifier>
+    <Filter Include="config\templates">
+      <UniqueIdentifier>{e371bdc0-d5e6-467a-ad4c-abcfe9a65b78}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\startup">
-      <UniqueIdentifier>{8164dfbc-f6ad-43b0-889d-559d76db215b}</UniqueIdentifier>
+    <Filter Include="config\simulator">
+      <UniqueIdentifier>{e72dd34b-dc79-4357-add0-9f36723b5cde}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\system">
-      <UniqueIdentifier>{8551595d-d1c1-411a-bcd7-8544bbc95d06}</UniqueIdentifier>
+    <Filter Include="lld">
+      <UniqueIdentifier>{0c9769c2-2f71-4c16-9ed7-6fba294c1031}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\uart">
-      <UniqueIdentifier>{91e776ce-cb15-448e-9243-044986f757ca}</UniqueIdentifier>
+    <Filter Include="lld\common">
+      <UniqueIdentifier>{1b3db6f9-d49d-4cc7-816e-2d0f46730661}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\usart">
-      <UniqueIdentifier>{3d799958-61ae-4e96-b4ed-914d0a2e9ade}</UniqueIdentifier>
+    <Filter Include="lld\common\cmsis">
+      <UniqueIdentifier>{deadc4d0-4dff-4014-b36a-dbcb41192d70}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\wwdg">
-      <UniqueIdentifier>{4f05770b-6683-43dc-ab58-4507c78f8a9d}</UniqueIdentifier>
+    <Filter Include="lld\common\cmsis\core">
+      <UniqueIdentifier>{1ebbc956-1473-4b6c-92c3-87dbc677f9e0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\model">
-      <UniqueIdentifier>{97f65408-2501-4096-ad9e-966a08548ecc}</UniqueIdentifier>
+    <Filter Include="lld\common\cmsis\core\include">
+      <UniqueIdentifier>{d9131c63-f800-4040-b97a-c1919be7b416}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\resources">
-      <UniqueIdentifier>{bfb4a2d6-67db-4eb9-b24a-49453da78ca6}</UniqueIdentifier>
+    <Filter Include="lld\common\cortex-m4">
+      <UniqueIdentifier>{4cc3af33-e61a-46a7-827f-125cebd4347a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\types">
-      <UniqueIdentifier>{2a921d0a-f4cc-488c-9e06-a9f05a7a3602}</UniqueIdentifier>
+    <Filter Include="lld\common\cortex-m7">
+      <UniqueIdentifier>{dec2769f-6eb0-4362-ab20-26dff51f67a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Thor\drivers\f4\linker">
-      <UniqueIdentifier>{cdc2f2c6-c1de-42c8-a010-c796f49e702a}</UniqueIdentifier>
+    <Filter Include="lld\common\interrupts">
+      <UniqueIdentifier>{33a3db5b-374c-4806-9513-61d36ff01609}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\common\mapping">
+      <UniqueIdentifier>{5a1672bb-8aeb-4a7c-9c40-a0c9a6f33857}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface">
+      <UniqueIdentifier>{eafaf95c-ee6c-4458-9224-689c7a6caac0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\dma">
+      <UniqueIdentifier>{8c345646-a5d8-461a-912e-adfeca5c513c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\flash">
+      <UniqueIdentifier>{b518dd6f-02d1-4835-9a31-66c030019071}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\gpio">
+      <UniqueIdentifier>{64593b4b-2e28-42d8-b7e6-59ebce939b95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\interrupt">
+      <UniqueIdentifier>{c5a9550a-76a3-4fff-ad5d-fc144e7132a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\nvic">
+      <UniqueIdentifier>{a0cdd972-87b7-44ba-ad7d-2c808140a4ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\power">
+      <UniqueIdentifier>{9df528c2-5f9b-4e12-9758-e3344d1d0b68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\rcc">
+      <UniqueIdentifier>{38c4fa71-33a8-4811-a73e-2de62ceff8e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\serial">
+      <UniqueIdentifier>{b6df1aaf-056b-44e4-bcb6-def56638e460}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\spi">
+      <UniqueIdentifier>{18b05f34-3076-4cca-9d3d-4e8a590cca46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\startup">
+      <UniqueIdentifier>{56ac6644-5c76-4c2a-8643-20c4b45fc2d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\uart">
+      <UniqueIdentifier>{3c6413fa-6d18-4cb6-b401-15a52e5e63fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\usart">
+      <UniqueIdentifier>{4d0eebd3-fc32-4533-8b39-510089b5d4f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\watchdog">
+      <UniqueIdentifier>{ddd3d425-7654-41dd-ba25-039cc19ebdb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x">
+      <UniqueIdentifier>{aece04d8-4217-4c68-b98b-023e37e713ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\common">
+      <UniqueIdentifier>{18a482c2-a66b-466e-9835-8b7fd532b303}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\dma">
+      <UniqueIdentifier>{8e297310-4284-47bd-9b74-24c15489a322}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\dma\test">
+      <UniqueIdentifier>{838bcdb1-b886-4e45-b1b4-58610e1bc93e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\dma\variant">
+      <UniqueIdentifier>{10f08f77-9f1b-44fc-935a-1164aeb74bb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\flash">
+      <UniqueIdentifier>{a612df6e-6320-442a-8a8a-2b18942f152d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\flash\test">
+      <UniqueIdentifier>{a89b8b7d-37a6-4500-8f4b-4fe05ab29330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\flash\variant">
+      <UniqueIdentifier>{581623f4-24d0-467f-8fe7-b722dfe74deb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\gpio">
+      <UniqueIdentifier>{3c4dfeea-b6c1-49db-a27f-7224eecd6e04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\gpio\test">
+      <UniqueIdentifier>{cfedfdb0-bbf6-43d4-8497-859d42d21bb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\gpio\variant">
+      <UniqueIdentifier>{a41d103e-eed9-4030-bac4-d7eccd8014f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\interrupt">
+      <UniqueIdentifier>{b9181dab-57f4-4fe3-a4e6-d7e88d6fefea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\interrupt\variant">
+      <UniqueIdentifier>{49891465-f684-420d-aa97-07ecf1dfaaa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\iwdg">
+      <UniqueIdentifier>{c9f4049d-f0de-4c8b-bb1e-4341ab7d31bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\iwdg\variant">
+      <UniqueIdentifier>{fe14f6e5-a0ce-4f81-8fa4-27faa19c990e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\nvic">
+      <UniqueIdentifier>{31887560-b56f-46a4-8b6f-8222bcc50ed2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\nvic\test">
+      <UniqueIdentifier>{e1ba97b1-6516-4e6e-a9b2-9c2c2a3343ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\nvic\variant">
+      <UniqueIdentifier>{8ae03ced-c256-441d-83d2-18d1233762ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\power">
+      <UniqueIdentifier>{1cfb7317-6164-4635-bfd0-7adda15e6e5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\power\test">
+      <UniqueIdentifier>{d12f4784-a362-4bcf-beea-e8e67d626f05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\power\variant">
+      <UniqueIdentifier>{66752c21-a907-4a6c-ae63-052807f59b76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\rcc">
+      <UniqueIdentifier>{e69942bb-b77c-4dd5-b2bd-1bae02ff4d79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\rcc\config">
+      <UniqueIdentifier>{105fc7f5-5c67-452b-b5ff-591afa4a3f3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\rcc\test">
+      <UniqueIdentifier>{98422eb1-d073-4e91-93d8-6df226cfe536}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\rcc\variant">
+      <UniqueIdentifier>{fd8887f5-e289-4773-b27f-2b83fdda8d53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\spi">
+      <UniqueIdentifier>{2b741c1d-5021-4844-9245-d59cbf6350af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\spi\test">
+      <UniqueIdentifier>{cfda359a-97ec-444c-ac16-f08d3f2d0920}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\spi\variant">
+      <UniqueIdentifier>{814f5277-7019-4b34-b757-c634e5ba5403}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\startup">
+      <UniqueIdentifier>{6d95abb7-4540-47a1-9358-72e78f781d1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\system">
+      <UniqueIdentifier>{4c18fa9f-6aa0-4087-9636-4ccf4e8fc1fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\system\variant">
+      <UniqueIdentifier>{2d650f5f-f369-4364-a71d-a4be182f5ee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\timer">
+      <UniqueIdentifier>{a5f09e3d-9996-4cad-b422-22e6df9a19fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\timer\test">
+      <UniqueIdentifier>{2a4a6056-86a6-4ad9-a8fe-bc95df65b415}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\timer\variant">
+      <UniqueIdentifier>{190f9df4-f68d-460f-928f-87ef4b2ecf74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\uart">
+      <UniqueIdentifier>{71d2d627-2a20-430f-9d76-706c6f4592fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\uart\test">
+      <UniqueIdentifier>{5fccdb14-ff6c-4c8b-afcf-e1db26481af4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\uart\variant">
+      <UniqueIdentifier>{8c2990b1-64b2-47e7-bc38-280b20c340d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\usart">
+      <UniqueIdentifier>{35a58d71-84a2-4d96-a8ea-df32a8cf04b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\usart\test">
+      <UniqueIdentifier>{bb60c346-9ab5-4d4e-9b25-8febcaf028a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\usart\variant">
+      <UniqueIdentifier>{e3673670-ba9a-4b49-a0d3-9274a85870c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\wwdg">
+      <UniqueIdentifier>{acecfb6e-8696-4d23-a0f9-55f05a1f563f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\wwdg\test">
+      <UniqueIdentifier>{ee2d5931-5329-47e6-9fe1-c792418b45d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32f4x\wwdg\variant">
+      <UniqueIdentifier>{1e487ace-187d-45c6-9dd8-289372a7af8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="config\hardware">
+      <UniqueIdentifier>{8f467ed2-0128-4a72-907e-c0d9d3a9d60c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -137,648 +303,776 @@
     <None Include="stm32.xml">
       <Filter>VisualGDB settings</Filter>
     </None>
-    <ClCompile Include="..\..\..\Thor\sram.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_boost_stub.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_core.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_crc.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_custom_dma.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_custom_gpio.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_custom_spi.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_custom_uart.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_custom_usart.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_custom_watchdog.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_event.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_exceptions.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_exti.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_flash.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_gpio.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_power.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_print.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_serial.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_spi.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_sram.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_stm32hal_uart.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_stm32hal_usart.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\thor_system.cpp">
-      <Filter>Thor</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\boostStub.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\clock\clock_types.hpp">
+      <Filter>hld\clock</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\config.hpp">
-      <Filter>Thor</Filter>
+    <ClCompile Include="..\..\..\Thor\hld\common\thor.cpp">
+      <Filter>hld\common</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\common\macro.hpp">
+      <Filter>hld\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\core.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\common\preprocessor.hpp">
+      <Filter>hld\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\crc.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\common\thor.hpp">
+      <Filter>hld\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\dma.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\crc\crc.hpp">
+      <Filter>hld\crc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\ethernet.hpp">
-      <Filter>Thor</Filter>
+    <ClCompile Include="..\..\..\Thor\hld\dma\hld_dma_chimera.cpp">
+      <Filter>hld\dma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\dma\hld_dma_driver.cpp">
+      <Filter>hld\dma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\dma\hld_prv_dma_resources.cpp">
+      <Filter>hld\dma</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\dma\hld_dma_chimera.hpp">
+      <Filter>hld\dma</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\event.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\dma\hld_dma_driver.hpp">
+      <Filter>hld\dma</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\exceptions.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\dma\hld_dma_intf.hpp">
+      <Filter>hld\dma</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\exti.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\dma\hld_dma_types.hpp">
+      <Filter>hld\dma</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\flash.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\dma\hld_prv_dma_resources.hpp">
+      <Filter>hld\dma</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\gpio.hpp">
-      <Filter>Thor</Filter>
+    <ClCompile Include="..\..\..\Thor\hld\dma\test\test_entry.cpp">
+      <Filter>hld\dma\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\dma\test\test_hld_dma_chimera.cpp">
+      <Filter>hld\dma\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\dma\test\test_hld_dma_driver.cpp">
+      <Filter>hld\dma\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\exti\thor_exti.cpp">
+      <Filter>hld\exti</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\exti\exti.hpp">
+      <Filter>hld\exti</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\headers.hpp">
-      <Filter>Thor</Filter>
+    <ClCompile Include="..\..\..\Thor\hld\flash\thor_flash.cpp">
+      <Filter>hld\flash</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\flash\flash.hpp">
+      <Filter>hld\flash</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\macro.hpp">
-      <Filter>Thor</Filter>
+    <ClCompile Include="..\..\..\Thor\hld\gpio\hld_gpio_chimera.cpp">
+      <Filter>hld\gpio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\gpio\hld_gpio_driver.cpp">
+      <Filter>hld\gpio</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_chimera.hpp">
+      <Filter>hld\gpio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\nucleo.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_driver.hpp">
+      <Filter>hld\gpio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\power.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_intf.hpp">
+      <Filter>hld\gpio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\preprocessor.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_types.hpp">
+      <Filter>hld\gpio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\print.hpp">
-      <Filter>Thor</Filter>
+    <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_entry.cpp">
+      <Filter>hld\gpio\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_hld_gpio_chimera.cpp">
+      <Filter>hld\gpio\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_hld_gpio_driver.cpp">
+      <Filter>hld\gpio\test</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\interrupt\hld_interrupt_definitions.hpp">
+      <Filter>hld\interrupt</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\serial.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\interrupt\hld_interrupt_types.hpp">
+      <Filter>hld\interrupt</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\spi.hpp">
-      <Filter>Thor</Filter>
+    <ClCompile Include="..\..\..\Thor\hld\power\thor_power.cpp">
+      <Filter>hld\power</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\power\power.hpp">
+      <Filter>hld\power</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\sram.hpp">
-      <Filter>Thor</Filter>
+    <ClCompile Include="..\..\..\Thor\hld\spi\hld_spi_chimera.cpp">
+      <Filter>hld\spi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\spi\hld_spi_driver.cpp">
+      <Filter>hld\spi</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\spi\hld_spi_chimera.hpp">
+      <Filter>hld\spi</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\system.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\spi\hld_spi_driver.hpp">
+      <Filter>hld\spi</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\thor.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\spi\hld_spi_types.hpp">
+      <Filter>hld\spi</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\uart.hpp">
-      <Filter>Thor</Filter>
+    <ClInclude Include="..\..\..\Thor\hld\spi\spi_definitions.hpp">
+      <Filter>hld\spi</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\usart.hpp">
-      <Filter>Thor</Filter>
+    <ClCompile Include="..\..\..\Thor\hld\spi\test\test_entry.cpp">
+      <Filter>hld\spi\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\spi\test\test_hld_spi_chimera.cpp">
+      <Filter>hld\spi\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\sram\sram.cpp">
+      <Filter>hld\sram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\sram\thor_sram.cpp">
+      <Filter>hld\sram</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\sram\sram.hpp">
+      <Filter>hld\sram</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\watchdog.hpp">
-      <Filter>Thor</Filter>
+    <ClCompile Include="..\..\..\Thor\hld\system\hld_system_chimera.cpp">
+      <Filter>hld\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\system\hld_system_driver.cpp">
+      <Filter>hld\system</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\system\hld_system_chimera.hpp">
+      <Filter>hld\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\system\hld_system_driver.hpp">
+      <Filter>hld\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\system\hld_system_intf.hpp">
+      <Filter>hld\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\system\hld_system_types.hpp">
+      <Filter>hld\system</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\hld\system\test\test_entry.cpp">
+      <Filter>hld\system\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\system\test\test_hld_system_chimera.cpp">
+      <Filter>hld\system\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\system\test\test_hld_system_driver.cpp">
+      <Filter>hld\system\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_chimera.cpp">
+      <Filter>hld\timer</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_chimera.hpp">
+      <Filter>hld\timer</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\hld\uart\hld_uart_chimera.cpp">
+      <Filter>hld\uart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\uart\hld_uart_driver.cpp">
+      <Filter>hld\uart</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_chimera.hpp">
+      <Filter>hld\uart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_driver.hpp">
+      <Filter>hld\uart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_intf.hpp">
+      <Filter>hld\uart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_types.hpp">
+      <Filter>hld\uart</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\hld\uart\test\test_entry.cpp">
+      <Filter>hld\uart\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\uart\test\test_hld_uart_chimera.cpp">
+      <Filter>hld\uart\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\uart\test\test_hld_uart_driver.cpp">
+      <Filter>hld\uart\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\usart\hld_usart_chimera.cpp">
+      <Filter>hld\usart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\usart\hld_usart_driver.cpp">
+      <Filter>hld\usart</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\usart\hld_usart_chimera.hpp">
+      <Filter>hld\usart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\usart\hld_usart_driver.hpp">
+      <Filter>hld\usart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\usart\hld_usart_intf.hpp">
+      <Filter>hld\usart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\usart\hld_usart_types.hpp">
+      <Filter>hld\usart</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\hld\usart\test\test_entry.cpp">
+      <Filter>hld\usart\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\usart\test\test_hld_usart_chimera.cpp">
+      <Filter>hld\usart\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\usart\test\test_hld_usart_driver.cpp">
+      <Filter>hld\usart\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\watchdog\thor_custom_watchdog.cpp">
+      <Filter>hld\watchdog</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\hld\watchdog\watchdog.hpp">
+      <Filter>hld\watchdog</Filter>
+    </ClInclude>
+    <None Include="..\..\..\Thor\dma" />
+    <None Include="..\..\..\Thor\event" />
+    <None Include="..\..\..\Thor\gpio" />
+    <None Include="..\..\..\Thor\interrupt" />
+    <None Include="..\..\..\Thor\nvic" />
+    <None Include="..\..\..\Thor\spi" />
+    <None Include="..\..\..\Thor\system" />
+    <None Include="..\..\..\Thor\timer" />
+    <None Include="..\..\..\Thor\uart" />
+    <None Include="..\..\..\Thor\usart" />
+    <None Include="..\..\..\Thor\hld\build.jam">
+      <Filter>hld</Filter>
+    </None>
+    <None Include="..\..\..\Thor\cfg" />
+    <ClCompile Include="..\..\..\Thor\lld\common\thor_exceptions.cpp">
+      <Filter>lld\common</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\common\exceptions.hpp">
+      <Filter>lld\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\cmsis\configuration.hpp">
+      <Filter>lld\common\cmsis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\cmsis\core\include\cmsis_compiler.h">
+      <Filter>lld\common\cmsis\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\cmsis\core\include\cmsis_gcc.h">
+      <Filter>lld\common\cmsis\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\cmsis\core\include\cmsis_version.h">
+      <Filter>lld\common\cmsis\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\cmsis\core\include\cmsis_windows.h">
+      <Filter>lld\common\cmsis\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\cmsis\core\include\core_cm4.h">
+      <Filter>lld\common\cmsis\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\cmsis\core\include\mpu_armv7.h">
+      <Filter>lld\common\cmsis\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\cortex-m4\register.hpp">
+      <Filter>lld\common\cortex-m4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\cortex-m4\utilities.hpp">
+      <Filter>lld\common\cortex-m4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\cortex-m7\register.hpp">
+      <Filter>lld\common\cortex-m7</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\interrupts\dma_interrupt_vectors.hpp">
+      <Filter>lld\common\interrupts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\interrupts\spi_interrupt_vectors.hpp">
+      <Filter>lld\common\interrupts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\interrupts\uart_interrupt_vectors.hpp">
+      <Filter>lld\common\interrupts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\interrupts\usart_interrupt_vectors.hpp">
+      <Filter>lld\common\interrupts</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\common\mapping\peripheral_mapping.cpp">
+      <Filter>lld\common\mapping</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\common\mapping\peripheral_mapping.hpp">
+      <Filter>lld\common\mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\callback_model.hpp">
+      <Filter>lld\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\callback_types.hpp">
+      <Filter>lld\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\dma\dma.hpp">
+      <Filter>lld\interface\dma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\dma\dma_model.hpp">
+      <Filter>lld\interface\dma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\dma\dma_types.hpp">
+      <Filter>lld\interface\dma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\flash\flash.hpp">
+      <Filter>lld\interface\flash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio.hpp">
+      <Filter>lld\interface\gpio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_model.hpp">
+      <Filter>lld\interface\gpio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_types.hpp">
+      <Filter>lld\interface\gpio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt.hpp">
+      <Filter>lld\interface\interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_model.hpp">
+      <Filter>lld\interface\interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_types.hpp">
+      <Filter>lld\interface\interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\nvic\nvic.hpp">
+      <Filter>lld\interface\nvic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\power\power.hpp">
+      <Filter>lld\interface\power</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc.hpp">
+      <Filter>lld\interface\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc_model.hpp">
+      <Filter>lld\interface\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\serial\serial_model.hpp">
+      <Filter>lld\interface\serial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\serial\serial_types.hpp">
+      <Filter>lld\interface\serial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi.hpp">
+      <Filter>lld\interface\spi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_model.hpp">
+      <Filter>lld\interface\spi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_types.hpp">
+      <Filter>lld\interface\spi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\startup\startup.hpp">
+      <Filter>lld\interface\startup</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart.hpp">
+      <Filter>lld\interface\uart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart.hpp">
+      <Filter>lld\interface\usart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog.hpp">
+      <Filter>lld\interface\watchdog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_model.hpp">
+      <Filter>lld\interface\watchdog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\common\definitions.hpp">
+      <Filter>lld\stm32f4x\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\common\types.hpp">
+      <Filter>lld\stm32f4x\common</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_driver_stm32f4.cpp">
+      <Filter>lld\stm32f4x\dma</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_mapping.cpp">
+      <Filter>lld\stm32f4x\dma</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_driver.hpp">
+      <Filter>lld\stm32f4x\dma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_mapping.hpp">
+      <Filter>lld\stm32f4x\dma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_prj.hpp">
+      <Filter>lld\stm32f4x\dma</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_types.hpp">
+      <Filter>lld\stm32f4x\dma</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\test\test_entry.cpp">
+      <Filter>lld\stm32f4x\dma\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\test\test_lld_dma_driver.cpp">
+      <Filter>lld\stm32f4x\dma\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\variant\hw_dma_register_stm32f446xx.cpp">
+      <Filter>lld\stm32f4x\dma\variant</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\variant\hw_dma_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\dma\variant</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_driver_stm32f4.cpp">
+      <Filter>lld\stm32f4x\flash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_mapping.cpp">
+      <Filter>lld\stm32f4x\flash</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_driver.hpp">
+      <Filter>lld\stm32f4x\flash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_mapping.hpp">
+      <Filter>lld\stm32f4x\flash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_prj.hpp">
+      <Filter>lld\stm32f4x\flash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_types.hpp">
+      <Filter>lld\stm32f4x\flash</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\test\test_entry.cpp">
+      <Filter>lld\stm32f4x\flash\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\test\test_lld_flash_driver.cpp">
+      <Filter>lld\stm32f4x\flash\test</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\variant\hw_flash_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\flash\variant</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_driver_stm32f4.cpp">
+      <Filter>lld\stm32f4x\gpio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_mapping.cpp">
+      <Filter>lld\stm32f4x\gpio</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_driver.hpp">
+      <Filter>lld\stm32f4x\gpio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_mapping.hpp">
+      <Filter>lld\stm32f4x\gpio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_prj.hpp">
+      <Filter>lld\stm32f4x\gpio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_types.hpp">
+      <Filter>lld\stm32f4x\gpio</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\test\test_entry.cpp">
+      <Filter>lld\stm32f4x\gpio\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\test\test_lld_gpio_driver.cpp">
+      <Filter>lld\stm32f4x\gpio\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\variant\hw_gpio_register_stm32f446xx.cpp">
+      <Filter>lld\stm32f4x\gpio\variant</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\variant\hw_gpio_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\gpio\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\interrupt\hw_it_prj.hpp">
+      <Filter>lld\stm32f4x\interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\interrupt\variant\hw_it_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\interrupt\variant</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_driver_stm32f4.cpp">
+      <Filter>lld\stm32f4x\iwdg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_mapping.cpp">
+      <Filter>lld\stm32f4x\iwdg</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_driver.hpp">
+      <Filter>lld\stm32f4x\iwdg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_mapping.hpp">
+      <Filter>lld\stm32f4x\iwdg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_prj.hpp">
+      <Filter>lld\stm32f4x\iwdg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_types.hpp">
+      <Filter>lld\stm32f4x\iwdg</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\iwdg\variant\hw_iwdg_register_stm32f446xx.cpp">
+      <Filter>lld\stm32f4x\iwdg\variant</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\variant\hw_iwdg_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\iwdg\variant</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_driver_stm32f4.cpp">
+      <Filter>lld\stm32f4x\nvic</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_driver.hpp">
+      <Filter>lld\stm32f4x\nvic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_prj.hpp">
+      <Filter>lld\stm32f4x\nvic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_types.hpp">
+      <Filter>lld\stm32f4x\nvic</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\test\test_entry.cpp">
+      <Filter>lld\stm32f4x\nvic\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\test\test_lld_nvic_driver.cpp">
+      <Filter>lld\stm32f4x\nvic\test</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\variant\hw_nvic_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\nvic\variant</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_driver_stm32f4.cpp">
+      <Filter>lld\stm32f4x\power</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_mapping.cpp">
+      <Filter>lld\stm32f4x\power</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_driver.hpp">
+      <Filter>lld\stm32f4x\power</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_mapping.hpp">
+      <Filter>lld\stm32f4x\power</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_prj.hpp">
+      <Filter>lld\stm32f4x\power</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_types.hpp">
+      <Filter>lld\stm32f4x\power</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\test\test_entry.cpp">
+      <Filter>lld\stm32f4x\power\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\test\test_lld_power_driver.cpp">
+      <Filter>lld\stm32f4x\power\test</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\variant\hw_power_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\power\variant</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_driver_stm32f4.cpp">
+      <Filter>lld\stm32f4x\rcc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_mapping.cpp">
+      <Filter>lld\stm32f4x\rcc</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_driver.hpp">
+      <Filter>lld\stm32f4x\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_driver_prv.hpp">
+      <Filter>lld\stm32f4x\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_mapping.hpp">
+      <Filter>lld\stm32f4x\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_prj.hpp">
+      <Filter>lld\stm32f4x\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_types.hpp">
+      <Filter>lld\stm32f4x\rcc</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\config\hw_rcc_config_stm32f446xx.cpp">
+      <Filter>lld\stm32f4x\rcc\config</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\config\hw_rcc_config_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\rcc\config</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\test\test_entry.cpp">
+      <Filter>lld\stm32f4x\rcc\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\test\test_lld_rcc_driver.cpp">
+      <Filter>lld\stm32f4x\rcc\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\variant\hw_rcc_register_stm32f446xx.cpp">
+      <Filter>lld\stm32f4x\rcc\variant</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\variant\hw_rcc_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\rcc\variant</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_driver_stm32f4.cpp">
+      <Filter>lld\stm32f4x\spi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_mapping.cpp">
+      <Filter>lld\stm32f4x\spi</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_driver.hpp">
+      <Filter>lld\stm32f4x\spi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_mapping.hpp">
+      <Filter>lld\stm32f4x\spi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_prj.hpp">
+      <Filter>lld\stm32f4x\spi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_types.hpp">
+      <Filter>lld\stm32f4x\spi</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\test\test_entry.cpp">
+      <Filter>lld\stm32f4x\spi\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\test\test_lld_spi_driver.cpp">
+      <Filter>lld\stm32f4x\spi\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\variant\hw_spi_register_stm32f446xx.cpp">
+      <Filter>lld\stm32f4x\spi\variant</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\variant\hw_spi_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\spi\variant</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\startup\startup_common_init.cpp">
+      <Filter>lld\stm32f4x\startup</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\startup\startup_stm32f446xx.c">
+      <Filter>lld\stm32f4x\startup</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\startup\startup_stm32f4xxxx.hpp">
+      <Filter>lld\stm32f4x\startup</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\system\sys_common_exit.cpp">
+      <Filter>lld\stm32f4x\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\system\sys_common_init.cpp">
+      <Filter>lld\stm32f4x\system</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\system\sys_memory_map_prj.hpp">
+      <Filter>lld\stm32f4x\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\system\variant\sys_memory_map_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\system\variant</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\lld_timer_driver.cpp">
+      <Filter>lld\stm32f4x\timer</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\timer\lld_timer_driver.hpp">
+      <Filter>lld\stm32f4x\timer</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_entry.cpp">
+      <Filter>lld\stm32f4x\timer\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_lld_timer_driver.cpp">
+      <Filter>lld\stm32f4x\timer\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\variant\hw_timer_register_stm32f446xx.cpp">
+      <Filter>lld\stm32f4x\timer\variant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_driver.cpp">
+      <Filter>lld\stm32f4x\uart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_mapping.cpp">
+      <Filter>lld\stm32f4x\uart</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_driver.hpp">
+      <Filter>lld\stm32f4x\uart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_mapping.hpp">
+      <Filter>lld\stm32f4x\uart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_prj.hpp">
+      <Filter>lld\stm32f4x\uart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_types.hpp">
+      <Filter>lld\stm32f4x\uart</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\test\test_entry.cpp">
+      <Filter>lld\stm32f4x\uart\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\test\test_lld_uart_driver.cpp">
+      <Filter>lld\stm32f4x\uart\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\variant\hw_uart_register_stm32f446xx.cpp">
+      <Filter>lld\stm32f4x\uart\variant</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\variant\hw_uart_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\uart\variant</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_driver_stm32f4.cpp">
+      <Filter>lld\stm32f4x\usart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_mapping.cpp">
+      <Filter>lld\stm32f4x\usart</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_driver.hpp">
+      <Filter>lld\stm32f4x\usart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_mapping.hpp">
+      <Filter>lld\stm32f4x\usart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_prj.hpp">
+      <Filter>lld\stm32f4x\usart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_types.hpp">
+      <Filter>lld\stm32f4x\usart</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\test\test_entry.cpp">
+      <Filter>lld\stm32f4x\usart\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\test\test_lld_usart_driver.cpp">
+      <Filter>lld\stm32f4x\usart\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\variant\hw_usart_register_stm32f446xx.cpp">
+      <Filter>lld\stm32f4x\usart\variant</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\variant\hw_usart_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\usart\variant</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_driver_stm32f4.cpp">
+      <Filter>lld\stm32f4x\wwdg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_mapping.cpp">
+      <Filter>lld\stm32f4x\wwdg</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_driver.hpp">
+      <Filter>lld\stm32f4x\wwdg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_mapping.hpp">
+      <Filter>lld\stm32f4x\wwdg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_prj.hpp">
+      <Filter>lld\stm32f4x\wwdg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_types.hpp">
+      <Filter>lld\stm32f4x\wwdg</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\test\test_entry.cpp">
+      <Filter>lld\stm32f4x\wwdg\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\test\test_lld_wwdg_driver.cpp">
+      <Filter>lld\stm32f4x\wwdg\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\variant\hw_wwdg_register_stm32f446xx.cpp">
+      <Filter>lld\stm32f4x\wwdg\variant</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\variant\hw_wwdg_register_stm32f446xx.hpp">
+      <Filter>lld\stm32f4x\wwdg\variant</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Thor\config\config.hpp">
+      <Filter>config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\config\boost\boostStub.hpp">
+      <Filter>config\boost</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\config\chimera\chimeraPort.hpp">
-      <Filter>Thor\config\chimera</Filter>
+      <Filter>config\chimera</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\Thor\config\freertos\thor_freertos_hooks_prj.cpp">
-      <Filter>Thor\config\freertos</Filter>
-    </ClCompile>
     <ClInclude Include="..\..\..\Thor\config\freertos\FreeRTOSConfig.h">
-      <Filter>Thor\config\freertos</Filter>
+      <Filter>config\freertos</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\config\templates\thorDriverConfig.hpp">
-      <Filter>Thor\config\templates</Filter>
+      <Filter>config\templates</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\Thor\defaults\serial_defaults.cpp">
-      <Filter>Thor\defaults</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\defaults\spi_defaults.cpp">
-      <Filter>Thor\defaults</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\defaults\serial_defaults.hpp">
-      <Filter>Thor\defaults</Filter>
+    <ClInclude Include="..\..\..\Thor\config\simulator\thor_sim_config.hpp">
+      <Filter>config\simulator</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\defaults\spi_defaults.hpp">
-      <Filter>Thor\defaults</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\definitions\dma_definitions.hpp">
-      <Filter>Thor\definitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\definitions\interrupt_definitions.hpp">
-      <Filter>Thor\definitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\definitions\serial_definitions.hpp">
-      <Filter>Thor\definitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\definitions\spi_definitions.hpp">
-      <Filter>Thor\definitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\definitions\system_checks.hpp">
-      <Filter>Thor\definitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\definitions\uart_definitions.hpp">
-      <Filter>Thor\definitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\definitions\usart_definitions.hpp">
-      <Filter>Thor\definitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\dma.hpp">
-      <Filter>Thor\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\gpio.hpp">
-      <Filter>Thor\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\interrupt.hpp">
-      <Filter>Thor\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\nvic.hpp">
-      <Filter>Thor\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\rcc.hpp">
-      <Filter>Thor\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\spi.hpp">
-      <Filter>Thor\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\uart.hpp">
-      <Filter>Thor\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\usart.hpp">
-      <Filter>Thor\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\watchdog.hpp">
-      <Filter>Thor\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\configuration.hpp">
-      <Filter>Thor\drivers\common\cmsis</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\cmsis_compiler.h">
-      <Filter>Thor\drivers\common\cmsis\core\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\cmsis_gcc.h">
-      <Filter>Thor\drivers\common\cmsis\core\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\cmsis_version.h">
-      <Filter>Thor\drivers\common\cmsis\core\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\cmsis_windows.h">
-      <Filter>Thor\drivers\common\cmsis\core\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\core_cm4.h">
-      <Filter>Thor\drivers\common\cmsis\core\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\cmsis\core\include\mpu_armv7.h">
-      <Filter>Thor\drivers\common\cmsis\core\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\cortex-m4\register.hpp">
-      <Filter>Thor\drivers\common\cortex-m4</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\cortex-m4\utilities.hpp">
-      <Filter>Thor\drivers\common\cortex-m4</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\cortex-m7\register.hpp">
-      <Filter>Thor\drivers\common\cortex-m7</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\interrupts\dma_interrupt_vectors.hpp">
-      <Filter>Thor\drivers\common\interrupts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\interrupts\spi_interrupt_vectors.hpp">
-      <Filter>Thor\drivers\common\interrupts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\interrupts\usart_interrupt_vectors.hpp">
-      <Filter>Thor\drivers\common\interrupts</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\common\mapping\peripheral_mapping.cpp">
-      <Filter>Thor\drivers\common\mapping</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\common\mapping\peripheral_mapping.hpp">
-      <Filter>Thor\drivers\common\mapping</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\types\callback_types.hpp">
-      <Filter>Thor\drivers\common\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\types\dma_types.hpp">
-      <Filter>Thor\drivers\common\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\types\gpio_types.hpp">
-      <Filter>Thor\drivers\common\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\types\interrupt_types.hpp">
-      <Filter>Thor\drivers\common\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\types\serial_types.hpp">
-      <Filter>Thor\drivers\common\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\common\types\spi_types.hpp">
-      <Filter>Thor\drivers\common\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\common\definitions.hpp">
-      <Filter>Thor\drivers\f4\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\common\types.hpp">
-      <Filter>Thor\drivers\f4\common</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\dma\hw_dma_driver_stm32f4.cpp">
-      <Filter>Thor\drivers\f4\dma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\dma\hw_dma_mapping.cpp">
-      <Filter>Thor\drivers\f4\dma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\dma\hw_dma_register_stm32f446xx.cpp">
-      <Filter>Thor\drivers\f4\dma</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\dma\hw_dma_driver.hpp">
-      <Filter>Thor\drivers\f4\dma</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\dma\hw_dma_mapping.hpp">
-      <Filter>Thor\drivers\f4\dma</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\dma\hw_dma_prj.hpp">
-      <Filter>Thor\drivers\f4\dma</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\dma\hw_dma_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\dma</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\dma\hw_dma_types.hpp">
-      <Filter>Thor\drivers\f4\dma</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\flash\hw_flash_driver_stm32f4.cpp">
-      <Filter>Thor\drivers\f4\flash</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\flash\hw_flash_mapping.cpp">
-      <Filter>Thor\drivers\f4\flash</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\flash\hw_flash_driver.hpp">
-      <Filter>Thor\drivers\f4\flash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\flash\hw_flash_mapping.hpp">
-      <Filter>Thor\drivers\f4\flash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\flash\hw_flash_prj.hpp">
-      <Filter>Thor\drivers\f4\flash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\flash\hw_flash_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\flash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\flash\hw_flash_types.hpp">
-      <Filter>Thor\drivers\f4\flash</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_driver_stm32f4.cpp">
-      <Filter>Thor\drivers\f4\gpio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_mapping.cpp">
-      <Filter>Thor\drivers\f4\gpio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_register_stm32f446xx.cpp">
-      <Filter>Thor\drivers\f4\gpio</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_driver.hpp">
-      <Filter>Thor\drivers\f4\gpio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_mapping.hpp">
-      <Filter>Thor\drivers\f4\gpio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_prj.hpp">
-      <Filter>Thor\drivers\f4\gpio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\gpio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\gpio\hw_gpio_types.hpp">
-      <Filter>Thor\drivers\f4\gpio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\interrupt\hw_it_prj.hpp">
-      <Filter>Thor\drivers\f4\interrupt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\interrupt\hw_it_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\interrupt</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_driver_stm32f4.cpp">
-      <Filter>Thor\drivers\f4\iwdg</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_mapping.cpp">
-      <Filter>Thor\drivers\f4\iwdg</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_register_stm32f446xx.cpp">
-      <Filter>Thor\drivers\f4\iwdg</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_driver.hpp">
-      <Filter>Thor\drivers\f4\iwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_mapping.hpp">
-      <Filter>Thor\drivers\f4\iwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_prj.hpp">
-      <Filter>Thor\drivers\f4\iwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\iwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\iwdg\hw_iwdg_types.hpp">
-      <Filter>Thor\drivers\f4\iwdg</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\nvic\hw_nvic_driver_stm32f4.cpp">
-      <Filter>Thor\drivers\f4\nvic</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\nvic\hw_nvic_driver.hpp">
-      <Filter>Thor\drivers\f4\nvic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\nvic\hw_nvic_prj.hpp">
-      <Filter>Thor\drivers\f4\nvic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\nvic\hw_nvic_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\nvic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\nvic\hw_nvic_types.hpp">
-      <Filter>Thor\drivers\f4\nvic</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\power\hw_power_driver_stm32f4.cpp">
-      <Filter>Thor\drivers\f4\power</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\power\hw_power_mapping.cpp">
-      <Filter>Thor\drivers\f4\power</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\power\hw_power_driver.hpp">
-      <Filter>Thor\drivers\f4\power</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\power\hw_power_mapping.hpp">
-      <Filter>Thor\drivers\f4\power</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\power\hw_power_prj.hpp">
-      <Filter>Thor\drivers\f4\power</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\power\hw_power_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\power</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\power\hw_power_types.hpp">
-      <Filter>Thor\drivers\f4\power</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_config_stm32f446xx.cpp">
-      <Filter>Thor\drivers\f4\rcc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_driver_stm32f4.cpp">
-      <Filter>Thor\drivers\f4\rcc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_mapping.cpp">
-      <Filter>Thor\drivers\f4\rcc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_register_stm32f446xx.cpp">
-      <Filter>Thor\drivers\f4\rcc</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_config_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\rcc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_driver.hpp">
-      <Filter>Thor\drivers\f4\rcc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_driver_prv.hpp">
-      <Filter>Thor\drivers\f4\rcc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_mapping.hpp">
-      <Filter>Thor\drivers\f4\rcc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_prj.hpp">
-      <Filter>Thor\drivers\f4\rcc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\rcc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\rcc\hw_rcc_types.hpp">
-      <Filter>Thor\drivers\f4\rcc</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\spi\hw_spi_driver_stm32f4.cpp">
-      <Filter>Thor\drivers\f4\spi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\spi\hw_spi_mapping.cpp">
-      <Filter>Thor\drivers\f4\spi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\spi\hw_spi_register_stm32f446xx.cpp">
-      <Filter>Thor\drivers\f4\spi</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\spi\hw_spi_driver.hpp">
-      <Filter>Thor\drivers\f4\spi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\spi\hw_spi_mapping.hpp">
-      <Filter>Thor\drivers\f4\spi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\spi\hw_spi_prj.hpp">
-      <Filter>Thor\drivers\f4\spi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\spi\hw_spi_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\spi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\spi\hw_spi_types.hpp">
-      <Filter>Thor\drivers\f4\spi</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\startup\startup_common_init.cpp">
-      <Filter>Thor\drivers\f4\startup</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\startup\startup_stm32f446xx.c">
-      <Filter>Thor\drivers\f4\startup</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\system\sys_common_exit.cpp">
-      <Filter>Thor\drivers\f4\system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\system\sys_common_init.cpp">
-      <Filter>Thor\drivers\f4\system</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\system\sys_memory_map_prj.hpp">
-      <Filter>Thor\drivers\f4\system</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\system\sys_memory_map_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\system</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\uart\hw_uart_driver.cpp">
-      <Filter>Thor\drivers\f4\uart</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\uart\hw_uart_mapping.cpp">
-      <Filter>Thor\drivers\f4\uart</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\uart\hw_uart_register_stm32f446xx.cpp">
-      <Filter>Thor\drivers\f4\uart</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_driver.hpp">
-      <Filter>Thor\drivers\f4\uart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_mapping.hpp">
-      <Filter>Thor\drivers\f4\uart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_prj.hpp">
-      <Filter>Thor\drivers\f4\uart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\uart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_stubs.hpp">
-      <Filter>Thor\drivers\f4\uart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\uart\hw_uart_types.hpp">
-      <Filter>Thor\drivers\f4\uart</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\usart\hw_usart_driver_stm32f4.cpp">
-      <Filter>Thor\drivers\f4\usart</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\usart\hw_usart_mapping.cpp">
-      <Filter>Thor\drivers\f4\usart</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\usart\hw_usart_register_stm32f446xx.cpp">
-      <Filter>Thor\drivers\f4\usart</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\usart\hw_usart_driver.hpp">
-      <Filter>Thor\drivers\f4\usart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\usart\hw_usart_mapping.hpp">
-      <Filter>Thor\drivers\f4\usart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\usart\hw_usart_prj.hpp">
-      <Filter>Thor\drivers\f4\usart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\usart\hw_usart_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\usart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\usart\hw_usart_types.hpp">
-      <Filter>Thor\drivers\f4\usart</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_driver_stm32f4.cpp">
-      <Filter>Thor\drivers\f4\wwdg</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_mapping.cpp">
-      <Filter>Thor\drivers\f4\wwdg</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_register_stm32f446xx.cpp">
-      <Filter>Thor\drivers\f4\wwdg</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_driver.hpp">
-      <Filter>Thor\drivers\f4\wwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_mapping.hpp">
-      <Filter>Thor\drivers\f4\wwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_prj.hpp">
-      <Filter>Thor\drivers\f4\wwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_register_stm32f446xx.hpp">
-      <Filter>Thor\drivers\f4\wwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\wwdg\hw_wwdg_types.hpp">
-      <Filter>Thor\drivers\f4\wwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\model\callback_model.hpp">
-      <Filter>Thor\drivers\model</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\model\dma_model.hpp">
-      <Filter>Thor\drivers\model</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\model\gpio_model.hpp">
-      <Filter>Thor\drivers\model</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\model\interrupt_model.hpp">
-      <Filter>Thor\drivers\model</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\model\rcc_model.hpp">
-      <Filter>Thor\drivers\model</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\model\serial_model.hpp">
-      <Filter>Thor\drivers\model</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\model\spi_model.hpp">
-      <Filter>Thor\drivers\model</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\model\watchdog_model.hpp">
-      <Filter>Thor\drivers\model</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\resources\thor_dma_resources.cpp">
-      <Filter>Thor\resources</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\resources\dma_resources.hpp">
-      <Filter>Thor\resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\types\clock_types.hpp">
-      <Filter>Thor\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\types\dma_types.hpp">
-      <Filter>Thor\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\types\gpio_types.hpp">
-      <Filter>Thor\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\types\interrupt_types.hpp">
-      <Filter>Thor\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\types\serial_types.hpp">
-      <Filter>Thor\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\types\spi_types.hpp">
-      <Filter>Thor\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\types\uart_types.hpp">
-      <Filter>Thor\types</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\types\usart_types.hpp">
-      <Filter>Thor\types</Filter>
+    <ClInclude Include="..\..\..\Thor\config\hardware\thor_stm32f4x_config.hpp">
+      <Filter>config\hardware</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Thor\drivers\startup.hpp">
-      <Filter>Thor\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\drivers\f4\startup\startup_stm32f4xxxx.hpp">
-      <Filter>Thor\drivers\f4\startup</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <LinkerScript Include="..\..\..\Thor\drivers\f4\linker\STM32F446RE_flash.lds">
-      <Filter>Thor\drivers\f4\linker</Filter>
-    </LinkerScript>
-    <LinkerScript Include="..\..\..\Thor\drivers\f4\linker\STM32F446RE_sram.lds">
-      <Filter>Thor\drivers\f4\linker</Filter>
-    </LinkerScript>
+    <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">
+      <Filter>config\boost</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\config\freertos\thor_freertos_hooks_prj.cpp">
+      <Filter>config\freertos</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

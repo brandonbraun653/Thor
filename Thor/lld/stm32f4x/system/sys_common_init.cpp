@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include "thor_config_prj.hpp"
 #include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
 #include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>

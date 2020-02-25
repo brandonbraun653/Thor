@@ -1,0 +1,17 @@
+/********************************************************************************
+ *  File Name:
+ *    cfg
+ * 
+ *  Description:
+ *    Thor includes that will configure the hardware drivers for a build
+ * 
+ *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_CFG_INCLUDES
+#define THOR_CFG_INCLUDES
+
+#include <Thor/config/config.hpp>
+
+#endif /* !THOR_CFG_INCLUDES */

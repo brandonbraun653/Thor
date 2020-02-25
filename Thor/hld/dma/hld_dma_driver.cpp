@@ -20,6 +20,7 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/dma>
 #include <Thor/hld/dma/hld_prv_dma_resources.hpp>
 #include <Thor/lld/interface/dma/dma.hpp>

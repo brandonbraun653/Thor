@@ -13,6 +13,7 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/headers.hpp>
 #include <Thor/thor.hpp>
 

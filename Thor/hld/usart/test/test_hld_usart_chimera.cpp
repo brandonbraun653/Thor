@@ -16,6 +16,7 @@
 #include <Chimera/usart>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/usart>
 #include <Thor/hld/usart/hld_usart_chimera.hpp>
 

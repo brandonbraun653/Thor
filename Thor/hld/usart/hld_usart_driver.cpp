@@ -21,6 +21,7 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/dma>
 #include <Thor/event>
 #include <Thor/usart>

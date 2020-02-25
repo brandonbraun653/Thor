@@ -15,6 +15,7 @@
 #include <Chimera/spi>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/stm32f4x/spi/hw_spi_types.hpp>
 
 

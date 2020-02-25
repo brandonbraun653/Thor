@@ -16,6 +16,7 @@
 #include <Chimera/gpio>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/gpio>
 #include <Thor/hld/gpio/hld_gpio_chimera.hpp>
 

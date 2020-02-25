@@ -16,6 +16,7 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/event>
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_driver.hpp>

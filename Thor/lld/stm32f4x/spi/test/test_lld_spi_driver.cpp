@@ -16,6 +16,7 @@
 #include <Chimera/gpio>
 
 /* Thor Includes */
+#include <Thor/cfg>
 
 
 TEST(PleasePass, PrettyPlease)

@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/stm32f4x/dma/hw_dma_mapping.hpp>
 #include <Thor/lld/stm32f4x/dma/variant/hw_dma_register_stm32f446xx.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>

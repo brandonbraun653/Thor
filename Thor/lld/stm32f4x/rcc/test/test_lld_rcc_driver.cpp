@@ -15,6 +15,7 @@
 #include <Chimera/common>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/rcc/rcc.hpp>
 
 

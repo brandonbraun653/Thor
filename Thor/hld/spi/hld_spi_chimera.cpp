@@ -16,6 +16,7 @@
 #include <Chimera/spi>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/spi>
 
 namespace Chimera::SPI::Backend

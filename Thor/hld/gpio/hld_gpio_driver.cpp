@@ -19,6 +19,7 @@
 #include <Chimera/gpio>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/hld/gpio/hld_gpio_driver.hpp>
 #include <Thor/lld/interface/gpio/gpio.hpp>
 

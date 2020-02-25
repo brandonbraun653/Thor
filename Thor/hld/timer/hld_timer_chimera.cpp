@@ -16,6 +16,7 @@
 #include <Chimera/timer>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/timer>
 
 namespace Chimera::Timer::Backend

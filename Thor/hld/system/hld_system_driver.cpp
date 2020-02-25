@@ -14,6 +14,7 @@
 #include <Chimera/system>
 
 /* Thor Includes */
+#include <Thor/cfg>
 // #include <Thor/preprocessor.hpp>
 #include <Thor/interrupt>
 // #include <Thor/headers.hpp>

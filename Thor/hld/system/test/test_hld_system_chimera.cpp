@@ -16,6 +16,7 @@
 #include <Chimera/system>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/system>
 #include <Thor/hld/system/hld_system_chimera.hpp>
 

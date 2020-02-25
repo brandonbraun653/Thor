@@ -16,6 +16,7 @@
 #include <Chimera/spi>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/spi>
 #include <Thor/hld/spi/hld_spi_chimera.hpp>
 

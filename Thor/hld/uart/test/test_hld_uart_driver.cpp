@@ -16,6 +16,7 @@
 #include <Chimera/uart>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/uart>
 
 TEST(PleasePass, PrettyPlease2)

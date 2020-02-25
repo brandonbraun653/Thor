@@ -16,6 +16,7 @@
 #include <Chimera/gpio>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/gpio>
 
 namespace Chimera::GPIO::Backend

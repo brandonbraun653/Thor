@@ -12,6 +12,7 @@
 #include <Chimera/power>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/power.hpp>
 
 namespace Thor

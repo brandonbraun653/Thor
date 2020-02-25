@@ -12,6 +12,7 @@
 
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/timer>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_TIMER )

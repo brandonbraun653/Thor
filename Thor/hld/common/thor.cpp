@@ -13,6 +13,7 @@
 #include <Chimera/common>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/thor.hpp>
 #include <Thor/macro.hpp>
 #include <Thor/print.hpp>

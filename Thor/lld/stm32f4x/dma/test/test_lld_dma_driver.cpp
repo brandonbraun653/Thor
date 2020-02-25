@@ -16,6 +16,7 @@
 #include <Chimera/dma>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/dma/dma.hpp>
 
 

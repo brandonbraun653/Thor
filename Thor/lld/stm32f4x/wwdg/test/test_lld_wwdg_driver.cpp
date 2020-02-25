@@ -16,6 +16,7 @@
 #include <Chimera/watchdog>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/watchdog/watchdog.hpp>
 
 

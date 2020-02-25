@@ -15,6 +15,7 @@
 #include <Chimera/common>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/uart>
 #include <Thor/lld/interface/uart/uart.hpp>
 

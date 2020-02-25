@@ -11,6 +11,7 @@
 /* C++ Includes */
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/thor.hpp>
 #include <Thor/exceptions.hpp>
 #include <Thor/system.hpp>

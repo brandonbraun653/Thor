@@ -19,6 +19,7 @@
 #include <Aurora/constants/common.hpp>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/watchdog.hpp>
 #include <Thor/drivers/watchdog.hpp>
 
