@@ -15,7 +15,7 @@
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_DMA )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_DMA )
 
 namespace Thor::LLD::DMA
 {

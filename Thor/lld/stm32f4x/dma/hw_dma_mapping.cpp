@@ -16,7 +16,7 @@
 #include <Thor/lld/stm32f4x/dma/hw_dma_types.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_DMA )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_DMA )
 
 namespace Thor::LLD::DMA
 {

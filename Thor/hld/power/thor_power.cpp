@@ -13,26 +13,26 @@
 
 /* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/power.hpp>
-
-namespace Thor
-{
-  namespace Power
-  {
-    SystemPower::SystemPower()
-    {
-      
-    }
-
-    SystemPower::~SystemPower()
-    {
-      
-    }
-
-    float SystemPower::systemVCC()
-    {
-      return 3.30f;
-    }
-
-  }    // namespace Power
-}
+//#include <Thor/power.hpp>
+//
+//namespace Thor
+//{
+//  namespace Power
+//  {
+//    SystemPower::SystemPower()
+//    {
+//      
+//    }
+//
+//    SystemPower::~SystemPower()
+//    {
+//      
+//    }
+//
+//    float SystemPower::systemVCC()
+//    {
+//      return 3.30f;
+//    }
+//
+//  }    // namespace Power
+//}

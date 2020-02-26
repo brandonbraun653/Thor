@@ -19,7 +19,7 @@
 #include <Thor/lld/stm32f4x/spi/hw_spi_types.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_SPI )
 
 namespace Thor::LLD::SPI
 {

@@ -74,7 +74,7 @@ High Level Driver Support
 #define THOR_HLD_SDMMC
 #define THOR_HLD_SERIAL
 #define THOR_HLD_SPI
-#define THOR_HLD_TIMER
+//#define THOR_HLD_TIMER
 #define THOR_HLD_UART
 #define THOR_HLD_USART
 #define THOR_HLD_USB

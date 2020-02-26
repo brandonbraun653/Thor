@@ -20,33 +20,33 @@
 
 /* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/watchdog.hpp>
-#include <Thor/drivers/watchdog.hpp>
+//#include <Thor/watchdog.hpp>
+//#include <Thor/drivers/watchdog.hpp>
 
 namespace Chimera::Watchdog::Backend
 {
-  Chimera::Status_t prjInitialize()
-  {
-    Chimera::Status_t resultWWDG = Chimera::CommonStatusCodes::OK;
-    Chimera::Status_t resultIWDG = Chimera::CommonStatusCodes::OK;
+  //Chimera::Status_t prjInitialize()
+  //{
+  //  Chimera::Status_t resultWWDG = Chimera::CommonStatusCodes::OK;
+  //  Chimera::Status_t resultIWDG = Chimera::CommonStatusCodes::OK;
 
-    #if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )
-    resultWWDG = Thor::Watchdog::initializeWWDG();
-    #endif 
+  //  #if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )
+  //  resultWWDG = Thor::Watchdog::initializeWWDG();
+  //  #endif 
 
-    #if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
-    resultIWDG = Thor::Watchdog::initializeIWDG();
-    #endif 
+  //  #if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
+  //  resultIWDG = Thor::Watchdog::initializeIWDG();
+  //  #endif 
 
-    if ( ( resultIWDG == Chimera::CommonStatusCodes::OK ) && ( resultWWDG == Chimera::CommonStatusCodes::OK ) )
-    {
-      return Chimera::CommonStatusCodes::OK;
-    }
-    else
-    {
-      return Chimera::CommonStatusCodes::FAIL;
-    }
-  }
+  //  if ( ( resultIWDG == Chimera::CommonStatusCodes::OK ) && ( resultWWDG == Chimera::CommonStatusCodes::OK ) )
+  //  {
+  //    return Chimera::CommonStatusCodes::OK;
+  //  }
+  //  else
+  //  {
+  //    return Chimera::CommonStatusCodes::FAIL;
+  //  }
+  //}
 }
 
 

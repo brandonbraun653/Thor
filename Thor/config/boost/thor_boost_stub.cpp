@@ -1,5 +1,15 @@
-#include <Thor/boostStub.hpp>
-#include <Thor/exceptions.hpp>
+/********************************************************************************
+*  File Name:
+*    thor_boost_stub.cpp
+*
+*  Description:
+*    Stubs for boost so we can compile
+*
+*  2020 | Brandon Braun | brandonbraun653@gmail.com
+********************************************************************************/
+
+#include <exception>
+#include <Thor/config/boost/boostStub.hpp>
 
 namespace boost
 {

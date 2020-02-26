@@ -10,7 +10,7 @@
 
 /* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/sram.hpp>
+//#include <Thor/sram.hpp>
 
 #if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
 namespace Thor

@@ -9,12 +9,12 @@
   ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/iwdg/hw_iwdg_driver.hpp>
-#include <Thor/drivers/f4/iwdg/hw_iwdg_mapping.hpp>
-#include <Thor/drivers/f4/iwdg/hw_iwdg_register_stm32f446xx.hpp>
-#include <Thor/drivers/f4/iwdg/hw_iwdg_types.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
+//#include <Thor/headers.hpp>
+//#include <Thor/drivers/f4/iwdg/hw_iwdg_driver.hpp>
+//#include <Thor/drivers/f4/iwdg/hw_iwdg_mapping.hpp>
+//#include <Thor/drivers/f4/iwdg/hw_iwdg_register_stm32f446xx.hpp>
+//#include <Thor/drivers/f4/iwdg/hw_iwdg_types.hpp>
+//#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
 
 #if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 ) && defined( STM32F446xx )
 

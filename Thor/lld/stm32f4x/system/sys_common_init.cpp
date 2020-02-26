@@ -10,15 +10,15 @@
 
 /* Thor Includes */
 #include <Thor/cfg>
-#include "thor_config_prj.hpp"
-#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
-#include <Thor/drivers/f4/rcc/hw_rcc_prj.hpp>
+//#include "thor_config_prj.hpp"
+//#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
+//#include <Thor/drivers/f4/rcc/hw_rcc_types.hpp>
+//#include <Thor/drivers/f4/rcc/hw_rcc_prj.hpp>
+//
+///* ARM Includes: Must come last so the Thor Includes can configure various macros */
+//#include <Thor/drivers/common/cmsis/core/include/core_cm4.h>
 
-/* ARM Includes: Must come last so the Thor Includes can configure various macros */
-#include <Thor/drivers/common/cmsis/core/include/core_cm4.h>
-
-using namespace Thor::LLD::RCC;
+//using namespace Thor::LLD::RCC;
 
 #if defined( EMBEDDED )
 void SystemInit()

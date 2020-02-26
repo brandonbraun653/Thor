@@ -8,23 +8,18 @@
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* C++ Includes */
-
 /* Chimera Includes */
+#include <Chimera/common>
 #include <Chimera/system>
 
 /* Thor Includes */
 #include <Thor/cfg>
-// #include <Thor/preprocessor.hpp>
 #include <Thor/interrupt>
-// #include <Thor/headers.hpp>
-// #include <Thor/system.hpp>
-// #include <Thor/dma.hpp>
+#include <Thor/dma>
 #include <Thor/gpio>
 #include <Thor/spi>
-// #include <Thor/uart.hpp>
-// #include <Thor/usart.hpp>
-// #include <Thor/watchdog.hpp>
+#include <Thor/uart>
+#include <Thor/usart>
 
 /* Driver Includes */
 #include <Thor/lld/interface/nvic/nvic.hpp>
@@ -50,24 +45,28 @@ namespace Chimera::System
     /*------------------------------------------------
     Hardware Specific Initialization
     ------------------------------------------------*/
-#if defined( THOR_DRIVER_DMA ) && ( THOR_DRIVER_DMA == 1 )
+#if defined( THOR_DRIVER_DMA ) && defined( THOR_LLD_DMA )
     Thor::DMA::initialize();
     Thor::DMA::DMAClass::get()->init();
 #endif
 
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
     Thor::GPIO::initialize();
+#endif
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_IWDG )
     Thor::Watchdog::initializeIWDG();
 #endif 
 
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_SPI )
     Thor::SPI::initialize();
+#endif
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_UART )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_UART )
     Thor::UART::initialize();
 #endif
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_USART )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_USART )
     Thor::USART::initialize();
 #endif
 

@@ -42,22 +42,22 @@ namespace Chimera::DMA::Backend
     return nullptr;
   }
 
-  Chimera::Status_t registerDriver( Chimera::DMA::Backend::DriverConfig &registry )
-  {
-#if defined( THOR_HLD_DMA )
-    registry.isSupported  = true;
-    registry.createShared = create_shared_ptr;
-    registry.createUnique = create_unique_ptr;
-    registry.initialize   = initialize;
-    registry.reset        = reset;
-    return Chimera::CommonStatusCodes::OK;
-#else
-    registry.isSupported  = false;
-    registry.createShared = nullptr;
-    registry.createUnique = nullptr;
-    registry.initialize   = nullptr;
-    registry.reset        = nullptr;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-#endif /* THOR_HLD_DMA */
-  }
+//   Chimera::Status_t registerDriver( Chimera::DMA::Backend::DriverConfig &registry )
+//   {
+// #if defined( THOR_HLD_DMA )
+//     registry.isSupported  = true;
+//     registry.createShared = create_shared_ptr;
+//     registry.createUnique = create_unique_ptr;
+//     registry.initialize   = initialize;
+//     registry.reset        = reset;
+//     return Chimera::CommonStatusCodes::OK;
+// #else
+//     registry.isSupported  = false;
+//     registry.createShared = nullptr;
+//     registry.createUnique = nullptr;
+//     registry.initialize   = nullptr;
+//     registry.reset        = nullptr;
+//     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+// #endif /* THOR_HLD_DMA */
+//  }
 }    // namespace Chimera::DMA::Backend

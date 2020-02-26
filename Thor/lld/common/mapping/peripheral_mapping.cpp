@@ -9,7 +9,7 @@
  ********************************************************************************/
 
 /* Driver Includes */
-#include <Thor/drivers/common/mapping/peripheral_mapping.hpp>
+#include <Thor/lld/common/mapping/peripheral_mapping.hpp>
 
 namespace Thor::Driver::Mapping
 {
