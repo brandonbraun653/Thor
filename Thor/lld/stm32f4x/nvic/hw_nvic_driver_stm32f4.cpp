@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/stm32f4x/nvic/hw_nvic_driver.hpp>
 #include <Thor/lld/stm32f4x/nvic/hw_nvic_prj.hpp>
 #include <Thor/lld/stm32f4x/nvic/hw_nvic_types.hpp>

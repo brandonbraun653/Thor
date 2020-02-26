@@ -18,17 +18,19 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/timer>
+#include <Thor/hld/timer/hld_timer_chimera.hpp>
 
 namespace Chimera::Timer::Backend
 {
   Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverConfig &registry )
   {
 #if defined( THOR_HLD_TIMER )
-    registry.isSupported  = true;
-    registry.createShared = create_shared_ptr;
-    registry.createUnique = create_unique_ptr;
-    registry.initialize   = initialize;
-    registry.reset        = reset;
+    registry.isSupported       = true;
+    registry.initialize        = initialize;
+    registry.reset             = reset;
+    registry.delayMicroseconds = delayMicroseconds;
+    registry.delayMilliseconds = delayMilliseconds;
+    registry.millis            = millis;
     return Chimera::CommonStatusCodes::OK;
 #else
     registry.isSupported       = false;
@@ -38,26 +40,32 @@ namespace Chimera::Timer::Backend
     registry.delayMilliseconds = nullptr;
     registry.millis            = nullptr;
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-#endif /* THOR_DRIVER_TIMER == 1*/
+#endif /* THOR_HLD_TIMER */
   }
 
-  // Chimera::Status_t initialize()
-  // {
-  //   return Thor::TIMER::initialize();
-  // }
+  Chimera::Status_t initialize()
+  {
+    return Thor::Timer::initialize();
+  }
 
-  // Chimera::Status_t reset()
-  // {
-  //   return Chimera::CommonStatusCodes::OK;
-  // }
+  Chimera::Status_t reset()
+  {
+    return Thor::Timer::reset();
+  }
 
-  // Chimera::TIMER::TIMER_sPtr create_shared_ptr()
-  // {
-  //   return std::make_shared<Thor::TIMER::Driver>();
-  // }
+  size_t millis()
+  {
+    return Thor::Timer::millis();
+  }
 
-  // Chimera::TIMER::TIMER_uPtr create_unique_ptr()
-  // {
-  //   return std::make_unique<Thor::TIMER::Driver>();
-  // }
+  void delayMilliseconds( const size_t val )
+  {
+    Thor::Timer::delayMilliseconds( val );
+  }
+
+  void delayMicroseconds( const size_t val )
+  {
+    Thor::Timer::delayMicroseconds( val );
+  }
+
 }    // namespace Chimera::Timer::Backend

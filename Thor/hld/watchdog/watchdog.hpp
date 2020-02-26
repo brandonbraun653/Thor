@@ -99,7 +99,7 @@ namespace Thor::Watchdog
 
   private:
     uint32_t currentPrescaler;
-    Thor::Driver::IWDG::Driver_uPtr hwDriver;
+    Thor::LLD::IWDG::Driver_uPtr hwDriver;
   };
 
 }    // namespace Thor::Watchdog

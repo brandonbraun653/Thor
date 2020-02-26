@@ -306,16 +306,10 @@
     <ClInclude Include="..\..\..\Thor\hld\clock\clock_types.hpp">
       <Filter>hld\clock</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\Thor\hld\common\thor.cpp">
-      <Filter>hld\common</Filter>
-    </ClCompile>
     <ClInclude Include="..\..\..\Thor\hld\common\macro.hpp">
       <Filter>hld\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\hld\common\preprocessor.hpp">
-      <Filter>hld\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\hld\common\thor.hpp">
       <Filter>hld\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\hld\crc\crc.hpp">
@@ -899,12 +893,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\system\variant\sys_memory_map_stm32f446xx.hpp">
       <Filter>lld\stm32f4x\system\variant</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\lld_timer_driver.cpp">
-      <Filter>lld\stm32f4x\timer</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\timer\lld_timer_driver.hpp">
-      <Filter>lld\stm32f4x\timer</Filter>
-    </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_lld_timer_driver.cpp">
       <Filter>lld\stm32f4x\timer\test</Filter>
     </ClCompile>
@@ -992,6 +980,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\variant\hw_wwdg_register_stm32f446xx.hpp">
       <Filter>lld\stm32f4x\wwdg\variant</Filter>
     </ClInclude>
+    <None Include="..\..\..\Thor\watchdog" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Thor\config\config.hpp">
@@ -1014,6 +1003,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\config\hardware\thor_stm32f4x_config.hpp">
       <Filter>config\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_driver.hpp">
+      <Filter>hld\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\timer\hw_timer_driver.hpp">
+      <Filter>lld\stm32f4x\timer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1073,6 +1068,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\test\test_entry_lld_wwdg.cpp">
       <Filter>lld\stm32f4x\wwdg\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver.cpp">
+      <Filter>hld\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\hw_timer_driver.cpp">
+      <Filter>lld\stm32f4x\timer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

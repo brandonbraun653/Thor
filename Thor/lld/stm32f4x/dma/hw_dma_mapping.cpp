@@ -12,6 +12,7 @@
 #include <Chimera/dma>
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/stm32f4x/dma/hw_dma_mapping.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_types.hpp>
 

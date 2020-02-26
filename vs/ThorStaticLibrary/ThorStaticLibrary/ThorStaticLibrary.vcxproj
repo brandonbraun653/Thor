@@ -252,9 +252,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|STM32F446RE'">
     <ClCompile>
-      <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
-      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ProjectDir)../../../../Thor;$(BOOST_ROOT)/boost_1_70_0;$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(ChimeraCompilerDefines);$(ProjectCompilerDefines);DEBUG=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CPPLanguageStandard>CPP2A</CPPLanguageStandard>
+      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>THOR_ENABLE_ALL_DRIVERS;$(ChimeraCompilerDefines);$(ProjectCompilerDefines);DEBUG=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Og</Optimization>
     </ClCompile>
     <Link>
@@ -266,9 +266,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32F446RE'">
     <ClCompile>
-      <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir)../../../../Thor;$(BOOST_ROOT)/boost_1_70_0;$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(ChimeraCompilerDefines);$(ProjectCompilerDefines);DEBUG=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CPPLanguageStandard>CPP2A</CPPLanguageStandard>
+      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>THOR_ENABLE_ALL_DRIVERS;$(ChimeraCompilerDefines);$(ProjectCompilerDefines);DEBUG=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Og</Optimization>
     </ClCompile>
     <Link>
@@ -281,9 +281,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32F446RE'">
     <ClCompile>
-      <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir)../../../../Thor;$(BOOST_ROOT)/boost_1_70_0;$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(ChimeraCompilerDefines);$(ProjectCompilerDefines);DEBUG=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CPPLanguageStandard>CPP2A</CPPLanguageStandard>
+      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(ClCompile.AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>THOR_ENABLE_ALL_DRIVERS;$(ChimeraCompilerDefines);$(ProjectCompilerDefines);DEBUG=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Og</Optimization>
     </ClCompile>
     <Link>
@@ -301,9 +301,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|STM32F446RE'">
     <ClCompile>
-      <CPPLanguageStandard>CPP1Z</CPPLanguageStandard>
-      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ProjectDir)../../../../Thor;$(BOOST_ROOT)/boost_1_70_0;$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(ChimeraCompilerDefines);$(ProjectCompilerDefines);%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1</PreprocessorDefinitions>
+      <CPPLanguageStandard>CPP2A</CPPLanguageStandard>
+      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>THOR_ENABLE_ALL_DRIVERS;$(ChimeraCompilerDefines);$(ProjectCompilerDefines);%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -378,6 +378,7 @@
     <None Include="..\..\..\Thor\timer" />
     <None Include="..\..\..\Thor\uart" />
     <None Include="..\..\..\Thor\usart" />
+    <None Include="..\..\..\Thor\watchdog" />
     <None Include="ThorStaticLibrary-Debug.vgdbsettings" />
     <None Include="ThorStaticLibrary-Release.vgdbsettings" />
     <None Include="stm32.xml" />
@@ -393,10 +394,8 @@
     <ClInclude Include="..\..\..\Thor\hld\clock\clock_types.hpp" />
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp" />
     <ClCompile Include="..\..\..\Thor\config\freertos\thor_freertos_hooks_prj.cpp" />
-    <ClCompile Include="..\..\..\Thor\hld\common\thor.cpp" />
     <ClInclude Include="..\..\..\Thor\hld\common\macro.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\common\preprocessor.hpp" />
-    <ClInclude Include="..\..\..\Thor\hld\common\thor.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\crc\crc.hpp" />
     <ClCompile Include="..\..\..\Thor\hld\dma\hld_dma_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\dma\hld_dma_driver.cpp" />
@@ -448,8 +447,10 @@
     <ClCompile Include="..\..\..\Thor\hld\system\test\test_hld_system_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_chimera.cpp" />
     <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_chimera.hpp" />
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\uart\hld_uart_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\uart\hld_uart_driver.cpp" />
+    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_chimera.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_intf.hpp" />
@@ -599,13 +600,13 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\system\sys_common_init.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\system\sys_memory_map_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\system\variant\sys_memory_map_stm32f446xx.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\lld_timer_driver.cpp" />
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\timer\lld_timer_driver.hpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\hw_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_entry_lld_timer.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_lld_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\variant\hw_timer_register_stm32f446xx.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_mapping.cpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\timer\hw_timer_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_prj.hpp" />

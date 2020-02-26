@@ -15,16 +15,17 @@
 #include <Chimera/utility>
 
 /* Driver Includes */
-//#include <Thor/drivers/f4/iwdg/hw_iwdg_driver.hpp>
-//#include <Thor/drivers/f4/iwdg/hw_iwdg_mapping.hpp>
-//#include <Thor/drivers/f4/iwdg/hw_iwdg_prj.hpp>
-//#include <Thor/drivers/f4/iwdg/hw_iwdg_types.hpp>
-//#include <Thor/drivers/f4/rcc/hw_rcc_driver.hpp>
+#include <Thor/cfg>
+#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_driver.hpp>
+#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_mapping.hpp>
+#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_prj.hpp>
+#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_IWDG )
 
-namespace Thor::Driver::IWDG
+namespace Thor::LLD::IWDG
 {
   static constexpr float hwCounterMax = static_cast<float>( RLR_MAX ); /**< Max value the hardware counter can store */
   static constexpr float hwCounterMin = static_cast<float>( RLR_MIN ); /**< Value the hardware counter trips at */
@@ -214,6 +215,6 @@ namespace Thor::Driver::IWDG
     return 0u;
   }
 
-}    // namespace Thor::Driver::IWDG
+}    // namespace Thor::LLD::IWDG
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */

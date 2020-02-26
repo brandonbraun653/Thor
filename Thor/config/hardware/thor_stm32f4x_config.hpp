@@ -51,64 +51,225 @@
 #define WRITE_BUFFERING_DISABLED 0
 
 #if defined( THOR_ENABLE_ALL_DRIVERS )
+
 /*----------------------------------------------
 High Level Driver Support
 ----------------------------------------------*/
+#ifndef THOR_HLD_ADC
 #define THOR_HLD_ADC
+#endif
+
+#ifndef THOR_HLD_CAN
 #define THOR_HLD_CAN
+#endif
+
+#ifndef THOR_HLD_CRYPTO
 #define THOR_HLD_CRYPTO
+#endif
+
+#ifndef THOR_HLD_DAC
 #define THOR_HLD_DAC
+#endif
+
+#ifndef THOR_HLD_DMA
 #define THOR_HLD_DMA
+#endif
+
+#ifndef THOR_HLD_ETHR
 #define THOR_HLD_ETHR
+#endif
+
+#ifndef THOR_HLD_EXTI
 #define THOR_HLD_EXTI
+#endif
+
+#ifndef THOR_HLD_FLASH
 #define THOR_HLD_FLASH
+#endif
+
+#ifndef THOR_HLD_GPIO
 #define THOR_HLD_GPIO
+#endif
+
+#ifndef THOR_HLD_HASH
 #define THOR_HLD_HASH
+#endif
+
+#ifndef THOR_HLD_I2C
 #define THOR_HLD_I2C
+#endif
+
+#ifndef THOR_HLD_I2S
 #define THOR_HLD_I2S
+#endif
+
+#ifndef THOR_HLD_NVIC
 #define THOR_HLD_NVIC
+#endif
+
+#ifndef THOR_HLD_PWM
 #define THOR_HLD_PWM
+#endif
+
+#ifndef THOR_HLD_QSPI
 #define THOR_HLD_QSPI
+#endif
+
+#ifndef THOR_HLD_RNG
 #define THOR_HLD_RNG
+#endif
+
+#ifndef THOR_HLD_RTC
 #define THOR_HLD_RTC
+#endif
+
+#ifndef THOR_HLD_SDMMC
 #define THOR_HLD_SDMMC
+#endif
+
+#ifndef THOR_HLD_SERIAL
 #define THOR_HLD_SERIAL
+#endif
+
+#ifndef THOR_HLD_SPI
 #define THOR_HLD_SPI
-//#define THOR_HLD_TIMER
+#endif
+
+#ifndef THOR_HLD_TIMER
+#define THOR_HLD_TIMER
+#endif
+
+#ifndef THOR_HLD_UART
 #define THOR_HLD_UART
+#endif
+
+#ifndef THOR_HLD_USART
 #define THOR_HLD_USART
+#endif
+
+#ifndef THOR_HLD_USB
 #define THOR_HLD_USB
+#endif
 
 /*----------------------------------------------
 Low Level Driver Support
 ----------------------------------------------*/
+#ifndef THOR_LLD_ADC
 #define THOR_LLD_ADC
+#endif
+
+#ifndef THOR_LLD_CAN
 #define THOR_LLD_CAN
+#endif
+
+#ifndef THOR_LLD_CRYPTO
 #define THOR_LLD_CRYPTO
+#endif
+
+#ifndef THOR_LLD_DAC
 #define THOR_LLD_DAC
+#endif
+
+#ifndef THOR_LLD_DMA
 #define THOR_LLD_DMA
+#endif
+
+#ifndef THOR_LLD_ETHR
 #define THOR_LLD_ETHR
+#endif
+
+#ifndef THOR_LLD_EXTI
 #define THOR_LLD_EXTI
+#endif
+
+#ifndef THOR_LLD_FLASH
 #define THOR_LLD_FLASH
+#endif
+
+#ifndef THOR_LLD_GPIO
 #define THOR_LLD_GPIO
+#endif
+
+#ifndef THOR_LLD_HASH
 #define THOR_LLD_HASH
+#endif
+
+#ifndef THOR_LLD_I2C
 #define THOR_LLD_I2C
+#endif
+
+#ifndef THOR_LLD_I2S
 #define THOR_LLD_I2S
+#endif
+
+#ifndef THOR_LLD_IWDG
+#define THOR_LLD_IWDG
+#endif
+
+#ifndef THOR_LLD_NVIC
 #define THOR_LLD_NVIC
+#endif
+
+#ifndef THOR_LLD_PWM
 #define THOR_LLD_PWM
+#endif
+
+#ifndef THOR_LLD_PWR
+#define THOR_LLD_PWR
+#endif
+
+#ifndef THOR_LLD_QSPI
 #define THOR_LLD_QSPI
+#endif
+
+#ifndef THOR_LLD_RCC
+#define THOR_LLD_RCC
+#endif
+
+#ifndef THOR_LLD_RNG
 #define THOR_LLD_RNG
+#endif
+
+#ifndef THOR_LLD_RTC
 #define THOR_LLD_RTC
+#endif
+
+#ifndef THOR_LLD_SDMMC
 #define THOR_LLD_SDMMC
+#endif
+
+#ifndef THOR_LLD_SERIAL
 #define THOR_LLD_SERIAL
+#endif
+
+#ifndef THOR_LLD_SPI
 #define THOR_LLD_SPI
+#endif
+
+#ifndef THOR_LLD_TIMER
 #define THOR_LLD_TIMER
+#endif
+
+#ifndef THOR_LLD_UART
 #define THOR_LLD_UART
+#endif
+
+#ifndef THOR_LLD_USART
 #define THOR_LLD_USART
+#endif
+
+#ifndef THOR_LLD_USB
 #define THOR_LLD_USB
+#endif
+
+#ifndef THOR_LLD_WWDG
+#define THOR_LLD_WWDG
+#endif
+
 
 #else /* !THOR_ENABLE_ALL_DRIVERS */
 
+//Enable specific drivers here
 
 #endif 
 

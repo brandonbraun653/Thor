@@ -9,12 +9,13 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 #include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
 #include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_USART ) && defined( STM32F446xx )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_USART ) && defined( STM32F446xx )
 
 namespace Thor::LLD::USART
 {

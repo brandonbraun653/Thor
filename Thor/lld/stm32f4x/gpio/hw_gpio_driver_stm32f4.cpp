@@ -12,6 +12,7 @@
 #include <Chimera/common>
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/cortex-m4/utilities.hpp>
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_driver.hpp>
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_mapping.hpp>

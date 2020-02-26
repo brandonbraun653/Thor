@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC )

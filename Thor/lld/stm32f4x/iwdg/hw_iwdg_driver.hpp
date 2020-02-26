@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_iwdg_driver.hpp
  *
- *   Description:
+ *  Description:
  *    Declares the low level hardware watchdog driver interface
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #ifndef THOR_HW_IWDG_DRIVER_HPP
@@ -15,12 +15,10 @@
 #include <memory>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/model/watchdog_model.hpp>
-#include <Thor/drivers/f4/iwdg/hw_iwdg_types.hpp>
+#include <Thor/lld/interface/watchdog/watchdog_model.hpp>
+#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
-namespace Thor::Driver::IWDG
+namespace Thor::LLD::IWDG
 {
   /**
    *  Initializes the low level driver
@@ -29,7 +27,7 @@ namespace Thor::Driver::IWDG
    */
   void initialize();
 
-  class Driver : public Thor::Driver::Watchdog::Basic
+  class Driver : public Thor::LLD::Watchdog::Basic
   {
   public:
     /**
@@ -68,7 +66,6 @@ namespace Thor::Driver::IWDG
   using Driver_sPtr = std::shared_ptr<Driver>;
   using Driver_uPtr = std::unique_ptr<Driver>;
 
-}    // namespace Thor::Driver::IWDG
+}    // namespace Thor::LLD::IWDG
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */
 #endif /* !THOR_HW_IWDG_DRIVER_HPP */

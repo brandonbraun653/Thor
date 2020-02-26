@@ -88,7 +88,7 @@ extern uint32_t SystemCoreClock;
 /*------------------------------------------------
 Figure out how much RAM we want to allocate
 ------------------------------------------------*/
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
 #define configTOTAL_HEAP_SIZE ( ( size_t )( 75 * 1024 ) )
 #elif defined( _SIM )
 #define configTOTAL_HEAP_SIZE ( ( size_t )( 1024 * 1024 ) )

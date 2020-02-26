@@ -2,34 +2,36 @@
  *  File Name:
  *    hld_timer_driver.hpp
  *
- *	 Description:
- *    Thor High Level Driver 
+ *  Description:
+ *    Thor high level driver for Timer
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
-#ifndef THOR_TIMER_CHIMERA_HOOKS_HPP
-#define THOR_TIMER_CHIMERA_HOOKS_HPP
+#ifndef THOR_HLD_TIMER_DRIVER_HPP 
+#define THOR_HLD_TIMER_DRIVER_HPP 
 
 /* STL Includes */
-#include <memory>
+#include <cstdlib>
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/timer>
 
-namespace Chimera::Timer::Backend
+namespace Thor::Timer
 {
   Chimera::Status_t initialize();
 
   Chimera::Status_t reset();
+
+  void incrementSystemTick();
 
   size_t millis();
 
   void delayMilliseconds( const size_t val );
 
   void delayMicroseconds( const size_t val );
-}    // namespace Chimera::TIMER::Backend
 
-#endif /* !THOR_TIMER_CHIMERA_HOOKS_HPP */
+}
+
+#endif  /* !THOR_HLD_TIMER_DRIVER_HPP */

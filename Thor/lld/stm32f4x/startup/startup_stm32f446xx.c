@@ -10,7 +10,7 @@
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-#if defined( _EMBEDDED )
+#if defined( EMBEDDED )
 
 #include <stddef.h>
 extern void *_estack;

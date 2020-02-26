@@ -114,6 +114,6 @@ namespace Thor::GPIO
     // TODO
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
+}
 
 #endif  /* THOR_DRIVER_GPIO */
-}

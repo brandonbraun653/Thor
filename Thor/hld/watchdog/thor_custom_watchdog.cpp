@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
- *       thor_watchdog.cpp
+ *  File Name:
+ *    thor_watchdog.cpp
  *
- *   Description:
- *       Implementation of the hardware watchdog interface
+ *  Description:
+ *    Implementation of the hardware watchdog interface
  *
- *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C/C++ Includes */
@@ -18,35 +18,33 @@
 /* Aurora Includes */
 #include <Aurora/constants/common.hpp>
 
+/* Chimera Includes */
+#include <Chimera/common>
+
 /* Thor Includes */
 #include <Thor/cfg>
-//#include <Thor/watchdog.hpp>
-//#include <Thor/drivers/watchdog.hpp>
+#include <Thor/watchdog>
+#include <Thor/lld/interface/watchdog/watchdog.hpp>
 
 namespace Chimera::Watchdog::Backend
 {
-  //Chimera::Status_t prjInitialize()
-  //{
-  //  Chimera::Status_t resultWWDG = Chimera::CommonStatusCodes::OK;
-  //  Chimera::Status_t resultIWDG = Chimera::CommonStatusCodes::OK;
+  Chimera::Status_t prjInitialize()
+  {
+    Chimera::Status_t resultWWDG = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t resultIWDG = Chimera::CommonStatusCodes::OK;
 
-  //  #if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )
-  //  resultWWDG = Thor::Watchdog::initializeWWDG();
-  //  #endif 
+    resultWWDG = Thor::Watchdog::initializeWWDG();
+    resultIWDG = Thor::Watchdog::initializeIWDG();
 
-  //  #if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
-  //  resultIWDG = Thor::Watchdog::initializeIWDG();
-  //  #endif 
-
-  //  if ( ( resultIWDG == Chimera::CommonStatusCodes::OK ) && ( resultWWDG == Chimera::CommonStatusCodes::OK ) )
-  //  {
-  //    return Chimera::CommonStatusCodes::OK;
-  //  }
-  //  else
-  //  {
-  //    return Chimera::CommonStatusCodes::FAIL;
-  //  }
-  //}
+    if ( ( resultIWDG == Chimera::CommonStatusCodes::OK ) && ( resultWWDG == Chimera::CommonStatusCodes::OK ) )
+    {
+      return Chimera::CommonStatusCodes::OK;
+    }
+    else
+    {
+      return Chimera::CommonStatusCodes::FAIL;
+    }
+  }
 }
 
 
@@ -55,7 +53,6 @@ namespace Thor::Watchdog
   /*------------------------------------------------
   Window Watchdog Driver
   ------------------------------------------------*/
-#if defined( THOR_DRIVER_WWDG ) && ( THOR_DRIVER_WWDG == 1 )
 
   static size_t s_wwdg_driver_initialized;
 
@@ -140,12 +137,9 @@ namespace Thor::Watchdog
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-#endif /* THOR_DRIVER_WWDG */
-
   /*------------------------------------------------
   Independent Watchdog Driver
   ------------------------------------------------*/
-#if defined( THOR_DRIVER_IWDG ) && ( THOR_DRIVER_IWDG == 1 )
 
   static size_t s_iwdg_driver_initialized;
 
@@ -156,7 +150,7 @@ namespace Thor::Watchdog
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    Thor::Driver::IWDG::initialize();
+    Thor::LLD::IWDG::initialize();
 
 
     s_iwdg_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
@@ -165,7 +159,7 @@ namespace Thor::Watchdog
 
   Independent::Independent() : currentPrescaler( 0u )
   {
-    hwDriver = std::make_unique<Thor::Driver::IWDG::Driver>( Thor::Driver::IWDG::IWDG1_PERIPH );
+    hwDriver = std::make_unique<Thor::LLD::IWDG::Driver>( Thor::LLD::IWDG::IWDG1_PERIPH );
   }
 
   Independent::~Independent()
@@ -215,19 +209,17 @@ namespace Thor::Watchdog
 
   size_t Independent::maxTimeout()
   {
-    return hwDriver->getMaxTimeout( Thor::Driver::IWDG::PR::PRESCALE_MAX );
+    return hwDriver->getMaxTimeout( Thor::LLD::IWDG::PR::PRESCALE_MAX );
   }
 
   size_t Independent::minTimeout()
   {
-    return hwDriver->getMinTimeout( Thor::Driver::IWDG::PR::PRESCALE_MIN );
+    return hwDriver->getMinTimeout( Thor::LLD::IWDG::PR::PRESCALE_MIN );
   }
 
   Chimera::Status_t Independent::pauseOnDebugHalt( const bool enable )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
-
-#endif /* THOR_DRIVER_IWDG */
 
 }    // namespace Thor::Watchdog

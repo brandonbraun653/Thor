@@ -20,7 +20,7 @@
 #include <Chimera/common>
 #include <Chimera/watchdog>
 
-namespace Thor::Driver::Watchdog
+namespace Thor::LLD::Watchdog
 {
   class Basic
   {
@@ -144,7 +144,7 @@ namespace Thor::Driver::Watchdog
     virtual Chimera::Status_t setWindow( const Reg32_t val ) = 0;
   };
 
-}    // namespace Thor::Driver::Watchdog
+}    // namespace Thor::LLD::Watchdog
 
 
 #endif  /* !THOR_DRIVER_MODEL_WATCHDOG_HPP */

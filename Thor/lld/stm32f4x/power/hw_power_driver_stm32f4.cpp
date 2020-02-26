@@ -7,6 +7,9 @@
  *
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
+ 
+/* Driver Includes */
+#include <Thor/cfg>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_PWR )
 

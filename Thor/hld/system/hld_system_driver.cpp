@@ -20,6 +20,7 @@
 #include <Thor/spi>
 #include <Thor/uart>
 #include <Thor/usart>
+#include <Thor/watchdog>
 
 /* Driver Includes */
 #include <Thor/lld/interface/nvic/nvic.hpp>
@@ -45,34 +46,14 @@ namespace Chimera::System
     /*------------------------------------------------
     Hardware Specific Initialization
     ------------------------------------------------*/
-#if defined( THOR_DRIVER_DMA ) && defined( THOR_LLD_DMA )
     Thor::DMA::initialize();
     Thor::DMA::DMAClass::get()->init();
-#endif
-
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
     Thor::GPIO::initialize();
-#endif
-
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_IWDG )
     Thor::Watchdog::initializeIWDG();
-#endif 
-
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_SPI )
     Thor::SPI::initialize();
-#endif
-
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_UART )
     Thor::UART::initialize();
-#endif
-
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_USART )
     Thor::USART::initialize();
-#endif
-
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_WWDG )
     Thor::Watchdog::initializeWWDG();
-#endif 
 
     /*------------------------------------------------
     Initialize interrupt settings

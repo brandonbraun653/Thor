@@ -18,6 +18,7 @@
 #include <Chimera/clock>
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/mapping/peripheral_mapping.hpp>
 
 #include <Thor/lld/stm32f4x/nvic/hw_nvic_driver.hpp>

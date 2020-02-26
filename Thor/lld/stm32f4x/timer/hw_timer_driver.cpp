@@ -9,7 +9,10 @@
  *******************************************************************************/
 
 /* STL Includes */
+#include <cstdlib>
 
+/* Chimera Includes */
+#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/cfg>
@@ -18,21 +21,35 @@
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_TIMER )
 
 namespace Thor::LLD::Timer
-{
+{  
+  static size_t systemTick = 0u;
+
+  void incrementSystemTick()
+  {
+    systemTick++;
+  }
+
   size_t millis()
   {
-    #pragma message("Millis won't work yet")
-    return 0;
+    return systemTick;
   }
 
   void delayMilliseconds( const size_t ms )
   {
-    #pragma message("delayMilliseconds won't work yet")
+    #if defined( USING_FREERTOS ) || defined( USING_FREERTOS_THREADS )
+    vTaskDelay( pdMS_TO_TICKS( ms ) );
+    #else
+    #pragma message("delayMilliseconds() has no implementation")
+    #endif
   }
 
   void delayMicroseconds( const size_t us )
   {
-    #pragma message("delayMicroseconds won't work yet")
+    #if defined( USING_FREERTOS ) || defined( USING_FREERTOS_THREADS )
+    vTaskDelay( pdMS_TO_TICKS( us * 1000 ) );
+    #else
+    #pragma message("delayMicroseconds() has no implementation")
+    #endif 
   }
 }
 

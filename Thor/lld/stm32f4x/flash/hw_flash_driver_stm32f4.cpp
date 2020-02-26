@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/stm32f4x/flash/hw_flash_driver.hpp>
 #include <Thor/lld/stm32f4x/flash/hw_flash_prj.hpp>
 #include <Thor/lld/stm32f4x/flash/hw_flash_types.hpp>

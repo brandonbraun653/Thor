@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_iwdg_mapping.hpp
  *
- *   Description:
+ *  Description:
  *    Mappings for the watchdog timer resources
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #ifndef THOR_HW_IWDG_MAPPING_HPP
@@ -18,12 +18,9 @@
 #include <Chimera/container>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/iwdg/hw_iwdg_types.hpp>
+#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
-
-namespace Thor::Driver::IWDG
+namespace Thor::LLD::IWDG
 {
 #if defined( STM32_IWDG1_PERIPH_AVAILABLE )
   extern RegisterMap * IWDG1_PERIPH;
@@ -50,5 +47,4 @@ namespace Thor::Driver::IWDG
   bool isIWDG( const std::uintptr_t address );
 }
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */
 #endif /* !THOR_HW_IWDG_MAPPING_HPP */

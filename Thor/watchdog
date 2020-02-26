@@ -1,17 +1,17 @@
 /********************************************************************************
  *  File Name:
- *    timer
+ *    watchdog
  * 
  *  Description:
- *    Thor Timer Includes
+ *    Thor Watchdog Includes
  * 
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_TIMER_INCLUDES
-#define THOR_TIMER_INCLUDES
+#ifndef THOR_WATCHDOG_INCLUDES
+#define THOR_WATCHDOG_INCLUDES
 
-#include <Thor/hld/timer/hld_timer_driver.hpp>
+#include <Thor/hld/watchdog/watchdog.hpp>
 
-#endif /* !THOR_TIMER_INCLUDES */
+#endif /* !THOR_WATCHDOG_INCLUDES */

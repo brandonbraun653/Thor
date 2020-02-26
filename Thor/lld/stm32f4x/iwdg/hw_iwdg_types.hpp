@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_iwdg_types.hpp
  *
- *   Description:
+ *  Description:
+ *    Types for the independent watchdog driver
  *
- *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #ifndef THOR_HW_IWDG_TYPES_HPP
@@ -13,13 +13,12 @@
 
 /* C++ Includes */
 #include <cstdint>
+#include <array>
 
 /* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/drivers/f4/iwdg/hw_iwdg_prj.hpp>
+#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
-namespace Thor::Driver::IWDG
+namespace Thor::LLD::IWDG
 {
   struct RegisterMap
   {
@@ -185,7 +184,6 @@ namespace Thor::Driver::IWDG
     };
   }
 
-}    // namespace Thor::Driver::IWDG
+}    // namespace Thor::LLD::IWDG
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */
 #endif /* !THOR_HW_IWDG_TYPES_HPP */

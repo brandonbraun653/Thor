@@ -29,7 +29,7 @@ namespace Thor::LLD::WWDG
    *        the future, it shouldn't take too much massaging to get
    *        everything in working order.
    */
-  class Driver : public Thor::Driver::Watchdog::Basic, public Thor::Driver::Watchdog::Advanced
+  class Driver : public Thor::LLD::Watchdog::Basic, public Thor::LLD::Watchdog::Advanced
   {
   public:
     /**

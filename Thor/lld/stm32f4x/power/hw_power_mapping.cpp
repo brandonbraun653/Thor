@@ -10,6 +10,7 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/stm32f4x/power/hw_power_mapping.hpp>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_PWR )

@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/stm32f4x/wwdg/hw_wwdg_driver.hpp>
 #include <Thor/lld/stm32f4x/wwdg/hw_wwdg_mapping.hpp>
 #include <Thor/lld/stm32f4x/wwdg/variant/hw_wwdg_register_stm32f446xx.hpp>

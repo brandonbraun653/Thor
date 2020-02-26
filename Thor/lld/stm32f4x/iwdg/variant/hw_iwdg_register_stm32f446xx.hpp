@@ -1,12 +1,12 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_iwdg_register_stm32f446xx.hpp
  *
- *   Description:
+ *  Description:
  *    Explicit hardware register definitions for the STM32F446xx Watchdog
  *    peripherals.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #ifndef THOR_HW_IWDG_REGISTER_HPP
@@ -16,15 +16,15 @@
 #include <array>
 #include <cstdint>
 
-/* Driver Includes */
-#include <Thor/headers.hpp>
-#include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
+/* Chimera Includes */
+#include <Chimera/common>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 )
+/* Driver Includes */
+#include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
 #define STM32_IWDG1_PERIPH_AVAILABLE
 
-namespace Thor::Driver::IWDG
+namespace Thor::LLD::IWDG
 {
   void initializeRegisters();
 
@@ -95,7 +95,6 @@ namespace Thor::Driver::IWDG
   static constexpr Reg32_t SR_RVU_Msk = ( 0x1U << SR_RVU_Pos );
   static constexpr Reg32_t SR_RVU     = SR_RVU_Msk;
 
-}    // namespace Thor::Driver::IWDG
+}    // namespace Thor::LLD::IWDG
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */
 #endif /* !THOR_HW_IWDG_REGISTER_HPP */

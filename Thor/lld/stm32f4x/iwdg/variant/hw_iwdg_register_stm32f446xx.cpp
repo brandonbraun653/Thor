@@ -5,20 +5,20 @@
   *  Description:
   *    Explicit STM32F446xx IWDG data and routines
   *
-  *  2019 | Brandon Braun | brandonbraun653@gmail.com
+  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
   ********************************************************************************/
 
 /* Driver Includes */
-//#include <Thor/headers.hpp>
-//#include <Thor/drivers/f4/iwdg/hw_iwdg_driver.hpp>
-//#include <Thor/drivers/f4/iwdg/hw_iwdg_mapping.hpp>
-//#include <Thor/drivers/f4/iwdg/hw_iwdg_register_stm32f446xx.hpp>
-//#include <Thor/drivers/f4/iwdg/hw_iwdg_types.hpp>
-//#include <Thor/drivers/f4/rcc/hw_rcc_mapping.hpp>
+#include <Thor/cfg>
+#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_driver.hpp>
+#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_mapping.hpp>
+#include <Thor/lld/stm32f4x/iwdg/variant/hw_iwdg_register_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_types.hpp>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_DRIVER_IWDG == 1 ) && defined( STM32F446xx )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_IWDG ) && defined( STM32F446xx )
 
-namespace Thor::Driver::IWDG
+namespace Thor::LLD::IWDG
 {
 #if defined( EMBEDDED )
   RegisterMap * IWDG1_PERIPH = reinterpret_cast<RegisterMap *>( IWDG1_BASE_ADDR );
@@ -53,6 +53,6 @@ namespace Thor::Driver::IWDG
 
 #endif
   }
-}    // namespace Thor::Driver::IWDG
+}    // namespace Thor::LLD::IWDG
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_IWDG */

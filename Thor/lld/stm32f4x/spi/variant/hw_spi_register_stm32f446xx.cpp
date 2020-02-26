@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
@@ -17,7 +18,7 @@
 #include <Thor/lld/stm32f4x/spi/hw_spi_types.hpp>
 #include <Thor/lld/stm32f4x/spi/variant/hw_spi_register_stm32f446xx.hpp>
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_SPI ) && defined( STM32F446xx )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_SPI ) && defined( STM32F446xx )
 
 namespace Thor::LLD::SPI
 {

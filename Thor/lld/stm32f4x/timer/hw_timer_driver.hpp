@@ -17,12 +17,13 @@
 
 namespace Thor::LLD::Timer
 {
+  void incrementSystemTick();
+
   size_t millis();
 
   void delayMilliseconds( const size_t ms );
 
   void delayMicroseconds( const size_t us );
-
 }
 
 #endif  /* !THOR_LLD_TIMER_HPP */

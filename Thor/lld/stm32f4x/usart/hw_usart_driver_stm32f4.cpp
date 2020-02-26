@@ -20,6 +20,7 @@
 #include <Chimera/thread>
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/dma>
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
@@ -30,7 +31,7 @@
 #include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
 
 
-#if defined( TARGET_STM32F4 ) && ( THOR_LLD_USART )
+#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_USART )
 
 namespace Thor::LLD::USART
 {

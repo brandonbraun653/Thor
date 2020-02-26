@@ -13,10 +13,11 @@
 
 namespace boost
 {
-#if defined( BOOST_NO_EXCEPTIONS )
-  void throw_exception( std::exception const &e )
-  {
-    while ( 1 ) {}
-  }
-#endif
+// Currently defined in Chimera...might not need this for now.
+//#if defined( BOOST_NO_EXCEPTIONS )
+//  void throw_exception( std::exception const &e )
+//  {
+//    while ( 1 ) {}
+//  }
+//#endif
 }    // namespace boost

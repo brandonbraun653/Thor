@@ -12,6 +12,7 @@
 #include <array>
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_mapping.hpp>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )

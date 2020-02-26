@@ -15,6 +15,9 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Driver Includes */
+#include <Thor/cfg>
+
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC ) && defined( STM32F446xx )
 
 #ifdef __cplusplus

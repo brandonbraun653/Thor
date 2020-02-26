@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prj.hpp>
