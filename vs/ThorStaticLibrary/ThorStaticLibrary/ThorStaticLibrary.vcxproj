@@ -101,27 +101,35 @@
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='RF24_1|Win32'">
     <PlatformToolset>v142</PlatformToolset>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='RF24_2|Win32'">
     <PlatformToolset>v142</PlatformToolset>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PlatformToolset>v142</PlatformToolset>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PlatformToolset>v142</PlatformToolset>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">
     <PlatformToolset>v142</PlatformToolset>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='RF24_2|x64'">
     <PlatformToolset>v142</PlatformToolset>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformToolset>v142</PlatformToolset>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PlatformToolset>v142</PlatformToolset>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -398,7 +406,7 @@
     <ClInclude Include="..\..\..\Thor\hld\dma\hld_dma_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\dma\hld_dma_types.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\dma\hld_prv_dma_resources.hpp" />
-    <ClCompile Include="..\..\..\Thor\hld\dma\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\dma\test\test_entry_dma.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\dma\test\test_hld_dma_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\dma\test\test_hld_dma_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\exti\thor_exti.cpp" />
@@ -411,7 +419,7 @@
     <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_entry_gpio.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_hld_gpio_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_hld_gpio_driver.cpp" />
     <ClInclude Include="..\..\..\Thor\hld\interrupt\hld_interrupt_definitions.hpp" />
@@ -424,7 +432,7 @@
     <ClInclude Include="..\..\..\Thor\hld\spi\hld_spi_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\spi\hld_spi_types.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\spi\spi_definitions.hpp" />
-    <ClCompile Include="..\..\..\Thor\hld\spi\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\spi\test\test_entry_spi.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\spi\test\test_hld_spi_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\sram\sram.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\sram\thor_sram.cpp" />
@@ -435,7 +443,7 @@
     <ClInclude Include="..\..\..\Thor\hld\system\hld_system_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\system\hld_system_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\system\hld_system_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\hld\system\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\system\test\test_entry_system.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\system\test\test_hld_system_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\system\test\test_hld_system_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_chimera.cpp" />
@@ -446,7 +454,7 @@
     <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\hld\uart\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\uart\test\test_entry_uart.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\uart\test\test_hld_uart_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\uart\test\test_hld_uart_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\usart\hld_usart_chimera.cpp" />
@@ -455,7 +463,7 @@
     <ClInclude Include="..\..\..\Thor\hld\usart\hld_usart_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\usart\hld_usart_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\usart\hld_usart_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\hld\usart\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\usart\test\test_entry_usart.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\usart\test\test_hld_usart_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\usart\test\test_hld_usart_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\watchdog\thor_custom_watchdog.cpp" />
@@ -512,7 +520,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\test\test_entry_lld_dma.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\test\test_lld_dma_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\variant\hw_dma_register_stm32f446xx.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\variant\hw_dma_register_stm32f446xx.hpp" />
@@ -522,7 +530,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\test\test_entry_lld_flash.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\test\test_lld_flash_driver.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\variant\hw_flash_register_stm32f446xx.hpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_driver_stm32f4.cpp" />
@@ -531,7 +539,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\test\test_entry_lld_gpio.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\test\test_lld_gpio_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\variant\hw_gpio_register_stm32f446xx.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\variant\hw_gpio_register_stm32f446xx.hpp" />
@@ -549,7 +557,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\test\test_entry_lld_nvic.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\test\test_lld_nvic_driver.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\variant\hw_nvic_register_stm32f446xx.hpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_driver_stm32f4.cpp" />
@@ -558,7 +566,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\test\test_entry_lld_power.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\test\test_lld_power_driver.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\variant\hw_power_register_stm32f446xx.hpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_driver_stm32f4.cpp" />
@@ -570,7 +578,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_types.hpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\config\hw_rcc_config_stm32f446xx.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\config\hw_rcc_config_stm32f446xx.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\test\test_entry_lld_rcc.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\test\test_lld_rcc_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\variant\hw_rcc_register_stm32f446xx.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\variant\hw_rcc_register_stm32f446xx.hpp" />
@@ -580,7 +588,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\test\test_entry_lld_spi.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\test\test_lld_spi_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\variant\hw_spi_register_stm32f446xx.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\variant\hw_spi_register_stm32f446xx.hpp" />
@@ -593,7 +601,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\system\variant\sys_memory_map_stm32f446xx.hpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\lld_timer_driver.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\timer\lld_timer_driver.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_entry_lld_timer.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_lld_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\variant\hw_timer_register_stm32f446xx.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_driver.cpp" />
@@ -602,7 +610,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\test\test_entry_lld_uart.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\test\test_lld_uart_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\variant\hw_uart_register_stm32f446xx.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\variant\hw_uart_register_stm32f446xx.hpp" />
@@ -612,7 +620,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\test\test_entry_lld_usart.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\test\test_lld_usart_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\variant\hw_usart_register_stm32f446xx.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\variant\hw_usart_register_stm32f446xx.hpp" />
@@ -622,7 +630,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\test\test_entry.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\test\test_entry_lld_wwdg.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\test\test_lld_wwdg_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\variant\hw_wwdg_register_stm32f446xx.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\variant\hw_wwdg_register_stm32f446xx.hpp" />

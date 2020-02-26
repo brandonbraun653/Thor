@@ -8,6 +8,7 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
+#if defined( THOR_HLD_TEST )
 /* GTest Includes */
 #include "gtest/gtest.h"
 
@@ -27,4 +28,5 @@ TEST(PleasePass, PrettyPlease)
 
   Chimera::UART::Backend::initialize();
 }
+#endif
 

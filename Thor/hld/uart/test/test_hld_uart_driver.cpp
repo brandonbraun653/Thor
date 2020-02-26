@@ -8,6 +8,7 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
+#if defined( THOR_HLD_TEST )
 /* GTest Includes */
 #include "gtest/gtest.h"
 
@@ -24,4 +25,4 @@ TEST(PleasePass, PrettyPlease2)
   EXPECT_EQ(0, 0);
   Thor::UART::initialize();
 }
-
+#endif

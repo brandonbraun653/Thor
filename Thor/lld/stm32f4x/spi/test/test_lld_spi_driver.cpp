@@ -8,6 +8,7 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
+#if defined( LLD_TEST )
 /* GTest Includes */
 #include "gtest/gtest.h"
 
@@ -23,4 +24,4 @@ TEST(PleasePass, PrettyPlease)
 {
   EXPECT_EQ(0, 0);
 }
-
+#endif
