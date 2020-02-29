@@ -1,14 +1,23 @@
 # Thor
 
-Thor is a translation layer that wraps around the well known STM32 HAL and exposes it using the [Chimera](https://github.com/brandonbraun653/Chimera) interface. This
-allows all of my projects (perhaps yours too?) to be able to utilize the entire STM32 lineup without too much hassle.
+Thor is my personal attempt at learning how to architect writing a Hardware Abstraction layer for STM32 series MCUs. It is broken up 
+into a High Level Driver (HLD) and a Low Level Driver (LLD). The high level driver handles common functionality that you would expect
+from modern hardware peripheral drivers, like thread awareness and asynchronous operation. The low level driver is a chip specific,
+bare metal driver that controls the peripheral register level. Using a predetermined interface, the HLD and LLD work together to allow
+swapping processors without too much hassle. Simply provide a LLD implementation and you are good to go.
+
+The HLD is built on top of the Chimera interface specification (my personal spec), which is a labor of love and always a work in progress,
+so if you have suggestions for improvements I would love to hear them.
 
 ## Required Repositories ##
-1. [Chimera](https://github.com/brandonbraun653/Chimera)
+[Chimera](https://github.com/brandonbraun653/Chimera)
+Provides the HLD interface specification and common defintions.
 
-## Semi-Optional ##
-Choose at least one of these back-end STM32 HAL drivers to compile with.
+## Optional Repositories ##
+[FreeRTOS](https://github.com/brandonbraun653/FreeRTOS)
+Slightly modified FreeRTOS 10.0.0 to integrate better with my build system. Functionally the same as the released FreeRTOS.
 
-1. [STM32F7](https://github.com/brandonbraun653/STM32HAL_F7)
-2. [STM32F4](https://github.com/brandonbraun653/STM32HAL_F4)
-3. More coming later...
+## Build System ##
+- Boost
+- MSBuild
+- VisualGDB
