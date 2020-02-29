@@ -1010,6 +1010,12 @@
     <ClInclude Include="..\..\..\Thor\hld\watchdog\hld_watchdog_driver.hpp">
       <Filter>hld\watchdog</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\version.hpp">
+      <Filter>hld</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\version.hpp">
+      <Filter>lld\stm32f4x</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">

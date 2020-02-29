@@ -469,6 +469,7 @@
     <ClCompile Include="..\..\..\Thor\hld\usart\test\test_hld_usart_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\watchdog\hld_watchdog_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\watchdog\hld_watchdog_driver.cpp" />
+    <ClInclude Include="..\..\..\Thor\hld\version.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\watchdog\hld_watchdog_chimera.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\watchdog\hld_watchdog_driver.hpp" />
     <ClCompile Include="..\..\..\Thor\lld\common\thor_exceptions.cpp" />
@@ -629,6 +630,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\variant\hw_usart_register_stm32f446xx.hpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_driver_stm32f4.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_mapping.cpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\version.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_prj.hpp" />
