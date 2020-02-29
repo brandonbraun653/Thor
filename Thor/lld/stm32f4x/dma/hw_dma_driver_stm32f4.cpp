@@ -323,7 +323,7 @@ namespace Thor::LLD::DMA
     ------------------------------------------------*/
     if ( cb.transferState & Runtime::Flag::TRANSFER_COMPLETE )
     {
-      processListeners( Chimera::Event::Trigger::TRANSFER_COMPLETE );
+      processListeners( Chimera::Event::TRIGGER_TRANSFER_COMPLETE );
     }
 
     /*------------------------------------------------
@@ -331,7 +331,7 @@ namespace Thor::LLD::DMA
     ------------------------------------------------*/
     if ( cb.transferState & ( Runtime::Flag::TRANSFER_ERROR | Runtime::Flag::DIRECT_MODE_ERROR | Runtime::Flag::FIFO_ERROR ) )
     {
-      processListeners( Chimera::Event::Trigger::SYSTEM_ERROR );
+      processListeners( Chimera::Event::TRIGGER_SYSTEM_ERROR );
     }
 
     return result;
@@ -489,18 +489,7 @@ namespace Thor::LLD::DMA
 
   void StreamController::processListeners( const Chimera::Event::Trigger event )
   {
-    for ( auto &listener : eventListeners )
-    {
-      if ( listener.trigger != event )
-      {
-        continue;
-      }
-
-#pragma message ("I don't think this works yet")
-      // Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
-      // Thor::Event::notifyThread( event, listener );
-      // Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
-    }
+    Chimera::Event::notifyListenerList( event, eventListeners, 0 );
   }
 
   /*------------------------------------------------

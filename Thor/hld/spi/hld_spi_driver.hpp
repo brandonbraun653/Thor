@@ -79,6 +79,7 @@ namespace Thor::SPI
     Thor::GPIO::Driver_sPtr CS;           /**< SPI Chip Select gpio pin */
     Thor::LLD::SPI::Driver_uPtr driver; /**< Low level hardware SPI driver */
 
+    Chimera::Event::ActionableList eventListeners;
     Chimera::Threading::BinarySemaphore awaitTransferComplete; /**< Internal signal for when the current transfer has completed */
   };
 

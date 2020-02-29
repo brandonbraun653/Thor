@@ -13,6 +13,7 @@
 #define THOR_HW_DMA_DRIVER_HPP
 
 /* Chimera Includes */
+#include <Chimera/event>
 #include <Chimera/thread>
 #include <Chimera/dma>
 
@@ -121,7 +122,7 @@ namespace Thor::LLD::DMA
     IRQn_Type streamIRQn;
 
     size_t listenerIDCount;
-    std::vector<Chimera::Event::Actionable> eventListeners;
+    Chimera::Event::ActionableList eventListeners;
 
     void enableTransferIRQ();
     void disableTransferIRQ();

@@ -432,7 +432,7 @@ namespace Thor::SPI
   ------------------------------------------------*/
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
-    if ( event != Chimera::Event::Trigger::TRANSFER_COMPLETE )
+    if ( event != Chimera::Event::TRIGGER_TRANSFER_COMPLETE )
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }

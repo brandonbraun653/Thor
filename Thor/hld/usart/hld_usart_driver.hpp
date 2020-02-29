@@ -99,7 +99,7 @@ namespace Thor::USART
 
 
     size_t listenerIDCount;
-    std::vector<Chimera::Event::Actionable> eventListeners;
+    Chimera::Event::ActionableList eventListeners;
 
     Chimera::Threading::BinarySemaphore awaitRXComplete;
     Chimera::Threading::BinarySemaphore awaitTXComplete;

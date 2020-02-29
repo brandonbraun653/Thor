@@ -18,6 +18,7 @@
 #include <Aurora/constants/common.hpp>
 
 /* Chimera Includes */
+#include <Chimera/event>
 #include <Chimera/thread>
 
 /* Thor Includes */
@@ -287,7 +288,7 @@ namespace Thor::USART
     using namespace Thor::LLD::USART;
 
     const auto flags = hwDriver->getFlags();
-    //auto event       = Chimera::Event::Trigger::INVALID;
+    //auto event       = Chimera::Event::TRIGGER_INVALID;
 
     if ( flags & Runtime::Flag::TX_COMPLETE )
     {
@@ -313,7 +314,7 @@ namespace Thor::USART
       awaitTXComplete.release();
       txLock.release();
 
-      processListeners( Chimera::Event::Trigger::WRITE_COMPLETE );
+      processListeners( Chimera::Event::TRIGGER_WRITE_COMPLETE );
     }
 
     if ( flags & Runtime::Flag::RX_COMPLETE )
@@ -334,7 +335,7 @@ namespace Thor::USART
       awaitRXComplete.release();
       rxLock.release();
 
-      processListeners( Chimera::Event::Trigger::READ_COMPLETE );
+      processListeners( Chimera::Event::TRIGGER_READ_COMPLETE );
     }
   }
 
@@ -435,16 +436,16 @@ namespace Thor::USART
   {
     using namespace Chimera::Event;
 
-    if ( ( event != Trigger::READ_COMPLETE ) && ( event != Trigger::WRITE_COMPLETE ) )
+    if ( ( event != TRIGGER_READ_COMPLETE ) && ( event != TRIGGER_WRITE_COMPLETE ) )
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
 
-    if ( ( event == Trigger::WRITE_COMPLETE ) && !awaitTXComplete.try_acquire_for( timeout ) )
+    if ( ( event == TRIGGER_WRITE_COMPLETE ) && !awaitTXComplete.try_acquire_for( timeout ) )
     {
       return Chimera::CommonStatusCodes::TIMEOUT;
     }
-    else if ( ( event == Trigger::READ_COMPLETE ) && !awaitRXComplete.try_acquire_for( timeout ) )
+    else if ( ( event == TRIGGER_READ_COMPLETE ) && !awaitRXComplete.try_acquire_for( timeout ) )
     {
       return Chimera::CommonStatusCodes::TIMEOUT;
     }
@@ -496,18 +497,7 @@ namespace Thor::USART
 
   void Driver::processListeners( const Chimera::Event::Trigger event )
   {
-    for ( auto &listener : eventListeners )
-    {
-      if ( listener.trigger != event )
-      {
-        continue;
-      }
-
-#pragma message("I don't think this is gonna work yet")
-      // Thor::Event::notifyAtomic( event, listener, static_cast<uint32_t>( event ) );
-      // Thor::Event::notifyThread( event, listener );
-      // Thor::Event::executeISRCallback( event, listener, nullptr, 0 );
-    }
+    Chimera::Event::notifyListenerList( event, eventListeners, 0 );
   }
 
   Chimera::Status_t Driver::readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
