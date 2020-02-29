@@ -12,6 +12,6 @@
 #ifndef THOR_WATCHDOG_INCLUDES
 #define THOR_WATCHDOG_INCLUDES
 
-#include <Thor/hld/watchdog/watchdog.hpp>
+#include <Thor/hld/watchdog/hld_watchdog_driver.hpp>
 
 #endif /* !THOR_WATCHDOG_INCLUDES */

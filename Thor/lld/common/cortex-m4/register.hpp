@@ -1,18 +1,19 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    register.hpp
  *
- *   Description:
+ *  Description:
  *    Cortex-M4 specific register definitions
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef CORTEX_M4_REGISTERS_HPP
 #define CORTEX_M4_REGISTERS_HPP
 
-#include <Thor/preprocessor.hpp>
+/* Thor Includes */
+#include <Thor/cfg>
 
 #if defined( CORTEX_M4 )
 

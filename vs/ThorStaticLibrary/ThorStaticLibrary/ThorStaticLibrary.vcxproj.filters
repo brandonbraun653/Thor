@@ -501,12 +501,6 @@
     <ClCompile Include="..\..\..\Thor\hld\usart\test\test_hld_usart_driver.cpp">
       <Filter>hld\usart\test</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Thor\hld\watchdog\thor_custom_watchdog.cpp">
-      <Filter>hld\watchdog</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\hld\watchdog\watchdog.hpp">
-      <Filter>hld\watchdog</Filter>
-    </ClInclude>
     <None Include="..\..\..\Thor\dma" />
     <None Include="..\..\..\Thor\event" />
     <None Include="..\..\..\Thor\gpio" />
@@ -1010,6 +1004,12 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\timer\hw_timer_driver.hpp">
       <Filter>lld\stm32f4x\timer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\watchdog\hld_watchdog_chimera.hpp">
+      <Filter>hld\watchdog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\watchdog\hld_watchdog_driver.hpp">
+      <Filter>hld\watchdog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">
@@ -1074,6 +1074,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\hw_timer_driver.cpp">
       <Filter>lld\stm32f4x\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\watchdog\hld_watchdog_chimera.cpp">
+      <Filter>hld\watchdog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\watchdog\hld_watchdog_driver.cpp">
+      <Filter>hld\watchdog</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

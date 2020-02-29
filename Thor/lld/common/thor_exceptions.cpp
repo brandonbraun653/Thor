@@ -1,30 +1,19 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    thor_exceptions.cpp
  *
- *   Description:
+ *  Description:
  *    Thor exception handling implementations
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* C++ Includes */
-
 /* Thor Includes */
-//#include <Thor/cfg>
-//#include <Thor/thor.hpp>
-//#include <Thor/exceptions.hpp>
-//#include <Thor/system.hpp>
-//
-///* Driver Includes */
-//#include <Thor/drivers/common/cortex-m4/register.hpp>
-//#include <Thor/drivers/common/cortex-m7/register.hpp>
+#include <Thor/cfg>
+#include <Thor/system>
 
-
-namespace Thor::Exception
-{
-
-}    // namespace Thor::Exception
+/* Driver Includes */
+#include <Thor/lld/common/cortex-m4/register.hpp>
 
 
 #if defined( EMBEDDED )
@@ -33,7 +22,7 @@ namespace Thor::Exception
 extern "C"
 {
 #endif
-  
+
   /**
    *  Exception handler registered with the isr vector array
    *
@@ -71,8 +60,8 @@ extern "C"
 #endif
 
   /**
-   *  This is called from HardFault_Handler() with a pointer to the fault stack 
-   *  as the parameter. We can then read the values from the stack and place them 
+   *  This is called from HardFault_Handler() with a pointer to the fault stack
+   *  as the parameter. We can then read the values from the stack and place them
    *  into local variables for ease of reading.
    *
    *  @note This function never returns as we break into the debugger.

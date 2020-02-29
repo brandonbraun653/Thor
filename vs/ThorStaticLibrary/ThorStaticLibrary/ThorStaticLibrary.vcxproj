@@ -467,8 +467,10 @@
     <ClCompile Include="..\..\..\Thor\hld\usart\test\test_entry_usart.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\usart\test\test_hld_usart_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\usart\test\test_hld_usart_driver.cpp" />
-    <ClCompile Include="..\..\..\Thor\hld\watchdog\thor_custom_watchdog.cpp" />
-    <ClInclude Include="..\..\..\Thor\hld\watchdog\watchdog.hpp" />
+    <ClCompile Include="..\..\..\Thor\hld\watchdog\hld_watchdog_chimera.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\watchdog\hld_watchdog_driver.cpp" />
+    <ClInclude Include="..\..\..\Thor\hld\watchdog\hld_watchdog_chimera.hpp" />
+    <ClInclude Include="..\..\..\Thor\hld\watchdog\hld_watchdog_driver.hpp" />
     <ClCompile Include="..\..\..\Thor\lld\common\thor_exceptions.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\common\exceptions.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\common\cmsis\configuration.hpp" />

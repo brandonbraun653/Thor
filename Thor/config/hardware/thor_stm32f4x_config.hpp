@@ -103,6 +103,10 @@ High Level Driver Support
 #define THOR_HLD_I2S
 #endif
 
+#ifndef THOR_HLD_IWDG
+#define THOR_HLD_IWDG
+#endif
+
 #ifndef THOR_HLD_NVIC
 #define THOR_HLD_NVIC
 #endif
@@ -149,6 +153,10 @@ High Level Driver Support
 
 #ifndef THOR_HLD_USB
 #define THOR_HLD_USB
+#endif
+
+#ifndef THOR_HLD_WWDG
+#define THOR_HLD_WWDG
 #endif
 
 /*----------------------------------------------
