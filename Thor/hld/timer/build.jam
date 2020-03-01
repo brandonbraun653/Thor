@@ -10,7 +10,7 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
 # ====================================================
 # Public Targets
 # ====================================================
-explicit_alias PUB : : : : <define>THOR_HLD_SYSTEM <define>THOR_LLD_SYSTEM ;
+explicit_alias PUB : : : : <define>THOR_HLD_TIMER ;
 
 lib hld_timer
   : [ glob *.cpp ]
@@ -20,19 +20,41 @@ lib hld_timer
     <use>/CHIMERA//PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
-    <use>/THOR/HLD/GPIO//PUB
+    <use>/THOR/HLD/TIMER//PUB
   ;
 explicit hld_timer ;
 explicit_alias LIB : hld_timer : : : <library>hld_timer ;
+
+# ====================================================
+# Test Driver Executable
+# ====================================================
+exe hld_timer_test
+  : [ glob test/*.cpp ]
+    
+    /THOR/HLD//TEST_LIB
+    /THOR/LLD/STM32F4//TEST_LIB
+  
+  : <link>static
+    <Thor>enabled-F4
+    <use>/AURORA//PUB
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/HLD//TEST_PUB
+    <linkflags>-Wl,--no-as-needed
+  ;
+explicit hld_timer_test ;
+explicit_alias TEST : hld_timer_test : : : <source>hld_timer_test ;
 
 
 # ====================================================
 # Installation Targets
 # ====================================================
-# install INSTALL_TEST : hld_usart_test
-#   : <variant>release:<location>$(rel_install_dir)
-#     <variant>debug:<location>$(dbg_install_dir)
-#   ;
+install INSTALL_TEST : hld_timer_test
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
 
 install INSTALL_LIB : hld_timer
   : <variant>release:<location>$(rel_install_dir)

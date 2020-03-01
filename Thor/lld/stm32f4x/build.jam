@@ -79,10 +79,12 @@ local propagated_link_flags =
 use-project /THOR/LLD/STM32F4/DMA   : dma ;
 use-project /THOR/LLD/STM32F4/FLASH : flash ;
 use-project /THOR/LLD/STM32F4/GPIO  : gpio ;
+use-project /THOR/LLD/STM32F4/IWDG  : iwdg ;
 use-project /THOR/LLD/STM32F4/NVIC  : nvic ;
 use-project /THOR/LLD/STM32F4/POWER : power ;
 use-project /THOR/LLD/STM32F4/RCC   : rcc ;
 use-project /THOR/LLD/STM32F4/SPI   : spi ;
+use-project /THOR/LLD/STM32F4/TIMER : timer ;
 use-project /THOR/LLD/STM32F4/UART  : uart ;
 use-project /THOR/LLD/STM32F4/USART : usart ;
 use-project /THOR/LLD/STM32F4/WWDG  : wwdg ;
@@ -141,6 +143,32 @@ explicit LIB_TARGET_STARTUP ;
 
 
 # ====================================================
+# STM32F4x Testing Components 
+# ====================================================
+# Common definitions needed across all testing executables
+explicit_alias TEST_PUB : : : :
+  <define>THOR_LLD_TEST
+  ;
+
+# Common libraries needed across nearly all LLD testing executables
+explicit_alias TEST_LIB : : : :
+  <library>/GOOGLE//gtest
+  <library>/THOR/LLD/STM32F4/DMA//LIB
+  <library>/THOR/LLD/STM32F4/FLASH//LIB
+  <library>/THOR/LLD/STM32F4/GPIO//LIB
+  <library>/THOR/LLD/STM32F4/IWDG//LIB 
+  <library>/THOR/LLD/STM32F4/NVIC//LIB
+  <library>/THOR/LLD/STM32F4/POWER//LIB
+  <library>/THOR/LLD/STM32F4/RCC//LIB
+  <library>/THOR/LLD/STM32F4/SPI//LIB
+  <library>/THOR/LLD/STM32F4/TIMER//LIB
+  <library>/THOR/LLD/STM32F4/UART//LIB
+  <library>/THOR/LLD/STM32F4/USART//LIB
+  <library>/THOR/LLD/STM32F4/WWDG//LIB
+  ;
+
+
+# ====================================================
 # Public Components 
 # ====================================================
 explicit_alias PUB : : : : <define>TARGET_STM32F4 ;
@@ -149,24 +177,30 @@ explicit_alias INSTALL_ALL_LIB :
   /THOR/LLD/STM32F4/DMA//INSTALL_LIB
   /THOR/LLD/STM32F4/FLASH//INSTALL_LIB
   /THOR/LLD/STM32F4/GPIO//INSTALL_LIB
+  /THOR/LLD/STM32F4/IWDG//INSTALL_LIB 
   /THOR/LLD/STM32F4/NVIC//INSTALL_LIB
   /THOR/LLD/STM32F4/POWER//INSTALL_LIB
   /THOR/LLD/STM32F4/RCC//INSTALL_LIB
   /THOR/LLD/STM32F4/SPI//INSTALL_LIB
+  /THOR/LLD/STM32F4/TIMER//INSTALL_LIB
   /THOR/LLD/STM32F4/UART//INSTALL_LIB 
   /THOR/LLD/STM32F4/USART//INSTALL_LIB 
   /THOR/LLD/STM32F4/WWDG//INSTALL_LIB
+  /THOR/LLD/STM32F4/IWDG//INSTALL_LIB
   ;
 
 explicit_alias INSTALL_ALL_TST : 
   /THOR/LLD/STM32F4/DMA//INSTALL_TEST
   /THOR/LLD/STM32F4/FLASH//INSTALL_TEST
   /THOR/LLD/STM32F4/GPIO//INSTALL_TEST
+  /THOR/LLD/STM32F4/IWDG//INSTALL_TEST
   /THOR/LLD/STM32F4/NVIC//INSTALL_TEST
   /THOR/LLD/STM32F4/POWER//INSTALL_TEST
   /THOR/LLD/STM32F4/RCC//INSTALL_TEST
   /THOR/LLD/STM32F4/SPI//INSTALL_TEST
+  /THOR/LLD/STM32F4/TIMER//INSTALL_TEST
   /THOR/LLD/STM32F4/UART//INSTALL_TEST
   /THOR/LLD/STM32F4/USART//INSTALL_TEST
   /THOR/LLD/STM32F4/WWDG//INSTALL_TEST
+  /THOR/LLD/STM32F4/IWDG//INSTALL_TEST
   ;

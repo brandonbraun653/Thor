@@ -30,8 +30,7 @@ explicit_alias LIB : : : : <library>lld_flash ;
 exe lld_flash_test
   : [ glob test/*.cpp ]
 
-    /GOOGLE//gtest
-    /THOR/LLD/STM32F4/FLASH//LIB
+    /THOR/LLD/STM32F4//TEST_LIB 
   
   : <link>static
     <Thor>enabled-F4
@@ -40,6 +39,7 @@ exe lld_flash_test
     <use>/GOOGLE//TEST_PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32F4//TEST_PUB
     <linkflags>-Wl,--no-as-needed
   ;
 explicit lld_flash_test ;

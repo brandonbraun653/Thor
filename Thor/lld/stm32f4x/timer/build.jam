@@ -26,11 +26,7 @@ lib lld_timer_chip
     <use>/CHIMERA//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
     <use>/THOR/LLD/STM32F4//PUB
-    <use>/THOR/LLD/STM32F4/FLASH//PUB
-    <use>/THOR/LLD/STM32F4/NVIC//PUB
-    <use>/THOR/LLD/STM32F4/POWER//PUB
-    <use>/THOR/LLD/STM32F4/RCC//PUB
-    <use>PUB
+    <use>/THOR/LLD/STM32F4/SPI//PUB
   ;
 explicit lld_timer_chip ;
 explicit_alias DEVICE_TARGET : lld_timer_chip : : : <library>lld_timer_chip ;
@@ -42,11 +38,43 @@ lib lld_timer
     <use>/CHIMERA//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
     <use>/THOR/LLD/STM32F4//PUB
-    <use>/THOR/LLD/STM32F4/FLASH//PUB
-    <use>/THOR/LLD/STM32F4/NVIC//PUB
-    <use>/THOR/LLD/STM32F4/POWER//PUB
-    <use>/THOR/LLD/STM32F4/RCC//PUB
-    <use>PUB
+    <use>/THOR/LLD/STM32F4/SPI//PUB
   ;
 explicit lld_timer ;
 explicit_alias LIB : lld_timer lld_timer_chip : : : <library>lld_timer <library>lld_timer_chip ;
+
+# ====================================================
+# Test Driver Executable
+# ====================================================
+exe lld_timer_test
+  : [ glob test/*.cpp ]
+
+    /THOR/LLD/STM32F4//TEST_LIB
+  
+  : <link>static
+    <Thor>enabled-F4
+    <use>/AURORA//PUB
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32F4//TEST_PUB
+    <linkflags>-Wl,--no-as-needed
+  ;
+explicit lld_timer_test ;
+explicit_alias TEST : lld_timer_test : : : <source>lld_timer_test ;
+
+# ====================================================
+# Installation Targets
+# ====================================================
+install INSTALL_TEST : lld_timer_test
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+install INSTALL_LIB : lld_timer lld_timer_chip
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

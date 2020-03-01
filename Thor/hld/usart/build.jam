@@ -13,7 +13,7 @@ local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/hld/usart ;
 # ====================================================
 # Public Targets
 # ====================================================
-explicit_alias PUB : : : : <define>THOR_HLD_GPIO ;
+explicit_alias PUB : : : : <define>THOR_HLD_USART ;
 
 # ====================================================
 # Static Libraries
@@ -26,7 +26,7 @@ lib hld_usart
     <use>/CHIMERA//PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
-    <use>/THOR/HLD/GPIO//PUB
+    <use>/THOR/HLD/USART//PUB
   ;
 explicit hld_usart ;
 explicit_alias LIB : hld_usart : : : <library>hld_usart ;
@@ -37,29 +37,8 @@ explicit_alias LIB : hld_usart : : : <library>hld_usart ;
 exe hld_usart_test
   : [ glob test/*.cpp ]
 
-    /CHIMERA/ALGORITHM//LIB
-    /CHIMERA/BUFFER//LIB
-    /CHIMERA/COMMON//LIB
-    /CHIMERA/CONTAINER//LIB
-    /CHIMERA/PERIPH/GPIO//LIB
-    /CHIMERA/SYSTEM//LIB
-    /CHIMERA/THREADING//LIB
-    /GOOGLE//gtest
-    /THOR/HLD/DMA//LIB
-    /THOR/HLD/GPIO//LIB
-    /THOR/HLD/SPI//LIB
-    /THOR/HLD/SYSTEM//LIB
-    /THOR/HLD/USART//LIB 
-    /THOR/LLD/STM32F4/FLASH//LIB
-    /THOR/LLD/STM32F4/GPIO//LIB
-    /THOR/LLD/STM32F4/NVIC//LIB
-    /THOR/LLD/STM32F4/POWER//LIB
-    /THOR/LLD/STM32F4/RCC//LIB
-    /THOR/LLD/STM32F4/SPI//LIB
-    /THOR/LLD/STM32F4/DMA//LIB
-    /THOR/LLD/STM32F4/UART//LIB
-    /THOR/LLD/STM32F4/USART//LIB
-    /THOR/LLD/STM32F4/WWDG//LIB
+    /THOR/HLD//TEST_LIB
+    /THOR/LLD/STM32F4//TEST_LIB
   
   : <link>static
     <Thor>enabled-F4
@@ -68,6 +47,7 @@ exe hld_usart_test
     <use>/GOOGLE//TEST_PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/HLD//TEST_PUB
     <linkflags>-Wl,--no-as-needed
   ;
 explicit hld_usart_test ;

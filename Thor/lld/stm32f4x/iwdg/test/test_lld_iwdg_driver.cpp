@@ -1,9 +1,9 @@
 /********************************************************************************
  *  File Name:
- *    test_lld_spi_driver.cpp
+ *    test_lld_iwdg_driver.cpp
  *
  *	 Description:
- *    Tests the Thor SPI driver
+ *    Tests the Thor Watchdog low level driver
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
@@ -14,14 +14,16 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/gpio>
+#include <Chimera/watchdog>
 
 /* Thor Includes */
 #include <Thor/cfg>
+#include <Thor/lld/interface/watchdog/watchdog.hpp>
 
 
 TEST(PleasePass, PrettyPlease)
 {
   EXPECT_EQ(0, 0);
+  Thor::LLD::IWDG::initialize();
 }
-#endif
+#endif 

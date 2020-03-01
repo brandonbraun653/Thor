@@ -53,21 +53,12 @@ exe lld_uart_test
     /CHIMERA/COMMON//LIB
     /CHIMERA/SYSTEM//LIB
     /CHIMERA/THREADING//LIB
-    /GOOGLE//gtest
     /THOR/HLD/DMA//LIB
     /THOR/HLD/GPIO//LIB
     /THOR/HLD/SPI//LIB
     /THOR/HLD/SYSTEM//LIB
-    /THOR/LLD/STM32F4/FLASH//LIB
-    /THOR/LLD/STM32F4/GPIO//LIB
-    /THOR/LLD/STM32F4/NVIC//LIB
-    /THOR/LLD/STM32F4/POWER//LIB
-    /THOR/LLD/STM32F4/RCC//LIB
-    /THOR/LLD/STM32F4/SPI//LIB
-    /THOR/LLD/STM32F4/DMA//LIB
-    /THOR/LLD/STM32F4/UART//LIB
-    /THOR/LLD/STM32F4/USART//LIB
-    /THOR/LLD/STM32F4/WWDG//LIB
+    
+    /THOR/LLD/STM32F4//TEST_LIB
   
   : <link>static
     <Thor>enabled-F4
@@ -76,6 +67,7 @@ exe lld_uart_test
     <use>/GOOGLE//TEST_PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32F4//TEST_PUB
     <linkflags>-Wl,--no-as-needed
   ;
 explicit lld_uart_test ;

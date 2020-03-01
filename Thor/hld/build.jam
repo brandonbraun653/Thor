@@ -11,14 +11,43 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
 # ====================================================
 # Public Thor Components
 # ====================================================
-use-project /THOR/HLD/DMA     : dma ;
-use-project /THOR/HLD/GPIO    : gpio ;  
-use-project /THOR/HLD/SPI     : spi ;   
-use-project /THOR/HLD/SYSTEM  : system ;
-use-project /THOR/HLD/TIMER   : timer ; 
-use-project /THOR/HLD/SYSTEM  : system ;
-use-project /THOR/HLD/UART    : uart ;
-use-project /THOR/HLD/USART   : usart ;
+use-project /THOR/HLD/DMA       : dma ;
+use-project /THOR/HLD/GPIO      : gpio ;  
+use-project /THOR/HLD/SPI       : spi ;   
+use-project /THOR/HLD/SYSTEM    : system ;
+use-project /THOR/HLD/TIMER     : timer ; 
+use-project /THOR/HLD/UART      : uart ;
+use-project /THOR/HLD/USART     : usart ;
+use-project /THOR/HLD/WATCHDOG  : watchdog ;
+
+# ====================================================
+# HLD Testing Components 
+# ====================================================
+# Common definitions needed across all testing executables
+explicit_alias TEST_PUB : : : :
+  <define>THOR_HLD_TEST
+  ;
+
+# Common libraries needed across nearly all HLD testing executables
+explicit_alias TEST_LIB : : : :
+  <library>/CHIMERA/ALGORITHM//LIB
+  <library>/CHIMERA/BUFFER//LIB
+  <library>/CHIMERA/COMMON//LIB
+  <library>/CHIMERA/EVENT//LIB
+  <library>/CHIMERA/PERIPH/DMA//LIB
+  <library>/CHIMERA/SYSTEM//LIB
+  <library>/CHIMERA/THREADING//LIB
+  <library>/GOOGLE//gtest
+  <library>/THOR/HLD/DMA//LIB
+  <library>/THOR/HLD/GPIO//LIB
+  <library>/THOR/HLD/SPI//LIB
+  <library>/THOR/HLD/SYSTEM//LIB
+  <library>/THOR/HLD/TIMER//LIB
+  <library>/THOR/HLD/UART//LIB
+  <library>/THOR/HLD/USART//LIB
+  <library>/THOR/HLD/WATCHDOG//LIB
+  ;
+
 
 # ====================================================
 # Helpful Targets
@@ -31,6 +60,7 @@ explicit_alias INSTALL_ALL_LIB :
   /THOR/HLD/TIMER//INSTALL_LIB
   /THOR/HLD/UART//INSTALL_LIB
   /THOR/HLD/USART//INSTALL_LIB
+  /THOR/HLD/WATCHDOG//INSTALL_LIB
   ;
 
 explicit_alias INSTALL_ALL_TST :
@@ -38,7 +68,8 @@ explicit_alias INSTALL_ALL_TST :
   /THOR/HLD/GPIO//INSTALL_TEST
   /THOR/HLD/SPI//INSTALL_TEST
   /THOR/HLD/SYSTEM//INSTALL_TEST
-  #/THOR/HLD/TIMER//INSTALL_TEST
+  /THOR/HLD/TIMER//INSTALL_TEST
   /THOR/HLD/UART//INSTALL_TEST
   /THOR/HLD/USART//INSTALL_TEST
+  /THOR/HLD/WATCHDOG//INSTALL_TEST
   ;

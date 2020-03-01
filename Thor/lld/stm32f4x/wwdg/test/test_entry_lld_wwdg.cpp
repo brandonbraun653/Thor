@@ -8,7 +8,7 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-#if defined( LLD_TEST )
+#if defined( THOR_LLD_TEST )
 #include "gtest/gtest.h"
 
 int main( int argc, char **argv )

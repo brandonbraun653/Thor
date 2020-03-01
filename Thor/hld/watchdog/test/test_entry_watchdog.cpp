@@ -1,27 +1,20 @@
 /********************************************************************************
  *  File Name:
- *    test_lld_spi_driver.cpp
+ *    test_entry.cpp
  *
  *	 Description:
- *    Tests the Thor SPI driver
+ *    Entry into the GPIO HLD tests
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-#if defined( THOR_LLD_TEST )
-/* GTest Includes */
+#if defined( THOR_HLD_TEST )
 #include "gtest/gtest.h"
 
-/* Chimera Includes */
-#include <Chimera/common>
-#include <Chimera/gpio>
-
-/* Thor Includes */
-#include <Thor/cfg>
-
-
-TEST(PleasePass, PrettyPlease)
+int main( int argc, char **argv )
 {
-  EXPECT_EQ(0, 0);
+  ::testing::InitGoogleTest( &argc, argv );
+  return RUN_ALL_TESTS();
 }
+
 #endif
