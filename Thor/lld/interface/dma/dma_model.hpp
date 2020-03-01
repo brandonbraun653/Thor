@@ -28,10 +28,10 @@
 
 namespace Thor::LLD::DMA
 {
-  class PeripheralModel
+  class IPeripheralModel
   {
   public:
-    virtual ~PeripheralModel() = default;
+    virtual ~IPeripheralModel() = default;
 
     /**
      *  Attaches an instance of a DMA peripheral for the class to control
@@ -87,12 +87,36 @@ namespace Thor::LLD::DMA
     virtual Chimera::Status_t start( StreamX *const stream ) = 0;
 
     virtual Chimera::Status_t abort( StreamX *const stream ) = 0;
+
+    /**
+     *  Registers a listener to a specific DMA stream
+     *
+     *  @param[in]  stream            The stream to register the listener against
+     *  @param[in]  listener          The listener to be registered
+     *  @param[in]  timeout           How long to wait for the registration sink to become available
+     *  @param[out] registrationID    Returned ID that uniquely identifies the registrated listener
+     *
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t registerListener( StreamX *const stream, Chimera::Event::Actionable &listener,
+                                                const size_t timeout, size_t &registrationID ) = 0;
+
+    /**
+     *  Removes a previously registered listener on a specific DMA stream
+     *
+     *  @param[in]  stream            The stream to remove the listener from
+     *  @param[in]  registrationID    ID returned when the listener was registered
+     *  @param[in]  timeout           How long to wait for the registration sink to become available
+     *
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t removeListener( StreamX *const stream, const size_t registrationID, const size_t timeout ) = 0;
   };
 
-  class StreamModel : virtual public Chimera::Event::ListenerInterface
+  class IStreamModel : virtual public Chimera::Event::ListenerInterface
   {
   public:
-    virtual ~StreamModel() = default;
+    virtual ~IStreamModel() = default;
 
     virtual Chimera::Status_t attach( StreamX *const peripheral, RegisterMap *const parent ) = 0;
 

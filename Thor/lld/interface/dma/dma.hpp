@@ -13,7 +13,9 @@
 #ifndef THOR_DMA_CONFIG_HPP
 #define THOR_DMA_CONFIG_HPP
 
-#if defined( TARGET_STM32F4 )
+#if defined( TARGET_LLD_MOCK )
+#include <Thor/lld/interface/dma/mock/dma_mock.hpp>
+#elif defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/dma/hw_dma_driver.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_prj.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_mapping.hpp>

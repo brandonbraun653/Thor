@@ -309,14 +309,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_SIM;CHIMERA_LITTLE_ENDIAN;USING_STL_THREADS;TARGET_STM32F4;STM32F446xx;BOOST_NO_EXCEPTIONS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(ProjectCompilerDefines);$(ChimeraCompilerDefines);$(BoostCompilerDefines)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_SIM;CHIMERA_LITTLE_ENDIAN;USING_STL_THREADS;TARGET_STM32F4;STM32F446xx;BOOST_NO_EXCEPTIONS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(ProjectCompilerDefines);$(ChimeraCompilerDefines);$(BoostCompilerDefines)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -337,14 +337,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_SIM;CHIMERA_LITTLE_ENDIAN;USING_STL_THREADS;TARGET_STM32F4;STM32F446xx;BOOST_NO_EXCEPTIONS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(ProjectCompilerDefines);$(ChimeraCompilerDefines);$(BoostCompilerDefines)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <PreprocessorDefinitions>_SIM;CHIMERA_LITTLE_ENDIAN;USING_STL_THREADS;TARGET_STM32F4;STM32F446xx;BOOST_NO_EXCEPTIONS;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(ProjectCompilerDefines);$(ChimeraCompilerDefines);$(BoostCompilerDefines)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -364,6 +364,7 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\..\..\vs\test\hld\gpio\ThorTest_F4_HLD_GPIO\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.3\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets" Condition="Exists('..\..\..\..\vs\test\hld\gpio\ThorTest_F4_HLD_GPIO\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.3\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" />
   </ImportGroup>
   <ItemGroup>
     <None Include="..\..\..\Thor\cfg" />
@@ -372,6 +373,10 @@
     <None Include="..\..\..\Thor\gpio" />
     <None Include="..\..\..\Thor\hld\build.jam" />
     <None Include="..\..\..\Thor\interrupt" />
+    <None Include="..\..\..\Thor\lld\interface\dma\mock\build.jam" />
+    <None Include="..\..\..\Thor\lld\interface\gpio\mock\build.jam" />
+    <None Include="..\..\..\Thor\lld\interface\interrupt\mock\build.jam" />
+    <None Include="..\..\..\Thor\lld\interface\spi\mock\build.jam" />
     <None Include="..\..\..\Thor\nvic" />
     <None Include="..\..\..\Thor\spi" />
     <None Include="..\..\..\Thor\system" />
@@ -379,6 +384,7 @@
     <None Include="..\..\..\Thor\uart" />
     <None Include="..\..\..\Thor\usart" />
     <None Include="..\..\..\Thor\watchdog" />
+    <None Include="packages.config" />
     <None Include="ThorStaticLibrary-Debug.vgdbsettings" />
     <None Include="ThorStaticLibrary-Release.vgdbsettings" />
     <None Include="stm32.xml" />
@@ -418,9 +424,60 @@
     <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_entry_gpio.cpp" />
-    <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_hld_gpio_chimera.cpp" />
-    <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_hld_gpio_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_entry_gpio.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_hld_gpio_chimera.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_hld_gpio_driver.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|VisualGDB'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32F446RE'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClInclude Include="..\..\..\Thor\hld\interrupt\hld_interrupt_definitions.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\interrupt\hld_interrupt_types.hpp" />
     <ClCompile Include="..\..\..\Thor\hld\power\thor_power.cpp" />
@@ -495,19 +552,24 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\dma\dma.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\dma\dma_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\dma\dma_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\dma\mock\dma_mock.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\flash\flash.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\mock\gpio_mock.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\mock\interrupt_mock.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\nvic\nvic.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\power\power.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\rcc\mock\rcc_mock.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\serial\serial_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\serial\serial_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\spi\mock\spi_mock.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_types.hpp" />
@@ -518,6 +580,11 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\common\definitions.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\common\types.hpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\dma\mock\dma_mock.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\gpio\mock\gpio_mock.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\interrupt\mock\interrupt_mock.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\rcc\mock\rcc_mock.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\spi\mock\spi_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_driver_stm32f4.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_mapping.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_driver.hpp" />
@@ -640,4 +707,10 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\variant\hw_wwdg_register_stm32f446xx.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\variant\hw_wwdg_register_stm32f446xx.hpp" />
   </ItemGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\..\vs\test\hld\gpio\ThorTest_F4_HLD_GPIO\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.3\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\vs\test\hld\gpio\ThorTest_F4_HLD_GPIO\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.3\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
+  </Target>
 </Project>

@@ -103,83 +103,37 @@ namespace Thor::LLD::RCC
   /**
    *  Singleton that allows the user to configure a chip's clock at a very high level.
    */
-  class SystemClock : public ClockTree
+  class SystemClock : virtual public IClockTree
   {
   public:
     ~SystemClock();
 
-    /**
-     *  Gets the singleton instance to the system clock driver
-     *
-     *  @return SystemClock *const
-     */
-    static SystemClock *const get();
-
     Chimera::Status_t configureProjectClocks() final override;
-
     Chimera::Status_t setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz ) final override;
-
     Chimera::Status_t setCoreClock( const size_t freqHz ) final override;
-
     Chimera::Status_t setCoreClockSource( const Thor::Clock::Source src ) final override;
-
     Chimera::Status_t getClockFrequency( const Configuration::ClockType_t clock, size_t *const freqHz ) final override;
-
     Chimera::Status_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz ) final override;
 
   private:
+    friend IClockTree *getSystemClockController();
     SystemClock();
   };
 
 
-  class PeripheralController
+  class PeripheralController : virtual public IPeripheralController
   {
   public:
     ~PeripheralController();
 
-    static std::shared_ptr<PeripheralController> get();
-
-    /**
-     *  Resets the peripheral using RCC reset registers
-     *
-     *  @param[in]  address        Indicates which peripheral instance should be accessed
-     *  @return Chimera::Status_t
-     */
-    Chimera::Status_t reset( const Chimera::Peripheral::Type type, const size_t index );
-
-    /**
-     *  Enables the peripheral clock
-     *
-     *  @param[in]  address        Indicates which peripheral instance should be accessed
-     *  @return Chimera::Status_t
-     */
-    Chimera::Status_t enableClock( const Chimera::Peripheral::Type type, const size_t index );
-
-    /**
-     *  Disables the peripheral clock
-     *
-     *  @param[in]  address        Indicates which peripheral instance should be accessed
-     *  @return Chimera::Status_t
-     */
-    Chimera::Status_t disableClock( const Chimera::Peripheral::Type type, const size_t index );
-
-    /**
-     *  Enables the peripheral clock in low power mode
-     *
-     *  @param[in]  address        Indicates which peripheral instance should be accessed
-     *  @return Chimera::Status_t
-     */
-    Chimera::Status_t enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index );
-
-    /**
-     *  Disables the peripheral clock in low power mode
-     *
-     *  @param[in]  address        Indicates which peripheral instance should be accessed
-     *  @return Chimera::Status_t
-     */
-    Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index );
+    Chimera::Status_t reset( const Chimera::Peripheral::Type type, const size_t index ) final override;
+    Chimera::Status_t enableClock( const Chimera::Peripheral::Type type, const size_t index ) final override;
+    Chimera::Status_t disableClock( const Chimera::Peripheral::Type type, const size_t index ) final override;
+    Chimera::Status_t enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index ) final override;
+    Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index ) final override;
 
   private:
+    IPeripheralController *getSystemPeripheralController()
     PeripheralController();
   };
 

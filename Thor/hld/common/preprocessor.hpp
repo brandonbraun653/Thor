@@ -40,7 +40,7 @@ Custom STM32F4 Driver
 
 #endif /* TARGET_STM32F4 CUSTOM DRIVER */
 
-#if !defined( TARGET_STM32F4 ) && !defined( TARGET_STM32F7 )
+#if !defined( TARGET_LLD_MOCK ) && !defined( TARGET_STM32F4 ) && !defined( TARGET_STM32F7 )
 #error No detected STM32 device. Please add to your project build system.
 #endif
 

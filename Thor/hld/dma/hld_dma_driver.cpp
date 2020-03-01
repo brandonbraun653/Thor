@@ -495,7 +495,7 @@ namespace Thor::DMA
   }
 }    // namespace Thor::DMA
 
-
+#ifdef STM32_DMA1_STREAM0_AVAILABLE
 static void DMA1_Stream0_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -510,7 +510,9 @@ static void DMA1_Stream0_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA1_STREAM1_AVAILABLE
 static void DMA1_Stream1_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -525,7 +527,9 @@ static void DMA1_Stream1_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA1_STREAM2_AVAILABLE
 static void DMA1_Stream2_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -540,7 +544,9 @@ static void DMA1_Stream2_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA1_STREAM3_AVAILABLE
 static void DMA1_Stream3_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -555,7 +561,9 @@ static void DMA1_Stream3_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA1_STREAM4_AVAILABLE
 static void DMA1_Stream4_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -570,7 +578,9 @@ static void DMA1_Stream4_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA1_STREAM5_AVAILABLE
 static void DMA1_Stream5_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -585,7 +595,9 @@ static void DMA1_Stream5_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA1_STREAM6_AVAILABLE
 static void DMA1_Stream6_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -600,7 +612,9 @@ static void DMA1_Stream6_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA1_STREAM7_AVAILABLE
 static void DMA1_Stream7_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -615,7 +629,9 @@ static void DMA1_Stream7_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA2_STREAM0_AVAILABLE
 static void DMA2_Stream0_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -630,7 +646,9 @@ static void DMA2_Stream0_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA2_STREAM1_AVAILABLE
 static void DMA2_Stream1_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -645,7 +663,9 @@ static void DMA2_Stream1_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA2_STREAM2_AVAILABLE
 static void DMA2_Stream2_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -660,7 +680,9 @@ static void DMA2_Stream2_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA2_STREAM3_AVAILABLE
 static void DMA2_Stream3_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -675,7 +697,9 @@ static void DMA2_Stream3_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA2_STREAM4_AVAILABLE
 static void DMA2_Stream4_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -690,7 +714,9 @@ static void DMA2_Stream4_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA2_STREAM5_AVAILABLE
 static void DMA2_Stream5_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -705,7 +731,9 @@ static void DMA2_Stream5_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA2_STREAM6_AVAILABLE
 static void DMA2_Stream6_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -720,7 +748,9 @@ static void DMA2_Stream6_ISRPostProcessorThread( void *argument )
       }
   }
 }
+#endif
 
+#ifdef STM32_DMA2_STREAM7_AVAILABLE
 static void DMA2_Stream7_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
@@ -735,4 +765,4 @@ static void DMA2_Stream7_ISRPostProcessorThread( void *argument )
       }
   }
 }
-
+#endif

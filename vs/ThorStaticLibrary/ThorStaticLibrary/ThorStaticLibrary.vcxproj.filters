@@ -292,6 +292,21 @@
     <Filter Include="config\hardware">
       <UniqueIdentifier>{8f467ed2-0128-4a72-907e-c0d9d3a9d60c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lld\interface\rcc\mock">
+      <UniqueIdentifier>{6483252a-e351-4a41-8a95-55f68da8a338}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\dma\mock">
+      <UniqueIdentifier>{669a98ac-40b4-405c-9fba-476027008a99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\gpio\mock">
+      <UniqueIdentifier>{ed1989dd-f14f-4da8-8c40-a83244f394af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\interrupt\mock">
+      <UniqueIdentifier>{e09a7516-555e-43bd-9c4b-e725290b2aa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\spi\mock">
+      <UniqueIdentifier>{dea797de-7d71-4526-a7f9-0c56765c0ba1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ThorStaticLibrary-Debug.vgdbsettings">
@@ -975,6 +990,19 @@
       <Filter>lld\stm32f4x\wwdg\variant</Filter>
     </ClInclude>
     <None Include="..\..\..\Thor\watchdog" />
+    <None Include="packages.config" />
+    <None Include="..\..\..\Thor\lld\interface\spi\mock\build.jam">
+      <Filter>lld\interface\spi\mock</Filter>
+    </None>
+    <None Include="..\..\..\Thor\lld\interface\interrupt\mock\build.jam">
+      <Filter>lld\interface\interrupt\mock</Filter>
+    </None>
+    <None Include="..\..\..\Thor\lld\interface\gpio\mock\build.jam">
+      <Filter>lld\interface\gpio\mock</Filter>
+    </None>
+    <None Include="..\..\..\Thor\lld\interface\dma\mock\build.jam">
+      <Filter>lld\interface\dma\mock</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Thor\config\config.hpp">
@@ -1015,6 +1043,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\version.hpp">
       <Filter>lld\stm32f4x</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\rcc\mock\rcc_mock.hpp">
+      <Filter>lld\interface\rcc\mock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\spi\mock\spi_mock.hpp">
+      <Filter>lld\interface\spi\mock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\mock\interrupt_mock.hpp">
+      <Filter>lld\interface\interrupt\mock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\mock\gpio_mock.hpp">
+      <Filter>lld\interface\gpio\mock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\dma\mock\dma_mock.hpp">
+      <Filter>lld\interface\dma\mock</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1086,6 +1129,21 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\hld\watchdog\hld_watchdog_driver.cpp">
       <Filter>hld\watchdog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\rcc\mock\rcc_mock.cpp">
+      <Filter>lld\interface\rcc\mock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\spi\mock\spi_mock.cpp">
+      <Filter>lld\interface\spi\mock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\interrupt\mock\interrupt_mock.cpp">
+      <Filter>lld\interface\interrupt\mock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\gpio\mock\gpio_mock.cpp">
+      <Filter>lld\interface\gpio\mock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\dma\mock\dma_mock.cpp">
+      <Filter>lld\interface\dma\mock</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -24,10 +24,10 @@
 
 namespace Thor::LLD::RCC
 {
-  class ClockTree
+  class IClockTree
   {
   public:
-    virtual ~ClockTree() = default;
+    virtual ~IClockTree() = default;
 
     /**
      *  Configures the clock tree according to a user defined method, overriding
@@ -85,6 +85,60 @@ namespace Thor::LLD::RCC
      */
     virtual Chimera::Status_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz ) = 0;
   };
+
+
+
+
+  class IPeripheralController
+  {
+  public:
+    virtual ~IPeripheralController() = default;
+
+    /**
+     *  Resets the peripheral using RCC reset registers
+     *
+     *  @param[in]  address        Indicates which peripheral instance should be accessed
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t reset( const Chimera::Peripheral::Type type, const size_t index ) = 0;
+
+    /**
+     *  Enables the peripheral clock
+     *
+     *  @param[in]  address        Indicates which peripheral instance should be accessed
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t enableClock( const Chimera::Peripheral::Type type, const size_t index ) = 0;
+
+    /**
+     *  Disables the peripheral clock
+     *
+     *  @param[in]  address        Indicates which peripheral instance should be accessed
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t disableClock( const Chimera::Peripheral::Type type, const size_t index ) = 0;
+
+    /**
+     *  Enables the peripheral clock in low power mode
+     *
+     *  @param[in]  address        Indicates which peripheral instance should be accessed
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index ) = 0;
+
+    /**
+     *  Disables the peripheral clock in low power mode
+     *
+     *  @param[in]  address        Indicates which peripheral instance should be accessed
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index ) = 0;
+  };
+
+
+  IClockTree *getSystemClockController();
+
+  IPeripheralController *getSystemPeripheralController();
 
 }    // namespace Thor::LLD::RCC
 

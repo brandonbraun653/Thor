@@ -9,7 +9,7 @@
 ********************************************************************************/
 
 #pragma once
-#if !defined( WIN32 ) && !defined( WIN64 )
+#if !defined( _SIM )
 
 #if defined( __ICCARM__ )
 #pragma system_include /* treat file as system include file for MISRA check */

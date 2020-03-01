@@ -8,7 +8,7 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-#if defined( THOR_HLD_TEST )
+#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_GPIO )
 /* GTest Includes */
 #include "gtest/gtest.h"
 

@@ -55,7 +55,7 @@ namespace Thor::LLD::DMA
   /**
    *  Models a stream within a DMA controller peripheral (channel)
    */
-  class StreamController : public StreamModel, public Chimera::Threading::Lockable
+  class StreamController : public IStreamModel, public Chimera::Threading::Lockable
   {
   public:
     StreamController();
@@ -136,7 +136,7 @@ namespace Thor::LLD::DMA
    *  Models the interface to a full DMA controller, which is composed of many streams.
    *  For the STM32F4xxx chips, there is typically seven streams per channel.
    */
-  class ChannelController : public PeripheralModel
+  class ChannelController : public IPeripheralModel
   {
   public:
     ChannelController();

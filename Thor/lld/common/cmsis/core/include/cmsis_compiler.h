@@ -261,9 +261,7 @@
     #define __RESTRICT
   #endif
 
-
-
-#elif defined( WIN32 ) || defined( WIN64 )
+#elif defined( WIN32 ) || defined( _WIN32 ) || defined( WIN64 ) || defined( _WIN64 )
   #include <Thor/lld/common/cmsis/core/include/cmsis_windows.h>
 
 #else
