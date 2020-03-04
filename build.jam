@@ -72,7 +72,8 @@ project ThorSource : usage-requirements <include>. ;
 # ====================================================
 # Public Thor Library Components
 # ====================================================
-use-project /THOR/LLD/STM32F4 : Thor/lld/stm32f4x ;      # Low level STM32F4xxx driver project
+use-project /THOR/LLD/STM32F4 : Thor/lld/stm32f4x ;  
+use-project /THOR/LLD/INTF : Thor/lld/interface ;    # Low level STM32F4xxx driver project
 use-project /THOR/HLD : Thor/hld ;
 
 

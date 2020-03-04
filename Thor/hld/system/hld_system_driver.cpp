@@ -24,7 +24,7 @@
 
 /* Driver Includes */
 #include <Thor/lld/interface/nvic/nvic.hpp>
-#include <Thor/lld/interface/rcc/rcc.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/interface/startup/startup.hpp>
 
 namespace Thor::System
@@ -41,7 +41,7 @@ namespace Chimera::System
     Initialize the system clocks
     ------------------------------------------------*/
     Thor::LLD::RCC::initialize();
-    Thor::LLD::RCC::SystemClock::get()->configureProjectClocks();
+    Thor::LLD::RCC::getSystemClockController()->configureProjectClocks();
 
     /*------------------------------------------------
     Hardware Specific Initialization

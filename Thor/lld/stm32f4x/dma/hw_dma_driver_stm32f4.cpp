@@ -59,13 +59,15 @@ namespace Thor::LLD::DMA
     }
   }
 
-  void initialize()
+  Chimera::Status_t initialize()
   {
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
     initializeRegisters();
     initializeMapping();
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   StreamController * getStreamController( const uint8_t resourceIndex )
@@ -512,7 +514,7 @@ namespace Thor::LLD::DMA
 
   Chimera::Status_t ChannelController::clockEnable()
   {
-    auto rcc   = Thor::LLD::RCC::PeripheralController::get();
+    auto rcc   = Thor::LLD::RCC::getSystemPeripheralController();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_DMA, index );
@@ -521,7 +523,7 @@ namespace Thor::LLD::DMA
 
   Chimera::Status_t ChannelController::clockDisable()
   {
-    auto rcc   = Thor::LLD::RCC::PeripheralController::get();
+    auto rcc   = Thor::LLD::RCC::getSystemPeripheralController();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_DMA, index );
@@ -530,7 +532,7 @@ namespace Thor::LLD::DMA
 
   Chimera::Status_t ChannelController::reset()
   {
-    auto rcc   = Thor::LLD::RCC::PeripheralController::get();
+    auto rcc   = Thor::LLD::RCC::getSystemPeripheralController();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->reset( Chimera::Peripheral::Type::PERIPH_DMA, index );

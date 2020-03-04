@@ -21,18 +21,11 @@
 
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
-#include <Thor/lld/interface/rcc/rcc_model.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/hld/clock/clock_types.hpp>
 
 namespace Thor::LLD::RCC
 {
-  /**
-   *  Initializes all system resources to their default state.
-   *  
-   *  @return void 
-   */
-  extern void initialize();
-
   /**
    *  Project specific declaration of the default HSI oscillator frequency in Hz
    *
@@ -112,7 +105,7 @@ namespace Thor::LLD::RCC
     Chimera::Status_t setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz ) final override;
     Chimera::Status_t setCoreClock( const size_t freqHz ) final override;
     Chimera::Status_t setCoreClockSource( const Thor::Clock::Source src ) final override;
-    Chimera::Status_t getClockFrequency( const Configuration::ClockType_t clock, size_t *const freqHz ) final override;
+    Chimera::Status_t getClockFrequency( const ClockType_t clock, size_t *const freqHz ) final override;
     Chimera::Status_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz ) final override;
 
   private:
@@ -133,7 +126,7 @@ namespace Thor::LLD::RCC
     Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index ) final override;
 
   private:
-    IPeripheralController *getSystemPeripheralController()
+    friend IPeripheralController *getSystemPeripheralController();
     PeripheralController();
   };
 

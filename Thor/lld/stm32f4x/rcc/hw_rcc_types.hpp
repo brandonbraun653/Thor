@@ -20,6 +20,7 @@
 #include <Chimera/common>
 
 /* Driver Includes */
+#include <Thor/lld/interface/rcc/rcc_types.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prj.hpp>
 
 namespace Thor::LLD::RCC
@@ -86,7 +87,6 @@ namespace Thor::LLD::RCC
      *  High level structure describing what kinds of clocks are available
      *  to be configured by the code.
      */
-    using ClockType_t = Reg32_t;
     namespace ClockType
     {
       static constexpr ClockType_t SYSCLK = 1u;
@@ -898,13 +898,13 @@ namespace Thor::LLD::RCC
   struct OscillatorInit
   {
     Configuration::OscillatorType_t
-        source;        /**< The oscillators to be configured. Can be multiple values of OscillatorType  OR'd together */
+        source;       /**< The oscillators to be configured. Can be multiple values of OscillatorType  OR'd together */
     Reg32_t HSEState; /**< The new state of the HSE. Can be value of CR::HSEConfig */
     Reg32_t LSEState; /**< The new state of the LSE. */
     Reg32_t HSIState; /**< The new state of the HSI. Can be value of CR::HSIConfig */
     Reg32_t LSIState; /**< The new state of the LSI. */
     Reg32_t HSICalibrationValue; /**< The HSI calibration trimming value */
-    PLLInit PLL;                  /**< Main PLL initialization parameters */
+    PLLInit PLL;                 /**< Main PLL initialization parameters */
   };
 
   /**
@@ -912,12 +912,12 @@ namespace Thor::LLD::RCC
    */
   struct ClockInit
   {
-    Configuration::ClockType_t clock;   /**< The clocks to be configured. Can be multiple values of ClockType OR'd together */
+    ClockType_t clock;                  /**< The clocks to be configured. Can be multiple values of ClockType OR'd together */
     CFGR::SW::SysOscSrc_t SYSCLKSource; /**< The system clock source (SYSCLKS)*/
     CFGR::HPRE::AHBPrescale_t AHBCLKDivider;    /**< The AHB clock (HCLK) divider */
     CFGR::PPRE1::APB1Prescale_t APB1CLKDivider; /**< The APB1 clock (PCLK1) divider */
     CFGR::PPRE2::APB2Prescale_t APB2CLKDivider; /**< The APB2 clock (PCLK2) divider */
-    Reg32_t FlashLatency;                      /**< The new number of flash wait states given the updated system clock */
+    Reg32_t FlashLatency;                       /**< The new number of flash wait states given the updated system clock */
   };
 
   /**
@@ -931,7 +931,7 @@ namespace Thor::LLD::RCC
 
   /**
    *  Peripheral Control & Config (PCC)
-   *  Describes a generic set of registers and configurations for a 
+   *  Describes a generic set of registers and configurations for a
    *  peripheral type that allows the RCC driver to generically configure
    *  a large number of peripherals by referencing these lookup tables.
    *
@@ -942,9 +942,10 @@ namespace Thor::LLD::RCC
     const RegisterConfig *clock;                   /**< Standard clock configuration registers */
     const RegisterConfig *clockLP;                 /**< Low power clock configuration registers */
     const RegisterConfig *reset;                   /**< Peripheral reset registers */
-    const Configuration::ClockType_t *clockSource; /**< Which system clock is used on the peripheral */
-    const Chimera::Container::LightFlatMap<std::uintptr_t, size_t> *resourceIndexMap; /**< Converts a peripheral address into a resource index */
-    size_t elements;                               /**< Number of elements in the tables */
+    const ClockType_t *clockSource; /**< Which system clock is used on the peripheral */
+    const Chimera::Container::LightFlatMap<std::uintptr_t, size_t>
+        *resourceIndexMap; /**< Converts a peripheral address into a resource index */
+    size_t elements;       /**< Number of elements in the tables */
   };
 
 

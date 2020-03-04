@@ -184,7 +184,7 @@ namespace Thor::LLD::RCC::LookupTables
   RegisterConfig DMA_ClockConfig[ dmaTableSize ];
   RegisterConfig DMA_ClockConfigLP[ dmaTableSize ];
   RegisterConfig DMA_ResetConfig[ dmaTableSize ];
-  Configuration::ClockType_t DMA_SourceClock[ dmaTableSize ];
+  ClockType_t DMA_SourceClock[ dmaTableSize ];
 
   const PCC DMALookup = {
     DMA_ClockConfig, DMA_ClockConfigLP, DMA_ResetConfig, DMA_SourceClock, &Thor::LLD::DMA::InstanceToResourceIndex,

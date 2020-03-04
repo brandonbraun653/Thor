@@ -38,6 +38,7 @@ explicit_alias TEST_LIB : : : :
   <library>/CHIMERA/SYSTEM//LIB
   <library>/CHIMERA/THREADING//LIB
   <library>/GOOGLE//gtest
+  <library>/GOOGLE//gmock
   <library>/THOR/HLD/DMA//LIB
   <library>/THOR/HLD/GPIO//LIB
   <library>/THOR/HLD/SPI//LIB

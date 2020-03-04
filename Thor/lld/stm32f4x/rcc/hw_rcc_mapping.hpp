@@ -72,7 +72,7 @@ namespace Thor::LLD::RCC
     extern RegisterConfig DMA_ClockConfigLP[ dmaTableSize ];
     extern RegisterConfig DMA_ResetConfig[ dmaTableSize ];
 
-    extern Configuration::ClockType_t DMA_SourceClock[ dmaTableSize ];
+    extern ClockType_t DMA_SourceClock[ dmaTableSize ];
 
     /**
      *  GPIO Peripheral Config Lookup Tables
@@ -86,7 +86,7 @@ namespace Thor::LLD::RCC
     extern RegisterConfig GPIO_ClockConfigLP[ gpioTableSize ];
     extern RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
 
-    extern Configuration::ClockType_t GPIO_SourceClock[ gpioTableSize ];
+    extern ClockType_t GPIO_SourceClock[ gpioTableSize ];
 
     /**
      *  SPI Peripheral Config Lookup Tables
@@ -100,7 +100,7 @@ namespace Thor::LLD::RCC
     extern RegisterConfig SPI_ClockConfigLP[ spiTableSize ];
     extern RegisterConfig SPI_ResetConfig[ spiTableSize ];
 
-    extern Configuration::ClockType_t SPI_SourceClock[ spiTableSize ];
+    extern ClockType_t SPI_SourceClock[ spiTableSize ];
 
     /**
      *  UART Peripheral Config Lookup Tables
@@ -114,7 +114,7 @@ namespace Thor::LLD::RCC
     extern RegisterConfig UART_ClockConfigLP[ uartTableSize ];
     extern RegisterConfig UART_ResetConfig[ uartTableSize ];
 
-    extern Configuration::ClockType_t UART_SourceClock[ uartTableSize ];
+    extern ClockType_t UART_SourceClock[ uartTableSize ];
 
     /**
      *  USART Peripheral Config Lookup Tables
@@ -128,7 +128,7 @@ namespace Thor::LLD::RCC
     extern RegisterConfig USART_ClockConfigLP[ usartTableSize ];
     extern RegisterConfig USART_ResetConfig[ usartTableSize ];
 
-    extern Configuration::ClockType_t USART_SourceClock[ usartTableSize ];
+    extern ClockType_t USART_SourceClock[ usartTableSize ];
 
     /**
      *  WWDG Peripheral Config Lookup Tables
@@ -142,7 +142,7 @@ namespace Thor::LLD::RCC
     extern RegisterConfig WWDG_ClockConfigLP[ wwdgTableSize ];
     extern RegisterConfig WWDG_ResetConfig[ wwdgTableSize ];
 
-    extern Configuration::ClockType_t WWDG_SourceClock[ wwdgTableSize ];
+    extern ClockType_t WWDG_SourceClock[ wwdgTableSize ];
 
   }    // namespace LookupTables
 

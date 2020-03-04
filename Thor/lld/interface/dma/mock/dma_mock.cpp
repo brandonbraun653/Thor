@@ -10,19 +10,10 @@
 
 #if defined( TARGET_LLD_MOCK )
 
-#include <Thor/lld/interface/dma/dma.hpp>
 
 namespace Thor::LLD::DMA
 {
-  void initialize()
-  {
-  
-  }
 
-  StreamController * getStreamController( const uint8_t resourceIndex )
-  {
-    return nullptr;
-  }
 }
 
 #endif 

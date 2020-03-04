@@ -12,11 +12,14 @@
 #ifndef THOR_LLD_RCC_MOCK_HPP
 #define THOR_LLD_RCC_MOCK_HPP
 
-/* Google Includes */
-#include "gtest/gmock.h"
-
 /* Thor Includes */
-#include <Thor/lld/interface/rcc/rcc_model.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
+#include <Thor/lld/interface/rcc/rcc_types.hpp>
+
+#if defined( THOR_LLD_RCC_MOCK )
+
+/* Google Includes */
+#include "gmock/gmock.h"
 
 namespace Thor::LLD::RCC
 {
@@ -27,7 +30,7 @@ namespace Thor::LLD::RCC
     MOCK_METHOD2( setPeriphClock, Chimera::Status_t( const Chimera::Peripheral::Type, const size_t ) );
     MOCK_METHOD1( setCoreClock, Chimera::Status_t( const size_t ) );
     MOCK_METHOD1( setCoreClockSource, Chimera::Status_t( const Thor::Clock::Source ) );
-    MOCK_METHOD2( getClockFrequency, Chimera::Status_t( const Configuration::ClockType_t, size_t *const ) );
+    MOCK_METHOD2( getClockFrequency, Chimera::Status_t( const ClockType_t, size_t *const ) );
     MOCK_METHOD3( getPeriphClock, Chimera::Status_t( const Chimera::Peripheral::Type, const std::uintptr_t, size_t *const ) );
   };
 
@@ -40,7 +43,8 @@ namespace Thor::LLD::RCC
     MOCK_METHOD2( enableClockLowPower, Chimera::Status_t( const Chimera::Peripheral::Type, const size_t ) );
     MOCK_METHOD2( disableClockLowPower, Chimera::Status_t( const Chimera::Peripheral::Type, const size_t ) );
   };
-}
+}    // namespace Thor::LLD::RCC
 
+#endif /* THOR_LLD_RCC_MOCK */
 
-#endif  /* !THOR_LLD_RCC_MOCK_HPP */  
+#endif /* !THOR_LLD_RCC_MOCK_HPP */

@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    gpio_model.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Driver GPIO Model
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -27,10 +27,10 @@ namespace Thor::LLD::GPIO
    *  
    *  @note In non-threaded access modes, the timeout parameter is simply ignored.
    */
-  class Model
+  class IDriver
   {
   public:
-    virtual ~Model() = default;
+    virtual ~IDriver() = default;
 
     /**
      *  Attaches a peripheral instance to the interaction model
@@ -184,6 +184,24 @@ namespace Thor::LLD::GPIO
     virtual size_t alternateFunctionGet( const uint8_t pin, const size_t timeout ) = 0;
   };
 
+  using IGPIO_sPtr = std::shared_ptr<IDriver>;
+
+  /**
+   *  Initializes the low level driver
+   */
+  extern Chimera::Status_t initialize();
+
+  /**
+   *  Gets a reference to the driver for a particular channel
+   */
+  extern IGPIO_sPtr getDriver( const size_t channel );
+
+  /**
+   *  Looks up how many GPIO channels are supported by the low level driver
+   *
+   *  @return size_t
+   */
+  extern size_t availableChannels();
 }    // namespace Thor::LLD::GPIO
 
 #endif /* !THOR_GPIO_MODEL_HPP */

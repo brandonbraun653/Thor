@@ -9,6 +9,7 @@
  *******************************************************************************/
 
 #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_GPIO )
+
 /* GTest Includes */
 #include "gtest/gtest.h"
 
@@ -20,13 +21,16 @@
 #include <Thor/cfg>
 #include <Thor/gpio>
 #include <Thor/hld/gpio/hld_gpio_chimera.hpp>
+#include <Thor/hld/gpio/test/test_fixture_gpio.hpp>
 
-
-TEST(PleasePass, PrettyPlease)
+namespace Thor::HLD::GPIO
 {
-  EXPECT_EQ(0, 0);
+  TEST_F( TestFixture, PrettyPlease )
+  {
+    EXPECT_EQ( 0, 0 );
 
-  Chimera::GPIO::Backend::initialize();
-}
+    Chimera::GPIO::Backend::initialize();
+  }
+}    // namespace Thor::HLD::GPIO
 #endif
 

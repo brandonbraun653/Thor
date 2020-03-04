@@ -13,10 +13,10 @@
 #define THOR_LLD_DMA_MOCK_HPP
 
 /* Google Includes */
-#include "gmock/gmock.hpp"
+#include "gmock/gmock.h"
 
 /* Thor Includes */
-#include <Thor/lld/interface/dma/dma_model.hpp>
+#include <Thor/lld/interface/dma/dma_intf.hpp>
 #include <Thor/lld/interface/dma/dma_types.hpp>
 
 namespace Thor::LLD::DMA
@@ -41,7 +41,7 @@ namespace Thor::LLD::DMA
   /**
    *  Models a stream within a DMA controller peripheral (channel)
    */
-  class StreamController : public IStreamModel, public Chimera::Threading::Lockable
+  class StreamController : public IStream, public Chimera::Threading::Lockable
   {
   public:
     MOCK_METHOD2( attach, Chimera::Status_t( StreamX *const, RegisterMap *const ) );
@@ -49,7 +49,7 @@ namespace Thor::LLD::DMA
     MOCK_METHOD2( configure, Chimera::Status_t( StreamConfig *const, TCB *const ) );
     MOCK_METHOD0( start, Chimera::Status_t() );
     MOCK_METHOD0( abort, Chimera::Status_t() );
-    MOCK_METHOD2( registerListener, Chimera::Status_t( Chimera::Event::Actionable &, const size_t, size_t & ) );
+    MOCK_METHOD3( registerListener, Chimera::Status_t( Chimera::Event::Actionable &, const size_t, size_t & ) );
     MOCK_METHOD2( removeListener, Chimera::Status_t( const size_t, const size_t ) );
   };
 
@@ -57,7 +57,7 @@ namespace Thor::LLD::DMA
    *  Models the interface to a full DMA controller, which is composed of many streams.
    *  For the STM32F4xxx chips, there is typically seven streams per channel.
    */
-  class ChannelController : public IPeripheralModel
+  class ChannelController : public IPeripheral
   {
   public:
     MOCK_METHOD1( attach, Chimera::Status_t( RegisterMap *const ) );

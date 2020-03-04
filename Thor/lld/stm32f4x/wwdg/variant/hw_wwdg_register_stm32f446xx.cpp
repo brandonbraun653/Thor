@@ -64,7 +64,7 @@ namespace Thor::LLD::RCC::LookupTables
   RegisterConfig WWDG_ClockConfig[ wwdgTableSize ];
   RegisterConfig WWDG_ClockConfigLP[ wwdgTableSize ];
   RegisterConfig WWDG_ResetConfig[ wwdgTableSize ];
-  Configuration::ClockType_t WWDG_SourceClock[ wwdgTableSize ];
+  ClockType_t WWDG_SourceClock[ wwdgTableSize ];
 
   const PCC WWDGLookup = {
     WWDG_ClockConfig, WWDG_ClockConfigLP, WWDG_ResetConfig, WWDG_SourceClock, &Thor::LLD::WWDG::InstanceToResourceIndex,

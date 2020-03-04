@@ -626,12 +626,6 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\power\power.hpp">
       <Filter>lld\interface\power</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc.hpp">
-      <Filter>lld\interface\rcc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc_model.hpp">
-      <Filter>lld\interface\rcc</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\serial\serial_model.hpp">
       <Filter>lld\interface\serial</Filter>
     </ClInclude>
@@ -990,7 +984,6 @@
       <Filter>lld\stm32f4x\wwdg\variant</Filter>
     </ClInclude>
     <None Include="..\..\..\Thor\watchdog" />
-    <None Include="packages.config" />
     <None Include="..\..\..\Thor\lld\interface\spi\mock\build.jam">
       <Filter>lld\interface\spi\mock</Filter>
     </None>
@@ -1058,6 +1051,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\dma\mock\dma_mock.hpp">
       <Filter>lld\interface\dma\mock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\config\simulator\thor_gtest_config.hpp">
+      <Filter>config\simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc_intf.hpp">
+      <Filter>lld\interface\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc_types.hpp">
+      <Filter>lld\interface\rcc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

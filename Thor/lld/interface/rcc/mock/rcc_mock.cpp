@@ -13,31 +13,35 @@
 
 /* Thor Includes */
 #include <Thor/lld/interface/rcc/mock/rcc_mock.hpp>
-#include <Thor/lld/interface/rcc/rcc_model.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 
-namespace Thor::LLD::RCC 
+#if defined( THOR_LLD_RCC_MOCK )
+
+namespace Thor::LLD::RCC
 {
   static SystemClockMock *clockController;
-  static PeriphControllerMock *periphController;
+  static PeripheralControllerMock *periphController;
 
   IClockTree *getSystemClockController()
   {
-    if( !clockController )
+    if ( !clockController )
     {
       clockController = new SystemClockMock();
     }
 
-    return SystemClockMock;
+    return clockController;
   }
 
   IPeripheralController *getSystemPeripheralController()
   {
-    if( !periphController )
+    if ( !periphController )
     {
-      periphController = new PeriphControllerMock();
+      periphController = new PeripheralControllerMock();
     }
 
     return periphController;
   }
 
-}
+}    // namespace Thor::LLD::RCC
+
+#endif /* THOR_LLD_RCC_MOCK */

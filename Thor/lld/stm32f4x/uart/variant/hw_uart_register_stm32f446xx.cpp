@@ -83,7 +83,7 @@ namespace Thor::LLD::RCC::LookupTables
   RegisterConfig UART_ClockConfigLP[ uartTableSize ];
   RegisterConfig UART_ResetConfig[ uartTableSize ];
   
-  Configuration::ClockType_t UART_SourceClock[ uartTableSize ];
+  ClockType_t UART_SourceClock[ uartTableSize ];
 
   const PCC UARTLookup = {
     UART_ClockConfig, UART_ClockConfigLP, UART_ResetConfig, UART_SourceClock, &Thor::LLD::UART::InstanceToResourceIndex,

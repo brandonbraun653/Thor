@@ -28,10 +28,13 @@
 
 namespace Thor::LLD::DMA
 {
-  class IPeripheralModel
+  /**
+   * Models the interface to a DMA controller peripheral
+   */
+  class IPeripheral
   {
   public:
-    virtual ~IPeripheralModel() = default;
+    virtual ~IPeripheral() = default;
 
     /**
      *  Attaches an instance of a DMA peripheral for the class to control
@@ -113,10 +116,13 @@ namespace Thor::LLD::DMA
     virtual Chimera::Status_t removeListener( StreamX *const stream, const size_t registrationID, const size_t timeout ) = 0;
   };
 
-  class IStreamModel : virtual public Chimera::Event::ListenerInterface
+  /**
+   *  Models the interface to a DMA controller stream
+   */
+  class IStream : virtual public Chimera::Event::ListenerInterface
   {
   public:
-    virtual ~IStreamModel() = default;
+    virtual ~IStream() = default;
 
     virtual Chimera::Status_t attach( StreamX *const peripheral, RegisterMap *const parent ) = 0;
 
@@ -148,6 +154,12 @@ namespace Thor::LLD::DMA
 
     virtual Chimera::Status_t abort() = 0;
   };
+
+
+  extern Chimera::Status_t initialize();
+
+  extern Chimera::Status_t registerDriver();
+
 }    // namespace Thor::LLD::DMA
 
 #endif /* !THOR_DRIVER_MODEL_DMA_HPP */

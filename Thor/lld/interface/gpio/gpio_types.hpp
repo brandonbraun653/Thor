@@ -5,7 +5,7 @@
  *   Description:
  *    Common GPIO types used in Thor drivers
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once 

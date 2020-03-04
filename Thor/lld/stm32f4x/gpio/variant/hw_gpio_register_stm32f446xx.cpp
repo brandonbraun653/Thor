@@ -146,7 +146,7 @@ namespace Thor::LLD::RCC::LookupTables
   RegisterConfig GPIO_ClockConfig[ gpioTableSize ];
   RegisterConfig GPIO_ClockConfigLP[ gpioTableSize ];
   RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
-  Configuration::ClockType_t GPIO_SourceClock[ gpioTableSize ];
+  ClockType_t GPIO_SourceClock[ gpioTableSize ];
 
   const PCC GPIOLookup = {
     GPIO_ClockConfig, GPIO_ClockConfigLP, GPIO_ResetConfig, GPIO_SourceClock, &Thor::LLD::GPIO::InstanceToResourceIndex,

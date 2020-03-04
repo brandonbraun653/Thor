@@ -101,6 +101,10 @@ High Level Driver Support
 #define THOR_HLD_I2S
 #endif
 
+#ifndef THOR_HLD_IWDG
+#define THOR_HLD_IWDG
+#endif
+
 #ifndef THOR_HLD_NVIC
 #define THOR_HLD_NVIC
 #endif
@@ -134,7 +138,7 @@ High Level Driver Support
 #endif
 
 #ifndef THOR_HLD_TIMER
-//#define THOR_HLD_TIMER
+#define THOR_HLD_TIMER
 #endif
 
 #ifndef THOR_HLD_UART
@@ -147,6 +151,10 @@ High Level Driver Support
 
 #ifndef THOR_HLD_USB
 #define THOR_HLD_USB
+#endif
+
+#ifndef THOR_HLD_WWDG
+#define THOR_HLD_WWDG
 #endif
 
 
@@ -201,6 +209,10 @@ Low Level Driver Support
 #define THOR_LLD_I2S
 #endif
 
+#ifndef THOR_LLD_IWDG
+#define THOR_LLD_IWDG
+#endif
+
 #ifndef THOR_LLD_NVIC
 #define THOR_LLD_NVIC
 #endif
@@ -209,8 +221,16 @@ Low Level Driver Support
 #define THOR_LLD_PWM
 #endif
 
+#ifndef THOR_LLD_PWR
+#define THOR_LLD_PWR
+#endif
+
 #ifndef THOR_LLD_QSPI
 #define THOR_LLD_QSPI
+#endif
+
+#ifndef THOR_LLD_RCC
+#define THOR_LLD_RCC
 #endif
 
 #ifndef THOR_LLD_RNG
@@ -234,7 +254,7 @@ Low Level Driver Support
 #endif
 
 #ifndef THOR_LLD_TIMER
-//#define THOR_LLD_TIMER
+#define THOR_LLD_TIMER
 #endif
 
 #ifndef THOR_LLD_UART
@@ -247,6 +267,10 @@ Low Level Driver Support
 
 #ifndef THOR_LLD_USB
 #define THOR_LLD_USB
+#endif
+
+#ifndef THOR_LLD_WWDG
+#define THOR_LLD_WWDG
 #endif
 
 

@@ -103,7 +103,7 @@ namespace Thor::LLD::RCC::LookupTables
   RegisterConfig USART_ClockConfigLP[ usartTableSize ];
   RegisterConfig USART_ResetConfig[ usartTableSize ];
   
-  Configuration::ClockType_t USART_SourceClock[ usartTableSize ];
+  ClockType_t USART_SourceClock[ usartTableSize ];
 
   const PCC USARTLookup = {
     USART_ClockConfig, USART_ClockConfigLP, USART_ResetConfig, USART_SourceClock, &Thor::LLD::USART::InstanceToResourceIndex,

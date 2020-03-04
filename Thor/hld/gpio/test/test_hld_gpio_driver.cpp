@@ -9,6 +9,7 @@
  *******************************************************************************/
 
 #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_GPIO )
+
 /* GTest Includes */
 #include "gtest/gtest.h"
 
@@ -20,11 +21,27 @@
 #include <Thor/cfg>
 #include <Thor/gpio>
 #include <Thor/hld/gpio/hld_gpio_chimera.hpp>
+#include <Thor/hld/gpio/test/test_fixture_gpio.hpp>
+#include <Thor/lld/interface/gpio/mock/gpio_mock.hpp>
 
-
-TEST(PleasePass, PrettyPlease2)
+namespace Thor::HLD::GPIO
 {
-  EXPECT_EQ(0, 0);
+
+  TEST_F(TestFixture, DriverConstructor)
+  {
+    auto DoIFailCreation = Thor::GPIO::Driver();
+    SUCCEED();
+  }
+
+  TEST_F(TestFixture, InitFromConfig)
+  {
+    auto driver = Thor::GPIO::Driver();
+    Chimera::GPIO::PinInit pinInit;
+
+    EXPECT_EQ( 0, 0 );
+  }
+
+
 }
 
 #endif

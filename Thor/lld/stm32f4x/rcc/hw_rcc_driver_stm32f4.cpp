@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_rcc_driver_stm32f4.cpp
  *
- *   Description:
+ *  Description:
  *    Implements the low level driver for the Reset and Clock Control peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -28,7 +28,7 @@
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
-#include <Thor/lld/interface/rcc/rcc_model.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 
 #include <Thor/lld/stm32f4x/flash/hw_flash_mapping.hpp>
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_mapping.hpp>
@@ -326,6 +326,17 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   SystemClock Class Implementation
   ------------------------------------------------*/
+  IClockTree *getSystemClockController()
+  {
+    static SystemClock *ref = nullptr;
+    if( ref == nullptr )
+    {
+      ref = new SystemClock();
+    }
+
+    return ref;
+  }
+
   SystemClock::SystemClock()
   {
     initialize();
@@ -333,18 +344,6 @@ namespace Thor::LLD::RCC
 
   SystemClock::~SystemClock()
   {
-  }
-
-  SystemClock *const SystemClock::get()
-  {
-    static SystemClock *ref = nullptr;
-
-    if ( ref == nullptr )
-    {
-      ref = new SystemClock();
-    }
-
-    return ref;
   }
 
   Chimera::Status_t SystemClock::configureProjectClocks()
@@ -404,7 +403,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  Chimera::Status_t SystemClock::getClockFrequency( const Configuration::ClockType_t clock, size_t *const freqHz )
+  Chimera::Status_t SystemClock::getClockFrequency( const ClockType_t clock, size_t *const freqHz )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
 
@@ -461,16 +460,13 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   PeripheralController Class Implementation
   ------------------------------------------------*/
-  std::shared_ptr<PeripheralController> PeripheralController::get()
+  IPeripheralController *getSystemPeripheralController()
   {
-    struct make_shared_enabler : public PeripheralController
-    {
-    };
-    static std::shared_ptr<make_shared_enabler> ref;
+    static PeripheralController *ref = nullptr;
 
     if ( !ref )
     {
-      ref = std::make_shared<make_shared_enabler>();
+      ref = new PeripheralController();
     }
 
     return ref;

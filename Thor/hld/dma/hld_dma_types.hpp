@@ -24,16 +24,6 @@ namespace Thor::DMA
     MEM_TO_MEM,
     TRANSFER_DIRECTION_UNDEFINED
   };
-
-#if defined( THOR_STM32HAL_DRIVERS ) && ( THOR_STM32HAL_DRIVERS == 1 )
-  struct Initializer
-  {
-    DMA_Stream_TypeDef *Instance;
-    uint32_t channel;
-    uint32_t direction;
-  };
-#endif 
-
 }
 
 #endif /* !THOR_DMA_TYPES_HPP */

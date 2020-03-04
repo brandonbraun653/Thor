@@ -115,7 +115,7 @@ namespace Thor::LLD::RCC::LookupTables
   RegisterConfig SPI_ClockConfigLP[ spiTableSize ];
   RegisterConfig SPI_ResetConfig[ spiTableSize ];
 
-  Configuration::ClockType_t SPI_SourceClock[ spiTableSize ];
+  ClockType_t SPI_SourceClock[ spiTableSize ];
 
   const PCC SPILookup = {
     SPI_ClockConfig, SPI_ClockConfigLP, SPI_ResetConfig, SPI_SourceClock, &Thor::LLD::SPI::InstanceToResourceIndex,

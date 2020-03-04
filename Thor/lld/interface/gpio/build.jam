@@ -1,0 +1,33 @@
+# ====================================================
+# Local Rules 
+# ====================================================
+local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
+    {
+    alias $(name) : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
+    explicit $(name) ;
+    }
+
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/lld/mock/gpio ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/mock/gpio ;
+
+# ====================================================
+# Public Targets
+# ====================================================
+explicit_alias PUB : : : : <define>THOR_LLD_GPIO ;
+
+# ====================================================
+# Static Libraries
+# ====================================================
+lib lld_gpio_mock
+  : [ glob mock/*.cpp ]
+
+  : <link>static
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/GOOGLE//MOCK_PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32F4//PUB
+    <use>/THOR/LLD/STM32F4/GPIO//PUB
+  ;
+explicit lld_gpio_mock ;
+explicit_alias MOCK_LIB : lld_gpio_mock : : : <library>lld_gpio_mock ;
