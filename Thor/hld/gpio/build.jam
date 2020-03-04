@@ -39,12 +39,15 @@ exe hld_gpio_test
 
     /THOR/HLD//TEST_LIB
     /THOR/LLD/STM32F4//TEST_LIB
+
+    /THOR/LLD/INTF/GPIO//MOCK_LIB
   
   : <link>static
     <Thor>enabled-F4
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
     <use>/GOOGLE//TEST_PUB
+    <use>/GOOGLE//MOCK_PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
     <use>/THOR/HLD//TEST_PUB

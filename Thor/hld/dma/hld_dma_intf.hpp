@@ -18,6 +18,9 @@
 
 namespace Thor::DMA
 {
+  static constexpr size_t MAX_CONTROLLERS = 2;
+  static constexpr size_t MAX_STREAMS = 14;
+
   /*------------------------------------------------
   Describes the available sources from which a DMA operation can
   be started with. These definitions are shared across STM32 devices.

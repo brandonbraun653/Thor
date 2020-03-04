@@ -20,19 +20,12 @@
 /* Thor Includes */
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_types.hpp>
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_mapping.hpp>
-#include <Thor/lld/interface/gpio/gpio_model.hpp>
+#include <Thor/lld/interface/gpio/gpio_intf.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_model.hpp>
 
 namespace Thor::LLD::GPIO
 {
-  /**
-   *  Initialize the low level driver
-   *
-   *  @return void 
-   */
-  void initialize();
-
-  class Driver : public Model
+  class Driver : public IDriver
   {
   public:
     Driver();

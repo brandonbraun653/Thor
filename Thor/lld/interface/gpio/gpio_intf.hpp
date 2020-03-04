@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    gpio_model.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Driver GPIO Model
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -27,10 +27,10 @@ namespace Thor::LLD::GPIO
    *  
    *  @note In non-threaded access modes, the timeout parameter is simply ignored.
    */
-  class Model
+  class IDriver
   {
   public:
-    virtual ~Model() = default;
+    virtual ~IDriver() = default;
 
     /**
      *  Attaches a peripheral instance to the interaction model
@@ -183,6 +183,51 @@ namespace Thor::LLD::GPIO
      */
     virtual size_t alternateFunctionGet( const uint8_t pin, const size_t timeout ) = 0;
   };
+
+  using IGPIO_sPtr = std::shared_ptr<IDriver>;
+
+  /**
+   *  LLD module level interface that describes how the 
+   */
+  class IModule
+  {
+  public:
+    virtual ~IModule();
+
+    virtual Chimera::Status_t initialize() = 0;
+
+    virtual IGPIO_sPtr getDriver( const size_t channel ) = 0;
+
+    virtual size_t availableChannels() = 0;
+
+  };
+
+  /**
+   *  Concrete class that the 
+   */
+  class Module : virtual public IModule 
+  {
+  public:
+    /**
+     *  Initializes the low level driver
+     */
+    Chimera::Status_t initialize() override;
+
+    /**
+     *  Gets a reference to the driver for a particular channel
+     */
+    IGPIO_sPtr getDriver( const size_t channel ) override;
+
+    /**
+     *  Looks up how many GPIO channels are supported by the low level driver
+     *
+     *  @return size_t
+     */
+    size_t availableChannels() override;
+  }
+
+
+should I have a prv interface file or should I just expect the lld to implement the class?
 
 }    // namespace Thor::LLD::GPIO
 

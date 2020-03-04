@@ -24,6 +24,42 @@
 
 namespace Thor::LLD::GPIO
 {
+  static std::array<IGPIO_sPtr, NUM_GPIO_PERIPHS> s_gpio_drivers;
+
+  /*-------------------------------------------------
+  LLD->HLD Interface Implementation
+  -------------------------------------------------*/
+  Chimera::Status_t initialize()
+  {
+    initializeRegisters();
+    initializeMapping();
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  IGPIO_sPtr getDriver( const size_t channel )
+  {
+    if ( !( channel < NUM_GPIO_PERIPHS ) )
+    {
+      return nullptr;
+    }
+    else if ( !s_gpio_drivers[ channel ] )
+    {
+      s_gpio_drivers[ channel ] = std::make_shared<Driver>();
+      s_gpio_drivers[ channel ]->attach( PeripheralList[ channel ] );
+    }
+
+    return s_gpio_drivers[ channel ];
+  }
+
+  size_t availableChannels()
+  {
+    return NUM_GPIO_PERIPHS;
+  }
+
+  /*-------------------------------------------------
+  Private LLD Function Implementation
+  -------------------------------------------------*/
   bool isGPIO( const std::uintptr_t address )
   {
     bool result = false;
@@ -39,14 +75,8 @@ namespace Thor::LLD::GPIO
     return result;
   }
 
-  void initialize()
-  {
-    initializeRegisters();
-    initializeMapping();
-  }
-
   /*-----------------------------------------------------
-  Bare Metal Implementation
+  Low Level Driver Implementation
   -----------------------------------------------------*/
   Driver::Driver() : periph( nullptr )
   {
@@ -64,7 +94,7 @@ namespace Thor::LLD::GPIO
 
   void Driver::clockEnable()
   {
-    auto rcc   = Thor::LLD::RCC::PeripheralController::get();
+    auto rcc   = Thor::LLD::RCC::getSystemPeripheralController();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
@@ -72,7 +102,7 @@ namespace Thor::LLD::GPIO
 
   void Driver::clockDisable()
   {
-    auto rcc   = Thor::LLD::RCC::PeripheralController::get();
+    auto rcc   = Thor::LLD::RCC::getSystemPeripheralController();
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );

@@ -1059,6 +1059,9 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\dma\mock\dma_mock.hpp">
       <Filter>lld\interface\dma\mock</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\config\simulator\thor_gtest_config.hpp">
+      <Filter>config\simulator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">

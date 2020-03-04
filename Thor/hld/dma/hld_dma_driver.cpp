@@ -23,18 +23,15 @@
 #include <Thor/cfg>
 #include <Thor/dma>
 #include <Thor/hld/dma/hld_prv_dma_resources.hpp>
-#include <Thor/lld/interface/dma/dma.hpp>
+#include <Thor/lld/interface/dma/dma_intf.hpp>
 #include <Thor/lld/interface/dma/dma_types.hpp>
 
 
+#if defined( THOR_HLD_DMA )
+
 static std::shared_ptr<Thor::DMA::DMAClass> dmaSingleton = nullptr;
-static Thor::LLD::DMA::ChannelController *currentDMAInstance = nullptr;
-static Thor::LLD::DMA::StreamX *currentStream     = nullptr;
-
-
-static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::LLD::DMA::NUM_DMA_STREAMS> postProcessorHandle;
-static std::array<Chimera::Threading::BinarySemaphore, Thor::LLD::DMA::NUM_DMA_STREAMS> postProcessorSignal;
-static std::array<Chimera::Function::void_func_void_ptr, Thor::LLD::DMA::NUM_DMA_STREAMS> postProcessorThread;
+static Thor::LLD::DMA::IPeripheral *currentDMAInstance = nullptr;
+static Thor::LLD::DMA::IStream *currentStream     = nullptr;
 
 #ifdef STM32_DMA1_STREAM0_AVAILABLE
 static void DMA1_Stream0_ISRPostProcessorThread( void *argument );
@@ -101,12 +98,19 @@ static void DMA2_Stream7_ISRPostProcessorThread( void *argument );
 #endif
 
 
+
+
+// static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::DMA::MAX_STREAMS> postProcessorHandle;
+// static std::array<Chimera::Threading::BinarySemaphore, Thor::DMA::MAX_STREAMS> postProcessorSignal;
+// static std::array<Chimera::Function::void_func_void_ptr, Thor::DMA::MAX_STREAMS> postProcessorThread;
+
+
 namespace Thor::DMA
 {
-  static Thor::LLD::DMA::ChannelController *const getController( const Chimera::DMA::Init &config );
-  static Thor::LLD::DMA::StreamX *const getMemoryMappedStream( const Chimera::DMA::Init &config );
-  static Thor::LLD::DMA::StreamConfig convertConfig( const Chimera::DMA::Init &config );
-  static Thor::LLD::DMA::TCB convertTCB( const Chimera::DMA::TCB &transfer );
+  // static Thor::LLD::DMA::IPeripheral *const getController( const Chimera::DMA::Init &config );
+  // static Thor::LLD::DMA::IStream *const getMemoryMappedStream( const Chimera::DMA::Init &config );
+  // static Thor::LLD::DMA::StreamConfig convertConfig( const Chimera::DMA::Init &config );
+  // static Thor::LLD::DMA::TCB convertTCB( const Chimera::DMA::TCB &transfer );
 
   static bool compareFunction( Thor::LLD::DMA::StreamResources &a, Thor::LLD::DMA::StreamResources &b )
   {
@@ -123,7 +127,8 @@ namespace Thor::DMA
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    Thor::LLD::DMA::initialize();
+    // Thor::LLD::DMA::initialize();
+    // Thor::LLD::DMA::registerDriver();
 
     /*------------------------------------------------
     Reset driver object memory
@@ -212,13 +217,6 @@ namespace Thor::DMA
 
   DMAClass::DMAClass()
   {
-    /*------------------------------------------------
-    Lazy initialize all driver memory in case the user forgot
-    ------------------------------------------------*/
-    if ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY )
-    {
-      initialize();
-    }
   }
 
   DMAClass::~DMAClass()
@@ -245,38 +243,38 @@ namespace Thor::DMA
     using namespace Chimera::Threading;
     using namespace Thor::LLD::DMA;
 
-    /*------------------------------------------------
-    Create and initialize the DMA controllers
-    ------------------------------------------------*/
-    for ( size_t channel = 0; channel < driverInstanceList.size(); channel++ )
-    {
-      if ( !driverInstanceList[ channel ] )
-      {
-        driverInstanceList[ channel ] = new ChannelController();
-        driverInstanceList[ channel ]->attach( periphInstanceList[ channel ] );
-        driverInstanceList[ channel ]->init();
-      }
-    }
+    // /*------------------------------------------------
+    // Create and initialize the DMA controllers
+    // ------------------------------------------------*/
+    // for ( size_t channel = 0; channel < driverInstanceList.size(); channel++ )
+    // {
+    //   if ( !driverInstanceList[ channel ] )
+    //   {
+    //     driverInstanceList[ channel ] = new ChannelController();
+    //     driverInstanceList[ channel ]->attach( periphInstanceList[ channel ] );
+    //     driverInstanceList[ channel ]->init();
+    //   }
+    // }
 
-    /*-------------------------------------------------
-    For each stream available, attach their post-processor wakeup signal
-    -------------------------------------------------*/
-    Thor::LLD::DMA::StreamController * streamInstance = nullptr;
+    // /*-------------------------------------------------
+    // For each stream available, attach their post-processor wakeup signal
+    // -------------------------------------------------*/
+    // Thor::LLD::DMA::StreamController * streamInstance = nullptr;
 
-    for( size_t stream = 0; stream < streamInstanceList.size(); stream++ )
-    {
-      streamInstance = getStreamController( stream );
+    // for( size_t stream = 0; stream < streamInstanceList.size(); stream++ )
+    // {
+    //   streamInstance = getStreamController( stream );
 
-      if ( streamInstance && postProcessorThread[ stream ] )
-      {
-        streamInstance->attachISRWakeup( &postProcessorSignal[ stream ] );
+    //   if ( streamInstance && postProcessorThread[ stream ] )
+    //   {
+    //     streamInstance->attachISRWakeup( &postProcessorSignal[ stream ] );
 
-        Thread thread;
-        thread.initialize( postProcessorThread[ stream ], nullptr, Priority::LEVEL_5, 500, "" );
-        thread.start();
-        postProcessorHandle[ stream ] = thread.native_handle();
-      }
-    }
+    //     Thread thread;
+    //     thread.initialize( postProcessorThread[ stream ], nullptr, Priority::LEVEL_5, 500, "" );
+    //     thread.start();
+    //     postProcessorHandle[ stream ] = thread.native_handle();
+    //   }
+    // }
       
     /*------------------------------------------------
     Sort the request resources such that lookup becomes O(log(N))
@@ -293,10 +291,10 @@ namespace Thor::DMA
 
   Chimera::Status_t DMAClass::start()
   {
-    if ( currentDMAInstance && currentStream )
-    {
-      return currentDMAInstance->start( currentStream );
-    }
+    // if ( currentDMAInstance && currentStream )
+    // {
+    //   return currentDMAInstance->start( currentStream );
+    // }
 
     return Chimera::CommonStatusCodes::FAIL;
   }
@@ -306,26 +304,26 @@ namespace Thor::DMA
   {
     auto result = Chimera::CommonStatusCodes::FAIL;
 
-    /*------------------------------------------------
-    Convert from the generic Chimera representation of DMA settings into
-    the actual register bit values needed for this device.
-    ------------------------------------------------*/
-    auto cfg = convertConfig( config );
-    auto tcb = convertTCB( transfer );
+    // /*------------------------------------------------
+    // Convert from the generic Chimera representation of DMA settings into
+    // the actual register bit values needed for this device.
+    // ------------------------------------------------*/
+    // auto cfg = convertConfig( config );
+    // auto tcb = convertTCB( transfer );
 
-    /*------------------------------------------------
-    Lookup the associated DMA peripheral and Stream to be configured
-    ------------------------------------------------*/
-    currentDMAInstance = getController( config );
-    currentStream      = getMemoryMappedStream( config );
+    // /*------------------------------------------------
+    // Lookup the associated DMA peripheral and Stream to be configured
+    // ------------------------------------------------*/
+    // currentDMAInstance = getController( config );
+    // currentStream      = getMemoryMappedStream( config );
 
-    /*------------------------------------------------
-    Perform the configuration
-    ------------------------------------------------*/
-    if ( currentDMAInstance && currentStream )
-    {
-      result = currentDMAInstance->configure( currentStream, &cfg, &tcb );
-    }
+    // /*------------------------------------------------
+    // Perform the configuration
+    // ------------------------------------------------*/
+    // if ( currentDMAInstance && currentStream )
+    // {
+    //   result = currentDMAInstance->configure( currentStream, &cfg, &tcb );
+    // }
 
     return result;
   }
@@ -382,117 +380,121 @@ namespace Thor::DMA
     return result;
   }
 
-  static Thor::LLD::DMA::ChannelController *const getController( const Chimera::DMA::Init &config )
-  {
-    using namespace Thor::LLD::DMA;
-    ChannelController *controller = nullptr;
+  // static Thor::LLD::DMA::IPeripheral *const getController( const Chimera::DMA::Init &config )
+  // {
+  //   // using namespace Thor::LLD::DMA;
+  //   // ChannelController *controller = nullptr;
 
-    /*------------------------------------------------
-    Find the request meta info using binary search of sorted list
-    ------------------------------------------------*/
-    StreamResources c;
-    c.clear();
-    c.requestID = config.request;
+  //   // /*------------------------------------------------
+  //   // Find the request meta info using binary search of sorted list
+  //   // ------------------------------------------------*/
+  //   // StreamResources c;
+  //   // c.clear();
+  //   // c.requestID = config.request;
 
-    auto metaInfo = std::lower_bound(
-        RequestGenerators.begin(), RequestGenerators.end(), c,
-        []( const StreamResources &a, const StreamResources &b ) { return b.requestID < a.requestID; } );
+  //   // auto metaInfo = std::lower_bound(
+  //   //     RequestGenerators.begin(), RequestGenerators.end(), c,
+  //   //     []( const StreamResources &a, const StreamResources &b ) { return b.requestID < a.requestID; } );
 
-    if ( metaInfo->requestID != config.request )
-    {
-      return controller;
-    }
+  //   // if ( metaInfo->requestID != config.request )
+  //   // {
+  //   //   return controller;
+  //   // }
 
-    /*------------------------------------------------
-    Pull out the stream object
-    ------------------------------------------------*/
-    if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA1 )
-    {
-      controller = Thor::LLD::DMA::driverInstanceList[ 0 ];
-    }
-    else if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA2 )
-    {
-      controller = Thor::LLD::DMA::driverInstanceList[ 1 ];
-    }
+  //   // /*------------------------------------------------
+  //   // Pull out the stream object
+  //   // ------------------------------------------------*/
+  //   // if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA1 )
+  //   // {
+  //   //   controller = Thor::LLD::DMA::driverInstanceList[ 0 ];
+  //   // }
+  //   // else if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA2 )
+  //   // {
+  //   //   controller = Thor::LLD::DMA::driverInstanceList[ 1 ];
+  //   // }
 
-    return controller;
-  }
+  //   // return controller;
 
-  static Thor::LLD::DMA::StreamX *const getMemoryMappedStream( const Chimera::DMA::Init &config )
-  {
-    using namespace Thor::LLD::DMA;
+  //   return nullptr;
+  // }
 
-    StreamX *stream    = nullptr;
-    uint32_t streamNum = 0;
+  // static Thor::LLD::DMA::IStream *const getMemoryMappedStream( const Chimera::DMA::Init &config )
+  // {
+  //   // using namespace Thor::LLD::DMA;
 
-    /*------------------------------------------------
-    Find the request meta info using binary search of sorted list
-    ------------------------------------------------*/
-    StreamResources c;
-    c.clear();
-    c.requestID = config.request;
+  //   // StreamX *stream    = nullptr;
+  //   // uint32_t streamNum = 0;
 
-    auto metaInfo = std::lower_bound(
-        RequestGenerators.begin(), RequestGenerators.end(), c,
-        []( const StreamResources &a, const StreamResources &b ) { return b.requestID < a.requestID; } );
+  //   // /*------------------------------------------------
+  //   // Find the request meta info using binary search of sorted list
+  //   // ------------------------------------------------*/
+  //   // StreamResources c;
+  //   // c.clear();
+  //   // c.requestID = config.request;
 
-    if ( metaInfo->requestID != config.request )
-    {
-      return stream;
-    }
+  //   // auto metaInfo = std::lower_bound(
+  //   //     RequestGenerators.begin(), RequestGenerators.end(), c,
+  //   //     []( const StreamResources &a, const StreamResources &b ) { return b.requestID < a.requestID; } );
 
-    /*------------------------------------------------
-    Pull out the stream object
-    ------------------------------------------------*/
-    streamNum = ( metaInfo->cfgBitField & ConfigBitFields::DMA_STREAM ) >> ConfigBitFields::DMA_STREAM_POS;
+  //   // if ( metaInfo->requestID != config.request )
+  //   // {
+  //   //   return stream;
+  //   // }
+
+  //   // /*------------------------------------------------
+  //   // Pull out the stream object
+  //   // ------------------------------------------------*/
+  //   // streamNum = ( metaInfo->cfgBitField & ConfigBitFields::DMA_STREAM ) >> ConfigBitFields::DMA_STREAM_POS;
     
-    if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA1 )
-    {
-      stream = getStreamRegisters( DMA1_PERIPH, streamNum );
-    }
-    else if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA2 )
-    {
-      stream = getStreamRegisters( DMA2_PERIPH, streamNum );
-    }
+  //   // if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA1 )
+  //   // {
+  //   //   stream = getStreamRegisters( DMA1_PERIPH, streamNum );
+  //   // }
+  //   // else if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA2 )
+  //   // {
+  //   //   stream = getStreamRegisters( DMA2_PERIPH, streamNum );
+  //   // }
 
-    return stream;
-  }
+  //   // return stream;
 
-  static Thor::LLD::DMA::StreamConfig convertConfig( const Chimera::DMA::Init &config )
-  {
-    using namespace Thor::LLD::DMA;
+  //   return nullptr;
+  // }
 
-    StreamConfig scfg;
+  // static Thor::LLD::DMA::StreamConfig convertConfig( const Chimera::DMA::Init &config )
+  // {
+  //   using namespace Thor::LLD::DMA;
 
-    scfg.Channel             = Configuration::ChannelSelect::Channel4;
-    scfg.Direction           = TransferMap[ static_cast<size_t>( config.direction ) ];
-    scfg.MemBurst            = Configuration::MemoryBurst::Single;
-    scfg.MemDataAlignment    = MemoryAlignmentMap[ static_cast<size_t>( config.mAlign ) ];
-    scfg.MemInc              = MemoryIncrementMap[ static_cast<size_t>( config.mInc ) ];
-    scfg.Mode                = ModeMap[ static_cast<size_t>( config.mode ) ];
-    scfg.PeriphBurst         = Configuration::PeriphBurst::Single;
-    scfg.PeriphInc           = PeripheralIncrementMap[ static_cast<size_t>( config.pInc ) ];
-    scfg.PeriphDataAlignment = PeripheralAlignmentMap[ static_cast<size_t>( config.pAlign ) ];
-    scfg.Priority            = PriorityMap[ static_cast<uint32_t>( config.priority ) ];
+  //   StreamConfig scfg;
 
-    // TODO: These two are a bit weird...how to abstract this higher?
-    scfg.FIFOMode      = Configuration::FIFODirectMode::Enabled;
-    scfg.FIFOThreshold = Configuration::FIFOThreshold::Threshold_4_4;
+  //   // scfg.Channel             = Configuration::ChannelSelect::Channel4;
+  //   // scfg.Direction           = TransferMap[ static_cast<size_t>( config.direction ) ];
+  //   // scfg.MemBurst            = Configuration::MemoryBurst::Single;
+  //   // scfg.MemDataAlignment    = MemoryAlignmentMap[ static_cast<size_t>( config.mAlign ) ];
+  //   // scfg.MemInc              = MemoryIncrementMap[ static_cast<size_t>( config.mInc ) ];
+  //   // scfg.Mode                = ModeMap[ static_cast<size_t>( config.mode ) ];
+  //   // scfg.PeriphBurst         = Configuration::PeriphBurst::Single;
+  //   // scfg.PeriphInc           = PeripheralIncrementMap[ static_cast<size_t>( config.pInc ) ];
+  //   // scfg.PeriphDataAlignment = PeripheralAlignmentMap[ static_cast<size_t>( config.pAlign ) ];
+  //   // scfg.Priority            = PriorityMap[ static_cast<uint32_t>( config.priority ) ];
 
-    return scfg;
-  }
+  //   // // TODO: These two are a bit weird...how to abstract this higher?
+  //   // scfg.FIFOMode      = Configuration::FIFODirectMode::Enabled;
+  //   // scfg.FIFOThreshold = Configuration::FIFOThreshold::Threshold_4_4;
 
-  static Thor::LLD::DMA::TCB convertTCB( const Chimera::DMA::TCB &transfer )
-  {
-    using namespace Thor::LLD::DMA;
+  //   return scfg;
+  // }
 
-    TCB tcb;
-    tcb.srcAddress   = transfer.srcAddress;
-    tcb.dstAddress   = transfer.dstAddress;
-    tcb.transferSize = static_cast<uint32_t>( transfer.transferSize );
+  // static Thor::LLD::DMA::TCB convertTCB( const Chimera::DMA::TCB &transfer )
+  // {
+  //   using namespace Thor::LLD::DMA;
 
-    return tcb;
-  }
+  //   TCB tcb;
+  //   tcb.srcAddress   = transfer.srcAddress;
+  //   tcb.dstAddress   = transfer.dstAddress;
+  //   tcb.transferSize = static_cast<uint32_t>( transfer.transferSize );
+
+  //   return tcb;
+  // }
 }    // namespace Thor::DMA
 
 #ifdef STM32_DMA1_STREAM0_AVAILABLE
@@ -766,3 +768,5 @@ static void DMA2_Stream7_ISRPostProcessorThread( void *argument )
   }
 }
 #endif
+
+#endif  /* THOR_HLD_DMA */

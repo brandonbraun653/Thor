@@ -136,9 +136,9 @@ namespace Thor::LLD::RCC
   };
 
 
-  IClockTree *getSystemClockController();
+  extern IClockTree *getSystemClockController();
 
-  IPeripheralController *getSystemPeripheralController();
+  extern IPeripheralController *getSystemPeripheralController();
 
 }    // namespace Thor::LLD::RCC
 

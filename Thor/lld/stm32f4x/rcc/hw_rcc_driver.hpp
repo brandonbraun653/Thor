@@ -133,7 +133,7 @@ namespace Thor::LLD::RCC
     Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index ) final override;
 
   private:
-    IPeripheralController *getSystemPeripheralController()
+    friend IPeripheralController *getSystemPeripheralController();
     PeripheralController();
   };
 

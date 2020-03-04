@@ -12,11 +12,13 @@
 #ifndef THOR_LLD_RCC_MOCK_HPP
 #define THOR_LLD_RCC_MOCK_HPP
 
-/* Google Includes */
-#include "gtest/gmock.h"
 
 /* Thor Includes */
 #include <Thor/lld/interface/rcc/rcc_model.hpp>
+
+
+/* Google Includes */
+#include "gmock/gmock.h"
 
 namespace Thor::LLD::RCC
 {

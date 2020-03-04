@@ -199,7 +199,7 @@ namespace Thor::LLD::WWDG
 
   void Driver::enableClock()
   {
-    auto rcc = Thor::LLD::RCC::PeripheralController::get();
+    auto rcc = Thor::LLD::RCC::getSystemPeripheralController();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_WWDG, resourceIndex );
   }
 

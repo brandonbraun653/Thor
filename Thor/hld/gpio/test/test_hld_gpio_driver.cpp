@@ -9,6 +9,7 @@
  *******************************************************************************/
 
 #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_GPIO )
+
 /* GTest Includes */
 #include "gtest/gtest.h"
 
@@ -20,6 +21,7 @@
 #include <Thor/cfg>
 #include <Thor/gpio>
 #include <Thor/hld/gpio/hld_gpio_chimera.hpp>
+#include <Thor/lld/interface/gpio/mock/gpio_mock.hpp>
 
 
 TEST(PleasePass, PrettyPlease2)

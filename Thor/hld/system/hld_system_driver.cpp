@@ -41,7 +41,7 @@ namespace Chimera::System
     Initialize the system clocks
     ------------------------------------------------*/
     Thor::LLD::RCC::initialize();
-    Thor::LLD::RCC::SystemClock::get()->configureProjectClocks();
+    Thor::LLD::RCC::getSystemClockController()->configureProjectClocks();
 
     /*------------------------------------------------
     Hardware Specific Initialization

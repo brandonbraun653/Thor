@@ -27,6 +27,14 @@ namespace Thor::LLD::GPIO
 
   void initializeMapping()
   {
+    PeripheralList[ GPIOA_RESOURCE_INDEX ] = GPIOA_PERIPH;
+    PeripheralList[ GPIOB_RESOURCE_INDEX ] = GPIOB_PERIPH;
+    PeripheralList[ GPIOC_RESOURCE_INDEX ] = GPIOC_PERIPH;
+    PeripheralList[ GPIOD_RESOURCE_INDEX ] = GPIOD_PERIPH;
+    PeripheralList[ GPIOE_RESOURCE_INDEX ] = GPIOE_PERIPH;
+    PeripheralList[ GPIOF_RESOURCE_INDEX ] = GPIOF_PERIPH;
+    PeripheralList[ GPIOG_RESOURCE_INDEX ] = GPIOG_PERIPH;
+    PeripheralList[ GPIOH_RESOURCE_INDEX ] = GPIOH_PERIPH;
   }
 
 

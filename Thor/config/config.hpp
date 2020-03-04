@@ -16,10 +16,12 @@
 /* Thor Includes */
 #include <Thor/hld/common/preprocessor.hpp>
 
-#if defined( _SIM )
+#if defined( _SIM ) && !defined( TARGET_LLD_MOCK )
 #include <Thor/config/simulator/thor_sim_config.hpp>
 #elif defined( TARGET_STM32F4 )
 #include <Thor/config/hardware/thor_stm32f4x_config.hpp>
+#elif defined( TARGET_LLD_MOCK )
+#include <Thor/config/simulator/thor_gtest_config.hpp>
 #else
 #pragma message("Unknown configuration options");
 #endif 

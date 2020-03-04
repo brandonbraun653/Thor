@@ -20,7 +20,7 @@
 /* Driver Includes */
 #include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/common/interrupts/dma_interrupt_vectors.hpp>
-#include <Thor/lld/interface/dma/dma_model.hpp>
+#include <Thor/lld/interface/dma/dma_intf.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_types.hpp>
 #include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
 
@@ -38,13 +38,6 @@ namespace Thor::LLD::DMA
   bool streamIsOnController( RegisterMap *const controller, StreamX *const stream );
 
   /**
-   *  Initializes the low level driver
-   *
-   *  @return void
-   */
-  void initialize();
-
-  /**
    *  Gets the current stream controller instance via lookup
    * 
    *  @param[in]  resourceIndex   LLD defined resource lookup index for a stream
@@ -55,7 +48,7 @@ namespace Thor::LLD::DMA
   /**
    *  Models a stream within a DMA controller peripheral (channel)
    */
-  class StreamController : public IStreamModel, public Chimera::Threading::Lockable
+  class StreamController : virtual public IStream, public Chimera::Threading::Lockable
   {
   public:
     StreamController();
@@ -136,7 +129,7 @@ namespace Thor::LLD::DMA
    *  Models the interface to a full DMA controller, which is composed of many streams.
    *  For the STM32F4xxx chips, there is typically seven streams per channel.
    */
-  class ChannelController : public IPeripheralModel
+  class ChannelController : virtual public IPeripheral
   {
   public:
     ChannelController();

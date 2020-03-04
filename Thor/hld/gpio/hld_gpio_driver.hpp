@@ -23,7 +23,7 @@
 
 /* Thor Includes */
 #include <Thor/hld/gpio/hld_gpio_types.hpp>
-#include <Thor/lld/interface/gpio/gpio.hpp>
+#include <Thor/lld/interface/gpio/gpio_intf.hpp>
 
 namespace Thor::GPIO
 {
@@ -50,7 +50,7 @@ namespace Thor::GPIO
     Chimera::Status_t toggle( const size_t timeout = ACCESS_TIMEOUT ) final override;
 
   private:
-    Thor::LLD::GPIO::Driver lld;
+    Thor::LLD::GPIO::IGPIO_sPtr lld;
     Chimera::GPIO::PinInit initSettings;
   };
 }    // namespace Thor::GPIO

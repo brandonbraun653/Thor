@@ -310,14 +310,14 @@
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PreprocessorDefinitions>$(ProjectCompilerDefines);$(ChimeraCompilerDefines);$(BoostCompilerDefines)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\git\Microcontrollers\ThorDev\lib\CommonTools\googletest\googletest\googlemock\include;$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PreprocessorDefinitions>$(ProjectCompilerDefines);$(ChimeraCompilerDefines);$(BoostCompilerDefines)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\git\Microcontrollers\ThorDev\lib\CommonTools\googletest\googletest\googlemock\include;$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RF24_1|Win32'">
@@ -338,14 +338,14 @@
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PreprocessorDefinitions>$(ProjectCompilerDefines);$(ChimeraCompilerDefines);$(BoostCompilerDefines)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\git\Microcontrollers\ThorDev\lib\CommonTools\googletest\googletest\googlemock\include;$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PreprocessorDefinitions>$(ProjectCompilerDefines);$(ChimeraCompilerDefines);$(BoostCompilerDefines)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\git\Microcontrollers\ThorDev\lib\CommonTools\googletest\googletest\googlemock\include;$(FreeRTOSIncDir);$(BoostIncDir);$(AuroraIncDir);$(ThorIncDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">
@@ -395,6 +395,7 @@
     <ClInclude Include="..\..\..\Thor\config\config.hpp" />
     <ClInclude Include="..\..\..\Thor\config\freertos\FreeRTOSConfig.h" />
     <ClInclude Include="..\..\..\Thor\config\hardware\thor_stm32f4x_config.hpp" />
+    <ClInclude Include="..\..\..\Thor\config\simulator\thor_gtest_config.hpp" />
     <ClInclude Include="..\..\..\Thor\config\simulator\thor_sim_config.hpp" />
     <ClInclude Include="..\..\..\Thor\config\templates\thorDriverConfig.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\clock\clock_types.hpp" />
