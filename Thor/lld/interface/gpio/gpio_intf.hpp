@@ -187,48 +187,21 @@ namespace Thor::LLD::GPIO
   using IGPIO_sPtr = std::shared_ptr<IDriver>;
 
   /**
-   *  LLD module level interface that describes how the 
+   *  Initializes the low level driver
    */
-  class IModule
-  {
-  public:
-    virtual ~IModule();
-
-    virtual Chimera::Status_t initialize() = 0;
-
-    virtual IGPIO_sPtr getDriver( const size_t channel ) = 0;
-
-    virtual size_t availableChannels() = 0;
-
-  };
+  extern Chimera::Status_t initialize();
 
   /**
-   *  Concrete class that the 
+   *  Gets a reference to the driver for a particular channel
    */
-  class Module : virtual public IModule 
-  {
-  public:
-    /**
-     *  Initializes the low level driver
-     */
-    Chimera::Status_t initialize() override;
+  extern IGPIO_sPtr getDriver( const size_t channel );
 
-    /**
-     *  Gets a reference to the driver for a particular channel
-     */
-    IGPIO_sPtr getDriver( const size_t channel ) override;
-
-    /**
-     *  Looks up how many GPIO channels are supported by the low level driver
-     *
-     *  @return size_t
-     */
-    size_t availableChannels() override;
-  }
-
-
-should I have a prv interface file or should I just expect the lld to implement the class?
-
+  /**
+   *  Looks up how many GPIO channels are supported by the low level driver
+   *
+   *  @return size_t
+   */
+  extern size_t availableChannels();
 }    // namespace Thor::LLD::GPIO
 
 #endif /* !THOR_GPIO_MODEL_HPP */

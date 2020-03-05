@@ -18,22 +18,21 @@
 
 namespace Thor::LLD::GPIO
 {
-  static constexpr size_t MAX_NUM_CHANNELS = 8;
+  ModuleMock *gpio_module_mock;
 
-  std::array<IGPIO_sPtr, MAX_NUM_CHANNELS> channels;
+  Chimera::Status_t initialize()
+  {
+    return gpio_module_mock->initialize();
+  }
 
   IGPIO_sPtr getDriver( const size_t channel )
   {
-    if( !channels[ channel ])
-    {
-      channels[ channel ] = std::make_shared<DriverMock>();
-    }
-
-    return channels[ channel ];
+    gpio_module_mock->getDriver( channel );
+    return std::make_shared<DriverMock>();
   }
 
   size_t availableChannels()
   {
-    return MAX_NUM_CHANNELS;
+    return gpio_module_mock->availableChannels();
   }
-}
+}    // namespace Thor::LLD::GPIO

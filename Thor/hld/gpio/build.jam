@@ -14,6 +14,7 @@ local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/hld/gpio ;
 # Public Targets
 # ====================================================
 explicit_alias PUB : : : : <define>THOR_HLD_GPIO ;
+explicit_alias TEST_PUB : : : : <define>THOR_HLD_TEST_GPIO ;
 
 # ====================================================
 # Static Libraries
@@ -51,6 +52,7 @@ exe hld_gpio_test
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
     <use>/THOR/HLD//TEST_PUB
+    <use>/THOR/HLD/GPIO//TEST_PUB
     <linkflags>-Wl,--no-as-needed
   ;
 explicit hld_gpio_test ;
