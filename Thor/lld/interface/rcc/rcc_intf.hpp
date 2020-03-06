@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
- *    rcc_model.hpp
+ *  File Name:
+ *    rcc_intf.hpp
  *
- *   Description:
- *    STM32 RCC interface modeling for the Thor driver
+ *  Description:
+ *    STM32 RCC interface modeling for the Thor low level driver
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -21,6 +21,7 @@
 
 /* Thor Includes */
 #include <Thor/hld/clock/clock_types.hpp>
+#include <Thor/lld/interface/rcc/rcc_types.hpp>
 
 namespace Thor::LLD::RCC
 {
@@ -43,7 +44,7 @@ namespace Thor::LLD::RCC
      *  @note   Does not modify the system core clock in order to accomplish this.
      *  @note   If the frequency cannot be matched, no change will be applied.
      *
-     *  @param[in]  periph    The perihperal to modify the clock against
+     *  @param[in]  periph    The peripheral to modify the clock against
      *  @param[in]  freqHz    The desired frequency to be set
      *  @return Chimera::Status_t
      */
@@ -69,11 +70,11 @@ namespace Thor::LLD::RCC
     /**
      *  Gets the frequency of any major system level clock
      *  
-     *  @param[in]  clock     The clock you wish to retreive the current frequency of
+     *  @param[in]  clock     The clock you wish to retrieve the current frequency of
      *  @param[out] freqHz    The current frequency of the requested clock
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t getClockFrequency( const Configuration::ClockType_t clock, size_t *const freqHz ) = 0;
+    virtual Chimera::Status_t getClockFrequency( const ClockType_t clock, size_t *const freqHz ) = 0;
 
     /**
      *  Gets the current peripheral clock frequency in Hz
@@ -85,9 +86,6 @@ namespace Thor::LLD::RCC
      */
     virtual Chimera::Status_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz ) = 0;
   };
-
-
-
 
   class IPeripheralController
   {

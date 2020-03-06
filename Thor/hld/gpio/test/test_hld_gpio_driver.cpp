@@ -24,17 +24,6 @@
 #include <Thor/hld/gpio/test/test_fixture_gpio.hpp>
 #include <Thor/lld/interface/gpio/mock/gpio_mock.hpp>
 
-
-TEST(PleasePass, PrettyPlease2)
-{
-  EXPECT_EQ(0, 0);
-}
-
-TEST(PleasePass, PrettyPlease32)
-{
-  EXPECT_EQ( 0, 0 );
-}
-
 namespace Thor::HLD::GPIO
 {
 
@@ -42,7 +31,6 @@ namespace Thor::HLD::GPIO
   {
     auto DoIFailCreation = Thor::GPIO::Driver();
     SUCCEED();
-    EXPECT_EQ( 0, 0 );
   }
 
   TEST_F(TestFixture, InitFromConfig)
@@ -52,6 +40,8 @@ namespace Thor::HLD::GPIO
 
     EXPECT_EQ( 0, 0 );
   }
+
+
 }
 
 #endif

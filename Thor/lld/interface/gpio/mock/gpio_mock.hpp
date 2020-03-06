@@ -60,7 +60,7 @@ namespace Thor::LLD::GPIO
   /**
    *  Concrete class that the
    */
-  class ModuleMock : virtual public IModule
+  class ModuleMock : public IModule
   {
   public:
     MOCK_METHOD( Chimera::Status_t, initialize, (), ( override ) );
@@ -68,7 +68,7 @@ namespace Thor::LLD::GPIO
     MOCK_METHOD( size_t, availableChannels, (), ( override ) );
   };
 
-  extern ModuleMock *gpio_module_mock;
+  void assignModuleMock( ModuleMock *mock );
 
 }    // namespace Thor::LLD::GPIO
 

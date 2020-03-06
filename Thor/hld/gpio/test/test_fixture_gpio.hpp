@@ -20,6 +20,9 @@
 #include <Thor/gpio>
 
 
+#include <Thor/lld/interface/gpio/mock/gpio_mock.hpp>
+
+
 namespace Thor::HLD::GPIO
 {
 
@@ -29,7 +32,7 @@ namespace Thor::HLD::GPIO
     virtual void SetUp() override;
     virtual void TearDown() override;
 
-
+    Thor::LLD::GPIO::ModuleMock *mock;
   };
 }
 

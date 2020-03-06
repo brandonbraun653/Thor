@@ -20,6 +20,7 @@
 #include <Chimera/common>
 
 /* Driver Includes */
+#include <Thor/lld/interface/rcc/rcc_types.hpp>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prj.hpp>
 
 namespace Thor::LLD::RCC
@@ -86,7 +87,6 @@ namespace Thor::LLD::RCC
      *  High level structure describing what kinds of clocks are available
      *  to be configured by the code.
      */
-    using ClockType_t = Reg32_t;
     namespace ClockType
     {
       static constexpr ClockType_t SYSCLK = 1u;

@@ -8,6 +8,10 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
+#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_GPIO )
+
+/* STL Includes */
+#include <iostream>
 
 /* Test Includes */
 #include <Thor/hld/gpio/test/test_fixture_gpio.hpp>
@@ -17,12 +21,15 @@ namespace Thor::HLD::GPIO
 {
   void TestFixture::SetUp()
   {
-    Thor::LLD::GPIO::gpio_module_mock = new Thor::LLD::GPIO::ModuleMock();
+    mock = new Thor::LLD::GPIO::ModuleMock();
+    ::Thor::LLD::GPIO::assignModuleMock( mock );
   }
 
   void TestFixture::TearDown()
   {
-    delete Thor::LLD::GPIO::gpio_module_mock;
+    delete mock;
   }
 
 }    // namespace Thor::HLD::GPIO
+
+#endif 

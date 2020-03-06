@@ -10,6 +10,7 @@
 
 /* STL Includes */
 #include <array>
+#include <iostream>
 
 /* Mock Includes */
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
@@ -18,7 +19,12 @@
 
 namespace Thor::LLD::GPIO
 {
-  ModuleMock *gpio_module_mock;
+  static ModuleMock *gpio_module_mock;
+
+  void assignModuleMock( ModuleMock *mock )
+  {
+    gpio_module_mock = mock;
+  }
 
   Chimera::Status_t initialize()
   {
