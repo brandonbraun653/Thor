@@ -8,16 +8,16 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-/* STL Includes */
-#include <array>
-#include <iostream>
-
 /* Mock Includes */
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 #include <Thor/lld/interface/gpio/mock/gpio_mock.hpp>
 
 #if defined( THOR_HLD_GPIO_MOCK )
+
+/* STL Includes */
+#include <array>
+#include <iostream>
 
 namespace Thor::LLD::GPIO
 {

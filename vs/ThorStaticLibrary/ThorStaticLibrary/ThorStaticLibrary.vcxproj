@@ -304,6 +304,7 @@
       <CPPLanguageStandard>CPP2A</CPPLanguageStandard>
       <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>THOR_ENABLE_ALL_DRIVERS;$(ChimeraCompilerDefines);$(ProjectCompilerDefines);%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1</PreprocessorDefinitions>
+      <Optimization>Os</Optimization>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
