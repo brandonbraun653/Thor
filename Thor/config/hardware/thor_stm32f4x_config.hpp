@@ -210,6 +210,10 @@ Low Level Driver Support
 #define THOR_LLD_I2S
 #endif
 
+#ifndef THOR_LLD_IT
+#define THOR_LLD_IT
+#endif
+
 #ifndef THOR_LLD_IWDG
 #define THOR_LLD_IWDG
 #endif
@@ -278,6 +282,10 @@ Low Level Driver Support
 #else /* !THOR_ENABLE_ALL_DRIVERS */
 
 //Enable specific drivers here
+
+#ifndef THOR_LLD_SPI
+#define THOR_LLD_SPI
+#endif
 
 #endif 
 

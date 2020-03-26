@@ -38,9 +38,24 @@ Custom STM32F4 Driver
 #error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)
 #endif
 
-#endif /* TARGET_STM32F4 CUSTOM DRIVER */
+#endif /* TARGET_STM32F4 */
 
-#if !defined( TARGET_LLD_MOCK ) && !defined( TARGET_STM32F4 ) && !defined( TARGET_STM32F7 )
+/*-------------------------------------------------
+Custom STM32L4 Driver
+-------------------------------------------------*/
+#if defined( TARGET_STM32L4 )
+
+#ifndef CORTEX_M4
+#define CORTEX_M4
+#endif 
+
+#if !defined( STM32L432xx ) && !defined( _SIM ) // || !defined( <some_other_chip> )
+#error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)
+#endif
+
+#endif /* TARGET_STM32F4 */
+
+#if !defined( TARGET_LLD_MOCK ) && !defined( TARGET_STM32F4 ) && !defined( TARGET_STM32L4 ) && !defined( TARGET_STM32F7 )
 #error No detected STM32 device. Please add to your project build system.
 #endif
 

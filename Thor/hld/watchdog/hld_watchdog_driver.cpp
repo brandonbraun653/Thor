@@ -48,12 +48,14 @@ namespace Chimera::Watchdog::Backend
 }
 
 
+
 namespace Thor::Watchdog
 {
+
+  #if defined( THOR_HLD_WWDG )
   /*------------------------------------------------
   Window Watchdog Driver
   ------------------------------------------------*/
-
   static size_t s_wwdg_driver_initialized;
 
   Chimera::Status_t initializeWWDG()
@@ -137,10 +139,12 @@ namespace Thor::Watchdog
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
+  #endif /* THOR_HLD_WWDG */
+
+  #if defined( THOR_HLD_IWDG )
   /*------------------------------------------------
   Independent Watchdog Driver
   ------------------------------------------------*/
-
   static size_t s_iwdg_driver_initialized;
 
   Chimera::Status_t initializeIWDG()
@@ -221,5 +225,7 @@ namespace Thor::Watchdog
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
+
+  #endif /* THOR_HLD_IWDG */
 
 }    // namespace Thor::Watchdog

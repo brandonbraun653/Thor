@@ -38,13 +38,6 @@ namespace Thor::LLD::GPIO
 
   /**
    *  Mode register configuration options
-   *
-   *  Elements values convention: 0xX0yz00YZ
-   *    - X  : GPIO mode or EXTI Mode
-   *    - y  : External IT or Event trigger detection
-   *    - z  : IO configuration on External IT or Event
-   *    - Y  : Output type (Push Pull or Open Drain)
-   *    - Z  : IO Direction mode (Input, Output, Alternate or Analog)
    */
   enum OPT_MODER : size_t
   {

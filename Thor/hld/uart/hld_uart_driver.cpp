@@ -27,6 +27,8 @@ namespace Chimera::UART::Backend
   }
 }    // namespace Chimera::UART
 
+#if defined( THOR_HLD_UART )
+
 namespace Thor::UART
 {
   static size_t s_driver_initialized;
@@ -38,7 +40,11 @@ namespace Thor::UART
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
+    #if defined( THOR_LLD_UART )
     Thor::LLD::UART::initialize();
+    #else
+    #pragma message("HLD UART driver enabled but the required LLD is not")
+    #endif
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::CommonStatusCodes::OK;
@@ -147,3 +153,5 @@ namespace Thor::UART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 }    // namespace Thor::UART
+
+#endif /* THOR_HLD_UART */

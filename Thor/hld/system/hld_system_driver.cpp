@@ -23,59 +23,120 @@
 #include <Thor/watchdog>
 
 /* Driver Includes */
-#include <Thor/lld/interface/nvic/nvic.hpp>
+#include <Thor/lld/common/cortex-m4/interrupts.hpp>
+#include <Thor/lld/interface/des/des_intf.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
+#include <Thor/lld/interface/nvic/nvic_intf.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
-#include <Thor/lld/interface/startup/startup.hpp>
+#include <Thor/lld/interface/startup/startup_intf.hpp>
 
 namespace Thor::System
 {
+  static Chimera::System::Information s_system_info;
 
+  Chimera::Status_t initialize()
+  {
+    s_system_info = {};
+    return Chimera::CommonStatusCodes::OK;
+  }
 
-}    // namespace Thor::System
+  Chimera::Status_t reset()
+  {
+    return Chimera::CommonStatusCodes::OK;
+  }
 
-namespace Chimera::System
-{
-  Chimera::Status_t prjSystemStartup()
+  Chimera::Status_t systemStartup()
   {
     /*------------------------------------------------
     Initialize the system clocks
     ------------------------------------------------*/
+#if defined( THOR_LLD_RCC )
     Thor::LLD::RCC::initialize();
     Thor::LLD::RCC::getSystemClockController()->configureProjectClocks();
+#endif
 
     /*------------------------------------------------
-    Hardware Specific Initialization
+    HLD Specific Initialization
     ------------------------------------------------*/
+#if defined( THOR_HLD_DMA )
     Thor::DMA::initialize();
     Thor::DMA::DMAClass::get()->init();
+#endif
+
+#if defined( THOR_HLD_GPIO )
     Thor::GPIO::initialize();
+#endif
+
+#if defined( THOR_HLD_IWDG )
     Thor::Watchdog::initializeIWDG();
+#endif
+
+#if defined( THOR_HLD_SPI )
     Thor::SPI::initialize();
+#endif
+
+#if defined( THOR_HLD_UART )
     Thor::UART::initialize();
+#endif
+
+#if defined( THOR_HLD_USART )
     Thor::USART::initialize();
+#endif
+
+#if defined( THOR_HLD_WWDG )
     Thor::Watchdog::initializeWWDG();
+#endif
+
+    /*------------------------------------------------
+    LLD Specific Initialization
+    ------------------------------------------------*/
+#if defined( THOR_LLD_DES )
+    Thor::LLD::DES::initialize();
+#endif 
 
     /*------------------------------------------------
     Initialize interrupt settings
     ------------------------------------------------*/
+#if defined( THOR_LLD_IT )
     Thor::LLD::IT::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
-
+#endif
 
     return Chimera::CommonStatusCodes::OK;
   }
 
-  InterruptMask prjDisableInterrupts()
+  Chimera::System::InterruptMask disableInterrupts()
   {
-    return InterruptMask();
+    return Thor::LLD::IT::disableInterrupts();
   }
 
-  void prjEnableInterrupts( InterruptMask &interruptMask )
+  void enableInterrupts( Chimera::System::InterruptMask &interruptMask )
   {
-
+    Thor::LLD::IT::enableInterrupts( interruptMask );
   }
 
-  int prjMaxConcurrentThreads()
+  int maxConcurrentThreads()
   {
     return 1;
   }
-}
+
+  Chimera::System::ResetEvent getResetReason()
+  {
+    return Thor::LLD::RCC::getResetReason();
+  }
+
+  void getSystemInformation( Chimera::System::Information *&info )
+  {
+    /*------------------------------------------------
+    Update the static data fields
+    ------------------------------------------------*/
+    Thor::LLD::DES::getUniqueId( s_system_info.uniqueId );
+    s_system_info.chipPackage = Thor::LLD::DES::getICPackaging();
+    s_system_info.flashSize   = Thor::LLD::DES::getFlashSize();
+
+    /*------------------------------------------------
+    Assign the data to the caller
+    ------------------------------------------------*/
+    info = &s_system_info;
+  }
+}    // namespace Thor::System

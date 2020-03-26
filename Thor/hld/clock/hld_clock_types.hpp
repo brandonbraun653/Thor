@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
- *    clock_types.hpp
+ *  File Name:
+ *    hld_clock_types.hpp
  *
- *   Description:
+ *  Description:
  *    Thor Clock types
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -30,7 +30,10 @@ namespace Thor::Clock
     HSI,  /**< High speed external clock */
     HSE,  /**< High speed internal clock */
     CSI,  /**< ? */
-    PLL,  /**< Phase locked loop clock */
+    PLL,  /**< Main phase locked loop clock */
+    PLLP, /**< Main PLL P output */
+    PLLQ, /**< Main PLL Q output */
+    PLLR, /**< Main PLL R output */
 
     NUM_CLOCK_SOURCES
   };

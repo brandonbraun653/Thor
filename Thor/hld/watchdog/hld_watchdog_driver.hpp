@@ -16,15 +16,12 @@
 #include <Chimera/thread>
 #include <Chimera/watchdog>
 
-/* Thor Includes */
-#include <Thor/lld/interface/watchdog/watchdog.hpp>
-
 namespace Thor::Watchdog
 {
   /**
    *  Initialize the WWDG driver
-   *  
-   *  @return Chimera::Status_t 
+   *
+   *  @return Chimera::Status_t
    */
   Chimera::Status_t initializeWWDG();
 
@@ -33,8 +30,7 @@ namespace Thor::Watchdog
    *   watchdog is intended to protect against software faults and has more advanced
    *   capabilities than the Independent Watchdog.
    */
-  class Window : virtual public Chimera::Watchdog::IWatchdog,
-                 public Chimera::Threading::Lockable
+  class Window : virtual public Chimera::Watchdog::IWatchdog, public Chimera::Threading::Lockable
   {
   public:
     Window();
@@ -58,13 +54,12 @@ namespace Thor::Watchdog
 
   private:
     uint32_t currentPrescaler;
-    Thor::LLD::WWDG::Driver_uPtr hwDriver;
   };
 
   /**
    *  Initialize the WWDG driver
-   *  
-   *  @return Chimera::Status_t 
+   *
+   *  @return Chimera::Status_t
    */
   Chimera::Status_t initializeIWDG();
 
@@ -74,8 +69,7 @@ namespace Thor::Watchdog
    *   to protect against issues deriving from a faulty system clock that would not
    *   trip the window watchdog.
    */
-  class Independent : virtual public Chimera::Watchdog::IWatchdog,
-                      public Chimera::Threading::Lockable
+  class Independent : virtual public Chimera::Watchdog::IWatchdog, public Chimera::Threading::Lockable
   {
   public:
     Independent();
@@ -99,7 +93,6 @@ namespace Thor::Watchdog
 
   private:
     uint32_t currentPrescaler;
-    Thor::LLD::IWDG::Driver_uPtr hwDriver;
   };
 
 }    // namespace Thor::Watchdog

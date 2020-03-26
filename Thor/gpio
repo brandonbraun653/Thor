@@ -13,7 +13,6 @@
 #define THOR_GPIO_INCLUDES
 
 #include <Thor/hld/gpio/hld_gpio_driver.hpp>
-#include <Thor/hld/gpio/hld_gpio_intf.hpp>
 #include <Thor/hld/gpio/hld_gpio_types.hpp>
 
 #endif /* !THOR_GPIO_INCLUDES */

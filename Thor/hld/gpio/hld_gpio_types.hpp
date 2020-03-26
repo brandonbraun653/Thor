@@ -9,8 +9,8 @@
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_GPIO_TYPES_HPP
-#define THOR_GPIO_TYPES_HPP
+#ifndef THOR_HLD_GPIO_TYPES_HPP
+#define THOR_HLD_GPIO_TYPES_HPP
 
 /* C++ Includes */
 #include <cstdint>
@@ -22,8 +22,6 @@ namespace Thor::GPIO
   using Driver_sPtr = std::shared_ptr<Driver>;
   using Driver_uPtr = std::unique_ptr<Driver>;
 
-  static constexpr size_t ACCESS_TIMEOUT = 10;  /**< Default timeout (mS) for accessing GPIO hardware */
-
 }    // namespace Thor::GPIO
 
-#endif /* !THOR_GPIO_TYPES_HPP */
+#endif /* !THOR_HLD_GPIO_TYPES_HPP */

@@ -21,6 +21,7 @@
 #include <Chimera/spi>
 
 /* Driver Includes */
+#include <Thor/lld/common/registers/field_accessor.hpp>
 #include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
 #include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
 

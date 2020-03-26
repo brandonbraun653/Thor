@@ -27,6 +27,8 @@
 #include <Thor/spi>
 #include <Thor/lld/interface/spi/spi.hpp>
 
+#if defined( THOR_HLD_SPI )
+
 static std::array<Thor::SPI::Driver *, Thor::LLD::SPI::NUM_SPI_PERIPHS> SPIClassObjects;
 static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::LLD::SPI::NUM_SPI_PERIPHS> postProcessorHandles;
 static std::array<Chimera::Threading::BinarySemaphore, Thor::LLD::SPI::NUM_SPI_PERIPHS> postProcessorSignals;
@@ -44,16 +46,6 @@ static void SPI3ISRPostProcessorThread( void *argument );
 #if defined( STM32_SPI4_PERIPH_AVAILABLE )
 static void SPI4ISRPostProcessorThread( void *argument );
 #endif
-
-
-namespace Chimera::SPI::Backend
-{
-  void prjInitialize()
-  {
-    
-  }
-}    // namespace Chimera::SPI
-
 
 namespace Thor::SPI
 {
@@ -475,6 +467,7 @@ namespace Thor::SPI
 
 }    // namespace Thor::SPI
 
+
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
 static void SPI1ISRPostProcessorThread( void *argument )
 {
@@ -542,3 +535,5 @@ static void SPI4ISRPostProcessorThread( void *argument )
   }
 }
 #endif
+
+#endif /* THOR_HLD_SPI */

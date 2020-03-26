@@ -19,7 +19,8 @@
 
 using namespace Thor::LLD::RCC;
 
-#if defined( EMBEDDED )
+#if defined( EMBEDDED ) && defined( THOR_LLD_RCC )
+
 void SystemInit()
 {
 
@@ -56,9 +57,17 @@ void SystemInit()
 }
 
 #elif defined( _SIM )
+
 void SystemInit()
 {
+  // Do something with this later
+}
 
+#else 
+
+void SystemInit()
+{
+  // Needed for compilation
 }
 
 #endif 

@@ -40,6 +40,38 @@ namespace CortexM4
 
     return _alias_address;
   };
+
+
+  /**
+   *  Globally disables interrupts 
+   *
+   *  @return uint32_t
+   */
+  uint32_t disableInterrupts()
+  {
+    /*------------------------------------------------
+    Read the PRIMASK core register so we can know what state 
+    interrupts are currently in.
+    ------------------------------------------------*/
+    uint32_t primask = 0;
+    __asm volatile( "MRS %0, primask" : "=r"( primask )::"memory" );  // Stores the mask
+    __asm volatile( "CPSID I" );                                      // Disables interrupts
+    return primask;
+  }
+
+  /**
+   *  Globally enables interrupts
+   *
+   *  @param[in]  mask     Mask returned from disableInterrupts()
+   *  @return void
+   */
+  void enableInterrupts( const uint32_t mask )
+  {
+    if ( !mask )
+    {
+      __asm volatile( "CPSIE I" );
+    }
+  }
 }    // namespace CortexM4
 
 #endif /* !CORTEX_M4_UTILITIES_HPP */

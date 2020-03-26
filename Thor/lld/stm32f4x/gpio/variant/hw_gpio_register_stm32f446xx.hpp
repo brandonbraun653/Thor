@@ -13,7 +13,9 @@
 #define THOR_HW_GPIO_REGISTER_HPP
 
 /* C++ Includes */
+#include <array>
 #include <cstdint>
+#include <cstddef>
 
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
@@ -30,7 +32,7 @@
 namespace Thor::LLD::GPIO
 {
   void initializeRegisters();
-
+  
   static constexpr uint32_t GPIOA_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0000U;
   static constexpr uint32_t GPIOB_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0400U;
   static constexpr uint32_t GPIOC_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0800U;

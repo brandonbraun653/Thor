@@ -3,14 +3,13 @@
  *    gpio_mock.hpp
  *
  *  Description:
- *
+ *    Mock interface for GPIO
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #ifndef THOR_HLD_GPIO_MOCK_HPP
 #define THOR_HLD_GPIO_MOCK_HPP
-
 
 /* STL Includes */
 #include <memory>

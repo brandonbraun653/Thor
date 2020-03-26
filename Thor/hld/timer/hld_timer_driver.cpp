@@ -13,9 +13,12 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/timer>
 #include <Thor/lld/interface/timer/timer.hpp>
 
+
+#if defined( THOR_HLD_TIMER )
 
 namespace Thor::Timer
 {
@@ -50,3 +53,5 @@ namespace Thor::Timer
   }
 
 }
+
+#endif /* THOR_HLD_TIMER */

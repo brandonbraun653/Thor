@@ -16,11 +16,12 @@
 #include <memory>
 
 /* Chimera Includes */
+#include <Chimera/clock>
 #include <Chimera/common>
-#include <Chimera/gpio>
+#include <Chimera/system>
 
 /* Thor Includes */
-#include <Thor/hld/clock/clock_types.hpp>
+#include <Thor/clock>
 #include <Thor/lld/interface/rcc/rcc_types.hpp>
 
 namespace Thor::LLD::RCC
@@ -33,10 +34,32 @@ namespace Thor::LLD::RCC
    */
   extern void initialize();
 
+  extern Chimera::System::ResetEvent getResetReason();
+  extern void clearResetReason();
+
+
   class IClockTree
   {
   public:
     virtual ~IClockTree() = default;
+
+    /**
+     *  Enables the requested clock
+     *
+     *  @note Assumes that all configuration has been applied
+     *
+     *  @param[in]  clock   The clock to turn on
+     *  @return void
+     */
+    virtual void enableClock( const Chimera::Clock::Bus clock ) = 0;
+
+    /**
+     *  Disables the requested clock
+     *
+     *  @param[in]  clock   The clock to turn off
+     *  @return void
+     */
+    virtual void disableClock( const Chimera::Clock::Bus clock ) = 0;
 
     /**
      *  Configures the clock tree according to a user defined method, overriding
@@ -47,52 +70,51 @@ namespace Thor::LLD::RCC
     virtual Chimera::Status_t configureProjectClocks() = 0;
 
     /**
-     *  Attempts to set the peripheral clock frequency to the given value.
-     *  
-     *  @note   Does not modify the system core clock in order to accomplish this.
-     *  @note   If the frequency cannot be matched, no change will be applied.
+     *  Sets the input clock source used as the system clock
      *
-     *  @param[in]  periph    The peripheral to modify the clock against
-     *  @param[in]  freqHz    The desired frequency to be set
+     *  @warning  This assumes that the source has previously been configured
+     *            correctly and the clock output has stabilized.
+     *
+     *  @note After this function is complete, the downstream clocks will need
+     *        to be reconfigured
+     *
+     *  @param[in]  src       The desired source
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz ) = 0;
+    virtual Chimera::Status_t setCoreClockSource( const Chimera::Clock::Bus src ) = 0;
 
     /**
-     *  Sets the core clock frequency of the chip. This value will be the clock source 
-     *  used to generate all other system clocks.
+     *  Gets the input clock source used as the system clock
      *
-     *  @param[in]  freqHz    The desired frequency to be set
-     *  @return Chimera::Status_t
+     *  @return Chimera::Clock::Bus
      */
-    virtual Chimera::Status_t setCoreClock( const size_t freqHz ) = 0;
+    virtual Chimera::Clock::Bus getCoreClockSource() = 0;
 
     /**
-     *  Sets the input clock source used to generate the system core clock
+     *  Sets the frequency of the given clock bus 
      *
-     *  @param[in]  src       The source used to generate the system core clock
-     *  @return Chimera::Status_t
+     *  @param[in]  clock     The desired clock bus to configure
+     *  @param[in]  freq      The frequency to set the bus to
+     *  @param[in]  enable    Should the clock output be enabled?
      */
-    virtual Chimera::Status_t setCoreClockSource( const Thor::Clock::Source src ) = 0;
+    virtual Chimera::Status_t setClockFrequency( const Chimera::Clock::Bus clock, const size_t freq, const bool enable ) = 0;
 
     /**
      *  Gets the frequency of any major system level clock
      *  
      *  @param[in]  clock     The clock you wish to retrieve the current frequency of
-     *  @param[out] freqHz    The current frequency of the requested clock
-     *  @return Chimera::Status_t
+     *  @return size_t
      */
-    virtual Chimera::Status_t getClockFrequency( const ClockType_t clock, size_t *const freqHz ) = 0;
+    virtual size_t getClockFrequency( const Chimera::Clock::Bus clock ) = 0;
 
     /**
      *  Gets the current peripheral clock frequency in Hz
      *
      *  @param[in]  periph    The peripheral type to check
-     *  @param[in]  address   Lookup table index tied to the peripheral instance
-     *  @param[out] freqHz    The current clock frequency of the requested peripheral
+     *  @param[in]  address   Base address of the exact peripheral
      *  @return size_t
      */
-    virtual Chimera::Status_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz ) = 0;
+    virtual size_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address ) = 0;
   };
 
   class IPeripheralController
