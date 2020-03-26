@@ -307,14 +307,50 @@
     <Filter Include="lld\interface\spi\mock">
       <UniqueIdentifier>{dea797de-7d71-4526-a7f9-0c56765c0ba1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lld\common\registers">
+      <UniqueIdentifier>{2373d904-d927-4aff-aeae-e601c01146f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Device-specific files">
+      <UniqueIdentifier>{02648eb3-c588-4607-b007-223269253cb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x">
+      <UniqueIdentifier>{041cbf1c-c8a2-46f0-abf2-ebac8254170f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\rcc">
+      <UniqueIdentifier>{569388ac-bee7-4254-8f0c-9bac82035e62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\rcc\config">
+      <UniqueIdentifier>{55230412-58c6-4169-ba9f-18a0216b2e0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\rcc\test">
+      <UniqueIdentifier>{9dae2738-b27b-4a39-94af-bd0e7d9f8dc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\rcc\variant">
+      <UniqueIdentifier>{ce676416-5a94-4569-b3ee-f498fe2623df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\system">
+      <UniqueIdentifier>{0cfb1c47-2719-4b9b-8c9b-78b4d057368b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\system\variant">
+      <UniqueIdentifier>{cbd546c4-bd0d-4682-8bcc-d1534887cf19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\startup">
+      <UniqueIdentifier>{83ffadd9-c5ae-443b-be79-2b634048c309}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\interrupt">
+      <UniqueIdentifier>{492a7019-138a-4efa-86d7-76b314cc85e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\interrupt\variant">
+      <UniqueIdentifier>{19ee2759-6ae6-4d2e-a67f-52014f4ef944}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\timer">
+      <UniqueIdentifier>{36c84d6f-9154-4f2f-aee6-af27fc7b3c90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\timer">
+      <UniqueIdentifier>{8f1b3fa9-f4cf-4982-8acf-82328ba6a77f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ThorStaticLibrary-Debug.vgdbsettings">
-      <Filter>VisualGDB settings</Filter>
-    </None>
-    <None Include="ThorStaticLibrary-Release.vgdbsettings">
-      <Filter>VisualGDB settings</Filter>
-    </None>
     <None Include="stm32.xml">
       <Filter>VisualGDB settings</Filter>
     </None>
@@ -996,6 +1032,18 @@
     <None Include="..\..\..\Thor\lld\interface\dma\mock\build.jam">
       <Filter>lld\interface\dma\mock</Filter>
     </None>
+    <None Include="ThorStaticLibrary-STM32F446RE-Debug.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="ThorStaticLibrary-STM32F446RE-Release.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="ThorStaticLibrary-STM32L432KC-Debug.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
+    <None Include="ThorStaticLibrary-STM32L432KC-Release.vgdbsettings">
+      <Filter>VisualGDB settings</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Thor\config\config.hpp">
@@ -1060,6 +1108,42 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc_types.hpp">
       <Filter>lld\interface\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\config\hardware\thor_stm32l4x_config.hpp">
+      <Filter>config\hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\registers\field_accessor.hpp">
+      <Filter>lld\common\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\variant\sys_memory_map_stm32l432xx.hpp">
+      <Filter>lld\stm32l4x\system\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\variant\sys_memory_map_stm32l4xxxx.hpp">
+      <Filter>lld\stm32l4x\system\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\sys_memory_map_prj.hpp">
+      <Filter>lld\stm32l4x\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_stm32l4xxxx.hpp">
+      <Filter>lld\stm32l4x\startup</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_it_prj.hpp">
+      <Filter>lld\stm32l4x\interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\variant\hw_it_register_stm32l432xx.hpp">
+      <Filter>lld\stm32l4x\interrupt\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\variant\hw_rcc_register_stm32l432xx.hpp">
+      <Filter>lld\stm32l4x\rcc\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_types.hpp">
+      <Filter>lld\stm32l4x\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver.hpp">
+      <Filter>lld\stm32l4x\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer.hpp">
+      <Filter>lld\interface\timer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1146,6 +1230,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\interface\dma\mock\dma_mock.cpp">
       <Filter>lld\interface\dma\mock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\system\sys_common_init.cpp">
+      <Filter>lld\stm32l4x\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_reset.cpp">
+      <Filter>lld\stm32l4x\startup</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_stm32l432xx.c">
+      <Filter>lld\stm32l4x\startup</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver.cpp">
+      <Filter>lld\stm32l4x\timer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

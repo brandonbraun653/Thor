@@ -16,6 +16,7 @@
 #include <cstdint>
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/stm32f4x/flash/hw_flash_prj.hpp>
 
 namespace Thor::LLD::FLASH
@@ -31,6 +32,8 @@ namespace Thor::LLD::FLASH
     volatile uint32_t OPTCR1;  /**< FLASH option control register 1, Address offset: 0x18 */
   };
 
+  #if defined( THOR_LLD_FLASH )
+  
   /*------------------------------------------------
   Access Control Register (ACR)
   ------------------------------------------------*/
@@ -174,6 +177,9 @@ namespace Thor::LLD::FLASH
   namespace OPTCR1
   {
   }
+
+  #endif /* THOR_LLD_FLASH */
+
 }    // namespace Thor::LLD::FLASH
 
 #endif /* !THOR_HW_DRIVER_FLASH_TYPES_HPP */

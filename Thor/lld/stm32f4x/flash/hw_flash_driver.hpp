@@ -15,9 +15,6 @@
 /* C++ Includes */
 #include <cstdint>
 
-/* Driver Includes */
-#include <Thor/lld/stm32f4x/flash/hw_flash_types.hpp>
-
 namespace Thor::LLD::FLASH
 {
   void initialize();

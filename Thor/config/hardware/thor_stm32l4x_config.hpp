@@ -1,16 +1,16 @@
 /********************************************************************************
  *  File Name:
- *    thor_stm32f4x_config.hpp
+ *    thor_stm32l4x_config.hpp
  *
  *  Description:
- *    Configure Thor for an STM32F4x device
+ *    Configure Thor for an STM32L4x device
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
-#ifndef THOR_CONFIG_STM32F4X_HPP
-#define THOR_CONFIG_STM32F4X_HPP
+#ifndef THOR_CONFIG_STM32L4X_HPP
+#define THOR_CONFIG_STM32L4X_HPP
 
 /*! @def USE_SERIAL_DEBUG_OUTPUT
  *	@brief Reroutes printf to use a serial channel as output
@@ -281,12 +281,24 @@ Low Level Driver Support
 
 #else /* !THOR_ENABLE_ALL_DRIVERS */
 
-//Enable specific drivers here
-
-#ifndef THOR_LLD_SPI
-#define THOR_LLD_SPI
+/*----------------------------------------------
+High Level Driver Support
+----------------------------------------------*/
+#ifndef THOR_HLD_TIMER
+#define THOR_HLD_TIMER
 #endif
 
-#endif 
+/*----------------------------------------------
+Low Level Driver Support
+----------------------------------------------*/
+#ifndef THOR_LLD_RCC
+#define THOR_LLD_RCC
+#endif
 
-#endif  /* !THOR_CONFIG_STM32F4X_HPP */
+#ifndef THOR_LLD_TIMER
+#define THOR_LLD_TIMER
+#endif
+
+#endif /* THOR_ENABLE_ALL_DRIVERS */
+
+#endif /* !THOR_CONFIG_STM32L4X_HPP */

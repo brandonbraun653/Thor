@@ -27,12 +27,6 @@
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/interface/startup/startup.hpp>
 
-namespace Thor::System
-{
-
-
-}    // namespace Thor::System
-
 namespace Chimera::System
 {
   Chimera::Status_t prjSystemStartup()
@@ -40,26 +34,49 @@ namespace Chimera::System
     /*------------------------------------------------
     Initialize the system clocks
     ------------------------------------------------*/
+    #if defined( THOR_LLD_RCC )
     Thor::LLD::RCC::initialize();
     Thor::LLD::RCC::getSystemClockController()->configureProjectClocks();
+    #endif
 
     /*------------------------------------------------
     Hardware Specific Initialization
     ------------------------------------------------*/
+    #if defined( THOR_HLD_DMA )
     Thor::DMA::initialize();
     Thor::DMA::DMAClass::get()->init();
+    #endif
+
+    #if defined( THOR_HLD_GPIO )
     Thor::GPIO::initialize();
+    #endif
+
+    #if defined( THOR_HLD_IWDG )
     Thor::Watchdog::initializeIWDG();
+    #endif 
+
+    #if defined( THOR_HLD_SPI )
     Thor::SPI::initialize();
+    #endif 
+
+    #if defined( THOR_HLD_UART )
     Thor::UART::initialize();
+    #endif 
+
+    #if defined( THOR_HLD_USART )
     Thor::USART::initialize();
+    #endif 
+
+    #if defined( THOR_HLD_WWDG )
     Thor::Watchdog::initializeWWDG();
+    #endif
 
     /*------------------------------------------------
     Initialize interrupt settings
     ------------------------------------------------*/
+    #if defined( THOR_LLD_IT )
     Thor::LLD::IT::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
-
+    #endif
 
     return Chimera::CommonStatusCodes::OK;
   }

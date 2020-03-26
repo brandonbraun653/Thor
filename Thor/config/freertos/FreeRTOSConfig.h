@@ -89,7 +89,14 @@ extern uint32_t SystemCoreClock;
 Figure out how much RAM we want to allocate
 ------------------------------------------------*/
 #if defined( EMBEDDED )
+#if defined( TARGET_STM32F4 ) 
 #define configTOTAL_HEAP_SIZE ( ( size_t )( 75 * 1024 ) )
+#endif
+
+#if defined( TARGET_STM32L4 ) && defined( STM32L432xx )
+#define configTOTAL_HEAP_SIZE ( ( size_t )( 32 * 1024 ) )
+#endif 
+
 #elif defined( _SIM )
 #define configTOTAL_HEAP_SIZE ( ( size_t )( 1024 * 1024 ) )
 #else

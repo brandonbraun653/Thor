@@ -28,6 +28,8 @@
 #include <Thor/usart>
 #include <Thor/lld/interface/usart/usart.hpp>
 
+#if defined( THOR_HLD_USART )
+
 /*------------------------------------------------
 Static Functions
 ------------------------------------------------*/
@@ -711,3 +713,5 @@ static void USART6ISRPostProcessorThread( void *argument )
     }
   }
 }
+
+#endif /* THOR_HLD_USART */

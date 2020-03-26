@@ -30,7 +30,6 @@
 
 /* Thor Includes */
 #include <Thor/gpio>
-#include <Thor/lld/interface/usart/usart.hpp>
 
 namespace Thor::USART
 {
@@ -90,7 +89,6 @@ namespace Thor::USART
     void postISRProcessing() final override;
 
   private:
-    Thor::LLD::USART::Driver_uPtr hwDriver;
     Thor::GPIO::Driver_uPtr rxPin;
     Thor::GPIO::Driver_uPtr txPin;
 
