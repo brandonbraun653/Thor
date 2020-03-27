@@ -1145,6 +1145,18 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer.hpp">
       <Filter>lld\interface\timer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_driver.hpp">
+      <Filter>lld\stm32l4x\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_mapping.hpp">
+      <Filter>lld\stm32l4x\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_prj.hpp">
+      <Filter>lld\stm32l4x\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\config\hw_rcc_config_stm32l432xx.hpp">
+      <Filter>lld\stm32l4x\rcc\config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">
@@ -1242,6 +1254,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver.cpp">
       <Filter>lld\stm32l4x\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\variant\hw_rcc_register_stm32l432xx.cpp">
+      <Filter>lld\stm32l4x\rcc\variant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\config\hw_rcc_config_stm32l432xx.cpp">
+      <Filter>lld\stm32l4x\rcc\config</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_mapping.cpp">
+      <Filter>lld\stm32l4x\rcc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_driver_stm32l4.cpp">
+      <Filter>lld\stm32l4x\rcc</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

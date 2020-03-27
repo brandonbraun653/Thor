@@ -53,4 +53,4 @@ namespace Thor::LLD::Timer
   }
 }
 
-#endif  /* TARGET_STM32F4 && THOR_LLD_TIMER */
+#endif  /* TARGET_STM32L4 && THOR_LLD_TIMER */

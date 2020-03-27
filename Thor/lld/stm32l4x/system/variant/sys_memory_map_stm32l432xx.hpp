@@ -34,6 +34,25 @@ namespace Thor::System::MemoryMap
   SRAM 2 (16kB)
   -------------------------------------------------*/
   static constexpr uint32_t SRAM2_RGN_END_ADDRESS = SRAM2_RGN_END_ADDRESS_16KB;
+
+  /*-------------------------------------------------
+  APB1
+  -------------------------------------------------*/
+
+  /*-------------------------------------------------
+  APB2
+  -------------------------------------------------*/
+
+  /*-------------------------------------------------
+  AHB1
+  -------------------------------------------------*/
+  static constexpr uint32_t RCC_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDRESS + 0x00001000;
+  static constexpr uint32_t RCC_PERIPH_END_ADDRESS   = AHB1_RGN_START_ADDRESS + 0x000013FF;
+
+  /*-------------------------------------------------
+  AHB2
+  -------------------------------------------------*/
+
 }    // namespace Thor::System::MemoryMap
 
 #endif  /* !THOR_SYSTEM_MEMORY_MAP_HPP */
