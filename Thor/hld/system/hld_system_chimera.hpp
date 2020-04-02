@@ -12,6 +12,20 @@
 #ifndef THOR_SYSTEM_CHIMERA_HPP
 #define THOR_SYSTEM_CHIMERA_HPP
 
+/* Chimera Includes */
+#include <Chimera/common>
+#include <Chimera/system>
 
+namespace Chimera::System::Backend
+{
+  Chimera::Status_t initialize();
+  Chimera::Status_t reset();
+  Chimera::Status_t systemStartup();
+  Chimera::System::InterruptMask disableInterrupts();
+  void enableInterrupts( Chimera::System::InterruptMask &interruptMask );
+  int maxConcurrentThreads();
+  Chimera::System::ResetEvent getResetReason();
+  void getSystemInformation( Chimera::System::Information *&info );
+}
 
 #endif  /* !THOR_SYSTEM_CHIMERA_HPP */

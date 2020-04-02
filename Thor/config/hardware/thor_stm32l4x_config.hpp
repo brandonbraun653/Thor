@@ -139,6 +139,10 @@ High Level Driver Support
 #define THOR_HLD_SPI
 #endif
 
+#ifndef THOR_HLD_SYSTEM
+#define THOR_HLD_SYSTEM
+#endif
+
 #ifndef THOR_HLD_TIMER
 #define THOR_HLD_TIMER
 #endif
@@ -176,6 +180,10 @@ Low Level Driver Support
 
 #ifndef THOR_LLD_DAC
 #define THOR_LLD_DAC
+#endif
+
+#ifndef THOR_LLD_DES
+#define THOR_LLD_DES
 #endif
 
 #ifndef THOR_LLD_DMA
@@ -284,6 +292,10 @@ Low Level Driver Support
 /*----------------------------------------------
 High Level Driver Support
 ----------------------------------------------*/
+#ifndef THOR_HLD_SYSTEM
+#define THOR_HLD_SYSTEM
+#endif
+
 #ifndef THOR_HLD_TIMER
 #define THOR_HLD_TIMER
 #endif
@@ -291,6 +303,10 @@ High Level Driver Support
 /*----------------------------------------------
 Low Level Driver Support
 ----------------------------------------------*/
+#ifndef THOR_LLD_DES
+#define THOR_LLD_DES
+#endif
+
 #ifndef THOR_LLD_RCC
 #define THOR_LLD_RCC
 #endif

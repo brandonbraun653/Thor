@@ -16,6 +16,7 @@
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/clock>
+#include <Chimera/system>
 
 /* Driver Includes */
 #include <Thor/cfg>
@@ -88,6 +89,70 @@ namespace Thor::LLD::RCC
       initialized = true;
     }
   }
+
+  void clearResetReason()
+  {
+    RMVFRSTF::set( RCC1_PERIPH, CSR_RMVF );
+  }
+
+  Chimera::System::ResetEvent getResetReason()
+  {
+    /*------------------------------------------------
+    Read out the flag bits and then clear them to ensure we 
+    get an accurate read the next time this function is called.
+    ------------------------------------------------*/
+    Reg32_t flags = RCC1_PERIPH->CSR & CSR_ResetFlags_Msk;
+    clearResetReason();
+
+    /*------------------------------------------------
+    When debugging and powering on the board for the first time, usually there
+    are two reset flags set. One is the brown out, the other is the pin reset.
+    If more than just the brown out flag has been set, it's safe to mask it away 
+    as a false positive. This is known to happen on the STM32 development boards.
+    ------------------------------------------------*/
+    if ( ( flags & ResetFlags::BROWN_OUT ) && ( flags != ResetFlags::BROWN_OUT ) ) 
+    {
+      flags &= ~ResetFlags::BROWN_OUT;
+    }
+
+    switch ( flags )
+    {
+      case ResetFlags::CLEARED:
+        return Chimera::System::ResetEvent::CLEARED;
+        break;
+
+      case ResetFlags::PIN_RESET:
+        return Chimera::System::ResetEvent::HW_EXTERNAL_PIN;
+        break;
+
+      case ResetFlags::IWDG:
+        return Chimera::System::ResetEvent::HW_INDEPENDENT_WATCHDOG_TIMEOUT;
+        break;
+
+      case ResetFlags::WWDG:
+        return Chimera::System::ResetEvent::HW_WINDOW_WATCHDOG_TIMEOUT;
+        break;
+
+      case ResetFlags::SOFTWARE:
+        return Chimera::System::ResetEvent::SOFTWARE;
+        break;
+
+      case ResetFlags::BROWN_OUT:
+        return Chimera::System::ResetEvent::BROWN_OUT;
+        break;
+
+      case ResetFlags::LOW_POWER:
+      case ResetFlags::OPTION_BYTE:
+      case ResetFlags::FIREWALL:
+        return Chimera::System::ResetEvent::UNKNOWN;
+        break;
+
+      default:
+        return Chimera::System::ResetEvent::NOT_SUPPORTED;
+        break;
+    }
+  }
+
 
   /*------------------------------------------------
   SystemClock Class Implementation

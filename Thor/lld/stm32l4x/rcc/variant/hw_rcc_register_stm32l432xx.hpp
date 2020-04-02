@@ -27,7 +27,6 @@ namespace Thor::LLD::RCC
 {
   void initializeRegisters();
 
-
   static constexpr Reg32_t NUM_RCC_PERIPHS     = 1;
   static constexpr uint8_t RCC1_RESOURCE_INDEX = 0u;
   static constexpr Reg32_t RCC1_BASE_ADDR      = Thor::System::MemoryMap::RCC_PERIPH_START_ADDRESS;
@@ -962,6 +961,11 @@ namespace Thor::LLD::RCC
   static constexpr Reg32_t BDCR_LSCOSEL     = BDCR_LSCOSEL_Msk;
 
   /********************  Bit definition for CSR register  *******************/
+  static constexpr Reg32_t CSR_Msk = 0xFF800F13;
+  static constexpr Reg32_t CSR_Rst = 0x0C000600;
+
+  static constexpr Reg32_t CSR_ResetFlags_Msk = 0xFF000000;
+
   static constexpr Reg32_t CSR_LSION_Pos  = ( 0U );
   static constexpr Reg32_t CSR_LSION_Msk  = ( 0x1UL << CSR_LSION_Pos );
   static constexpr Reg32_t CSR_LSION      = CSR_LSION_Msk;

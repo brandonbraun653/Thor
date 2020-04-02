@@ -349,6 +349,21 @@
     <Filter Include="lld\interface\timer">
       <UniqueIdentifier>{8f1b3fa9-f4cf-4982-8acf-82328ba6a77f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lld\stm32l4x\system\NewFilter1">
+      <UniqueIdentifier>{41108435-a98b-4b44-8f6e-2bbc541f79a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\des">
+      <UniqueIdentifier>{69df319e-9ef8-4c6b-84e4-c18b276bc3de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\des\mock">
+      <UniqueIdentifier>{d18dcbd3-ef96-407f-9353-9e309b352a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\des">
+      <UniqueIdentifier>{0341196c-5b8a-471b-85fd-a128c0feed45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\des\variant">
+      <UniqueIdentifier>{832b6333-5bae-422c-b38b-ecaa79088d60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.xml">
@@ -637,12 +652,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\flash\flash.hpp">
       <Filter>lld\interface\flash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio.hpp">
-      <Filter>lld\interface\gpio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_model.hpp">
-      <Filter>lld\interface\gpio</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_types.hpp">
       <Filter>lld\interface\gpio</Filter>
@@ -1157,6 +1166,30 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\config\hw_rcc_config_stm32l432xx.hpp">
       <Filter>lld\stm32l4x\rcc\config</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_intf.hpp">
+      <Filter>lld\interface\gpio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\des\des_intf.hpp">
+      <Filter>lld\interface\des</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\des\des_types.hpp">
+      <Filter>lld\interface\des</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\des\mock\des_mock.hpp">
+      <Filter>lld\interface\des\mock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_mapping.hpp">
+      <Filter>lld\stm32l4x\des</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_prj.hpp">
+      <Filter>lld\stm32l4x\des</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_types.hpp">
+      <Filter>lld\stm32l4x\des</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.hpp">
+      <Filter>lld\stm32l4x\des\variant</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">
@@ -1266,6 +1299,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_driver_stm32l4.cpp">
       <Filter>lld\stm32l4x\rcc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\des\mock\des_mock.cpp">
+      <Filter>lld\interface\des\mock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp">
+      <Filter>lld\stm32l4x\des</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.cpp">
+      <Filter>lld\stm32l4x\des\variant</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

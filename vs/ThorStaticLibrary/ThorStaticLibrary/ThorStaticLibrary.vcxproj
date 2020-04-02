@@ -470,6 +470,9 @@
     <None Include="ThorStaticLibrary-STM32L432KC-Release.vgdbsettings" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Thor\lld\interface\des\mock\des_mock.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\config\hw_rcc_config_stm32l432xx.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_driver_stm32l4.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_mapping.cpp" />
@@ -640,13 +643,15 @@
     <ClInclude Include="..\..\..\Thor\lld\common\registers\field_accessor.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\callback_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\callback_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\des\des_intf.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\des\des_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\des\mock\des_mock.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\dma\dma.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\dma\dma_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\dma\dma_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\dma\mock\dma_mock.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\flash\flash.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_model.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\mock\gpio_mock.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt.hpp" />
@@ -1408,6 +1413,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_it_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\variant\hw_it_register_stm32l432xx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\config\hw_rcc_config_stm32l432xx.hpp" />

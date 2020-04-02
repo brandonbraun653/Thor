@@ -123,7 +123,7 @@ namespace Thor::LLD::RCC
    *  peripheral type that allows the RCC driver to generically configure
    *  a large number of peripherals by referencing these lookup tables.
    *
-   *  @note All pointers here reference a lookup table
+   *  @note All pointers here reference a lookup
    */
   struct PCC
   {
@@ -143,7 +143,38 @@ namespace Thor::LLD::RCC
   REG_ACCESSOR( RegisterMap, CR, CR_MSION_Msk, MSION, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR, CR_MSIRDY_Msk, MSIRDY, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, CR, CR_MSIPLLEN_Msk, MSIPLLEN, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CR, CR_MSIRGSEL_Msk, MSIRGSEL, )
+  REG_ACCESSOR( RegisterMap, CR, CR_MSIRGSEL_Msk, MSIRGSEL, BIT_ACCESS_RS );
+
+
+  /*------------------------------------------------
+  Control Status Register
+  ------------------------------------------------*/
+  enum ResetFlags : Reg32_t
+  {
+    CLEARED     = 0,
+    LOW_POWER   = CSR_LPWRRSTF,
+    WWDG        = CSR_WWDGRSTF,
+    IWDG        = CSR_IWDGRSTF,
+    SOFTWARE    = CSR_SFTRSTF,
+    BROWN_OUT   = CSR_BORRSTF,
+    PIN_RESET   = CSR_PINRSTF,
+    OPTION_BYTE = CSR_OBLRSTF,
+    FIREWALL    = CSR_FWRSTF
+  };
+
+  REG_ACCESSOR( RegisterMap, CSR, CSR_LPWRRSTF, LPWRRSTF, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_WWDGRSTF, WWDGRSTF, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_IWDGRSTF, IWDGRSTF, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_SFTRSTF, SFTRSTF, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_BORRSTF, BORRSTF, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_PINRSTF, PINRSTF, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_OBLRSTF, OBLRSTF, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_FWRSTF, FWRSTF, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_RMVF, RMVFRSTF, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_MSISRANGE, MSIRANGE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_LSIRDY, LSIRDY, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_LSION, LSION, BIT_ACCESS_RW );
+
 
 }    // namespace Thor::LLD::RCC
 

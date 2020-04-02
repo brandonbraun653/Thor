@@ -18,6 +18,7 @@
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/gpio>
+#include <Chimera/system>
 
 /* Thor Includes */
 #include <Thor/hld/clock/clock_types.hpp>
@@ -32,6 +33,10 @@ namespace Thor::LLD::RCC
    *  @return void 
    */
   extern void initialize();
+
+  extern Chimera::System::ResetEvent getResetReason();
+  extern void clearResetReason();
+
 
   class IClockTree
   {

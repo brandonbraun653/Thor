@@ -53,6 +53,13 @@ namespace Thor::System::MemoryMap
   AHB2
   -------------------------------------------------*/
 
+  /*------------------------------------------------
+  Vector Table Offset Configuration
+  ------------------------------------------------*/
+  static constexpr uint32_t FLASH_BASE_ADDR = MAIN_FLASH_RGN_START_ADDRESS;
+  static constexpr uint32_t VECT_TAB_OFFSET = 0x00;
+
+
 }    // namespace Thor::System::MemoryMap
 
 #endif  /* !THOR_SYSTEM_MEMORY_MAP_HPP */

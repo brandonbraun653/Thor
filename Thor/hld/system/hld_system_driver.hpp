@@ -21,7 +21,14 @@
 
 namespace Thor::System
 {
-
+  Chimera::Status_t initialize();
+  Chimera::Status_t reset();
+  Chimera::Status_t systemStartup();
+  Chimera::System::InterruptMask disableInterrupts();
+  void enableInterrupts( Chimera::System::InterruptMask &interruptMask );
+  int maxConcurrentThreads();
+  Chimera::System::ResetEvent getResetReason();
+  void getSystemInformation( Chimera::System::Information *&info );
 }
 
 #endif

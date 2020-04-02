@@ -95,6 +95,11 @@ namespace Thor::LLD
   static constexpr size_t BIT_ACCESS_ALL_READ =
       ( BIT_ACCESS_R | BIT_ACCESS_RW | BIT_ACCESS_RCR | BIT_ACCESS_RSR | BIT_ACCESS_RS | BIT_ACCESS_RW_ONCE | BIT_ACCESS_RTW1 );
 
+  /**
+   *
+   */
+  static constexpr size_t BIT_ACCESS_ALL_WRITE = ( BIT_ACCESS_W | BIT_ACCESS_RW | BIT_ACCESS_RCW0 | BIT_ACCESS_RCW1 |
+                                                   BIT_ACCESS_RCW | BIT_ACCESS_RW_ONCE | BIT_ACCESS_T | BIT_ACCESS_RTW1 );
 }    // namespace Thor::LLD
 
 /**
@@ -108,33 +113,33 @@ namespace Thor::LLD
  *  @param[in]  NAME            User friendly name of the class
  *  @param[in]  ACCESS          Access level of the bits (r/w/rw)
  */
-#define REG_ACCESSOR( MEM_MAP_TYPE, REGISTER, MASK, NAME, ACCESS )             \
-  class NAME                                                                   \
-  {                                                                            \
-  public:                                                                      \
-    static inline Reg32_t get( const MEM_MAP_TYPE *const periph )              \
-    {                                                                          \
-      using namespace Thor::LLD;                                               \
-      if constexpr ( static_cast<bool>( ( ACCESS )& BIT_ACCESS_ALL_READ )      \
-      {                                                                        \
-        return periph->REGISTER & ( MASK );                                    \
-      }                                                                        \
-      else                                                                     \
-      {                                                                        \
-        return 0;                                                              \
-      }                                                                        \
-    }                                                                          \
-                                                                               \
-    static inline void set( MEM_MAP_TYPE *const periph, const Reg32_t val )    \
-    {                                                                          \
-      if constexpr ( static_cast<bool>( ( ACCESS )&Thor::LLD::REG_WRITE ) )    \
-      {                                                                        \
-        Reg32_t tmp = periph->REGISTER;                                        \
-        tmp &= ~( MASK );                                                      \
-        tmp |= val & ( MASK );                                                 \
-        periph->REGISTER = tmp;                                                \
-      }                                                                        \
-    }                                                                          \
+#define REG_ACCESSOR( MEM_MAP_TYPE, REGISTER, MASK, NAME, ACCESS )          \
+  class NAME                                                                \
+  {                                                                         \
+  public:                                                                   \
+    static inline Reg32_t get( const MEM_MAP_TYPE *const periph )           \
+    {                                                                       \
+      using namespace Thor::LLD;                                            \
+      if constexpr ( static_cast<bool>( ( ACCESS )&BIT_ACCESS_ALL_READ ) )  \
+      {                                                                     \
+        return periph->REGISTER & ( MASK );                                 \
+      }                                                                     \
+      else                                                                  \
+      {                                                                     \
+        return 0;                                                           \
+      }                                                                     \
+    }                                                                       \
+                                                                            \
+    static inline void set( MEM_MAP_TYPE *const periph, const Reg32_t val ) \
+    {                                                                       \
+      if constexpr ( static_cast<bool>( ( ACCESS )&BIT_ACCESS_ALL_WRITE ) ) \
+      {                                                                     \
+        Reg32_t tmp = periph->REGISTER;                                     \
+        tmp &= ~( MASK );                                                   \
+        tmp |= val & ( MASK );                                              \
+        periph->REGISTER = tmp;                                             \
+      }                                                                     \
+    }                                                                       \
   };
 
 
