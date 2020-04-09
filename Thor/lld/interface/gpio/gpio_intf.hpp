@@ -1,20 +1,19 @@
 /********************************************************************************
  *  File Name:
- *    gpio_model.hpp
+ *    gpio_intf.hpp
  *
  *  Description:
- *    STM32 Driver GPIO Model
+ *    STM32 LLD GPIO Interface Spec
  *
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_GPIO_MODEL_HPP
-#define THOR_GPIO_MODEL_HPP
+#ifndef THOR_LLD_GPIO_DRIVER_INTERFACE_HPP
+#define THOR_LLD_GPIO_DRIVER_INTERFACE_HPP
 
 /* Chimera Includes */
 #include <Chimera/gpio>
-#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
@@ -22,10 +21,36 @@
 namespace Thor::LLD::GPIO
 {
   /**
-   *  STM32 Custom Thor GPIO Driver that can handle BareMetal, Atomic, and Threaded
-   *  access modes.
+   *  Initializes the low level driver
+   */
+  extern Chimera::Status_t initialize();
+
+  /**
+   *  Gets a shared pointer to the GPIO driver for a particular channel
+   *
+   *  @note Because GPIO hardware is usually grouped into ports, registers, or banks, the
+   *        lookup channel is referencing one of those groupings. On STM32, this typically
+   *        means PORTA/B/C/etc. Reference the LLD implementation to figure out which 
+   *        channel is mapped to which port.
+   *
+   *  @param[in] channel      The GPIO channel (port) to grab
+   *  @return IGPIO_sPtr      Instance of the GPIO driver for the requested channel
+   */
+  extern IDriver_sPtr getDriver( const size_t channel );
+
+  /**
+   *  Looks up how many GPIO channels are supported by the low level driver
+   *
+   *  @return size_t
+   */
+  extern size_t availableChannels();
+
+  /**
+   *  Interface specification for the low level GPIO driver. It's expected that the 
+   *  implementation will follow the described behavior set to the letter. No thread
+   *  safety is assumed with the driver as it's provided by associated GPIO HLD module.
    *  
-   *  @note In non-threaded access modes, the timeout parameter is simply ignored.
+   *  Instances of this driver can be used directly, but it's recommended to use the HLD.
    */
   class IDriver
   {
@@ -59,7 +84,6 @@ namespace Thor::LLD::GPIO
      *
      *  @param[in]  pin       The pin to act on
      *  @param[in]  drive     The drive type of the GPIO
-     *  @param[in]  timeout   How long to wait for the resource to become available
      *  @return Chimera::Status_t
      *
      *  |  Return Value |                Explanation               |
@@ -69,14 +93,13 @@ namespace Thor::LLD::GPIO
      *  |       TIMEOUT | The resource lock timed-out              |
      *  | NOT_SUPPORTED | The drive state is not supported         |
      */
-    virtual Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive, const size_t timeout ) = 0;
+    virtual Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive ) = 0;
 
     /**
      *  Set the drive strength of the GPIO output
      *
      *  @param[in]  pin       The pin to act on
      *  @param[in]  speed     The drive speed to set
-     *  @param[in]  timeout   How long to wait for the resource to become available
      *  @return Chimera::Status_t
      *
      *  |  Return Value |             Explanation            |
@@ -86,7 +109,7 @@ namespace Thor::LLD::GPIO
      *  |       TIMEOUT | The resource lock timed-out        |
      *  | NOT_SUPPORTED | The speed is not supported         |
      */
-    virtual Chimera::Status_t speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed, const size_t timeout ) = 0;
+    virtual Chimera::Status_t speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed ) = 0;
 
     /**
      *  Set the pull up/down resistor configuration
@@ -103,7 +126,7 @@ namespace Thor::LLD::GPIO
      *  |       TIMEOUT | The resource lock timed-out                     |
      *  | NOT_SUPPORTED | The pull up/down value is not supported         |
      */
-    virtual Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout ) = 0;
+    virtual Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull ) = 0;
 
     /**
      *  Writes the entire output data register for the configured port
@@ -120,7 +143,7 @@ namespace Thor::LLD::GPIO
      *  |       TIMEOUT | The resource lock timed-out               |
      *  | NOT_SUPPORTED | The output state is not supported         |
      */
-    virtual Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state, const size_t timeout ) = 0;
+    virtual Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state ) = 0;
 
     /**
      *  Configures the GPIO alternate function register
@@ -137,71 +160,51 @@ namespace Thor::LLD::GPIO
      *  |       TIMEOUT | The resource lock timed-out                     |
      *  | NOT_SUPPORTED | The alternate function is not supported         |
      */
-    virtual Chimera::Status_t alternateFunctionSet( const uint8_t pin, const size_t val, const size_t timeout ) = 0;
+    virtual Chimera::Status_t alternateFunctionSet( const uint8_t pin, const Chimera::GPIO::Alternate val ) = 0;
 
     /**
-     *  Reads the entire input data register for the configured port
+     *  Reads the given pin's state
      *
-     *  @param[in]  timeout   How long to wait for the resource to become available
-     *  @return size_t
+     *  @return Chimera::GPIO::State
      */
-    virtual size_t read( const size_t timeout ) = 0;
+    virtual Chimera::GPIO::State read( const uint8_t pin ) = 0;
 
     /**
      *  Reads the drive register for the configured port
      *
      *  @param[in]  pin       The pin to act on
      *  @param[in]  timeout   How long to wait for the resource to become available
-     *  @return size_t
+     *  @return Chimera::GPIO::Drive
      */
-    virtual size_t driveGet( const uint8_t pin, const size_t timeout ) = 0;
+    virtual Chimera::GPIO::Drive driveGet( const uint8_t pin ) = 0;
 
     /**
      *  Reads the speed register for the configured port
      *
      *  @param[in]  pin       The pin to act on
      *  @param[in]  timeout   How long to wait for the resource to become available
-     *  @return size_t
+     *  @return Thor::LLD::GPIO::Speed 
      */
-    virtual size_t speedGet( const uint8_t pin, const size_t timeout ) = 0;
+    virtual Thor::LLD::GPIO::Speed speedGet( const uint8_t pin ) = 0;
 
     /**
      *  Reads the pull up/dn register for the configured port
      *
      *  @param[in]  pin       The pin to act on
      *  @param[in]  timeout   How long to wait for the resource to become available
-     *  @return size_t
+     *  @return Chimera::GPIO::Pull
      */
-    virtual size_t pullGet( const uint8_t pin, const size_t timeout ) = 0;
+    virtual Chimera::GPIO::Pull pullGet( const uint8_t pin ) = 0;
 
     /**
      *  Reads the current GPIO alternate function register configuration
      *
      *  @param[in]  pin       The pin to act on
      *  @param[in]  timeout   How long to wait for the resource to become available
-     *  @return size_t
+     *  @return Chimera::GPIO::Alternate
      */
-    virtual size_t alternateFunctionGet( const uint8_t pin, const size_t timeout ) = 0;
+    virtual Chimera::GPIO::Alternate alternateFunctionGet( const uint8_t pin ) = 0;
   };
-
-  using IGPIO_sPtr = std::shared_ptr<IDriver>;
-
-  /**
-   *  Initializes the low level driver
-   */
-  extern Chimera::Status_t initialize();
-
-  /**
-   *  Gets a reference to the driver for a particular channel
-   */
-  extern IGPIO_sPtr getDriver( const size_t channel );
-
-  /**
-   *  Looks up how many GPIO channels are supported by the low level driver
-   *
-   *  @return size_t
-   */
-  extern size_t availableChannels();
 }    // namespace Thor::LLD::GPIO
 
-#endif /* !THOR_GPIO_MODEL_HPP */
+#endif /* !THOR_LLD_GPIO_DRIVER_INTERFACE_HPP */

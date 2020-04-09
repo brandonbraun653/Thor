@@ -32,7 +32,6 @@ namespace Thor::LLD::RCC
 #endif
 
 #if defined( THOR_LLD_GPIO )
-#pragma message( "Need to initialize the driver" )
     LookupTables::GPIOInit();
 #endif
 

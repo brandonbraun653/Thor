@@ -292,6 +292,10 @@ Low Level Driver Support
 /*----------------------------------------------
 High Level Driver Support
 ----------------------------------------------*/
+#ifndef THOR_HLD_GPIO
+#define THOR_HLD_GPIO
+#endif
+
 #ifndef THOR_HLD_SYSTEM
 #define THOR_HLD_SYSTEM
 #endif
@@ -303,6 +307,10 @@ High Level Driver Support
 /*----------------------------------------------
 Low Level Driver Support
 ----------------------------------------------*/
+#ifndef THOR_LLD_GPIO
+#define THOR_LLD_GPIO
+#endif
+
 #ifndef THOR_LLD_DES
 #define THOR_LLD_DES
 #endif

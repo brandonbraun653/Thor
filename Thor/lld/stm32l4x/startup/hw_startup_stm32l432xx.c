@@ -69,7 +69,7 @@ void __attribute__( ( weak ) ) UsageFault_Handler()
   __asm__( "bkpt 255" );
 }
 
-void __attribute__( ( weak ) ) SVCall_Handler()
+void __attribute__( ( weak ) ) SVC_Handler()
 {
   /* If you hit the breakpoint below, this particular interrupt was unhandled in your code.
      Define the handler in your code to manually override this one. */
@@ -618,7 +618,7 @@ void HardFault_Handler __attribute__( ( weak, alias( "Default_Handler" ) ) );
 void MemManage_Handler __attribute__( ( weak, alias( "Default_Handler" ) ) );
 void BusFault_Handler __attribute__( ( weak, alias( "Default_Handler" ) ) );
 void UsageFault_Handler __attribute__( ( weak, alias( "Default_Handler" ) ) );
-void SVCall_Handler __attribute__( ( weak, alias( "Default_Handler" ) ) );
+void SVC_Handler __attribute__( ( weak, alias( "Default_Handler" ) ) );
 void DebugMonitor_Handler __attribute__( ( weak, alias( "Default_Handler" ) ) );
 void PendSV_Handler __attribute__( ( weak, alias( "Default_Handler" ) ) );
 void SysTick_Handler __attribute__( ( weak, alias( "Default_Handler" ) ) );
@@ -730,7 +730,7 @@ void *StartupVectorTable[] __attribute__( ( section( ".isr_vector" ), used ) ) =
   NULL,                     //  -8: Reserved
   NULL,                     //  -7: Reserved
   NULL,                     //  -6: Reserved
-  &SVCall_Handler,          //  -5: Supervisor Call
+  &SVC_Handler,          //  -5: Supervisor Call
   &DebugMonitor_Handler,    //  -4: Debug Monitor
   NULL,                     //  -3: Reserved
   &PendSV_Handler,          //  -2: Pending Supervisor Call

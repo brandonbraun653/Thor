@@ -21,7 +21,7 @@ Common memory mapping values
 Chip specific additional memory mappings
 -------------------------------------------------*/
 #if defined( STM32L432xx )
-#include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432xx.hpp>
+#include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432kc.hpp>
 #endif 
 
 #endif  /* !THOR_LLD_SYS_MEMORY_MAP_PROJECT_HPP */

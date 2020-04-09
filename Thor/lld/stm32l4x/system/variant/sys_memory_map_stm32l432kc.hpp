@@ -52,6 +52,24 @@ namespace Thor::System::MemoryMap
   /*-------------------------------------------------
   AHB2
   -------------------------------------------------*/
+  static constexpr uint32_t GPIOA_PERIPH_START_ADDRESS = AHB2_RGN_START_ADDRESS + 0x0000U;
+  static constexpr uint32_t GPIOA_PERIPH_END_ADDRESS   = AHB2_RGN_START_ADDRESS + 0x03FFU;
+
+  static constexpr uint32_t GPIOB_PERIPH_START_ADDRESS = AHB2_RGN_START_ADDRESS + 0x0400U;
+  static constexpr uint32_t GPIOB_PERIPH_END_ADDRESS   = AHB2_RGN_START_ADDRESS + 0x07FFU;
+
+  static constexpr uint32_t GPIOC_PERIPH_START_ADDRESS = AHB2_RGN_START_ADDRESS + 0x0800U;
+  static constexpr uint32_t GPIOC_PERIPH_END_ADDRESS   = AHB2_RGN_START_ADDRESS + 0x0BFFU;
+
+  static constexpr uint32_t GPIOD_PERIPH_START_ADDRESS = AHB2_RGN_START_ADDRESS + 0x0C00U;
+  static constexpr uint32_t GPIOD_PERIPH_END_ADDRESS   = AHB2_RGN_START_ADDRESS + 0x0FFFU;
+
+  static constexpr uint32_t GPIOE_PERIPH_START_ADDRESS = AHB2_RGN_START_ADDRESS + 0x1000U;
+  static constexpr uint32_t GPIOE_PERIPH_END_ADDRESS   = AHB2_RGN_START_ADDRESS + 0x13FFU;
+
+  static constexpr uint32_t GPIOH_PERIPH_START_ADDRESS = AHB2_RGN_START_ADDRESS + 0x1C00U;
+  static constexpr uint32_t GPIOH_PERIPH_END_ADDRESS   = AHB2_RGN_START_ADDRESS + 0x1FFFU;
+
 
   /*------------------------------------------------
   Vector Table Offset Configuration

@@ -9,8 +9,8 @@
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_GPIO_HPP
-#define THOR_GPIO_HPP
+#ifndef THOR_HLD_GPIO_HPP
+#define THOR_HLD_GPIO_HPP
 
 /* C++ Includes */
 #include <cstdint>
@@ -21,38 +21,47 @@
 #include <Chimera/gpio>
 #include <Chimera/thread>
 
-/* Thor Includes */
-#include <Thor/hld/gpio/hld_gpio_types.hpp>
-#include <Thor/lld/interface/gpio/gpio_intf.hpp>
-
 namespace Thor::GPIO
 {
+  /**
+   *  Initializes the memory associated with the GPIO HLD
+   *
+   *  @return Chimera::Status_t
+   */
   Chimera::Status_t initialize();
 
+  /**
+   *  High level driver to interact with GPIO. It is naturally thread aware 
+   *  but by default won't be thread safe unless configured that way.
+   */
   class Driver : virtual public Chimera::GPIO::IGPIO, public Chimera::Threading::Lockable
   {
   public:
     Driver();
     ~Driver();
 
-    Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit, const size_t timeout = ACCESS_TIMEOUT ) final override;
+    Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit,
+                            const size_t timeout = Chimera::Threading::TIMEOUT_DONT_WAIT ) final override;
 
     Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin,
-                            const size_t timeout = ACCESS_TIMEOUT ) final override;
+                            const size_t timeout = Chimera::Threading::TIMEOUT_DONT_WAIT ) final override;
 
     Chimera::Status_t setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull,
-                               const size_t timeout = ACCESS_TIMEOUT ) final override;
+                               const size_t timeout = Chimera::Threading::TIMEOUT_DONT_WAIT ) final override;
 
-    Chimera::Status_t setState( const Chimera::GPIO::State state, const size_t timeout = ACCESS_TIMEOUT ) final override;
+    Chimera::Status_t setState( const Chimera::GPIO::State state,
+                                const size_t timeout = Chimera::Threading::TIMEOUT_DONT_WAIT ) final override;
 
-    Chimera::Status_t getState( Chimera::GPIO::State &state, const size_t timeout = ACCESS_TIMEOUT ) final override;
+    Chimera::Status_t getState( Chimera::GPIO::State &state,
+                                const size_t timeout = Chimera::Threading::TIMEOUT_DONT_WAIT ) final override;
 
-    Chimera::Status_t toggle( const size_t timeout = ACCESS_TIMEOUT ) final override;
+    Chimera::Status_t toggle( const size_t timeout = Chimera::Threading::TIMEOUT_DONT_WAIT ) final override;
 
   private:
-    Thor::LLD::GPIO::IGPIO_sPtr lld;
+    uint8_t channel;
+    Chimera::GPIO::State lastState;
     Chimera::GPIO::PinInit initSettings;
   };
 }    // namespace Thor::GPIO
 
-#endif /* THOR_GPIO_HPP */
+#endif /* THOR_HLD_GPIO_HPP */

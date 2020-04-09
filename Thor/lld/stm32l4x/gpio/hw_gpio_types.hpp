@@ -3,9 +3,9 @@
  *    hw_gpio_types.hpp
  *
  *  Description:
- *    STM32F4 Types for the GPIO Peripheral
+ *    STM32L4 Types for the GPIO Peripheral
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -16,25 +16,29 @@
 #include <cstdint>
 #include <array>
 
+/* Chimera Includes */
+#include <Chimera/container>
+
 /* Driver Includes */
-#include <Thor/lld/stm32f4x/gpio/hw_gpio_prj.hpp>
+#include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 
 namespace Thor::LLD::GPIO
 {
   struct RegisterMap
   {
-    volatile uint32_t MODER;    /**< GPIO port mode register,               Address offset: 0x00      */
-    volatile uint32_t OTYPER;   /**< GPIO port output type register,        Address offset: 0x04      */
-    volatile uint32_t OSPEEDR;  /**< GPIO port output speed register,       Address offset: 0x08      */
-    volatile uint32_t PUPDR;    /**< GPIO port pull-up/pull-down register,  Address offset: 0x0C      */
-    volatile uint32_t IDR;      /**< GPIO port input data register,         Address offset: 0x10      */
-    volatile uint32_t ODR;      /**< GPIO port output data register,        Address offset: 0x14      */
-    volatile uint32_t BSRR;     /**< GPIO port bit set/reset register,      Address offset: 0x18      */
-    volatile uint32_t LCKR;     /**< GPIO port configuration lock register, Address offset: 0x1C      */
-    volatile uint64_t AFR; /**< GPIO alternate function registers,     Address offset: 0x20-0x24 */
+    volatile uint32_t MODER;   /**< GPIO port mode register,               Address offset: 0x00      */
+    volatile uint32_t OTYPER;  /**< GPIO port output type register,        Address offset: 0x04      */
+    volatile uint32_t OSPEEDR; /**< GPIO port output speed register,       Address offset: 0x08      */
+    volatile uint32_t PUPDR;   /**< GPIO port pull-up/pull-down register,  Address offset: 0x0C      */
+    volatile uint32_t IDR;     /**< GPIO port input data register,         Address offset: 0x10      */
+    volatile uint32_t ODR;     /**< GPIO port output data register,        Address offset: 0x14      */
+    volatile uint32_t BSRR;    /**< GPIO port bit set/reset register,      Address offset: 0x18      */
+    volatile uint32_t LCKR;    /**< GPIO port configuration lock register, Address offset: 0x1C      */
+    volatile uint64_t AFR;     /**< GPIO alternate function registers,     Address offset: 0x20-0x24 */
+    volatile uint32_t BRR;     /**< GPIO port bit reset register,          Address offset: 0x28      */
   };
 
-   using PeriphRegisterList = std::array<RegisterMap *, NUM_GPIO_PERIPHS>;
+  using PeriphRegisterList = std::array<RegisterMap *, NUM_GPIO_PERIPHS>;
 
   /**
    *  Mode register configuration options
@@ -76,6 +80,7 @@ namespace Thor::LLD::GPIO
     PULLUP   = 0x01u, /**< Pull up activation */
     PULLDOWN = 0x02u  /**< Pull down activation */
   };
+
 }    // namespace Thor::LLD::GPIO
 
-#endif /* !THOR_HW_GPIO_TYPEGPIOHS_HPP */
+#endif /* !THOR_HW_GPIO_TYPES_HPP*/

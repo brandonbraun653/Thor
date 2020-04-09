@@ -131,11 +131,41 @@ namespace Thor::LLD::RCC
     const RegisterConfig *clockLP;  /**< Low power clock configuration registers */
     const RegisterConfig *reset;    /**< Peripheral reset registers */
     const ClockType_t *clockSource; /**< Which system clock is used on the peripheral */
-    const Chimera::Container::LightFlatMap<std::uintptr_t, size_t>
+    Chimera::Container::LightFlatMap<std::uintptr_t, size_t>
         *resourceIndexMap; /**< Converts a peripheral address into a resource index */
     size_t elements;       /**< Number of elements in the tables */
   };
 
+  /*------------------------------------------------
+  Configuration Options
+  ------------------------------------------------*/
+  namespace Configuration
+  {
+    /**
+     *  High level structure describing what kinds of clocks are available
+     *  to be used as a source for the System Clock.
+     */
+    using OscillatorType_t = Reg32_t;
+    namespace OscillatorType
+    {
+      static constexpr OscillatorType_t HSE     = 1u;
+      static constexpr OscillatorType_t HSI     = 2u;
+      static constexpr OscillatorType_t PLLCLK  = 4u;
+      static constexpr OscillatorType_t PLLRCLK = 8u;
+    }    // namespace OscillatorType
+
+    /**
+     *  High level structure describing what kinds of clocks are available
+     *  to be configured by the code.
+     */
+    namespace ClockType
+    {
+      static constexpr ClockType_t SYSCLK = 1u;
+      static constexpr ClockType_t HCLK   = 2u;
+      static constexpr ClockType_t PCLK1  = 4u;
+      static constexpr ClockType_t PCLK2  = 8u;
+    }    // namespace ClockType
+  }      // namespace Configuration
 
   /*------------------------------------------------
   Clock Control Register

@@ -456,6 +456,7 @@
     <None Include="..\..\..\Thor\lld\interface\gpio\mock\build.jam" />
     <None Include="..\..\..\Thor\lld\interface\interrupt\mock\build.jam" />
     <None Include="..\..\..\Thor\lld\interface\spi\mock\build.jam" />
+    <None Include="..\..\..\Thor\lld\stm32l4x\gpio\build.jam" />
     <None Include="..\..\..\Thor\nvic" />
     <None Include="..\..\..\Thor\spi" />
     <None Include="..\..\..\Thor\system" />
@@ -473,6 +474,11 @@
     <ClCompile Include="..\..\..\Thor\lld\interface\des\mock\des_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver_stm32l4.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\test\test_entry_lld_gpio.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\test\test_lld_gpio_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\config\hw_rcc_config_stm32l432xx.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_driver_stm32l4.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_mapping.cpp" />
@@ -515,7 +521,6 @@
     <ClCompile Include="..\..\..\Thor\hld\gpio\hld_gpio_driver.cpp" />
     <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_chimera.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_driver.hpp" />
-    <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_types.hpp" />
     <ClCompile Include="..\..\..\Thor\hld\gpio\test\test_entry_gpio.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|VisualGDB'">true</ExcludedFromBuild>
@@ -651,6 +656,7 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\dma\dma_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\dma\mock\dma_mock.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\flash\flash.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_detail.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\mock\gpio_mock.hpp" />
@@ -1417,6 +1423,11 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_it_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\variant\hw_it_register_stm32l432xx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\config\hw_rcc_config_stm32l432xx.hpp" />
@@ -1427,7 +1438,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\variant\hw_rcc_register_stm32l432xx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_stm32l4xxxx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\sys_memory_map_prj.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\variant\sys_memory_map_stm32l432xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\variant\sys_memory_map_stm32l432kc.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\variant\sys_memory_map_stm32l4xxxx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver.hpp" />
   </ItemGroup>

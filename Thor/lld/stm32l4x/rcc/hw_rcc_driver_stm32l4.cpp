@@ -40,7 +40,7 @@ namespace Thor::LLD::RCC
   /**
    *  Lookup table for all RCC peripheral control registers.
    */
-  static std::array<const PCC *, numPeriphs> periphLookupTables;
+  static std::array<PCC *, numPeriphs> periphLookupTables;
 
   /*------------------------------------------------
   Standalone Functions

@@ -20,6 +20,7 @@
 #include <Chimera/container>
 
 /* Driver Includes */
+#include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32l4x/system/sys_memory_map_prj.hpp>
@@ -50,6 +51,23 @@ namespace Thor::LLD::RCC
    */
   extern bool isRCC( const std::uintptr_t address );
 
+
+  namespace LookupTables
+  {
+#if defined( THOR_LLD_GPIO )
+    /**
+     *  GPIO Peripheral Config Lookup Tables
+     */
+    extern void GPIOInit();
+    static constexpr size_t gpioTableSize = Thor::LLD::GPIO::NUM_GPIO_PERIPHS;
+
+    extern PCC GPIOLookup;
+
+    extern RegisterConfig GPIO_ClockConfig[ gpioTableSize ];
+    extern RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
+    extern ClockType_t GPIO_SourceClock[ gpioTableSize ];
+#endif /* THOR_LLD_GPIO */
+  }
 }
 
 #endif  /* !THOR_LLD_RCC_MAPPING_HPP */

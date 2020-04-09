@@ -75,7 +75,6 @@ namespace Thor::LLD::GPIO
   extern const std::array<uint32_t, static_cast<size_t>( Thor::LLD::GPIO::Speed::NUM_OPTIONS )> SpeedMap;
   extern const std::array<uint32_t, static_cast<size_t>( Chimera::GPIO::Port::NUM_OPTIONS )> PortToIteratorMap;
 
-
   static constexpr uint32_t PIN_0        = 0x0001; /**< Pin 0 selected    */
   static constexpr uint32_t PIN_1        = 0x0002; /**< Pin 1 selected    */
   static constexpr uint32_t PIN_2        = 0x0004; /**< Pin 2 selected    */

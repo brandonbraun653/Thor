@@ -132,7 +132,6 @@ namespace Thor::LLD::GPIO
     InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( GPIOF_PERIPH ), GPIOF_RESOURCE_INDEX );
     InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( GPIOG_PERIPH ), GPIOG_RESOURCE_INDEX );
     InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( GPIOH_PERIPH ), GPIOH_RESOURCE_INDEX );
-
 #endif
   }
 }    // namespace Thor::LLD::GPIO
