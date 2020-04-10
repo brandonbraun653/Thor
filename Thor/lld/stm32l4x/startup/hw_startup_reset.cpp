@@ -48,17 +48,17 @@ extern "C"
     ------------------------------------------------*/
     for ( pDest = &_sbss; pDest != &_ebss; pDest++ )
       *pDest = 0;
-    
-    /*------------------------------------------------
-    Perform any chip specific initialization steps
-    ------------------------------------------------*/
-    SystemInit();
 
     /*------------------------------------------------
     Takes care of array/ctor/dtor data
     https://stackoverflow.com/questions/15265295/understanding-the-libc-init-array
     ------------------------------------------------*/
     __libc_init_array();
+
+    /*------------------------------------------------
+    Perform any chip specific initialization steps
+    ------------------------------------------------*/
+    SystemInit();
 
     /*------------------------------------------------
     System Execution Entry Point

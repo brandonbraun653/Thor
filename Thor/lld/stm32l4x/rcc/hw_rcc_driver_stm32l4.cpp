@@ -12,6 +12,7 @@
 #include <array>
 #include <cstring>
 #include <cstdlib>
+#include <limits>
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -21,6 +22,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/mapping/peripheral_mapping.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
@@ -37,10 +39,16 @@ namespace Thor::LLD::RCC
   ------------------------------------------------*/
   static constexpr uint8_t numPeriphs = static_cast<uint8_t>( Chimera::Peripheral::Type::NUM_SUPPORTED_TYPES );
 
+  /* Default bad clock value. Is positive so that there aren't accidental div/0 errors at runtime. */
+  static constexpr size_t BAD_CLOCK = static_cast<size_t>( 0xCCCCCCCC );
+
   /**
    *  Lookup table for all RCC peripheral control registers.
    */
   static std::array<PCC *, numPeriphs> periphLookupTables;
+
+  static OscillatorSettings sOscillatorSettings;
+  static DerivedClockSettings sDerivedClockSettings;
 
   /*------------------------------------------------
   Standalone Functions
@@ -54,6 +62,9 @@ namespace Thor::LLD::RCC
 
     if ( !initialized )
     {
+      sHSEFrequency = std::numeric_limits<size_t>::max();
+      sLSEFrequency = std::numeric_limits<size_t>::max();
+
       initializeRegisters();
       initializeMapping();
 
@@ -98,7 +109,7 @@ namespace Thor::LLD::RCC
   Chimera::System::ResetEvent getResetReason()
   {
     /*------------------------------------------------
-    Read out the flag bits and then clear them to ensure we 
+    Read out the flag bits and then clear them to ensure we
     get an accurate read the next time this function is called.
     ------------------------------------------------*/
     Reg32_t flags = RCC1_PERIPH->CSR & CSR_ResetFlags_Msk;
@@ -107,10 +118,10 @@ namespace Thor::LLD::RCC
     /*------------------------------------------------
     When debugging and powering on the board for the first time, usually there
     are two reset flags set. One is the brown out, the other is the pin reset.
-    If more than just the brown out flag has been set, it's safe to mask it away 
+    If more than just the brown out flag has been set, it's safe to mask it away
     as a false positive. This is known to happen on the STM32 development boards.
     ------------------------------------------------*/
-    if ( ( flags & ResetFlags::BROWN_OUT ) && ( flags != ResetFlags::BROWN_OUT ) ) 
+    if ( ( flags & ResetFlags::BROWN_OUT ) && ( flags != ResetFlags::BROWN_OUT ) )
     {
       flags &= ~ResetFlags::BROWN_OUT;
     }
@@ -151,6 +162,368 @@ namespace Thor::LLD::RCC
         return Chimera::System::ResetEvent::NOT_SUPPORTED;
         break;
     }
+  }
+
+  size_t getHSIFreq()
+  {
+    /* This is a fixed value for all L4 variants */
+    return 16000000;
+  }
+
+  size_t getHSEFreq()
+  {
+    return sHSEFrequency;
+  }
+
+  void setHSEFreq( const size_t freq )
+  {
+    sOscillatorSettings.HSEConfig.value = freq;
+  }
+
+  size_t getLSEFreq()
+  {
+    return sLSEFrequency;
+  }
+
+  void setLSEFreq( const size_t freq )
+  {
+    sLSEFrequency = freq;
+  }
+
+  size_t getLSIFreq()
+  {
+    /* A 32kHz clock is common across all L4 variants */
+    return 32000;
+  }
+
+  size_t getMSIFreq()
+  {
+    const Reg32_t msi_range_select = MSIRGSEL::get( RCC1_PERIPH );
+
+    /*------------------------------------------------
+    On powerup or reset, the MSI clock speed is configured
+    from the RCC_CSR register instead of the RCC_CR register.
+    ------------------------------------------------*/
+    Reg32_t msiConfig = std::numeric_limits<Reg32_t>::max();
+    if ( msi_range_select == CR_MSIRGSEL )
+    {
+      // Range is from RCC_CR
+      msiConfig = MSIRANGE1::get( RCC1_PERIPH );
+    }
+    else
+    {
+      // Range is from RCC_CSR
+      msiConfig = MSIRANGE2::get( RCC1_PERIPH );
+    }
+
+    /*------------------------------------------------
+    Given the configured option, return the clock to the user.
+    ------------------------------------------------*/
+    using namespace Config;
+
+    switch ( msiConfig )
+    {
+      case MSIClock::CLK_100KHZ:
+        return 100000;
+        break;
+
+      case MSIClock::CLK_200KHZ:
+        return 200000;
+        break;
+
+      case MSIClock::CLK_400KHZ:
+        return 400000;
+        break;
+
+      case MSIClock::CLK_800KHZ:
+        return 800000;
+        break;
+
+      case MSIClock::CLK_1MHZ:
+        return 1000000;
+        break;
+
+      case MSIClock::CLK_2MHZ:
+        return 2000000;
+        break;
+
+      case MSIClock::CLK_4MHZ:
+        return 4000000;
+        break;
+
+      case MSIClock::CLK_8MHZ:
+        return 8000000;
+        break;
+
+      case MSIClock::CLK_16MHZ:
+        return 16000000;
+        break;
+
+      case MSIClock::CLK_24MHZ:
+        return 24000000;
+        break;
+
+      case MSIClock::CLK_32MHZ:
+        return 32000000;
+        break;
+
+      case MSIClock::CLK_48MHZ:
+        return 48000000;
+        break;
+      default:
+        return std::numeric_limits<size_t>::max();
+        break;
+    };
+  }
+
+  size_t getPLLCLKFreq( const uint32_t mask )
+  {
+    size_t outputClock = BAD_CLOCK;
+
+    /*------------------------------------------------
+    The system PLL clock is driven by PLL R. Make sure
+    it's been turned on before going through all the math
+    to figure out how it's been configured.
+    ------------------------------------------------*/
+    bool pllMainOn    = static_cast<bool>( PLLON::get( RCC1_PERIPH ) );
+    bool pllR_Enabled = static_cast<bool>( PLLREN::get( RCC1_PERIPH ) );
+
+    if ( !pllMainOn || !pllR_Enabled )
+    {
+      return outputClock;
+    }
+
+    /*------------------------------------------------
+    Get the PLL source clock input frequency
+    ------------------------------------------------*/
+    size_t entryClock = 0;
+    Reg32_t pllSrc    = PLLSRC::get( RCC1_PERIPH );
+
+    switch ( pllSrc )
+    {
+      case PLLCFGR_PLLSRC_MSI:
+        entryClock = getMSIFreq();
+        break;
+
+      case PLLCFGR_PLLSRC_HSI:
+        entryClock = getHSIFreq();
+        break;
+
+      case PLLCFGR_PLLSRC_HSE:
+        entryClock = getHSEFreq();
+        break;
+
+      default:
+        return outputClock;
+        break;
+    };
+
+    /*------------------------------------------------
+    Cacluate the VCO frequency:
+      VCO = PLL_Src_Clock * (PLLN / PLLM)
+    ------------------------------------------------*/
+    Reg32_t pdivM = ( PLLM::get( RCC1_PERIPH ) >> PLLCFGR_PLLM_Pos ) + 1;
+    Reg32_t pdivN = PLLN::get( RCC1_PERIPH ) >> PLLCFGR_PLLN_Pos;
+
+    Reg32_t VCO = pllSrc * ( pdivN / pdivM );
+
+    /*------------------------------------------------
+    Calculate the output PLL clock
+    ------------------------------------------------*/
+    // PLL P divisor. Only two options are available, 17 or 7
+    Reg32_t pdivP = PLLP::get( RCC1_PERIPH ) ? 17 : 7;
+
+    // PLL Q or R divisor: Shifted to zero then quickly converted to the numerical
+    //                     equivalents of the configuration bits as described in the
+    //                     device datasheet. Pretty simple.
+    Reg32_t pdivQ = ( ( PLLQ::get( RCC1_PERIPH ) >> PLLCFGR_PLLR_Pos ) + 1 ) * 2;
+    Reg32_t pdivR = ( ( PLLR::get( RCC1_PERIPH ) >> PLLCFGR_PLLR_Pos ) + 1 ) * 2;
+
+    // No need to do div/0 checks here as all possible values are positive.
+    //  PLLP: Only two options are positive
+    //  PLLQ/R: Even if the register value is zero, the +1 offset mitigates this
+    switch ( mask )
+    {
+      case PLLCFGR_PLLP:
+        outputClock = VCO / pdivP;
+        break;
+
+      case PLLCFGR_PLLQ:
+        outputClock = VCO / pdivQ;
+        break;
+
+      case PLLCFGR_PLLR:
+        outputClock = VCO / pdivR;
+        break;
+
+      default:
+        outputClock = BAD_CLOCK;
+        break;
+    };
+
+    return outputClock;
+  }
+
+  size_t getSysClockFreq()
+  {
+    /*------------------------------------------------
+    From the clock tree diagram in RM0394 Fig. 13, there are
+    only four possible clock sources for the System Clock.
+    ------------------------------------------------*/
+    switch ( SWS::get( RCC1_PERIPH ) )
+    {
+      case Config::SystemClockStatus::SYSCLK_HSE:
+        return getHSEFreq();
+        break;
+
+      case Config::SystemClockStatus::SYSCLK_HSI16:
+        return getHSIFreq();
+        break;
+
+      case Config::SystemClockStatus::SYSCLK_MSI:
+        return getMSIFreq();
+        break;
+
+      case Config::SystemClockStatus::SYSCLK_PLL:
+        return getPLLCLKFreq( PLLCFGR_PLLR );
+        break;
+
+      default:
+        return std::numeric_limits<size_t>::max();
+        break;
+    };
+  }
+
+  size_t getHCLKFreq()
+  {
+    size_t hclkDiv                 = 1;
+    size_t systemClock             = getSysClockFreq();
+    Reg32_t ahbPrescalerConfigBits = HPRE::get( RCC1_PERIPH );
+
+    switch ( ahbPrescalerConfigBits )
+    {
+      case CFGR_HPRE_DIV1:
+        hclkDiv = 1;
+        break;
+
+      case CFGR_HPRE_DIV2:
+        hclkDiv = 2;
+        break;
+
+      case CFGR_HPRE_DIV4:
+        hclkDiv = 4;
+        break;
+
+      case CFGR_HPRE_DIV8:
+        hclkDiv = 8;
+        break;
+
+      case CFGR_HPRE_DIV16:
+        hclkDiv = 16;
+        break;
+
+      case CFGR_HPRE_DIV64:
+        hclkDiv = 64;
+        break;
+
+      case CFGR_HPRE_DIV128:
+        hclkDiv = 128;
+        break;
+
+      case CFGR_HPRE_DIV256:
+        hclkDiv = 256;
+        break;
+
+      case CFGR_HPRE_DIV512:
+        hclkDiv = 512;
+        break;
+
+      default:
+        hclkDiv = 1;
+        break;
+    }
+
+    return systemClock / hclkDiv;
+  }
+
+  size_t getPCLK1Freq()
+  {
+    /*------------------------------------------------
+    According to the clock tree diagram, PCLK1 is derived
+    from HCLK bus using the APB1 divisor.
+    ------------------------------------------------*/
+    size_t pclk1Div = 1;
+    size_t hclkFreq = getHCLKFreq();
+    size_t apbPrescalerConfigBits = PPRE1::get( RCC1_PERIPH );
+
+    switch ( apbPrescalerConfigBits )
+    {
+      case CFGR_PPRE1_DIV1:
+        pclk1Div = 1;
+        break;
+
+      case CFGR_PPRE1_DIV2:
+        pclk1Div = 2;
+        break;
+
+      case CFGR_PPRE1_DIV4:
+        pclk1Div = 4;
+        break;
+
+      case CFGR_PPRE1_DIV8:
+        pclk1Div = 8;
+        break;
+
+      case CFGR_PPRE1_DIV16:
+        pclk1Div = 16;
+        break;
+
+      default:
+        pclk1Div = 1;
+        break;
+    }
+
+    return hclkFreq / pclk1Div;
+  }
+
+  size_t getPCLK2Freq()
+  {
+    /*------------------------------------------------
+    According to the clock tree diagram, PCLK1 is derived
+    from HCLK bus using the APB1 divisor.
+    ------------------------------------------------*/
+    size_t pclk2Div = 1;
+    size_t hclkFreq = getHCLKFreq();
+    size_t apbPrescalerConfigBits = PPRE2::get( RCC1_PERIPH );
+
+    switch ( apbPrescalerConfigBits )
+    {
+      case CFGR_PPRE2_DIV1:
+        pclk2Div = 1;
+        break;
+
+      case CFGR_PPRE2_DIV2:
+        pclk2Div = 2;
+        break;
+
+      case CFGR_PPRE2_DIV4:
+        pclk2Div = 4;
+        break;
+
+      case CFGR_PPRE2_DIV8:
+        pclk2Div = 8;
+        break;
+
+      case CFGR_PPRE2_DIV16:
+        pclk2Div = 16;
+        break;
+
+      default:
+        pclk2Div = 1;
+        break;
+    }
+
+    return hclkFreq / pclk2Div;
   }
 
 
@@ -216,76 +589,138 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  Chimera::Status_t SystemClock::setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz )
+  Chimera::Status_t SystemClock::setCoreClockSource( const Chimera::Clock::Bus src )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
-    return result;
+    /*------------------------------------------------
+    Prevent the clock selection update from being interrupted
+    ------------------------------------------------*/
+    auto itMask = Thor::LLD::IT::disableInterrupts();
+
+    /*------------------------------------------------
+    Figure out the configuration bits that should be set. Go
+    ahead and update the SystemCoreClock value. If the update
+    fails, we'll be stuck in the while loop anyways and it won't
+    matter that the variable has been set to a bad value.
+    ------------------------------------------------*/
+    Reg32_t cfgOption = 0;
+    Reg32_t expStatus = 0;
+
+    switch ( src )
+    {
+      case Chimera::Clock::Bus::HSE:
+        cfgOption = Config::SystemClockSelect::SYSCLK_HSE;
+        expStatus = Config::SystemClockStatus::SYSCLK_HSE;
+
+        SystemCoreClock = getHSEFreq();
+        break;
+
+      case Chimera::Clock::Bus::MSI:
+        cfgOption = Config::SystemClockSelect::SYSCLK_MSI;
+        expStatus = Config::SystemClockStatus::SYSCLK_MSI;
+
+        SystemCoreClock = getMSIFreq();
+        break;
+
+      case Chimera::Clock::Bus::HSI16:
+        cfgOption = Config::SystemClockSelect::SYSCLK_HSI16;
+        expStatus = Config::SystemClockStatus::SYSCLK_HSI16;
+
+        SystemCoreClock = getHSIFreq();
+        break;
+
+      case Chimera::Clock::Bus::PLLCLK:
+        cfgOption = Config::SystemClockSelect::SYSCLK_PLL;
+        expStatus = Config::SystemClockStatus::SYSCLK_PLL;
+
+        SystemCoreClock = getPLLCLKFreq( PLLCFGR_PLLR );
+        break;
+
+      default:
+        return Chimera::CommonStatusCodes::FAIL;
+        break;
+    }
+
+    /*------------------------------------------------
+    Apply the clock selection setting, then wait for the
+    hardware to indicate it has stabilized.
+    ------------------------------------------------*/
+    SW::set( RCC1_PERIPH, cfgOption );
+    while ( ( SWS::get( RCC1_PERIPH ) & expStatus ) != expStatus )
+    {
+      ;
+    }
+
+    /*------------------------------------------------
+    The clock is stable now, allow normal program execution
+    ------------------------------------------------*/
+    Thor::LLD::IT::enableInterrupts( itMask );
+    return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::Status_t SystemClock::setCoreClock( const size_t freqHz )
+  Chimera::Status_t SystemClock::setClockFrequency( const Chimera::Clock::Bus clock, const size_t freq, const bool enable )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
-    return result;
+    switch ( clock )
+    {
+      case Chimera::Clock::Bus::HSE:
+        Thor::LLD::RCC::setHSEFreq( freq );
+        return Chimera::CommonStatusCodes::OK;
+        break;
+
+      case Chimera::Clock::Bus::LSE:
+        Thor::LLD::RCC::setLSEFreq( freq );
+        return Chimera::CommonStatusCodes::OK;
+        break;
+
+      // TODO: Handle the more complex cases next
+
+      default:
+        return Chimera::CommonStatusCodes::FAIL;
+        break;
+    };
   }
 
-  Chimera::Status_t SystemClock::setCoreClockSource( const Thor::Clock::Source src )
+  size_t SystemClock::getClockFrequency( const Chimera::Clock::Bus clock  )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
-    return result;
+    switch ( clock )
+    {
+      case Chimera::Clock::Bus::HCLK:
+        return getHCLKFreq();
+        break;
+
+      case Chimera::Clock::Bus::PCLK1:
+        return getPCLK1Freq();
+        break;
+
+      case Chimera::Clock::Bus::PCLK2:
+        return getPCLK2Freq();
+        break;
+
+      case Chimera::Clock::Bus::SYSCLK:
+        return getSysClockFreq();
+        break;
+
+      default:
+        return BAD_CLOCK;
+        break;
+    }
   }
 
-  Chimera::Status_t SystemClock::getClockFrequency( const ClockType_t clock, size_t *const freqHz )
+  size_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
-
-    //    if ( freqHz )
-    //    {
-    //      switch ( clock )
-    //      {
-    //        case Configuration::ClockType::HCLK:
-    //          result = prjGetHCLKFreq( freqHz );
-    //          break;
-    //
-    //        case Configuration::ClockType::PCLK1:
-    //          result = prjGetPCLK1Freq( freqHz );
-    //          break;
-    //
-    //        case Configuration::ClockType::PCLK2:
-    //          result = prjGetPCLK2Freq( freqHz );
-    //          break;
-    //
-    //        case Configuration::ClockType::SYSCLK:
-    //          result = prjGetSysClockFreq( freqHz );
-    //          break;
-    //
-    //        default:
-    //          // result = Chimera::CommonStatusCodes::FAIL;
-    //          break;
-    //      }
-    //    }
-
-    return result;
-  }
-
-  Chimera::Status_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address,
-                                                 size_t *const freqHz )
-  {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
-
     auto clockLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->clockSource;
     auto indexLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->resourceIndexMap;
 
-    // auto tmp = reinterpret_cast<Chimera::Container::LightFlatMap<std::uintptr_t, size_t, NUM_DMA_PERIPHS>
-
-    if ( freqHz && clockLookupTable && indexLookupTable )
+    if ( clockLookupTable && indexLookupTable )
     {
       auto index       = indexLookupTable->find( address )->second;
       auto sourceClock = clockLookupTable[ index ];
 
-      result = getClockFrequency( sourceClock, freqHz );
+      return getClockFrequency( sourceClock );
     }
-
-    return result;
+    else
+    {
+      return BAD_CLOCK;
+    }
   }
 
   /*------------------------------------------------

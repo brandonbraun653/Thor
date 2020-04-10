@@ -16,6 +16,7 @@
 #include <cstdint>
 
 /* Chimera/Includes */
+#include <Chimera/clock>
 #include <Chimera/container>
 #include <Chimera/common>
 
@@ -118,6 +119,88 @@ namespace Thor::LLD::RCC
   };
 
   /**
+   *  Settings that are used in configuring various oscillators
+   *  on STM32L4 microcontrollers. These oscillators are used 
+   *  as the source clocks for generating system derived clocks.
+   */
+  struct OscillatorSettings
+  {
+    bool valid; /**< Whether or not the settings are valid */
+
+    // Might be useful to use unions
+
+    /*------------------------------------------------
+    Cached oscillator output frequencies
+    ------------------------------------------------*/
+    size_t HSEFrequency;  /**< Current External HSO frequency: Must be set by user. Cannot be deduced. */
+    size_t LSEFrequency;  /**< Current External LSO frequency: Must be set by user. Cannot be deduced. */
+    size_t LSIFrequency;  /**< Current Internal LSO frequency */
+    size_t MSIFrequency;  /**< Current Internal MSO frequency */
+
+    /*------------------------------------------------
+    Configuration Values
+    ------------------------------------------------*/
+    /**
+     *  Configuration settings for the MSI oscillator
+     *
+     *  Applicable Registers:
+     *    1. RCC_CR
+     *    2. RCC_ICSCR
+     *    3. RCC_CFGR
+     */
+    struct _MSIConfig
+    {
+      bool applied; /**< Are the register settings applied? */
+      bool enabled; /**< Has the oscillator been turned on? */
+
+      Reg32_t range;  /**< Clock range to set */
+      Reg32_t trim;   /**< Trims the frequency set by range*/
+
+    } MSIConfig;
+
+    /**
+     *  Configuration settings for the HSI oscillator
+     *
+     *  Applicable Registers:
+     *    1. RCC_CR
+     *    2. RCC_ICSCR
+     *    3. RCC_CFGR
+     */
+    struct _HSIConfig
+    {
+      bool applied; /**< Are the register settings applied? */
+      bool enabled; /**< Has the oscillator been turned on? */
+
+      Reg32_t trim;   /**< Trims the static RC oscillator */
+    } HSIConfig;
+
+    struct _HSEConfig
+    {
+      bool enabled;
+      Reg32_t value;
+    } HSEConfig;
+  };
+
+  /**
+   *  Settings used for configuring various system derived clock
+   *  busses. Examples include SYSCLK, APB1, SAI1, etc.
+   */
+  struct DerivedClockSettings
+  {
+    bool valid; /**< Whether or not the settings are valid */
+
+    // Might be useful to use unions
+
+    /*------------------------------------------------
+    Cached derived clock frequencies
+    ------------------------------------------------*/
+    size_t SYSCLKFrequency; /**< Current system clock frequency */
+    size_t HCLKFrequency;
+    size_t PCLK1Frequency;
+    size_t PCLK2Frequency;
+  };
+
+  /**
    *  Peripheral Control & Config (PCC)
    *  Describes a generic set of registers and configurations for a
    *  peripheral type that allows the RCC driver to generically configure
@@ -127,10 +210,10 @@ namespace Thor::LLD::RCC
    */
   struct PCC
   {
-    const RegisterConfig *clock;    /**< Standard clock configuration registers */
-    const RegisterConfig *clockLP;  /**< Low power clock configuration registers */
-    const RegisterConfig *reset;    /**< Peripheral reset registers */
-    const ClockType_t *clockSource; /**< Which system clock is used on the peripheral */
+    const RegisterConfig *clock;            /**< Lookup Table Pointer: Standard clock configuration registers */
+    const RegisterConfig *clockLP;          /**< Lookup Table Pointer: Low power clock configuration registers */
+    const RegisterConfig *reset;            /**< Lookup Table Pointer: Peripheral reset registers */
+    const Chimera::Clock::Bus *clockSource; /**< Lookup Table Pointer: Which system clock is used on the peripheral */
     Chimera::Container::LightFlatMap<std::uintptr_t, size_t>
         *resourceIndexMap; /**< Converts a peripheral address into a resource index */
     size_t elements;       /**< Number of elements in the tables */
@@ -139,7 +222,7 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   Configuration Options
   ------------------------------------------------*/
-  namespace Configuration
+  namespace Config
   {
     /**
      *  High level structure describing what kinds of clocks are available
@@ -154,17 +237,43 @@ namespace Thor::LLD::RCC
       static constexpr OscillatorType_t PLLRCLK = 8u;
     }    // namespace OscillatorType
 
-    /**
-     *  High level structure describing what kinds of clocks are available
-     *  to be configured by the code.
-     */
-    namespace ClockType
+    namespace MSIClock
     {
-      static constexpr ClockType_t SYSCLK = 1u;
-      static constexpr ClockType_t HCLK   = 2u;
-      static constexpr ClockType_t PCLK1  = 4u;
-      static constexpr ClockType_t PCLK2  = 8u;
-    }    // namespace ClockType
+      static constexpr Reg32_t CLK_100KHZ = CR_MSIRANGE_0;
+      static constexpr Reg32_t CLK_200KHZ = CR_MSIRANGE_1;
+      static constexpr Reg32_t CLK_400KHZ = CR_MSIRANGE_2;
+      static constexpr Reg32_t CLK_800KHZ = CR_MSIRANGE_3;
+      static constexpr Reg32_t CLK_1MHZ   = CR_MSIRANGE_4;
+      static constexpr Reg32_t CLK_2MHZ   = CR_MSIRANGE_5;
+      static constexpr Reg32_t CLK_4MHZ   = CR_MSIRANGE_6;
+      static constexpr Reg32_t CLK_8MHZ   = CR_MSIRANGE_7;
+      static constexpr Reg32_t CLK_16MHZ  = CR_MSIRANGE_8;
+      static constexpr Reg32_t CLK_24MHZ  = CR_MSIRANGE_9;
+      static constexpr Reg32_t CLK_32MHZ  = CR_MSIRANGE_10;
+      static constexpr Reg32_t CLK_48MHZ  = CR_MSIRANGE_11;
+    }
+
+    /**
+     *  System clock select options for the RCC_CFGR SW register
+     */
+    namespace SystemClockSelect
+    {
+      static constexpr Reg32_t SYSCLK_MSI   = 0;
+      static constexpr Reg32_t SYSCLK_HSI16 = CFGR_SW_0;
+      static constexpr Reg32_t SYSCLK_HSE   = CFGR_SW_1;
+      static constexpr Reg32_t SYSCLK_PLL   = CFGR_SW_1 | CFGR_SW_0;
+    }
+
+    /**
+     *  System clock status options for the RCC_CFGR SWS register
+     */
+    namespace SystemClockStatus
+    {
+      static constexpr Reg32_t SYSCLK_MSI   = 0;
+      static constexpr Reg32_t SYSCLK_HSI16 = CFGR_SWS_0;
+      static constexpr Reg32_t SYSCLK_HSE   = CFGR_SWS_1;
+      static constexpr Reg32_t SYSCLK_PLL   = CFGR_SWS_1 | CFGR_SWS_0;
+    }
   }      // namespace Configuration
 
   /*------------------------------------------------
@@ -174,7 +283,47 @@ namespace Thor::LLD::RCC
   REG_ACCESSOR( RegisterMap, CR, CR_MSIRDY_Msk, MSIRDY, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, CR, CR_MSIPLLEN_Msk, MSIPLLEN, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR, CR_MSIRGSEL_Msk, MSIRGSEL, BIT_ACCESS_RS );
+  REG_ACCESSOR( RegisterMap, CR, CR_MSIRANGE_Msk, MSIRANGE1, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR, CR_PLLON_Msk, PLLON, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR, CR_PLLRDY_Msk, PLLRDY, BIT_ACCESS_R );
 
+  /*------------------------------------------------
+  Configuration Register
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_SW_Msk, SW, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_SWS_Msk, SWS, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_HPRE_Msk, HPRE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_PPRE1_Msk, PPRE1, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_PPRE2_Msk, PPRE2, BIT_ACCESS_RW );
+
+  namespace Config::CFGR
+  {
+    
+  }
+
+  /*------------------------------------------------
+  PLL Configuration Register
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, PLLCFGR, PLLCFGR_PLLSRC_Msk, PLLSRC, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLCFGR, PLLCFGR_PLLM_Msk, PLLM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLCFGR, PLLCFGR_PLLN_Msk, PLLN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLCFGR, PLLCFGR_PLLPEN_Msk, PLLPEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLCFGR, PLLCFGR_PLLP_Msk, PLLP, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLCFGR, PLLCFGR_PLLQEN_Msk, PLLQEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLCFGR, PLLCFGR_PLLQ_Msk, PLLQ, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLCFGR, PLLCFGR_PLLREN_Msk, PLLREN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLCFGR, PLLCFGR_PLLR_Msk, PLLR, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLCFGR, PLLCFGR_PLLPDIV_Msk, PLLPDIV, BIT_ACCESS_RW );
+
+  namespace Config::PLLCFGR
+  {
+    
+  }
+
+  /*------------------------------------------------
+  Control Status Register
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CSR, CSR_MSISRANGE_Msk, MSIRANGE2, BIT_ACCESS_RW );
 
   /*------------------------------------------------
   Control Status Register

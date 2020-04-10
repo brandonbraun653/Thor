@@ -23,10 +23,13 @@
 #include <Thor/watchdog>
 
 /* Driver Includes */
+#include <Thor/lld/common/cortex-m4/interrupts.hpp>
 #include <Thor/lld/interface/des/des_intf.hpp>
-#include <Thor/lld/interface/nvic/nvic.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
+#include <Thor/lld/interface/nvic/nvic_intf.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
-#include <Thor/lld/interface/startup/startup.hpp>
+#include <Thor/lld/interface/startup/startup_intf.hpp>
 
 namespace Thor::System
 {
@@ -104,13 +107,12 @@ namespace Thor::System
 
   Chimera::System::InterruptMask disableInterrupts()
   {
-#pragma message( "LLD system interrupt disable not implemented" )
-    return Chimera::System::InterruptMask();
+    return Thor::LLD::IT::disableInterrupts();
   }
 
   void enableInterrupts( Chimera::System::InterruptMask &interruptMask )
   {
-#pragma message( "LLD system interrupt enable not implemented" )
+    Thor::LLD::IT::enableInterrupts( interruptMask );
   }
 
   int maxConcurrentThreads()

@@ -19,7 +19,7 @@
 #if defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
 #elif defined( TARGET_STM32L4 )
-#include <Thor/lld/stm32l4x/interrupt/hw_it_prj.hpp>
+#include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
 #else
 #pragma message( "Unknown target. Interrupt definitions for CMSIS will be missing." )
 #endif 

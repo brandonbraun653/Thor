@@ -16,6 +16,7 @@
 #include <array>
 
 /* Chimera Includes */
+#include <Chimera/clock>
 #include <Chimera/common>
 #include <Chimera/container>
 
@@ -65,7 +66,7 @@ namespace Thor::LLD::RCC
 
     extern RegisterConfig GPIO_ClockConfig[ gpioTableSize ];
     extern RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
-    extern ClockType_t GPIO_SourceClock[ gpioTableSize ];
+    extern Chimera::Clock::Bus GPIO_SourceClock[ gpioTableSize ];
 #endif /* THOR_LLD_GPIO */
   }
 }

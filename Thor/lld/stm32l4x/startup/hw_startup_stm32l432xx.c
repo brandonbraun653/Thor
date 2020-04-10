@@ -9,7 +9,6 @@
  *******************************************************************************/
 
 #include <stddef.h>
-#include <Thor/lld/stm32l4x/interrupt/hw_it_prj.hpp>
 
 /*-------------------------------------------------
 Beginning of the stack frame, as given by the linker script

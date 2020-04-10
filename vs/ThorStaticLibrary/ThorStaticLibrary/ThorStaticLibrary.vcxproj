@@ -471,6 +471,8 @@
     <None Include="ThorStaticLibrary-STM32L432KC-Release.vgdbsettings" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Thor\hld\clock\hld_clock_chimera.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\clock\hld_clock_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\des\mock\des_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.cpp" />
@@ -479,6 +481,9 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\test\test_entry_lld_gpio.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\test\test_lld_gpio_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_driver_stm32l4.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\interrupt\variant\hw_interrupt_register_stm32l432kc.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\config\hw_rcc_config_stm32l432xx.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_driver_stm32l4.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_mapping.cpp" />
@@ -496,7 +501,9 @@
     <ClInclude Include="..\..\..\Thor\config\simulator\thor_gtest_config.hpp" />
     <ClInclude Include="..\..\..\Thor\config\simulator\thor_sim_config.hpp" />
     <ClInclude Include="..\..\..\Thor\config\templates\thorDriverConfig.hpp" />
-    <ClInclude Include="..\..\..\Thor\hld\clock\clock_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\hld\clock\hld_clock_chimera.hpp" />
+    <ClInclude Include="..\..\..\Thor\hld\clock\hld_clock_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\hld\clock\hld_clock_types.hpp" />
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp" />
     <ClCompile Include="..\..\..\Thor\config\freertos\thor_freertos_hooks_prj.cpp" />
     <ClInclude Include="..\..\..\Thor\hld\common\macro.hpp" />
@@ -628,6 +635,7 @@
     <ClInclude Include="..\..\..\Thor\hld\watchdog\hld_watchdog_chimera.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\watchdog\hld_watchdog_driver.hpp" />
     <ClCompile Include="..\..\..\Thor\lld\common\thor_exceptions.cpp" />
+    <ClInclude Include="..\..\..\Thor\lld\common\cortex-m4\interrupts.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\common\exceptions.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\common\cmsis\configuration.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\common\cmsis\core\include\cmsis_compiler.h" />
@@ -660,13 +668,14 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\mock\gpio_mock.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_model.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_detail.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\mock\interrupt_mock.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\nvic\nvic.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\nvic\nvic_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\power\power.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\rcc\mock\rcc_mock.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc_detail.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\serial\serial_model.hpp" />
@@ -675,7 +684,7 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_types.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\startup\startup.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\startup\startup_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart.hpp" />
@@ -1428,8 +1437,11 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_it_prj.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\variant\hw_it_register_stm32l432xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\variant\hw_interrupt_register_stm32l432kc.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\config\hw_rcc_config_stm32l432xx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_mapping.hpp" />

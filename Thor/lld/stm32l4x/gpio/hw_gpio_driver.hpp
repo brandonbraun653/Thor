@@ -21,7 +21,6 @@
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_mapping.hpp>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
-#include <Thor/lld/interface/interrupt/interrupt_model.hpp>
 
 namespace Thor::LLD::GPIO
 {

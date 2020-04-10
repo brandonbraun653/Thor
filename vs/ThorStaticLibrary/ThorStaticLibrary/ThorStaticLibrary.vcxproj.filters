@@ -370,14 +370,14 @@
     <Filter Include="lld\stm32l4x\gpio\variant">
       <UniqueIdentifier>{414bc4fa-3d43-4c06-b9dd-7e7b01ce241d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hld\clock\test">
+      <UniqueIdentifier>{ad7216da-5978-4e3f-8313-04e1616c3d8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.xml">
       <Filter>VisualGDB settings</Filter>
     </None>
-    <ClInclude Include="..\..\..\Thor\hld\clock\clock_types.hpp">
-      <Filter>hld\clock</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\hld\common\macro.hpp">
       <Filter>hld\common</Filter>
     </ClInclude>
@@ -659,17 +659,8 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_types.hpp">
       <Filter>lld\interface\gpio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt.hpp">
-      <Filter>lld\interface\interrupt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_model.hpp">
-      <Filter>lld\interface\interrupt</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_types.hpp">
       <Filter>lld\interface\interrupt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\nvic\nvic.hpp">
-      <Filter>lld\interface\nvic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\power\power.hpp">
       <Filter>lld\interface\power</Filter>
@@ -688,9 +679,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_types.hpp">
       <Filter>lld\interface\spi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\startup\startup.hpp">
-      <Filter>lld\interface\startup</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart.hpp">
       <Filter>lld\interface\uart</Filter>
@@ -1139,12 +1127,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_stm32l4xxxx.hpp">
       <Filter>lld\stm32l4x\startup</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_it_prj.hpp">
-      <Filter>lld\stm32l4x\interrupt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\variant\hw_it_register_stm32l432xx.hpp">
-      <Filter>lld\stm32l4x\interrupt\variant</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\variant\hw_rcc_register_stm32l432xx.hpp">
       <Filter>lld\stm32l4x\rcc\variant</Filter>
     </ClInclude>
@@ -1213,6 +1195,48 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_detail.hpp">
       <Filter>lld\interface\gpio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_intf.hpp">
+      <Filter>lld\interface\interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_detail.hpp">
+      <Filter>lld\interface\interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\variant\hw_interrupt_register_stm32l432kc.hpp">
+      <Filter>lld\stm32l4x\interrupt\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_driver.hpp">
+      <Filter>lld\stm32l4x\interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_mapping.hpp">
+      <Filter>lld\stm32l4x\interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_prj.hpp">
+      <Filter>lld\stm32l4x\interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_types.hpp">
+      <Filter>lld\stm32l4x\interrupt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\nvic\nvic_intf.hpp">
+      <Filter>lld\interface\nvic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\startup\startup_intf.hpp">
+      <Filter>lld\interface\startup</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\cortex-m4\interrupts.hpp">
+      <Filter>lld\common\cortex-m4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\clock\hld_clock_types.hpp">
+      <Filter>hld\clock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\clock\hld_clock_driver.hpp">
+      <Filter>hld\clock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\clock\hld_clock_chimera.hpp">
+      <Filter>hld\clock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc_detail.hpp">
+      <Filter>lld\stm32l4x\rcc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1347,6 +1371,21 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.cpp">
       <Filter>lld\stm32l4x\gpio\variant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\interrupt\variant\hw_interrupt_register_stm32l432kc.cpp">
+      <Filter>lld\stm32l4x\interrupt\variant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_driver_stm32l4.cpp">
+      <Filter>lld\stm32l4x\interrupt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_mapping.cpp">
+      <Filter>lld\stm32l4x\interrupt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\clock\hld_clock_chimera.cpp">
+      <Filter>hld\clock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\clock\hld_clock_driver.cpp">
+      <Filter>hld\clock</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

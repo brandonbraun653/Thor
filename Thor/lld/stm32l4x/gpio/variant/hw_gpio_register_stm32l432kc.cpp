@@ -8,6 +8,9 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+/* Chimera Includes */
+#include <Chimera/clock>
+
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
@@ -454,7 +457,7 @@ namespace Thor::LLD::RCC::LookupTables
   ------------------------------------------------*/
   RegisterConfig GPIO_ClockConfig[ gpioTableSize ];
   RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
-  ClockType_t GPIO_SourceClock[ gpioTableSize ];
+  Chimera::Clock::Bus GPIO_SourceClock[ gpioTableSize ];
 
   PCC GPIOLookup = { GPIO_ClockConfig, nullptr, GPIO_ResetConfig, GPIO_SourceClock, &Thor::LLD::GPIO::InstanceToResourceIndex,
                      gpioTableSize };
@@ -496,10 +499,10 @@ namespace Thor::LLD::RCC::LookupTables
     /*------------------------------------------------
     GPIO clocking bus source identifier
     ------------------------------------------------*/
-    GPIO_SourceClock[ GPIOA_RESOURCE_INDEX ] = Configuration::ClockType::PCLK2;
-    GPIO_SourceClock[ GPIOB_RESOURCE_INDEX ] = Configuration::ClockType::PCLK2;
-    GPIO_SourceClock[ GPIOC_RESOURCE_INDEX ] = Configuration::ClockType::PCLK2;
-    GPIO_SourceClock[ GPIOH_RESOURCE_INDEX ] = Configuration::ClockType::PCLK2;
+    GPIO_SourceClock[ GPIOA_RESOURCE_INDEX ] = Chimera::Clock::Bus::PCLK2;
+    GPIO_SourceClock[ GPIOB_RESOURCE_INDEX ] = Chimera::Clock::Bus::PCLK2;
+    GPIO_SourceClock[ GPIOC_RESOURCE_INDEX ] = Chimera::Clock::Bus::PCLK2;
+    GPIO_SourceClock[ GPIOH_RESOURCE_INDEX ] = Chimera::Clock::Bus::PCLK2;
   };
 
 }    // namespace Thor::LLD::RCC::LookupTables

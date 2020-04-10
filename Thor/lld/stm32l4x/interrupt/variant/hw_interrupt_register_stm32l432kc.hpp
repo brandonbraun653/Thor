@@ -1,16 +1,22 @@
 /********************************************************************************
  *  File Name:
- *    hw_it_register_stm32l432xx.hpp
+ *    hw_interrupt_register_stm32l432kc.hpp
  *
  *  Description:
- *    Interrupt definitions for the STM32L432xx chips
+ *    INTERRUPT register definitions for the STM32L432KC series chips.
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ ********************************************************************************/
 
 #pragma once
-#ifndef THOR_LLD_INTERRUPT_REGISTER_HPP
-#define THOR_LLD_INTERRUPT_REGISTER_HPP
+#ifndef THOR_HW_INTERRUPT_REGISTER_STM32L432KC_HPP
+#define THOR_HW_INTERRUPT_REGISTER_STM32L432KC_HPP
+
+/* C++ Includes */
+#include <cstdint>
+
+/* Driver Includes */
+#include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432kc.hpp>
 
 /*-------------------------------------------------
 ISR vector numbers as described in PM0214 Section 2.3.4 and RM0394 Section 12.3.
@@ -102,4 +108,9 @@ enum IRQn_Type
   I2C4_ER_IRn             = 84
 };
 
-#endif /* !THOR_LLD_INTERRUPT_REGISTER_HPP */
+
+namespace Thor::LLD::IT
+{
+}    // namespace Thor::LLD::IT
+
+#endif /* !THOR_HW_INTERRUPT_REGISTER_STM32L432KC_HPP */

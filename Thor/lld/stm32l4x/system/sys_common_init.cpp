@@ -10,6 +10,7 @@
 
 /* Thor Includes */
 #include <Thor/cfg>
+#include <Thor/lld/interface/rcc/rcc_detail.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
@@ -25,25 +26,46 @@ void SystemInit()
   using namespace Thor::LLD::RCC;
 
   /*------------------------------------------------
-  Reset the RCC controller to defaults
+  Set HSION bit to enable the 16MHz internal RC oscillator
   ------------------------------------------------*/
-  /* Set HSION bit */
   RCC1_PERIPH->CR |= CR_HSION;
+  while ( !( RCC1_PERIPH->CR & CR_HSIRDY ) )
+  {
+    ;
+  }
 
-  /* Reset CFGR register */
+  /*------------------------------------------------
+  Switch the system clock to be driven from the HSI16 bus. While
+  techinally we just turned it on above, the hardware will override
+  us on exiting Standby or Shutdown mode to use the MSI clock instead.
+
+  This leads to a condition where the first power up will have the
+  correct clock frequency, but toggling the nRST pin ends up causing
+  the MSI clock to be selected.
+  ------------------------------------------------*/
+  auto cfgOption = Config::SystemClockSelect::SYSCLK_HSI16;
+  auto expStatus = Config::SystemClockStatus::SYSCLK_HSI16;
+  SW::set( RCC1_PERIPH, cfgOption );
+
+  while ( ( SWS::get( RCC1_PERIPH ) & expStatus ) != expStatus )
+  {
+    ;
+  }
+
+  /*------------------------------------------------
+  Update the external clock variable so FreeRTOS (if used)
+  can know the startup frequency.
+  ------------------------------------------------*/
+  SystemCoreClock = getHSIFreq();
+
+  /*------------------------------------------------
+  Clear any other clock configuration data
+  ------------------------------------------------*/
+  RCC1_PERIPH->CR &= ~( CR_MSION | CR_HSEON | CR_CSSON | CR_PLLON );
   RCC1_PERIPH->CFGR = 0;
-
-  /* Reset HSEON, CSSON and PLLON bits */
-  RCC1_PERIPH->CR &= ( CR_MSION | CR_HSEON | CR_CSSON | CR_PLLON );
-
-  /* Reset PLLCFGR register */
   RCC1_PERIPH->PLLCFGR = 0x00001000;
-
-  /* Reset HSEBYP bit */
-  RCC1_PERIPH->CR &= ~CR_HSEBYP;
-
-  /* Disable all interrupts */
   RCC1_PERIPH->CIER = 0;
+  RCC1_PERIPH->CR &= ~CR_HSEBYP;  // Can only be written after HSEON is cleared
 
   /*------------------------------------------------
   Default initialize the System Control Block

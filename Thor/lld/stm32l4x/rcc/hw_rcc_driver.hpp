@@ -17,10 +17,11 @@
 #include <memory>
 
 /* Chimera Includes */
+#include <Chimera/clock>
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/hld/clock/clock_types.hpp>
+#include <Thor/clock>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 
@@ -33,11 +34,10 @@ namespace Thor::LLD::RCC
     ~SystemClock();
 
     Chimera::Status_t configureProjectClocks() final override;
-    Chimera::Status_t setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz ) final override;
-    Chimera::Status_t setCoreClock( const size_t freqHz ) final override;
-    Chimera::Status_t setCoreClockSource( const Thor::Clock::Source src ) final override;
-    Chimera::Status_t getClockFrequency( const ClockType_t clock, size_t *const freqHz ) final override;
-    Chimera::Status_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz ) final override;
+    Chimera::Status_t setCoreClockSource( const Chimera::Clock::Bus src ) final override;
+    Chimera::Status_t setClockFrequency( const Chimera::Clock::Bus clock, const size_t freq, const bool enable ) final override;
+    size_t getClockFrequency( const Chimera::Clock::Bus clock ) final override;
+    size_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address ) final override;
 
   private:
     friend IClockTree *getSystemClockController();
