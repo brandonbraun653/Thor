@@ -17,7 +17,7 @@
 
 namespace Thor::HLD
 {
-  static const std::string_view Version = "2.2";
+  static const std::string_view Version = "2.2#";
 }
 
 #endif  /* !THOR_HLD_VERSION_HPP */
