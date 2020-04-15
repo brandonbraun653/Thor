@@ -24,6 +24,9 @@
 #include <Thor/lld/common/mapping/peripheral_mapping.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
+#include <Thor/lld/stm32l4x/flash/hw_flash_mapping.hpp>
+#include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
+#include <Thor/lld/stm32l4x/flash/hw_flash_types.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_mapping.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_types.hpp>
@@ -82,6 +85,10 @@ namespace Thor::LLD::RCC
 
 #if defined( THOR_LLD_DMA )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ] = &LookupTables::DMALookup;
+#endif
+
+#if defined( THOR_LLD_FLASH )
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_FLASH ) ] = &LookupTables::FLASHLookup;
 #endif
 
 #if defined( THOR_LLD_GPIO )
@@ -838,6 +845,17 @@ namespace Thor::LLD::RCC
         return Chimera::CommonStatusCodes::FAIL;
         break;
     }
+
+    /*------------------------------------------------
+    Adjust the flash read access latency (Section 3.3.3 of RM0394)
+     
+    Note: Currently harcoded to assume a clock increase, but once
+    I have the processor brought up and have some free time, this 
+    needs to adjust for a decrease too. Can calculate the desired
+    clock frequency from the registers in the config structure.
+    ------------------------------------------------*/
+    using namespace Thor::LLD::FLASH;
+    LATENCY::set( FLASH_PERIPH, ACR_LATENCY_4WS );
 
     /*------------------------------------------------
     Apply the clock selection setting, then wait for the

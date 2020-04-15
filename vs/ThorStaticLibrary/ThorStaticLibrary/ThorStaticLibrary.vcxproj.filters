@@ -382,6 +382,15 @@
     <Filter Include="lld\stm32l4x\power\variant">
       <UniqueIdentifier>{1524cc43-790c-4b53-b953-7f60da96aa21}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lld\stm32l4x\flash">
+      <UniqueIdentifier>{377a8bd6-f9e7-4eb9-bcf2-83b7cfdf4304}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\flash\test">
+      <UniqueIdentifier>{a5449371-ac55-44d5-ae14-029ad1202623}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\flash\variant">
+      <UniqueIdentifier>{0dd97454-8201-479f-93d2-7dbc65277af1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.xml">
@@ -1265,6 +1274,21 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\power\variant\hw_power_register_stm32l432kc.hpp">
       <Filter>lld\stm32l4x\power\variant</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_driver.hpp">
+      <Filter>lld\stm32l4x\flash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_mapping.hpp">
+      <Filter>lld\stm32l4x\flash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_prj.hpp">
+      <Filter>lld\stm32l4x\flash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_types.hpp">
+      <Filter>lld\stm32l4x\flash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\variant\hw_flash_register_stm32l432kc.hpp">
+      <Filter>lld\stm32l4x\flash\variant</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">
@@ -1431,6 +1455,21 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\power\variant\hw_power_register_stm32l432kc.cpp">
       <Filter>lld\stm32l4x\power\variant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_driver_stm32l4.cpp">
+      <Filter>lld\stm32l4x\flash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_mapping.cpp">
+      <Filter>lld\stm32l4x\flash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\test\test_entry_lld_flash.cpp">
+      <Filter>lld\stm32l4x\flash\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\test\test_lld_flash_driver.cpp">
+      <Filter>lld\stm32l4x\flash\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\variant\hw_flash_register_stm32l432kc.cpp">
+      <Filter>lld\stm32l4x\flash\variant</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

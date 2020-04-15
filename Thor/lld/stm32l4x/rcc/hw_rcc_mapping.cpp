@@ -31,6 +31,10 @@ namespace Thor::LLD::RCC
     LookupTables::DMAInit();
 #endif
 
+#if defined( THOR_LLD_FLASH )
+    LookupTables::FLASHInit();
+#endif
+
 #if defined( THOR_LLD_GPIO )
     LookupTables::GPIOInit();
 #endif

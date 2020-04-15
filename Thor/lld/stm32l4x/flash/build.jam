@@ -1,0 +1,80 @@
+# ====================================================
+# Local Rules 
+# ====================================================
+local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
+    {
+    alias $(name) : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
+    explicit $(name) ;
+    }
+
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/lld/stm32l4/flash ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/stm32l4/flash ;
+
+# ====================================================
+# Public Targets
+# ====================================================
+explicit_alias PUB : : : : <define>THOR_LLD_FLASH ;
+
+# ====================================================
+# Static Libraries
+# ====================================================
+lib lld_flash_chip
+  : variant/hw_flash_register_stm32l432kc.cpp
+
+  : <Thor>enabled-L432
+    <link>static
+    <use>/CHIMERA//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32L4//PUB
+    <use>/THOR/LLD/STM32L4/FLASH//PUB
+  ;
+explicit lld_flash_chip ;
+explicit_alias DEVICE_TARGET : lld_flash_chip : : : <library>lld_flash_chip ;
+
+lib lld_flash
+  : [ glob *.cpp ]
+
+  : <link>static
+    <use>/CHIMERA//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32L4//PUB
+    <use>/THOR/LLD/STM32L4/FLASH//PUB
+  ;
+explicit lld_flash ;
+explicit_alias LIB : lld_flash lld_flash_chip : : : <library>lld_flash <library>lld_flash_chip ;
+
+# ====================================================
+# Test Driver Executable
+# ====================================================
+exe lld_flash_test
+  : [ glob test/*.cpp ]
+
+    /THOR/LLD/STM32L4//TEST_LIB
+  
+  : <link>static
+    <Thor>enabled-L4
+    <use>/AURORA//PUB
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32L4//TEST_PUB
+    <linkflags>-Wl,--no-as-needed
+  ;
+explicit lld_flash_test ;
+explicit_alias TEST : lld_flash_test : : : <source>lld_flash_test ;
+
+# ====================================================
+# Installation Targets
+# ====================================================
+install INSTALL_TEST : lld_flash_test
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+install INSTALL_LIB : lld_flash lld_flash_chip
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

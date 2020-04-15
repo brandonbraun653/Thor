@@ -476,6 +476,11 @@
     <ClCompile Include="..\..\..\Thor\lld\interface\des\mock\des_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_driver_stm32l4.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\test\test_entry_lld_flash.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\test\test_lld_flash_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\variant\hw_flash_register_stm32l432kc.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver_stm32l4.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_mapping.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\test\test_entry_lld_gpio.cpp" />
@@ -1438,6 +1443,11 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\variant\hw_flash_register_stm32l432kc.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_prj.hpp" />

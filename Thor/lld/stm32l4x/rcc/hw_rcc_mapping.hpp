@@ -21,6 +21,7 @@
 #include <Chimera/container>
 
 /* Driver Includes */
+#include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
@@ -56,6 +57,19 @@ namespace Thor::LLD::RCC
 
   namespace LookupTables
   {
+#if defined( THOR_LLD_FLASH )
+    /**
+     *  Power Peripheral Config Lookup Tables
+     */
+    extern void FLASHInit();
+
+    extern PCC FLASHLookup;
+
+    extern RegisterConfig FLASH_ClockConfig[ Thor::LLD::FLASH::NUM_FLASH_PERIPHS ];
+    extern RegisterConfig FLASH_ResetConfig[ Thor::LLD::FLASH::NUM_FLASH_PERIPHS ];
+    extern Chimera::Clock::Bus FLASH_SourceClock[ Thor::LLD::FLASH::NUM_FLASH_PERIPHS ];
+#endif /* THOR_LLD_FLASH */
+
 #if defined( THOR_LLD_GPIO )
     /**
      *  GPIO Peripheral Config Lookup Tables
