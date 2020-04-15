@@ -29,8 +29,8 @@ namespace Thor::LLD::RCC
 {
   struct RegisterMap
   {
-    volatile Reg32_t CR;                                                                                                    
-    volatile Reg32_t ICSCR;                   
+    volatile Reg32_t CR;
+    volatile Reg32_t ICSCR;
     volatile Reg32_t CFGR;
     volatile Reg32_t PLLCFGR;
     volatile Reg32_t PLLSAI1CFGR;
@@ -108,7 +108,7 @@ namespace Thor::LLD::RCC
 
   using PeriphRegisterList = std::array<RegisterMap *, NUM_RCC_PERIPHS>;
 
-  
+
   /**
    *  Configuration struct for the clock enable register
    */
@@ -120,26 +120,23 @@ namespace Thor::LLD::RCC
 
   /**
    *  Settings that are used in configuring various oscillators
-   *  on STM32L4 microcontrollers. These oscillators are used 
+   *  on STM32L4 microcontrollers. These oscillators are used
    *  as the source clocks for generating system derived clocks.
    */
   struct OscillatorSettings
   {
     bool valid; /**< Whether or not the settings are valid */
 
-    // Might be useful to use unions
-
-    /*------------------------------------------------
-    Cached oscillator output frequencies
-    ------------------------------------------------*/
-    size_t HSEFrequency;  /**< Current External HSO frequency: Must be set by user. Cannot be deduced. */
-    size_t LSEFrequency;  /**< Current External LSO frequency: Must be set by user. Cannot be deduced. */
-    size_t LSIFrequency;  /**< Current Internal LSO frequency */
-    size_t MSIFrequency;  /**< Current Internal MSO frequency */
-
     /*------------------------------------------------
     Configuration Values
     ------------------------------------------------*/
+    struct __BaseConfig
+    {
+      bool applied;   /**< Are the register settings applied? */
+      bool enabled;   /**< Has the oscillator been turned on? */
+      bool configure; /**< Should the settings be configured? */
+    };
+
     /**
      *  Configuration settings for the MSI oscillator
      *
@@ -148,37 +145,75 @@ namespace Thor::LLD::RCC
      *    2. RCC_ICSCR
      *    3. RCC_CFGR
      */
-    struct _MSIConfig
+    struct _MSIConfig : __BaseConfig
     {
-      bool applied; /**< Are the register settings applied? */
-      bool enabled; /**< Has the oscillator been turned on? */
-
-      Reg32_t range;  /**< Clock range to set */
-      Reg32_t trim;   /**< Trims the frequency set by range*/
-
+      Reg32_t frequency; /**< Current Internal MSO frequency */
+      Reg32_t range;     /**< Clock range to set */
+      Reg32_t trim;      /**< Trims the frequency set by range*/
     } MSIConfig;
 
     /**
      *  Configuration settings for the HSI oscillator
-     *
-     *  Applicable Registers:
-     *    1. RCC_CR
-     *    2. RCC_ICSCR
-     *    3. RCC_CFGR
      */
-    struct _HSIConfig
+    struct _HSIConfig : __BaseConfig
     {
-      bool applied; /**< Are the register settings applied? */
-      bool enabled; /**< Has the oscillator been turned on? */
-
-      Reg32_t trim;   /**< Trims the static RC oscillator */
+      Reg32_t frequency; /**< Current Internal HSO frequency */
+      Reg32_t trim;      /**< Trims the static RC oscillator */
     } HSIConfig;
 
-    struct _HSEConfig
+    struct _LSIConfig : __BaseConfig
     {
-      bool enabled;
-      Reg32_t value;
+      Reg32_t frequency; /**< Current Internal LSO frequency */
+    } LSIConfig;
+
+    /**
+     *  Configuration settings for the HSE oscillator
+     */
+    struct _HSEConfig : __BaseConfig
+    {
+      Reg32_t frequency; /**< Current External HSO frequency: Must be set by user. Cannot be deduced. */
     } HSEConfig;
+
+    /**
+     *  Configuration settings for the LSE oscillator
+     */
+    struct _LSEConfig : __BaseConfig
+    {
+      Reg32_t frequency; /**< Current External LSO frequency: Must be set by user. Cannot be deduced. */
+    } LSEConfig;
+
+    /**
+     *  Configuration settings for the PLL oscillator
+     */
+    struct _PLLConfig : __BaseConfig
+    {
+      Chimera::Clock::Bus inputSource; /**< Input source for the PLL (HSI, MSI, HSE) */
+      Reg32_t divM;                    /**< Divides the input source to provide base PLL clock */
+      Reg32_t divN;                    /**< Multiplier for generating the VCO clock */
+
+      struct _PLL_P
+      {
+        bool configure;  /**< Should the PLL be configured */
+        bool enabled;    /**< Is the PLL P output enabled? */
+        Reg32_t divisor; /**< Divisor applied to the VCO clock */
+      } P;
+
+      struct _PLL_Q
+      {
+        bool configure;  /**< Should the PLL be configured */
+        bool enabled;    /**< Is the PLL Q output enabled? */
+        Reg32_t divisor; /**< Divisor applied to the VCO clock */
+      } Q;
+
+      struct _PLL_R
+      {
+        bool configure;  /**< Should the PLL be configured */
+        bool enabled;    /**< Is the PLL R output enabled? */
+        Reg32_t divisor; /**< Divisor applied to the VCO clock */
+        size_t outputFrequency;
+      } R;
+
+    } PLLConfig;
   };
 
   /**
@@ -189,15 +224,29 @@ namespace Thor::LLD::RCC
   {
     bool valid; /**< Whether or not the settings are valid */
 
-    // Might be useful to use unions
+    struct __BaseConfig
+    {
+      bool applied;   /**< Are the register settings applied? */
+      bool configure; /**< Should the settings be configured? */
+    };
 
-    /*------------------------------------------------
-    Cached derived clock frequencies
-    ------------------------------------------------*/
-    size_t SYSCLKFrequency; /**< Current system clock frequency */
-    size_t HCLKFrequency;
-    size_t PCLK1Frequency;
-    size_t PCLK2Frequency;
+    struct _HCLKConfig : __BaseConfig
+    {
+      Reg32_t AHBPrescaler;
+      size_t AHBFrequency;
+    } HCLKConfig;
+
+    struct _PCLK1Config : __BaseConfig
+    {
+      Reg32_t APB1Prescaler;
+      size_t APB1Frequency;
+    } PCLK1Config;
+
+    struct _PCLK2Config : __BaseConfig
+    {
+      Reg32_t APB2Prescaler;
+      size_t APB2Frequency;
+    } PCLK2Config;
   };
 
   /**
@@ -251,7 +300,7 @@ namespace Thor::LLD::RCC
       static constexpr Reg32_t CLK_24MHZ  = CR_MSIRANGE_9;
       static constexpr Reg32_t CLK_32MHZ  = CR_MSIRANGE_10;
       static constexpr Reg32_t CLK_48MHZ  = CR_MSIRANGE_11;
-    }
+    }    // namespace MSIClock
 
     /**
      *  System clock select options for the RCC_CFGR SW register
@@ -262,7 +311,7 @@ namespace Thor::LLD::RCC
       static constexpr Reg32_t SYSCLK_HSI16 = CFGR_SW_0;
       static constexpr Reg32_t SYSCLK_HSE   = CFGR_SW_1;
       static constexpr Reg32_t SYSCLK_PLL   = CFGR_SW_1 | CFGR_SW_0;
-    }
+    }    // namespace SystemClockSelect
 
     /**
      *  System clock status options for the RCC_CFGR SWS register
@@ -273,12 +322,16 @@ namespace Thor::LLD::RCC
       static constexpr Reg32_t SYSCLK_HSI16 = CFGR_SWS_0;
       static constexpr Reg32_t SYSCLK_HSE   = CFGR_SWS_1;
       static constexpr Reg32_t SYSCLK_PLL   = CFGR_SWS_1 | CFGR_SWS_0;
-    }
-  }      // namespace Configuration
+    }    // namespace SystemClockStatus
+  }      // namespace Config
 
   /*------------------------------------------------
   Clock Control Register
   ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CR, CR_HSEON_Msk, HSEON, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR, CR_HSERDY_Msk, HSERDY, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CR, CR_HSION_Msk, HSION, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR, CR_HSIRDY_Msk, HSIRDY, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, CR, CR_MSION_Msk, MSION, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR, CR_MSIRDY_Msk, MSIRDY, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, CR, CR_MSIPLLEN_Msk, MSIPLLEN, BIT_ACCESS_RW );
@@ -298,7 +351,27 @@ namespace Thor::LLD::RCC
 
   namespace Config::CFGR
   {
-    
+    static constexpr Reg32_t AHB_SYS_DIV_1   = 0;
+    static constexpr Reg32_t AHB_SYS_DIV_2   = ( 0x08 << CFGR_HPRE_Pos ) & CFGR_HPRE_Msk;
+    static constexpr Reg32_t AHB_SYS_DIV_4   = ( 0x09 << CFGR_HPRE_Pos ) & CFGR_HPRE_Msk;
+    static constexpr Reg32_t AHB_SYS_DIV_8   = ( 0x0A << CFGR_HPRE_Pos ) & CFGR_HPRE_Msk;
+    static constexpr Reg32_t AHB_SYS_DIV_16  = ( 0x0B << CFGR_HPRE_Pos ) & CFGR_HPRE_Msk;
+    static constexpr Reg32_t AHB_SYS_DIV_64  = ( 0x0C << CFGR_HPRE_Pos ) & CFGR_HPRE_Msk;
+    static constexpr Reg32_t AHB_SYS_DIV_128 = ( 0x0D << CFGR_HPRE_Pos ) & CFGR_HPRE_Msk;
+    static constexpr Reg32_t AHB_SYS_DIV_256 = ( 0x0E << CFGR_HPRE_Pos ) & CFGR_HPRE_Msk;
+    static constexpr Reg32_t AHB_SYS_DIV_512 = ( 0x0F << CFGR_HPRE_Pos ) & CFGR_HPRE_Msk;
+
+    static constexpr Reg32_t APB1_AHB_DIV_1  = 0;
+    static constexpr Reg32_t APB1_AHB_DIV_2  = ( 0x04 << CFGR_PPRE1_Pos ) & CFGR_PPRE1_Msk;
+    static constexpr Reg32_t APB1_AHB_DIV_4  = ( 0x05 << CFGR_PPRE1_Pos ) & CFGR_PPRE1_Msk;
+    static constexpr Reg32_t APB1_AHB_DIV_8  = ( 0x06 << CFGR_PPRE1_Pos ) & CFGR_PPRE1_Msk;
+    static constexpr Reg32_t APB1_AHB_DIV_16 = ( 0x07 << CFGR_PPRE1_Pos ) & CFGR_PPRE1_Msk;
+
+    static constexpr Reg32_t APB2_AHB_DIV_1  = 0;
+    static constexpr Reg32_t APB2_AHB_DIV_2  = ( 0x04 << CFGR_PPRE2_Pos ) & CFGR_PPRE2_Msk;
+    static constexpr Reg32_t APB2_AHB_DIV_4  = ( 0x05 << CFGR_PPRE2_Pos ) & CFGR_PPRE2_Msk;
+    static constexpr Reg32_t APB2_AHB_DIV_8  = ( 0x06 << CFGR_PPRE2_Pos ) & CFGR_PPRE2_Msk;
+    static constexpr Reg32_t APB2_AHB_DIV_16 = ( 0x07 << CFGR_PPRE2_Pos ) & CFGR_PPRE2_Msk;
   }
 
   /*------------------------------------------------
@@ -317,8 +390,30 @@ namespace Thor::LLD::RCC
 
   namespace Config::PLLCFGR
   {
-    
+    static constexpr Reg32_t M_DIV_1 = 0;
+    static constexpr Reg32_t M_DIV_2 = PLLCFGR_PLLM_0;
+    static constexpr Reg32_t M_DIV_3 = PLLCFGR_PLLM_1;
+    static constexpr Reg32_t M_DIV_4 = PLLCFGR_PLLM_1 | PLLCFGR_PLLM_0;
+    static constexpr Reg32_t M_DIV_5 = PLLCFGR_PLLM_2;
+    static constexpr Reg32_t M_DIV_6 = PLLCFGR_PLLM_2 | PLLCFGR_PLLM_0;
+    static constexpr Reg32_t M_DIV_7 = PLLCFGR_PLLM_2 | PLLCFGR_PLLM_1;
+    static constexpr Reg32_t M_DIV_8 = PLLCFGR_PLLM_2 | PLLCFGR_PLLM_1 | PLLCFGR_PLLM_0;
+
+    static constexpr Reg32_t Q_DIV_2 = 0;
+    static constexpr Reg32_t Q_DIV_4 = PLLCFGR_PLLQ_0;
+    static constexpr Reg32_t Q_DIV_6 = PLLCFGR_PLLQ_1;
+    static constexpr Reg32_t Q_DIV_8 = PLLCFGR_PLLQ_1 | PLLCFGR_PLLQ_0;
+
+    static constexpr Reg32_t R_DIV_2 = 0;
+    static constexpr Reg32_t R_DIV_4 = PLLCFGR_PLLR_0;
+    static constexpr Reg32_t R_DIV_6 = PLLCFGR_PLLR_1;
+    static constexpr Reg32_t R_DIV_8 = PLLCFGR_PLLR_1 | PLLCFGR_PLLR_0;
   }
+
+  /*------------------------------------------------
+  Peripheral Clock Enable Register (APB1ENR1)
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, APB1ENR1, APB1ENR1_PWREN_Msk, PWREN, BIT_ACCESS_RW );
 
   /*------------------------------------------------
   Control Status Register
@@ -357,4 +452,4 @@ namespace Thor::LLD::RCC
 
 }    // namespace Thor::LLD::RCC
 
-#endif  /* !THOR_LLD_RCC_TYPES_HPP */
+#endif /* !THOR_LLD_RCC_TYPES_HPP */

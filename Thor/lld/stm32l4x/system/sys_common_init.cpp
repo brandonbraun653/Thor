@@ -26,13 +26,13 @@ void SystemInit()
   using namespace Thor::LLD::RCC;
 
   /*------------------------------------------------
-  Set HSION bit to enable the 16MHz internal RC oscillator
+  Clear any other clock configuration data
   ------------------------------------------------*/
-  RCC1_PERIPH->CR |= CR_HSION;
-  while ( !( RCC1_PERIPH->CR & CR_HSIRDY ) )
-  {
-    ;
-  }
+  RCC1_PERIPH->CR &= ~( CR_MSION | CR_HSEON | CR_CSSON | CR_PLLON );
+  RCC1_PERIPH->CFGR    = 0;
+  RCC1_PERIPH->PLLCFGR = 0x00001000;
+  RCC1_PERIPH->CIER    = 0;
+  RCC1_PERIPH->CR &= ~CR_HSEBYP;    // Can only be written after HSEON is cleared
 
   /*------------------------------------------------
   Switch the system clock to be driven from the HSI16 bus. While
@@ -43,29 +43,15 @@ void SystemInit()
   correct clock frequency, but toggling the nRST pin ends up causing
   the MSI clock to be selected.
   ------------------------------------------------*/
-  auto cfgOption = Config::SystemClockSelect::SYSCLK_HSI16;
-  auto expStatus = Config::SystemClockStatus::SYSCLK_HSI16;
-  SW::set( RCC1_PERIPH, cfgOption );
-
-  while ( ( SWS::get( RCC1_PERIPH ) & expStatus ) != expStatus )
-  {
-    ;
-  }
+  auto rcc = getSystemClockController();
+  rcc->enableClock( Chimera::Clock::Bus::HSI16 );
+  rcc->setCoreClockSource( Chimera::Clock::Bus::HSI16 );
 
   /*------------------------------------------------
   Update the external clock variable so FreeRTOS (if used)
   can know the startup frequency.
   ------------------------------------------------*/
-  SystemCoreClock = getHSIFreq();
-
-  /*------------------------------------------------
-  Clear any other clock configuration data
-  ------------------------------------------------*/
-  RCC1_PERIPH->CR &= ~( CR_MSION | CR_HSEON | CR_CSSON | CR_PLLON );
-  RCC1_PERIPH->CFGR = 0;
-  RCC1_PERIPH->PLLCFGR = 0x00001000;
-  RCC1_PERIPH->CIER = 0;
-  RCC1_PERIPH->CR &= ~CR_HSEBYP;  // Can only be written after HSEON is cleared
+  SystemCoreClock = rcc->getClockFrequency( Chimera::Clock::Bus::SYSCLK );
 
   /*------------------------------------------------
   Default initialize the System Control Block

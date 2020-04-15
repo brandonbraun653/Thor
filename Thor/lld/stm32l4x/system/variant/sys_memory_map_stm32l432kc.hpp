@@ -38,6 +38,8 @@ namespace Thor::System::MemoryMap
   /*-------------------------------------------------
   APB1
   -------------------------------------------------*/
+  static constexpr uint32_t PWR_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x7000;
+  static constexpr uint32_t PWR_PERIPH_END_ADDRESS   = APB1_RGN_START_ADDRESS + 0x73FF;
 
   /*-------------------------------------------------
   APB2

@@ -44,6 +44,24 @@ namespace Thor::LLD::RCC
     virtual ~IClockTree() = default;
 
     /**
+     *  Enables the requested clock
+     *
+     *  @note Assumes that all configuration has been applied
+     *
+     *  @param[in]  clock   The clock to turn on
+     *  @return void
+     */
+    virtual void enableClock( const Chimera::Clock::Bus clock ) = 0;
+
+    /**
+     *  Disables the requested clock
+     *
+     *  @param[in]  clock   The clock to turn off
+     *  @return void
+     */
+    virtual void disableClock( const Chimera::Clock::Bus clock ) = 0;
+
+    /**
      *  Configures the clock tree according to a user defined method, overriding
      *  other set**() methods in this class.
      *
@@ -64,6 +82,13 @@ namespace Thor::LLD::RCC
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t setCoreClockSource( const Chimera::Clock::Bus src ) = 0;
+
+    /**
+     *  Gets the input clock source used as the system clock
+     *
+     *  @return Chimera::Clock::Bus
+     */
+    virtual Chimera::Clock::Bus getCoreClockSource() = 0;
 
     /**
      *  Sets the frequency of the given clock bus 

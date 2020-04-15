@@ -327,6 +327,10 @@ Low Level Driver Support
 #define THOR_LLD_IT
 #endif
 
+#ifndef THOR_LLD_PWR
+#define THOR_LLD_PWR
+#endif
+
 #ifndef THOR_LLD_RCC
 #define THOR_LLD_RCC
 #endif

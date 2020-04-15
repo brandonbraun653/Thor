@@ -32,9 +32,11 @@ namespace Thor::LLD::RCC
   {
   public:
     ~SystemClock();
-
+    void enableClock( const Chimera::Clock::Bus clock ) final override;
+    void disableClock( const Chimera::Clock::Bus clock ) final override;
     Chimera::Status_t configureProjectClocks() final override;
     Chimera::Status_t setCoreClockSource( const Chimera::Clock::Bus src ) final override;
+    Chimera::Clock::Bus getCoreClockSource() final override;
     Chimera::Status_t setClockFrequency( const Chimera::Clock::Bus clock, const size_t freq, const bool enable ) final override;
     size_t getClockFrequency( const Chimera::Clock::Bus clock ) final override;
     size_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address ) final override;
@@ -42,6 +44,9 @@ namespace Thor::LLD::RCC
   private:
     friend IClockTree *getSystemClockController();
     SystemClock();
+
+    bool configureOscillators( OscillatorSettings &cfg );
+    bool configureClocks( DerivedClockSettings &cfg );
   };
 
 

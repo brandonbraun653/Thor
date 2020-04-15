@@ -35,6 +35,10 @@ namespace Thor::LLD::RCC
     LookupTables::GPIOInit();
 #endif
 
+#if defined( THOR_LLD_PWR )
+    LookupTables::PWRInit();
+#endif
+
 #if defined( THOR_LLD_SPI )
 #pragma message( "Need to initialize the driver" )
     LookupTables::SPIInit();

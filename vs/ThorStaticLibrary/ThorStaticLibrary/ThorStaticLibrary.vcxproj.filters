@@ -373,6 +373,15 @@
     <Filter Include="hld\clock\test">
       <UniqueIdentifier>{ad7216da-5978-4e3f-8313-04e1616c3d8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lld\stm32l4x\power">
+      <UniqueIdentifier>{474f0ae6-aa8c-4c02-8b68-709b2ac610c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\power\test">
+      <UniqueIdentifier>{1b182a54-c2fd-471d-9e85-e29a585b29db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\power\variant">
+      <UniqueIdentifier>{1524cc43-790c-4b53-b953-7f60da96aa21}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.xml">
@@ -1236,7 +1245,25 @@
       <Filter>hld\clock</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\rcc\rcc_detail.hpp">
+      <Filter>lld\interface\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_pll.hpp">
       <Filter>lld\stm32l4x\rcc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\power\hw_power_driver.hpp">
+      <Filter>lld\stm32l4x\power</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\power\hw_power_mapping.hpp">
+      <Filter>lld\stm32l4x\power</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\power\hw_power_prj.hpp">
+      <Filter>lld\stm32l4x\power</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\power\hw_power_types.hpp">
+      <Filter>lld\stm32l4x\power</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\power\variant\hw_power_register_stm32l432kc.hpp">
+      <Filter>lld\stm32l4x\power\variant</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1386,6 +1413,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\hld\clock\hld_clock_driver.cpp">
       <Filter>hld\clock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_pll.cpp">
+      <Filter>lld\stm32l4x\rcc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\power\hw_power_driver_stm32l4.cpp">
+      <Filter>lld\stm32l4x\power</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\power\hw_power_mapping.cpp">
+      <Filter>lld\stm32l4x\power</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\power\test\test_entry_lld_power.cpp">
+      <Filter>lld\stm32l4x\power\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\power\test\test_lld_power_driver.cpp">
+      <Filter>lld\stm32l4x\power\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\power\variant\hw_power_register_stm32l432kc.cpp">
+      <Filter>lld\stm32l4x\power\variant</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

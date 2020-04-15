@@ -22,6 +22,7 @@
 
 /* Driver Includes */
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
+#include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32l4x/system/sys_memory_map_prj.hpp>
@@ -68,6 +69,19 @@ namespace Thor::LLD::RCC
     extern RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
     extern Chimera::Clock::Bus GPIO_SourceClock[ gpioTableSize ];
 #endif /* THOR_LLD_GPIO */
+
+#if defined( THOR_LLD_PWR )
+    /**
+     *  Power Peripheral Config Lookup Tables
+     */
+    extern void PWRInit();
+
+    extern PCC PWRLookup;
+
+    extern RegisterConfig PWR_ClockConfig[ Thor::LLD::PWR::NUM_POWER_PERIPHS ];
+    extern RegisterConfig PWR_ResetConfig[ Thor::LLD::PWR::NUM_POWER_PERIPHS ];
+    extern Chimera::Clock::Bus PWR_SourceClock[ Thor::LLD::PWR::NUM_POWER_PERIPHS ];
+#endif /* THOR_LLD_PWR */
   }
 }
 

@@ -90,6 +90,14 @@ namespace Thor::LLD::RCC
   size_t getPLLCLKFreq( const uint32_t mask );
 
   /**
+   *  Sets the PLLCLK oscillator frequency in Hz
+   *
+   *  @param[in]  mask    The desired PLL output clock to set
+   *  @return bool
+   */
+  bool updatePLL( const uint32_t mask, OscillatorSettings &config );
+
+  /**
    *  Get's the CPU core system clock frequency in Hz
    *  @return size_t
    */
