@@ -473,6 +473,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\hld\clock\hld_clock_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\clock\hld_clock_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\common\cortex-m4\cm4_interrupts.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\des\mock\des_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.cpp" />
@@ -499,6 +500,11 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_mapping.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_pll.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\variant\hw_rcc_register_stm32l432xx.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_driver_stm32l4.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\test\test_entry_lld_spi.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\test\test_lld_spi_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l4xxxx.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_reset.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_stm32l432xx.c" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\system\sys_common_init.cpp" />
@@ -692,8 +698,8 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\serial\serial_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\serial\serial_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\mock\spi_mock.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_model.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_detail.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\startup\startup_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer.hpp" />
@@ -1470,6 +1476,11 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\variant\hw_rcc_register_stm32l432xx.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l4xxxx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_stm32l4xxxx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\sys_memory_map_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\variant\sys_memory_map_stm32l432kc.hpp" />

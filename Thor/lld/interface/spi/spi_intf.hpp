@@ -15,12 +15,18 @@
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/spi>
+#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/lld/interface/spi/spi_types.hpp>
 
 namespace Thor::LLD::SPI
 {
+  /**
+   *  Initializes the low level driver
+   */
+  extern Chimera::Status_t initialize();
+
   /**
    *  Checks if the given hardware channel is supported on this device.
    *
@@ -29,10 +35,10 @@ namespace Thor::LLD::SPI
    */
   bool isChannelSupported( const size_t channel );
 
-  class Model
+  class IDriver
   {
   public:
-    virtual ~Model() = default;
+    virtual ~IDriver() = default;
 
     /**
      *  Attaches a peripheral instance to the interaction model
@@ -88,6 +94,10 @@ namespace Thor::LLD::SPI
     virtual Chimera::Status_t transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) = 0;
 
     virtual Chimera::Status_t killTransfer() = 0;
+
+    virtual void attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup ) = 0;
+
+    virtual HWTransfer getTransferBlock() = 0;
   };
 }    // namespace Thor::LLD::SPI
 

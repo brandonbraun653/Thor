@@ -16,6 +16,9 @@
 #include <cstdint>
 #include <memory>
 
+/* Chimera Includes */
+#include <Chimera/common>
+
 namespace Thor::LLD::SPI
 {
   /**
@@ -42,9 +45,9 @@ namespace Thor::LLD::SPI
   };
 
 
-  class Driver;
-  using Driver_sPtr = std::shared_ptr<Driver>;
-  using Driver_uPtr = std::unique_ptr<Driver>;
+  class IDriver;
+  using IDriver_sPtr = std::shared_ptr<IDriver>;
+  using IDriver_uPtr = std::unique_ptr<IDriver>;
 
   using StatusFlags_t = uint32_t;
   using ErrorFlags_t  = uint32_t;

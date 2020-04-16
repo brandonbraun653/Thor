@@ -455,12 +455,12 @@ namespace Thor::LLD::RCC::LookupTables
   Lookup tables for register access on a peripheral by peripheral basis.
   Indexing must match the lookup table hw_gpio_mapping.hpp
   ------------------------------------------------*/
-  RegisterConfig GPIO_ClockConfig[ gpioTableSize ];
-  RegisterConfig GPIO_ResetConfig[ gpioTableSize ];
-  Chimera::Clock::Bus GPIO_SourceClock[ gpioTableSize ];
+  RegisterConfig GPIO_ClockConfig[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
+  RegisterConfig GPIO_ResetConfig[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
+  Chimera::Clock::Bus GPIO_SourceClock[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
 
   PCC GPIOLookup = { GPIO_ClockConfig, nullptr, GPIO_ResetConfig, GPIO_SourceClock, &Thor::LLD::GPIO::InstanceToResourceIndex,
-                     gpioTableSize };
+                     Thor::LLD::GPIO::NUM_GPIO_PERIPHS };
 
   void GPIOInit()
   {

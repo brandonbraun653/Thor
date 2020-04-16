@@ -10,8 +10,8 @@
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_SPI_CONFIG_HPP
-#define THOR_SPI_CONFIG_HPP
+#ifndef THOR_SPI_DETAIL_HPP
+#define THOR_SPI_DETAIL_HPP
 
 #if defined( TARGET_LLD_MOCK )
 #include <Thor/lld/interface/spi/mock/spi_mock.hpp>
@@ -19,8 +19,12 @@
 #include <Thor/lld/stm32f4x/spi/hw_spi_driver.hpp>
 #include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
 #include <Thor/lld/stm32f4x/spi/hw_spi_mapping.hpp>
+#elif defined( TARGET_STM32L4 )
+#include <Thor/lld/stm32l4x/spi/hw_spi_driver.hpp>
+#include <Thor/lld/stm32l4x/spi/hw_spi_prj.hpp>
+#include <Thor/lld/stm32l4x/spi/hw_spi_mapping.hpp>
 #else
 #pragma message( "Unknown target device for SPI low level driver" )
 #endif
 
-#endif  /* !THOR_SPI_CONFIG_HPP */
+#endif  /* !THOR_SPI_DETAIL_HPP */

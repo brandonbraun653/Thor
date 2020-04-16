@@ -25,7 +25,8 @@
 #include <Thor/cfg>
 #include <Thor/gpio>
 #include <Thor/spi>
-#include <Thor/lld/interface/spi/spi.hpp>
+#include <Thor/lld/interface/spi/spi_detail.hpp>
+#include <Thor/lld/interface/spi/spi_intf.hpp>
 
 #if defined( THOR_HLD_SPI )
 
