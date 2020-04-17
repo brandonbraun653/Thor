@@ -30,10 +30,10 @@
 
 #if defined( THOR_HLD_SPI )
 
-static std::array<Thor::SPI::Driver *, Thor::LLD::SPI::NUM_SPI_PERIPHS> SPIClassObjects;
-static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::LLD::SPI::NUM_SPI_PERIPHS> postProcessorHandles;
-static std::array<Chimera::Threading::BinarySemaphore, Thor::LLD::SPI::NUM_SPI_PERIPHS> postProcessorSignals;
-static std::array<Chimera::Function::void_func_void_ptr, Thor::LLD::SPI::NUM_SPI_PERIPHS> postProcessorThreads;
+static std::array<Thor::SPI::Driver *, Thor::LLD::SPI::NUM_SPI_PERIPHS> s_hld_drivers;
+static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::LLD::SPI::NUM_SPI_PERIPHS> s_user_isr_handle;
+static std::array<Chimera::Threading::BinarySemaphore, Thor::LLD::SPI::NUM_SPI_PERIPHS> s_user_isr_signal;
+static std::array<Chimera::Function::void_func_void_ptr, Thor::LLD::SPI::NUM_SPI_PERIPHS> s_user_isr_thread_func;
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
 static void SPI1ISRPostProcessorThread( void *argument );
@@ -53,40 +53,17 @@ namespace Thor::SPI
   using namespace Chimera::Threading;
 
   static size_t s_driver_initialized;
-
-  // static void destroyClassObject( const size_t channel )
-  // {
-  //   // if ( ( channel < SPIClassObjects.size() ) && SPIClassObjects[ channel ] )
-  //   // {
-  //   //   SPIClassObjects[ channel ]->deInit();
-  //   //   vPortFree( SPIClassObjects[ channel ] );
-  //   // }
-
-  //   // SPIClassObjects[ channel ] = nullptr;
-  // }
-
-  // static void destroyThreadHandle( const size_t channel )
-  // {
-  //   // if ( ( channel < postProcessorHandles.size() ) && postProcessorHandles[ channel ] )
-  //   // {
-  //   //   vTaskDelete( postProcessorHandles[ channel ] );
-  //   //   vPortFree( postProcessorHandles[ channel ] );
-  //   // }
-
-  //   // postProcessorHandles[ channel ] = nullptr;
-  // }
-
-  // static void destroyThreadFunction( const size_t channel )
-  // {
-  //   // if ( channel < postProcessorThreads.size() )
-  //   // {
-  //   //   postProcessorThreads[ channel ] = nullptr;
-  //   // }
-  // }
+  static std::array<Thor::LLD::SPI::IDriver_sPtr, Thor::LLD::SPI::NUM_SPI_PERIPHS> s_lld_drivers;
 
   Chimera::Status_t initialize()
   {
-    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+    /*------------------------------------------------
+    Prevent multiple initializations (need reset first)
+    ------------------------------------------------*/
+    if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
+    {
+      return Chimera::CommonStatusCodes::OK;
+    }
 
     /*------------------------------------------------
     Initialize the low level driver
@@ -94,40 +71,21 @@ namespace Thor::SPI
     Thor::LLD::SPI::initialize();
 
     /*------------------------------------------------
-    Reset driver object memory
+    Initialize driver object memory
     ------------------------------------------------*/
-    // for ( size_t x = 0; x < SPIClassObjects.size(); x++ )
-    // {
-    //   destroyClassObject( x );
-    // }
-
-    /*------------------------------------------------
-    Reset thread handle memory
-    ------------------------------------------------*/
-    // for ( size_t x = 0; x < postProcessorHandles.size(); x++ )
-    // {
-    //   destroyThreadHandle( x );
-    // }
-
-    /*------------------------------------------------
-    Reset and register the post processor threads
-    ------------------------------------------------*/
-    // for ( size_t x = 0; x < postProcessorThreads.size(); x++ )
-    // {
-    //   destroyThreadFunction( x );
-    // }
+    s_lld_drivers.fill( nullptr );
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
-    postProcessorThreads[ Thor::LLD::SPI::SPI1_RESOURCE_INDEX ] = SPI1ISRPostProcessorThread;
+    s_user_isr_thread_func[ Thor::LLD::SPI::SPI1_RESOURCE_INDEX ] = SPI1ISRPostProcessorThread;
 #endif
 #if defined( STM32_SPI2_PERIPH_AVAILABLE )
-    postProcessorThreads[ Thor::LLD::SPI::SPI2_RESOURCE_INDEX ] = SPI2ISRPostProcessorThread;
+    s_user_isr_thread_func[ Thor::LLD::SPI::SPI2_RESOURCE_INDEX ] = SPI2ISRPostProcessorThread;
 #endif
 #if defined( STM32_SPI3_PERIPH_AVAILABLE )
-    postProcessorThreads[ Thor::LLD::SPI::SPI3_RESOURCE_INDEX ] = SPI3ISRPostProcessorThread;
+    s_user_isr_thread_func[ Thor::LLD::SPI::SPI3_RESOURCE_INDEX ] = SPI3ISRPostProcessorThread;
 #endif
 #if defined( STM32_SPI4_PERIPH_AVAILABLE )
-    postProcessorThreads[ Thor::LLD::SPI::SPI4_RESOURCE_INDEX ] = SPI4ISRPostProcessorThread;
+    s_user_isr_thread_func[ Thor::LLD::SPI::SPI4_RESOURCE_INDEX ] = SPI4ISRPostProcessorThread;
 #endif
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
@@ -181,7 +139,7 @@ namespace Thor::SPI
   Chimera::Status_t Driver::init( const Chimera::SPI::DriverConfig &setupStruct )
   {
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
-    auto lockGuard           = TimedLockGuard(*this);
+    auto lockGuard           = TimedLockGuard( *this );
 
     /*------------------------------------------------
     Should we even bother creating this?
@@ -198,10 +156,11 @@ namespace Thor::SPI
     /*------------------------------------------------
     First register the driver and initialize class vars
     ------------------------------------------------*/
-    auto instance      = Thor::LLD::SPI::ChannelToInstance[ setupStruct.HWInit.hwChannel ];
-    auto resourceIndex = Thor::LLD::SPI::InstanceToResourceIndex[ reinterpret_cast<std::uintptr_t>( instance ) ];
+    auto instance    = Thor::LLD::SPI::ChannelToInstance[ setupStruct.HWInit.hwChannel ];
+    lldResourceIndex = Thor::LLD::SPI::InstanceToResourceIndex[ reinterpret_cast<std::uintptr_t>( instance ) ];
 
-    SPIClassObjects[ resourceIndex ] = this;
+    s_hld_drivers[ lldResourceIndex ] = this;
+    s_lld_drivers[ lldResourceIndex ]  = Thor::LLD::SPI::getDriver( setupStruct.HWInit.hwChannel );
 
     /*------------------------------------------------
     Configure the GPIO
@@ -212,15 +171,20 @@ namespace Thor::SPI
     MOSI = std::make_unique<Thor::GPIO::Driver>();
     MISO = std::make_unique<Thor::GPIO::Driver>();
 
-    result |= SCK->init( config.SCKInit, 100 );
-    result |= MOSI->init( config.MOSIInit, 100 );
-    result |= MISO->init( config.MISOInit, 100 );
+    result |= SCK->init( config.SCKInit, Chimera::Threading::TIMEOUT_DONT_WAIT );
+    result |= MOSI->init( config.MOSIInit, Chimera::Threading::TIMEOUT_DONT_WAIT );
+    result |= MISO->init( config.MISOInit, Chimera::Threading::TIMEOUT_DONT_WAIT );
 
-    /* Are we supposed to take control of the CS pin? */
+    /* Does the driver take control of the CS pin? */
     if ( !setupStruct.externalCS )
     {
       CS = std::make_shared<Thor::GPIO::Driver>();
       result |= CS->init( config.CSInit, 100 );
+    }
+    else if ( !CS )
+    {
+      /* User hasn't attached the ChipSelect shared_ptr object yet */
+      return Chimera::CommonStatusCodes::FAILED_INIT;
     }
     else
     {
@@ -240,7 +204,7 @@ namespace Thor::SPI
     /*------------------------------------------------
     Configure the SPI hardware
     ------------------------------------------------*/
-    driver = std::make_unique<Thor::LLD::SPI::Driver>();
+    auto driver = s_lld_drivers[ lldResourceIndex ];
     result |= driver->attach( instance );
     result |= driver->configure( config );
     result |= driver->registerConfig( &config );
@@ -253,17 +217,17 @@ namespace Thor::SPI
     /*------------------------------------------------
     Register the ISR post processor thread
     ------------------------------------------------*/
-    if ( postProcessorThreads[ resourceIndex ] )
+    if ( s_user_isr_thread_func[ lldResourceIndex ] )
     {
       // Yeah this is gonna be bad if someone re-initializes the SPI driver....
-      //postProcessorHandles[ resourceIndex ] = nullptr;
+      // postProcessorHandles[ lldResourceIndex ] = nullptr;
 
-      driver->attachISRWakeup( &postProcessorSignals[ resourceIndex ] );
+      driver->attachISRWakeup( &s_user_isr_signal[ lldResourceIndex ] );
 
       Chimera::Threading::Thread thread;
-      thread.initialize( postProcessorThreads[ resourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500, "" );
+      thread.initialize( s_user_isr_thread_func[ lldResourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500, "" );
       thread.start();
-      postProcessorHandles[ resourceIndex ] = thread.native_handle();
+      s_user_isr_handle[ lldResourceIndex ] = thread.native_handle();
     }
 
     return result;
@@ -314,10 +278,11 @@ namespace Thor::SPI
   }
 
   Chimera::Status_t Driver::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length,
-                                              const size_t timeoutMS )
+                                            const size_t timeoutMS )
   {
     auto lockguard = TimedLockGuard( *this );
     auto result    = Chimera::CommonStatusCodes::OK;
+    auto driver    = s_lld_drivers[ lldResourceIndex ];
 
     /*------------------------------------------------
     Input protection & resource acquisition
@@ -334,7 +299,7 @@ namespace Thor::SPI
     /*------------------------------------------------
     Handle the chip select controller behavior
     ------------------------------------------------*/
-    if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL ) 
+    if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
     {
       setChipSelect( Chimera::GPIO::State::LOW );
     }
@@ -390,19 +355,17 @@ namespace Thor::SPI
 
   Chimera::Status_t Driver::setClockFrequency( const size_t freq, const size_t tolerance )
   {
-    /*------------------------------------------------
-    Acquire resources
-    ------------------------------------------------*/
     auto lockguard = TimedLockGuard( *this );
-    if ( !lockguard.try_lock_for( 10 ) )
-    {
-      return Chimera::CommonStatusCodes::LOCKED;
-    }
+    auto driver    = s_lld_drivers[ lldResourceIndex ];
 
     /*------------------------------------------------
     Input protection
     ------------------------------------------------*/
-    if ( !driver || !freq )
+    if ( !lockguard.try_lock_for( 10 ) )
+    {
+      return Chimera::CommonStatusCodes::LOCKED;
+    }
+    else if ( !driver || !freq )
     {
       return Chimera::CommonStatusCodes::NOT_INITIALIZED;
     }
@@ -429,7 +392,7 @@ namespace Thor::SPI
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
-    else if ( awaitTransferComplete.try_acquire_for( timeout) )
+    else if ( awaitTransferComplete.try_acquire_for( timeout ) )
     {
       return Chimera::CommonStatusCodes::TIMEOUT;
     }
@@ -440,7 +403,7 @@ namespace Thor::SPI
   }
 
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
-                                     const size_t timeout )
+                                   const size_t timeout )
   {
     auto result = await( event, timeout );
 
@@ -456,7 +419,7 @@ namespace Thor::SPI
   Listener Interface
   ------------------------------------------------*/
   Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
-                                                size_t &registrationID )
+                                              size_t &registrationID )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -477,8 +440,8 @@ static void SPI1ISRPostProcessorThread( void *argument )
 
   while ( 1 )
   {
-    postProcessorSignals[ index ].acquire();
-    if ( auto spi = SPIClassObjects[ index ]; spi )
+    s_user_isr_signal[ index ].acquire();
+    if ( auto spi = s_hld_drivers[ index ]; spi )
     {
       spi->postISRProcessing();
     }
@@ -511,8 +474,8 @@ static void SPI3ISRPostProcessorThread( void *argument )
 
   while ( 1 )
   {
-    postProcessorSignals[ index ].acquire();
-    if ( auto spi = SPIClassObjects[ index ]; spi )
+    s_user_isr_signal[ index ].acquire();
+    if ( auto spi = s_hld_drivers[ index ]; spi )
     {
       spi->postISRProcessing();
     }

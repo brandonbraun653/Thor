@@ -66,11 +66,11 @@ namespace Thor::LLD::SPI
     return Chimera::CommonStatusCodes::OK;
   }
 
-  bool isChannelSupported( const size_t channel )
+  bool isChannelSupported( const Chimera::SPI::Channel channel )
   {
     for ( auto &num : supportedChannels )
     {
-      if ( static_cast<size_t>( num ) == channel )
+      if ( ( num == channel ) && ( num != Chimera::SPI::Channel::NOT_SUPPORTED ) )
       {
         return true;
       }
@@ -79,19 +79,21 @@ namespace Thor::LLD::SPI
     return false;
   }
 
-  IDriver_sPtr getDriver( const size_t channel )
+  IDriver_sPtr getDriver( const Chimera::SPI::Channel channel )
   {
-    if ( !( channel < NUM_SPI_PERIPHS ) )
+    size_t ch = static_cast<size_t>( channel );
+
+    if ( !( ch < s_spi_drivers.size() ) || !isChannelSupported( channel ) )
     {
       return nullptr;
     }
-    else if ( !s_spi_drivers[ channel ] )
+    else if ( !s_spi_drivers[ ch ] )
     {
-      s_spi_drivers[ channel ] = std::make_shared<Driver>();
-      s_spi_drivers[ channel ]->attach( PeripheralList[ channel ] );
+      s_spi_drivers[ ch ] = std::make_shared<Driver>();
+      s_spi_drivers[ ch ]->attach( PeripheralList[ ch ] );
     }
 
-    return s_spi_drivers[ channel ];
+    return s_spi_drivers[ ch ];
   }
 
   size_t availableChannels()
@@ -377,21 +379,34 @@ namespace Thor::LLD::SPI
         }
       }
 
-      periph->DR = txData;
+      /*------------------------------------------------
+      The STM32L4 SPI FIFOs implement data packing, so even though the
+      bit configuration above is set, the DR has to be accessed as in
+      either 8 bit or 16 bit modes. Otherwise extra data can be TX'd.
+      ------------------------------------------------*/
+      if ( bytesPerTransfer == 1 )
+      {
+        auto *dr = reinterpret_cast<volatile uint8_t *>( &periph->DR );
+        *dr      = txData;
+      }
+      else
+      {
+        auto *dr = reinterpret_cast<volatile uint16_t *>( &periph->DR );
+        *dr      = txData;
+      }
 
       /*------------------------------------------------
       Wait for the hw receive buffer to indicate data has
       arrived, then read it out.
       ------------------------------------------------*/
-#if defined( EMBEDDED )
-      while ( !RXNE::get( periph ) )
-        continue;
-#endif
-
-      rxData = periph->DR;
-
       if ( rxBufferPtr )
       {
+#if defined( EMBEDDED )
+        while ( !RXNE::get( periph ) )
+          continue;
+#endif
+        rxData = periph->DR;
+
         if ( ( bytesTransfered + 1u ) == bufferSize )
         {
           memcpy( rxBufferPtr + bytesTransfered, &rxData, 1u );
@@ -407,6 +422,15 @@ namespace Thor::LLD::SPI
       ------------------------------------------------*/
       bytesTransfered += bytesPerTransfer;
     }
+
+    /*------------------------------------------------
+    Don't exit this blocking function before all the 
+    TX FIFO transfers are finished.
+    ------------------------------------------------*/
+#if defined( EMBEDDED )
+      while ( BSY::get( periph ) )
+        continue;
+#endif
 
     return Chimera::CommonStatusCodes::OK;
   }
@@ -442,9 +466,15 @@ namespace Thor::LLD::SPI
     txfr.status = Chimera::SPI::Status::TRANSFER_IN_PROGRESS;
 
     /*------------------------------------------------
+    Data transfers must have 8-bit or 16-bit aligned access.
+    Currently hardcoded to 8 for development...
+    ------------------------------------------------*/
+    auto dr = reinterpret_cast<volatile uint8_t *>( &periph->DR );
+
+    /*------------------------------------------------
     Start the transfer
     ------------------------------------------------*/
-    periph->DR = txfr.txBuffer[ txfr.txTransferCount ];
+    *dr = txfr.txBuffer[ txfr.txTransferCount ];
     txfr.waitingOnTX = false;
     txfr.waitingOnRX = true;
     txfr.txTransferCount++;
@@ -455,12 +485,12 @@ namespace Thor::LLD::SPI
 
   Chimera::Status_t Driver::transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
   {
-    return Chimera::Status_t();
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::killTransfer()
   {
-    return Chimera::Status_t();
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
   void Driver::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )
@@ -499,6 +529,12 @@ namespace Thor::LLD::SPI
     const volatile Reg32_t CR2 = CR2_ALL::get( periph );
 
     /*------------------------------------------------
+    Data transfers must have 8-bit or 16-bit aligned access.
+    Currently hardcoded to 8 for development...
+    ------------------------------------------------*/
+    auto dr = reinterpret_cast<volatile uint8_t *>( &periph->DR );
+
+    /*------------------------------------------------
     HW TX Buffer Empty (Next frame can be buffered)
     ------------------------------------------------*/
     if ( txfr.waitingOnTX && ( CR2 & CR2_TXEIE ) && ( SR & SR_TXE ) )
@@ -508,12 +544,30 @@ namespace Thor::LLD::SPI
 
       if ( txfr.txTransferCount < txfr.txTransferSize ) 
       {
-        periph->DR = txfr.txBuffer[ txfr.txTransferCount ];
+        /*------------------------------------------------
+        Still more data to TX...
+        ------------------------------------------------*/
+        *dr = txfr.txBuffer[ txfr.txTransferCount ];
         txfr.txTransferCount++;
       }
       else
       {
+        /*------------------------------------------------
+        The TX half of the transfer is complete. Disable the
+        TX FIFO empty ISR signal.
+        ------------------------------------------------*/
         TXEIE::set( periph, ~CR2_TXEIE );
+
+        /*------------------------------------------------
+        The user could have also requested a TX only transfer
+        and not cared about received data. In this case, the 
+        entire transfer is now complete.
+        ------------------------------------------------*/
+        if ( !txfr.rxBuffer )
+        {
+          RXNEIE::set( periph, ~CR2_RXNEIE );
+          txfr.status = Chimera::SPI::Status::TRANSFER_COMPLETE;
+        }
       }
     }
 
@@ -527,7 +581,7 @@ namespace Thor::LLD::SPI
 
       if ( txfr.rxTransferCount < txfr.rxTransferSize )
       {
-        txfr.rxBuffer[ txfr.rxTransferCount ] = periph->DR;
+        txfr.rxBuffer[ txfr.rxTransferCount ] = *dr;
         txfr.rxTransferCount++;
       }
 
@@ -536,6 +590,15 @@ namespace Thor::LLD::SPI
         RXNEIE::set( periph, ~CR2_RXNEIE );
         txfr.status = Chimera::SPI::Status::TRANSFER_COMPLETE;
       }
+    }
+    else if ( txfr.waitingOnRX && !txfr.rxBuffer )
+    {
+      /*------------------------------------------------
+      The user specified a transmit only. Ignore the RX
+      half and jump back to the TX half.
+      ------------------------------------------------*/
+      txfr.waitingOnTX = true;
+      txfr.waitingOnRX = false;
     }
 
     /*------------------------------------------------
@@ -556,6 +619,7 @@ namespace Thor::LLD::SPI
     }
   }
 }    // namespace Thor::LLD::SPI
+
 
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
 void SPI1_IRQHandler()

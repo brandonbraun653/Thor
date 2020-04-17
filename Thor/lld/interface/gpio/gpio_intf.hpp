@@ -34,7 +34,7 @@ namespace Thor::LLD::GPIO
    *        channel is mapped to which port.
    *
    *  @param[in] channel      The GPIO channel (port) to grab
-   *  @return IGPIO_sPtr      Instance of the GPIO driver for the requested channel
+   *  @return IDriver_sPtr    Instance of the GPIO driver for the requested channel
    */
   extern IDriver_sPtr getDriver( const size_t channel );
 

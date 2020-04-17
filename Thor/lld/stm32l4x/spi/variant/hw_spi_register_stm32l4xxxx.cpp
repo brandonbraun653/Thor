@@ -8,6 +8,9 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+/* Chimera Includes */
+#include <Chimera/spi>
+
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/hld/dma/hld_dma_intf.hpp>
@@ -21,17 +24,44 @@
 
 namespace Thor::LLD::SPI
 {
-  const std::array<uint8_t, NUM_SPI_PERIPHS> supportedChannels = { SPI1_CHANNEL_NUMBER, SPI2_CHANNEL_NUMBER,
-                                                                   SPI3_CHANNEL_NUMBER };
+  /* clang-format off */
+  const std::array<Chimera::SPI::Channel, NUM_SPI_PERIPHS> supportedChannels = {
+#if defined ( STM32_SPI1_PERIPH_AVAILABLE )
+    Chimera::SPI::Channel::SPI1,
+#else
+    Chimera::SPI::Channel::NOT_SUPPORTED,
+#endif
 
-  const DMASignalList RXDMASignals = { Thor::DMA::Source::S_SPI1_RX, Thor::DMA::Source::S_SPI2_RX,
-                                       Thor::DMA::Source::S_SPI3_RX };
+#if defined ( STM32_SPI2_PERIPH_AVAILABLE )
+    Chimera::SPI::Channel::SPI2,
+#else
+    Chimera::SPI::Channel::NOT_SUPPORTED,
+#endif
 
-  const DMASignalList TXDMASignals = { Thor::DMA::Source::S_SPI1_TX, Thor::DMA::Source::S_SPI2_TX,
-                                       Thor::DMA::Source::S_SPI3_TX };
+#if defined ( STM32_SPI3_PERIPH_AVAILABLE )
+    Chimera::SPI::Channel::SPI3,
+#else
+    Chimera::SPI::Channel::NOT_SUPPORTED,
+#endif
+  };
 
-  const IRQSignalList IRQSignals = { SPI1_IRQn, SPI2_IRQn, SPI3_IRQn };
+  const DMASignalList RXDMASignals = { 
+    Thor::DMA::Source::S_SPI1_RX, 
+    Thor::DMA::Source::S_SPI2_RX,
+    Thor::DMA::Source::S_SPI3_RX 
+  };
 
+  const DMASignalList TXDMASignals = { 
+    Thor::DMA::Source::S_SPI1_TX, 
+    Thor::DMA::Source::S_SPI2_TX,
+    Thor::DMA::Source::S_SPI3_TX 
+  };
+
+  const IRQSignalList IRQSignals = { 
+    SPI1_IRQn, 
+    SPI2_IRQn, 
+    SPI3_IRQn 
+  };
 
 #if defined( EMBEDDED )
   /*-------------------------------------------------
@@ -50,9 +80,12 @@ namespace Thor::LLD::SPI
     { reinterpret_cast<std::uintptr_t>( SPI3_PERIPH ), SPI3_RESOURCE_INDEX }
   };
 
-  Chimera::Container::LightFlatMap<size_t, RegisterMap *> ChannelToInstance{ { SPI1_CHANNEL_NUMBER, SPI1_PERIPH },
-                                                                             { SPI2_CHANNEL_NUMBER, SPI2_PERIPH },
-                                                                             { SPI3_CHANNEL_NUMBER, SPI3_PERIPH }};
+  Chimera::Container::LightFlatMap<Chimera::SPI::Channel, RegisterMap *> ChannelToInstance{ 
+    { Chimera::SPI::Channel::SPI1, SPI1_PERIPH },
+    { Chimera::SPI::Channel::SPI2, SPI2_PERIPH },
+    { Chimera::SPI::Channel::SPI3, SPI3_PERIPH }
+  };
+  /* clang-format on */
 
 #elif defined( _SIM )
   /*-------------------------------------------------

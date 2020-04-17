@@ -51,7 +51,7 @@ namespace Thor::LLD::SPI
   extern const DMASignalList TXDMASignals;
   extern const IRQSignalList IRQSignals;
   extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
-  extern Chimera::Container::LightFlatMap<size_t, RegisterMap*> ChannelToInstance;
+  extern Chimera::Container::LightFlatMap<Chimera::SPI::Channel, RegisterMap*> ChannelToInstance;
 
   /*------------------------------------------------
   Mappings from Chimera Config Options->Register Values

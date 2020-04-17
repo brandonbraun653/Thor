@@ -19,6 +19,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/spi>
 
 /* Driver Includes */
 #include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432kc.hpp>
@@ -85,12 +86,7 @@ namespace Thor::LLD::SPI
   /*------------------------------------------------
   Supported Hardware Channels
   ------------------------------------------------*/
-  static constexpr uint8_t SPI1_CHANNEL_NUMBER = 1u;
-  static constexpr uint8_t SPI2_CHANNEL_NUMBER = 2u;
-  static constexpr uint8_t SPI3_CHANNEL_NUMBER = 3u;
-  static constexpr uint8_t SPI4_CHANNEL_NUMBER = 4u;
-
-  extern const std::array<uint8_t, NUM_SPI_PERIPHS> supportedChannels;
+  extern const std::array<Chimera::SPI::Channel, NUM_SPI_PERIPHS> supportedChannels;
 
   /*-------------------------------------------------
   Peripheral Register Definitions

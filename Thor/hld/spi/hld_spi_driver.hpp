@@ -23,14 +23,12 @@
 
 /* Thor Includes */
 #include <Thor/gpio>
-#include <Thor/lld/interface/spi/spi_types.hpp>
 
 namespace Thor::SPI
 {
   Chimera::Status_t initialize();
 
-  class Driver : virtual public Chimera::SPI::ISPI,
-                   public Chimera::Threading::Lockable
+  class Driver : virtual public Chimera::SPI::ISPI, public Chimera::Threading::Lockable
   {
   public:
     /*------------------------------------------------
@@ -72,12 +70,12 @@ namespace Thor::SPI
     Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
 
   private:
+    size_t lldResourceIndex;
     Chimera::SPI::DriverConfig config;  /**< Configuration used to set up the class */
     Thor::GPIO::Driver_uPtr SCK;          /**< SPI clock gpio pin */
     Thor::GPIO::Driver_uPtr MOSI;         /**< SPI MOSI gpio pin */
     Thor::GPIO::Driver_uPtr MISO;         /**< SPI MISO gpio pin */
     Thor::GPIO::Driver_sPtr CS;           /**< SPI Chip Select gpio pin */
-    Thor::LLD::SPI::IDriver_uPtr driver; /**< Low level hardware SPI driver */
 
     Chimera::Event::ActionableList eventListeners;
     Chimera::Threading::BinarySemaphore awaitTransferComplete; /**< Internal signal for when the current transfer has completed */

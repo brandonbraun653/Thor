@@ -30,10 +30,18 @@ namespace Thor::LLD::SPI
   /**
    *  Checks if the given hardware channel is supported on this device.
    *
-   *  @param[in]  channel   The channel number to be checked
+   *  @param[in]  channel       The channel number to be checked
    *  @return bool
    */
-  bool isChannelSupported( const size_t channel );
+  bool isChannelSupported( const Chimera::SPI::Channel channel );
+
+  /**
+   *  Gets a shared pointer to the SPI driver for a particular channel
+   *
+   *  @param[in] channel        The SPI channel to grab (1 indexed)
+   *  @return IDriver_sPtr      Instance of the SPI driver for the requested channel
+   */
+  extern IDriver_sPtr getDriver( const Chimera::SPI::Channel channel );
 
   class IDriver
   {
