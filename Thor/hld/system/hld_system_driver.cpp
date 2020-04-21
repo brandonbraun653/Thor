@@ -17,6 +17,7 @@
 #include <Thor/interrupt>
 #include <Thor/dma>
 #include <Thor/gpio>
+#include <Thor/pwm>
 #include <Thor/spi>
 #include <Thor/uart>
 #include <Thor/usart>
@@ -70,6 +71,10 @@ namespace Thor::System
 
 #if defined( THOR_HLD_IWDG )
     Thor::Watchdog::initializeIWDG();
+#endif
+
+#if defined( THOR_HLD_PWM )
+    Thor::PWM::initialize();
 #endif
 
 #if defined( THOR_HLD_SPI )

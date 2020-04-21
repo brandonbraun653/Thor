@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    spi.hpp
+ *    hld_spi_driver.hpp
  *
  *  Description:
  *    Thor SPI high level driver

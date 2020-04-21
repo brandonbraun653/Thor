@@ -1,0 +1,69 @@
+# ====================================================
+# Local Rules 
+# ====================================================
+local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
+    {
+    alias $(name) : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
+    explicit $(name) ;
+    }
+
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/hld/pwm ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/hld/pwm ;
+
+# ====================================================
+# Public Targets
+# ====================================================
+explicit_alias PUB : : : : <define>THOR_HLD_PWM ;
+
+# ====================================================
+# Static Libraries
+# ====================================================
+lib hld_pwm
+  : [ glob *.cpp ]
+
+  : <link>static
+    <use>/AURORA//PUB
+    <use>/CHIMERA//PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/HLD/PWM//PUB
+  ;
+explicit hld_pwm ;
+explicit_alias LIB : hld_pwm : : : <library>hld_pwm ;
+
+# ====================================================
+# Test Driver Executable
+# ====================================================
+exe hld_pwm_test
+  : [ glob test/*.cpp ]
+
+    /THOR/HLD//TEST_LIB
+    /THOR/LLD/STM32F4//TEST_LIB
+  
+  : <link>static
+    <Thor>enabled-F4
+    <use>/AURORA//PUB
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/HLD//TEST_PUB
+    <linkflags>-Wl,--no-as-needed
+  ;
+explicit hld_pwm_test ;
+explicit_alias TEST : hld_pwm_test : : : <source>hld_pwm_test ;
+
+# ====================================================
+# Installation Targets
+# ====================================================
+install INSTALL_TEST : hld_pwm_test
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+install INSTALL_LIB : hld_pwm
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

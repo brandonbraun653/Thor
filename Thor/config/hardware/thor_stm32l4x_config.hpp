@@ -304,6 +304,10 @@ High Level Driver Support
 #define THOR_HLD_GPIO
 #endif
 
+#ifndef THOR_HLD_PWM
+#define THOR_HLD_PWM
+#endif
+
 #ifndef THOR_HLD_SPI
 #define THOR_HLD_SPI
 #endif

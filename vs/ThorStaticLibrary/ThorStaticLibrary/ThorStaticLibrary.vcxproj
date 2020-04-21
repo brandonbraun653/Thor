@@ -458,6 +458,7 @@
     <None Include="..\..\..\Thor\lld\interface\spi\mock\build.jam" />
     <None Include="..\..\..\Thor\lld\stm32l4x\gpio\build.jam" />
     <None Include="..\..\..\Thor\nvic" />
+    <None Include="..\..\..\Thor\pwm" />
     <None Include="..\..\..\Thor\spi" />
     <None Include="..\..\..\Thor\system" />
     <None Include="..\..\..\Thor\timer" />
@@ -473,6 +474,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\hld\clock\hld_clock_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\clock\hld_clock_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\pwm\hld_pwm_chimera.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\pwm\hld_pwm_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\pwm\test\test_entry_pwm.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\pwm\test\test_hld_pwm_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\common\cortex-m4\cm4_interrupts.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\des\mock\des_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp" />
@@ -606,6 +611,9 @@
     <ClInclude Include="..\..\..\Thor\hld\power\power.hpp" />
     <ClCompile Include="..\..\..\Thor\hld\spi\hld_spi_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\spi\hld_spi_driver.cpp" />
+    <ClInclude Include="..\..\..\Thor\hld\pwm\hld_pwm_chimera.hpp" />
+    <ClInclude Include="..\..\..\Thor\hld\pwm\hld_pwm_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\hld\pwm\hld_pwm_types.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\spi\hld_spi_chimera.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\spi\hld_spi_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\spi\hld_spi_types.hpp" />

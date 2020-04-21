@@ -1,9 +1,9 @@
 /********************************************************************************
  *  File Name:
- *    test_entry_spi.cpp
+ *    test_entry_pwm.cpp
  *
  *	 Description:
- *    Entry into the SPI HLD tests
+ *    Entry into the PWM HLD tests
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/

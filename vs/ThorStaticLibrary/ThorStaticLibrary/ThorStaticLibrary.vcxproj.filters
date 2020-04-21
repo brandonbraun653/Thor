@@ -397,6 +397,12 @@
     <Filter Include="lld\stm32l4x\spi\variant">
       <UniqueIdentifier>{f93a3fb3-793e-4231-abb4-d49c5cadc887}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hld\pwm">
+      <UniqueIdentifier>{a0900818-a54c-42fc-9490-3c01dcd09735}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hld\pwm\test">
+      <UniqueIdentifier>{0e076278-f3c0-4160-8d4b-a234eb928b90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.xml">
@@ -1065,6 +1071,7 @@
     <None Include="..\..\..\Thor\lld\stm32l4x\gpio\build.jam">
       <Filter>lld\stm32l4x\gpio</Filter>
     </None>
+    <None Include="..\..\..\Thor\pwm" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Thor\config\config.hpp">
@@ -1310,6 +1317,15 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l4xxxx.hpp">
       <Filter>lld\stm32l4x\spi\variant</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\pwm\hld_pwm_chimera.hpp">
+      <Filter>hld\pwm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\pwm\hld_pwm_driver.hpp">
+      <Filter>hld\pwm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\pwm\hld_pwm_types.hpp">
+      <Filter>hld\pwm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">
@@ -1509,6 +1525,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\common\cortex-m4\cm4_interrupts.cpp">
       <Filter>lld\common\cortex-m4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\pwm\test\test_entry_pwm.cpp">
+      <Filter>hld\pwm\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\pwm\test\test_hld_pwm_chimera.cpp">
+      <Filter>hld\pwm\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\pwm\hld_pwm_chimera.cpp">
+      <Filter>hld\pwm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\pwm\hld_pwm_driver.cpp">
+      <Filter>hld\pwm</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

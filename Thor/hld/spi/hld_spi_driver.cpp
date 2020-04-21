@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    thor_custom_spi.cpp
+ *    hld_spi_driver.cpp
  *
  *  Description:
  *    SPI driver for Thor
