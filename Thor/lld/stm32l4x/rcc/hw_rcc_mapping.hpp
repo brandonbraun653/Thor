@@ -25,6 +25,7 @@
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_prj.hpp>
+#include <Thor/lld/stm32l4x/timer/hw_timer_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32l4x/system/sys_memory_map_prj.hpp>
@@ -39,11 +40,11 @@ namespace Thor::LLD::RCC
   Peripheral Memory Mapping
   ------------------------------------------------*/
   extern PeriphRegisterList PeripheralList;
-  extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  extern Thor::LLD::RIndexMap InstanceToResourceIndex;
 
   /**
    *  Initializes memory associated with mapping
-   *  
+   *
    *  @return void
    */
   extern void initializeMapping();
@@ -105,6 +106,18 @@ namespace Thor::LLD::RCC
     extern RegisterConfig SPI_ResetConfig[ Thor::LLD::SPI::NUM_SPI_PERIPHS ];
     extern Chimera::Clock::Bus SPI_SourceClock[ Thor::LLD::SPI::NUM_SPI_PERIPHS ];
 #endif /* THOR_LLD_SPI */
+
+#if defined( THOR_LLD_TIMER )
+    /**
+     *  TIMER Peripheral Config Lookup Tables
+     */
+    extern void TIMERInit();
+
+    extern PCC TIMERLookup;
+    extern RegisterConfig TIMER_ClockConfig[ Thor::LLD::TIMER::NUM_TIMER_PERIPHS ];
+    extern RegisterConfig TIMER_ResetConfig[ Thor::LLD::TIMER::NUM_TIMER_PERIPHS ];
+    extern Chimera::Clock::Bus TIMER_SourceClock[ Thor::LLD::TIMER::NUM_TIMER_PERIPHS ];
+#endif /* THOR_LLD_TIMER */
   }
 }
 

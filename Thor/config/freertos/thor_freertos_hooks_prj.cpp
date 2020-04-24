@@ -28,7 +28,7 @@ namespace Chimera::Threading::FreeRTOS
 
   void ApplicationTickHook()
   {
-    Thor::Timer::incrementSystemTick();
+    Thor::TIMER::incrementSystemTick();
   }
 
   void ApplicationMallocFailedHook()

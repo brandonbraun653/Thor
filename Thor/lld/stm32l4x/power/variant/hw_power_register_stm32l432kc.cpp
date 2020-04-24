@@ -29,7 +29,7 @@ namespace Thor::LLD::PWR
   /*-------------------------------------------------
   Lookup Tables Defintions
   -------------------------------------------------*/
-  Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex{
+  Thor::LLD::RIndexMap InstanceToResourceIndex{
     { reinterpret_cast<std::uintptr_t>( POWER1_PERIPH ), POWER1_RESOURCE_INDEX }
   };
 
@@ -42,7 +42,7 @@ namespace Thor::LLD::PWR
   /*-------------------------------------------------
   Lookup Tables Defintions
   -------------------------------------------------*/
-  Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  Thor::LLD::RIndexMap InstanceToResourceIndex;
 #endif
 
   void initializeRegisters()

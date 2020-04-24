@@ -21,6 +21,7 @@
 #include <Chimera/common>
 
 /* Driver Includes */
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/common/registers/field_accessor.hpp>
 #include <Thor/lld/interface/rcc/rcc_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
@@ -263,9 +264,8 @@ namespace Thor::LLD::RCC
     const RegisterConfig *clockLP;          /**< Lookup Table Pointer: Low power clock configuration registers */
     const RegisterConfig *reset;            /**< Lookup Table Pointer: Peripheral reset registers */
     const Chimera::Clock::Bus *clockSource; /**< Lookup Table Pointer: Which system clock is used on the peripheral */
-    Chimera::Container::LightFlatMap<std::uintptr_t, size_t>
-        *resourceIndexMap; /**< Converts a peripheral address into a resource index */
-    size_t elements;       /**< Number of elements in the tables */
+    RIndexMap *resourceIndexMap;            /**< Converts a peripheral address into a resource index */
+    size_t elements;                        /**< Number of elements in the tables */
   };
 
   /*------------------------------------------------

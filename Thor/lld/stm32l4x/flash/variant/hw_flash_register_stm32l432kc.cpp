@@ -32,7 +32,7 @@ namespace Thor::LLD::FLASH
   /*-------------------------------------------------
   Lookup Tables Defintions
   -------------------------------------------------*/
-   Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex{
+   Thor::LLD::RIndexMap InstanceToResourceIndex{
      { reinterpret_cast<std::uintptr_t>( FLASH_PERIPH ), FLASH_RESOURCE_INDEX },
    };
 
@@ -45,7 +45,7 @@ namespace Thor::LLD::FLASH
   /*-------------------------------------------------
   Lookup Tables Definitions
   -------------------------------------------------*/
-  Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  Thor::LLD::RIndexMap InstanceToResourceIndex;
 #endif
 
   void initializeRegisters()

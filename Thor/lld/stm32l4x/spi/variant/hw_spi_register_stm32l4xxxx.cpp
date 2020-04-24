@@ -45,22 +45,22 @@ namespace Thor::LLD::SPI
 #endif
   };
 
-  const DMASignalList RXDMASignals = { 
-    Thor::DMA::Source::S_SPI1_RX, 
+  const DMASignalList RXDMASignals = {
+    Thor::DMA::Source::S_SPI1_RX,
     Thor::DMA::Source::S_SPI2_RX,
-    Thor::DMA::Source::S_SPI3_RX 
+    Thor::DMA::Source::S_SPI3_RX
   };
 
-  const DMASignalList TXDMASignals = { 
-    Thor::DMA::Source::S_SPI1_TX, 
+  const DMASignalList TXDMASignals = {
+    Thor::DMA::Source::S_SPI1_TX,
     Thor::DMA::Source::S_SPI2_TX,
-    Thor::DMA::Source::S_SPI3_TX 
+    Thor::DMA::Source::S_SPI3_TX
   };
 
-  const IRQSignalList IRQSignals = { 
-    SPI1_IRQn, 
-    SPI2_IRQn, 
-    SPI3_IRQn 
+  const IRQSignalList IRQSignals = {
+    SPI1_IRQn,
+    SPI2_IRQn,
+    SPI3_IRQn
   };
 
 #if defined( EMBEDDED )
@@ -74,13 +74,13 @@ namespace Thor::LLD::SPI
   /*-------------------------------------------------
   Lookup Tables Defintions
   -------------------------------------------------*/
-  Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex{
+  Thor::LLD::RIndexMap InstanceToResourceIndex{
     { reinterpret_cast<std::uintptr_t>( SPI1_PERIPH ), SPI1_RESOURCE_INDEX },
     { reinterpret_cast<std::uintptr_t>( SPI2_PERIPH ), SPI2_RESOURCE_INDEX },
     { reinterpret_cast<std::uintptr_t>( SPI3_PERIPH ), SPI3_RESOURCE_INDEX }
   };
 
-  Chimera::Container::LightFlatMap<Chimera::SPI::Channel, RegisterMap *> ChannelToInstance{ 
+  Chimera::Container::LightFlatMap<Chimera::SPI::Channel, RegisterMap *> ChannelToInstance{
     { Chimera::SPI::Channel::SPI1, SPI1_PERIPH },
     { Chimera::SPI::Channel::SPI2, SPI2_PERIPH },
     { Chimera::SPI::Channel::SPI3, SPI3_PERIPH }
@@ -98,7 +98,7 @@ namespace Thor::LLD::SPI
   /*-------------------------------------------------
   Lookup Tables Definitions
   -------------------------------------------------*/
-  Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  Thor::LLD::RIndexMap InstanceToResourceIndex;
   Chimera::Container::LightFlatMap<size_t, RegisterMap *> ChannelToInstance;
 #endif
 
@@ -161,16 +161,16 @@ namespace Thor::LLD::RCC::LookupTables
     SPI_ClockConfig[ SPI1_RESOURCE_INDEX ].mask = APB2ENR_SPI1EN;
     SPI_ClockConfig[ SPI1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2ENR;
     #endif
-    
+
     #if defined ( STM32_SPI2_PERIPH_AVAILABLE )
     SPI_ClockConfig[ SPI2_RESOURCE_INDEX ].mask = APB1ENR1_SPI2EN;
     SPI_ClockConfig[ SPI2_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR1;
-    #endif 
+    #endif
 
     #if defined ( STM32_SPI3_PERIPH_AVAILABLE )
     SPI_ClockConfig[ SPI3_RESOURCE_INDEX ].mask = APB1ENR1_SPI3EN;
     SPI_ClockConfig[ SPI3_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2ENR;
-    #endif 
+    #endif
 
     /*------------------------------------------------
     SPI reset register access lookup table
@@ -182,8 +182,8 @@ namespace Thor::LLD::RCC::LookupTables
 
     #if defined ( STM32_SPI2_PERIPH_AVAILABLE )
     #pragma message( "NEED SPI 2 DEFINITIONS" )
-    #endif 
-    
+    #endif
+
     #if defined ( STM32_SPI3_PERIPH_AVAILABLE )
     SPI_ResetConfig[ SPI1_RESOURCE_INDEX ].mask = APB1RSTR1_SPI3RST;
     SPI_ResetConfig[ SPI1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2RSTR;
@@ -195,14 +195,14 @@ namespace Thor::LLD::RCC::LookupTables
     #if defined ( STM32_SPI1_PERIPH_AVAILABLE )
     SPI_SourceClock[ SPI1_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB2;
     #endif
-    
+
     #if defined ( STM32_SPI2_PERIPH_AVAILABLE )
     SPI_SourceClock[ SPI1_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
-    #endif 
+    #endif
 
     #if defined ( STM32_SPI3_PERIPH_AVAILABLE )
     SPI_SourceClock[ SPI1_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
-    #endif 
+    #endif
   };
 
 }    // namespace Thor::LLD::RCC::LookupTables

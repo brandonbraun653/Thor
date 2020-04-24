@@ -403,6 +403,15 @@
     <Filter Include="hld\pwm\test">
       <UniqueIdentifier>{0e076278-f3c0-4160-8d4b-a234eb928b90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hld\timer\test">
+      <UniqueIdentifier>{41c519f8-a8f2-4bf6-95bf-a0a1c6576659}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\timer\test">
+      <UniqueIdentifier>{db558715-a003-4e80-8547-f659f68daa15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\stm32l4x\timer\variant">
+      <UniqueIdentifier>{55e29ace-30b9-49d6-9662-7f2dbc96cb7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.xml">
@@ -1158,12 +1167,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_types.hpp">
       <Filter>lld\stm32l4x\rcc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver.hpp">
-      <Filter>lld\stm32l4x\timer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer.hpp">
-      <Filter>lld\interface\timer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_driver.hpp">
       <Filter>lld\stm32l4x\rcc</Filter>
     </ClInclude>
@@ -1326,6 +1329,42 @@
     <ClInclude Include="..\..\..\Thor\hld\pwm\hld_pwm_types.hpp">
       <Filter>hld\pwm</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_detail.hpp">
+      <Filter>lld\interface\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_intf.hpp">
+      <Filter>lld\interface\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_types.hpp">
+      <Filter>lld\interface\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver.hpp">
+      <Filter>lld\stm32l4x\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_mapping.hpp">
+      <Filter>lld\stm32l4x\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_prj.hpp">
+      <Filter>lld\stm32l4x\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_types.hpp">
+      <Filter>lld\stm32l4x\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.hpp">
+      <Filter>lld\stm32l4x\timer\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_types.hpp">
+      <Filter>hld\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_prv_driver.hpp">
+      <Filter>hld\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\common\types.hpp">
+      <Filter>hld\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\types.hpp">
+      <Filter>lld\common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">
@@ -1420,9 +1459,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_stm32l432xx.c">
       <Filter>lld\stm32l4x\startup</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver.cpp">
-      <Filter>lld\stm32l4x\timer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\rcc\variant\hw_rcc_register_stm32l432xx.cpp">
       <Filter>lld\stm32l4x\rcc\variant</Filter>
@@ -1537,6 +1573,45 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\hld\pwm\hld_pwm_driver.cpp">
       <Filter>hld\pwm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\test\test_entry_timer.cpp">
+      <Filter>hld\timer\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\test\test_hld_timer_chimera.cpp">
+      <Filter>hld\timer\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\test\test_hld_timer_driver.cpp">
+      <Filter>hld\timer\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver_stm32l4.cpp">
+      <Filter>lld\stm32l4x\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_mapping.cpp">
+      <Filter>lld\stm32l4x\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_entry_lld_timer.cpp">
+      <Filter>lld\stm32l4x\timer\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_lld_timer_driver.cpp">
+      <Filter>lld\stm32l4x\timer\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.cpp">
+      <Filter>lld\stm32l4x\timer\variant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_advanced.cpp">
+      <Filter>hld\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_basic.cpp">
+      <Filter>hld\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_general.cpp">
+      <Filter>hld\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_low_power.cpp">
+      <Filter>hld\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver_stm32l4_general.cpp">
+      <Filter>lld\stm32l4x\timer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

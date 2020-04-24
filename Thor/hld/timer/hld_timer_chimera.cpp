@@ -19,53 +19,82 @@
 #include <Thor/cfg>
 #include <Thor/timer>
 #include <Thor/hld/timer/hld_timer_chimera.hpp>
+#include <Thor/hld/timer/hld_timer_prv_driver.hpp>
+#include <Thor/lld/interface/timer/timer_detail.hpp>
 
-namespace Chimera::Timer::Backend
+namespace Chimera::Timer
 {
-  Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverConfig &registry )
+  namespace Backend
   {
+    Chimera::Status_t initialize()
+    {
+      return Thor::TIMER::initializeModule();
+    }
+
+    Chimera::Status_t reset()
+    {
+      return Thor::TIMER::resetModule();
+    }
+
+    size_t millis()
+    {
+      return Thor::TIMER::millis();
+    }
+
+    size_t micros()
+    {
+      return Thor::TIMER::micros();
+    }
+
+    void delayMilliseconds( const size_t val )
+    {
+      Thor::TIMER::delayMilliseconds( val );
+    }
+
+    void delayMicroseconds( const size_t val )
+    {
+      Thor::TIMER::delayMicroseconds( val );
+    }
+
+    ITimer_rPtr createUnsafeInstance( const Chimera::Timer::Peripheral peripheral )
+    {
+      return Thor::TIMER::lookUpRawPointer( peripheral );
+    }
+
+    ITimer_sPtr createSharedInstance( const Chimera::Timer::Peripheral peripheral )
+    {
+      return Thor::TIMER::lookUpSharedPointer( peripheral );
+    }
+
+    Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverRegistration &registry )
+    {
 #if defined( THOR_HLD_TIMER )
-    registry.isSupported       = true;
-    registry.initialize        = initialize;
-    registry.reset             = reset;
-    registry.delayMicroseconds = delayMicroseconds;
-    registry.delayMilliseconds = delayMilliseconds;
-    registry.millis            = millis;
-    return Chimera::CommonStatusCodes::OK;
+      registry.isSupported          = true;
+      registry.initialize           = initialize;
+      registry.reset                = reset;
+      registry.delayMicroseconds    = delayMicroseconds;
+      registry.delayMilliseconds    = delayMilliseconds;
+      registry.millis               = millis;
+      registry.micros               = micros;
+      registry.createSharedInstance = createSharedInstance;
+      registry.createUniqueInstance = nullptr;
+      registry.createUnsafeInstance = createUnsafeInstance;
+      return Chimera::CommonStatusCodes::OK;
 #else
-    registry.isSupported       = false;
-    registry.initialize        = nullptr;
-    registry.reset             = nullptr;
-    registry.delayMicroseconds = nullptr;
-    registry.delayMilliseconds = nullptr;
-    registry.millis            = nullptr;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      registry.isSupported          = false;
+      registry.initialize           = nullptr;
+      registry.reset                = nullptr;
+      registry.delayMicroseconds    = nullptr;
+      registry.delayMilliseconds    = nullptr;
+      registry.millis               = nullptr;
+      registry.micros               = nullptr;
+      registry.createSharedInstance = nullptr;
+      registry.createUniqueInstance = nullptr;
+      registry.createUnsafeInstance = nullptr;
+      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
 #endif /* THOR_HLD_TIMER */
-  }
+    }
+  }    // namespace Backend
 
-  Chimera::Status_t initialize()
-  {
-    return Thor::Timer::initialize();
-  }
-
-  Chimera::Status_t reset()
-  {
-    return Thor::Timer::reset();
-  }
-
-  size_t millis()
-  {
-    return Thor::Timer::millis();
-  }
-
-  void delayMilliseconds( const size_t val )
-  {
-    Thor::Timer::delayMilliseconds( val );
-  }
-
-  void delayMicroseconds( const size_t val )
-  {
-    Thor::Timer::delayMicroseconds( val );
-  }
-
-}    // namespace Chimera::Timer::Backend
+}    // namespace Chimera::Timer
+     // namespace Chimera::Timer

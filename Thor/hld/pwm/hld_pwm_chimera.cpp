@@ -23,7 +23,7 @@ namespace Chimera::PWM::Backend
 {
   Chimera::Status_t initialize()
   {
-    return Thor::PWM::initialize();
+    return Thor::PWM::initializeModule();
   }
 
   Chimera::Status_t reset()
@@ -43,6 +43,7 @@ namespace Chimera::PWM::Backend
 
   size_t numSupportedChannels()
   {
+    
     return 0;    // TODO
   }
 

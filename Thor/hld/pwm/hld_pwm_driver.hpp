@@ -16,12 +16,18 @@
 #include <cstdint>
 
 /* Chimera Includes */
+#include <Chimera/common>
 #include <Chimera/pwm>
 #include <Chimera/thread>
+#include <Chimera/timer>
+
+/* Thor Includes */
+#include <Thor/gpio>
+#include <Thor/timer>
 
 namespace Thor::PWM
 {
-  Chimera::Status_t initialize();
+  Chimera::Status_t initializeModule();
 
   class Driver : virtual public Chimera::PWM::IPWM, public Chimera::Threading::Lockable
   {
@@ -36,14 +42,24 @@ namespace Thor::PWM
     HW Interface
     ------------------------------------------------*/
     Chimera::Status_t init( const Chimera::PWM::DriverConfig &cfg ) final override;
-    void enableOutput() final override;
-    void disableOutput() final override;
+    Chimera::Status_t enableOutput() final override;
+    Chimera::Status_t disableOutput() final override;
     Chimera::Status_t setFrequency( const size_t freq ) final override;
     Chimera::Status_t setDutyCyle( const size_t dutyCycle ) final override;
+    Chimera::Status_t setPolarity( const Chimera::Timer::PWM::Polarity polarity ) final override;
 
   private:
+    bool mInitialized;
+    Chimera::Timer::Peripheral mPeripheral;
+    Chimera::Timer::PWM::Config mPWMConfig;
+
+    Thor::GPIO::Driver_uPtr mpOutputPin;
+    Chimera::Timer::ITimer_sPtr mpTimerDriver;
+
+    Chimera::Status_t applyConfig( const size_t freq, const size_t dutyCycle,
+                                   const Chimera::Timer::PWM::Polarity polarity );
   };
 
 }    // namespace Thor::PWM
 
-#endif /* PWM_H_*/
+#endif /* !THOR_PWM_HPP*/

@@ -22,6 +22,7 @@
 #include <Chimera/spi>
 
 /* Driver Includes */
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_types.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_prj.hpp>
 
@@ -50,13 +51,13 @@ namespace Thor::LLD::SPI
   extern const DMASignalList RXDMASignals;
   extern const DMASignalList TXDMASignals;
   extern const IRQSignalList IRQSignals;
-  extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  extern Thor::LLD::RIndexMap InstanceToResourceIndex;
   extern Chimera::Container::LightFlatMap<Chimera::SPI::Channel, RegisterMap*> ChannelToInstance;
 
   /*------------------------------------------------
   Mappings from Chimera Config Options->Register Values
   ------------------------------------------------*/
-  extern std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::BitOrder::NUM_OPTIONS )> BitOrderToRegConfig;  
+  extern std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::BitOrder::NUM_OPTIONS )> BitOrderToRegConfig;
   extern std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::ClockMode::NUM_OPTIONS )> ClockModeToRegConfig;
   extern std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::ControlMode::NUM_OPTIONS )> ControlModeToRegConfig;
   extern std::array<Reg32_t, static_cast<size_t>( Chimera::SPI::DataSize::NUM_OPTIONS )> DataSizeToRegConfig;
@@ -70,7 +71,7 @@ namespace Thor::LLD::SPI
    *  @return void
    */
   void initializeMapping();
-  
+
 }    // namespace Thor::LLD::SPI
 
 #endif /* !THOR_HW_SPI_MAPPING_HPP */

@@ -44,8 +44,11 @@ namespace Thor::LLD::RCC
 #endif
 
 #if defined( THOR_LLD_SPI )
-#pragma message( "Need to initialize the driver" )
     LookupTables::SPIInit();
+#endif
+
+#if defined( THOR_LLD_TIMER )
+    LookupTables::TIMERInit();
 #endif
 
 #if defined( THOR_LLD_UART )

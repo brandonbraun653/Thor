@@ -22,14 +22,14 @@ namespace Thor::LLD::RCC
 #if defined( EMBEDDED )
   RegisterMap * RCC1_PERIPH = reinterpret_cast<RegisterMap *>( RCC1_BASE_ADDR );
 
-  Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex{
+  Thor::LLD::RIndexMap InstanceToResourceIndex{
     { reinterpret_cast<std::uintptr_t>( RCC1_PERIPH ), RCC1_RESOURCE_INDEX }
   };
 
 #elif defined( _SIM )
   RegisterMap * RCC1_PERIPH = nullptr;
 
-  Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  Thor::LLD::RIndexMap InstanceToResourceIndex;
 #endif
 
   void initializeRegisters()
@@ -49,7 +49,7 @@ namespace Thor::LLD::RCC
     Update the resource indexer now that the registers actually exist
     ------------------------------------------------*/
     InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( RCC1_PERIPH ), RCC1_RESOURCE_INDEX );
-    #endif 
+    #endif
   }
 }
 

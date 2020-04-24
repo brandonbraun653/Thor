@@ -1,10 +1,10 @@
 /********************************************************************************
  *  File Name:
  *    timer
- * 
+ *
  *  Description:
  *    Thor Timer Includes
- * 
+ *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
@@ -13,5 +13,6 @@
 #define THOR_TIMER_INCLUDES
 
 #include <Thor/hld/timer/hld_timer_driver.hpp>
+#include <Thor/hld/timer/hld_timer_types.hpp>
 
 #endif /* !THOR_TIMER_INCLUDES */

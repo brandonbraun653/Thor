@@ -25,9 +25,9 @@ namespace Chimera::SPI::Backend
 
   Chimera::Status_t reset();
 
-  Chimera::SPI::SPI_sPtr create_shared_ptr();
+  Chimera::SPI::ISPI_sPtr create_shared_ptr();
 
-  Chimera::SPI::SPI_uPtr create_unique_ptr();
+  Chimera::SPI::ISPI_uPtr create_unique_ptr();
 }    // namespace Chimera::SPI::Backend
 
 #endif /* !THOR_SPI_CHIMERA_HOOKS_HPP */

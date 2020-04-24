@@ -35,13 +35,13 @@ namespace Thor::LLD::SPI
   static float calculate_clock_performance( const size_t goal, const size_t actVal, void *const data )
   {
     /*------------------------------------------------
-    Input checks: 
+    Input checks:
       data    --  System's currently configured peripheral source clock
       actVal  --  Peripheral clock divider under consideration
-    
+
     If either are null, permanently indicate worst case performance.
     ------------------------------------------------*/
-    if ( !data || !actVal)
+    if ( !data || !actVal )
     {
       return std::numeric_limits<float>::max();
     }
@@ -49,7 +49,7 @@ namespace Thor::LLD::SPI
     size_t spi_periph_clock_freq = *( reinterpret_cast<size_t *const>( data ) );
     size_t spi_output_clock_freq = spi_periph_clock_freq / actVal;
 
-    float fGoal = static_cast<float>( goal );
+    float fGoal     = static_cast<float>( goal );
     float fAchieved = static_cast<float>( spi_output_clock_freq );
 
     return fAchieved - fGoal;
@@ -153,7 +153,7 @@ namespace Thor::LLD::SPI
     Thor::LLD::IT::setPriority( periphIRQn, Thor::Interrupt::SPI_IT_PREEMPT_PRIORITY, 0u );
 
     /*------------------------------------------------
-    Driver registration with the backend 
+    Driver registration with the backend
     ------------------------------------------------*/
     Thor::LLD::SPI::spiObjects[ resourceIndex ] = this;
 
@@ -199,9 +199,9 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Find the best clock divisor need to achieve the desired clock frequency
     ------------------------------------------------*/
-    auto systemClock  = Thor::LLD::RCC::getSystemClockController();
-    auto periphAddr   = reinterpret_cast<std::uintptr_t>( periph );
-    auto clockFreq = systemClock->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SPI, periphAddr );
+    auto systemClock = Thor::LLD::RCC::getSystemClockController();
+    auto periphAddr  = reinterpret_cast<std::uintptr_t>( periph );
+    auto clockFreq   = systemClock->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SPI, periphAddr );
 
     if ( clockFreq == std::numeric_limits<size_t>::max() )
     {
@@ -424,12 +424,12 @@ namespace Thor::LLD::SPI
     }
 
     /*------------------------------------------------
-    Don't exit this blocking function before all the 
+    Don't exit this blocking function before all the
     TX FIFO transfers are finished.
     ------------------------------------------------*/
 #if defined( EMBEDDED )
-      while ( BSY::get( periph ) )
-        continue;
+    while ( BSY::get( periph ) )
+      continue;
 #endif
 
     return Chimera::CommonStatusCodes::OK;
@@ -474,7 +474,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Start the transfer
     ------------------------------------------------*/
-    *dr = txfr.txBuffer[ txfr.txTransferCount ];
+    *dr              = txfr.txBuffer[ txfr.txTransferCount ];
     txfr.waitingOnTX = false;
     txfr.waitingOnRX = true;
     txfr.txTransferCount++;
@@ -525,7 +525,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Save critical register information
     ------------------------------------------------*/
-    const volatile Reg32_t SR = SR_ALL::get( periph );
+    const volatile Reg32_t SR  = SR_ALL::get( periph );
     const volatile Reg32_t CR2 = CR2_ALL::get( periph );
 
     /*------------------------------------------------
@@ -542,7 +542,7 @@ namespace Thor::LLD::SPI
       txfr.waitingOnTX = false;
       txfr.waitingOnRX = true;
 
-      if ( txfr.txTransferCount < txfr.txTransferSize ) 
+      if ( txfr.txTransferCount < txfr.txTransferSize )
       {
         /*------------------------------------------------
         Still more data to TX...
@@ -560,7 +560,7 @@ namespace Thor::LLD::SPI
 
         /*------------------------------------------------
         The user could have also requested a TX only transfer
-        and not cared about received data. In this case, the 
+        and not cared about received data. In this case, the
         entire transfer is now complete.
         ------------------------------------------------*/
         if ( !txfr.rxBuffer )
@@ -604,7 +604,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Handle Any Errors
     ------------------------------------------------*/
-    if ( ( CR2 & CR2_ERRIE ) && ( SR & ( SR_CRCERR | SR_FRE | SR_MODF | SR_OVR ) ) ) 
+    if ( ( CR2 & CR2_ERRIE ) && ( SR & ( SR_CRCERR | SR_FRE | SR_MODF | SR_OVR ) ) )
     {
       txfr.status = Chimera::SPI::Status::TRANSFER_ERROR;
     }
@@ -631,7 +631,7 @@ void SPI1_IRQHandler()
     Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
-#endif 
+#endif
 
 #if defined( STM32_SPI2_PERIPH_AVAILABLE )
 void SPI2_IRQHandler()
@@ -643,7 +643,7 @@ void SPI2_IRQHandler()
     Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
-#endif 
+#endif
 
 #if defined( STM32_SPI3_PERIPH_AVAILABLE )
 void SPI3_IRQHandler()
@@ -655,6 +655,6 @@ void SPI3_IRQHandler()
     Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
-#endif 
+#endif
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_SPI */

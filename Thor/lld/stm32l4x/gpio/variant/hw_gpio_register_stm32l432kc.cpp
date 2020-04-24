@@ -13,6 +13,7 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_driver.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_mapping.hpp>
@@ -342,7 +343,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Port::PORTH, GPIOH_PERIPH } 
   };
 
-  IndexMap InstanceToResourceIndex{ 
+  Thor::LLD::RIndexMap InstanceToResourceIndex{ 
     { reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ), GPIOA_RESOURCE_INDEX },
     { reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ), GPIOB_RESOURCE_INDEX },
     { reinterpret_cast<std::uintptr_t>( GPIOC_PERIPH ), GPIOC_RESOURCE_INDEX },
@@ -459,7 +460,11 @@ namespace Thor::LLD::RCC::LookupTables
   RegisterConfig GPIO_ResetConfig[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
   Chimera::Clock::Bus GPIO_SourceClock[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
 
-  PCC GPIOLookup = { GPIO_ClockConfig, nullptr, GPIO_ResetConfig, GPIO_SourceClock, &Thor::LLD::GPIO::InstanceToResourceIndex,
+  PCC GPIOLookup = { GPIO_ClockConfig,
+                     nullptr,
+                     GPIO_ResetConfig,
+                     GPIO_SourceClock,
+                     &Thor::LLD::GPIO::InstanceToResourceIndex,
                      Thor::LLD::GPIO::NUM_GPIO_PERIPHS };
 
   void GPIOInit()
