@@ -31,12 +31,12 @@ namespace Chimera::SPI::Backend
     return Chimera::CommonStatusCodes::OK;
   }
 
-  Chimera::SPI::SPI_sPtr create_shared_ptr()
+  Chimera::SPI::ISPI_sPtr create_shared_ptr()
   {
     return std::make_shared<Thor::SPI::Driver>();
   }
 
-  Chimera::SPI::SPI_uPtr create_unique_ptr()
+  Chimera::SPI::ISPI_uPtr create_unique_ptr()
   {
     return std::make_unique<Thor::SPI::Driver>();
   }

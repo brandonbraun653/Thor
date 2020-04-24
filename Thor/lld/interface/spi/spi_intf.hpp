@@ -9,8 +9,8 @@
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_SPI_MODEL_HPP
-#define THOR_SPI_MODEL_HPP
+#ifndef LLD_SPI_INTERFACE_HPP
+#define LLD_SPI_INTERFACE_HPP
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -109,4 +109,4 @@ namespace Thor::LLD::SPI
   };
 }    // namespace Thor::LLD::SPI
 
-#endif /* THOR_SPI_MODEL_HPP */
+#endif /* LLD_SPI_INTERFACE_HPP */

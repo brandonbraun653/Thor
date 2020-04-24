@@ -18,31 +18,9 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/timer>
-#include <Thor/hld/timer/hld_timer_chimera.hpp>
 
 namespace Chimera::Timer::Backend
 {
-  Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverConfig &registry )
-  {
-#if defined( THOR_HLD_TIMER )
-    registry.isSupported       = true;
-    registry.initialize        = initialize;
-    registry.reset             = reset;
-    registry.delayMicroseconds = delayMicroseconds;
-    registry.delayMilliseconds = delayMilliseconds;
-    registry.millis            = millis;
-    return Chimera::CommonStatusCodes::OK;
-#else
-    registry.isSupported       = false;
-    registry.initialize        = nullptr;
-    registry.reset             = nullptr;
-    registry.delayMicroseconds = nullptr;
-    registry.delayMilliseconds = nullptr;
-    registry.millis            = nullptr;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-#endif /* THOR_HLD_TIMER */
-  }
-
   Chimera::Status_t initialize()
   {
     return Thor::Timer::initialize();
@@ -51,6 +29,16 @@ namespace Chimera::Timer::Backend
   Chimera::Status_t reset()
   {
     return Thor::Timer::reset();
+  }
+
+  Chimera::Timer::ITimer_sPtr create_shared_ptr()
+  {
+    return std::make_shared<Thor::Timer::Driver>();
+  }
+
+  Chimera::Timer::ITimer_uPtr create_unique_ptr()
+  {
+    return std::make_unique<Thor::Timer::Driver>();
   }
 
   size_t millis()
@@ -66,6 +54,31 @@ namespace Chimera::Timer::Backend
   void delayMicroseconds( const size_t val )
   {
     Thor::Timer::delayMicroseconds( val );
+  }
+
+  Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverRegistration &registry )
+  {
+#if defined( THOR_HLD_TIMER )
+    registry.isSupported       = true;
+    registry.initialize        = initialize;
+    registry.reset             = reset;
+    registry.create_shared_ptr = create_shared_ptr;
+    registry.create_unique_ptr = create_unique_ptr;
+    registry.delayMicroseconds = delayMicroseconds;
+    registry.delayMilliseconds = delayMilliseconds;
+    registry.millis            = millis;
+    return Chimera::CommonStatusCodes::OK;
+#else
+    registry.isSupported       = false;
+    registry.initialize        = nullptr;
+    registry.reset             = nullptr;
+    registry.create_shared_ptr = nullptr;
+    registry.create_unique_ptr = nullptr;
+    registry.delayMicroseconds = nullptr;
+    registry.delayMilliseconds = nullptr;
+    registry.millis            = nullptr;
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+#endif /* THOR_HLD_TIMER */
   }
 
 }    // namespace Chimera::Timer::Backend

@@ -403,6 +403,9 @@
     <Filter Include="hld\pwm\test">
       <UniqueIdentifier>{0e076278-f3c0-4160-8d4b-a234eb928b90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hld\timer\test">
+      <UniqueIdentifier>{41c519f8-a8f2-4bf6-95bf-a0a1c6576659}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.xml">
@@ -1161,9 +1164,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver.hpp">
       <Filter>lld\stm32l4x\timer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer.hpp">
-      <Filter>lld\interface\timer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_driver.hpp">
       <Filter>lld\stm32l4x\rcc</Filter>
     </ClInclude>
@@ -1325,6 +1325,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\hld\pwm\hld_pwm_types.hpp">
       <Filter>hld\pwm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_detail.hpp">
+      <Filter>lld\interface\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_intf.hpp">
+      <Filter>lld\interface\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_types.hpp">
+      <Filter>lld\interface\timer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1537,6 +1546,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\hld\pwm\hld_pwm_driver.cpp">
       <Filter>hld\pwm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\test\test_entry_timer.cpp">
+      <Filter>hld\timer\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\test\test_hld_timer_chimera.cpp">
+      <Filter>hld\timer\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\test\test_hld_timer_driver.cpp">
+      <Filter>hld\timer\test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

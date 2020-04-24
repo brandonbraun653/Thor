@@ -478,6 +478,9 @@
     <ClCompile Include="..\..\..\Thor\hld\pwm\hld_pwm_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\pwm\test\test_entry_pwm.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\pwm\test\test_hld_pwm_chimera.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\timer\test\test_entry_timer.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\timer\test\test_hld_timer_chimera.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\timer\test\test_hld_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\common\cortex-m4\cm4_interrupts.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\des\mock\des_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp" />
@@ -710,7 +713,9 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\startup\startup_intf.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_detail.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_intf.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog.hpp" />
