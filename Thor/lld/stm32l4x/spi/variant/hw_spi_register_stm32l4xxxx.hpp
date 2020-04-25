@@ -27,9 +27,9 @@
 /*-------------------------------------------------
 Peripheral Availability
 -------------------------------------------------*/
-#if defined( STM32L432xx )
+// Available on every STM32L4 device
 #define STM32_SPI1_PERIPH_AVAILABLE
-#endif
+
 
 #if defined( STM32L412xx )
 #define STM32_SPI2_PERIPH_AVAILABLE

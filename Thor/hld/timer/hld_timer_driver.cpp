@@ -15,7 +15,7 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/timer>
-#include <Thor/lld/interface/timer/timer.hpp>
+#include <Thor/lld/interface/timer/timer_intf.hpp>
 
 
 #if defined( THOR_HLD_TIMER )
@@ -34,22 +34,22 @@ namespace Thor::Timer
 
   void incrementSystemTick()
   {
-    Thor::LLD::Timer::incrementSystemTick();
+    Thor::LLD::TIMER::incrementSystemTick();
   }
 
   size_t millis()
   {
-    return Thor::LLD::Timer::millis();
+    return Thor::LLD::TIMER::millis();
   }
 
   void delayMilliseconds( const size_t ms )
   {
-    Thor::LLD::Timer::delayMilliseconds( ms );
+    Thor::LLD::TIMER::delayMilliseconds( ms );
   }
 
   void delayMicroseconds( const size_t us )
   {
-    Thor::LLD::Timer::delayMicroseconds( us );
+    Thor::LLD::TIMER::delayMicroseconds( us );
   }
 
   /*------------------------------------------------

@@ -516,7 +516,11 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_reset.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_stm32l432xx.c" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\system\sys_common_init.cpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver_stm32l4.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_entry_lld_timer.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_lld_timer_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.cpp" />
     <ClInclude Include="..\..\..\Thor\config\boost\boostStub.hpp" />
     <ClInclude Include="..\..\..\Thor\config\chimera\chimeraPort.hpp" />
     <ClInclude Include="..\..\..\Thor\config\config.hpp" />
@@ -1499,5 +1503,9 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\variant\sys_memory_map_stm32l432kc.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\variant\sys_memory_map_stm32l4xxxx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.hpp" />
   </ItemGroup>
 </Project>

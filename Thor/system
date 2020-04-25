@@ -3,17 +3,17 @@
  *    system
  * 
  *  Description:
- *    Thor GPIO Includes
+ *    Thor SYSTEM Includes
  * 
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_GPIO_INCLUDES
-#define THOR_GPIO_INCLUDES
+#ifndef THOR_SYSTEM_INCLUDES
+#define THOR_SYSTEM_INCLUDES
 
 #include <Thor/hld/system/hld_system_driver.hpp>
 #include <Thor/hld/system/hld_system_intf.hpp>
 #include <Thor/hld/system/hld_system_types.hpp>
 
-#endif /* !THOR_GPIO_INCLUDES */
+#endif /* !THOR_SYSTEM_INCLUDES */

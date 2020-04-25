@@ -47,11 +47,38 @@ namespace Thor::System::MemoryMap
   static constexpr uint32_t SPI3_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x3C00;
   static constexpr uint32_t SPI3_PERIPH_END_ADDRESS   = APB1_RGN_START_ADDRESS + 0x3FFF;
 
+  static constexpr uint32_t LPTIMER2_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x9400;
+  static constexpr uint32_t LPTIMER2_PERIPH_END_ADDRESS   = APB1_RGN_END_ADDRESS + 0x97FF;
+
+  static constexpr uint32_t LPTIMER1_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x7C00;
+  static constexpr uint32_t LPTIMER1_PERIPH_END_ADDRESS   = APB1_RGN_END_ADDRESS + 0x7FFF;
+
+  static constexpr uint32_t TIMER7_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x1400;
+  static constexpr uint32_t TIMER7_PERIPH_END_ADDRESS   = APB1_RGN_END_ADDRESS + 0x17FF;
+
+  static constexpr uint32_t TIMER6_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x1000;
+  static constexpr uint32_t TIMER6_PERIPH_END_ADDRESS   = APB1_RGN_END_ADDRESS + 0x13FF;
+
+  static constexpr uint32_t TIMER3_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x0400;
+  static constexpr uint32_t TIMER3_PERIPH_END_ADDRESS   = APB1_RGN_END_ADDRESS + 0x07FF;
+
+  static constexpr uint32_t TIMER2_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x0000;
+  static constexpr uint32_t TIMER2_PERIPH_END_ADDRESS   = APB1_RGN_END_ADDRESS + 0x03FF;
+
   /*-------------------------------------------------
   APB2
   -------------------------------------------------*/
   static constexpr uint32_t SPI1_PERIPH_START_ADDRESS = APB2_RGN_START_ADDRESS + 0x3000;
   static constexpr uint32_t SPI1_PERIPH_END_ADDRESS   = APB2_RGN_START_ADDRESS + 0x33FF;
+
+  static constexpr uint32_t TIMER16_PERIPH_START_ADDRESS = APB2_RGN_START_ADDRESS + 0x4400;
+  static constexpr uint32_t TIMER16_PERIPH_END_ADDRESS   = APB2_RGN_END_ADDRESS + 0x47FF;
+
+  static constexpr uint32_t TIMER15_PERIPH_START_ADDRESS = APB2_RGN_START_ADDRESS + 0x4000;
+  static constexpr uint32_t TIMER15_PERIPH_END_ADDRESS   = APB2_RGN_END_ADDRESS + 0x43FF;
+
+  static constexpr uint32_t TIMER1_PERIPH_START_ADDRESS = APB2_RGN_START_ADDRESS + 0x2C00;
+  static constexpr uint32_t TIMER1_PERIPH_END_ADDRESS   = APB2_RGN_END_ADDRESS + 0x2FFF;
 
   /*-------------------------------------------------
   AHB1
@@ -82,7 +109,6 @@ namespace Thor::System::MemoryMap
 
   static constexpr uint32_t GPIOH_PERIPH_START_ADDRESS = AHB2_RGN_START_ADDRESS + 0x1C00U;
   static constexpr uint32_t GPIOH_PERIPH_END_ADDRESS   = AHB2_RGN_START_ADDRESS + 0x1FFFU;
-
 
   /*------------------------------------------------
   Vector Table Offset Configuration

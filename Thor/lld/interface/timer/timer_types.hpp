@@ -15,8 +15,14 @@
 /* STL Includes */
 #include <memory>
 
-namespace Thor::LLD::Timer
+namespace Thor::LLD::TIMER
 {
+  /**
+   *  Forward declaration to ease compilation
+   */
+  struct RegisterMap;
+  struct LPRegisterMap;
+
   /** 
    *  The category of timer peripheral that can exist. Not all
    *  timers have the same capabilities.
