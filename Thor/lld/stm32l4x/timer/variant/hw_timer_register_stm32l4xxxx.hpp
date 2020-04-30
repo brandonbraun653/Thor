@@ -40,7 +40,7 @@ Peripheral Availability
 
 #if defined( STM32L432xx )
 #define STM32_TIMER7_PERIPH_AVAILABLE
-#endif 
+#endif
 
 
 namespace Thor::LLD::TIMER
@@ -51,6 +51,15 @@ namespace Thor::LLD::TIMER
    *  @return void
    */
   void initializeRegisters();
+
+  /*------------------------------------------------
+  Configuration Data
+  ------------------------------------------------*/
+  static constexpr size_t NUM_TIMER_PERIPHS     = 9;
+  static constexpr size_t NUM_ADVANCED_PERIPHS  = 1;
+  static constexpr size_t NUM_BASIC_PERIPHS     = 2;
+  static constexpr size_t NUM_GENERAL_PERIPHS   = 4;
+  static constexpr size_t NUM_LOW_POWER_PERIPHS = 2;
 
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base
@@ -78,6 +87,19 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------
   Peripheral Resource Lookup Indices
   -------------------------------------------------*/
+  static constexpr size_t ADVANCED_TIMER1_RESOURCE_INDEX = 0u;
+
+  static constexpr size_t BASIC_TIMER1_RESOURCE_INDEX = 0u;
+  static constexpr size_t BASIC_TIMER2_RESOURCE_INDEX = 1u;
+
+  static constexpr size_t GENERAL_TIMER1_RESOURCE_INDEX = 0u;
+  static constexpr size_t GENERAL_TIMER2_RESOURCE_INDEX = 1u;
+  static constexpr size_t GENERAL_TIMER3_RESOURCE_INDEX = 2u;
+  static constexpr size_t GENERAL_TIMER4_RESOURCE_INDEX = 3u;
+
+  static constexpr size_t LOW_POWER_TIMER1_RESOURCE_INDEX = 0u;
+  static constexpr size_t LOW_POWER_TIMER2_RESOURCE_INDEX = 1u;
+
   static constexpr size_t TIMER1_RESOURCE_INDEX   = 0u;
   static constexpr size_t TIMER2_RESOURCE_INDEX   = 1u;
   static constexpr size_t TIMER3_RESOURCE_INDEX   = 2u;
@@ -91,7 +113,7 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------
   Lookup addresses
   -------------------------------------------------*/
-  static constexpr size_t NUM_TIMER_PERIPHS                                  = 9;
+
   static constexpr std::array<uint32_t, NUM_TIMER_PERIPHS> periphAddressList = {
     TIMER1_BASE_ADDR,  TIMER2_BASE_ADDR,  TIMER3_BASE_ADDR,   TIMER6_BASE_ADDR,  TIMER7_BASE_ADDR,
     TIMER15_BASE_ADDR, TIMER16_BASE_ADDR, LPTIMER1_BASE_ADDR, LPTIMER2_BASE_ADDR
@@ -100,7 +122,7 @@ namespace Thor::LLD::TIMER
   /*------------------------------------------------
   Supported Hardware Channels
   ------------------------------------------------*/
-  extern const std::array<Chimera::Timer::Channel, NUM_TIMER_PERIPHS> supportedChannels;
+  extern const std::array<Chimera::Timer::Peripheral, NUM_TIMER_PERIPHS> supportedChannels;
 
   /*-------------------------------------------------
   Peripheral Register Definitions

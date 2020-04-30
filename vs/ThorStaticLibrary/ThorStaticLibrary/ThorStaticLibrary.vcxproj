@@ -358,6 +358,10 @@
       <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>TARGET_STM32F4;STM32F446xx;$(ChimeraCompilerDefines);$(ProjectCompilerDefines);%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1</PreprocessorDefinitions>
       <Optimization>Os</Optimization>
+      <DeleteNullPointerChecks>
+      </DeleteNullPointerChecks>
+      <ShortEnums>
+      </ShortEnums>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -478,6 +482,11 @@
     <ClCompile Include="..\..\..\Thor\hld\pwm\hld_pwm_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\pwm\test\test_entry_pwm.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\pwm\test\test_hld_pwm_chimera.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_conversion.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_advanced.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_basic.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_general.cpp" />
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_low_power.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\timer\test\test_entry_timer.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\timer\test\test_hld_timer_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\timer\test\test_hld_timer_driver.cpp" />
@@ -517,6 +526,7 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_stm32l432xx.c" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\system\sys_common_init.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver_stm32l4.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver_stm32l4_general.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_mapping.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_entry_lld_timer.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_lld_timer_driver.cpp" />
@@ -644,7 +654,10 @@
     <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\uart\hld_uart_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\uart\hld_uart_driver.cpp" />
+    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_conversion.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_prv_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_types.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_chimera.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\uart\hld_uart_intf.hpp" />

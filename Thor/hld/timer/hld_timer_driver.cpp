@@ -3,10 +3,15 @@
  *    hld_timer_driver.cpp
  *
  *  Description:
- *    Driver implementation 
+ *    Driver implementation
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
+
+/* STL Includes */
+
+/* Aurora Includes */
+#include <Aurora/constants/common.hpp>
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -15,16 +20,42 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/timer>
+#include <Thor/hld/timer/hld_timer_prv_driver.hpp>
 #include <Thor/lld/interface/timer/timer_intf.hpp>
+#include <Thor/lld/interface/timer/timer_detail.hpp>
 
 
 #if defined( THOR_HLD_TIMER )
 
-namespace Thor::Timer
+namespace Thor::TIMER
 {
+  // Tracks if the module data has been initialized correctly
+  static size_t s_driver_initialized;
+
+  /*-------------------------------------------------------------------------------
+  Chimera Free Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    return Chimera::CommonStatusCodes::OK;
+    /*------------------------------------------------
+    Prevent re-initialization from occurring
+    ------------------------------------------------*/
+    auto result = Chimera::CommonStatusCodes::OK;
+    if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
+    {
+      return result;
+    }
+
+    /*------------------------------------------------
+    Initialize driver memory
+    ------------------------------------------------*/
+    result |= initializeAdvanced();
+    result |= initializeBasic();
+    result |= initializeGeneral();
+    result |= initializeLowPower();
+
+    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return result;
   }
 
   Chimera::Status_t reset()
@@ -52,99 +83,14 @@ namespace Thor::Timer
     Thor::LLD::TIMER::delayMicroseconds( us );
   }
 
-  /*------------------------------------------------
-  Driver Implementation
-  ------------------------------------------------*/
-  Driver::Driver()
+  /*-------------------------------------------------------------------------------
+  Driver Free Functions
+  -------------------------------------------------------------------------------*/
+  bool isInitialized()
   {
-
+    return s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY;
   }
 
-  Driver::~Driver()
-  {
-
-  }
-
-  void Driver::enable()
-  {
-    
-  }
-
-  void Driver::disable()
-  {
-    
-  }
-
-  Chimera::Status_t Driver::initPeripheral( const Chimera::Timer::DriverConfig &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t Driver::enableISR( const Chimera::Timer::ISREvent type )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t Driver::disableISR( const Chimera::Timer::ISREvent type )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t Driver::setupInputCapture( const Chimera::Timer::InputCapture::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t Driver::setupOutputCompare( const Chimera::Timer::OutputCompare::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t Driver::setupPWMGeneration( const Chimera::Timer::PWMGeneration::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t Driver::setupOnePulse( const Chimera::Timer::OnePulse::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  size_t Driver::counterBitWidth()
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  size_t Driver::tickRate( const Chimera::Units::Time units )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  size_t Driver::maxPeriod( const Chimera::Units::Time units )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  size_t Driver::minPeriod( const Chimera::Units::Time units )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Timer::Mode Driver::currentMode()
-  {
-    return Chimera::Timer::Mode::NUM_OPTIONS;
-  }
-
-  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
-                                              size_t &registrationID )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
 }
 
 #endif /* THOR_HLD_TIMER */

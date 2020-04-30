@@ -51,18 +51,31 @@ namespace Thor::LLD::TIMER
   };
 
 
-  class GeneralDriver : public virtual IGeneralDriver
+#if defined( VIRTUAL_FUNC )
+  class GeneralDriverImpl : public virtual IGeneralDriver
   {
   public:
-    GeneralDriver();
-    ~GeneralDriver();
+    GeneralDriverImpl();
+    ~GeneralDriverImpl();
 
     Chimera::Status_t attach( RegisterMap *const peripheral ) final override;
 
   private:
     RegisterMap *periph;
   };
+#else
+    class GeneralDriverImpl : IGeneralDriver<GeneralDriverImpl>
+    {
+    public:
+      GeneralDriverImpl();
+      ~GeneralDriverImpl();
 
+      Chimera::Status_t attach( RegisterMap *const peripheral );
+
+    private:
+      RegisterMap *periph;
+    };
+#endif
 
   class LowPowerDriver : public virtual ILowPowerDriver
   {

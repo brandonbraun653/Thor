@@ -27,26 +27,26 @@
 namespace Thor::LLD::TIMER
 {
   /* clang-format off */
-  const std::array<Chimera::Timer::Channel, NUM_TIMER_PERIPHS> supportedChannels = {
+  const std::array<Chimera::Timer::Peripheral, NUM_TIMER_PERIPHS> supportedChannels = {
 
-    Chimera::Timer::Channel::TIMER1,   
-    Chimera::Timer::Channel::TIMER2,
-    Chimera::Timer::Channel::TIMER6,
-    Chimera::Timer::Channel::TIMER15,  
-    Chimera::Timer::Channel::TIMER16,
-    Chimera::Timer::Channel::LPTIMER1, 
-    Chimera::Timer::Channel::LPTIMER2,
+    Chimera::Timer::Peripheral::TIMER1,   
+    Chimera::Timer::Peripheral::TIMER2,
+    Chimera::Timer::Peripheral::TIMER6,
+    Chimera::Timer::Peripheral::TIMER15,  
+    Chimera::Timer::Peripheral::TIMER16,
+    Chimera::Timer::Peripheral::LPTIMER1, 
+    Chimera::Timer::Peripheral::LPTIMER2,
 
 #if defined( STM32_TIMER3_PERIPH_AVAILABLE )
-    Chimera::Timer::Channel::TIMER3,
+    Chimera::Timer::Peripheral::TIMER3,
 #else
-    Chimera::Timer::Channel::NOT_SUPPORTED,
+    Chimera::Timer::Peripheral::NOT_SUPPORTED,
 #endif
 
 #if defined( STM32_TIMER7_PERIPH_AVAILABLE )
-    Chimera::Timer::Channel::TIMER7,
+    Chimera::Timer::Peripheral::TIMER7,
 #else
-    Chimera::Timer::Channel::NOT_SUPPORTED,
+    Chimera::Timer::Peripheral::NOT_SUPPORTED,
 #endif
   };
 
@@ -67,16 +67,16 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------
   Lookup Tables Defintions
   -------------------------------------------------*/
-  Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex{ 
-    { reinterpret_cast<std::uintptr_t>( TIMER1_PERIPH ), TIMER1_RESOURCE_INDEX },
-    { reinterpret_cast<std::uintptr_t>( TIMER2_PERIPH ), TIMER2_RESOURCE_INDEX },
-    { reinterpret_cast<std::uintptr_t>( TIMER3_PERIPH ), TIMER3_RESOURCE_INDEX },
-    { reinterpret_cast<std::uintptr_t>( TIMER6_PERIPH ), TIMER6_RESOURCE_INDEX },
-    { reinterpret_cast<std::uintptr_t>( TIMER7_PERIPH ), TIMER7_RESOURCE_INDEX },
-    { reinterpret_cast<std::uintptr_t>( TIMER15_PERIPH ), TIMER15_RESOURCE_INDEX },
-    { reinterpret_cast<std::uintptr_t>( TIMER16_PERIPH ), TIMER16_RESOURCE_INDEX },
-    { reinterpret_cast<std::uintptr_t>( LPTIMER1_PERIPH ), LPTIMER1_RESOURCE_INDEX },
-    { reinterpret_cast<std::uintptr_t>( LPTIMER2_PERIPH ), LPTIMER2_RESOURCE_INDEX }
+  ITRIMap InstanceToResourceIndex{ 
+    { reinterpret_cast<std::uintptr_t>( TIMER1_PERIPH ),    TIMER1_RESOURCE_INDEX },
+    { reinterpret_cast<std::uintptr_t>( TIMER2_PERIPH ),    TIMER2_RESOURCE_INDEX },
+    { reinterpret_cast<std::uintptr_t>( TIMER3_PERIPH ),    TIMER3_RESOURCE_INDEX },
+    { reinterpret_cast<std::uintptr_t>( TIMER6_PERIPH ),    TIMER6_RESOURCE_INDEX },
+    { reinterpret_cast<std::uintptr_t>( TIMER7_PERIPH ),    TIMER7_RESOURCE_INDEX },
+    { reinterpret_cast<std::uintptr_t>( TIMER15_PERIPH ),   TIMER15_RESOURCE_INDEX },
+    { reinterpret_cast<std::uintptr_t>( TIMER16_PERIPH ),   TIMER16_RESOURCE_INDEX },
+    { reinterpret_cast<std::uintptr_t>( LPTIMER1_PERIPH ),  LPTIMER1_RESOURCE_INDEX },
+    { reinterpret_cast<std::uintptr_t>( LPTIMER2_PERIPH ),  LPTIMER2_RESOURCE_INDEX }
   };
 
 #elif defined( _SIM )
@@ -129,21 +129,7 @@ namespace Thor::LLD::TIMER
     InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( TIMER16_PERIPH ), TIMER16_RESOURCE_INDEX );
     InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( LPTIMER1_PERIPH ), LPTIMER1_RESOURCE_INDEX );
     InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( LPTIMER2_PERIPH ), LPTIMER2_RESOURCE_INDEX );
-
 #endif
-
-    /*------------------------------------------------
-    Update the memory listing
-    ------------------------------------------------*/
-    PeripheralList[ TIMER1_RESOURCE_INDEX ]   = TIMER1_PERIPH;
-    PeripheralList[ TIMER2_RESOURCE_INDEX ]   = TIMER2_PERIPH;
-    PeripheralList[ TIMER3_RESOURCE_INDEX ]   = TIMER3_PERIPH;
-    PeripheralList[ TIMER6_RESOURCE_INDEX ]   = TIMER6_PERIPH;
-    PeripheralList[ TIMER7_RESOURCE_INDEX ]   = TIMER7_PERIPH;
-    PeripheralList[ TIMER15_RESOURCE_INDEX ]  = TIMER15_PERIPH;
-    PeripheralList[ TIMER16_RESOURCE_INDEX ]  = TIMER16_PERIPH;
-    PeripheralList[ LPTIMER1_RESOURCE_INDEX ] = LPTIMER1_PERIPH;
-    PeripheralList[ LPTIMER2_RESOURCE_INDEX ] = LPTIMER2_PERIPH;
   }
 }    // namespace Thor::LLD::TIMER
 

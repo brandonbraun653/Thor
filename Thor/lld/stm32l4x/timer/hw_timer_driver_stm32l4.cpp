@@ -15,6 +15,7 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
+#include <Thor/lld/interface/timer/timer_intf.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_driver.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_mapping.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_prj.hpp>
@@ -25,18 +26,10 @@
 
 namespace Thor::LLD::TIMER
 {
-  /*-------------------------------------------------
-  LLD->HLD Interface Implementation
-  -------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  HLD->LLD Required Free Functions
+  -------------------------------------------------------------------------------*/
   static size_t systemTick = 0u;
-
-  Chimera::Status_t initialize()
-  {
-    initializeRegisters();
-    initializeMapping();
-
-    return Chimera::CommonStatusCodes::OK;
-  }
 
   void incrementSystemTick()
   {
@@ -63,12 +56,38 @@ namespace Thor::LLD::TIMER
     vTaskDelay( pdMS_TO_TICKS( us * 1000 ) );
     #else
     #pragma message("delayMicroseconds() has no implementation")
-    #endif 
+    #endif
   }
 
-  /*-------------------------------------------------
-  Private LLD Function Implementation
-  -------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  LLD Public Free Functions
+  -------------------------------------------------------------------------------*/
+  Chimera::Status_t initialize()
+  {
+    initializeRegisters();
+    initializeMapping();
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  IAdvancedDriver_sPtr getAdvancedDriver( const size_t channel )
+  {
+    return nullptr;
+  }
+
+  IBasicDriver_sPtr getBasicDriver( const size_t channel )
+  {
+    return nullptr;
+  }
+
+  ILowPowerDriver_sPtr getLowPowerDriver( const size_t channel )
+  {
+    return nullptr;
+  }
+
+  /*-------------------------------------------------------------------------------
+  LLD Private Free Functions
+  -------------------------------------------------------------------------------*/
   bool isTIMER( const std::uintptr_t address )
   {
     bool result = false;
@@ -84,9 +103,9 @@ namespace Thor::LLD::TIMER
     return result;
   }
 
-  /*-----------------------------------------------------
+  /*-------------------------------------------------------------------------------
   Advanced Low Level Driver Implementation
-  -----------------------------------------------------*/
+  -------------------------------------------------------------------------------*/
   AdvancedDriver::AdvancedDriver() : periph( nullptr )
   {
   }
@@ -101,9 +120,9 @@ namespace Thor::LLD::TIMER
   }
 
 
-  /*-----------------------------------------------------
+  /*-------------------------------------------------------------------------------
   Basic Low Level Driver Implementation
-  -----------------------------------------------------*/
+  -------------------------------------------------------------------------------*/
   BasicDriver::BasicDriver() : periph( nullptr )
   {
   }
@@ -117,27 +136,9 @@ namespace Thor::LLD::TIMER
     return Chimera::CommonStatusCodes::OK;
   }
 
-
-  /*-----------------------------------------------------
-  General Low Level Driver Implementation
-  -----------------------------------------------------*/
-  GeneralDriver::GeneralDriver() : periph( nullptr )
-  {
-  }
-
-  GeneralDriver::~GeneralDriver()
-  {
-  }
-
-  Chimera::Status_t GeneralDriver::attach( RegisterMap *const peripheral )
-  {
-    return Chimera::CommonStatusCodes::OK;
-  }
-
-
-  /*-----------------------------------------------------
-  LowPower Low Level Driver Implementation
-  -----------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Low Power Low Level Driver Implementation
+  -------------------------------------------------------------------------------*/
   LowPowerDriver::LowPowerDriver() : periph( nullptr )
   {
   }

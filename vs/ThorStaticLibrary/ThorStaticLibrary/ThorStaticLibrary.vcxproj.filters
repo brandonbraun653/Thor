@@ -1353,6 +1353,15 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.hpp">
       <Filter>lld\stm32l4x\timer\variant</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_types.hpp">
+      <Filter>hld\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_conversion.hpp">
+      <Filter>hld\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_prv_driver.hpp">
+      <Filter>hld\timer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">
@@ -1585,6 +1594,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.cpp">
       <Filter>lld\stm32l4x\timer\variant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_conversion.cpp">
+      <Filter>hld\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_advanced.cpp">
+      <Filter>hld\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_basic.cpp">
+      <Filter>hld\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_general.cpp">
+      <Filter>hld\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_low_power.cpp">
+      <Filter>hld\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver_stm32l4_general.cpp">
+      <Filter>lld\stm32l4x\timer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
