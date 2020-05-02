@@ -16,6 +16,7 @@
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/thread>
+#include <Chimera/timer>
 
 /* Thor Includes */
 #include <Thor/cfg>
@@ -79,7 +80,7 @@ namespace Thor::TIMER
     if ( !hld_general_drivers[ iDriver ] && create )
     {
       /* Initialize the HLD reference */
-      auto driver            = new GeneralDriver;
+      auto driver            = std::make_shared<GeneralDriver>();
       driver->mResourceIndex = iDriver;
 
       hld_general_drivers[ iDriver ] = driver;
@@ -105,105 +106,33 @@ namespace Thor::TIMER
   {
   }
 
-  /*------------------------------------------------
-  Timer Base Interface
-  ------------------------------------------------*/
-  Chimera::Status_t GeneralDriver::initPeripheral( const Chimera::Timer::DriverConfig &cfg )
+  /*-------------------------------------------------
+  Chimera ITimer Interface
+  -------------------------------------------------*/
+  Chimera::Status_t GeneralDriver::initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  bool GeneralDriver::configured()
-  {
-    return 0;
-  }
-
-  size_t GeneralDriver::counterBitWidth()
-  {
-    return 0;
-  }
-
-  size_t GeneralDriver::tickRate( const Chimera::Units::Time units )
-  {
-    return 0;
-  }
-
-  size_t GeneralDriver::maxPeriod( const Chimera::Units::Time units )
-  {
-    return 0;
-  }
-
-  size_t GeneralDriver::minPeriod( const Chimera::Units::Time units )
-  {
-    return 0;
-  }
-
-  bool GeneralDriver::hasFunction( const Chimera::Timer::Function func )
-  {
-    return false;
-  }
-
-  /*------------------------------------------------
-  Timer Channel Interface
-  ------------------------------------------------*/
-  Chimera::Status_t GeneralDriver::enable( const Chimera::Timer::Channel channel )
+  Chimera::Status_t GeneralDriver::invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t GeneralDriver::disable( const Chimera::Timer::Channel channel )
+  Chimera::Status_t GeneralDriver::setState( const Chimera::Timer::Switchable device,
+                                              const Chimera::Timer::SwitchableState state )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t GeneralDriver::enableEvent( const Chimera::Timer::Channel channel, const Chimera::Timer::Event type )
+  Chimera::Status_t GeneralDriver::requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t GeneralDriver::disableEvent( const Chimera::Timer::Channel channel, const Chimera::Timer::Event type )
+  const Chimera::Timer::Descriptor *GeneralDriver::getDeviceInfo()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  Encoder Interface
-  ------------------------------------------------*/
-  Chimera::Status_t GeneralDriver::encInit( const Chimera::Timer::Encoder::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  Input Capture Interface
-  ------------------------------------------------*/
-  Chimera::Status_t GeneralDriver::icInit( const Chimera::Timer::InputCapture::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  One Pulse Interface
-  ------------------------------------------------*/
-  Chimera::Status_t GeneralDriver::opInit( const Chimera::Timer::OnePulse::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  Output Compare Interface
-  ------------------------------------------------*/
-  Chimera::Status_t GeneralDriver::ocInit( const Chimera::Timer::OutputCompare::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  PWM Interface
-  ------------------------------------------------*/
-  Chimera::Status_t GeneralDriver::pwmInit( const Chimera::Timer::PWM::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return nullptr;
   }
 }  // namespace Thor::TIMER
 

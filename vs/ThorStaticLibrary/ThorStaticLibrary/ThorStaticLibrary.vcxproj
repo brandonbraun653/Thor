@@ -482,7 +482,6 @@
     <ClCompile Include="..\..\..\Thor\hld\pwm\hld_pwm_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\pwm\test\test_entry_pwm.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\pwm\test\test_hld_pwm_chimera.cpp" />
-    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_conversion.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_advanced.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_basic.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_general.cpp" />
@@ -654,7 +653,6 @@
     <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\uart\hld_uart_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\uart\hld_uart_driver.cpp" />
-    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_conversion.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_prv_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_types.hpp" />

@@ -15,6 +15,7 @@
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/thread>
+#include <Chimera/timer>
 
 /* Thor Includes */
 #include <Thor/cfg>
@@ -78,7 +79,7 @@ namespace Thor::TIMER
     if ( !hld_low_power_drivers[ iDriver ] && create )
     {
       /* Initialize the HLD reference */
-      auto driver            = new LowPowerDriver;
+      auto driver            = std::make_shared<LowPowerDriver>();
       driver->mResourceIndex = iDriver;
 
       hld_low_power_drivers[ iDriver ] = driver;
@@ -104,105 +105,33 @@ namespace Thor::TIMER
   {
   }
 
-  /*------------------------------------------------
-  Timer Base Interface
-  ------------------------------------------------*/
-  Chimera::Status_t LowPowerDriver::initPeripheral( const Chimera::Timer::DriverConfig &cfg )
+  /*-------------------------------------------------
+  Chimera ITimer Interface
+  -------------------------------------------------*/
+  Chimera::Status_t LowPowerDriver::initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  bool LowPowerDriver::configured()
-  {
-    return 0;
-  }
-
-  size_t LowPowerDriver::counterBitWidth()
-  {
-    return 0;
-  }
-
-  size_t LowPowerDriver::tickRate( const Chimera::Units::Time units )
-  {
-    return 0;
-  }
-
-  size_t LowPowerDriver::maxPeriod( const Chimera::Units::Time units )
-  {
-    return 0;
-  }
-
-  size_t LowPowerDriver::minPeriod( const Chimera::Units::Time units )
-  {
-    return 0;
-  }
-
-  bool LowPowerDriver::hasFunction( const Chimera::Timer::Function func )
-  {
-    return false;
-  }
-
-  /*------------------------------------------------
-  Timer Channel Interface
-  ------------------------------------------------*/
-  Chimera::Status_t LowPowerDriver::enable( const Chimera::Timer::Channel channel )
+  Chimera::Status_t LowPowerDriver::invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t LowPowerDriver::disable( const Chimera::Timer::Channel channel )
+  Chimera::Status_t LowPowerDriver::setState( const Chimera::Timer::Switchable device,
+                                              const Chimera::Timer::SwitchableState state )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t LowPowerDriver::enableEvent( const Chimera::Timer::Channel channel, const Chimera::Timer::Event type )
+  Chimera::Status_t LowPowerDriver::requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t LowPowerDriver::disableEvent( const Chimera::Timer::Channel channel, const Chimera::Timer::Event type )
+  const Chimera::Timer::Descriptor *LowPowerDriver::getDeviceInfo()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  Encoder Interface
-  ------------------------------------------------*/
-  Chimera::Status_t LowPowerDriver::encInit( const Chimera::Timer::Encoder::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  Input Capture Interface
-  ------------------------------------------------*/
-  Chimera::Status_t LowPowerDriver::icInit( const Chimera::Timer::InputCapture::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  One Pulse Interface
-  ------------------------------------------------*/
-  Chimera::Status_t LowPowerDriver::opInit( const Chimera::Timer::OnePulse::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  Output Compare Interface
-  ------------------------------------------------*/
-  Chimera::Status_t LowPowerDriver::ocInit( const Chimera::Timer::OutputCompare::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  PWM Interface
-  ------------------------------------------------*/
-  Chimera::Status_t LowPowerDriver::pwmInit( const Chimera::Timer::PWM::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return nullptr;
   }
 }  // namespace Thor::TIMER
 

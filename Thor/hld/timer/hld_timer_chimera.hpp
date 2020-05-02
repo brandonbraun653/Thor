@@ -1,9 +1,9 @@
 /********************************************************************************
  *  File Name:
- *    hld_timer_driver.hpp
+ *    hld_timer_chimera.hpp
  *
  *	 Description:
- *    Thor High Level Driver 
+ *    Chimera hooks for Thor Timer
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
@@ -24,17 +24,15 @@ namespace Chimera::Timer
   namespace Backend
   {
     Chimera::Status_t initialize();
-
     Chimera::Status_t reset();
-
     size_t millis();
-
+    size_t micros();
     void delayMilliseconds( const size_t val );
-
     void delayMicroseconds( const size_t val );
-  }
-
-  
-}    // namespace Chimera::TIMER::Backend
+    ITimer_rPtr createUnsafeInstance( const Chimera::Timer::Peripheral peripheral );
+    ITimer_sPtr createSharedInstance( const Chimera::Timer::Peripheral peripheral );
+    ITimer_uPtr createUniqueInstance( const Chimera::Timer::Peripheral peripheral );
+  }    // namespace Backend
+}    // namespace Chimera::Timer
 
 #endif /* !THOR_TIMER_CHIMERA_HOOKS_HPP */

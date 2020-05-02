@@ -14,13 +14,10 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/timer>
 
 /* Thor Includes */
-/**
- *  It's ok to include the LLD details here as this private header will
- *  only be seen in source files for this driver. It should never be
- *  included into public headers.
- */
+#include <Thor/hld/timer/hld_timer_types.hpp>
 #include <Thor/lld/interface/timer/timer_detail.hpp>
 
 namespace Thor::TIMER
@@ -42,17 +39,11 @@ namespace Thor::TIMER
   Chimera::Status_t initializeGeneral();
   Chimera::Status_t initializeLowPower();
 
-  void *getDriverAddress( const Chimera::Timer::Peripheral periph, const size_t hld_resource_index );
-
-  /*------------------------------------------------
-  hld_timer_chimera.cpp
-  ------------------------------------------------*/
-  Chimera::Timer::TimerBaseImpl *getBaseImplDriver( const size_t resourceIndex );
-  Chimera::Timer::TimerEncoderImpl *getEncoderImplDriver( const size_t resourceIndex );
-  Chimera::Timer::TimerInputCaptureImpl *getInputCaptureImplDriver( const size_t resourceIndex );
-  Chimera::Timer::TimerOnePulseImpl *getOnePulseImplDriver( const size_t resourceIndex );
-  Chimera::Timer::TimerOutputCompareImpl *getOutputCompareImplDriver( const size_t resourceIndex );
-
+  /*-------------------------------------------------
+  Helper functions for Chimera hooks
+  -------------------------------------------------*/
+  Chimera::Timer::ITimer_rPtr lookUpRawPointer( const Chimera::Timer::Peripheral peripheral );
+  Chimera::Timer::ITimer_sPtr lookUpSharedPointer( const Chimera::Timer::Peripheral peripheral );
 }    // namespace Thor::TIMER
 
 #endif /* !THOR_HLD_TIMER_PRIVATE_DRIVER_HPP */

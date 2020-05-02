@@ -19,21 +19,21 @@
 namespace Thor::TIMER
 {
   class AdvancedDriver;
-  using AdvancedDriver_sPtr = AdvancedDriver*;
-  using AdvancedDriver_uPtr = AdvancedDriver*;
-  
+  using AdvancedDriver_sPtr = std::shared_ptr<AdvancedDriver>;
+  using AdvancedDriver_uPtr = std::shared_ptr<AdvancedDriver>;
+
   class BasicDriver;
-  using BasicDriver_sPtr = BasicDriver*;
-  using BasicDriver_uPtr = BasicDriver*;
-  
+  using BasicDriver_sPtr = std::shared_ptr<BasicDriver>;
+  using BasicDriver_uPtr = std::shared_ptr<BasicDriver>;
+
 
   class GeneralDriver;
-  using GeneralDriver_sPtr = GeneralDriver*;
-  using GeneralDriver_uPtr = GeneralDriver*;
+  using GeneralDriver_sPtr = std::shared_ptr<GeneralDriver>;
+  using GeneralDriver_uPtr = std::shared_ptr<GeneralDriver>;
 
   class LowPowerDriver;
-  using LowPowerDriver_sPtr = LowPowerDriver*;
-  using LowPowerDriver_uPtr = LowPowerDriver*;
+  using LowPowerDriver_sPtr = std::shared_ptr<LowPowerDriver>;
+  using LowPowerDriver_uPtr = std::shared_ptr<LowPowerDriver>;
 
   /**
    *  Describes a timer peripheral and what it can do

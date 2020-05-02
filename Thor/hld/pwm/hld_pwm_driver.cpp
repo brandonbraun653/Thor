@@ -9,7 +9,7 @@
  *******************************************************************************/
 
 /* STL Includes */
-
+#include <cstring>
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -34,7 +34,7 @@ namespace Thor::PWM
   /*-------------------------------------------------------------------------------
   HLD Driver Definitions
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mInitialized( false ), mpOutputPin( nullptr ), mpPWMDriver( nullptr ), mpTimerBaseDriver( nullptr )
+  Driver::Driver() : mInitialized( false ), mpOutputPin( nullptr ), mpTimerDriver( nullptr )
   {
 
   }
@@ -46,6 +46,8 @@ namespace Thor::PWM
 
   Chimera::Status_t Driver::init( const Chimera::PWM::DriverConfig &cfg )
   {
+    using namespace Chimera::Timer;
+
     /*------------------------------------------------
     Input validity checks
     ------------------------------------------------*/
@@ -58,16 +60,8 @@ namespace Thor::PWM
     Check if a timer peripheral exists for the requested PWM channel.
     If it does, grab the driver, creating one if it doesn't exist yet.
     ------------------------------------------------*/
-    #if defined( VIRTUAL_FUNC )
-    mpTimerBaseDriver = Thor::TIMER::getTimerAsBase( cfg.timer.peripheral );
-    mpPWMDriver = Thor::TIMER::getTimerAsPWM( cfg.timer.peripheral );
-    #else 
-    mpTimerBaseDriver = Chimera::Timer::getTimerAsBase( cfg.timer.peripheral );
-    mpPWMDriver = Chimera::Timer::getTimerAsPWM( cfg.timer.peripheral );
-    #endif 
-
-
-    if ( !mpPWMDriver )
+    mpTimerDriver = Chimera::Timer::createSharedInstance( cfg.timer.peripheral );
+    if ( !mpTimerDriver )
     {
       return Chimera::CommonStatusCodes::NOT_AVAILABLE;
     }
@@ -77,12 +71,23 @@ namespace Thor::PWM
     by another entity, so try not to blow away configuration settings.
     ------------------------------------------------*/
     auto result = Chimera::CommonStatusCodes::OK;
-    if ( !mpTimerBaseDriver->configured() || cfg.timer.overwrite )
+    bool configured = false;
+    CoreFeatureInit tmp;
+
+    mpTimerDriver->requestData( DriverData::IS_CONFIGURED, &configured, sizeof( configured ) );
+
+    /* Configure the base timer if needed */
+    if ( !configured || cfg.timer.overwrite )
     {
-      result |= mpTimerBaseDriver->initPeripheral( cfg.timer );
+      memset( &tmp, 0, sizeof( tmp ) );
+      tmp.base = cfg.timer;
+      result |= mpTimerDriver->initializeCoreFeature( CoreFeature::BASE_TIMER, tmp );
     }
 
-    result |= mpPWMDriver->pwmInit( cfg.pwm );
+    /* Configure the PWM portion of the timer */
+    memset( &tmp, 0, sizeof( tmp ) );
+    tmp.pwm = cfg.pwm;
+    result |= mpTimerDriver->initializeCoreFeature( CoreFeature::PWM_OUTPUT, tmp );
 
     /*------------------------------------------------
     Configure the GPIO for timer output
@@ -105,6 +110,8 @@ namespace Thor::PWM
 
   Chimera::Status_t Driver::enableOutput()
   {
+    using namespace Chimera::Timer;
+
     /*------------------------------------------------
     HW Protection and Thread Safety
     ------------------------------------------------*/
@@ -120,7 +127,8 @@ namespace Thor::PWM
     /*------------------------------------------------
     Enable the PWM output
     ------------------------------------------------*/
-    auto result = mpTimerBaseDriver->enable( mPWMConfig.outputChannel );
+    auto result = mpTimerDriver->invokeAction( DriverAction::ENABLE_PWM_CHANNEL, &mPWMConfig.outputChannel,
+                                               sizeof( mPWMConfig.outputChannel ) );
 
     /*------------------------------------------------
     Unlock the driver and return the result
@@ -131,6 +139,8 @@ namespace Thor::PWM
 
   Chimera::Status_t Driver::disableOutput()
   {
+    using namespace Chimera::Timer;
+
     /*------------------------------------------------
     HW Protection and Thread Safety
     ------------------------------------------------*/
@@ -146,7 +156,8 @@ namespace Thor::PWM
     /*------------------------------------------------
     Disable the PWM output
     ------------------------------------------------*/
-    auto result = mpTimerBaseDriver->disable( mPWMConfig.outputChannel );
+    auto result = mpTimerDriver->invokeAction( DriverAction::DISABLE_PWM_CHANNEL, &mPWMConfig.outputChannel,
+                                               sizeof( mPWMConfig.outputChannel ) );
 
     /*------------------------------------------------
     Unlock the driver and return the result
@@ -173,6 +184,8 @@ namespace Thor::PWM
   Chimera::Status_t Driver::applyConfig( const size_t freq, const size_t dutyCycle,
                                          const Chimera::Timer::PWM::Polarity polarity )
   {
+    using namespace Chimera::Timer;
+
     /*------------------------------------------------
     HW Protection and Thread Safety
     ------------------------------------------------*/
@@ -190,7 +203,12 @@ namespace Thor::PWM
     ------------------------------------------------*/
     mPWMConfig.frequency = freq;
     mPWMConfig.dutyCycle = dutyCycle;
-    auto result = mpPWMDriver->pwmInit( mPWMConfig );
+
+    
+    CoreFeatureInit tmp;
+    memset( &tmp, 0, sizeof( tmp ) );
+    tmp.pwm = mPWMConfig;
+    auto result = mpTimerDriver->initializeCoreFeature( CoreFeature::PWM_OUTPUT, tmp );
 
     /*------------------------------------------------
     Unlock the driver and return the result

@@ -1356,9 +1356,6 @@
     <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_types.hpp">
       <Filter>hld\timer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_conversion.hpp">
-      <Filter>hld\timer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_prv_driver.hpp">
       <Filter>hld\timer</Filter>
     </ClInclude>
@@ -1594,9 +1591,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.cpp">
       <Filter>lld\stm32l4x\timer\variant</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_conversion.cpp">
-      <Filter>hld\timer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver_advanced.cpp">
       <Filter>hld\timer</Filter>

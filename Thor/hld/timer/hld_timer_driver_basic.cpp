@@ -16,6 +16,7 @@
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/thread>
+#include <Chimera/timer>
 
 /* Thor Includes */
 #include <Thor/cfg>
@@ -29,7 +30,7 @@
 
 namespace Thor::TIMER
 {
-  namespace LLD = Thor::LLD::TIMER;
+  namespace LLD                       = Thor::LLD::TIMER;
   static constexpr size_t NUM_PERIPHS = Thor::LLD::TIMER::NUM_BASIC_PERIPHS;
 
   /*-------------------------------------------------------------------------------
@@ -43,9 +44,9 @@ namespace Thor::TIMER
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initializeBasic()
   {
-    for( size_t x=0; x<NUM_PERIPHS; x++)
+    for ( size_t x = 0; x < NUM_PERIPHS; x++ )
     {
-      hld_basic_drivers[ x ] = nullptr;
+      hld_basic_drivers[ x ]   = nullptr;
       s_lld_basic_drivers[ x ] = nullptr;
     }
 
@@ -58,7 +59,7 @@ namespace Thor::TIMER
     Ensure the driver is initialized. This saves the cost
     of a look-up in the next step.
     -------------------------------------------------*/
-    if( !isInitialized() )
+    if ( !isInitialized() )
     {
       return nullptr;
     }
@@ -79,7 +80,7 @@ namespace Thor::TIMER
     if ( !hld_basic_drivers[ iDriver ] && create )
     {
       /* Initialize the HLD reference */
-      auto driver            = new BasicDriver;
+      auto driver            = std::make_shared<BasicDriver>();
       driver->mResourceIndex = iDriver;
 
       hld_basic_drivers[ iDriver ] = driver;
@@ -105,106 +106,35 @@ namespace Thor::TIMER
   {
   }
 
-  /*------------------------------------------------
-  Timer Base Interface
-  ------------------------------------------------*/
-  Chimera::Status_t BasicDriver::initPeripheral( const Chimera::Timer::DriverConfig &cfg )
+  /*-------------------------------------------------
+  Chimera ITimer Interface
+  -------------------------------------------------*/
+  Chimera::Status_t BasicDriver::initializeCoreFeature( const Chimera::Timer::CoreFeature feature,
+                                                        Chimera::Timer::CoreFeatureInit &init )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  bool BasicDriver::configured()
-  {
-    return 0;
-  }
-
-  size_t BasicDriver::counterBitWidth()
-  {
-    return 0;
-  }
-
-  size_t BasicDriver::tickRate( const Chimera::Units::Time units )
-  {
-    return 0;
-  }
-
-  size_t BasicDriver::maxPeriod( const Chimera::Units::Time units )
-  {
-    return 0;
-  }
-
-  size_t BasicDriver::minPeriod( const Chimera::Units::Time units )
-  {
-    return 0;
-  }
-
-  bool BasicDriver::hasFunction( const Chimera::Timer::Function func )
-  {
-    return false;
-  }
-
-  /*------------------------------------------------
-  Timer Channel Interface
-  ------------------------------------------------*/
-  Chimera::Status_t BasicDriver::enable( const Chimera::Timer::Channel channel )
+  Chimera::Status_t BasicDriver::invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t BasicDriver::disable( const Chimera::Timer::Channel channel )
+  Chimera::Status_t BasicDriver::setState( const Chimera::Timer::Switchable device,
+                                           const Chimera::Timer::SwitchableState state )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t BasicDriver::enableEvent( const Chimera::Timer::Channel channel, const Chimera::Timer::Event type )
+  Chimera::Status_t BasicDriver::requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t BasicDriver::disableEvent( const Chimera::Timer::Channel channel, const Chimera::Timer::Event type )
+  const Chimera::Timer::Descriptor *BasicDriver::getDeviceInfo()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return nullptr;
   }
-
-  /*------------------------------------------------
-  Encoder Interface
-  ------------------------------------------------*/
-  Chimera::Status_t BasicDriver::encInit( const Chimera::Timer::Encoder::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  Input Capture Interface
-  ------------------------------------------------*/
-  Chimera::Status_t BasicDriver::icInit( const Chimera::Timer::InputCapture::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  One Pulse Interface
-  ------------------------------------------------*/
-  Chimera::Status_t BasicDriver::opInit( const Chimera::Timer::OnePulse::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  Output Compare Interface
-  ------------------------------------------------*/
-  Chimera::Status_t BasicDriver::ocInit( const Chimera::Timer::OutputCompare::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-
-  /*------------------------------------------------
-  PWM Interface
-  ------------------------------------------------*/
-  Chimera::Status_t BasicDriver::pwmInit( const Chimera::Timer::PWM::Config &cfg )
-  {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-  }
-}  // namespace Thor::TIMER
+}    // namespace Thor::TIMER
 
 #endif /* THOR_HLD_TIMER */

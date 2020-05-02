@@ -12,7 +12,6 @@
 #ifndef THOR_TIMER_INCLUDES
 #define THOR_TIMER_INCLUDES
 
-#include <Thor/hld/timer/hld_timer_conversion.hpp>
 #include <Thor/hld/timer/hld_timer_driver.hpp>
 #include <Thor/hld/timer/hld_timer_types.hpp>
 

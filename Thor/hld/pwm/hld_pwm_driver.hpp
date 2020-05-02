@@ -54,8 +54,7 @@ namespace Thor::PWM
     Chimera::Timer::PWM::Config mPWMConfig;
 
     Thor::GPIO::Driver_uPtr mpOutputPin;
-    Chimera::Timer::ITimerPWM_sPtr mpPWMDriver;
-    Chimera::Timer::ITimerBase_sPtr mpTimerBaseDriver;
+    Chimera::Timer::ITimer_sPtr mpTimerDriver;
 
     Chimera::Status_t applyConfig( const size_t freq, const size_t dutyCycle,
                                    const Chimera::Timer::PWM::Polarity polarity );

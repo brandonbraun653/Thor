@@ -73,6 +73,11 @@ namespace Thor::TIMER
     return Thor::LLD::TIMER::millis();
   }
 
+  size_t micros()
+  {
+    return millis() * 1000;
+  }
+
   void delayMilliseconds( const size_t ms )
   {
     Thor::LLD::TIMER::delayMilliseconds( ms );
@@ -91,6 +96,94 @@ namespace Thor::TIMER
     return s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY;
   }
 
+
+  static bool getHLDResourceData( const Chimera::Timer::Peripheral peripheral, size_t &index, Thor::LLD::TIMER::Type &type )
+  {
+    using namespace Thor::LLD::TIMER;
+
+    /*-------------------------------------------------
+    Get the LLD resource index for the driver, if it's supported.
+    This will allow us to grab other pieces of needed data.
+    -------------------------------------------------*/
+    auto hld_resource_map = PeripheralToHLDResourceIndex.find( peripheral );
+    if( !hld_resource_map )
+    {
+      return false;
+    }
+
+    auto lld_resource_map = PeripheralToLLDResourceIndex.find( peripheral );
+    if( !lld_resource_map )
+    {
+      return false;
+    }
+
+    /*-------------------------------------------------
+    Using the resource index, grab to the device descriptor
+    -------------------------------------------------*/
+    size_t hld_resource_index = hld_resource_map->second;
+    size_t lld_resource_index = lld_resource_map->second;
+    const DeviceDescription * pDeviceDescriptor = getPeripheralDescriptor( lld_resource_index );
+
+
+    type = pDeviceDescriptor->timerType;
+    index = hld_resource_index;
+
+    return true;
+  }
+
+  Chimera::Timer::ITimer_rPtr lookUpRawPointer( const Chimera::Timer::Peripheral peripheral )
+  {
+    /*-------------------------------------------------
+    Due to Thor implementing a persistent driver model
+    -------------------------------------------------*/
+    auto shared_view = lookUpSharedPointer( peripheral );
+    if( shared_view )
+    {
+      return shared_view.get();
+    }
+  }
+
+  Chimera::Timer::ITimer_sPtr lookUpSharedPointer( const Chimera::Timer::Peripheral peripheral )
+  {
+    using namespace Thor::LLD::TIMER;
+
+    /*-------------------------------------------------
+    Grab the lookup data
+    -------------------------------------------------*/
+    size_t hld_index = 0;
+    Type hld_type = Type::INVALID;
+
+    if( !getHLDResourceData( peripheral, hld_index, hld_type ))
+    {
+      return nullptr;
+    }
+
+    /*-------------------------------------------------
+    Grab the driver, implicitly converting to the base type
+    -------------------------------------------------*/
+    switch( hld_type )
+    {
+      case Type::ADVANCED_TIMER:
+        return hld_advanced_drivers[ hld_index ];
+        break;
+
+      case Type::BASIC_TIMER:
+        return hld_basic_drivers[ hld_index ];
+        break;
+
+      case Type::GENERAL_PURPOSE_TIMER:
+        return hld_general_drivers[ hld_index ];
+        break;
+
+      case Type::LOW_POWER_TIMER:
+        return hld_low_power_drivers[ hld_index ];
+        break;
+
+      default:
+        return nullptr;
+        break;
+    }
+  }
 }
 
 #endif /* THOR_HLD_TIMER */
