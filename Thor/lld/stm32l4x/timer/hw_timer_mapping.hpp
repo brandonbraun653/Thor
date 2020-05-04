@@ -17,15 +17,16 @@
 #include <array>
 
 /* Driver Includes */
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/timer/timer_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_types.hpp>
 
 namespace Thor::LLD::TIMER
 {
-  /*-------------------------------------------------
-  Define Memory Mapped Structs for Peripheral
-  -------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Memory Mapped Structs for Peripheral
+  -------------------------------------------------------------------------------*/
   extern RegisterMap *TIMER1_PERIPH;
   extern RegisterMap *TIMER2_PERIPH;
   extern RegisterMap *TIMER6_PERIPH;
@@ -42,27 +43,26 @@ namespace Thor::LLD::TIMER
   extern RegisterMap *TIMER7_PERIPH;
 #endif
 
-
-  /*------------------------------------------------
+  /*-------------------------------------------------------------------------------
   Hardware Memory Mappings
-  ------------------------------------------------*/
-  extern ITRIMap InstanceToResourceIndex;
-  extern PTRIMap PeripheralToLLDResourceIndex;
-  extern PTRIMap PeripheralToHLDResourceIndex;
+  -------------------------------------------------------------------------------*/
+  extern RIndexMap InstanceToResourceIndex;
+  extern PTRIMapLLD PeripheralToLLDResourceIndex;
+  extern PTRIMapHLD PeripheralToHLDResourceIndex;
 
   /**
    *
    */
   extern std::array<void *, NUM_TIMER_PERIPHS> LUT_PeripheralList;
 
-  /*------------------------------------------------
-  Mappings from Chimera Config Options->Register Values
-  ------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Mappings from Chimera Config Values -> LLD Register Values
+  -------------------------------------------------------------------------------*/
+  extern DirectionConverter LUT_Direction;
 
-
-  /*-------------------------------------------------
+  /*-------------------------------------------------------------------------------
   Module Functions
-  -------------------------------------------------*/
+  -------------------------------------------------------------------------------*/
   /**
    *  Initializes memory associated with mapping
    *

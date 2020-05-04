@@ -103,6 +103,10 @@ namespace Thor::LLD::RCC
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_SPI ) ] = &LookupTables::SPILookup;
 #endif
 
+#if defined( THOR_LLD_TIMER )
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_TIM ) ] = &LookupTables::TIMERLookup;
+#endif
+
 #if defined( THOR_LLD_UART )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ] = &LookupTables::UARTLookup;
 #endif

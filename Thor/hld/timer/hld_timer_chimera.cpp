@@ -28,12 +28,12 @@ namespace Chimera::Timer
   {
     Chimera::Status_t initialize()
     {
-      return Thor::TIMER::initialize();
+      return Thor::TIMER::initializeModule();
     }
 
     Chimera::Status_t reset()
     {
-      return Thor::TIMER::reset();
+      return Thor::TIMER::resetModule();
     }
 
     size_t millis()

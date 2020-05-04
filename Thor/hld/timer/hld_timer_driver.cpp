@@ -20,6 +20,7 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/timer>
+#include <Thor/hld/common/types.hpp>
 #include <Thor/hld/timer/hld_timer_prv_driver.hpp>
 #include <Thor/lld/interface/timer/timer_intf.hpp>
 #include <Thor/lld/interface/timer/timer_detail.hpp>
@@ -35,7 +36,7 @@ namespace Thor::TIMER
   /*-------------------------------------------------------------------------------
   Chimera Free Functions
   -------------------------------------------------------------------------------*/
-  Chimera::Status_t initialize()
+  Chimera::Status_t initializeModule()
   {
     /*------------------------------------------------
     Prevent re-initialization from occurring
@@ -47,18 +48,23 @@ namespace Thor::TIMER
     }
 
     /*------------------------------------------------
-    Initialize driver memory
+    Initialize HLD module
     ------------------------------------------------*/
-    result |= initializeAdvanced();
-    result |= initializeBasic();
-    result |= initializeGeneral();
-    result |= initializeLowPower();
+    result |= initAdvancedDriverModule();
+    result |= initBasicDriverModule();
+    result |= initGeneralDriverModule();
+    result |= initLowPowerDriverModule();
+
+    /*------------------------------------------------
+    Initialize the LLD module 
+    ------------------------------------------------*/
+    result |= Thor::LLD::TIMER::initializeModule();
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return result;
   }
 
-  Chimera::Status_t reset()
+  Chimera::Status_t resetModule()
   {
     return Chimera::CommonStatusCodes::OK;
   }
@@ -96,8 +102,7 @@ namespace Thor::TIMER
     return s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY;
   }
 
-
-  static bool getHLDResourceData( const Chimera::Timer::Peripheral peripheral, size_t &index, Thor::LLD::TIMER::Type &type )
+  static bool getHLDResourceData( const Chimera::Timer::Peripheral peripheral, Thor::HLD::RIndex &index, Thor::LLD::TIMER::Type &type )
   {
     using namespace Thor::LLD::TIMER;
 
@@ -120,8 +125,8 @@ namespace Thor::TIMER
     /*-------------------------------------------------
     Using the resource index, grab to the device descriptor
     -------------------------------------------------*/
-    size_t hld_resource_index = hld_resource_map->second;
-    size_t lld_resource_index = lld_resource_map->second;
+    auto hld_resource_index = hld_resource_map->second;
+    auto lld_resource_index = lld_resource_map->second;
     const DeviceDescription * pDeviceDescriptor = getPeripheralDescriptor( lld_resource_index );
 
 
@@ -134,13 +139,16 @@ namespace Thor::TIMER
   Chimera::Timer::ITimer_rPtr lookUpRawPointer( const Chimera::Timer::Peripheral peripheral )
   {
     /*-------------------------------------------------
-    Due to Thor implementing a persistent driver model
+    Due to Thor implementing a persistent driver model, if the 
+    shared_ptr exists, it will never be deleted. Giving out the 
+    raw pointer is no big deal.
     -------------------------------------------------*/
-    auto shared_view = lookUpSharedPointer( peripheral );
-    if( shared_view )
+    if( auto shared_view = lookUpSharedPointer( peripheral ); shared_view )
     {
       return shared_view.get();
     }
+
+    return nullptr;
   }
 
   Chimera::Timer::ITimer_sPtr lookUpSharedPointer( const Chimera::Timer::Peripheral peripheral )
@@ -150,7 +158,7 @@ namespace Thor::TIMER
     /*-------------------------------------------------
     Grab the lookup data
     -------------------------------------------------*/
-    size_t hld_index = 0;
+    HLD::RIndex hld_index = HLD::RIndex( 0 );
     Type hld_type = Type::INVALID;
 
     if( !getHLDResourceData( peripheral, hld_index, hld_type ))
@@ -159,24 +167,29 @@ namespace Thor::TIMER
     }
 
     /*-------------------------------------------------
-    Grab the driver, implicitly converting to the base type
+    Grab the driver, implicitly converting to the base type.
+    If one does not exist yet, it will be created.
     -------------------------------------------------*/
     switch( hld_type )
     {
       case Type::ADVANCED_TIMER:
-        return hld_advanced_drivers[ hld_index ];
+        initAdvancedDriverObject( hld_index );
+        return hld_advanced_drivers[ hld_index.value() ];
         break;
 
       case Type::BASIC_TIMER:
-        return hld_basic_drivers[ hld_index ];
+        initBasicDriverObject( hld_index );
+        return hld_basic_drivers[ hld_index.value() ];
         break;
 
       case Type::GENERAL_PURPOSE_TIMER:
-        return hld_general_drivers[ hld_index ];
+        initGeneralDriverObject( hld_index );
+        return hld_general_drivers[ hld_index.value() ];
         break;
 
       case Type::LOW_POWER_TIMER:
-        return hld_low_power_drivers[ hld_index ];
+        initLowPowerDriverObject( hld_index );
+        return hld_low_power_drivers[ hld_index.value() ];
         break;
 
       default:

@@ -30,24 +30,40 @@
 
 namespace Thor::TIMER
 {
-  namespace LLD = Thor::LLD::TIMER;
+  namespace LLD                       = Thor::LLD::TIMER;
   static constexpr size_t NUM_PERIPHS = Thor::LLD::TIMER::NUM_GENERAL_PERIPHS;
 
   /*-------------------------------------------------------------------------------
   Driver Memory
   -------------------------------------------------------------------------------*/
   std::array<GeneralDriver_sPtr, NUM_PERIPHS> hld_general_drivers;
-  static std::array<LLD::IGeneralDriver_sPtr, NUM_PERIPHS> s_lld_general_drivers;
+  static std::array<LLD::GeneralDriver_rPtr, NUM_PERIPHS> s_lld_general_drivers;
 
   /*-------------------------------------------------------------------------------
   Free Functions
   -------------------------------------------------------------------------------*/
-  Chimera::Status_t initializeGeneral()
+  Chimera::Status_t initGeneralDriverModule()
   {
-    for( size_t x=0; x<NUM_PERIPHS; x++)
+    for ( size_t x = 0; x < NUM_PERIPHS; x++ )
     {
-      hld_general_drivers[ x ] = nullptr;
+      hld_general_drivers[ x ]   = nullptr;
       s_lld_general_drivers[ x ] = nullptr;
+    }
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  Chimera::Status_t initGeneralDriverObject( const Thor::HLD::RIndex index )
+  {
+    if ( ( index.value() < hld_general_drivers.size() ) && !hld_general_drivers[ index.value() ] )
+    {
+      /* Initialize the HLD reference */
+      auto driver       = std::make_shared<GeneralDriver>();
+      driver->mIndexHLD = index;
+
+      /* Assign the driver instances */
+      hld_general_drivers[ index.value() ]   = driver;
+      s_lld_general_drivers[ index.value() ] = LLD::getGeneralDriver( index );
     }
 
     return Chimera::CommonStatusCodes::OK;
@@ -59,7 +75,7 @@ namespace Thor::TIMER
     Ensure the driver is initialized. This saves the cost
     of a look-up in the next step.
     -------------------------------------------------*/
-    if( !isInitialized() )
+    if ( !isInitialized() )
     {
       return nullptr;
     }
@@ -77,41 +93,38 @@ namespace Thor::TIMER
     Use the returned resource index to grab the driver instance
     ------------------------------------------------*/
     auto const iDriver = pRegistered->second;
-    if ( !hld_general_drivers[ iDriver ] && create )
+    if ( create )
     {
-      /* Initialize the HLD reference */
-      auto driver            = std::make_shared<GeneralDriver>();
-      driver->mResourceIndex = iDriver;
-
-      hld_general_drivers[ iDriver ] = driver;
-
-      /* Initialize the LLD reference */
-      s_lld_general_drivers[ iDriver ] = LLD::getGeneralDriver( iDriver );
+      initGeneralDriverObject( iDriver );
     }
 
-    return hld_general_drivers[ iDriver ];
+    return hld_general_drivers[ iDriver.value() ];
   }
 
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  /*------------------------------------------------
-  General Driver Interface
-  ------------------------------------------------*/
-  GeneralDriver::GeneralDriver() : mResourceIndex( 0 )
-  {
-  }
-
-  GeneralDriver::~GeneralDriver()
-  {
-  }
-
   /*-------------------------------------------------
   Chimera ITimer Interface
   -------------------------------------------------*/
-  Chimera::Status_t GeneralDriver::initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init )
+  Chimera::Status_t GeneralDriver::initializeCoreFeature( const Chimera::Timer::CoreFeature feature,
+                                                          Chimera::Timer::CoreFeatureInit &init )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    using namespace Chimera::Timer;
+
+    switch ( feature )
+    {
+      case CoreFeature::BASE_TIMER:
+        return initCoreTimer( init.base );
+        break;
+
+      case CoreFeature::PWM_OUTPUT:
+        return initPWM( init.pwm );
+
+      default:
+        return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+        break;
+    }
   }
 
   Chimera::Status_t GeneralDriver::invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize )
@@ -120,7 +133,7 @@ namespace Thor::TIMER
   }
 
   Chimera::Status_t GeneralDriver::setState( const Chimera::Timer::Switchable device,
-                                              const Chimera::Timer::SwitchableState state )
+                                             const Chimera::Timer::SwitchableState state )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -134,6 +147,58 @@ namespace Thor::TIMER
   {
     return nullptr;
   }
-}  // namespace Thor::TIMER
+
+
+  /*------------------------------------------------
+  General Driver Interface
+  ------------------------------------------------*/
+  GeneralDriver::GeneralDriver() : mIndexHLD( 0 ), mIndexLLD( 0 )
+  {
+  }
+
+  GeneralDriver::~GeneralDriver()
+  {
+  }
+
+  Chimera::Status_t GeneralDriver::initCoreTimer( const Chimera::Timer::DriverConfig &cfg )
+  {
+    /*------------------------------------------------
+    Make sure we should actually be initializing the timer
+    ------------------------------------------------*/
+    if ( !cfg.validity )
+    {
+      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+
+    /*-------------------------------------------------
+    Look up the LLD resource index and use it to attach the proper peripheral instance
+    -------------------------------------------------*/
+    mIndexLLD       = LLD::PeripheralToLLDResourceIndex.find( cfg.peripheral )->second;
+    auto peripheral = reinterpret_cast<LLD::RegisterMap *>( LLD::LUT_PeripheralList[ mIndexLLD.value() ] );
+    auto driver     = s_lld_general_drivers[ mIndexHLD.value() ];
+
+    driver->attach( peripheral );
+
+    /*-------------------------------------------------
+    Configure the base timer settings
+    -------------------------------------------------*/
+    driver->initBaseTimer( cfg );
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  Chimera::Status_t GeneralDriver::initPWM( const Chimera::Timer::PWM::Config &cfg )
+  {
+    /*------------------------------------------------
+    Make sure we should actually be initializing the channel
+    ------------------------------------------------*/
+    if ( !cfg.validity )
+    {
+      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    }
+
+    return s_lld_general_drivers[ mIndexHLD.value() ]->initPWM( cfg );
+  }
+}    // namespace Thor::TIMER
 
 #endif /* THOR_HLD_TIMER */

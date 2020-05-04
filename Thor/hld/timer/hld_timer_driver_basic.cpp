@@ -9,6 +9,8 @@
  *******************************************************************************/
 
 /* STL Includes */
+#include <array>
+#include <memory>
 
 /* Aurora Includes */
 #include <Aurora/constants/common.hpp>
@@ -42,7 +44,7 @@ namespace Thor::TIMER
   /*-------------------------------------------------------------------------------
   Free Functions
   -------------------------------------------------------------------------------*/
-  Chimera::Status_t initializeBasic()
+  Chimera::Status_t initBasicDriverModule()
   {
     for ( size_t x = 0; x < NUM_PERIPHS; x++ )
     {
@@ -52,6 +54,23 @@ namespace Thor::TIMER
 
     return Chimera::CommonStatusCodes::OK;
   }
+
+  Chimera::Status_t initBasicDriverObject( const Thor::HLD::RIndex index )
+  {
+    if ( ( index.value() < hld_basic_drivers.size() ) && !hld_basic_drivers[ index.value() ] )
+    {
+      /* Initialize the HLD reference */
+      auto driver       = std::make_shared<BasicDriver>();
+      driver->mIndexHLD = index;
+
+      /* Assign the driver instances */
+      hld_basic_drivers[ index.value() ]   = driver;
+      s_lld_basic_drivers[ index.value() ] = LLD::getBasicDriver( index );
+    }
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
 
   BasicDriver_sPtr getBasicDriver_sPtr( const Chimera::Timer::Peripheral periph, const bool create )
   {
@@ -77,19 +96,12 @@ namespace Thor::TIMER
     Use the returned resource index to grab the driver instance
     ------------------------------------------------*/
     auto const iDriver = pRegistered->second;
-    if ( !hld_basic_drivers[ iDriver ] && create )
+    if ( create )
     {
-      /* Initialize the HLD reference */
-      auto driver            = std::make_shared<BasicDriver>();
-      driver->mResourceIndex = iDriver;
-
-      hld_basic_drivers[ iDriver ] = driver;
-
-      /* Initialize the LLD reference */
-      s_lld_basic_drivers[ iDriver ] = LLD::getBasicDriver( iDriver );
+      initBasicDriverObject( iDriver );
     }
 
-    return hld_basic_drivers[ iDriver ];
+    return hld_basic_drivers[ iDriver.value() ];
   }
 
   /*-------------------------------------------------------------------------------
@@ -98,7 +110,7 @@ namespace Thor::TIMER
   /*------------------------------------------------
   Basic Driver Interface
   ------------------------------------------------*/
-  BasicDriver::BasicDriver() : mResourceIndex( 0 )
+  BasicDriver::BasicDriver() : mIndexHLD( 0 ), mIndexLLD( 0 )
   {
   }
 

@@ -546,6 +546,7 @@
     <ClCompile Include="..\..\..\Thor\config\freertos\thor_freertos_hooks_prj.cpp" />
     <ClInclude Include="..\..\..\Thor\hld\common\macro.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\common\preprocessor.hpp" />
+    <ClInclude Include="..\..\..\Thor\hld\common\types.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\crc\crc.hpp" />
     <ClCompile Include="..\..\..\Thor\hld\dma\hld_dma_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\dma\hld_dma_driver.cpp" />
@@ -697,6 +698,7 @@
     <ClCompile Include="..\..\..\Thor\lld\common\mapping\peripheral_mapping.cpp" />
     <ClInclude Include="..\..\..\Thor\lld\common\mapping\peripheral_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\common\registers\field_accessor.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\common\types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\callback_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\callback_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\des\des_intf.hpp" />

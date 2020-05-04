@@ -29,12 +29,12 @@ namespace Thor::LLD::TIMER
   /* clang-format off */
   const std::array<Chimera::Timer::Peripheral, NUM_TIMER_PERIPHS> supportedChannels = {
 
-    Chimera::Timer::Peripheral::TIMER1,   
+    Chimera::Timer::Peripheral::TIMER1,
     Chimera::Timer::Peripheral::TIMER2,
     Chimera::Timer::Peripheral::TIMER6,
-    Chimera::Timer::Peripheral::TIMER15,  
+    Chimera::Timer::Peripheral::TIMER15,
     Chimera::Timer::Peripheral::TIMER16,
-    Chimera::Timer::Peripheral::LPTIMER1, 
+    Chimera::Timer::Peripheral::LPTIMER1,
     Chimera::Timer::Peripheral::LPTIMER2,
 
 #if defined( STM32_TIMER3_PERIPH_AVAILABLE )
@@ -67,7 +67,7 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------
   Lookup Tables Defintions
   -------------------------------------------------*/
-  ITRIMap InstanceToResourceIndex{ 
+  RIndexMap InstanceToResourceIndex{
     { reinterpret_cast<std::uintptr_t>( TIMER1_PERIPH ),    TIMER1_RESOURCE_INDEX },
     { reinterpret_cast<std::uintptr_t>( TIMER2_PERIPH ),    TIMER2_RESOURCE_INDEX },
     { reinterpret_cast<std::uintptr_t>( TIMER3_PERIPH ),    TIMER3_RESOURCE_INDEX },
@@ -96,7 +96,7 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------
   Lookup Tables Definitions
   -------------------------------------------------*/
-  Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  Thor::LLD::RIndexMap InstanceToResourceIndex;
 #endif
 
   /* clang-format on */
@@ -157,83 +157,83 @@ namespace Thor::LLD::RCC::LookupTables
     /*------------------------------------------------
     TIMER clock enable register access lookup table
     ------------------------------------------------*/
-    TIMER_ClockConfig[ TIMER1_RESOURCE_INDEX ].mask = APB2ENR_TIM1EN;
-    TIMER_ClockConfig[ TIMER1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2ENR;
+    TIMER_ClockConfig[ TIMER1_RESOURCE_INDEX.value() ].mask = APB2ENR_TIM1EN;
+    TIMER_ClockConfig[ TIMER1_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB2ENR;
 
-    TIMER_ClockConfig[ TIMER2_RESOURCE_INDEX ].mask = APB1ENR1_TIM2EN;
-    TIMER_ClockConfig[ TIMER2_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR1;
+    TIMER_ClockConfig[ TIMER2_RESOURCE_INDEX.value() ].mask = APB1ENR1_TIM2EN;
+    TIMER_ClockConfig[ TIMER2_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1ENR1;
 
 #if defined( STM32_TIMER3_PERIPH_AVAILABLE )
-    TIMER_ClockConfig[ TIMER3_RESOURCE_INDEX ].mask = APB1ENR1_TIM3EN;
-    TIMER_ClockConfig[ TIMER3_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR1;
+    TIMER_ClockConfig[ TIMER3_RESOURCE_INDEX.value() ].mask = APB1ENR1_TIM3EN;
+    TIMER_ClockConfig[ TIMER3_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1ENR1;
 #endif
 
-    TIMER_ClockConfig[ TIMER6_RESOURCE_INDEX ].mask = APB1ENR1_TIM6EN;
-    TIMER_ClockConfig[ TIMER6_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR1;
+    TIMER_ClockConfig[ TIMER6_RESOURCE_INDEX.value() ].mask = APB1ENR1_TIM6EN;
+    TIMER_ClockConfig[ TIMER6_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1ENR1;
 
-    TIMER_ClockConfig[ TIMER7_RESOURCE_INDEX ].mask = APB1ENR1_TIM7EN;
-    TIMER_ClockConfig[ TIMER7_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR1;
+    TIMER_ClockConfig[ TIMER7_RESOURCE_INDEX.value() ].mask = APB1ENR1_TIM7EN;
+    TIMER_ClockConfig[ TIMER7_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1ENR1;
 
-    TIMER_ClockConfig[ TIMER15_RESOURCE_INDEX ].mask = APB2ENR_TIM15EN;
-    TIMER_ClockConfig[ TIMER15_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2ENR;
+    TIMER_ClockConfig[ TIMER15_RESOURCE_INDEX.value() ].mask = APB2ENR_TIM15EN;
+    TIMER_ClockConfig[ TIMER15_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB2ENR;
 
-    TIMER_ClockConfig[ TIMER16_RESOURCE_INDEX ].mask = APB2ENR_TIM16EN;
-    TIMER_ClockConfig[ TIMER16_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2ENR;
+    TIMER_ClockConfig[ TIMER16_RESOURCE_INDEX.value() ].mask = APB2ENR_TIM16EN;
+    TIMER_ClockConfig[ TIMER16_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB2ENR;
 
-    TIMER_ClockConfig[ LPTIMER1_RESOURCE_INDEX ].mask = APB1ENR1_LPTIM1EN;
-    TIMER_ClockConfig[ LPTIMER1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR1;
+    TIMER_ClockConfig[ LPTIMER1_RESOURCE_INDEX.value() ].mask = APB1ENR1_LPTIM1EN;
+    TIMER_ClockConfig[ LPTIMER1_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1ENR1;
 
-    TIMER_ClockConfig[ LPTIMER2_RESOURCE_INDEX ].mask = APB1ENR2_LPTIM2EN;
-    TIMER_ClockConfig[ LPTIMER2_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR2;
+    TIMER_ClockConfig[ LPTIMER2_RESOURCE_INDEX.value() ].mask = APB1ENR2_LPTIM2EN;
+    TIMER_ClockConfig[ LPTIMER2_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1ENR2;
 
     /*------------------------------------------------
     TIMER reset register access lookup table
     ------------------------------------------------*/
-    TIMER_ResetConfig[ TIMER1_RESOURCE_INDEX ].mask = APB2RSTR_TIM1RST;
-    TIMER_ResetConfig[ TIMER1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2RSTR;
+    TIMER_ResetConfig[ TIMER1_RESOURCE_INDEX.value() ].mask = APB2RSTR_TIM1RST;
+    TIMER_ResetConfig[ TIMER1_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB2RSTR;
 
-    TIMER_ResetConfig[ TIMER2_RESOURCE_INDEX ].mask = APB1RSTR1_TIM2RST;
-    TIMER_ResetConfig[ TIMER2_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1RSTR1;
+    TIMER_ResetConfig[ TIMER2_RESOURCE_INDEX.value() ].mask = APB1RSTR1_TIM2RST;
+    TIMER_ResetConfig[ TIMER2_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1RSTR1;
 
 #if defined( STM32_TIMER3_PERIPH_AVAILABLE )
-    TIMER_ResetConfig[ TIMER3_RESOURCE_INDEX ].mask = APB1RSTR1_TIM3RST;
-    TIMER_ResetConfig[ TIMER3_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1RSTR1;
+    TIMER_ResetConfig[ TIMER3_RESOURCE_INDEX.value() ].mask = APB1RSTR1_TIM3RST;
+    TIMER_ResetConfig[ TIMER3_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1RSTR1;
 #endif
 
-    TIMER_ResetConfig[ TIMER6_RESOURCE_INDEX ].mask = APB1RSTR1_TIM6RST;
-    TIMER_ResetConfig[ TIMER6_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1RSTR1;
+    TIMER_ResetConfig[ TIMER6_RESOURCE_INDEX.value() ].mask = APB1RSTR1_TIM6RST;
+    TIMER_ResetConfig[ TIMER6_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1RSTR1;
 
-    TIMER_ResetConfig[ TIMER7_RESOURCE_INDEX ].mask = APB1RSTR1_TIM7RST;
-    TIMER_ResetConfig[ TIMER7_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1RSTR1;
+    TIMER_ResetConfig[ TIMER7_RESOURCE_INDEX.value() ].mask = APB1RSTR1_TIM7RST;
+    TIMER_ResetConfig[ TIMER7_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1RSTR1;
 
-    TIMER_ResetConfig[ TIMER15_RESOURCE_INDEX ].mask = APB2RSTR_TIM15RST;
-    TIMER_ResetConfig[ TIMER15_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2RSTR;
+    TIMER_ResetConfig[ TIMER15_RESOURCE_INDEX.value() ].mask = APB2RSTR_TIM15RST;
+    TIMER_ResetConfig[ TIMER15_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB2RSTR;
 
-    TIMER_ResetConfig[ TIMER16_RESOURCE_INDEX ].mask = APB2RSTR_TIM16RST;
-    TIMER_ResetConfig[ TIMER16_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2RSTR;
+    TIMER_ResetConfig[ TIMER16_RESOURCE_INDEX.value() ].mask = APB2RSTR_TIM16RST;
+    TIMER_ResetConfig[ TIMER16_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB2RSTR;
 
-    TIMER_ResetConfig[ LPTIMER1_RESOURCE_INDEX ].mask = APB1RSTR1_LPTIM1RST;
-    TIMER_ResetConfig[ LPTIMER1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1RSTR1;
+    TIMER_ResetConfig[ LPTIMER1_RESOURCE_INDEX.value() ].mask = APB1RSTR1_LPTIM1RST;
+    TIMER_ResetConfig[ LPTIMER1_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1RSTR1;
 
-    TIMER_ResetConfig[ LPTIMER2_RESOURCE_INDEX ].mask = APB1RSTR2_LPTIM2RST;
-    TIMER_ResetConfig[ LPTIMER2_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1RSTR2;
+    TIMER_ResetConfig[ LPTIMER2_RESOURCE_INDEX.value() ].mask = APB1RSTR2_LPTIM2RST;
+    TIMER_ResetConfig[ LPTIMER2_RESOURCE_INDEX.value() ].reg  = &RCC1_PERIPH->APB1RSTR2;
 
     /*------------------------------------------------
     TIMER clocking bus source identifier
     ------------------------------------------------*/
-    TIMER_SourceClock[ TIMER1_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB2;
-    TIMER_SourceClock[ TIMER2_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
+    TIMER_SourceClock[ TIMER1_RESOURCE_INDEX.value() ] = Chimera::Clock::Bus::APB2;
+    TIMER_SourceClock[ TIMER2_RESOURCE_INDEX.value() ] = Chimera::Clock::Bus::APB1;
 
 #if defined( STM32_TIMER3_PERIPH_AVAILABLE )
-    TIMER_SourceClock[ TIMER3_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
+    TIMER_SourceClock[ TIMER3_RESOURCE_INDEX.value() ] = Chimera::Clock::Bus::APB1;
 #endif
 
-    TIMER_SourceClock[ TIMER6_RESOURCE_INDEX ]   = Chimera::Clock::Bus::APB1;
-    TIMER_SourceClock[ TIMER7_RESOURCE_INDEX ]   = Chimera::Clock::Bus::APB1;
-    TIMER_SourceClock[ TIMER15_RESOURCE_INDEX ]  = Chimera::Clock::Bus::APB2;
-    TIMER_SourceClock[ TIMER16_RESOURCE_INDEX ]  = Chimera::Clock::Bus::APB2;
-    TIMER_SourceClock[ LPTIMER1_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
-    TIMER_SourceClock[ LPTIMER2_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
+    TIMER_SourceClock[ TIMER6_RESOURCE_INDEX.value() ]   = Chimera::Clock::Bus::APB1;
+    TIMER_SourceClock[ TIMER7_RESOURCE_INDEX.value() ]   = Chimera::Clock::Bus::APB1;
+    TIMER_SourceClock[ TIMER15_RESOURCE_INDEX.value() ]  = Chimera::Clock::Bus::APB2;
+    TIMER_SourceClock[ TIMER16_RESOURCE_INDEX.value() ]  = Chimera::Clock::Bus::APB2;
+    TIMER_SourceClock[ LPTIMER1_RESOURCE_INDEX.value() ] = Chimera::Clock::Bus::APB1;
+    TIMER_SourceClock[ LPTIMER2_RESOURCE_INDEX.value() ] = Chimera::Clock::Bus::APB1;
   };
 
 }    // namespace Thor::LLD::RCC::LookupTables

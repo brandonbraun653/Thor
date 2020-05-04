@@ -26,7 +26,7 @@ namespace Thor::PWM
   /*-------------------------------------------------------------------------------
   Free Function Definitions
   -------------------------------------------------------------------------------*/
-  Chimera::Status_t initialize()
+  Chimera::Status_t initializeModule()
   {
     return Chimera::CommonStatusCodes::OK;
   }
@@ -168,17 +168,20 @@ namespace Thor::PWM
 
   Chimera::Status_t Driver::setFrequency( const size_t freq )
   {
-    return applyConfig( freq, mPWMConfig.dutyCycle, mPWMConfig.polarity );
+    //return applyConfig( freq, mPWMConfig.dutyCycle, mPWMConfig.polarity );
+    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
   }
 
   Chimera::Status_t Driver::setDutyCyle( const size_t dutyCycle )
   {
-    return applyConfig( mPWMConfig.frequency, dutyCycle, mPWMConfig.polarity );
+    //return applyConfig( mPWMConfig.frequency, dutyCycle, mPWMConfig.polarity );
+    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
   }
 
   Chimera::Status_t Driver::setPolarity( const Chimera::Timer::PWM::Polarity polarity )
   {
-    return applyConfig( mPWMConfig.frequency, mPWMConfig.dutyCycle, polarity );
+    //return applyConfig( mPWMConfig.frequency, mPWMConfig.dutyCycle, polarity );
+    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
   }
 
   Chimera::Status_t Driver::applyConfig( const size_t freq, const size_t dutyCycle,
@@ -198,22 +201,24 @@ namespace Thor::PWM
       return Chimera::CommonStatusCodes::LOCKED;
     }
 
-    /*------------------------------------------------
-    Set the new frequency/duty cycle
-    ------------------------------------------------*/
-    mPWMConfig.frequency = freq;
-    mPWMConfig.dutyCycle = dutyCycle;
+    //    /*------------------------------------------------
+    //    Set the new frequency/duty cycle
+    //    ------------------------------------------------*/
+    //    mPWMConfig.frequency = freq;
+    //    mPWMConfig.dutyCycle = dutyCycle;
+    //
+    //
+    //    CoreFeatureInit tmp;
+    //    memset( &tmp, 0, sizeof( tmp ) );
+    //    tmp.pwm = mPWMConfig;
+    //    auto result = mpTimerDriver->initializeCoreFeature( CoreFeature::PWM_OUTPUT, tmp );
+    //
+    //    /*------------------------------------------------
+    //    Unlock the driver and return the result
+    //    ------------------------------------------------*/
+    //    unlock();
+    //    return result;
 
-    
-    CoreFeatureInit tmp;
-    memset( &tmp, 0, sizeof( tmp ) );
-    tmp.pwm = mPWMConfig;
-    auto result = mpTimerDriver->initializeCoreFeature( CoreFeature::PWM_OUTPUT, tmp );
-
-    /*------------------------------------------------
-    Unlock the driver and return the result
-    ------------------------------------------------*/
-    unlock();
-    return result;
+    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
   }
 }

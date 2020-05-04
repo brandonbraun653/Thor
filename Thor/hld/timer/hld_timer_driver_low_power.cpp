@@ -20,6 +20,7 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/timer>
+#include <Thor/hld/common/types.hpp>
 #include <Thor/hld/timer/hld_timer_prv_driver.hpp>
 #include <Thor/lld/interface/timer/timer_intf.hpp>
 #include <Thor/lld/interface/timer/timer_detail.hpp>
@@ -41,12 +42,28 @@ namespace Thor::TIMER
   /*-------------------------------------------------------------------------------
   Free Functions
   -------------------------------------------------------------------------------*/
-  Chimera::Status_t initializeLowPower()
+  Chimera::Status_t initLowPowerDriverModule()
   {
     for( size_t x=0; x<NUM_PERIPHS; x++)
     {
       hld_low_power_drivers[ x ] = nullptr;
       s_lld_low_power_drivers[ x ] = nullptr;
+    }
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+
+  Chimera::Status_t initLowPowerDriverObject( const Thor::HLD::RIndex index )
+  {
+    if ( ( index.value() < hld_low_power_drivers.size() ) && !hld_low_power_drivers[ index.value() ] ) 
+    {
+      /* Initialize the HLD reference */
+      auto driver       = std::make_shared<LowPowerDriver>();
+      driver->mIndexHLD = index;
+
+      /* Assign the driver instances */
+      hld_low_power_drivers[ index.value() ] = driver;
+      s_lld_low_power_drivers[ index.value() ] = LLD::getLowPowerDriver( index );
     }
 
     return Chimera::CommonStatusCodes::OK;
@@ -76,19 +93,12 @@ namespace Thor::TIMER
     Use the returned resource index to grab the driver instance
     ------------------------------------------------*/
     auto const iDriver = pRegistered->second;
-    if ( !hld_low_power_drivers[ iDriver ] && create )
+    if ( create )
     {
-      /* Initialize the HLD reference */
-      auto driver            = std::make_shared<LowPowerDriver>();
-      driver->mResourceIndex = iDriver;
-
-      hld_low_power_drivers[ iDriver ] = driver;
-
-      /* Initialize the LLD reference */
-      s_lld_low_power_drivers[ iDriver ] = LLD::getLowPowerDriver( iDriver );
+      initLowPowerDriverObject( iDriver );
     }
 
-    return hld_low_power_drivers[ iDriver ];
+    return hld_low_power_drivers[ iDriver.value() ];
   }
 
   /*-------------------------------------------------------------------------------
@@ -97,7 +107,7 @@ namespace Thor::TIMER
   /*------------------------------------------------
   Low Power Driver Interface
   ------------------------------------------------*/
-  LowPowerDriver::LowPowerDriver() : mResourceIndex( 0 )
+  LowPowerDriver::LowPowerDriver() : mIndexHLD( 0 ), mIndexLLD( 0 )
   {
   }
 

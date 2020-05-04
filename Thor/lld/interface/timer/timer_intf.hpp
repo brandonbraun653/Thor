@@ -21,6 +21,8 @@
 #include <Chimera/timer>
 
 /* Thor Includes */
+#include <Thor/hld/common/types.hpp>
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/timer/timer_types.hpp>
 
 namespace Thor::LLD::TIMER
@@ -39,7 +41,7 @@ namespace Thor::LLD::TIMER
   /**
    *  Initializes the low level driver
    */
-  extern Chimera::Status_t initialize();
+  extern Chimera::Status_t initializeModule();
 
   /**
    *  Checks if the given hardware channel is supported on this device.
@@ -49,103 +51,29 @@ namespace Thor::LLD::TIMER
    */
   bool isChannelSupported( const size_t channel );
 
-  IAdvancedDriver_sPtr getAdvancedDriver( const size_t channel );
+  IAdvancedDriver_sPtr getAdvancedDriver( const Thor::HLD::RIndex channel );
 
-  IBasicDriver_sPtr getBasicDriver( const size_t channel );
+  IBasicDriver_sPtr getBasicDriver( const Thor::HLD::RIndex channel );
 
-  IGeneralDriver_sPtr getGeneralDriver( const size_t channel );
+  GeneralDriver_rPtr getGeneralDriver( const Thor::HLD::RIndex channel );
 
-  ILowPowerDriver_sPtr getLowPowerDriver( const size_t channel );
-
-
-  /**
-   *  Looks up the LLD resource index associated with a particular
-   *  timer channel. There can be multiple channels associated with a
-   *  single resource index.
-   *
-   *  @param[in]  channel     The channel number to look up
-   *  @return size_t
-   */
-  size_t getResourceIndexFromChannel( const size_t channel );
-
+  ILowPowerDriver_sPtr getLowPowerDriver( const Thor::HLD::RIndex channel );
 
   /**
    *  Gets the peripheral description data associated with the
    *  resource index.
    *
-   *  @param[in]  resourceIndex     The index to look up
+   *  @note This data is mapped to a resource index provided by the LLD implementation.
+   *        Do not use a HLD resource index to
+   *
+   *  @param[in]  lldIndex    The look up index (must be from LLD's perspective)
    *  @return const DeviceDescription *
    */
-  const DeviceDescription *getPeripheralDescriptor( const size_t resourceIndex );
+  const DeviceDescription *getPeripheralDescriptor( const Thor::LLD::RIndex lldIndex );
 
   /*-------------------------------------------------------------------------------
   Timer Driver Class Interface Declarations
   -------------------------------------------------------------------------------*/
-  template<class T>
-  class CRTPParent
-  {
-  public:
-    bool moreFunctions()
-    {
-      return static_cast<T *>( this )->moreFunctions();
-    }
-  };
-
-  template<class T>
-  class CRTPBaseDriver : public CRTPParent<CRTPBaseDriver<T>>
-  {
-  public:
-    Chimera::Status_t initPeripheral( const Chimera::Timer::DriverConfig &cfg )
-    {
-      return static_cast<T *>( this )->initPeripheral( cfg );
-    }
-
-    bool hasFunction( const Chimera::Timer::Function func )
-    {
-      return static_cast<T *>( this )->hasFunction( func );
-    }
-
-    Chimera::Status_t enable( const Chimera::Timer::Channel channel )
-    {
-      return static_cast<T *>( this )->enable( channel );
-    }
-
-    Chimera::Status_t disable( const Chimera::Timer::Channel channel )
-    {
-      return static_cast<T *>( this )->disable( channel );
-    }
-
-    Chimera::Status_t enableEvent( const Chimera::Timer::Channel channel, const Chimera::Timer::Event type )
-    {
-      return static_cast<T *>( this )->enableEvent( channel, type );
-    }
-
-    Chimera::Status_t disableEvent( const Chimera::Timer::Channel channel, const Chimera::Timer::Event type )
-    {
-      return static_cast<T *>( this )->disableEvent( channel, type );
-    }
-  };
-
-  class VirtualParent
-  {
-  public:
-    virtual ~VirtualParent() = default;
-
-    virtual bool moreFunctions() = 0;
-  };
-
-  class VirtualBaseDriver : public virtual VirtualParent
-  {
-  public:
-    virtual ~VirtualBaseDriver()                                                                                      = default;
-    virtual Chimera::Status_t initPeripheral( const Chimera::Timer::DriverConfig &cfg )                               = 0;
-    virtual bool hasFunction( const Chimera::Timer::Function func )                                                   = 0;
-    virtual Chimera::Status_t enable( const Chimera::Timer::Channel channel )                                         = 0;
-    virtual Chimera::Status_t disable( const Chimera::Timer::Channel channel )                                        = 0;
-    virtual Chimera::Status_t enableEvent( const Chimera::Timer::Channel channel, const Chimera::Timer::Event type )  = 0;
-    virtual Chimera::Status_t disableEvent( const Chimera::Timer::Channel channel, const Chimera::Timer::Event type ) = 0;
-  };
-
   class ICommonDriver
   {
   public:
@@ -209,32 +137,6 @@ namespace Thor::LLD::TIMER
      */
     virtual Chimera::Status_t attach( RegisterMap *const peripheral ) = 0;
   };
-
-#if defined( VIRTUAL_FUNC )
-  class IGeneralDriver : public virtual ICommonDriver
-  {
-  public:
-    virtual ~IGeneralDriver() = default;
-
-    /**
-     *  Attaches a peripheral instance to the interaction model
-     *
-     *  @param[in]  peripheral    Memory mapped struct of the desired peripheral
-     *  @return void
-     */
-    virtual Chimera::Status_t attach( RegisterMap *const peripheral ) = 0;
-  };
-#else
-  template<class T>
-  class IGeneralDriver
-  {
-  public:
-    Chimera::Status_t attach( RegisterMap *const peripheral )
-    {
-      return static_cast<T *>( this )->attach( peripheral );
-    }
-  };
-#endif
 
   class ILowPowerDriver : public virtual ICommonDriver
   {

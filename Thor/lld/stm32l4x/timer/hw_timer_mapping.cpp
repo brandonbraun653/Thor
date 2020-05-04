@@ -19,6 +19,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/stm32l4x/timer/hw_timer_mapping.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_prj.hpp>
+#include <Thor/lld/stm32l4x/timer/hw_timer_types.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_TIMER )
 
@@ -112,7 +113,7 @@ namespace Thor::LLD::TIMER
   Flat Map Data
   -------------------------------------------------------------------------------*/
   /* clang-format off */
-  PTRIMap PeripheralToLLDResourceIndex = {
+  PTRIMapLLD PeripheralToLLDResourceIndex = {
     { Chimera::Timer::Peripheral::TIMER1,   TIMER1_RESOURCE_INDEX   },
     { Chimera::Timer::Peripheral::TIMER2,   TIMER2_RESOURCE_INDEX   },
     { Chimera::Timer::Peripheral::TIMER3,   TIMER3_RESOURCE_INDEX   },
@@ -124,7 +125,7 @@ namespace Thor::LLD::TIMER
     { Chimera::Timer::Peripheral::LPTIMER2, LPTIMER2_RESOURCE_INDEX }
   };
 
-  PTRIMap PeripheralToHLDResourceIndex = {
+  PTRIMapHLD PeripheralToHLDResourceIndex = {
     { Chimera::Timer::Peripheral::TIMER1,   ADVANCED_TIMER1_RESOURCE_INDEX  },
     { Chimera::Timer::Peripheral::TIMER2,   GENERAL_TIMER1_RESOURCE_INDEX   },
     { Chimera::Timer::Peripheral::TIMER3,   GENERAL_TIMER2_RESOURCE_INDEX   },
@@ -141,7 +142,10 @@ namespace Thor::LLD::TIMER
   Look Up Tables
   -------------------------------------------------------------------------------*/
   /* clang-format off */
-
+  DirectionConverter LUT_Direction = {
+    Configuration::Direction::COUNT_UP,
+    Configuration::Direction::COUNT_DN
+  };
   /* clang-format on */
 
   /*-------------------------------------------------------------------------------
@@ -155,47 +159,47 @@ namespace Thor::LLD::TIMER
     /*------------------------------------------------
     Assign the peripheral list
     ------------------------------------------------*/
-    LUT_PeripheralList[ TIMER1_RESOURCE_INDEX ]   = TIMER1_PERIPH;
-    LUT_PeripheralList[ TIMER2_RESOURCE_INDEX ]   = TIMER2_PERIPH;
-    LUT_PeripheralList[ TIMER6_RESOURCE_INDEX ]   = TIMER6_PERIPH;
-    LUT_PeripheralList[ TIMER15_RESOURCE_INDEX ]  = TIMER15_PERIPH;
-    LUT_PeripheralList[ TIMER16_RESOURCE_INDEX ]  = TIMER16_PERIPH;
-    LUT_PeripheralList[ LPTIMER1_RESOURCE_INDEX ] = LPTIMER1_PERIPH;
-    LUT_PeripheralList[ LPTIMER2_RESOURCE_INDEX ] = LPTIMER2_PERIPH;
+    LUT_PeripheralList[ TIMER1_RESOURCE_INDEX.value() ]   = TIMER1_PERIPH;
+    LUT_PeripheralList[ TIMER2_RESOURCE_INDEX.value() ]   = TIMER2_PERIPH;
+    LUT_PeripheralList[ TIMER6_RESOURCE_INDEX.value() ]   = TIMER6_PERIPH;
+    LUT_PeripheralList[ TIMER15_RESOURCE_INDEX.value() ]  = TIMER15_PERIPH;
+    LUT_PeripheralList[ TIMER16_RESOURCE_INDEX.value() ]  = TIMER16_PERIPH;
+    LUT_PeripheralList[ LPTIMER1_RESOURCE_INDEX.value() ] = LPTIMER1_PERIPH;
+    LUT_PeripheralList[ LPTIMER2_RESOURCE_INDEX.value() ] = LPTIMER2_PERIPH;
 
 #if defined( STM32_TIMER3_PERIPH_AVAILABLE )
-    LUT_PeripheralList[ TIMER3_RESOURCE_INDEX ] = TIMER3_PERIPH;
+    LUT_PeripheralList[ TIMER3_RESOURCE_INDEX.value() ] = TIMER3_PERIPH;
 #else
-    LUT_PeripheralList[ TIMER3_RESOURCE_INDEX ] = nullptr;
+    LUT_PeripheralList[ TIMER3_RESOURCE_INDEX.value() ] = nullptr;
 #endif
 
 #if defined( STM32_TIMER7_PERIPH_AVAILABLE )
-    LUT_PeripheralList[ TIMER7_RESOURCE_INDEX ] = TIMER7_PERIPH;
+    LUT_PeripheralList[ TIMER7_RESOURCE_INDEX.value() ] = TIMER7_PERIPH;
 #else
-    LUT_PeripheralList[ TIMER7_RESOURCE_INDEX ] = nullptr;
+    LUT_PeripheralList[ TIMER7_RESOURCE_INDEX.value() ] = nullptr;
 #endif
 
     /*------------------------------------------------
     Assign the device descriptors
     ------------------------------------------------*/
-    LUT_DeviceDescriptor[ TIMER1_RESOURCE_INDEX ]   = &sTIMER1Description;
-    LUT_DeviceDescriptor[ TIMER2_RESOURCE_INDEX ]   = &sTIMER2Description;
-    LUT_DeviceDescriptor[ TIMER6_RESOURCE_INDEX ]   = &sTIMER6Description;
-    LUT_DeviceDescriptor[ TIMER15_RESOURCE_INDEX ]  = &sTIMER15Description;
-    LUT_DeviceDescriptor[ TIMER16_RESOURCE_INDEX ]  = &sTIMER16Description;
-    LUT_DeviceDescriptor[ LPTIMER1_RESOURCE_INDEX ] = &sLPTIMER1Description;
-    LUT_DeviceDescriptor[ LPTIMER2_RESOURCE_INDEX ] = &sLPTIMER2Description;
+    LUT_DeviceDescriptor[ TIMER1_RESOURCE_INDEX.value() ]   = &sTIMER1Description;
+    LUT_DeviceDescriptor[ TIMER2_RESOURCE_INDEX.value() ]   = &sTIMER2Description;
+    LUT_DeviceDescriptor[ TIMER6_RESOURCE_INDEX.value() ]   = &sTIMER6Description;
+    LUT_DeviceDescriptor[ TIMER15_RESOURCE_INDEX.value() ]  = &sTIMER15Description;
+    LUT_DeviceDescriptor[ TIMER16_RESOURCE_INDEX.value() ]  = &sTIMER16Description;
+    LUT_DeviceDescriptor[ LPTIMER1_RESOURCE_INDEX.value() ] = &sLPTIMER1Description;
+    LUT_DeviceDescriptor[ LPTIMER2_RESOURCE_INDEX.value() ] = &sLPTIMER2Description;
 
 #if defined( STM32_TIMER3_PERIPH_AVAILABLE )
-    LUT_DeviceDescriptor[ TIMER3_RESOURCE_INDEX ] = &sTIMER3Description;
+    LUT_DeviceDescriptor[ TIMER3_RESOURCE_INDEX.value() ] = &sTIMER3Description;
 #else
-    LUT_DeviceDescriptor[ TIMER3_RESOURCE_INDEX ] = nullptr;
+    LUT_DeviceDescriptor[ TIMER3_RESOURCE_INDEX.value() ] = nullptr;
 #endif
 
 #if defined( STM32_TIMER7_PERIPH_AVAILABLE )
-    LUT_DeviceDescriptor[ TIMER7_RESOURCE_INDEX ] = &sTIMER7Description;
+    LUT_DeviceDescriptor[ TIMER7_RESOURCE_INDEX.value() ] = &sTIMER7Description;
 #else
-    LUT_DeviceDescriptor[ TIMER7_RESOURCE_INDEX ] = nullptr;
+    LUT_DeviceDescriptor[ TIMER7_RESOURCE_INDEX.value() ] = nullptr;
 #endif
   }
 
@@ -205,11 +209,11 @@ namespace Thor::LLD::TIMER
   timer_intf.hpp
   ------------------------------------------------*/
 
-  const DeviceDescription *getPeripheralDescriptor( const size_t resourceIndex )
+  const DeviceDescription *getPeripheralDescriptor( const Thor::LLD::RIndex resourceIndex )
   {
-    if ( resourceIndex < NUM_TIMER_PERIPHS )
+    if ( resourceIndex.value() < NUM_TIMER_PERIPHS )
     {
-      return LUT_DeviceDescriptor[ resourceIndex ];
+      return LUT_DeviceDescriptor[ resourceIndex.value() ];
     }
     else
     {

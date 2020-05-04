@@ -1359,6 +1359,12 @@
     <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_prv_driver.hpp">
       <Filter>hld\timer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\hld\common\types.hpp">
+      <Filter>hld\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\common\types.hpp">
+      <Filter>lld\common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">

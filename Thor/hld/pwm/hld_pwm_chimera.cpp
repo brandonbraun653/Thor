@@ -23,7 +23,7 @@ namespace Chimera::PWM::Backend
 {
   Chimera::Status_t initialize()
   {
-    return Thor::PWM::initialize();
+    return Thor::PWM::initializeModule();
   }
 
   Chimera::Status_t reset()

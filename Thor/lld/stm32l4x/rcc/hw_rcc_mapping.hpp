@@ -40,11 +40,11 @@ namespace Thor::LLD::RCC
   Peripheral Memory Mapping
   ------------------------------------------------*/
   extern PeriphRegisterList PeripheralList;
-  extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  extern Thor::LLD::RIndexMap InstanceToResourceIndex;
 
   /**
    *  Initializes memory associated with mapping
-   *  
+   *
    *  @return void
    */
   extern void initializeMapping();

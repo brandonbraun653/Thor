@@ -21,6 +21,7 @@
 #include <Chimera/gpio>
 
 /* Driver Includes */
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
@@ -61,7 +62,7 @@ namespace Thor::LLD::GPIO
 
 
   extern PortMap InstanceToPortMap;
-  extern IndexMap InstanceToResourceIndex;
+  extern RIndexMap InstanceToResourceIndex;
   extern AlternateMap InstanceToAlternateMap;
   extern InstanceMap PortToInstanceMap;
 

@@ -16,6 +16,7 @@
 #include <cstdint>
 
 /* Driver Includes */
+#include <Thor/lld/common/registers/field_accessor.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_prj.hpp>
 
 namespace Thor::LLD::TIMER
@@ -65,6 +66,110 @@ namespace Thor::LLD::TIMER
     volatile uint32_t CNT;  /**< LPTIM Counter register,              Address offset: 0x1C */
     volatile uint32_t OR;   /**< LPTIM Option register,               Address offset: 0x20 */
   };
+
+
+  namespace Configuration
+  {
+    static constexpr Reg32_t ENABLED  = 1;
+    static constexpr Reg32_t DISABLED = 0;
+
+    namespace Direction
+    {
+      static constexpr Reg32_t COUNT_UP = 0;
+      static constexpr Reg32_t COUNT_DN = TIM_CR1_DIR;
+    }
+
+    namespace OC
+    {
+      namespace Mode
+      {
+        static constexpr Reg32_t PWM_MODE_1 = 0x06;
+        static constexpr Reg32_t PWM_MODE_2 = 0x07;
+      }
+    }
+
+    namespace CC
+    {
+      namespace Direction
+      {
+        static constexpr Reg32_t OUTPUT = 0;
+        static constexpr Reg32_t INPUT  = 1;
+      }
+
+      namespace Polarity
+      {
+        static constexpr Reg32_t ACTIVE_HIGH = 0;
+        static constexpr Reg32_t ACTIVE_LOW  = 1;
+      }
+    }
+  }
+
+  /*------------------------------------------------
+  TIMx_CR1
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_ARPE_Msk, ARPE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_DIR_Msk, DIR, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_CEN_Msk, CEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_OPM_Msk, OPM, BIT_ACCESS_RW );
+  
+  /*------------------------------------------------
+  TIMx_CCMR1
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_OC2M_Msk, OC2M, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_OC2PE_Msk, OC2PE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_CC2S_Msk, CC2S, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_OC1M_Msk, OC1M, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_OC1PE_Msk, OC1PE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_CC1S_Msk, CC1S, BIT_ACCESS_RW );
+
+  /*------------------------------------------------
+  TIMx_CCMR2
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_OC4M_Msk, OC4M, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_OC4PE_Msk, OC4PE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_CC4S_Msk, CC4S, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_OC3M_Msk, OC3M, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_OC3PE_Msk, OC3PE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_CC3S_Msk, CC3S, BIT_ACCESS_RW );
+
+  
+  /*------------------------------------------------
+  TIMx_CCER
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC1P_Msk, CC1P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC1E_Msk, CC1E, BIT_ACCESS_RW );
+
+  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC2P_Msk, CC2P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC2E_Msk, CC2E, BIT_ACCESS_RW );
+  
+  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC3P_Msk, CC3P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC3E_Msk, CC3E, BIT_ACCESS_RW );
+
+  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC4P_Msk, CC4P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC4E_Msk, CC4E, BIT_ACCESS_RW );
+
+  /*------------------------------------------------
+  TIMx_CNT
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CNT, TIM_CNT_CNT_Msk, CNT, BIT_ACCESS_RW );
+
+  /*------------------------------------------------
+  TIMx_PSC
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, PSC, TIM_PSC_PSC_Msk, PSC, BIT_ACCESS_RW );
+
+  /*------------------------------------------------
+  TIMx_ARR
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, ARR, TIM_ARR_ARR_Msk, ARR, BIT_ACCESS_RW );
+
+  /*------------------------------------------------
+  TIMx_CCR1-4
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CCR1, TIM_CCR1_CCR1_Msk, CCR1, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCR2, TIM_CCR2_CCR2_Msk, CCR2, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCR3, TIM_CCR3_CCR3_Msk, CCR3, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCR4, TIM_CCR4_CCR4_Msk, CCR4, BIT_ACCESS_RW );
 
 }    // namespace Thor::LLD::TIMER
 

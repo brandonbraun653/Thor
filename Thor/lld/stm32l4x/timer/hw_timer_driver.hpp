@@ -51,31 +51,56 @@ namespace Thor::LLD::TIMER
   };
 
 
-#if defined( VIRTUAL_FUNC )
-  class GeneralDriverImpl : public virtual IGeneralDriver
+  class GeneralDriverImpl
   {
   public:
     GeneralDriverImpl();
     ~GeneralDriverImpl();
 
-    Chimera::Status_t attach( RegisterMap *const peripheral ) final override;
+    /**
+     *  Resets the hardware registers back to boot-up values
+     *
+     *  @return Chimera::Status_t
+     */
+    Chimera::Status_t reset();
+
+    /**
+     *  Enables the peripheral clock
+     *
+     *  @return void
+     */
+    void clockEnable();
+
+    /**
+     *  Disables the peripheral clock
+     *
+     *  @return void
+     */
+    void clockDisable();
+
+    void toggleCounter( const bool state );
+
+    void toggleChannel( const Chimera::Timer::Channel channel, const bool state );
+
+    Chimera::Status_t attach( RegisterMap *const peripheral );
+
+    Chimera::Status_t initBaseTimer( const Chimera::Timer::DriverConfig &cfg );
+
+    Chimera::Status_t initPWM( const Chimera::Timer::PWM::Config &cfg );
+
+
+    void setCaptureComparePolarity( const Chimera::Timer::Channel channel, const Reg32_t val );
+    void setCaptureCompareMatch( const Chimera::Timer::Channel channel, const Reg32_t val );
+    void setCaptureCompareDirection( const Chimera::Timer::Channel channel, const Reg32_t val );
+    
+    void setOutputCompareMode( const Chimera::Timer::Channel channel, const Reg32_t val );
+    void setOutputComparePreload( const Chimera::Timer::Channel channel, const Reg32_t val );
 
   private:
-    RegisterMap *periph;
+    RegisterMap *mpPeriph;
+    RIndex mRIndex;
   };
-#else
-    class GeneralDriverImpl : IGeneralDriver<GeneralDriverImpl>
-    {
-    public:
-      GeneralDriverImpl();
-      ~GeneralDriverImpl();
 
-      Chimera::Status_t attach( RegisterMap *const peripheral );
-
-    private:
-      RegisterMap *periph;
-    };
-#endif
 
   class LowPowerDriver : public virtual ILowPowerDriver
   {

@@ -3,7 +3,10 @@
  *    hld_timer_driver.hpp
  *
  *  Description:
- *    Thor high level driver for Timer
+ *    Thor HLD for Timer perihperals. ST seems to have decided that timers can
+ *    be divided into four main categories: Advanced, Basic, General, and Low Power.
+ *    The is module provides support for all of these types while keeping a common
+ *    interface to handle injection with Chimera based software.
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
@@ -22,25 +25,21 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/hld/common/types.hpp>
 #include <Thor/hld/timer/hld_timer_types.hpp>
+#include <Thor/lld/common/types.hpp>
 
 namespace Thor::TIMER
 {
   /*-------------------------------------------------------------------------------
   Chimera Based Free Function Declarations (see Chimera::Timer for documentation)
   -------------------------------------------------------------------------------*/
-  Chimera::Status_t initialize();
-
-  Chimera::Status_t reset();
-
+  Chimera::Status_t initializeModule();
+  Chimera::Status_t resetModule();
   void incrementSystemTick();
-
   size_t millis();
-
   size_t micros();
-
   void delayMilliseconds( const size_t val );
-
   void delayMicroseconds( const size_t val );
 
   /*-------------------------------------------------------------------------------
@@ -66,20 +65,15 @@ namespace Thor::TIMER
     const Chimera::Timer::Descriptor * getDeviceInfo() final override;
 
   private:
-    friend AdvancedDriver_sPtr getAdvancedDriver_sPtr( const Chimera::Timer::Peripheral, const bool );
-    size_t mResourceIndex;
+    friend Chimera::Status_t initAdvancedDriverObject( const Thor::HLD::RIndex );
+    Thor::HLD::RIndex mIndexHLD;
+    Thor::LLD::RIndex mIndexLLD;
   };
 
   class GeneralDriver : virtual public Chimera::Timer::ITimer,
                         public Chimera::Threading::Lockable
   {
   public:
-    /*------------------------------------------------
-    General Driver Interface
-    ------------------------------------------------*/
-    GeneralDriver();
-    ~GeneralDriver();
-
     /*-------------------------------------------------
     Chimera ITimer Interface
     -------------------------------------------------*/
@@ -88,10 +82,26 @@ namespace Thor::TIMER
     Chimera::Status_t setState( const Chimera::Timer::Switchable device, const Chimera::Timer::SwitchableState state ) final override;
     Chimera::Status_t requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize ) final override;
     const Chimera::Timer::Descriptor * getDeviceInfo() final override;
+    
+    /*------------------------------------------------
+    General Driver Interface
+    ------------------------------------------------*/
+    GeneralDriver();
+    ~GeneralDriver();
+
+    Chimera::Status_t initCoreTimer( const Chimera::Timer::DriverConfig &cfg );
+
+    /*------------------------------------------------
+    PWM Functionality
+    ------------------------------------------------*/
+    Chimera::Status_t initPWM( const Chimera::Timer::PWM::Config &cfg );
+
+
 
   private:
-    friend GeneralDriver_sPtr getGeneralDriver_sPtr( const Chimera::Timer::Peripheral, const bool );
-    size_t mResourceIndex;
+    friend Chimera::Status_t initGeneralDriverObject( const Thor::HLD::RIndex );
+    Thor::HLD::RIndex mIndexHLD;
+    Thor::LLD::RIndex mIndexLLD;
   };
 
   class BasicDriver : virtual public Chimera::Timer::ITimer,
@@ -114,8 +124,9 @@ namespace Thor::TIMER
     const Chimera::Timer::Descriptor * getDeviceInfo() final override;
 
   private:
-    friend BasicDriver_sPtr getBasicDriver_sPtr( const Chimera::Timer::Peripheral, const bool );
-    size_t mResourceIndex;
+    friend Chimera::Status_t initBasicDriverObject( const Thor::HLD::RIndex );
+    Thor::HLD::RIndex mIndexHLD;
+    Thor::LLD::RIndex mIndexLLD;
   };
 
   class LowPowerDriver : virtual public Chimera::Timer::ITimer,
@@ -138,8 +149,9 @@ namespace Thor::TIMER
     const Chimera::Timer::Descriptor * getDeviceInfo() final override;
 
   private:
-    friend LowPowerDriver_sPtr getLowPowerDriver_sPtr( const Chimera::Timer::Peripheral, const bool );
-    size_t mResourceIndex;
+    friend Chimera::Status_t initLowPowerDriverObject( const Thor::HLD::RIndex );
+    Thor::HLD::RIndex mIndexHLD;
+    Thor::LLD::RIndex mIndexLLD;
   };
 }    // namespace Thor::TIMER
 

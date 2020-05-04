@@ -62,7 +62,7 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------------------------------------
   LLD Public Free Functions
   -------------------------------------------------------------------------------*/
-  Chimera::Status_t initialize()
+  Chimera::Status_t initializeModule()
   {
     initializeRegisters();
     initializeMapping();
@@ -70,17 +70,17 @@ namespace Thor::LLD::TIMER
     return Chimera::CommonStatusCodes::OK;
   }
 
-  IAdvancedDriver_sPtr getAdvancedDriver( const size_t channel )
+  IAdvancedDriver_sPtr getAdvancedDriver( const Thor::HLD::RIndex channel )
   {
     return nullptr;
   }
 
-  IBasicDriver_sPtr getBasicDriver( const size_t channel )
+  IBasicDriver_sPtr getBasicDriver( const Thor::HLD::RIndex channel )
   {
     return nullptr;
   }
 
-  ILowPowerDriver_sPtr getLowPowerDriver( const size_t channel )
+  ILowPowerDriver_sPtr getLowPowerDriver( const Thor::HLD::RIndex channel )
   {
     return nullptr;
   }

@@ -27,7 +27,7 @@
 
 namespace Thor::PWM
 {
-  Chimera::Status_t initialize();
+  Chimera::Status_t initializeModule();
 
   class Driver : virtual public Chimera::PWM::IPWM, public Chimera::Threading::Lockable
   {

@@ -17,6 +17,7 @@
 #include <Chimera/timer>
 
 /* Thor Includes */
+#include <Thor/hld/common/types.hpp>
 #include <Thor/hld/timer/hld_timer_types.hpp>
 #include <Thor/lld/interface/timer/timer_detail.hpp>
 
@@ -34,10 +35,17 @@ namespace Thor::TIMER
   Private Free Functions
   -------------------------------------------------*/
   bool isInitialized();
-  Chimera::Status_t initializeAdvanced();
-  Chimera::Status_t initializeBasic();
-  Chimera::Status_t initializeGeneral();
-  Chimera::Status_t initializeLowPower();
+  Chimera::Status_t initAdvancedDriverModule();
+  Chimera::Status_t initAdvancedDriverObject( const Thor::HLD::RIndex hld_index );
+  
+  Chimera::Status_t initBasicDriverModule();
+  Chimera::Status_t initBasicDriverObject( const Thor::HLD::RIndex hld_index );
+
+  Chimera::Status_t initGeneralDriverModule();
+  Chimera::Status_t initGeneralDriverObject( const Thor::HLD::RIndex hld_index );
+
+  Chimera::Status_t initLowPowerDriverModule();
+  Chimera::Status_t initLowPowerDriverObject( const Thor::HLD::RIndex hld_index );
 
   /*-------------------------------------------------
   Helper functions for Chimera hooks

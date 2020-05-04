@@ -20,6 +20,9 @@
 #include <Chimera/container>
 #include <Chimera/timer>
 
+/* Thor Includes */
+#include <Thor/hld/common/types.hpp>
+#include <Thor/lld/common/types.hpp>
 
 namespace Thor::LLD::TIMER
 {
@@ -30,13 +33,13 @@ namespace Thor::LLD::TIMER
    */
   enum class Type : uint8_t
   {
+    INVALID,
     ADVANCED_TIMER,
     BASIC_TIMER,
     GENERAL_PURPOSE_TIMER,
     LOW_POWER_TIMER,
 
-    NUM_OPTIONS,
-    INVALID
+    NUM_OPTIONS
   };
 
   /**
@@ -66,22 +69,6 @@ namespace Thor::LLD::TIMER
     const Chimera::Algorithm::OptionsList* supportedModes;
   };
 
-//  class IAdvancedDriver;
-//  using IAdvancedDriver_sPtr = std::shared_ptr<IAdvancedDriver>;
-//  using IAdvancedDriver_uPtr = std::unique_ptr<IAdvancedDriver>;
-//
-//  class IBasicDriver;
-//  using IBasicDriver_sPtr = std::shared_ptr<IBasicDriver>;
-//  using IBasicDriver_uPtr = std::unique_ptr<IBasicDriver>;
-//
-//  class IGeneralDriver;
-//  using IGeneralDriver_sPtr = std::shared_ptr<IGeneralDriver>;
-//  using IGeneralDriver_uPtr = std::unique_ptr<IGeneralDriver>;
-//
-//  class ILowPowerDriver;
-//  using ILowPowerDriver_sPtr = std::shared_ptr<ILowPowerDriver>;
-//  using ILowPowerDriver_uPtr = std::unique_ptr<ILowPowerDriver>;
-
   class IAdvancedDriver;
   using IAdvancedDriver_sPtr = IAdvancedDriver*;
   using IAdvancedDriver_uPtr = IAdvancedDriver*;
@@ -96,36 +83,8 @@ namespace Thor::LLD::TIMER
   using ILowPowerDriver_uPtr = ILowPowerDriver*;
 
 
-  
   class GeneralDriverImpl;
-  #if defined( VIRTUAL_FUNC )
-  class IGeneralDriver;
-  using IGeneralDriver_sPtr = IGeneralDriver*;
-  using IGeneralDriver_uPtr = IGeneralDriver*;
-
-  #else
-  template<class T>
-  class IGeneralDriver;
-
-  using IGeneralDriver_sPtr = IGeneralDriver<GeneralDriverImpl>*;
-  using IGeneralDriver_uPtr = IGeneralDriver<GeneralDriverImpl>*;
-  #endif 
-
-  /*-------------------------------------------------
-  General Driver Types
-  -------------------------------------------------*/
-  // // Interface defined in timer_intf.hpp
-  // template<class T>
-  // class IGeneralDriver;
-
-  // template<class T>
-  // using GeneralDriver = IGeneralDriver<T>;
-
-  // template<class T>
-  // using GeneralDriver_sPtr = std::shared_ptr<GeneralDriver<T>>;
-
-  // template<class T>
-  // using GeneralDriver_uPtr = std::unique_ptr<GeneralDriver<T>>;
+  using GeneralDriver_rPtr = GeneralDriverImpl*;
 
   /*------------------------------------------------
   Flat Map Data Types
@@ -134,12 +93,13 @@ namespace Thor::LLD::TIMER
   using ITRIMap = Chimera::Container::LightFlatMap<std::uintptr_t, size_t>;
 
   // Peripheral To Resource Index Map
-  using PTRIMap = Chimera::Container::LightFlatMap<Chimera::Timer::Peripheral, size_t>;
-
+  using PTRIMapLLD = Chimera::Container::LightFlatMap<Chimera::Timer::Peripheral, Thor::LLD::RIndex>;
+  using PTRIMapHLD = Chimera::Container::LightFlatMap<Chimera::Timer::Peripheral, Thor::HLD::RIndex>;
+  
   /*------------------------------------------------
   Look Up Table Types
   ------------------------------------------------*/
-
+  using DirectionConverter = std::array<Reg32_t, static_cast<size_t>( Chimera::Timer::Direction::NUM_OPTIONS )>;
 
 }    // namespace Thor::LLD::Timer
 

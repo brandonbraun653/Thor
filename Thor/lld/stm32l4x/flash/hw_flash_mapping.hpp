@@ -36,7 +36,7 @@ namespace Thor::LLD::FLASH
   Hardware Memory Mappings
   ------------------------------------------------*/
   extern PeriphRegisterList PeripheralList;
-  extern Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
+  extern Thor::LLD::RIndexMap InstanceToResourceIndex;
 
   /*------------------------------------------------
   Mappings from Chimera Config Options->Register Values
@@ -51,7 +51,7 @@ namespace Thor::LLD::FLASH
    *  @return void
    */
   void initializeMapping();
-  
+
 }    // namespace Thor::LLD::FLASH
 
 #endif /* !THOR_HW_FLASH_MAPPING_HPP */

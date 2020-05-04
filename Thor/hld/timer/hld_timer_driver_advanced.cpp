@@ -42,12 +42,28 @@ namespace Thor::TIMER
   /*-------------------------------------------------------------------------------
   Free Functions
   -------------------------------------------------------------------------------*/
-  Chimera::Status_t initializeAdvanced()
+  Chimera::Status_t initAdvancedDriverModule()
   {
     for ( size_t x = 0; x < NUM_PERIPHS; x++ )
     {
       hld_advanced_drivers[ x ]   = nullptr;
       s_lld_advanced_drivers[ x ] = nullptr;
+    }
+
+    return Chimera::CommonStatusCodes::OK;
+  }
+  
+  Chimera::Status_t initAdvancedDriverObject( const Thor::HLD::RIndex index )
+  {
+    if ( ( index.value() < hld_advanced_drivers.size() ) && !hld_advanced_drivers[ index.value() ] ) 
+    {
+      /* Initialize the HLD reference */
+      auto driver            = std::make_shared<AdvancedDriver>();
+      driver->mIndexHLD = index;
+
+      /* Assign the driver instances */
+      hld_advanced_drivers[ index.value() ]   = driver;
+      s_lld_advanced_drivers[ index.value() ] = LLD::getAdvancedDriver( index );
     }
 
     return Chimera::CommonStatusCodes::OK;
@@ -77,19 +93,12 @@ namespace Thor::TIMER
     Use the returned resource index to grab the driver instance
     ------------------------------------------------*/
     auto const iDriver = pRegistered->second;
-    if ( !hld_advanced_drivers[ iDriver ] && create )
+    if ( create )
     {
-      /* Initialize the HLD reference */
-      auto driver            = std::make_shared<AdvancedDriver>();
-      driver->mResourceIndex = iDriver;
-
-      hld_advanced_drivers[ iDriver ] = driver;
-
-      /* Initialize the LLD reference */
-      s_lld_advanced_drivers[ iDriver ] = LLD::getAdvancedDriver( iDriver );
+      initAdvancedDriverObject( iDriver );
     }
 
-    return hld_advanced_drivers[ iDriver ];
+    return hld_advanced_drivers[ iDriver.value() ];
   }
 
   /*-------------------------------------------------------------------------------
@@ -98,7 +107,7 @@ namespace Thor::TIMER
   /*------------------------------------------------
   Advanced Driver Interface
   ------------------------------------------------*/
-  AdvancedDriver::AdvancedDriver() : mResourceIndex( 0 )
+  AdvancedDriver::AdvancedDriver() : mIndexHLD( 0 ), mIndexLLD( 0 )
   {
   }
 
