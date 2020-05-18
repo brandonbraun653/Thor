@@ -176,21 +176,14 @@ namespace Thor::SPI
     result |= MISO->init( config.MISOInit, Chimera::Threading::TIMEOUT_DONT_WAIT );
 
     /* Does the driver take control of the CS pin? */
-    if ( !setupStruct.externalCS )
+    if ( setupStruct.externalCS ) 
     {
-      CS = std::make_shared<Thor::GPIO::Driver>();
-      result |= CS->init( config.CSInit, 100 );
-    }
-    else if ( !CS )
-    {
-      /* User hasn't attached the ChipSelect shared_ptr object yet */
-      return Chimera::CommonStatusCodes::FAILED_INIT;
+      setChipSelectControlMode( Chimera::SPI::CSMode::MANUAL );
     }
     else
     {
-      /* Disable the CS and force external control behavior */
-      CS.reset();
-      config.HWInit.csMode = Chimera::SPI::CSMode::MANUAL;
+      CS = std::make_shared<Thor::GPIO::Driver>();
+      result |= CS->init( config.CSInit, 100 );
     }
 
     if ( result != Chimera::CommonStatusCodes::OK )
