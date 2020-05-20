@@ -184,7 +184,7 @@ namespace Thor::TIMER
 
       case Type::GENERAL_PURPOSE_TIMER:
         initGeneralDriverObject( hld_index );
-        return hld_general_drivers[ hld_index.value() ];
+        return getGeneralDriverObject( hld_index );
         break;
 
       case Type::LOW_POWER_TIMER:

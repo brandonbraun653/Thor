@@ -95,7 +95,7 @@ namespace Thor::TIMER
     PWM Functionality
     ------------------------------------------------*/
     Chimera::Status_t initPWM( const Chimera::Timer::PWM::Config &cfg );
-
+    Chimera::Status_t toggleOutput( const Chimera::Timer::Channel channel, const bool state );
 
 
   private:

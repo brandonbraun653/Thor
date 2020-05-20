@@ -108,7 +108,7 @@ namespace Thor::PWM
     return result;
   }
 
-  Chimera::Status_t Driver::enableOutput()
+  Chimera::Status_t Driver::toggleOutput( const bool state )
   {
     using namespace Chimera::Timer;
 
@@ -127,37 +127,8 @@ namespace Thor::PWM
     /*------------------------------------------------
     Enable the PWM output
     ------------------------------------------------*/
-    auto result = mpTimerDriver->invokeAction( DriverAction::ENABLE_PWM_CHANNEL, &mPWMConfig.outputChannel,
-                                               sizeof( mPWMConfig.outputChannel ) );
-
-    /*------------------------------------------------
-    Unlock the driver and return the result
-    ------------------------------------------------*/
-    unlock();
-    return result;
-  }
-
-  Chimera::Status_t Driver::disableOutput()
-  {
-    using namespace Chimera::Timer;
-
-    /*------------------------------------------------
-    HW Protection and Thread Safety
-    ------------------------------------------------*/
-    if ( !mInitialized )
-    {
-      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
-    }
-    else if( !try_lock_for( Chimera::Threading::TIMEOUT_25MS ) )
-    {
-      return Chimera::CommonStatusCodes::LOCKED;
-    }
-
-    /*------------------------------------------------
-    Disable the PWM output
-    ------------------------------------------------*/
-    auto result = mpTimerDriver->invokeAction( DriverAction::DISABLE_PWM_CHANNEL, &mPWMConfig.outputChannel,
-                                               sizeof( mPWMConfig.outputChannel ) );
+    auto action = state ? DriverAction::ENABLE_PWM_CHANNEL : DriverAction::DISABLE_PWM_CHANNEL;
+    auto result = mpTimerDriver->invokeAction( action, &mPWMConfig.outputChannel, sizeof( mPWMConfig.outputChannel ) );
 
     /*------------------------------------------------
     Unlock the driver and return the result
@@ -168,19 +139,31 @@ namespace Thor::PWM
 
   Chimera::Status_t Driver::setFrequency( const size_t freq )
   {
-    //return applyConfig( freq, mPWMConfig.dutyCycle, mPWMConfig.polarity );
+    /*
+    1. Grab the current base timer configuration
+    2. Grab information about the timer (clock bus)
+    3. Use the RCC driver to grab the source clock
+    4. Update the clock prescaler and auto-reload value (converging algorithm)
+        a) Allowed to be naive approach due to infrequent calls
+    */
     return Chimera::CommonStatusCodes::NOT_AVAILABLE;
   }
 
   Chimera::Status_t Driver::setDutyCyle( const size_t dutyCycle )
   {
-    //return applyConfig( mPWMConfig.frequency, dutyCycle, mPWMConfig.polarity );
+    /* 1. Get the current configuration (driver: reload value)
+       2. Get the information about the timer itself (counter width)
+       3. Recalculate the compare match value using (1) (2)
+       4. Send the new channel configuration
+     */
     return Chimera::CommonStatusCodes::NOT_AVAILABLE;
   }
 
   Chimera::Status_t Driver::setPolarity( const Chimera::Timer::PWM::Polarity polarity )
   {
-    //return applyConfig( mPWMConfig.frequency, mPWMConfig.dutyCycle, polarity );
+    /*
+    1. This one should be pretty simple. Just send a command with the desired state.
+    */
     return Chimera::CommonStatusCodes::NOT_AVAILABLE;
   }
 

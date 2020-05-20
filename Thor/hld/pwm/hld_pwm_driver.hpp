@@ -42,8 +42,7 @@ namespace Thor::PWM
     HW Interface
     ------------------------------------------------*/
     Chimera::Status_t init( const Chimera::PWM::DriverConfig &cfg ) final override;
-    Chimera::Status_t enableOutput() final override;
-    Chimera::Status_t disableOutput() final override;
+    Chimera::Status_t toggleOutput( const bool state ) final override;
     Chimera::Status_t setFrequency( const size_t freq ) final override;
     Chimera::Status_t setDutyCyle( const size_t dutyCycle ) final override;
     Chimera::Status_t setPolarity( const Chimera::Timer::PWM::Polarity polarity ) final override;
