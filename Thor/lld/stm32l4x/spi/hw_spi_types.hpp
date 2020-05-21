@@ -140,6 +140,12 @@ namespace Thor::LLD::SPI
       static constexpr Reg32_t RX_ENABLE  = CR2_RXDMAEN;
       static constexpr Reg32_t RX_DISABLE = 0u;
     }    // namespace DMA
+
+    namespace FIFOThreshold
+    {
+      static constexpr Reg32_t RXNE_ON_16BIT = 0;
+      static constexpr Reg32_t RXNE_ON_8BIT  = CR2_FRXTH;
+    }
   }      // namespace Configuration
 
   /*------------------------------------------------

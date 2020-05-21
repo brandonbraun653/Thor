@@ -169,7 +169,7 @@ namespace Thor::LLD::RCC::LookupTables
 
     #if defined ( STM32_SPI3_PERIPH_AVAILABLE )
     SPI_ClockConfig[ SPI3_RESOURCE_INDEX ].mask = APB1ENR1_SPI3EN;
-    SPI_ClockConfig[ SPI3_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2ENR;
+    SPI_ClockConfig[ SPI3_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR1;
     #endif
 
     /*------------------------------------------------
@@ -185,8 +185,8 @@ namespace Thor::LLD::RCC::LookupTables
     #endif
 
     #if defined ( STM32_SPI3_PERIPH_AVAILABLE )
-    SPI_ResetConfig[ SPI1_RESOURCE_INDEX ].mask = APB1RSTR1_SPI3RST;
-    SPI_ResetConfig[ SPI1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2RSTR;
+    SPI_ResetConfig[ SPI3_RESOURCE_INDEX ].mask = APB1RSTR1_SPI3RST;
+    SPI_ResetConfig[ SPI3_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1RSTR1;
     #endif
 
     /*------------------------------------------------
@@ -197,11 +197,11 @@ namespace Thor::LLD::RCC::LookupTables
     #endif
 
     #if defined ( STM32_SPI2_PERIPH_AVAILABLE )
-    SPI_SourceClock[ SPI1_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
+    SPI_SourceClock[ SPI2_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
     #endif
 
     #if defined ( STM32_SPI3_PERIPH_AVAILABLE )
-    SPI_SourceClock[ SPI1_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
+    SPI_SourceClock[ SPI3_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
     #endif
   };
 

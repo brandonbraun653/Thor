@@ -127,7 +127,7 @@ namespace Thor::PWM
     /*------------------------------------------------
     Enable the PWM output
     ------------------------------------------------*/
-    auto action = state ? DriverAction::ENABLE_PWM_CHANNEL : DriverAction::DISABLE_PWM_CHANNEL;
+    auto action = state ? DriverAction::PWM_ENABLE_CHANNEL : DriverAction::PWM_DISABLE_CHANNEL;
     auto result = mpTimerDriver->invokeAction( action, &mPWMConfig.outputChannel, sizeof( mPWMConfig.outputChannel ) );
 
     /*------------------------------------------------

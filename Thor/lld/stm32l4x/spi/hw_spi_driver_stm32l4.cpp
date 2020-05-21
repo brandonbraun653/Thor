@@ -469,7 +469,11 @@ namespace Thor::LLD::SPI
     Data transfers must have 8-bit or 16-bit aligned access.
     Currently hardcoded to 8 for development...
     ------------------------------------------------*/
+    // Access the data register as 8-bit aligned 
     auto dr = reinterpret_cast<volatile uint8_t *>( &periph->DR );
+    
+    // Set the RX FIFO threshold to generate an RXNE event when 8-bits are received
+    FRXTH::set( periph, Configuration::FIFOThreshold::RXNE_ON_8BIT );
 
     /*------------------------------------------------
     Start the transfer

@@ -155,8 +155,8 @@ namespace Thor::TIMER
 
     switch ( action )
     {
-      case DriverAction::ENABLE_PWM_CHANNEL:
-      case DriverAction::DISABLE_PWM_CHANNEL:
+      case DriverAction::PWM_ENABLE_CHANNEL:
+      case DriverAction::PWM_DISABLE_CHANNEL:
       {
         /* Ensure the parameter spec was met */
         if ( !arg || ( argSize != sizeof( Channel ) ) ) 
@@ -165,7 +165,7 @@ namespace Thor::TIMER
         }
 
         /* Convert the arguments to the expected types */
-        bool state = ( action == DriverAction::ENABLE_PWM_CHANNEL );
+        bool state = ( action == DriverAction::PWM_ENABLE_CHANNEL );
         auto channel = *static_cast<Channel *>( arg );
 
         /* Invoke the desired action */

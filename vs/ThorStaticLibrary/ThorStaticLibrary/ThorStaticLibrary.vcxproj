@@ -423,7 +423,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);</AdditionalIncludeDirectories>
-      <Optimization>Og</Optimization>
+      <Optimization>O0</Optimization>
       <PreprocessorDefinitions>TARGET_STM32L4;STM32L432xx;$(ChimeraCompilerDefines);$(ProjectCompilerDefines);%(ClCompile.PreprocessorDefinitions);</PreprocessorDefinitions>
       <CLanguageStandard>C2x</CLanguageStandard>
       <CPPLanguageStandard>CPP2A</CPPLanguageStandard>
