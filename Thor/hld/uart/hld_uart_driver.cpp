@@ -17,7 +17,7 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/uart>
-#include <Thor/lld/interface/uart/uart.hpp>
+#include <Thor/lld/interface/uart/uart_intf.hpp>
 
 namespace Chimera::UART::Backend
 {

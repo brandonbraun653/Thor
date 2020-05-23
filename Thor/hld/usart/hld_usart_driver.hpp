@@ -47,7 +47,7 @@ namespace Thor::USART
     Driver();
     ~Driver();
 
-    Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
+    Chimera::Status_t assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins ) final override;
 
     Chimera::Status_t begin( const Chimera::Hardware::PeripheralMode txMode,
                              const Chimera::Hardware::PeripheralMode rxMode ) final override;
@@ -92,8 +92,8 @@ namespace Thor::USART
     Thor::GPIO::Driver_uPtr rxPin;
     Thor::GPIO::Driver_uPtr txPin;
 
-    uint8_t channel;      /**< Hardware channel associated with this driver */
-    size_t resourceIndex; /**< Lookup table index for USART resources */
+    Chimera::Serial::Channel channel; /**< Hardware channel associated with this driver */
+    size_t resourceIndex;             /**< Lookup table index for USART resources */
 
 
     size_t listenerIDCount;

@@ -46,7 +46,7 @@ namespace Thor::UART
     Driver();
     ~Driver();
 
-    Chimera::Status_t assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins ) final override;
+    Chimera::Status_t assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins ) final override;
 
     Chimera::Status_t begin( const Chimera::Hardware::PeripheralMode,
                              const Chimera::Hardware::PeripheralMode rxMode ) final override;

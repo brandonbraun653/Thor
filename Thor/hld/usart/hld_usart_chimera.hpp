@@ -22,11 +22,9 @@
 namespace Chimera::USART::Backend
 {
   Chimera::Status_t initialize();
-
   Chimera::Status_t reset();
-
+  bool isChannelUSART( const Chimera::Serial::Channel channel );
   Chimera::USART::USART_sPtr create_shared_ptr();
-
   Chimera::USART::USART_uPtr create_unique_ptr();
 }    // namespace Chimera::USART::Backend
 

@@ -63,7 +63,7 @@ namespace Thor::LLD::USART
   {
   }
 
-  Chimera::Status_t Driver::init( const Thor::Driver::Serial::Config &cfg )
+  Chimera::Status_t Driver::init( const Thor::LLD::Serial::Config &cfg )
   {
     /*------------------------------------------------
     First deinitialize the driver so we know we are
@@ -92,7 +92,7 @@ namespace Thor::LLD::USART
     rccPeriph->enableClock( peripheralType, resourceIndex );
 
     /*------------------------------------------------
-    Follow the initialization sequence as defined in RM0390 pg.801 
+    Follow the initialization sequence as defined in RM0390 pg.801
     ------------------------------------------------*/
     /* Clear out all the control registers to ensure a clean slate */
     CR1::set( periph, CR1::resetValue );
@@ -148,7 +148,7 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::enableIT( const Chimera::Hardware::SubPeripheral subPeriph )
   {
-    using namespace Thor::Interrupt; 
+    using namespace Thor::Interrupt;
     using namespace Thor::LLD::IT;
 
     setPriority( periphIRQn, USART_IT_PREEMPT_PRIORITY, 0u );
@@ -207,9 +207,9 @@ namespace Thor::LLD::USART
       enableIT( Chimera::Hardware::SubPeripheral::TX );
 
       enterCriticalSection();
-      
+
       /*------------------------------------------------
-      Turn on the transmitter & enable TDR interrupt so we know 
+      Turn on the transmitter & enable TDR interrupt so we know
       when we can stage the next byte transfer.
       ------------------------------------------------*/
       CR1::TE::set( periph, CR1_TE );
@@ -329,7 +329,7 @@ namespace Thor::LLD::USART
     code on 64-bit platforms.
     -------------------------------------------------*/
     tcb.dstAddress = static_cast<uint32_t>( tempDstAddr );
-    tcb.srcAddress = static_cast<uint32_t>( tempSrcAddr ); 
+    tcb.srcAddress = static_cast<uint32_t>( tempSrcAddr );
     tcb.transferSize = size;
 
     /*------------------------------------------------
@@ -348,16 +348,16 @@ namespace Thor::LLD::USART
     {
       /*------------------------------------------------
       According to pg.32 of AN4031, the DMA must be initialized
-      BEFORE the peripheral is enabled otherwise a FIFO error 
+      BEFORE the peripheral is enabled otherwise a FIFO error
       is likely to ensue. I found this to be very true.
       ------------------------------------------------*/
       result = dma->configure( init, tcb, timeout, nullptr );
       dma->start();
 
       /*------------------------------------------------
-      At this point the DMA is enabled and waiting for the 
+      At this point the DMA is enabled and waiting for the
       peripheral to send a request. Setting these two bits
-      accomplish this. 
+      accomplish this.
       ------------------------------------------------*/
       enableIT( Chimera::Hardware::SubPeripheral::TX );
       enterCriticalSection();
@@ -366,7 +366,7 @@ namespace Thor::LLD::USART
       CR1::TE::set( periph, CR1_TE );
 
       /*------------------------------------------------
-      Prepare the USART state machine to correctly process the ISR request. Once the DMA 
+      Prepare the USART state machine to correctly process the ISR request. Once the DMA
       transfer finishes, the TCIF will be set and trigger the USART ISR processing.
 
       According to the datasheet, the TC flag must be cleared before starting the DMA transfer.
@@ -473,9 +473,9 @@ namespace Thor::LLD::USART
     return temp;
   }
 
-  Thor::Driver::Serial::Config Driver::getConfiguration()
+  Thor::LLD::Serial::Config Driver::getConfiguration()
   {
-    Thor::Driver::Serial::Config cfg;
+    Thor::LLD::Serial::Config cfg;
     memset( &cfg, 0, sizeof( cfg ) );
 
     cfg.BaudRate     = 0;
@@ -538,7 +538,7 @@ namespace Thor::LLD::USART
         else
         {
           /*------------------------------------------------
-          We finished pushing the last character into the TDR, so 
+          We finished pushing the last character into the TDR, so
           now listen for the TX complete interrupt.
           ------------------------------------------------*/
           CR1::TXEIE::set( periph, 0 );
@@ -550,7 +550,7 @@ namespace Thor::LLD::USART
       /*------------------------------------------------
       Transfer Complete Interrupt
       ------------------------------------------------*/
-      if ( ( txFlags & FLAG_TC ) && ( CR1 & CR1_TCIE ) && ( txTCB.state == StateMachine::TX::TX_COMPLETE ) ) 
+      if ( ( txFlags & FLAG_TC ) && ( CR1 & CR1_TCIE ) && ( txTCB.state == StateMachine::TX::TX_COMPLETE ) )
       {
         /*------------------------------------------------
         Exit the TX ISR cleanly by disabling related interrupts
@@ -607,7 +607,7 @@ namespace Thor::LLD::USART
       }
 
       /*------------------------------------------------
-      Line Idle: We were in the middle of a transfer and 
+      Line Idle: We were in the middle of a transfer and
       then suddenly they just stopped sending data.
       ------------------------------------------------*/
       if ( ( rxFlags & FLAG_IDLE ) && ( CR1 & CR1_IDLEIE ) && ( rxTCB.state == StateMachine::RX::RX_ONGOING ) )

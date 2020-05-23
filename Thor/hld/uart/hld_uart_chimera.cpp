@@ -18,6 +18,7 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/uart>
+#include <Thor/lld/interface/uart/uart_intf.hpp>
 
 namespace Chimera::UART::Backend
 {
@@ -29,6 +30,11 @@ namespace Chimera::UART::Backend
   Chimera::Status_t reset()
   {
     return Chimera::CommonStatusCodes::OK;
+  }
+
+  bool isChannelUART( const Chimera::Serial::Channel channel )
+  {
+    return Thor::LLD::UART::isChannelSupported( channel );
   }
 
   Chimera::UART::UART_sPtr create_shared_ptr()
@@ -44,18 +50,20 @@ namespace Chimera::UART::Backend
   Chimera::Status_t registerDriver( Chimera::UART::Backend::DriverConfig &registry )
   {
 #if defined( THOR_HLD_UART )
-    registry.isSupported  = true;
-    registry.createShared = create_shared_ptr;
-    registry.createUnique = create_unique_ptr;
-    registry.initialize   = initialize;
-    registry.reset        = reset;
+    registry.isSupported   = true;
+    registry.createShared  = create_shared_ptr;
+    registry.createUnique  = create_unique_ptr;
+    registry.initialize    = initialize;
+    registry.reset         = reset;
+    registry.isChannelUART = isChannelUART;
     return Chimera::CommonStatusCodes::OK;
 #else
-    registry.isSupported  = false;
-    registry.createShared = nullptr;
-    registry.createUnique = nullptr;
-    registry.initialize   = nullptr;
-    registry.reset        = nullptr;
+    registry.isSupported   = false;
+    registry.createShared  = nullptr;
+    registry.createUnique  = nullptr;
+    registry.initialize    = nullptr;
+    registry.reset         = nullptr;
+    registry.isChannelUART = nullptr;
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
 #endif /* THOR_DRIVER_UART == 1*/
   }
