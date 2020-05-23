@@ -56,7 +56,7 @@ namespace Thor::LLD::USART
     namespace WordLength
     {
       static constexpr Reg32_t LEN_8BIT = 0u;
-      static constexpr Reg32_t LEN_9BIT = CR1_M;
+      static constexpr Reg32_t LEN_9BIT = CR1_M0;
     }    // namespace WordLength
 
     namespace Stop
@@ -124,7 +124,7 @@ namespace Thor::LLD::USART
       static constexpr Reg32_t FLAG_FE   = ISR_FE;
       static constexpr Reg32_t FLAG_PE   = ISR_PE;
     }    // namespace Flags
-  }
+  }      // namespace Configuration
 
   /*------------------------------------------------
   Runtime
@@ -134,45 +134,78 @@ namespace Thor::LLD::USART
     using Flag_t = Reg32_t;
     namespace Flag
     {
-      /* Let the first 16 bits match the Status Register for consistency */
-      static constexpr Flag_t RX_PARITY_ERROR    = Configuration::Flags::FLAG_PE;
-      static constexpr Flag_t RX_FRAMING_ERROR   = Configuration::Flags::FLAG_FE;
-      static constexpr Flag_t RX_NOISE_ERROR     = Configuration::Flags::FLAG_NF;
-      static constexpr Flag_t RX_OVERRUN         = Configuration::Flags::FLAG_ORE;
-      static constexpr Flag_t RX_IDLE_DETECTED   = Configuration::Flags::FLAG_IDLE;
-      static constexpr Flag_t RX_BYTE_READY      = Configuration::Flags::FLAG_RXNE;
-      static constexpr Flag_t TX_COMPLETE        = Configuration::Flags::FLAG_TC;
-      static constexpr Flag_t TX_DR_EMPTY        = Configuration::Flags::FLAG_TXE;
-      static constexpr Flag_t RX_LINE_IN_BREAK   = Configuration::Flags::FLAG_LBD;
-      static constexpr Flag_t CTL_CLEAR_TO_SEND  = Configuration::Flags::FLAG_CTS;
+      /* Let the first 25 bits match the Status Register for consistency */
+      static constexpr Flag_t RX_PARITY_ERROR   = Configuration::Flags::FLAG_PE;
+      static constexpr Flag_t RX_FRAMING_ERROR  = Configuration::Flags::FLAG_FE;
+      static constexpr Flag_t RX_NOISE_ERROR    = Configuration::Flags::FLAG_NF;
+      static constexpr Flag_t RX_OVERRUN        = Configuration::Flags::FLAG_ORE;
+      static constexpr Flag_t RX_IDLE_DETECTED  = Configuration::Flags::FLAG_IDLE;
+      static constexpr Flag_t RX_BYTE_READY     = Configuration::Flags::FLAG_RXNE;
+      static constexpr Flag_t TX_COMPLETE       = Configuration::Flags::FLAG_TC;
+      static constexpr Flag_t TX_DR_EMPTY       = Configuration::Flags::FLAG_TXE;
+      static constexpr Flag_t RX_LINE_IN_BREAK  = Configuration::Flags::FLAG_LBD;
+      static constexpr Flag_t CTL_CLEAR_TO_SEND = Configuration::Flags::FLAG_CTS;
 
-      /* Use the remaining 16 bits for other signals */
-      static constexpr Flag_t RX_LINE_IDLE_ABORT = ( 1u << 16 );
-      static constexpr Flag_t RX_COMPLETE        = ( 1u << 17 );
-    }
-  }
+      /* Use the remaining 6 bits for other signals */
+      static constexpr Flag_t RX_LINE_IDLE_ABORT = ( 1u << 26 );
+      static constexpr Flag_t RX_COMPLETE        = ( 1u << 27 );
+    }    // namespace Flag
+  }      // namespace Runtime
 
-  /*------------------------------------------------
-  State Machine
-  ------------------------------------------------*/
-  namespace StateMachine
-  {
-    enum TX : Chimera::Status_t
-    {
-      TX_READY    = Chimera::Serial::Status::TX_READY,
-      TX_ONGOING  = Chimera::Serial::Status::TX_IN_PROGRESS,
-      TX_ABORTED  = Chimera::Serial::Status::TX_ABORTED,
-      TX_COMPLETE = Chimera::Serial::Status::TX_COMPLETE
-    };
 
-    enum RX : Chimera::Status_t
-    {
-      RX_READY    = Chimera::Serial::Status::RX_READY,
-      RX_ONGOING  = Chimera::Serial::Status::RX_IN_PROGRESS,
-      RX_COMPLETE = Chimera::Serial::Status::RX_COMPLETE,
-      RX_ABORTED  = Chimera::Serial::Status::RX_ABORTED
-    };
-  }    // namespace StateMachine
+  /*-------------------------------------------------
+  Control Register 1
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CR1, CR1_Msk, CR1, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_UE_Msk, UE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_TCIE_Msk, TCIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_TXEIE_Msk, TXEIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_RXNEIE_Msk, RXNEIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_IDLEIE_Msk, IDLEIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_M0_Msk, M0, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_M1_Msk, M1, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_TE_Msk, TE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_RE_Msk, RE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_OVER8_Msk, OVER8, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_PCE_Msk, PCE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_PS_Msk, PS, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Control Register 2
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CR2, CR2_Msk, CR2, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR2, CR2_STOP_Msk, STOP, BIT_ACCESS_RW );
+
+
+  /*-------------------------------------------------
+  Control Register 3
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CR3, CR3_Msk, CR3, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR3, CR3_DMAT_Msk, DMAT, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Baurd Rate Register
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, BRR, BRR_Msk, BRR, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Interrupt and Status Register
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, ISR, ISR_Msk, ISR, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_TC_Msk, TC, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_RXNE_Msk, RXNE, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Interrupt Flag Clear Register
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, ICR, ICR_Msk, ICR, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, ICR, ICR_PECF_Msk, PECF, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ICR, ICR_FECF_Msk, FECF, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ICR, ICR_NECF_Msk, NECF, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ICR, ICR_ORECF_Msk, ORECF, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ICR, ICR_IDLECF_Msk, IDLECF, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ICR, ICR_TCCF_Msk, TCCF, BIT_ACCESS_RCW1 );
+
 }    // namespace Thor::LLD::USART
 
 #endif /* !THOR_HW_USART_TYPES_HPP*/

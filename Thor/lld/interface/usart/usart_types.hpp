@@ -26,6 +26,30 @@ namespace Thor::LLD::USART
   class Driver;
   using Driver_sPtr = std::shared_ptr<Driver>;
   using Driver_uPtr = std::unique_ptr<Driver>;
+
+
+  /*------------------------------------------------
+  State Machine
+  ------------------------------------------------*/
+  namespace StateMachine
+  {
+    enum TX : Chimera::Status_t
+    {
+      TX_READY    = Chimera::Serial::Status::TX_READY,
+      TX_ONGOING  = Chimera::Serial::Status::TX_IN_PROGRESS,
+      TX_ABORTED  = Chimera::Serial::Status::TX_ABORTED,
+      TX_COMPLETE = Chimera::Serial::Status::TX_COMPLETE
+    };
+
+    enum RX : Chimera::Status_t
+    {
+      RX_READY    = Chimera::Serial::Status::RX_READY,
+      RX_ONGOING  = Chimera::Serial::Status::RX_IN_PROGRESS,
+      RX_COMPLETE = Chimera::Serial::Status::RX_COMPLETE,
+      RX_ABORTED  = Chimera::Serial::Status::RX_ABORTED
+    };
+  }    // namespace StateMachine
+
 }    // namespace Thor::LLD::USART
 
 #endif /* !THOR_DRIVER_USART_COMMON_TYPES_HPP */

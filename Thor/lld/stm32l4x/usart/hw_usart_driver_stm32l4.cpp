@@ -42,9 +42,24 @@ namespace Thor::LLD::USART
     return Chimera::CommonStatusCodes::OK;
   }
 
+
   size_t availableChannels()
   {
     return NUM_USART_PERIPHS;
+  }
+
+
+  bool isChannelSupported( const Chimera::Serial::Channel channel )
+  {
+    for( auto &ch : supportedChannels )
+    {
+      if( ch == channel )
+      {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /*-------------------------------------------------
@@ -70,19 +85,21 @@ namespace Thor::LLD::USART
   -----------------------------------------------------*/
   Driver::Driver( RegisterMap *peripheral ) : periph( peripheral )
   {
-    auto address   = reinterpret_cast<std::uintptr_t>( peripheral );
-    peripheralType = Chimera::Peripheral::Type::PERIPH_USART;
-    resourceIndex  = Thor::LLD::USART::InstanceToResourceIndex.find( address )->second;
-    periphIRQn     = IRQSignals[ resourceIndex ];
-    dmaTXSignal    = TXDMASignals[ resourceIndex ];
-    dmaRXSignal    = RXDMASignals[ resourceIndex ];
+    const auto address = reinterpret_cast<std::uintptr_t>( peripheral );
+    peripheralType     = Chimera::Peripheral::Type::PERIPH_USART;
+    resourceIndex      = Thor::LLD::USART::InstanceToResourceIndex.find( address )->second;
+    periphIRQn         = IRQSignals[ resourceIndex ];
+    dmaTXSignal        = TXDMASignals[ resourceIndex ];
+    dmaRXSignal        = RXDMASignals[ resourceIndex ];
 
     usartObjects[ resourceIndex ] = this;
   }
 
+
   Driver::~Driver()
   {
   }
+
 
   Chimera::Status_t Driver::init( const Thor::LLD::Serial::Config &cfg )
   {
@@ -113,30 +130,57 @@ namespace Thor::LLD::USART
     rccPeriph->enableClock( peripheralType, resourceIndex );
 
     /*------------------------------------------------
-    Follow the initialization sequence as defined in RM0390 pg.801
+    Follow the initialization sequence as defined in RM0394 Rev 4, pg.1202
     ------------------------------------------------*/
+    /* Disable the USART by writing the UE bit to 0 */
+    UE::set( periph, 0 );
+
     /* Clear out all the control registers to ensure a clean slate */
-    CR1::set( periph, CR1::resetValue );
-    CR2::set( periph, CR2::resetValue );
-    CR3::set( periph, CR3::resetValue );
+    CR1::set( periph, CR1_Rst );
+    CR2::set( periph, CR2_Rst );
+    CR3::set( periph, CR3_Rst );
 
-    /* Enable the USART by writing the UE bit to 1 */
-    CR1::UE::set( periph, CR1_UE );
-
-    /* Program the M bit to define the word length */
-    CR1::M::set( periph, cfg.WordLength );
+    /* Program the M0 bit to define the word length. M1 Currently not supported. */
+    M0::set( periph, cfg.WordLength );
+    M1::set( periph, 0 );
 
     /* Program the number of stop bits */
-    CR2::STOP::set( periph, cfg.StopBits );
+    STOP::set( periph, cfg.StopBits );
+
+    /* Program the parity */
+    switch( cfg.Parity )
+    {
+      case Configuration::Parity::EVEN:
+        PCE::set( periph, CR1_PCE );
+        PS::clear( periph, CR1_PS );
+        break;
+
+      case Configuration::Parity::ODD:
+        PCE::set( periph, CR1_PCE );
+        PS::set( periph, CR1_PS );
+        break;
+
+      case Configuration::Parity::NONE:
+      default:
+        PCE::clear( periph, CR1_PCE );
+        break;
+    };
 
     /* Select the desired baud rate */
     BRR::set( periph, calculateBRR( cfg.BaudRate ) );
 
+    /* Enable the USART by writing the UE bit to 1 */
+    UE::set( periph, CR1_UE );
+
     return Chimera::CommonStatusCodes::OK;
   }
 
+
   Chimera::Status_t Driver::deinit()
   {
+    /*-------------------------------------------------
+    Use the RCC's ability to reset whole peripherals back to default states
+    -------------------------------------------------*/
     auto rcc = Thor::LLD::RCC::getSystemPeripheralController();
     rcc->enableClock( peripheralType, resourceIndex );
     rcc->reset( peripheralType, resourceIndex );
@@ -145,17 +189,15 @@ namespace Thor::LLD::USART
     return Chimera::CommonStatusCodes::OK;
   }
 
+
   Chimera::Status_t Driver::reset()
   {
-    /*------------------------------------------------
-    Reset the hardware registers
-    ------------------------------------------------*/
     deinit();
-
     ISRWakeup_external = nullptr;
 
     return Chimera::CommonStatusCodes::OK;
   }
+
 
   Chimera::Status_t Driver::transmit( const uint8_t *const data, const size_t size, const size_t timeout )
   {
@@ -163,121 +205,146 @@ namespace Thor::LLD::USART
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
+
   Chimera::Status_t Driver::receive( uint8_t *const data, const size_t size, const size_t timeout )
   {
     // Blocking mode not allowed
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
+
   Chimera::Status_t Driver::enableIT( const Chimera::Hardware::SubPeripheral subPeriph )
   {
-    using namespace Thor::Interrupt;
-    using namespace Thor::LLD::IT;
+    /*-------------------------------------------------
+    Ignore the subperiph argument as the actual transmit
+    and receive functions called by the user handle that.
+    -------------------------------------------------*/
+    Thor::LLD::IT::setPriority( periphIRQn, Thor::Interrupt::USART_IT_PREEMPT_PRIORITY, 0u );
+    Thor::LLD::IT::enableIRQ( periphIRQn );
 
-    setPriority( periphIRQn, USART_IT_PREEMPT_PRIORITY, 0u );
-
-    /*------------------------------------------------
-    The individual TX and RX functions take care of the nitty gritty details
-    ------------------------------------------------*/
-    enableIRQ( periphIRQn );
     return Chimera::CommonStatusCodes::OK;
   }
+
 
   Chimera::Status_t Driver::disableIT( const Chimera::Hardware::SubPeripheral subPeriph )
   {
     using namespace Chimera::Hardware;
-    using namespace Thor::LLD::IT;
 
     Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
 
-    disableIRQ( periphIRQn );
-    clearPendingIRQ( periphIRQn );
+    /*-------------------------------------------------
+    Disable system level interrupt from peripheral, to prevent glitching
+    -------------------------------------------------*/
+    Thor::LLD::IT::disableIRQ( periphIRQn );
+    Thor::LLD::IT::clearPendingIRQ( periphIRQn );
 
+    /*-------------------------------------------------
+    Disable interrupt event generation inside the peripheral
+    -------------------------------------------------*/
     if ( ( subPeriph == SubPeripheral::TX ) || ( subPeriph == SubPeripheral::TXRX ) )
     {
-      CR1::TCIE::set( periph, 0 );
-      CR1::TXEIE::set( periph, 0 );
+      TCIE::set( periph, 0 );
+      TXEIE::set( periph, 0 );
     }
     else if ( ( subPeriph == SubPeripheral::RX ) || ( subPeriph == SubPeripheral::TXRX ) )
     {
-
+      RXNEIE::set( periph, 0 );
     }
     else
     {
       result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
     }
 
-    enableIRQ( periphIRQn );
+    /*-------------------------------------------------
+    Re-enable the system level interrupts so other events can get through
+    -------------------------------------------------*/
+    Thor::LLD::IT::enableIRQ( periphIRQn );
 
     return result;
   }
 
+
   Chimera::Status_t Driver::transmitIT( const uint8_t *const data, const size_t size, const size_t timeout )
   {
 #if defined( DEBUG )
+    /*-------------------------------------------------
+    Don't bother with this check in release code as it slows down the program
+    -------------------------------------------------*/
     if ( !data || !size )
     {
       return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
     }
 #endif
 
-    if ( !SR::TC::get( periph ) )
+    /*-------------------------------------------------
+    Ensure the previous transfer has completed
+    -------------------------------------------------*/
+    if ( ( txTCB.state != StateMachine::TX::TX_COMPLETE ) && ( txTCB.state != StateMachine::TX::TX_READY ) )
     {
       return Chimera::CommonStatusCodes::BUSY;
     }
-    else
+    else // No on-going transfers
     {
+      /*-------------------------------------------------
+      Turn on interrupts and immediately enter a critical section
+      so that explicit ISR signals can be enabled without glitching.
+      -------------------------------------------------*/
       enableIT( Chimera::Hardware::SubPeripheral::TX );
-
       enterCriticalSection();
 
       /*------------------------------------------------
       Turn on the transmitter & enable TDR interrupt so we know
       when we can stage the next byte transfer.
       ------------------------------------------------*/
-      CR1::TE::set( periph, CR1_TE );
-      CR1::TXEIE::set( periph, CR1_TXEIE );
+      TE::set( periph, CR1_TE );
+      TXEIE::set( periph, CR1_TXEIE );
 
       /*------------------------------------------------
       Prep the transfer control block
       ------------------------------------------------*/
       txTCB.buffer = &data[ 1 ]; /* Point to the next byte */
-      txTCB.size   = size - 1u;  /* Pre-decrement to account for this first byte */
+      txTCB.size   = size - 1u;  /* Pre-decrement to account for this first byte TX */
       txTCB.state  = StateMachine::TX::TX_ONGOING;
 
       /*------------------------------------------------
-      Write the byte onto the wire
+      Shove the byte into the transmit data register, kicking off the
+      transfer. Re-enable interrupts so we can catch the TX complete event.
       ------------------------------------------------*/
       periph->TDR = data[ 0 ];
-
       exitCriticalSection();
     }
 
     return Chimera::CommonStatusCodes::OK;
   }
 
+
   Chimera::Status_t Driver::receiveIT( uint8_t *const data, const size_t size, const size_t timeout )
   {
 #if defined( DEBUG )
+    /*-------------------------------------------------
+    Don't bother with this check in release code as it slows down the program
+    -------------------------------------------------*/
     if ( !data || !size )
     {
       return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
     }
 #endif
 
-    if ( SR::RXNE::get( periph ) )
+    /*-------------------------------------------------
+    Ensure that the ISR has processed all data in the FIFO
+    -------------------------------------------------*/
+    if ( RXNE::get( periph ) )
     {
-      /* There is a byte in the register that needs to be read by the ISR */
       return Chimera::CommonStatusCodes::BUSY;
     }
-    else
+    else // All bytes have been read out of the FIFO
     {
       enterCriticalSection();
 
       /*------------------------------------------------
       Only turn on RXNE so as to detect when the first byte arrives
       ------------------------------------------------*/
-      CR1::RXNEIE::set( periph, CR1_RXNEIE );
+      RXNEIE::set( periph, CR1_RXNEIE );
 
       /*------------------------------------------------
       Prep the transfer control block to receive data
@@ -287,9 +354,9 @@ namespace Thor::LLD::USART
       rxTCB.state  = StateMachine::RX::RX_ONGOING;
 
       /*------------------------------------------------
-      Turn on the RX hardware to begin listening
+      Turn on the RX hardware to begin listening for data
       ------------------------------------------------*/
-      CR1::RE::set( periph, CR1_RE );
+      RE::set( periph, CR1_RE );
 
       exitCriticalSection();
     }
@@ -297,123 +364,133 @@ namespace Thor::LLD::USART
     return Chimera::CommonStatusCodes::OK;
   }
 
+
   Chimera::Status_t Driver::initDMA()
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
+
 
   Chimera::Status_t Driver::deinitDMA()
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
+
   Chimera::Status_t Driver::enableDMA_IT( const Chimera::Hardware::SubPeripheral periph )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
+
 
   Chimera::Status_t Driver::disableDMA_IT( const Chimera::Hardware::SubPeripheral periph )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
+
   Chimera::Status_t Driver::transmitDMA( const void *const data, const size_t size, const size_t timeout )
   {
     using namespace Chimera::Threading;
-
-    auto result = Chimera::CommonStatusCodes::TIMEOUT;
-
-    /*------------------------------------------------
-    Create the control blocks for configuring a USART DMA transfer
-    ------------------------------------------------*/
-    Chimera::DMA::Init init;
-    init.direction = Chimera::DMA::TransferDirection::MEMORY_TO_PERIPH;
-    init.mAlign    = Chimera::DMA::MemoryAlignment::ALIGN_BYTE;
-    init.mInc      = Chimera::DMA::MemoryIncrement::ENABLED;
-    init.mode      = Chimera::DMA::Mode::NORMAL;
-    init.pAlign    = Chimera::DMA::PeripheralAlignment::ALIGN_BYTE;
-    init.pInc      = Chimera::DMA::PeripheralIncrement::DISABLED;
-    init.priority  = Chimera::DMA::Priority::MEDIUM;
-    init.request   = dmaTXSignal;
-
-    Chimera::DMA::TCB tcb;
-
-    /*-------------------------------------------------
-    Grab the address of the data using a type that is large enough to hold
-    the system's sizeof(void*). Otherwise the compiler complains about losing
-    precision when cross compiling with GCC et al in a 64-bit environment.
-    -------------------------------------------------*/
-    size_t tempDstAddr = reinterpret_cast<size_t>( &periph->TDR );
-    size_t tempSrcAddr = reinterpret_cast<size_t>( data );
-
-    /*-------------------------------------------------
-    The STM32 embedded system is always 32-bit, so the control block structure is
-    expecting a 32-bit address. This might cause issues during simulation of this
-    code on 64-bit platforms.
-    -------------------------------------------------*/
-    tcb.dstAddress = static_cast<uint32_t>( tempDstAddr );
-    tcb.srcAddress = static_cast<uint32_t>( tempSrcAddr );
-    tcb.transferSize = size;
-
-    /*------------------------------------------------
-    Grab a pointer to the DMA singleton
-    ------------------------------------------------*/
-    auto dma = Thor::DMA::DMAClass::get();
-    if ( !dma )
-    {
-      return Chimera::CommonStatusCodes::FAIL;
-    }
-
-    /*------------------------------------------------
-    Acquire exclusive access to the hardware and start the transfer
-    ------------------------------------------------*/
-    if ( dma->try_lock_for( timeout ) == Chimera::CommonStatusCodes::OK )
-    {
-      /*------------------------------------------------
-      According to pg.32 of AN4031, the DMA must be initialized
-      BEFORE the peripheral is enabled otherwise a FIFO error
-      is likely to ensue. I found this to be very true.
-      ------------------------------------------------*/
-      result = dma->configure( init, tcb, timeout, nullptr );
-      dma->start();
-
-      /*------------------------------------------------
-      At this point the DMA is enabled and waiting for the
-      peripheral to send a request. Setting these two bits
-      accomplish this.
-      ------------------------------------------------*/
-      enableIT( Chimera::Hardware::SubPeripheral::TX );
-      enterCriticalSection();
-
-      CR3::DMAT::set( periph, CR3_DMAT );
-      CR1::TE::set( periph, CR1_TE );
-
-      /*------------------------------------------------
-      Prepare the USART state machine to correctly process the ISR request. Once the DMA
-      transfer finishes, the TCIF will be set and trigger the USART ISR processing.
-
-      According to the datasheet, the TC flag must be cleared before starting the DMA transfer.
-      ------------------------------------------------*/
-      SR::TC::set( periph, 0 );
-      CR1::TCIE::set( periph, CR1_TCIE );
-      txTCB.state = StateMachine::TX::TX_COMPLETE;
-
-      exitCriticalSection();
-
-      dma->unlock();
-    }
-
-    return result;
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    //    auto result = Chimera::CommonStatusCodes::TIMEOUT;
+    //
+    //    /*------------------------------------------------
+    //    Create the control blocks for configuring a USART DMA transfer
+    //    ------------------------------------------------*/
+    //    Chimera::DMA::Init init;
+    //    init.direction = Chimera::DMA::TransferDirection::MEMORY_TO_PERIPH;
+    //    init.mAlign    = Chimera::DMA::MemoryAlignment::ALIGN_BYTE;
+    //    init.mInc      = Chimera::DMA::MemoryIncrement::ENABLED;
+    //    init.mode      = Chimera::DMA::Mode::NORMAL;
+    //    init.pAlign    = Chimera::DMA::PeripheralAlignment::ALIGN_BYTE;
+    //    init.pInc      = Chimera::DMA::PeripheralIncrement::DISABLED;
+    //    init.priority  = Chimera::DMA::Priority::MEDIUM;
+    //    init.request   = dmaTXSignal;
+    //
+    //    Chimera::DMA::TCB tcb;
+    //
+    //    /*-------------------------------------------------
+    //    Grab the address of the data using a type that is large enough to hold
+    //    the system's sizeof(void*). Otherwise the compiler complains about losing
+    //    precision when cross compiling with GCC et al in a 64-bit environment.
+    //    -------------------------------------------------*/
+    //    size_t tempDstAddr = reinterpret_cast<size_t>( &periph->TDR );
+    //    size_t tempSrcAddr = reinterpret_cast<size_t>( data );
+    //
+    //    /*-------------------------------------------------
+    //    The STM32 embedded system is always 32-bit, so the control block structure is
+    //    expecting a 32-bit address. This might cause issues during simulation of this
+    //    code on 64-bit platforms.
+    //    -------------------------------------------------*/
+    //    tcb.dstAddress = static_cast<uint32_t>( tempDstAddr );
+    //    tcb.srcAddress = static_cast<uint32_t>( tempSrcAddr );
+    //    tcb.transferSize = size;
+    //
+    //    /*------------------------------------------------
+    //    Grab a pointer to the DMA singleton
+    //    ------------------------------------------------*/
+    //    auto dma = Thor::DMA::DMAClass::get();
+    //    if ( !dma )
+    //    {
+    //      return Chimera::CommonStatusCodes::FAIL;
+    //    }
+    //
+    //    /*------------------------------------------------
+    //    Acquire exclusive access to the hardware and start the transfer
+    //    ------------------------------------------------*/
+    //    if ( dma->try_lock_for( timeout ) == Chimera::CommonStatusCodes::OK )
+    //    {
+    //      /*------------------------------------------------
+    //      According to pg.32 of AN4031, the DMA must be initialized
+    //      BEFORE the peripheral is enabled otherwise a FIFO error
+    //      is likely to occur. I found this to be very true.
+    //      ------------------------------------------------*/
+    //      result = dma->configure( init, tcb, timeout, nullptr );
+    //      dma->start();
+    //
+    //      /*------------------------------------------------
+    //      At this point the DMA is enabled and waiting for the
+    //      peripheral to send a request. Setting these two bits
+    //      accomplish this.
+    //      ------------------------------------------------*/
+    //      enableIT( Chimera::Hardware::SubPeripheral::TX );
+    //      enterCriticalSection();
+    //
+    //      DMAT::set( periph, CR3_DMAT );
+    //      TE::set( periph, CR1_TE );
+    //
+    //      /*------------------------------------------------
+    //      Prepare the USART state machine to correctly process the ISR request. Once the DMA
+    //      transfer finishes, the TCIF will be set and trigger the USART ISR processing.
+    //
+    //      According to the datasheet, the TC flag must be cleared before starting the DMA transfer.
+    //      ------------------------------------------------*/
+    //      TCCF::set( periph, ICR_TCCF );
+    //      TCIE::set( periph, CR1_TCIE );
+    //      txTCB.state = StateMachine::TX::TX_COMPLETE;
+    //
+    //      // Allow listening for the TCIE event
+    //      exitCriticalSection();
+    //
+    //      // Unlock after the critical section due to possibly needing ISRs with the RTOS
+    //      dma->unlock();
+    //    }
+    //
+    //    return result;
   }
+
 
   Chimera::Status_t Driver::receiveDMA( void *const data, const size_t size, const size_t timeout )
   {
-    auto dma = Thor::DMA::DMAClass::get();
+    //auto dma = Thor::DMA::DMAClass::get();
 
     // don't forget to pull the correct signal
+    // TODO if ever needed
 
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
+
 
   Chimera::Status_t Driver::txTransferStatus()
   {
@@ -426,6 +503,7 @@ namespace Thor::LLD::USART
     return cacheStatus;
   }
 
+
   Chimera::Status_t Driver::rxTransferStatus()
   {
     Chimera::Status_t cacheStatus = Chimera::CommonStatusCodes::UNKNOWN_ERROR;
@@ -437,10 +515,12 @@ namespace Thor::LLD::USART
     return cacheStatus;
   }
 
+
   uint32_t Driver::getFlags()
   {
-    return runtimeFlags;
+    return runtimeFlags;  // Atomic operation on this processor
   }
+
 
   void Driver::clearFlags( const uint32_t flagBits )
   {
@@ -448,6 +528,7 @@ namespace Thor::LLD::USART
     runtimeFlags &= ~( flagBits );
     exitCriticalSection();
   }
+
 
   void Driver::killTransmit()
   {
@@ -460,6 +541,7 @@ namespace Thor::LLD::USART
     exitCriticalSection();
   }
 
+
   void Driver::killReceive()
   {
     enterCriticalSection();
@@ -471,14 +553,17 @@ namespace Thor::LLD::USART
     exitCriticalSection();
   }
 
+
   void Driver::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )
   {
     ISRWakeup_external = wakeup;
   }
 
+
   Thor::LLD::Serial::CDTCB Driver::getTCB_TX()
   {
     Thor::LLD::Serial::CDTCB temp;
+
     enterCriticalSection();
     temp = txTCB;
     exitCriticalSection();
@@ -486,9 +571,11 @@ namespace Thor::LLD::USART
     return temp;
   }
 
+
   Thor::LLD::Serial::MDTCB Driver::getTCB_RX()
   {
     Thor::LLD::Serial::MDTCB temp;
+
     enterCriticalSection();
     temp = rxTCB;
     exitCriticalSection();
@@ -496,42 +583,39 @@ namespace Thor::LLD::USART
     return temp;
   }
 
+
   Thor::LLD::Serial::Config Driver::getConfiguration()
   {
     Thor::LLD::Serial::Config cfg;
     memset( &cfg, 0, sizeof( cfg ) );
 
     cfg.BaudRate     = 0;
-    cfg.Mode         = CR1::TE::get( periph ) | CR1::RE::get( periph );
-    cfg.OverSampling = CR1::OVER8::get( periph );
-    cfg.Parity       = CR1::PCE::get( periph ) | CR1::PS::get( periph );
-    cfg.StopBits     = CR2::STOP::get( periph );
-    cfg.WordLength   = CR1::M::get( periph );
+    cfg.Mode         = TE::get( periph ) | RE::get( periph );
+    cfg.OverSampling = OVER8::get( periph );
+    cfg.Parity       = PCE::get( periph ) | PS::get( periph );
+    cfg.StopBits     = STOP::get( periph );
+    cfg.WordLength   = M0::get( periph );
 
     return cfg;
   }
+
 
   void Driver::IRQHandler()
   {
     using namespace Configuration::Flags;
 
     /*------------------------------------------------
-    Following the datasheet, flags are only cleared after
-    reading the SR and then DR.
+    Cache the current state of the registers
     ------------------------------------------------*/
-    const uint32_t statusRegister = SR::get( periph );
-
-    /*------------------------------------------------
-    Cache the current state of the control registers
-    ------------------------------------------------*/
-    const uint32_t CR1 = CR1::get( periph );
+    const uint32_t ISRCache = ISR::get( periph );
+    const uint32_t CR1Cache = CR1::get( periph );
 
     /*------------------------------------------------
     Figure out which interrupt flags have been set
     ------------------------------------------------*/
-    uint32_t txFlags    = statusRegister & ( FLAG_TC | FLAG_TXE );
-    uint32_t rxFlags    = statusRegister & ( FLAG_RXNE | FLAG_IDLE );
-    uint32_t errorFlags = statusRegister & ( FLAG_ORE | FLAG_PE | FLAG_NF | FLAG_FE );
+    uint32_t txFlags    = ISRCache & ( FLAG_TC | FLAG_TXE );
+    uint32_t rxFlags    = ISRCache & ( FLAG_RXNE | FLAG_IDLE );
+    uint32_t errorFlags = ISRCache & ( FLAG_ORE | FLAG_PE | FLAG_NF | FLAG_FE );
 
     /*------------------------------------------------
     TX Related Handler
@@ -541,14 +625,14 @@ namespace Thor::LLD::USART
       /*------------------------------------------------
       TDR Empty Interrupt
       ------------------------------------------------*/
-      if ( ( txFlags & FLAG_TXE ) && ( CR1 & CR1_TXEIE ) && ( txTCB.state == StateMachine::TX::TX_ONGOING ) )
+      if ( ( txFlags & FLAG_TXE ) && ( CR1Cache & CR1_TXEIE ) && ( txTCB.state == StateMachine::TX::TX_ONGOING ) )
       {
-        if ( txTCB.size )
+        if ( txTCB.size ) // Data left to be transmitted
         {
           /*------------------------------------------------
           Make sure the TX complete interrupt cannot fire
           ------------------------------------------------*/
-          CR1::TCIE::set( periph, 0 );
+          TCIE::set( periph, 0 );
 
           /*------------------------------------------------
           Transfer the byte and prep for the next character
@@ -558,14 +642,14 @@ namespace Thor::LLD::USART
           txTCB.buffer++;
           txTCB.size--;
         }
-        else
+        else // All data has been transmitted
         {
           /*------------------------------------------------
           We finished pushing the last character into the TDR, so
-          now listen for the TX complete interrupt.
+          now we can listen for the TX complete interrupt.
           ------------------------------------------------*/
-          CR1::TXEIE::set( periph, 0 );
-          CR1::TCIE::set( periph, CR1_TCIE );
+          TXEIE::set( periph, 0 );
+          TCIE::set( periph, CR1_TCIE );
           txTCB.state = StateMachine::TX_COMPLETE;
         }
       }
@@ -573,13 +657,18 @@ namespace Thor::LLD::USART
       /*------------------------------------------------
       Transfer Complete Interrupt
       ------------------------------------------------*/
-      if ( ( txFlags & FLAG_TC ) && ( CR1 & CR1_TCIE ) && ( txTCB.state == StateMachine::TX::TX_COMPLETE ) )
+      if ( ( txFlags & FLAG_TC ) && ( CR1Cache & CR1_TCIE ) && ( txTCB.state == StateMachine::TX::TX_COMPLETE ) )
       {
+        /*-------------------------------------------------
+        Clear the appropriate flag
+        -------------------------------------------------*/
+        TCCF::set( periph, ICR_TCCF );
+
         /*------------------------------------------------
         Exit the TX ISR cleanly by disabling related interrupts
         ------------------------------------------------*/
-        CR1::TCIE::set( periph, 0 );
-        CR1::TXEIE::set( periph, 0 );
+        TCIE::set( periph, 0 );
+        TXEIE::set( periph, 0 );
         runtimeFlags |= Runtime::Flag::TX_COMPLETE;
 
         /*------------------------------------------------
@@ -600,20 +689,19 @@ namespace Thor::LLD::USART
       /*------------------------------------------------
       RX register not empty, aka a new byte has arrived!
       ------------------------------------------------*/
-      if ( ( rxFlags & FLAG_RXNE ) && ( CR1 & CR1_RXNEIE ) && ( rxTCB.state == StateMachine::RX::RX_ONGOING ) )
+      if ( ( rxFlags & FLAG_RXNE ) && ( CR1Cache & CR1_RXNEIE ) && ( rxTCB.state == StateMachine::RX::RX_ONGOING ) )
       {
         /*------------------------------------------------
         Make sure the line idle interrupt is enabled. Regardless of
         whether or not we have data left to RX, the sender might just
         suddenly stop, and we need to detect that.
         ------------------------------------------------*/
-        CR1::IDLEIE::set( periph, CR1_IDLEIE );
+        IDLEIE::set( periph, CR1_IDLEIE );
 
         /*------------------------------------------------
         Read out the current byte and prep for the next transfer
         ------------------------------------------------*/
-        *rxTCB.buffer = periph->TDR;
-
+        *rxTCB.buffer = periph->RDR;
         rxTCB.buffer++;
         rxTCB.size--;
 
@@ -622,8 +710,8 @@ namespace Thor::LLD::USART
         ------------------------------------------------*/
         if ( !rxTCB.size )
         {
-          CR1::RE::set( periph, 0 );
-          CR1::IDLEIE::set( periph, 0 );
+          RE::set( periph, 0 );
+          IDLEIE::set( periph, 0 );
           rxTCB.state = StateMachine::RX::RX_COMPLETE;
           runtimeFlags |= Runtime::Flag::RX_COMPLETE;
         }
@@ -633,10 +721,18 @@ namespace Thor::LLD::USART
       Line Idle: We were in the middle of a transfer and
       then suddenly they just stopped sending data.
       ------------------------------------------------*/
-      if ( ( rxFlags & FLAG_IDLE ) && ( CR1 & CR1_IDLEIE ) && ( rxTCB.state == StateMachine::RX::RX_ONGOING ) )
+      if ( ( rxFlags & FLAG_IDLE ) && ( CR1Cache & CR1_IDLEIE ) && ( rxTCB.state == StateMachine::RX::RX_ONGOING ) )
       {
-        CR1::RE::set( periph, 0 );
-        CR1::IDLEIE::set( periph, 0 );
+        /*-------------------------------------------------
+        Clear the appropriate flags
+        -------------------------------------------------*/
+        RE::set( periph, 0 );
+        IDLEIE::set( periph, 0 );
+        IDLECF::set( periph, ICR_IDLECF );
+
+        /*-------------------------------------------------
+        Update the system state variables
+        -------------------------------------------------*/
         rxTCB.state = StateMachine::RX::RX_ABORTED;
         runtimeFlags |= Runtime::Flag::RX_LINE_IDLE_ABORT;
       }
@@ -655,10 +751,15 @@ namespace Thor::LLD::USART
     ------------------------------------------------*/
     if ( errorFlags )
     {
+      ORECF::set( periph, errorFlags );
+      NECF::set( periph, errorFlags );
+      FECF::set( periph, errorFlags );
+      PECF::set( periph, errorFlags );
+
       runtimeFlags |= errorFlags;
-      /* All error bits are cleared by read to SR then DR, which was already performed */
     }
   }
+
 
   uint32_t Driver::calculateBRR( const size_t desiredBaud )
   {
@@ -670,10 +771,10 @@ namespace Thor::LLD::USART
     Figure out the frequency of the clock that drives the USART
     ------------------------------------------------*/
     auto rccSys = Thor::LLD::RCC::getSystemClockController();
-    rccSys->getPeriphClock( Chimera::Peripheral::Type::PERIPH_USART, periphAddress, &periphClock );
+    periphClock = rccSys->getPeriphClock( Chimera::Peripheral::Type::PERIPH_USART, periphAddress );
 
     /*------------------------------------------------
-    Protect from fault conditions in the math below
+    Protect from div0 conditions in the math below
     ------------------------------------------------*/
     if ( !desiredBaud || !periphClock )
     {
@@ -686,7 +787,7 @@ namespace Thor::LLD::USART
     ------------------------------------------------*/
     size_t over8Compensator = 2u;
 
-    if ( CR1::OVER8::get( periph ) )
+    if ( OVER8::get( periph ) )
     {
       over8Compensator = 1u;
     }
@@ -694,15 +795,17 @@ namespace Thor::LLD::USART
     auto divisor          = ( 25u * periphClock ) / ( 2u * over8Compensator * desiredBaud );
     auto mantissa_divisor = divisor / 100u;
     auto fraction_divisor = ( ( divisor - ( mantissa_divisor * 100u ) ) * 16u + 50u ) / 100u;
-    calculatedBRR         = ( mantissa_divisor << BRR_DIV_Mantissa_Pos ) | ( fraction_divisor & BRR_DIV_Fraction );
+    calculatedBRR         = ( mantissa_divisor << BRR_DIV_MANTISSA_Pos ) | ( fraction_divisor & BRR_DIV_FRACTION );
 
     return static_cast<uint32_t>( calculatedBRR );
   }
+
 
   inline void Driver::enterCriticalSection()
   {
     Thor::LLD::IT::disableIRQ( periphIRQn );
   }
+
 
   inline void Driver::exitCriticalSection()
   {
@@ -714,7 +817,7 @@ namespace Thor::LLD::USART
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
 void USART1_IRQHandler( void )
 {
-  static constexpr size_t index = 0;
+  static constexpr size_t index = Thor::LLD::USART::USART1_RESOURCE_INDEX;
 
   if ( Thor::LLD::USART::usartObjects[ index ] )
   {
@@ -727,7 +830,7 @@ void USART1_IRQHandler( void )
 #if defined( STM32_USART2_PERIPH_AVAILABLE )
 void USART2_IRQHandler( void )
 {
-  static constexpr size_t index = 1;
+  static constexpr size_t index = Thor::LLD::USART::USART2_RESOURCE_INDEX;
 
   if ( Thor::LLD::USART::usartObjects[ index ] )
   {
@@ -740,7 +843,7 @@ void USART2_IRQHandler( void )
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
 void USART3_IRQHandler( void )
 {
-  static constexpr size_t index = 2;
+  static constexpr size_t index = Thor::LLD::USART::USART3_RESOURCE_INDEX;
 
   if ( Thor::LLD::USART::usartObjects[ index ] )
   {
@@ -748,7 +851,6 @@ void USART3_IRQHandler( void )
   }
 }
 #endif  /* STM32_USART3_PERIPH_AVAILABLE */
-
 
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_USART */

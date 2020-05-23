@@ -460,6 +460,8 @@
     <None Include="..\..\..\Thor\lld\interface\gpio\mock\build.jam" />
     <None Include="..\..\..\Thor\lld\interface\interrupt\mock\build.jam" />
     <None Include="..\..\..\Thor\lld\interface\spi\mock\build.jam" />
+    <None Include="..\..\..\Thor\lld\stm32f4x\build.jam" />
+    <None Include="..\..\..\Thor\lld\stm32l4x\build.jam" />
     <None Include="..\..\..\Thor\lld\stm32l4x\gpio\build.jam" />
     <None Include="..\..\..\Thor\lld\stm32l4x\usart\build.jam" />
     <None Include="..\..\..\Thor\nvic" />
@@ -739,7 +741,9 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_detail.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_types.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_detail.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_intf.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_detail.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_types.hpp" />
@@ -1533,5 +1537,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\version.hpp" />
   </ItemGroup>
 </Project>

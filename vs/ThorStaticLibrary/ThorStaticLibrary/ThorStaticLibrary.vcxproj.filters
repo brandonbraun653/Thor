@@ -722,9 +722,6 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_types.hpp">
       <Filter>lld\interface\spi</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart.hpp">
-      <Filter>lld\interface\uart</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog.hpp">
       <Filter>lld\interface\watchdog</Filter>
     </ClInclude>
@@ -1090,6 +1087,12 @@
     <None Include="..\..\..\Thor\lld\stm32l4x\usart\build.jam">
       <Filter>lld\stm32l4x\usart</Filter>
     </None>
+    <None Include="..\..\..\Thor\lld\stm32l4x\build.jam">
+      <Filter>lld\stm32l4x</Filter>
+    </None>
+    <None Include="..\..\..\Thor\lld\stm32f4x\build.jam">
+      <Filter>lld\stm32f4x</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Thor\config\config.hpp">
@@ -1397,6 +1400,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_types.hpp">
       <Filter>lld\interface\usart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\version.hpp">
+      <Filter>lld\stm32l4x</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_detail.hpp">
+      <Filter>lld\interface\uart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_intf.hpp">
+      <Filter>lld\interface\uart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_types.hpp">
+      <Filter>lld\interface\uart</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
