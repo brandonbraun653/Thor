@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    serial_model.hpp
+ *    serial_intf.hpp
  *
  *  Description:
  *    STM32 Driver Model for Serial Communication
@@ -24,7 +24,7 @@
 #include <Thor/lld/interface/serial/serial_types.hpp>
 
 
-namespace Thor::Driver::Serial
+namespace Thor::LLD::Serial
 {
   /**
    *  Describes the bare minimum functionality that should be present across
@@ -36,13 +36,13 @@ namespace Thor::Driver::Serial
     virtual ~Basic() = default;
 
     /**
-     *  Performs the low level driver register initialization to 
+     *  Performs the low level driver register initialization to
      *  get the peripheral into a basic functional state for blocking transfers.
      *
      *  @param[in]  cfg     Hardware configuration options
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t init( const Thor::Driver::Serial::Config &cfg ) = 0;
+    virtual Chimera::Status_t init( const Thor::LLD::Serial::Config &cfg ) = 0;
 
     /**
      *  Deinitializes the low level driver and peripheral
@@ -55,7 +55,7 @@ namespace Thor::Driver::Serial
 
     /**
      *  Completely resets the entire driver, including all instance resources.
-     *  
+     *
      *  @note init() must be called again before the driver can be reused
      *
      *  @return Chimera::Status_t
@@ -87,7 +87,7 @@ namespace Thor::Driver::Serial
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t receive( uint8_t *const data, const size_t size, const size_t timeout ) = 0;
-    
+
     /**
      *
      */
@@ -226,7 +226,7 @@ namespace Thor::Driver::Serial
     virtual void killReceive() = 0;
   };
 
-}    // namespace Thor::Driver::Serial
+}    // namespace Thor::LLD::Serial
 
 
 #endif /* !THOR_DRIVER_MODEL_SERIAL_HPP */

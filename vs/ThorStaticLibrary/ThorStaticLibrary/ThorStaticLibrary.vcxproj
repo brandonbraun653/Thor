@@ -461,6 +461,7 @@
     <None Include="..\..\..\Thor\lld\interface\interrupt\mock\build.jam" />
     <None Include="..\..\..\Thor\lld\interface\spi\mock\build.jam" />
     <None Include="..\..\..\Thor\lld\stm32l4x\gpio\build.jam" />
+    <None Include="..\..\..\Thor\lld\stm32l4x\usart\build.jam" />
     <None Include="..\..\..\Thor\nvic" />
     <None Include="..\..\..\Thor\pwm" />
     <None Include="..\..\..\Thor\spi" />
@@ -530,6 +531,11 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_entry_lld_timer.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_lld_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_driver_stm32l4.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\test\test_entry_lld_usart.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\test\test_lld_usart_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.cpp" />
     <ClInclude Include="..\..\..\Thor\config\boost\boostStub.hpp" />
     <ClInclude Include="..\..\..\Thor\config\chimera\chimeraPort.hpp" />
     <ClInclude Include="..\..\..\Thor\config\config.hpp" />
@@ -734,7 +740,9 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\timer\timer_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_detail.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_intf.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\common\definitions.hpp">
@@ -1520,5 +1528,10 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_driver.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_mapping.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_prj.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.hpp" />
   </ItemGroup>
 </Project>

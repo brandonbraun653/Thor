@@ -15,12 +15,12 @@
 /* C++ Includes */
 #include <cstdint>
 
-namespace Thor::Driver
+namespace Thor::LLD::Interrupt
 {
   using InterruptSignal_t = int16_t;
 
   /*------------------------------------------------
-  Define numerical boundaries to the number of interrupt signals 
+  Define numerical boundaries to the number of interrupt signals
   that a given hardware peripheral can support. These must account
   for all STM32 chips past and future.
   ------------------------------------------------*/

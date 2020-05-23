@@ -37,7 +37,7 @@ namespace Thor::Driver
      *  on whether or the implementer uses a queue or a single callback.
      *
      *  @param[in]  type      The event type to attach the callback to
-     *  @param[in]  onEvent   The function to be called when the event occurs 
+     *  @param[in]  onEvent   The function to be called when the event occurs
      *  @return Chimera::Status_t
      *
      *  |  Return Value |                       Explanation                      |
@@ -48,7 +48,7 @@ namespace Thor::Driver
      */
     virtual Chimera::Status_t registerCallback( const CallbackEvent type, const VoidCallback &onEvent ) = 0;
   };
-}    // namespace Thor::Driver::Serial
+}    // namespace Thor::LLD::Serial
 
 
 #endif /* !THOR_DRIVER_MODEL_CALLBACK_HPP */

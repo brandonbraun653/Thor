@@ -1,62 +1,83 @@
 /********************************************************************************
  *  File Name:
- *    hw_usart_driver_stm32f4.cpp
+ *    hw_usart_driver_STM32L4.cpp
  *
  *  Description:
- *    STM32F4 specific driver implementation for the UART/USART driver. Both drivers
- *    are merged into one as the datasheet does not make a distinction between the
- *    two. In practice with the STM32HAL this was also found to be true.
+ *    Implements the LLD interface to the STM32L4 series USART hardware.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* C++ Includes */
-#include <array>
-#include <cstring>
+/* STL Includes */
+#include <memory>
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/dma>
-#include <Chimera/thread>
 
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/dma>
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
-#include <Thor/lld/stm32f4x/nvic/hw_nvic_driver.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_driver.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
+#include <Thor/lld/common/cortex-m4/interrupts.hpp>
+#include <Thor/lld/stm32l4x/usart/hw_usart_driver.hpp>
+#include <Thor/lld/stm32l4x/usart/hw_usart_mapping.hpp>
+#include <Thor/lld/stm32l4x/usart/hw_usart_prj.hpp>
+#include <Thor/lld/stm32l4x/usart/hw_usart_types.hpp>
+#include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
-
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_USART )
+#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_USART )
 
 namespace Thor::LLD::USART
 {
-  void initialize()
+  static std::array<Driver_sPtr, NUM_USART_PERIPHS> s_usart_drivers;
+
+  /*-------------------------------------------------
+  LLD->HLD Interface Implementation
+  -------------------------------------------------*/
+  Chimera::Status_t initialize()
   {
     initializeRegisters();
     initializeMapping();
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
-  Driver::Driver( RegisterMap *const peripheral ) : periph( peripheral ), ISRWakeup_external( nullptr )
+  size_t availableChannels()
+  {
+    return NUM_USART_PERIPHS;
+  }
+
+  /*-------------------------------------------------
+  Private LLD Function Implementation
+  -------------------------------------------------*/
+  bool isUSART( const std::uintptr_t address )
+  {
+    bool result = false;
+
+    for ( auto &val : periphAddressList )
+    {
+      if ( val == address )
+      {
+        result = true;
+      }
+    }
+
+    return result;
+  }
+
+  /*-----------------------------------------------------
+  Low Level Driver Implementation
+  -----------------------------------------------------*/
+  Driver::Driver( RegisterMap *peripheral ) : periph( peripheral )
   {
     auto address   = reinterpret_cast<std::uintptr_t>( peripheral );
     peripheralType = Chimera::Peripheral::Type::PERIPH_USART;
     resourceIndex  = Thor::LLD::USART::InstanceToResourceIndex.find( address )->second;
-    periphIRQn     = USART_IRQn[ resourceIndex ];
+    periphIRQn     = IRQSignals[ resourceIndex ];
     dmaTXSignal    = TXDMASignals[ resourceIndex ];
     dmaRXSignal    = RXDMASignals[ resourceIndex ];
 
     usartObjects[ resourceIndex ] = this;
-
-    /*------------------------------------------------
-    Ensure the clock is enabled otherwise the hardware is "dead"
-    ------------------------------------------------*/
-    auto rccPeriph = Thor::LLD::RCC::getSystemPeripheralController();
-    rccPeriph->enableClock( peripheralType, resourceIndex );
   }
 
   Driver::~Driver()
@@ -138,11 +159,13 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::transmit( const uint8_t *const data, const size_t size, const size_t timeout )
   {
+    // Blocking mode not allowed
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::receive( uint8_t *const data, const size_t size, const size_t timeout )
   {
+    // Blocking mode not allowed
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
 
@@ -225,7 +248,7 @@ namespace Thor::LLD::USART
       /*------------------------------------------------
       Write the byte onto the wire
       ------------------------------------------------*/
-      periph->DR = data[ 0 ];
+      periph->TDR = data[ 0 ];
 
       exitCriticalSection();
     }
@@ -320,7 +343,7 @@ namespace Thor::LLD::USART
     the system's sizeof(void*). Otherwise the compiler complains about losing
     precision when cross compiling with GCC et al in a 64-bit environment.
     -------------------------------------------------*/
-    size_t tempDstAddr = reinterpret_cast<size_t>( &periph->DR );
+    size_t tempDstAddr = reinterpret_cast<size_t>( &periph->TDR );
     size_t tempSrcAddr = reinterpret_cast<size_t>( data );
 
     /*-------------------------------------------------
@@ -453,9 +476,9 @@ namespace Thor::LLD::USART
     ISRWakeup_external = wakeup;
   }
 
-  CDTCB Driver::getTCB_TX()
+  Thor::LLD::Serial::CDTCB Driver::getTCB_TX()
   {
-    CDTCB temp;
+    Thor::LLD::Serial::CDTCB temp;
     enterCriticalSection();
     temp = txTCB;
     exitCriticalSection();
@@ -463,9 +486,9 @@ namespace Thor::LLD::USART
     return temp;
   }
 
-  MDTCB Driver::getTCB_RX()
+  Thor::LLD::Serial::MDTCB Driver::getTCB_RX()
   {
-    MDTCB temp;
+    Thor::LLD::Serial::MDTCB temp;
     enterCriticalSection();
     temp = rxTCB;
     exitCriticalSection();
@@ -530,7 +553,7 @@ namespace Thor::LLD::USART
           /*------------------------------------------------
           Transfer the byte and prep for the next character
           ------------------------------------------------*/
-          periph->DR = *txTCB.buffer;
+          periph->TDR = *txTCB.buffer;
 
           txTCB.buffer++;
           txTCB.size--;
@@ -589,7 +612,7 @@ namespace Thor::LLD::USART
         /*------------------------------------------------
         Read out the current byte and prep for the next transfer
         ------------------------------------------------*/
-        *rxTCB.buffer = periph->DR;
+        *rxTCB.buffer = periph->TDR;
 
         rxTCB.buffer++;
         rxTCB.size--;
@@ -687,6 +710,8 @@ namespace Thor::LLD::USART
   }
 }    // namespace Thor::LLD::USART
 
+
+#if defined( STM32_USART1_PERIPH_AVAILABLE )
 void USART1_IRQHandler( void )
 {
   static constexpr size_t index = 0;
@@ -696,7 +721,10 @@ void USART1_IRQHandler( void )
     Thor::LLD::USART::usartObjects[ index ]->IRQHandler();
   }
 }
+#endif  /* STM32_USART1_PERIPH_AVAILABLE */
 
+
+#if defined( STM32_USART2_PERIPH_AVAILABLE )
 void USART2_IRQHandler( void )
 {
   static constexpr size_t index = 1;
@@ -706,7 +734,10 @@ void USART2_IRQHandler( void )
     Thor::LLD::USART::usartObjects[ index ]->IRQHandler();
   }
 }
+#endif  /* STM32_USART2_PERIPH_AVAILABLE */
 
+
+#if defined( STM32_USART3_PERIPH_AVAILABLE )
 void USART3_IRQHandler( void )
 {
   static constexpr size_t index = 2;
@@ -716,15 +747,8 @@ void USART3_IRQHandler( void )
     Thor::LLD::USART::usartObjects[ index ]->IRQHandler();
   }
 }
+#endif  /* STM32_USART3_PERIPH_AVAILABLE */
 
-void USART6_IRQHandler( void )
-{
-  static constexpr size_t index = 3;
 
-  if ( Thor::LLD::USART::usartObjects[ index ] )
-  {
-    Thor::LLD::USART::usartObjects[ index ]->IRQHandler();
-  }
-}
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_USART */
+#endif /* TARGET_STM32L4 && THOR_DRIVER_USART */

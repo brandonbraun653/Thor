@@ -57,7 +57,6 @@ namespace Thor::LLD::RCC
 #endif
 
 #if defined( THOR_LLD_USART )
-#pragma message( "Need to initialize the driver" )
     LookupTables::USARTInit();
 #endif
 

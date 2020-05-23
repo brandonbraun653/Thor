@@ -126,9 +126,9 @@ namespace Thor::LLD::SPI
     InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( SPI2_PERIPH ), SPI2_RESOURCE_INDEX );
     InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( SPI3_PERIPH ), SPI3_RESOURCE_INDEX );
 
-    ChannelToInstance.append( SPI1_CHANNEL_NUMBER, SPI1_PERIPH );
-    ChannelToInstance.append( SPI2_CHANNEL_NUMBER, SPI2_PERIPH );
-    ChannelToInstance.append( SPI3_CHANNEL_NUMBER, SPI3_PERIPH );
+    ChannelToInstance.append( Chimera::SPI::Channel::SPI1, SPI1_PERIPH );
+    ChannelToInstance.append( Chimera::SPI::Channel::SPI2, SPI2_PERIPH );
+    ChannelToInstance.append( Chimera::SPI::Channel::SPI3, SPI3_PERIPH );
 #endif
   }
 }    // namespace Thor::LLD::GPIO

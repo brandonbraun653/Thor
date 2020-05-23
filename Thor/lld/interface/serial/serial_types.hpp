@@ -18,17 +18,79 @@
 /* Driver Includes */
 #include <Thor/lld/interface/interrupt/interrupt_types.hpp>
 
-namespace Thor::Driver::Serial
+namespace Thor::LLD::Serial
 {
+  /*------------------------------------------------
+  State Machine
+  ------------------------------------------------*/
+  namespace StateMachine
+  {
+    enum TX : Chimera::Status_t
+    {
+      TX_READY    = Chimera::Serial::Status::TX_READY,
+      TX_ONGOING  = Chimera::Serial::Status::TX_IN_PROGRESS,
+      TX_ABORTED  = Chimera::Serial::Status::TX_ABORTED,
+      TX_COMPLETE = Chimera::Serial::Status::TX_COMPLETE
+    };
+
+    enum RX : Chimera::Status_t
+    {
+      RX_READY    = Chimera::Serial::Status::RX_READY,
+      RX_ONGOING  = Chimera::Serial::Status::RX_IN_PROGRESS,
+      RX_COMPLETE = Chimera::Serial::Status::RX_COMPLETE,
+      RX_ABORTED  = Chimera::Serial::Status::RX_ABORTED
+    };
+  }    // namespace StateMachine
+
+  /**
+   *  Transfer control block that handles data which should
+   *  never be modified during a transfer.
+   *
+   *  (C)onstant (D)ata (T)ransfer (C)ontrol (B)lock
+   */
+  struct CDTCB
+  {
+    const uint8_t *buffer;
+    size_t size;
+    Chimera::Status_t state;
+
+    inline void reset()
+    {
+      buffer = nullptr;
+      size   = 0;
+      state  = StateMachine::TX::TX_READY;
+    }
+  };
+
+  /**
+   *  Transfer control block that handles data which might
+   *  be modified during a transfer.
+   *
+   *  (M)odifiable (D)ata (T)ransfer (C)ontrol (B)lock
+   */
+  struct MDTCB
+  {
+    uint8_t *buffer;
+    size_t size;
+    Chimera::Status_t state;
+
+    inline void reset()
+    {
+      buffer = nullptr;
+      size   = 0;
+      state  = StateMachine::RX::RX_READY;
+    }
+  };
+
   /**
    *  Configuration structure for the Serial peripherals (UART/USART).
-   *  Each member is expected to be equal to the exact value needed to 
+   *  Each member is expected to be equal to the exact value needed to
    *  configure the appropriate control register. The calculation of these
    *  values is left up to the hardware driver as this might vary from
    *  chip to chip. Expect that these values will be writen directly to
    *  a register without much translation or protection.
    *
-   *  The only exception is the BaudRate parameter, which can be set to 
+   *  The only exception is the BaudRate parameter, which can be set to
    *  a numerical value and not a register configuration value.
    */
   struct Config
@@ -36,17 +98,17 @@ namespace Thor::Driver::Serial
     /*------------------------------------------------
     This member configures the communication baud rate
     ------------------------------------------------*/
-    uint32_t BaudRate; 
+    uint32_t BaudRate;
 
     /*------------------------------------------------
     Specifies the number of data bits transmitted or received in a frame
     ------------------------------------------------*/
     uint32_t WordLength;
-                              
+
     /*------------------------------------------------
     Specifies the number of stop bits transmitted
     ------------------------------------------------*/
-    uint32_t StopBits; 
+    uint32_t StopBits;
 
     /*------------------------------------------------
     Specifies the parity mode
@@ -93,23 +155,23 @@ namespace Thor::Driver::Serial
   class ITSigUSART
   {
   public:
-    static constexpr InterruptSignal_t TRANSMIT_DATA_REGISTER_EMPTY = USARTSigOffset + 0;
-    static constexpr InterruptSignal_t RECEIVED_DATA_READ_TO_READ   = USARTSigOffset + 1;
-    static constexpr InterruptSignal_t TRANSMISSION_COMPLETE        = USARTSigOffset + 2;
-    static constexpr InterruptSignal_t IDLE_LINE_DETECTED           = USARTSigOffset + 3;
-    static constexpr InterruptSignal_t PARITY_ERROR                 = USARTSigOffset + 4;
-    static constexpr InterruptSignal_t OVERRUN_ERROR                = USARTSigOffset + 5;
-    static constexpr InterruptSignal_t FRAMING_ERROR                = USARTSigOffset + 6;
-    static constexpr InterruptSignal_t BREAK_FLAG                   = USARTSigOffset + 7;
-    static constexpr InterruptSignal_t NOISE_FLAG                   = USARTSigOffset + 8;
-    static constexpr InterruptSignal_t CTS_FLAG                     = USARTSigOffset + 9;
+    static constexpr Thor::LLD::Interrupt::InterruptSignal_t TRANSMIT_DATA_REGISTER_EMPTY = Thor::LLD::Interrupt::USARTSigOffset + 0;
+    static constexpr Thor::LLD::Interrupt::InterruptSignal_t RECEIVED_DATA_READ_TO_READ   = Thor::LLD::Interrupt::USARTSigOffset + 1;
+    static constexpr Thor::LLD::Interrupt::InterruptSignal_t TRANSMISSION_COMPLETE        = Thor::LLD::Interrupt::USARTSigOffset + 2;
+    static constexpr Thor::LLD::Interrupt::InterruptSignal_t IDLE_LINE_DETECTED           = Thor::LLD::Interrupt::USARTSigOffset + 3;
+    static constexpr Thor::LLD::Interrupt::InterruptSignal_t PARITY_ERROR                 = Thor::LLD::Interrupt::USARTSigOffset + 4;
+    static constexpr Thor::LLD::Interrupt::InterruptSignal_t OVERRUN_ERROR                = Thor::LLD::Interrupt::USARTSigOffset + 5;
+    static constexpr Thor::LLD::Interrupt::InterruptSignal_t FRAMING_ERROR                = Thor::LLD::Interrupt::USARTSigOffset + 6;
+    static constexpr Thor::LLD::Interrupt::InterruptSignal_t BREAK_FLAG                   = Thor::LLD::Interrupt::USARTSigOffset + 7;
+    static constexpr Thor::LLD::Interrupt::InterruptSignal_t NOISE_FLAG                   = Thor::LLD::Interrupt::USARTSigOffset + 8;
+    static constexpr Thor::LLD::Interrupt::InterruptSignal_t CTS_FLAG                     = Thor::LLD::Interrupt::USARTSigOffset + 9;
 
-    static constexpr InterruptSignal_t NUM_INTERRUPT_SIGNALS = CTS_FLAG - TRANSMIT_DATA_REGISTER_EMPTY + 1;
+    static constexpr Thor::LLD::Interrupt::InterruptSignal_t NUM_INTERRUPT_SIGNALS = CTS_FLAG - TRANSMIT_DATA_REGISTER_EMPTY + 1;
 
-    static_assert( NUM_INTERRUPT_SIGNALS <= USARTMaxSig, "Too many interrupt signals for USART" );
+    static_assert( NUM_INTERRUPT_SIGNALS <= Thor::LLD::Interrupt::USARTMaxSig, "Too many interrupt signals for USART" );
   };
 
-}    // namespace Thor::Driver::Serial
+}    // namespace Thor::LLD::Serial
 
 
 #endif /* !THOR_DRIVER_TYPES_SERIAL_HPP */

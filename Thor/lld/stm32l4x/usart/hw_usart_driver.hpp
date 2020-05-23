@@ -3,43 +3,36 @@
  *    hw_usart_driver.hpp
  *
  *  Description:
- *    STM32 Driver for the USART Peripheral
+ *    Declares the LLD interface to the STM32L4 series USART hardware.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_HW_USART_DRIVER_HPP
-#define THOR_HW_USART_DRIVER_HPP
-
-/* C++ Includes */
-#include <memory>
-#include <vector>
+#ifndef THOR_HW_USART_DRIVER_STM32L4_HPP
+#define THOR_HW_USART_DRIVER_STM32L4_HPP
 
 /* Chimera Includes */
-#include <Chimera/thread>
 #include <Chimera/common>
+#include <Chimera/usart>
+#include <Chimera/thread>
 
-/* Driver Includes */
+/* Thor Includes */
 #include <Thor/lld/common/interrupts/usart_interrupt_vectors.hpp>
-#include <Thor/lld/stm32f4x/interrupt/hw_it_prj.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
-#include <Thor/lld/interface/serial/serial_model.hpp>
+#include <Thor/lld/stm32l4x/usart/hw_usart_types.hpp>
+#include <Thor/lld/stm32l4x/usart/hw_usart_mapping.hpp>
+#include <Thor/lld/interface/usart/usart_intf.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
+#include <Thor/lld/interface/serial/serial_intf.hpp>
+#include <Thor/lld/interface/serial/serial_types.hpp>
 
 namespace Thor::LLD::USART
 {
-  /**
-   *  Initializes the low level driver
-   *
-   *  @return void
-   */
-  void initialize();
-
   class Driver : public Thor::LLD::Serial::Basic,
                  public Thor::LLD::Serial::Extended
   {
   public:
-    Driver( RegisterMap *const peripheral );
+    Driver( RegisterMap *peripheral );
     ~Driver();
 
     Chimera::Status_t init( const Thor::LLD::Serial::Config &cfg ) final override;
@@ -86,17 +79,14 @@ namespace Thor::LLD::USART
 
     void attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup );
 
-    CDTCB getTCB_TX();
-
-    MDTCB getTCB_RX();
-
+    Thor::LLD::Serial::CDTCB getTCB_TX();
+    Thor::LLD::Serial::MDTCB getTCB_RX();
     Thor::LLD::Serial::Config getConfiguration();
 
   protected:
     friend void(::USART1_IRQHandler )();
     friend void(::USART2_IRQHandler )();
     friend void(::USART3_IRQHandler )();
-    friend void(::USART6_IRQHandler )();
 
     /**
      *  Generic interrupt handler for all USART specific ISR signals
@@ -106,7 +96,7 @@ namespace Thor::LLD::USART
     void IRQHandler();
 
   private:
-    RegisterMap *const periph;                /**< Points to the hardware registers for this instance */
+    RegisterMap *periph;                      /**< Points to the hardware registers for this instance */
     size_t resourceIndex;                     /**< Derived lookup table index for resource access */
     uint32_t dmaTXSignal;                     /**< DMA request signal ID for TX operations */
     uint32_t dmaRXSignal;                     /**< DMA request signal ID for RX operations */
@@ -122,8 +112,8 @@ namespace Thor::LLD::USART
     /*------------------------------------------------
     Transfer Control Blocks
     ------------------------------------------------*/
-    CDTCB txTCB;
-    MDTCB rxTCB;
+    Thor::LLD::Serial::CDTCB txTCB;
+    Thor::LLD::Serial::MDTCB rxTCB;
 
     /**
      *  Calculates the appropriate configuration value for the Baud Rate Register
@@ -146,7 +136,6 @@ namespace Thor::LLD::USART
 
   using Driver_sPtr = std::shared_ptr<Driver>;
   using Driver_uPtr = std::unique_ptr<Driver>;
-
 }    // namespace Thor::LLD::USART
 
-#endif /* !THOR_HW_USART_DRIVER_HPP */
+#endif /* !THOR_HW_USART_DRIVER_STM32L4_HPP */

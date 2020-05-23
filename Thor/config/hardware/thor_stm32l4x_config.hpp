@@ -320,6 +320,10 @@ High Level Driver Support
 #define THOR_HLD_TIMER
 #endif
 
+#ifndef THOR_HLD_USART
+#define THOR_HLD_USART
+#endif
+
 /*----------------------------------------------
 Low Level Driver Support
 ----------------------------------------------*/
@@ -353,6 +357,10 @@ Low Level Driver Support
 
 #ifndef THOR_LLD_TIMER
 #define THOR_LLD_TIMER
+#endif
+
+#ifndef THOR_LLD_USART
+#define THOR_LLD_USART
 #endif
 
 #endif /* THOR_ENABLE_ALL_DRIVERS */

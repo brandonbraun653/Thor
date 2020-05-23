@@ -26,6 +26,7 @@
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_prj.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_prj.hpp>
+#include <Thor/lld/stm32l4x/usart/hw_usart_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32l4x/system/sys_memory_map_prj.hpp>
@@ -118,6 +119,18 @@ namespace Thor::LLD::RCC
     extern RegisterConfig TIMER_ResetConfig[ Thor::LLD::TIMER::NUM_TIMER_PERIPHS ];
     extern Chimera::Clock::Bus TIMER_SourceClock[ Thor::LLD::TIMER::NUM_TIMER_PERIPHS ];
 #endif /* THOR_LLD_TIMER */
+
+#if defined( THOR_LLD_USART )
+    /**
+     *  USART Peripheral Config Lookup Tables
+     */
+    extern void USARTInit();
+
+    extern PCC USARTLookup;
+    extern RegisterConfig USART_ClockConfig[ Thor::LLD::USART::NUM_USART_PERIPHS ];
+    extern RegisterConfig USART_ResetConfig[ Thor::LLD::USART::NUM_USART_PERIPHS ];
+    extern Chimera::Clock::Bus USART_SourceClock[ Thor::LLD::USART::NUM_USART_PERIPHS ];
+#endif /* THOR_LLD_USART */
   }
 }
 
