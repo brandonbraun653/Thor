@@ -15,8 +15,6 @@
 /* C++ Includes */
 #include <cstdint>
 
-#pragma message( "This file needs to use project side getters" )
-
 namespace Thor::Interrupt
 {
   /*------------------------------------------------
@@ -36,17 +34,6 @@ namespace Thor::Interrupt
   static constexpr uint32_t UART_DMA_PREEMPT_PRIORITY = 5;
   static constexpr uint32_t USART_IT_PREEMPT_PRIORITY = UART_IT_PREEMPT_PRIORITY;
   static constexpr uint32_t USART_DMA_PREEMPT_PRIORITY = UART_DMA_PREEMPT_PRIORITY;
-  
-  // TODO: Move this into a .cpp file so that I don't have to include <Chimera/thread>
-  #if defined( USE_FREERTOS_THREADS )
-  static_assert( EXTI0_MAX_IRQn_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
-  static_assert( DMA_STREAM_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
-  static_assert( SPI_IT_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
-  static_assert( UART_IT_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
-  static_assert( UART_DMA_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
-  static_assert( USART_IT_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
-  static_assert( USART_DMA_PREEMPT_PRIORITY >= configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY, "Invalid interrupt priority" );
-  #endif /* USE_FREERTOS_THREADS */
 
 }
 

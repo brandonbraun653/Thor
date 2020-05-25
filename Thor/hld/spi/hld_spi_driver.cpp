@@ -210,15 +210,21 @@ namespace Thor::SPI
     /*------------------------------------------------
     Register the ISR post processor thread
     ------------------------------------------------*/
+    std::array<char, 10> tmp;
+
     if ( s_user_isr_thread_func[ lldResourceIndex ] )
     {
       // Yeah this is gonna be bad if someone re-initializes the SPI driver....
       // postProcessorHandles[ lldResourceIndex ] = nullptr;
 
       driver->attachISRWakeup( &s_user_isr_signal[ lldResourceIndex ] );
+      
+      tmp.fill( 0 );
+      snprintf( tmp.data(), tmp.size(), "PP_SPI%d", lldResourceIndex );
+      std::string_view threadName = tmp.data();
 
       Chimera::Threading::Thread thread;
-      thread.initialize( s_user_isr_thread_func[ lldResourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500, "" );
+      thread.initialize( s_user_isr_thread_func[ lldResourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500, threadName );
       thread.start();
       s_user_isr_handle[ lldResourceIndex ] = thread.native_handle();
     }

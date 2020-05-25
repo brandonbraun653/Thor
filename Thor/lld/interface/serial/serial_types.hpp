@@ -50,15 +50,17 @@ namespace Thor::LLD::Serial
    */
   struct CDTCB
   {
-    const uint8_t *buffer;
-    size_t size;
-    Chimera::Status_t state;
+    const uint8_t *buffer;   /**< Data buffer to transfer out of */
+    size_t remaining;             /**< How many bytes are left to transfer */
+    size_t expected;         /**< How many bytes were expected to receive */
+    Chimera::Status_t state; /**< Current state of the transfer */
 
     inline void reset()
     {
-      buffer = nullptr;
-      size   = 0;
-      state  = StateMachine::TX::TX_READY;
+      buffer   = nullptr;
+      remaining     = 0;
+      expected = 0;
+      state    = StateMachine::TX::TX_READY;
     }
   };
 
@@ -70,15 +72,17 @@ namespace Thor::LLD::Serial
    */
   struct MDTCB
   {
-    uint8_t *buffer;
-    size_t size;
-    Chimera::Status_t state;
+    uint8_t *buffer;         /**< Data buffer to transfer into */
+    size_t remaining;             /**< How many bytes are left to transfer */
+    size_t expected;         /**< How many bytes were expected to receive */
+    Chimera::Status_t state; /**< Current state of the transfer */
 
     inline void reset()
     {
-      buffer = nullptr;
-      size   = 0;
-      state  = StateMachine::RX::RX_READY;
+      buffer   = nullptr;
+      remaining     = 0;
+      expected = 0;
+      state    = StateMachine::RX::RX_READY;
     }
   };
 

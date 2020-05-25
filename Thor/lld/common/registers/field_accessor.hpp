@@ -152,5 +152,17 @@ namespace Thor::LLD
     }                                                                         \
   };
 
+#define REG_FORCE_SET( NAME, PERIPH, BITS ) \
+  do                                    \
+  {                                     \
+    NAME::set( PERIPH, BITS );          \
+  } while ( ( NAME::get( PERIPH ) & BITS ) != BITS )
+
+
+#define REG_FORCE_CLR( NAME, PERIPH, BITS ) \
+  do                                    \
+  {                                     \
+    NAME::clear( PERIPH, BITS );        \
+  } while ( NAME::get( PERIPH ) != 0 )
 
 #endif /* !THOR_LLD_REGISTER_FIELD_ACCESSOR_HPP */

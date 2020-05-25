@@ -179,7 +179,7 @@ namespace Thor::USART
 
 
   Chimera::Status_t Driver::begin( const Chimera::Hardware::PeripheralMode txMode,
-                                       const Chimera::Hardware::PeripheralMode rxMode )
+                                   const Chimera::Hardware::PeripheralMode rxMode )
   {
     /*------------------------------------------------
     Initialize to the desired TX/RX modes
@@ -190,14 +190,20 @@ namespace Thor::USART
     /*------------------------------------------------
     Register the ISR post processor thread
     ------------------------------------------------*/
+    std::array<char, 10> tmp;
+
     if ( postProcessorThread[ resourceIndex ] )
     {
       postProcessorHandle[ resourceIndex ] = {};
 
       s_lld_drivers[ resourceIndex ]->attachISRWakeup( &postProcessorSignal[ resourceIndex ] );
+      
+      tmp.fill( 0 );
+      snprintf( tmp.data(), tmp.size(), "PP_USART%d", resourceIndex );
+      std::string_view threadName = tmp.data();
 
       Chimera::Threading::Thread thread;
-      thread.initialize( postProcessorThread[ resourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500, "" );
+      thread.initialize( postProcessorThread[ resourceIndex ], nullptr, Chimera::Threading::Priority::MAXIMUM, 500, threadName );
       thread.start();
       postProcessorHandle[ resourceIndex ] = thread.native_handle();
     }
@@ -319,8 +325,10 @@ namespace Thor::USART
 
     if ( flags & Runtime::Flag::TX_COMPLETE )
     {
+      /*------------------------------------------------
+      Clear out the flags which got us in here
+      ------------------------------------------------*/
       s_lld_drivers[ resourceIndex ]->clearFlags( Runtime::Flag::TX_COMPLETE );
-      //auto tcb = s_lld_drivers[ resourceIndex ]->getTCB_TX();
       auto cb  = txBuffers.circularBuffer();
       auto lb  = txBuffers.linearBuffer();
 
@@ -344,16 +352,22 @@ namespace Thor::USART
       processListeners( Chimera::Event::TRIGGER_WRITE_COMPLETE );
     }
 
-    if ( flags & Runtime::Flag::RX_COMPLETE )
+    if ( ( flags & Runtime::Flag::RX_COMPLETE ) || ( flags & Runtime::Flag::RX_LINE_IDLE_ABORT ) )
     {
+      /*------------------------------------------------
+      Clear out the flags which got us in here
+      ------------------------------------------------*/
       s_lld_drivers[ resourceIndex ]->clearFlags( Runtime::Flag::RX_COMPLETE );
-      // auto tcb = s_lld_drivers[ resourceIndex ]->getTCB_RX();
+      s_lld_drivers[ resourceIndex ]->clearFlags( Runtime::Flag::RX_LINE_IDLE_ABORT );
 
       /*------------------------------------------------
       Process Receive Buffers
       ------------------------------------------------*/
-      // dump into queue?
-      // how many bytes were read? Need copy of TCB
+      auto tcb      = s_lld_drivers[ resourceIndex ]->getTCB_RX();
+      size_t rxSize = tcb.expected - tcb.remaining;
+      size_t tmp    = 0;
+
+      rxBuffers.transferOutOf( tcb.remaining, tmp );
 
       /*------------------------------------------------
       Process Event Listeners. Semaphores unlocked in preparation
@@ -365,6 +379,22 @@ namespace Thor::USART
       processListeners( Chimera::Event::TRIGGER_READ_COMPLETE );
     }
   }
+
+
+  Chimera::Status_t Driver::toggleAsyncListening( const bool state )
+  {
+    if ( state )
+    {
+      return s_lld_drivers[ resourceIndex ]->receiveIT( rxBuffers.linearBuffer(), rxBuffers.linearSize(),
+                                                        Chimera::Threading::TIMEOUT_DONT_WAIT );
+    }
+    else
+    {
+      s_lld_drivers[ resourceIndex ]->killReceive();
+      return Chimera::CommonStatusCodes::OK;
+    }
+  }
+
 
   Chimera::Status_t Driver::readAsync( uint8_t *const buffer, const size_t len )
   {
@@ -549,7 +579,7 @@ namespace Thor::USART
     }
 
 
-    if ( ( length <= rxBuffers.linearSize() ) && rxLock.try_acquire_for( 1000 ) )
+    if ( ( length <= rxBuffers.linearSize() ) && rxLock.try_acquire_for( timeout_mS ) )
     {
       memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
 
