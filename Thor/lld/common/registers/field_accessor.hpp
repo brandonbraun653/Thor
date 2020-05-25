@@ -152,17 +152,34 @@ namespace Thor::LLD
     }                                                                         \
   };
 
+/**
+ *  Helper macro that repeatedly attempts to set a particular bit or set of bits
+ *  in a register. Intented to be used with the class that is defined by the
+ *  REG_ACCESSOR macro.
+ *
+ *  @param[in]  NAME      Name used to identify a register bit in REG_ACCESSOR
+ *  @param[in]  PERIPH    The peripheral instance (memory mapped struct)
+ *  @param[in]  BITS      Which bits should be set
+ */
 #define REG_FORCE_SET( NAME, PERIPH, BITS ) \
-  do                                    \
-  {                                     \
-    NAME::set( PERIPH, BITS );          \
+  do                                        \
+  {                                         \
+    NAME::set( PERIPH, BITS );              \
   } while ( ( NAME::get( PERIPH ) & BITS ) != BITS )
 
-
+/**
+ *  Helper macro that repeatedly attempts to clear a particular bit or set of bits
+ *  in a register. Intented to be used with the class that is defined by the
+ *  REG_ACCESSOR macro.
+ *
+ *  @param[in]  NAME      Name used to identify a register bit in REG_ACCESSOR
+ *  @param[in]  PERIPH    The peripheral instance (memory mapped struct)
+ *  @param[in]  BITS      Which bits should be cleared
+ */
 #define REG_FORCE_CLR( NAME, PERIPH, BITS ) \
-  do                                    \
-  {                                     \
-    NAME::clear( PERIPH, BITS );        \
+  do                                        \
+  {                                         \
+    NAME::clear( PERIPH, BITS );            \
   } while ( NAME::get( PERIPH ) != 0 )
 
 #endif /* !THOR_LLD_REGISTER_FIELD_ACCESSOR_HPP */
