@@ -14,6 +14,7 @@
 
 /* C++ Includes */
 #include <cstdint>
+#include <string>
 
 /* Chimera Includes */
 #include <Chimera/system>
@@ -29,6 +30,54 @@ namespace Thor::System
   int maxConcurrentThreads();
   Chimera::System::ResetEvent getResetReason();
   void getSystemInformation( Chimera::System::Information *&info );
+
+  namespace Version
+  {
+    /**
+     *  Gets the Chimera driver version information as a string
+     *  @return std::string_view
+     */
+    std::string_view asString();
+
+    /**
+     *  Gets the major version number of the backend driver
+     *  @return size_t
+     */
+    size_t major();
+
+    /**
+     *  Gets the minor version number of the backend driver
+     *  @return size_t
+     */
+    size_t minor();
+
+    /**
+     *  Gets the patch version number of the backend driver
+     *  @return size_t
+     */
+    size_t patch();
+  }
+
+  namespace Description
+  {
+    /**
+     *  Describes the backend driver with whatever information is desired
+     *  @return std::string_view
+     */
+    std::string_view about();
+
+    /**
+     *  Name of the backend driver
+     *  @return std::string_view
+     */
+    std::string_view backendDriverName();
+
+    /**
+     *  Link to where documentation for the backend driver should be
+     *  @return std::string_view
+     */
+    std::string_view documentationLink();
+  }
 }
 
 #endif

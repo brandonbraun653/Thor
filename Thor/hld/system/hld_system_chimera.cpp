@@ -90,18 +90,71 @@ namespace Chimera::System::Backend
     Thor::System::getSystemInformation( info );
   }
 
+  namespace Version
+  {
+    std::string_view asString()
+    {
+      return Thor::HLD::VersionString;
+    }
+
+
+    size_t major()
+    {
+      return Thor::HLD::VersionMajor;
+    }
+
+
+    size_t minor()
+    {
+      return Thor::HLD::VersionMinor;
+    }
+
+
+    size_t patch()
+    {
+      return Thor::HLD::VersionPatch;
+    }
+  }
+
+  namespace Description
+  {
+    std::string_view about()
+    {
+      return "Thor is a hardware abstraction layer focused on STM32 chips.";
+    }
+
+
+    std::string_view backendDriverName()
+    {
+      return "Thor";
+    }
+
+
+    std::string_view documentationLink()
+    {
+      return "N/A";
+    }
+  }
+
   Chimera::Status_t registerDriver( DriverConfig &registry )
   {
 #if defined( THOR_HLD_SYSTEM )
-    registry.isSupported          = true;
-    registry.disableInterrupts    = disableInterrupts;
-    registry.enableInterrupts     = enableInterrupts;
-    registry.getResetReason       = getResetReason;
-    registry.getSystemInformation = getSystemInformation;
-    registry.initialize           = initialize;
-    registry.maxConcurrentThreads = maxConcurrentThreads;
-    registry.reset                = reset;
-    registry.systemStartup        = systemStartup;
+    registry.isSupported            = true;
+    registry.disableInterrupts      = disableInterrupts;
+    registry.enableInterrupts       = enableInterrupts;
+    registry.getResetReason         = getResetReason;
+    registry.getSystemInformation   = getSystemInformation;
+    registry.initialize             = initialize;
+    registry.maxConcurrentThreads   = maxConcurrentThreads;
+    registry.reset                  = reset;
+    registry.systemStartup          = systemStartup;
+    registry.desc_About             = Description::about;
+    registry.desc_BackendDriverName = Description::backendDriverName;
+    registry.desc_DocumentationLink = Description::documentationLink;
+    registry.version_AsString       = Version::asString;
+    registry.version_Major          = Version::major;
+    registry.version_Minor          = Version::minor;
+    registry.version_Patch          = Version::patch;
     return Chimera::CommonStatusCodes::OK;
 #else
     registry             = {};

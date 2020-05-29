@@ -5,6 +5,10 @@
       <Configuration>Debug</Configuration>
       <Platform>STM32F446RE</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|STM32L432KB">
+      <Configuration>Debug</Configuration>
+      <Platform>STM32L432KB</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|STM32L432KC">
       <Configuration>Debug</Configuration>
       <Platform>STM32L432KC</Platform>
@@ -24,6 +28,10 @@
     <ProjectConfiguration Include="Release|STM32F446RE">
       <Configuration>Release</Configuration>
       <Platform>STM32F446RE</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|STM32L432KB">
+      <Configuration>Release</Configuration>
+      <Platform>STM32L432KB</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|STM32L432KC">
       <Configuration>Release</Configuration>
@@ -45,6 +53,10 @@
       <Configuration>RF24_1</Configuration>
       <Platform>STM32F446RE</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="RF24_1|STM32L432KB">
+      <Configuration>RF24_1</Configuration>
+      <Platform>STM32L432KB</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="RF24_1|STM32L432KC">
       <Configuration>RF24_1</Configuration>
       <Platform>STM32L432KC</Platform>
@@ -64,6 +76,10 @@
     <ProjectConfiguration Include="RF24_2|STM32F446RE">
       <Configuration>RF24_2</Configuration>
       <Platform>STM32F446RE</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RF24_2|STM32L432KB">
+      <Configuration>RF24_2</Configuration>
+      <Platform>STM32L432KB</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="RF24_2|STM32L432KC">
       <Configuration>RF24_2</Configuration>
@@ -201,13 +217,25 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">
     <Import Project="CommonProperties.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'" Label="PropertySheets">
+    <Import Project="CommonProperties.props" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">
+    <Import Project="CommonProperties.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'" Label="PropertySheets">
     <Import Project="CommonProperties.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">
     <Import Project="CommonProperties.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'" Label="PropertySheets">
+    <Import Project="CommonProperties.props" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">
+    <Import Project="CommonProperties.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'" Label="PropertySheets">
     <Import Project="CommonProperties.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
@@ -271,7 +299,20 @@
     <LinkAsWholeArchive>true</LinkAsWholeArchive>
     <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
+    <GNUTargetType>StaticLibrary</GNUTargetType>
+    <GNUConfigurationType>Debug</GNUConfigurationType>
+    <LinkAsWholeArchive>true</LinkAsWholeArchive>
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
     <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
     <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
@@ -281,7 +322,19 @@
     <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
     <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">
+    <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
+    <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
+    <GNUTargetType>StaticLibrary</GNUTargetType>
+    <LinkAsWholeArchive>true</LinkAsWholeArchive>
+    <MCUPropertyListFile>$(ProjectDir)stm32.props</MCUPropertyListFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
     <ToolchainVersion>9.2.1/8.3.0/r1</ToolchainVersion>
     <GNUTargetType>StaticLibrary</GNUTargetType>
@@ -429,7 +482,25 @@
       <CPPLanguageStandard>CPP2A</CPPLanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);</AdditionalIncludeDirectories>
+      <Optimization>Og</Optimization>
+      <PreprocessorDefinitions>TARGET_STM32L4;STM32L432xx;$(ChimeraCompilerDefines);$(ProjectCompilerDefines);%(ClCompile.PreprocessorDefinitions);</PreprocessorDefinitions>
+      <CLanguageStandard>C2x</CLanguageStandard>
+      <CPPLanguageStandard>CPP2A</CPPLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);</AdditionalIncludeDirectories>
+      <Optimization>Os</Optimization>
+      <PreprocessorDefinitions>TARGET_STM32L4;STM32L432xx;$(ChimeraCompilerDefines);$(ProjectCompilerDefines);%(ClCompile.PreprocessorDefinitions);NDEBUG=1;RELEASE=1</PreprocessorDefinitions>
+      <CLanguageStandard>C2x</CLanguageStandard>
+      <CPPLanguageStandard>CPP2A</CPPLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);</AdditionalIncludeDirectories>
       <Optimization>Os</Optimization>
@@ -443,7 +514,17 @@
       <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);</AdditionalIncludeDirectories>
     </ClCompile>
@@ -751,15 +832,23 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_model.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\common\definitions.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\common\types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\interface\dma\mock\dma_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\gpio\mock\gpio_mock.cpp" />
@@ -768,724 +857,1204 @@
     <ClCompile Include="..\..\..\Thor\lld\interface\spi\mock\spi_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_driver_stm32f4.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_mapping.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_mapping.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\test\test_entry_lld_dma.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\test\test_lld_dma_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\variant\hw_dma_register_stm32f446xx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\variant\hw_dma_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_driver_stm32f4.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_mapping.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_mapping.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\test\test_entry_lld_flash.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\test\test_lld_flash_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\variant\hw_flash_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_driver_stm32f4.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_mapping.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_mapping.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\test\test_entry_lld_gpio.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\test\test_lld_gpio_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\variant\hw_gpio_register_stm32f446xx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\variant\hw_gpio_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\interrupt\hw_it_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\interrupt\variant\hw_it_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_driver_stm32f4.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_mapping.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_mapping.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\iwdg\variant\hw_iwdg_register_stm32f446xx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\variant\hw_iwdg_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_driver_stm32f4.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\test\test_entry_lld_nvic.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\test\test_lld_nvic_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\variant\hw_nvic_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_driver_stm32f4.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_mapping.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_mapping.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\test\test_entry_lld_power.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\test\test_lld_power_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\variant\hw_power_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_driver_stm32f4.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_mapping.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_driver_prv.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_mapping.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\config\hw_rcc_config_stm32f446xx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\config\hw_rcc_config_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\test\test_entry_lld_rcc.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\test\test_lld_rcc_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\variant\hw_rcc_register_stm32f446xx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\variant\hw_rcc_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_driver_stm32f4.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_mapping.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_mapping.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\test\test_entry_lld_spi.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\test\test_lld_spi_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\variant\hw_spi_register_stm32f446xx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\variant\hw_spi_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\startup\startup_common_init.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\startup\startup_stm32f446xx.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\startup\startup_stm32f4xxxx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\system\sys_common_exit.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\system\sys_common_init.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\system\sys_memory_map_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\system\variant\sys_memory_map_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\hw_timer_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_entry_lld_timer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_lld_timer_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\variant\hw_timer_register_stm32f446xx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_mapping.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\timer\hw_timer_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_mapping.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\test\test_entry_lld_uart.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\test\test_lld_uart_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\variant\hw_uart_register_stm32f446xx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\variant\hw_uart_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_driver_stm32f4.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_mapping.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_mapping.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\test\test_entry_lld_usart.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\test\test_lld_usart_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\variant\hw_usart_register_stm32f446xx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\variant\hw_usart_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_driver_stm32f4.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_mapping.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\version.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_driver.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_mapping.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_prj.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_types.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\test\test_entry_lld_wwdg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\test\test_lld_wwdg_driver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\variant\hw_wwdg_register_stm32f446xx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\variant\hw_wwdg_register_stm32f446xx.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|STM32L432KB'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KC'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|STM32L432KB'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_prj.hpp" />

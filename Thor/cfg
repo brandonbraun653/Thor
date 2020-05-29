@@ -13,5 +13,6 @@
 #define THOR_CFG_INCLUDES
 
 #include <Thor/config/config.hpp>
+#include <Thor/hld/version.hpp>
 
 #endif /* !THOR_CFG_INCLUDES */

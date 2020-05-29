@@ -233,7 +233,16 @@ namespace Thor::LLD::GPIO
   Chimera::GPIO::State Driver::read( const uint8_t pin )
   {
     /* Read the input data register and mask off the desired bit */
-    return static_cast<Chimera::GPIO::State>( periph->IDR & ( 1u << pin ) );
+    const bool state = ( periph->IDR & ( 1u << pin ) ) >> pin;
+
+    if ( state ) 
+    {
+      return Chimera::GPIO::State::HI;
+    }
+    else
+    {
+      return Chimera::GPIO::State::LO;
+    }
   }
 
   Chimera::GPIO::Drive Driver::driveGet( const uint8_t pin )
