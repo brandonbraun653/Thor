@@ -105,16 +105,12 @@ namespace Thor::TIMER
     /*------------------------------------------------
     Check to see if the peripheral is supported by the LLD
     ------------------------------------------------*/
-    auto pRegistered = Thor::LLD::TIMER::PeripheralToHLDResourceIndex.find( periph );
-    if ( !pRegistered )
-    {
-      return nullptr;
-    }
+    const auto pRegistered = Thor::LLD::TIMER::PeripheralToHLDResourceIndex.at( periph );
 
     /*------------------------------------------------
     Use the returned resource index to grab the driver instance
     ------------------------------------------------*/
-    auto const iDriver = pRegistered->second;
+    const auto iDriver = pRegistered.second;
     if ( create )
     {
       initGeneralDriverObject( iDriver );
@@ -220,7 +216,7 @@ namespace Thor::TIMER
     /*-------------------------------------------------
     Look up the LLD resource index and use it to attach the proper peripheral instance
     -------------------------------------------------*/
-    mIndexLLD       = LLD::PeripheralToLLDResourceIndex.find( cfg.peripheral )->second;
+    mIndexLLD       = LLD::PeripheralToLLDResourceIndex.at( cfg.peripheral ).second;
     auto peripheral = reinterpret_cast<LLD::RegisterMap *>( LLD::LUT_PeripheralList[ mIndexLLD.value() ] );
     auto driver     = s_prv_timer_data[ mIndexHLD.value() ].lld_driver;
     auto result     = Chimera::CommonStatusCodes::OK;

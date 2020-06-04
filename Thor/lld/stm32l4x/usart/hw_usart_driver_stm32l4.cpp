@@ -87,7 +87,7 @@ namespace Thor::LLD::USART
   {
     const auto address = reinterpret_cast<std::uintptr_t>( peripheral );
     peripheralType     = Chimera::Peripheral::Type::PERIPH_USART;
-    resourceIndex      = Thor::LLD::USART::InstanceToResourceIndex.find( address )->second;
+    resourceIndex      = Thor::LLD::USART::InstanceToResourceIndex.at( address ).second;
     periphIRQn         = IRQSignals[ resourceIndex ];
     dmaTXSignal        = TXDMASignals[ resourceIndex ];
     dmaRXSignal        = RXDMASignals[ resourceIndex ];

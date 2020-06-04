@@ -112,7 +112,7 @@ namespace Thor::LLD::TIMER
   Chimera::Status_t GeneralDriverImpl::attach( RegisterMap *const peripheral )
   {
     mpPeriph = peripheral;
-    mRIndex  = RIndex( InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( peripheral ) )->second );
+    mRIndex  = RIndex( InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( peripheral ) ).second );
 
     return Chimera::CommonStatusCodes::OK;
   }

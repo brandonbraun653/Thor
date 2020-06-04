@@ -25,8 +25,8 @@ namespace Chimera::Watchdog::Backend
   {
     auto result = Chimera::CommonStatusCodes::OK;
 
-    result |= Thor::Watchdog::initializeIWDG();
-    result |= Thor::Watchdog::initializeWWDG();
+    // result |= Thor::Watchdog::initializeIWDG();
+    // result |= Thor::Watchdog::initializeWWDG();
 
     return result;
   }
@@ -38,12 +38,14 @@ namespace Chimera::Watchdog::Backend
 
   Chimera::Watchdog::Watchdog_sPtr create_shared_ptr()
   {
-    return std::make_shared<Thor::Watchdog::Independent>();
+    return nullptr;
+    //return std::make_shared<Thor::Watchdog::Independent>();
   }
 
   Chimera::Watchdog::Watchdog_uPtr create_unique_ptr()
   {
-    return std::make_unique<Thor::Watchdog::Independent>();
+    return nullptr;
+    //return std::make_unique<Thor::Watchdog::Independent>();
   }
 
   Chimera::Status_t registerDriver( Chimera::Watchdog::Backend::DriverConfig &registry )

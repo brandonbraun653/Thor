@@ -11,16 +11,8 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
 # ====================================================
 # Public Thor Components
 # ====================================================
-use-project /THOR/HLD/CLOCK     : clock ;
-use-project /THOR/HLD/DMA       : dma ;
-use-project /THOR/HLD/GPIO      : gpio ;
-use-project /THOR/HLD/PWM       : pwm ;
-use-project /THOR/HLD/SPI       : spi ;
-use-project /THOR/HLD/SYSTEM    : system ;
-use-project /THOR/HLD/TIMER     : timer ;
-use-project /THOR/HLD/UART      : uart ;
-use-project /THOR/HLD/USART     : usart ;
-use-project /THOR/HLD/WATCHDOG  : watchdog ;
+use-project /THOR/LLD/CMN/CM4 : common/cortex-m4 ;
+use-project /THOR/LLD/CMN/MAP : common/mapping ;
 
 # ====================================================
 # HLD Testing Components

@@ -37,15 +37,15 @@ Static Functions
 ------------------------------------------------*/
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
 static void USART1ISRPostProcessorThread( void *argument );
-#endif 
+#endif
 
 #if defined( STM32_USART2_PERIPH_AVAILABLE )
 static void USART2ISRPostProcessorThread( void *argument );
-#endif 
+#endif
 
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
 static void USART3ISRPostProcessorThread( void *argument );
-#endif 
+#endif
 
 /*------------------------------------------------
 Static Data
@@ -69,29 +69,21 @@ static std::array<Chimera::Function::void_func_void_ptr, Thor::LLD::USART::NUM_U
   USART1ISRPostProcessorThread,
 #else
   nullptr,
-#endif 
+#endif
 
 #if defined( STM32_USART2_PERIPH_AVAILABLE )
   USART2ISRPostProcessorThread,
 #else
   nullptr,
-#endif 
+#endif
 
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
   USART3ISRPostProcessorThread
 #else
   nullptr
-#endif 
+#endif
 };
 /* clang-format on */
-
-namespace Chimera::USART::Backend
-{
-  Chimera::Status_t prjInitialize()
-  {
-    return Thor::USART::initialize();
-  }
-}    // namespace Chimera::USART
 
 namespace Thor::USART
 {
@@ -143,15 +135,15 @@ namespace Thor::USART
     /*------------------------------------------------
     Make sure the channel is actually supported
     ------------------------------------------------*/
-    auto iterator = ChannelToInstance.find( channel );
-    if ( !iterator )
-    {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
-    }
+    auto iterator = ChannelToInstance.at( channel );
+//    if ( !iterator )
+//    {
+//      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+//    }
 
-    Thor::LLD::USART::RegisterMap* instance = iterator->second;
+    Thor::LLD::USART::RegisterMap* instance = iterator.second;
     this->channel = channel;
-    resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( instance ) )->second;
+    resourceIndex = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( instance ) ).second;
 
     /*------------------------------------------------
     Create the hardware drivers
@@ -197,7 +189,7 @@ namespace Thor::USART
       postProcessorHandle[ resourceIndex ] = {};
 
       s_lld_drivers[ resourceIndex ]->attachISRWakeup( &postProcessorSignal[ resourceIndex ] );
-      
+
       tmp.fill( 0 );
       snprintf( tmp.data(), tmp.size(), "PP_USART%d", resourceIndex );
       std::string_view threadName = tmp.data();
@@ -701,7 +693,7 @@ namespace Thor::USART
 static void USART1ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::USART;
-  static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART1_PERIPH ) )->second;
+  static const auto resourceIndex = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( USART1_PERIPH ) ).second;
 
   while ( 1 )
   {
@@ -722,7 +714,7 @@ static void USART1ISRPostProcessorThread( void *argument )
 static void USART2ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::USART;
-  static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART2_PERIPH ) )->second;
+  static const auto resourceIndex = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( USART2_PERIPH ) ).second;
 
   while ( 1 )
   {
@@ -743,7 +735,7 @@ static void USART2ISRPostProcessorThread( void *argument )
 static void USART3ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::USART;
-  static const auto resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( USART3_PERIPH ) )->second;
+  static const auto resourceIndex = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( USART3_PERIPH ) ).second;
 
   while ( 1 )
   {

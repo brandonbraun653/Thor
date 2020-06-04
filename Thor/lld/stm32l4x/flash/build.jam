@@ -1,5 +1,5 @@
 # ====================================================
-# Local Rules 
+# Local Rules
 # ====================================================
 local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
     {
@@ -46,35 +46,35 @@ explicit_alias LIB : lld_flash lld_flash_chip : : : <library>lld_flash <library>
 # ====================================================
 # Test Driver Executable
 # ====================================================
-exe lld_flash_test
-  : [ glob test/*.cpp ]
+# exe lld_flash_test
+#   : [ glob test/*.cpp ]
 
-    /THOR/LLD/STM32L4//TEST_LIB
-  
-  : <link>static
-    <Thor>enabled-L4
-    <use>/AURORA//PUB
-    <use>/CHIMERA//PUB
-    <use>/GOOGLE//TEST_PUB
-    <use>/THOR//PUB
-    <use>/THOR//TARGET_PROPAGATED_OPTIONS
-    <use>/THOR/LLD/STM32L4//TEST_PUB
-    <linkflags>-Wl,--no-as-needed
-  ;
-explicit lld_flash_test ;
-explicit_alias TEST : lld_flash_test : : : <source>lld_flash_test ;
+#     /THOR/LLD/STM32L4//TEST_LIB
 
-# ====================================================
-# Installation Targets
-# ====================================================
-install INSTALL_TEST : lld_flash_test
-  : <variant>release:<location>$(rel_install_dir)
-    <variant>debug:<location>$(dbg_install_dir)
-  ;
+#   : <link>static
+#     <Thor>enabled-L4
+#     <use>/AURORA//PUB
+#     <use>/CHIMERA//PUB
+#     <use>/GOOGLE//TEST_PUB
+#     <use>/THOR//PUB
+#     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+#     <use>/THOR/LLD/STM32L4//TEST_PUB
+#     <linkflags>-Wl,--no-as-needed
+#   ;
+# explicit lld_flash_test ;
+# explicit_alias TEST : lld_flash_test : : : <source>lld_flash_test ;
 
-install INSTALL_LIB : lld_flash lld_flash_chip
-  : <variant>release:<location>$(rel_install_dir)
-    <variant>debug:<location>$(dbg_install_dir)
-  ;
+# # ====================================================
+# # Installation Targets
+# # ====================================================
+# install INSTALL_TEST : lld_flash_test
+#   : <variant>release:<location>$(rel_install_dir)
+#     <variant>debug:<location>$(dbg_install_dir)
+#   ;
 
-explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;
+# install INSTALL_LIB : lld_flash lld_flash_chip
+#   : <variant>release:<location>$(rel_install_dir)
+#     <variant>debug:<location>$(dbg_install_dir)
+#   ;
+
+# explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

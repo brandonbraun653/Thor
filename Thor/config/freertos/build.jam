@@ -7,19 +7,18 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
     explicit $(name) ;
     }
 
-local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/hld/clock ;
-local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/hld/clock ;
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/config/freertos ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/config/freertos ;
 
 # ====================================================
 # Public Targets
 # ====================================================
-explicit_alias PUB : : : : <define>THOR_HLD_CLOCK ;
-explicit_alias TEST_PUB : : : : <define>THOR_HLD_TEST_CLOCK ;
+explicit_alias PUB : : : : ;
 
 # ====================================================
 # Static Libraries
 # ====================================================
-lib hld_clock
+lib cfg_freertos
   : [ glob *.cpp ]
 
   : <link>static
@@ -27,45 +26,42 @@ lib hld_clock
     <use>/CHIMERA//PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
-    <use>/THOR/HLD/CLOCK//PUB
+    <use>/THOR/HLD/USART//PUB
   ;
-explicit hld_clock ;
-explicit_alias LIB : hld_clock : : : <library>hld_clock ;
+explicit cfg_freertos ;
+explicit_alias LIB : cfg_freertos : : : <library>cfg_freertos ;
 
 # ====================================================
 # Test Driver Executable
 # ====================================================
-exe hld_clock_test
+exe cfg_freertos_test
   : [ glob test/*.cpp ]
 
     /THOR/HLD//TEST_LIB
     /THOR/LLD/STM32F4//TEST_LIB
 
-    /THOR/LLD/INTF/CLOCK//MOCK_LIB
-
   : <link>static
+    <Thor>enabled-F4
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
     <use>/GOOGLE//TEST_PUB
-    <use>/GOOGLE//MOCK_PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
     <use>/THOR/HLD//TEST_PUB
-    <use>/THOR/HLD/CLOCK//TEST_PUB
     <linkflags>-Wl,--no-as-needed
   ;
-explicit hld_clock_test ;
-explicit_alias TEST : hld_clock_test : : : <source>hld_clock_test ;
+explicit cfg_freertos_test ;
+explicit_alias TEST : cfg_freertos_test : : : <source>cfg_freertos_test ;
 
 # ====================================================
 # Installation Targets
 # ====================================================
-install INSTALL_TEST : hld_clock_test
+install INSTALL_TEST : cfg_freertos_test
   : <variant>release:<location>$(rel_install_dir)
     <variant>debug:<location>$(dbg_install_dir)
   ;
 
-install INSTALL_LIB : hld_clock
+install INSTALL_LIB : cfg_freertos
   : <variant>release:<location>$(rel_install_dir)
     <variant>debug:<location>$(dbg_install_dir)
   ;

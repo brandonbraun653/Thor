@@ -8,7 +8,7 @@
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-#pragma once 
+#pragma once
 #ifndef THOR_LLD_GPIO_DRIVER_TYPES_HPP
 #define THOR_LLD_GPIO_DRIVER_TYPES_HPP
 
@@ -51,10 +51,10 @@ namespace Thor::LLD::GPIO
   using InstanceMap  = Chimera::Container::LightFlatMap<Chimera::GPIO::Port, RegisterMap *>;
   using PortMap      = Chimera::Container::LightFlatMap<RegisterMap *, Chimera::GPIO::Port>;
   using IndexMap     = Chimera::Container::LightFlatMap<std::uintptr_t, size_t>;
-  using AlternateMap = Chimera::Container::LightFlatMap<RegisterMap *, void *>;
+  using AlternateMap = Chimera::Container::LightFlatMap<RegisterMap *, const void *>;
 
   using AFToReg = Chimera::Container::LightFlatMap<Chimera::GPIO::Alternate, Reg32_t>;
-  using PinToAFMap = Chimera::Container::LightFlatMap<uint8_t, void *>;
+  using PinToAFMap = Chimera::Container::LightFlatMap<uint8_t, const AFToReg *>;
 }
 
 #endif /* !THOR_LLD_GPIO_DRIVER_TYPES_HPP */

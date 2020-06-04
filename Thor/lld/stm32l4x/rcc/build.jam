@@ -1,0 +1,81 @@
+# ====================================================
+# Local Rules
+# ====================================================
+local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
+    {
+    alias $(name) : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
+    explicit $(name) ;
+    }
+
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/lld/stm32l4/rcc ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/stm32l4/rcc ;
+
+# ====================================================
+# Public Targets
+# ====================================================
+explicit_alias PUB : : : : <define>THOR_LLD_RCC ;
+
+# ====================================================
+# Static Libraries
+# ====================================================
+lib lld_rcc_chip
+  : variant/hw_rcc_register_stm32l432xx.cpp
+    config/hw_rcc_config_stm32l432xx.cpp
+
+  : <Thor>enabled-L432
+    <link>static
+    <use>/CHIMERA//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32L4//PUB
+    <use>/THOR/LLD/STM32L4/RCC//PUB
+  ;
+explicit lld_rcc_chip ;
+explicit_alias DEVICE_TARGET : lld_rcc_chip : : : <library>lld_rcc_chip ;
+
+lib lld_rcc
+  : [ glob *.cpp ]
+
+  : <link>static
+    <use>/CHIMERA//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32L4//PUB
+    <use>/THOR/LLD/STM32L4/RCC//PUB
+  ;
+explicit lld_rcc ;
+explicit_alias LIB : lld_rcc lld_rcc_chip : : : <library>lld_rcc <library>lld_rcc_chip ;
+
+# ====================================================
+# Test Driver Executable
+# ====================================================
+exe lld_rcc_test
+  : [ glob test/*.cpp ]
+
+    /THOR/LLD/STM32L4//TEST_LIB
+
+  : <link>static
+    <Thor>enabled-L4
+    <use>/AURORA//PUB
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+    <use>/THOR/LLD/STM32L4//TEST_PUB
+    <linkflags>-Wl,--no-as-needed
+  ;
+explicit lld_rcc_test ;
+explicit_alias TEST : lld_rcc_test : : : <source>lld_rcc_test ;
+
+# ====================================================
+# Installation Targets
+# ====================================================
+install INSTALL_TEST : lld_rcc_test
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+install INSTALL_LIB : lld_rcc lld_rcc_chip
+  : <variant>release:<location>$(rel_install_dir)
+    <variant>debug:<location>$(dbg_install_dir)
+  ;
+
+explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

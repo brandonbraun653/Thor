@@ -959,7 +959,7 @@ namespace Thor::LLD::RCC
 
     if ( clockLookupTable && indexLookupTable )
     {
-      auto index       = indexLookupTable->find( address )->second;
+      auto index       = indexLookupTable->at( address ).second;
       auto sourceClock = clockLookupTable[ index ];
 
       return getClockFrequency( sourceClock );

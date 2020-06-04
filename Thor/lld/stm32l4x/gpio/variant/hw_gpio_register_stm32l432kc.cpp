@@ -31,7 +31,7 @@ namespace Thor::LLD::GPIO
   See Table 15 of DS11451
   ------------------------------------------------*/
   /* clang-format off */
-  static AFToReg PA0_AFMap{ 
+  static const AFToReg PA0_AFMap{ 
     { Chimera::GPIO::Alternate::TIM2_CH1,       AF1_TIM2      },
     { Chimera::GPIO::Alternate::USART2_CTS,     AF7_USART2    },
     { Chimera::GPIO::Alternate::COMP1_OUT,      AF12_COMP1    },
@@ -40,7 +40,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA1_AFMap{ 
+  static const AFToReg PA1_AFMap{ 
     { Chimera::GPIO::Alternate::TIM2_CH2,       AF1_TIM2      },
     { Chimera::GPIO::Alternate::I2C1_SMBA,      AF4_I2C1      },
     { Chimera::GPIO::Alternate::SPI1_SCK,       AF5_SPI1      },
@@ -49,7 +49,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA2_AFMap{ 
+  static const AFToReg PA2_AFMap{ 
     { Chimera::GPIO::Alternate::TIM2_CH3,       AF1_TIM2      },
     { Chimera::GPIO::Alternate::USART2_TX,      AF7_USART2    },
     { Chimera::GPIO::Alternate::LPUART1_TX,     AF8_LPUART1   },
@@ -59,7 +59,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA3_AFMap{ 
+  static const AFToReg PA3_AFMap{ 
     { Chimera::GPIO::Alternate::TIM2_CH4,       AF1_TIM2      },
     { Chimera::GPIO::Alternate::USART2_RX,      AF7_USART2    },
     { Chimera::GPIO::Alternate::LPUART1_RX,     AF8_LPUART1   },
@@ -69,7 +69,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA4_AFMap{ 
+  static const AFToReg PA4_AFMap{ 
     { Chimera::GPIO::Alternate::SPI1_NSS,       AF5_SPI1      },
     { Chimera::GPIO::Alternate::SPI3_NSS,       AF6_SPI3      },
     { Chimera::GPIO::Alternate::USART2_CK,      AF7_USART2    },
@@ -78,7 +78,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA5_AFMap{ 
+  static const AFToReg PA5_AFMap{ 
     { Chimera::GPIO::Alternate::TIM2_CH1,       AF1_TIM2      },
     { Chimera::GPIO::Alternate::TIM2_ETR,       AF2_TIM2      },
     { Chimera::GPIO::Alternate::SPI1_SCK,       AF5_SPI1      },
@@ -86,7 +86,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA6_AFMap{ 
+  static const AFToReg PA6_AFMap{ 
     { Chimera::GPIO::Alternate::TIM1_BKIN,      AF1_TIM1      },
     { Chimera::GPIO::Alternate::SPI1_MISO,      AF5_SPI1      },
     { Chimera::GPIO::Alternate::COMP1_OUT,      AF6_COMP1     },
@@ -98,7 +98,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA7_AFMap{ 
+  static const AFToReg PA7_AFMap{ 
     { Chimera::GPIO::Alternate::TIM1_CH1N,      AF1_TIM1      },
     { Chimera::GPIO::Alternate::I2C3_SCL,       AF4_I2C3      },
     { Chimera::GPIO::Alternate::SPI1_MOSI,      AF5_SPI1      },
@@ -107,7 +107,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA8_AFMap{ 
+  static const AFToReg PA8_AFMap{ 
     { Chimera::GPIO::Alternate::MCO,            AF0_MCO       },
     { Chimera::GPIO::Alternate::TIM1_CH1,       AF1_TIM1      },
     { Chimera::GPIO::Alternate::USART1_CK,      AF7_USART1    },
@@ -117,7 +117,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA9_AFMap{ 
+  static const AFToReg PA9_AFMap{ 
     { Chimera::GPIO::Alternate::TIM1_CH2,       AF1_TIM1      },
     { Chimera::GPIO::Alternate::I2C1_SCL,       AF4_I2C1      },
     { Chimera::GPIO::Alternate::USART1_TX,      AF7_USART1    },
@@ -126,7 +126,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA10_AFMap{ 
+  static const AFToReg PA10_AFMap{ 
     { Chimera::GPIO::Alternate::TIM1_CH3,       AF1_TIM1      },
     { Chimera::GPIO::Alternate::I2C1_SDA,       AF4_I2C1      },
     { Chimera::GPIO::Alternate::USART1_RX,      AF7_USART1    },
@@ -135,7 +135,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA11_AFMap{ 
+  static const AFToReg PA11_AFMap{ 
     { Chimera::GPIO::Alternate::TIM1_CH4,       AF1_TIM1      },
     { Chimera::GPIO::Alternate::TIM1_BKIN2,     AF2_TIM1      },
     { Chimera::GPIO::Alternate::SPI1_MISO,      AF5_SPI1      },
@@ -147,7 +147,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA12_AFMap{ 
+  static const AFToReg PA12_AFMap{ 
     { Chimera::GPIO::Alternate::TIM1_ETR,       AF1_TIM1      },
     { Chimera::GPIO::Alternate::SPI1_MOSI,      AF5_SPI1      },
     { Chimera::GPIO::Alternate::USART1_RTS_DE,  AF7_USART1    },
@@ -156,7 +156,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA13_AFMap{ 
+  static const AFToReg PA13_AFMap{ 
     { Chimera::GPIO::Alternate::JTMSSWDIO,      AF0_SWJ       },
     { Chimera::GPIO::Alternate::IR_OUT,         AF1_IR        },
     { Chimera::GPIO::Alternate::USB_NOE,        AF10_USB_FS   },
@@ -165,7 +165,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA14_AFMap{ 
+  static const AFToReg PA14_AFMap{ 
     { Chimera::GPIO::Alternate::JTCKSWCLK,      AF0_SWJ       },
     { Chimera::GPIO::Alternate::LPTIM1_OUT,     AF1_LPTIM1    },
     { Chimera::GPIO::Alternate::I2C1_SMBA,      AF4_I2C1      },
@@ -174,7 +174,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PA15_AFMap{ 
+  static const AFToReg PA15_AFMap{ 
     { Chimera::GPIO::Alternate::JTDI,           AF0_SWJ       },
     { Chimera::GPIO::Alternate::TIM2_CH1,       AF1_TIM2      },
     { Chimera::GPIO::Alternate::TIM2_ETR,       AF2_TIM2      },
@@ -187,7 +187,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static PinToAFMap PA_PinAF{
+  static const PinToAFMap PA_PinAF{
     { 0,  &PA0_AFMap  },
     { 1,  &PA1_AFMap  },
     { 2,  &PA2_AFMap  },
@@ -210,7 +210,7 @@ namespace Thor::LLD::GPIO
   Pin Alternate Function Mapping: Port B
   See Table 15 of DS11451
   ------------------------------------------------*/
-  static AFToReg PB0_AFMap{ 
+  static const AFToReg PB0_AFMap{ 
     { Chimera::GPIO::Alternate::TIM1_CH2N,      AF1_TIM2      },
     { Chimera::GPIO::Alternate::SPI1_NSS,       AF5_SPI1      },
     { Chimera::GPIO::Alternate::USART3_CK,      AF7_USART3    },
@@ -220,7 +220,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PB1_AFMap{ 
+  static const AFToReg PB1_AFMap{ 
     { Chimera::GPIO::Alternate::TIM1_CH3N,      AF1_TIM1      },
     { Chimera::GPIO::Alternate::USART3_RTS_DE,  AF7_USART3    },
     { Chimera::GPIO::Alternate::LPUART1_RTS_DE, AF8_LPUART1   },
@@ -229,7 +229,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PB3_AFMap{ 
+  static const AFToReg PB3_AFMap{ 
     { Chimera::GPIO::Alternate::JTDO_TRACESWO,  AF0_SWJ       },
     { Chimera::GPIO::Alternate::TIM2_CH2,       AF1_TIM2      },
     { Chimera::GPIO::Alternate::SPI1_SCK,       AF5_SPI1      },
@@ -239,7 +239,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PB4_AFMap{ 
+  static const AFToReg PB4_AFMap{ 
     { Chimera::GPIO::Alternate::NJTRST,         AF0_SWJ       },
     { Chimera::GPIO::Alternate::I2C3_SDA,       AF4_I2C3      },
     { Chimera::GPIO::Alternate::SPI1_MISO,      AF5_SPI1      },
@@ -250,7 +250,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
   
-  static AFToReg PB5_AFMap{ 
+  static const AFToReg PB5_AFMap{ 
     { Chimera::GPIO::Alternate::LPTIM1_IN1,     AF1_TIM1      },
     { Chimera::GPIO::Alternate::I2C1_SMBA,      AF4_I2C1      },
     { Chimera::GPIO::Alternate::SPI1_MOSI,      AF5_SPI1      },
@@ -263,7 +263,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PB6_AFMap{ 
+  static const AFToReg PB6_AFMap{ 
     { Chimera::GPIO::Alternate::LPTIM1_ETR,     AF1_LPTIM1    },
     { Chimera::GPIO::Alternate::I2C1_SCL,       AF4_I2C1      },
     { Chimera::GPIO::Alternate::USART1_TX,      AF7_USART1    },
@@ -273,7 +273,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PB7_AFMap{ 
+  static const AFToReg PB7_AFMap{ 
     { Chimera::GPIO::Alternate::LPTIM1_IN2,     AF1_LPTIM1    },
     { Chimera::GPIO::Alternate::I2C1_SDA,       AF4_I2C1      },
     { Chimera::GPIO::Alternate::USART1_RX,      AF7_USART1    },
@@ -281,7 +281,7 @@ namespace Thor::LLD::GPIO
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static PinToAFMap PB_PinAF{
+  static const PinToAFMap PB_PinAF{
     { 0, &PB0_AFMap },
     { 1, &PB1_AFMap },
     { 3, &PB3_AFMap },
@@ -295,15 +295,15 @@ namespace Thor::LLD::GPIO
   Pin Alternate Function Mapping: Port C
   See Table 15 of DS11451
   ------------------------------------------------*/
-  static AFToReg PC14_AFMap{ 
+  static const AFToReg PC14_AFMap{ 
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static AFToReg PC15_AFMap{ 
+  static const AFToReg PC15_AFMap{ 
     { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
   };
 
-  static PinToAFMap PC_PinAF{
+  static const PinToAFMap PC_PinAF{
     { 14, &PC14_AFMap },
     { 15, &PC15_AFMap }
   };
@@ -353,9 +353,9 @@ namespace Thor::LLD::GPIO
   };
 
   AlternateMap InstanceToAlternateMap{ 
-    { GPIOA_PERIPH, nullptr }, 
-    { GPIOB_PERIPH, nullptr }, 
-    { GPIOC_PERIPH, nullptr }, 
+    { GPIOA_PERIPH, &PA_PinAF }, 
+    { GPIOB_PERIPH, &PB_PinAF }, 
+    { GPIOC_PERIPH, &PC_PinAF }, 
     { GPIOD_PERIPH, nullptr }, 
     { GPIOE_PERIPH, nullptr }, 
     { GPIOH_PERIPH, nullptr } 
@@ -441,12 +441,12 @@ namespace Thor::LLD::GPIO
     /*------------------------------------------------
     Register the Alternate Configurations
     ------------------------------------------------*/
-    InstanceToAlternateMap.assign( GPIOA_PERIPH, reinterpret_cast<void *>( &PA_PinAF ) );
-    InstanceToAlternateMap.assign( GPIOB_PERIPH, reinterpret_cast<void *>( &PB_PinAF ) );
-    InstanceToAlternateMap.assign( GPIOC_PERIPH, reinterpret_cast<void *>( &PC_PinAF ) );
-    InstanceToAlternateMap.assign( GPIOD_PERIPH, nullptr );
-    InstanceToAlternateMap.assign( GPIOE_PERIPH, nullptr );
-    InstanceToAlternateMap.assign( GPIOH_PERIPH, nullptr );
+//    InstanceToAlternateMap.assign( GPIOA_PERIPH, &PA_PinAF );
+//    InstanceToAlternateMap.assign( GPIOB_PERIPH, &PB_PinAF );
+//    InstanceToAlternateMap.assign( GPIOC_PERIPH, &PC_PinAF );
+//    InstanceToAlternateMap.assign( GPIOD_PERIPH, nullptr );
+//    InstanceToAlternateMap.assign( GPIOE_PERIPH, nullptr );
+//    InstanceToAlternateMap.assign( GPIOH_PERIPH, nullptr );
   }
 }    // namespace Thor::LLD::GPIO
 

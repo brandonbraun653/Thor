@@ -110,23 +110,14 @@ namespace Thor::TIMER
     Get the LLD resource index for the driver, if it's supported.
     This will allow us to grab other pieces of needed data.
     -------------------------------------------------*/
-    auto hld_resource_map = PeripheralToHLDResourceIndex.find( peripheral );
-    if( !hld_resource_map )
-    {
-      return false;
-    }
-
-    auto lld_resource_map = PeripheralToLLDResourceIndex.find( peripheral );
-    if( !lld_resource_map )
-    {
-      return false;
-    }
+    auto hld_resource_map = PeripheralToHLDResourceIndex.at( peripheral );
+    auto lld_resource_map = PeripheralToLLDResourceIndex.at( peripheral );
 
     /*-------------------------------------------------
     Using the resource index, grab to the device descriptor
     -------------------------------------------------*/
-    auto hld_resource_index = hld_resource_map->second;
-    auto lld_resource_index = lld_resource_map->second;
+    auto hld_resource_index = hld_resource_map.second;
+    auto lld_resource_index = lld_resource_map.second;
     const DeviceDescription * pDeviceDescriptor = getPeripheralDescriptor( lld_resource_index );
 
 

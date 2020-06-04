@@ -95,7 +95,7 @@ namespace Thor::LLD::GPIO
   void Driver::clockEnable()
   {
     auto rcc   = Thor::LLD::RCC::getSystemPeripheralController();
-    auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
+    auto index = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( periph ) ).second;
 
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
   }
@@ -103,7 +103,7 @@ namespace Thor::LLD::GPIO
   void Driver::clockDisable()
   {
     auto rcc   = Thor::LLD::RCC::getSystemPeripheralController();
-    auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
+    auto index = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( periph ) ).second;
 
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
   }
@@ -193,31 +193,23 @@ namespace Thor::LLD::GPIO
     Determine the alternate function configuration by 
     going through all the lovely lookup tables.
     ------------------------------------------------*/
-    AlternateMap::ElementType *instanceToPinMap = nullptr;
-    if ( !InstanceToAlternateMap.exists( periph, &instanceToPinMap ) )
+    const auto instanceToPinMap = InstanceToAlternateMap.at( periph );
+    if ( !instanceToPinMap.second )
     {
       return Chimera::CommonStatusCodes::FAIL;
     }
 
-    PinToAFMap *pinMap                   = reinterpret_cast<PinToAFMap *>( instanceToPinMap->second );
-    PinToAFMap::ElementType *afConfigMap = nullptr;
-    if ( !pinMap->exists( pin, &afConfigMap ) )
-    {
-      return Chimera::CommonStatusCodes::FAIL;
-    }
+    const auto pinMap      = reinterpret_cast<const PinToAFMap *>( instanceToPinMap.second );
+    const auto afConfigMap = pinMap->at( pin );
 
-    AFToReg *registerMap                      = reinterpret_cast<AFToReg *>( afConfigMap->second );
-    AFToReg::ElementType *afRegisterConfigMap = nullptr;
-    if ( !registerMap->exists( val, &afRegisterConfigMap ) )
-    {
-      return Chimera::CommonStatusCodes::FAIL;
-    }
+    const AFToReg *registerMap     = reinterpret_cast<const AFToReg *>( afConfigMap.second );
+    const auto afRegisterConfigMap = registerMap->at( val );
 
 
     uint64_t temp         = 0u;
     const uint64_t offset = pin * AFR_CFG_X_WID;
     const uint64_t mask   = AFR_CFG_X_MSK;
-    const uint64_t AFcfg  = afRegisterConfigMap->second;
+    const uint64_t AFcfg  = afRegisterConfigMap.second;
 
     /*------------------------------------------------
     64-bit wide read-modify-write sequence to AFRL & AFRH
@@ -323,35 +315,35 @@ namespace Thor::LLD::GPIO
     Determine the alternate function configuration by 
     going through all the lovely lookup tables.
     ------------------------------------------------*/
-    AlternateMap::ElementType *instanceToPinMap = nullptr;
-    if ( !InstanceToAlternateMap.exists( periph, &instanceToPinMap ) )
-    {
-      return Chimera::GPIO::Alternate::NONE;
-    }
-
-    PinToAFMap *pinMap                   = reinterpret_cast<PinToAFMap *>( instanceToPinMap->second );
-    PinToAFMap::ElementType *afConfigMap = nullptr;
-    if ( !pinMap->exists( pin, &afConfigMap ) )
-    {
-      return Chimera::GPIO::Alternate::NONE;
-    }
-
-
-
-    const uint64_t offset = pin * AFR_CFG_X_WID;
-    const uint64_t mask   = AFR_CFG_X_MSK << offset;
-
-    /*------------------------------------------------
-    64-bit wide read-modify-write sequence to AFRL & AFRH
-    ------------------------------------------------*/
-    Reg8_t currentConfig = static_cast<Reg8_t>( ( periph->AFR & mask ) >> offset );
-    AFToReg *registerMap = reinterpret_cast<AFToReg *>( afConfigMap->second );
-
-    AFToReg::ElementType *cfg = registerMap->findWithValue( currentConfig );
-    if ( cfg ) 
-    {
-      return cfg->first;
-    }
+//    AlternateMap::value_type *instanceToPinMap = nullptr;
+//    if ( !InstanceToAlternateMap.exists( periph, &instanceToPinMap ) )
+//    {
+//      return Chimera::GPIO::Alternate::NONE;
+//    }
+//
+//    const PinToAFMap *pinMap             = reinterpret_cast<const PinToAFMap *>( instanceToPinMap->second );
+//    PinToAFMap::value_type *afConfigMap = nullptr;
+//    if ( !pinMap->exists( pin, &afConfigMap ) )
+//    {
+//      return Chimera::GPIO::Alternate::NONE;
+//    }
+//
+//
+//
+//    const uint64_t offset = pin * AFR_CFG_X_WID;
+//    const uint64_t mask   = AFR_CFG_X_MSK << offset;
+//
+//    /*------------------------------------------------
+//    64-bit wide read-modify-write sequence to AFRL & AFRH
+//    ------------------------------------------------*/
+//    Reg8_t currentConfig = static_cast<Reg8_t>( ( periph->AFR & mask ) >> offset );
+//    const AFToReg *registerMap = reinterpret_cast<const AFToReg *>( afConfigMap->second );
+//
+//    const AFToReg::value_type *cfg = registerMap->findWithValue( currentConfig );
+//    if ( cfg ) 
+//    {
+//      return cfg->first;
+//    }
 
     return Chimera::GPIO::Alternate::NONE;
   }

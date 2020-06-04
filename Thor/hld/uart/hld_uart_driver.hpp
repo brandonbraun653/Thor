@@ -34,8 +34,8 @@ namespace Thor::UART
 {
   /**
    *  Initialize the driver
-   *  
-   *  @return Chimera::Status_t 
+   *
+   *  @return Chimera::Status_t
    */
   Chimera::Status_t initialize();
 
@@ -48,7 +48,7 @@ namespace Thor::UART
 
     Chimera::Status_t assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins ) final override;
 
-    Chimera::Status_t begin( const Chimera::Hardware::PeripheralMode,
+    Chimera::Status_t begin( const Chimera::Hardware::PeripheralMode txMode,
                              const Chimera::Hardware::PeripheralMode rxMode ) final override;
 
     Chimera::Status_t end() final override;
@@ -65,7 +65,7 @@ namespace Thor::UART
     Chimera::Status_t read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS = 500 ) final override;
 
     Chimera::Status_t flush( const Chimera::Hardware::SubPeripheral periph ) final override;
-    
+
     Chimera::Status_t toggleAsyncListening( const bool state ) final override;
     Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
 

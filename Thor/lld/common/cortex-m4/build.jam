@@ -7,65 +7,54 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
     explicit $(name) ;
     }
 
-local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/hld/clock ;
-local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/hld/clock ;
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/lld/stm32l4/nvic ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/stm32l4/nvic ;
 
 # ====================================================
 # Public Targets
 # ====================================================
-explicit_alias PUB : : : : <define>THOR_HLD_CLOCK ;
-explicit_alias TEST_PUB : : : : <define>THOR_HLD_TEST_CLOCK ;
+explicit_alias PUB : : : : <define>THOR_LLD_NVIC ;
 
-# ====================================================
-# Static Libraries
-# ====================================================
-lib hld_clock
+lib cm4_nvic
   : [ glob *.cpp ]
 
   : <link>static
-    <use>/AURORA//PUB
     <use>/CHIMERA//PUB
-    <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
-    <use>/THOR/HLD/CLOCK//PUB
   ;
-explicit hld_clock ;
-explicit_alias LIB : hld_clock : : : <library>hld_clock ;
+explicit cm4_nvic ;
+explicit_alias LIB : cm4_nvic : : : <library>cm4_nvic ;
 
 # ====================================================
 # Test Driver Executable
 # ====================================================
-exe hld_clock_test
+exe cm4_nvic_test
   : [ glob test/*.cpp ]
 
-    /THOR/HLD//TEST_LIB
-    /THOR/LLD/STM32F4//TEST_LIB
-
-    /THOR/LLD/INTF/CLOCK//MOCK_LIB
+    /THOR/LLD/STM32L4//TEST_LIB
 
   : <link>static
+    <Thor>enabled-L4
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
     <use>/GOOGLE//TEST_PUB
-    <use>/GOOGLE//MOCK_PUB
     <use>/THOR//PUB
     <use>/THOR//TARGET_PROPAGATED_OPTIONS
-    <use>/THOR/HLD//TEST_PUB
-    <use>/THOR/HLD/CLOCK//TEST_PUB
+    <use>/THOR/LLD/STM32L4//TEST_PUB
     <linkflags>-Wl,--no-as-needed
   ;
-explicit hld_clock_test ;
-explicit_alias TEST : hld_clock_test : : : <source>hld_clock_test ;
+explicit cm4_nvic_test ;
+explicit_alias TEST : cm4_nvic_test : : : <source>cm4_nvic_test ;
 
 # ====================================================
 # Installation Targets
 # ====================================================
-install INSTALL_TEST : hld_clock_test
+install INSTALL_TEST : cm4_nvic_test
   : <variant>release:<location>$(rel_install_dir)
     <variant>debug:<location>$(dbg_install_dir)
   ;
 
-install INSTALL_LIB : hld_clock
+install INSTALL_LIB : cm4_nvic
   : <variant>release:<location>$(rel_install_dir)
     <variant>debug:<location>$(dbg_install_dir)
   ;

@@ -19,14 +19,6 @@
 #include <Thor/uart>
 #include <Thor/lld/interface/uart/uart_intf.hpp>
 
-namespace Chimera::UART::Backend
-{
-  Chimera::Status_t prjInitialize()
-  {
-    return Thor::UART::initialize();
-  }
-}    // namespace Chimera::UART
-
 #if defined( THOR_HLD_UART )
 
 namespace Thor::UART
@@ -58,7 +50,7 @@ namespace Thor::UART
   {
   }
 
-  Chimera::Status_t Driver::assignHW( const uint8_t channel, const Chimera::Serial::IOPins &pins )
+  Chimera::Status_t Driver::assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }
@@ -101,6 +93,11 @@ namespace Thor::UART
   }
 
   Chimera::Status_t Driver::flush( const Chimera::Hardware::SubPeripheral periph )
+  {
+    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+  }
+
+  Chimera::Status_t Driver::toggleAsyncListening( const bool state )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }

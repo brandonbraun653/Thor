@@ -1,5 +1,5 @@
 # ====================================================
-# Local Rules 
+# Local Rules
 # ====================================================
 local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
     {
@@ -19,7 +19,7 @@ explicit_alias PUB : : : : <define>THOR_LLD_TIMER ;
 # Static Libraries
 # ====================================================
 lib lld_timer_chip
-  : variant/hw_timer_register_stm32l432kc.cpp
+  : variant/hw_timer_register_stm32l4xxxx.cpp
 
   : <Thor>enabled-L432
     <link>static
@@ -46,35 +46,35 @@ explicit_alias LIB : lld_timer lld_timer_chip : : : <library>lld_timer <library>
 # ====================================================
 # Test Driver Executable
 # ====================================================
-exe lld_timer_test
-  : [ glob test/*.cpp ]
+# exe lld_timer_test
+#   : [ glob test/*.cpp ]
 
-    /THOR/LLD/STM32L4//TEST_LIB
-  
-  : <link>static
-    <Thor>enabled-L4
-    <use>/AURORA//PUB
-    <use>/CHIMERA//PUB
-    <use>/GOOGLE//TEST_PUB
-    <use>/THOR//PUB
-    <use>/THOR//TARGET_PROPAGATED_OPTIONS
-    <use>/THOR/LLD/STM32L4//TEST_PUB
-    <linkflags>-Wl,--no-as-needed
-  ;
-explicit lld_timer_test ;
-explicit_alias TEST : lld_timer_test : : : <source>lld_timer_test ;
+#     /THOR/LLD/STM32L4//TEST_LIB
 
-# ====================================================
-# Installation Targets
-# ====================================================
-install INSTALL_TEST : lld_timer_test
-  : <variant>release:<location>$(rel_install_dir)
-    <variant>debug:<location>$(dbg_install_dir)
-  ;
+#   : <link>static
+#     <Thor>enabled-L4
+#     <use>/AURORA//PUB
+#     <use>/CHIMERA//PUB
+#     <use>/GOOGLE//TEST_PUB
+#     <use>/THOR//PUB
+#     <use>/THOR//TARGET_PROPAGATED_OPTIONS
+#     <use>/THOR/LLD/STM32L4//TEST_PUB
+#     <linkflags>-Wl,--no-as-needed
+#   ;
+# explicit lld_timer_test ;
+# explicit_alias TEST : lld_timer_test : : : <source>lld_timer_test ;
 
-install INSTALL_LIB : lld_timer lld_timer_chip
-  : <variant>release:<location>$(rel_install_dir)
-    <variant>debug:<location>$(dbg_install_dir)
-  ;
+# # ====================================================
+# # Installation Targets
+# # ====================================================
+# install INSTALL_TEST : lld_timer_test
+#   : <variant>release:<location>$(rel_install_dir)
+#     <variant>debug:<location>$(dbg_install_dir)
+#   ;
 
-explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;
+# install INSTALL_LIB : lld_timer lld_timer_chip
+#   : <variant>release:<location>$(rel_install_dir)
+#     <variant>debug:<location>$(dbg_install_dir)
+#   ;
+
+# explicit_alias INSTALL_ALL : INSTALL_TEST INSTALL_LIB ;

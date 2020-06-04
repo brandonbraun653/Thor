@@ -140,7 +140,7 @@ namespace Thor::LLD::SPI
     Get peripheral descriptor settings
     ------------------------------------------------*/
     periph        = peripheral;
-    resourceIndex = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
+    resourceIndex = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( periph ) ).second;
     periphIRQn    = IRQSignals[ resourceIndex ];
     dmaTXSignal   = TXDMASignals[ resourceIndex ];
     dmaRXSignal   = RXDMASignals[ resourceIndex ];

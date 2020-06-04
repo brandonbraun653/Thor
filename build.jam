@@ -1,5 +1,5 @@
 # ====================================================
-# Local Rules 
+# Local Rules
 # ====================================================
 local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
     {
@@ -8,10 +8,10 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
     }
 
 # ====================================================
-# Local Resources 
+# Local Resources
 # ====================================================
 # ------------------------------------------
-# Build Target Specific Options 
+# Build Target Specific Options
 # ------------------------------------------
 local thor_dbg_defs = DEBUG ;
 local thor_dbg_cflags = -ggdb -Og ;
@@ -23,7 +23,7 @@ local thor_rel_cflags = -O3 ;
 # CXXFlags
 # ------------------------------------------
 # Applies to all Thor targets, but not propagated to dependents.
-local thor_requirements_cxxflags = 
+local thor_requirements_cxxflags =
     -fno-common
     -fmessage-length=0
     -fno-exceptions
@@ -37,7 +37,7 @@ local thor_usage_requirements_cxxflags =
     -fno-exceptions
     ;
 
-local all_thor_cxxflags = 
+local all_thor_cxxflags =
     $(thor_requirements_cxxflags)
     $(thor_usage_requirements_cxxflags)
     ;
@@ -59,7 +59,7 @@ local all_thor_link_flags =
     ;
 
 # ------------------------------------------
-# Source/Include Directories 
+# Source/Include Directories
 # ------------------------------------------
 local thor_inc_dir = . ;
 
@@ -72,15 +72,17 @@ project ThorSource : usage-requirements <include>. ;
 # ====================================================
 # Public Thor Library Components
 # ====================================================
-use-project /THOR/LLD/STM32F4 : Thor/lld/stm32f4x ;  
-use-project /THOR/LLD/INTF : Thor/lld/interface ;    # Low level STM32F4xxx driver project
+use-project /THOR/LLD/STM32F4 : Thor/lld/stm32f4x ;
+use-project /THOR/LLD/STM32L4 : Thor/lld/stm32l4x ;
+use-project /THOR/LLD/INTF : Thor/lld/interface ;
 use-project /THOR/HLD : Thor/hld ;
+use-project /THOR/CFG : Thor/config ;
 
 
 # ------------------------------------------
 # Includes all common Thor headers
 # -----------------------------------------
-explicit_alias PUB : : : : 
+explicit_alias PUB : : : :
     <include>.
     <define>BOOST_NO_EXCEPTIONS
     <Thor>enabled-F4:<use>/THOR/LLD/STM32F4//PUB
@@ -93,16 +95,164 @@ explicit_alias PUB : : : :
 #     <library>/THOR/HLD/TIMER//LIB
 #     ;
 
+# ====================================================
+# Propagated Options
+# ====================================================
+
 # -----------------------------------------
-# STM32F4 Public Headers
+# STM32F4 Propagated Options
 # -----------------------------------------
 alias TARGET_PROPAGATED_OPTIONS
-    : 
+    :
     :   <Thor>enabled-F4
     :
     :   <use>PUB
         <use>/PRJ//BOOST
-        <use>/THOR/LLD/STM32F4//ALIAS_MCU_OPTIONS        
+        <use>/THOR/LLD/STM32F4//ALIAS_MCU_OPTIONS
+        <cxxflags>$(thor_usage_requirements_cxxflags)
+    ;
+
+# -----------------------------------------
+# STM32L4 Propagated Options
+# -----------------------------------------
+alias TARGET_PROPAGATED_OPTIONS
+    :
+    :   <Thor>enabled-L4
+    :
+    :   <use>PUB
+        <use>/PRJ//BOOST
+        <use>/THOR/LLD/STM32L4//ALIAS_MCU_OPTIONS
         <cxxflags>$(thor_usage_requirements_cxxflags)
     ;
 explicit TARGET_PROPAGATED_OPTIONS ;                # Thor chip specific options that should be propagated to all targets using Thor
+
+
+# ====================================================
+# Modules
+# ====================================================
+explicit_alias CONFIG
+  : /THOR/CFG/FREERTOS//LIB
+  : <Thor>enabled
+  :
+  : <library>/THOR/CFG/FREERTOS//LIB
+  ;
+
+# -----------------------------------------
+# STM32L4
+# -----------------------------------------
+explicit_alias COMMON
+  : /THOR/LLD/CMN/CM4//LIB
+    /THOR/LLD/CMN/MAP//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/LLD/CMN/CM4//LIB
+    <library>/THOR/LLD/CMN/MAP//LIB
+  ;
+
+explicit_alias GPIO
+  : /THOR/HLD/GPIO//LIB /THOR/LLD/STM32L4/GPIO//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/HLD/GPIO//LIB <library>/THOR/LLD/STM32L4/GPIO//LIB
+  ;
+
+explicit_alias INTERRUPT
+  : /THOR/LLD/STM32L4/INTERRUPT//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/LLD/STM32L4/INTERRUPT//LIB
+  ;
+
+explicit_alias FLASH
+  : /THOR/LLD/STM32L4/FLASH//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/LLD/STM32L4/FLASH//LIB
+  ;
+
+explicit_alias POWER
+  : /THOR/LLD/STM32L4/POWER//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/LLD/STM32L4/POWER//LIB
+  ;
+
+explicit_alias PWM
+  : /THOR/HLD/PWM//LIB
+    /THOR/HLD/TIMER//LIB
+    /THOR/LLD/STM32L4/TIMER//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/HLD/PWM//LIB
+    <library>/THOR/HLD/TIMER//LIB
+    <library>/THOR/LLD/STM32L4/TIMER//LIB
+  ;
+
+explicit_alias RCC
+  : /THOR/HLD/CLOCK//LIB /THOR/LLD/STM32L4/RCC//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/HLD/CLOCK//LIB <library>/THOR/LLD/STM32L4/RCC//LIB
+  ;
+
+explicit_alias SPI
+  : /THOR/HLD/SPI//LIB /THOR/LLD/STM32L4/SPI//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/HLD/SPI//LIB <library>/THOR/LLD/STM32L4/SPI//LIB
+  ;
+
+explicit_alias SYSTEM
+  : /THOR/HLD/SYSTEM//LIB
+    /THOR/LLD/STM32L4/DES//LIB
+    /THOR/LLD/STM32L4/STARTUP//LIB
+    /THOR/LLD/STM32L4/SYSTEM//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/HLD/SYSTEM//LIB <library>/THOR/LLD/STM32L4/SYSTEM//LIB
+  ;
+
+explicit_alias TIMER
+  : /THOR/HLD/TIMER//LIB /THOR/LLD/STM32L4/TIMER//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/HLD/TIMER//LIB <library>/THOR/LLD/STM32L4/TIMER//LIB
+  ;
+
+explicit_alias UART
+  : /THOR/HLD/UART//LIB
+    #/THOR/LLD/STM32L4/UART//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/HLD/UART//LIB
+    #<library>/THOR/LLD/STM32L4/UART//LIB
+  ;
+
+explicit_alias USART
+  : /THOR/HLD/USART//LIB /THOR/LLD/STM32L4/USART//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/HLD/USART//LIB <library>/THOR/LLD/STM32L4/USART//LIB
+  ;
+
+explicit_alias WATCHDOG
+  : /THOR/HLD/WATCHDOG//LIB
+    #/THOR/LLD/STM32L4/WATCHDOG//LIB
+  : <Thor>enabled-L4
+  :
+  : <library>/THOR/HLD/WATCHDOG//LIB
+    #<library>/THOR/LLD/STM32L4/WATCHDOG//LIB
+  ;
+
+explicit_alias CHECK_COMPILE :
+  /THOR//COMMON
+  /THOR//FLASH
+  /THOR//GPIO
+  /THOR//INTERRUPT
+  /THOR//POWER
+  /THOR//RCC
+  /THOR//SPI
+  /THOR//SYSTEM
+  /THOR//TIMER
+  /THOR//USART
+  ;

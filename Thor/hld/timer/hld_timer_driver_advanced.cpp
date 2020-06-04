@@ -83,16 +83,12 @@ namespace Thor::TIMER
     /*------------------------------------------------
     Check to see if the peripheral is supported by the LLD
     ------------------------------------------------*/
-    auto pRegistered = LLD::PeripheralToHLDResourceIndex.find( periph );
-    if ( !pRegistered )
-    {
-      return nullptr;
-    }
+    const auto pRegistered = LLD::PeripheralToHLDResourceIndex.at( periph );
 
     /*------------------------------------------------
     Use the returned resource index to grab the driver instance
     ------------------------------------------------*/
-    auto const iDriver = pRegistered->second;
+    auto const iDriver = pRegistered.second;
     if ( create )
     {
       initAdvancedDriverObject( iDriver );

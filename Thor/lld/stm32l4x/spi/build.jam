@@ -1,5 +1,5 @@
 # ====================================================
-# Local Rules 
+# Local Rules
 # ====================================================
 local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
     {
@@ -19,7 +19,7 @@ explicit_alias PUB : : : : <define>THOR_LLD_SPI ;
 # Static Libraries
 # ====================================================
 lib lld_spi_chip
-  : variant/hw_spi_register_stm32l432kc.cpp
+  : variant/hw_spi_register_stm32l4xxxx.cpp
 
   : <Thor>enabled-L432
     <link>static
@@ -50,7 +50,7 @@ exe lld_spi_test
   : [ glob test/*.cpp ]
 
     /THOR/LLD/STM32L4//TEST_LIB
-  
+
   : <link>static
     <Thor>enabled-L4
     <use>/AURORA//PUB
