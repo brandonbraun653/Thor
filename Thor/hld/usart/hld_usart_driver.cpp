@@ -174,6 +174,12 @@ namespace Thor::USART
                                    const Chimera::Hardware::PeripheralMode rxMode )
   {
     /*------------------------------------------------
+    Ensure the internal event signals are reset
+    ------------------------------------------------*/
+    awaitRXComplete.try_acquire();
+    awaitTXComplete.try_acquire();
+
+    /*------------------------------------------------
     Initialize to the desired TX/RX modes
     ------------------------------------------------*/
     setMode( Chimera::Hardware::SubPeripheral::RX, rxMode );
@@ -647,6 +653,7 @@ namespace Thor::USART
     ------------------------------------------------*/
     if ( txLock.try_acquire() )
     {
+      awaitTXComplete.try_acquire();
       error = s_lld_drivers[ resourceIndex ]->transmitIT( buffer, length, timeout_mS );
     }
     else
@@ -674,6 +681,7 @@ namespace Thor::USART
     ------------------------------------------------*/
     if ( txLock.try_acquire() )
     {
+      awaitTXComplete.try_acquire();
       error = s_lld_drivers[ resourceIndex ]->transmitDMA( buffer, length, timeout_mS );
     }
     else

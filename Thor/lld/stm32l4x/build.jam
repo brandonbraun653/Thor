@@ -59,6 +59,7 @@ local propagated_cxxflags =
   -mthumb
   -ffunction-sections
   -fdata-sections
+  -fno-rtti
   ;
 
 # ------------------------------------------
@@ -78,7 +79,7 @@ local propagated_link_flags =
   -specs=nano.specs
   -specs=nosys.specs
   -Wl,--gc-sections
-
+  -Wl,--print-memory-usage
   ;
 
 use-project /THOR/LLD/STM32L4/DES : des ;

@@ -73,7 +73,7 @@ namespace Thor::GPIO
   Driver::Driver()
   {
     channel   = drivers.size();
-    lastState = Chimera::GPIO::State::OFF;
+    lastState = Chimera::GPIO::State::LOW;
     initSettings.clear();
   }
 
@@ -93,9 +93,16 @@ namespace Thor::GPIO
     /*------------------------------------------------
     Optionally invoke thread-safe access
     ------------------------------------------------*/
-    if ( pinInit.threaded && this->try_lock_for( timeout ) ) 
+    if ( pinInit.threaded ) 
     {
-      locked = true;
+      if ( this->try_lock_for( timeout ) )
+      {
+        locked = true;
+      }
+      else
+      {
+        return Chimera::CommonStatusCodes::LOCKED;
+      }
     }
 
     /*------------------------------------------------
@@ -136,7 +143,7 @@ namespace Thor::GPIO
     cfg.pin       = pin;
     cfg.alternate = Chimera::GPIO::Alternate::NONE;
     cfg.drive     = Chimera::GPIO::Drive::INPUT;
-    cfg.state     = Chimera::GPIO::State::OFF;
+    cfg.state     = Chimera::GPIO::State::LOW;
     cfg.pull      = Chimera::GPIO::Pull::PULL_UP;
 
     return init( cfg, timeout );
@@ -161,9 +168,16 @@ namespace Thor::GPIO
     ------------------------------------------------*/
     auto locked = false;
     auto result = Chimera::CommonStatusCodes::FAIL;
-    if ( initSettings.threaded && this->try_lock_for( timeout ) ) 
+    if ( initSettings.threaded ) 
     {
-      locked = true;
+      if ( this->try_lock_for( timeout ) )
+      {
+        locked = true;
+      }
+      else
+      {
+        return Chimera::CommonStatusCodes::LOCKED;
+      }
     }
 
     /*------------------------------------------------
@@ -211,9 +225,16 @@ namespace Thor::GPIO
     ------------------------------------------------*/
     auto locked = false;
     auto result = Chimera::CommonStatusCodes::FAIL;
-    if ( initSettings.threaded && this->try_lock_for( timeout ) ) 
+    if ( initSettings.threaded ) 
     {
-      locked = true;
+      if ( this->try_lock_for( timeout ) )
+      {
+        locked = true;
+      }
+      else
+      {
+        return Chimera::CommonStatusCodes::LOCKED;
+      }
     }
 
     /*------------------------------------------------
@@ -250,10 +271,16 @@ namespace Thor::GPIO
     Optionally invoke thread-safe access
     ------------------------------------------------*/
     auto locked = false;
-    auto result = Chimera::CommonStatusCodes::FAIL;
-    if ( initSettings.threaded && this->try_lock_for( timeout ) ) 
+    if ( initSettings.threaded ) 
     {
-      locked = true;
+      if ( this->try_lock_for( timeout ) )
+      {
+        locked = true;
+      }
+      else
+      {
+        return Chimera::CommonStatusCodes::LOCKED;
+      }
     }
 
     /*------------------------------------------------
@@ -269,7 +296,7 @@ namespace Thor::GPIO
       this->unlock();
     }
 
-    return result;
+    return Chimera::CommonStatusCodes::OK;
   }
 
   Chimera::Status_t Driver::toggle( const size_t timeout )

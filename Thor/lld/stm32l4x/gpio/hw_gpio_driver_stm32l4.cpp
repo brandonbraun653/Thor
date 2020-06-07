@@ -229,11 +229,11 @@ namespace Thor::LLD::GPIO
 
     if ( state ) 
     {
-      return Chimera::GPIO::State::HI;
+      return Chimera::GPIO::State::HIGH;
     }
     else
     {
-      return Chimera::GPIO::State::LO;
+      return Chimera::GPIO::State::LOW;
     }
   }
 
