@@ -113,7 +113,7 @@ namespace Thor::UART
 
   Chimera::Status_t Driver::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                                 boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
-                                                const uint32_t hwBufferSize )
+                                                const size_t hwBufferSize )
   {
     return Chimera::CommonStatusCodes::NOT_SUPPORTED;
   }

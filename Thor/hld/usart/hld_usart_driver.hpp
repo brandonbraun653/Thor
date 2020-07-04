@@ -62,7 +62,7 @@ namespace Thor::USART
     Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
     Chimera::Status_t enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                        boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
-                                       const uint32_t hwBufferSize ) final override;
+                                       const size_t hwBufferSize ) final override;
     Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph ) final override;
     Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID ) final override;
     Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;

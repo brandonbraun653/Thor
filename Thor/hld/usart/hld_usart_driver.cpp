@@ -428,7 +428,7 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                                  boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
-                                                 const uint32_t hwBufferSize )
+                                                 const size_t hwBufferSize )
   {
     Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
 

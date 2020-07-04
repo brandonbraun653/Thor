@@ -71,7 +71,7 @@ namespace Thor::UART
 
     Chimera::Status_t enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                        boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
-                                       const uint32_t hwBufferSize ) final override;
+                                       const size_t hwBufferSize ) final override;
 
     Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph ) final override;
 
