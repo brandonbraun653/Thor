@@ -151,12 +151,13 @@ namespace Thor::PWM
 
   Chimera::Status_t Driver::setDutyCyle( const size_t dutyCycle )
   {
-    /* 1. Get the current configuration (driver: reload value)
-       2. Get the information about the timer itself (counter width)
-       3. Recalculate the compare match value using (1) (2)
-       4. Send the new channel configuration
-     */
-    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
+    using namespace Chimera::Timer;
+
+    DriverAction_PWMDutyCycle_t action;
+    action.channel = mPWMConfig.outputChannel;
+    action.dutyCycle = dutyCycle;
+
+    return mpTimerDriver->invokeAction( DriverAction::PWM_SET_DUTY_CYCLE, &action, sizeof( DriverAction_PWMDutyCycle_t ) );
   }
 
   Chimera::Status_t Driver::setPolarity( const Chimera::Timer::PWM::Polarity polarity )

@@ -49,6 +49,18 @@ namespace Thor::TIMER
 
     Chimera::Timer::DriverConfig baseTimerConfig;
     std::array<ChannelConfiguration, NUM_PERIPHS> channelConfig;
+    bool configured;
+
+    void clear()
+    {
+      hld_driver = nullptr;
+      lld_driver = nullptr;
+
+      baseTimerConfig = {};
+      channelConfig.fill( {} );
+
+      configured = false;
+    }
   };
 
   /*-------------------------------------------------------------------------------
@@ -83,7 +95,7 @@ namespace Thor::TIMER
 
   GeneralDriver_sPtr getGeneralDriverObject( const Thor::HLD::RIndex index )
   {
-    if ( index.value() < NUM_PERIPHS ) 
+    if ( index.value() < NUM_PERIPHS )
     {
       return s_prv_timer_data[ index.value() ].hld_driver;
     }
@@ -145,6 +157,7 @@ namespace Thor::TIMER
     }
   }
 
+  
   Chimera::Status_t GeneralDriver::invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize )
   {
     using namespace Chimera::Timer;
@@ -155,7 +168,7 @@ namespace Thor::TIMER
       case DriverAction::PWM_DISABLE_CHANNEL:
       {
         /* Ensure the parameter spec was met */
-        if ( !arg || ( argSize != sizeof( Channel ) ) ) 
+        if ( !arg || ( argSize != sizeof( Channel ) ) )
         {
           return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
         }
@@ -169,11 +182,52 @@ namespace Thor::TIMER
       }
       break;
 
+      case DriverAction::PWM_SET_DUTY_CYCLE:
+      {
+        /*------------------------------------------------
+        Parse the arguments
+        ------------------------------------------------*/
+        auto data = reinterpret_cast<DriverAction_PWMDutyCycle_t *>( arg );
+        if ( !arg || ( argSize != sizeof( DriverAction_PWMDutyCycle_t ) ) )
+        {
+          return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+        }
+        else if ( ( data->dutyCycle == 0 ) || ( data->dutyCycle >= 100 ) )
+        {
+          return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+        }
+
+        /*------------------------------------------------
+        Update the compare match
+        ------------------------------------------------*/
+        Reg32_t compareMatch = 0;
+        Reg32_t reloadValue  = s_prv_timer_data[ mIndexHLD.value() ].baseTimerConfig.reloadValue;
+        auto countDirection = s_prv_timer_data[ mIndexHLD.value() ].baseTimerConfig.countDirection;
+        float reloadPercent = static_cast<float>( data->dutyCycle ) / 100.0f;
+
+        Reg32_t newValue = static_cast<Reg32_t>( reloadPercent * static_cast<float>( reloadValue ) );
+
+        if ( countDirection == Direction::COUNT_UP ) 
+        {
+          compareMatch = newValue;
+        }
+        else
+        {
+          compareMatch = reloadValue - newValue;
+        }
+
+        s_prv_timer_data[ mIndexHLD.value() ].lld_driver->setCaptureCompareMatch( data->channel, compareMatch );
+      }
+      break;
+
       default:
         return Chimera::CommonStatusCodes::NOT_SUPPORTED;
         break;
     }
+
+    return Chimera::CommonStatusCodes::OK;
   }
+
 
   Chimera::Status_t GeneralDriver::setState( const Chimera::Timer::Switchable device,
                                              const Chimera::Timer::SwitchableState state )
@@ -183,7 +237,88 @@ namespace Thor::TIMER
 
   Chimera::Status_t GeneralDriver::requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    using namespace Chimera::Timer;
+
+    auto index = mIndexHLD.value();
+
+    switch ( data )
+    {
+      case DriverData::IS_CONFIGURED:
+      {
+        /*------------------------------------------------
+        Ensure the proper parameter spec is met
+        ------------------------------------------------*/
+        auto dataPtr = reinterpret_cast<bool *>( arg );
+        if ( !arg || ( argSize != sizeof( bool ) ) )
+        {
+          return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+        }
+
+        /*------------------------------------------------
+        Copy out the data
+        ------------------------------------------------*/
+        *dataPtr = s_prv_timer_data[ index ].configured;
+      }
+      break;
+
+      case DriverData::DRIVER_CONFIG:
+      {
+        /*------------------------------------------------
+        Ensure the proper parameter spec is met
+        ------------------------------------------------*/
+        auto dataPtr = reinterpret_cast<DataRequest_DriverConfig_t *>( arg );
+        if ( !arg || ( argSize != sizeof( DataRequest_DriverConfig_t ) ) )
+        {
+          return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+        }
+
+        /*------------------------------------------------
+        Copy out the data
+        ------------------------------------------------*/
+        memset( &dataPtr->cfgData, 0, sizeof( CoreFeatureInit ) );
+        memcpy( &dataPtr->cfgData, &s_prv_timer_data[ index ].baseTimerConfig, sizeof( DriverConfig ) );
+        dataPtr->validity = true;
+      }
+      break;
+
+      case DriverData::CHANNEL_CONFIG:
+      {
+        /*------------------------------------------------
+        Ensure the proper parameter spec is met
+        ------------------------------------------------*/
+        auto dataPtr = reinterpret_cast<DataRequest_ChannelConfig_t *>( arg );
+        if ( !arg || ( argSize != sizeof( DataRequest_ChannelConfig_t ) ) )
+        {
+          return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+        }
+
+        /*------------------------------------------------
+        Has a valid channel been requested?
+        ------------------------------------------------*/
+        auto channel = static_cast<size_t>( dataPtr->channel );
+        if ( channel >= s_prv_timer_data[ index ].channelConfig.size() ) 
+        {
+          dataPtr->validity = false;
+          return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+        }
+
+        /*------------------------------------------------
+        Copy out the data
+        ------------------------------------------------*/
+        auto prvCfgData = &s_prv_timer_data[ index ].channelConfig[ channel ].configData;
+
+        memset( &dataPtr->cfgData, 0, sizeof( CoreFeatureInit ) );
+        memcpy( &dataPtr->cfgData, prvCfgData, sizeof( CoreFeatureInit ) );
+        dataPtr->validity = true;
+      }
+      break;
+
+      default:
+        return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+        break;
+    };
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
   const Chimera::Timer::Descriptor *GeneralDriver::getDeviceInfo()
@@ -220,16 +355,17 @@ namespace Thor::TIMER
     auto peripheral = reinterpret_cast<LLD::RegisterMap *>( LLD::LUT_PeripheralList[ mIndexLLD.value() ] );
     auto driver     = s_prv_timer_data[ mIndexHLD.value() ].lld_driver;
     auto result     = Chimera::CommonStatusCodes::OK;
-    
+
     /*-------------------------------------------------
     Configure the base timer settings
     -------------------------------------------------*/
     result |= driver->attach( peripheral );
     result |= driver->initBaseTimer( cfg );
 
-    if ( result == Chimera::CommonStatusCodes::OK ) 
+    if ( result == Chimera::CommonStatusCodes::OK )
     {
       s_prv_timer_data[ mIndexHLD.value() ].baseTimerConfig = cfg;
+      s_prv_timer_data[ mIndexHLD.value() ].configured = true;
     }
 
     return result;
@@ -252,7 +388,7 @@ namespace Thor::TIMER
     -------------------------------------------------*/
     auto result = s_prv_timer_data[ mIndexHLD.value() ].lld_driver->initPWM( cfg );
 
-    if ( result == Chimera::CommonStatusCodes::OK ) 
+    if ( result == Chimera::CommonStatusCodes::OK )
     {
       auto index = mIndexHLD.value();
       auto channel = static_cast<size_t>( cfg.outputChannel );
