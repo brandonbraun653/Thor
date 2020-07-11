@@ -46,8 +46,8 @@ namespace Thor::LLD::GPIO
   const std::array<uint32_t, static_cast<size_t>( Chimera::GPIO::Pull::NUM_OPTIONS )> PullMap =
   {
     OPT_PUPDR::NOPULL, 
-    OPT_PUPDR::PULLDOWN,
     OPT_PUPDR::PULLUP,
+    OPT_PUPDR::PULLDOWN,
     OPT_PUPDR::NOPULL  
   };
 
