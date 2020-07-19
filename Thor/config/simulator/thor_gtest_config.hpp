@@ -192,11 +192,12 @@ Low Level Driver Support
 //#ifndef THOR_LLD_FLASH
 //#define THOR_LLD_FLASH
 //#endif
-//
-//#ifndef THOR_LLD_GPIO
-//#define THOR_LLD_GPIO
-//#endif
-//
+
+#ifndef THOR_LLD_GPIO
+#define THOR_LLD_GPIO
+#define THOR_LLD_GPIO_MOCK
+#endif
+
 //#ifndef THOR_LLD_HASH
 //#define THOR_LLD_HASH
 //#endif

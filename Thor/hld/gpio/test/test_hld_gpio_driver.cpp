@@ -40,8 +40,6 @@ namespace Thor::HLD::GPIO
 
     EXPECT_EQ( 0, 0 );
   }
-
-
 }
 
 #endif

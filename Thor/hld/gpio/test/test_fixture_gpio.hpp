@@ -31,8 +31,6 @@ namespace Thor::HLD::GPIO
   protected:
     virtual void SetUp() override;
     virtual void TearDown() override;
-
-    Thor::LLD::GPIO::ModuleMock *mock;
   };
 }
 

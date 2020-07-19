@@ -116,7 +116,6 @@ namespace Thor::LLD::GPIO
      *
      *  @param[in]  pin       The pin to act on
      *  @param[in]  pull      The pull up/down state to set
-     *  @param[in]  timeout   How long to wait for the resource to become available
      *  @return Chimera::Status_t
      *
      *  |  Return Value |                   Explanation                   |
@@ -133,7 +132,6 @@ namespace Thor::LLD::GPIO
      *
      *  @param[in]  pin       The pin to act on
      *  @param[in]  val       The value to set the output register to
-     *  @param[in]  timeout   How long to wait for the resource to become available
      *  @return Chimera::Status_t
      *
      *  |  Return Value |                Explanation                |
@@ -150,7 +148,6 @@ namespace Thor::LLD::GPIO
      *
      *  @param[in]  pin       The pin to act on
      *  @param[in]  val       The value to set the AF register to
-     *  @param[in]  timeout   How long to wait for the resource to become available
      *  @return Chimera::Status_t
      *
      *  |  Return Value |                   Explanation                   |
@@ -188,7 +185,7 @@ namespace Thor::LLD::GPIO
     virtual Thor::LLD::GPIO::Speed speedGet( const uint8_t pin ) = 0;
 
     /**
-     *  Reads the pull up/dn register for the configured port
+     *  Reads the pull up/down register for the configured port
      *
      *  @param[in]  pin       The pin to act on
      *  @param[in]  timeout   How long to wait for the resource to become available

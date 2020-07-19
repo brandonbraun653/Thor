@@ -21,13 +21,12 @@ namespace Thor::HLD::GPIO
 {
   void TestFixture::SetUp()
   {
-    mock = new Thor::LLD::GPIO::ModuleMock();
-    ::Thor::LLD::GPIO::assignModuleMock( mock );
+    
   }
 
   void TestFixture::TearDown()
   {
-    delete mock;
+    
   }
 
 }    // namespace Thor::HLD::GPIO

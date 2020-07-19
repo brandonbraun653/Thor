@@ -23,6 +23,9 @@
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_mapping.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
+#elif defined( TARGET_LLD_MOCK )
+#include <Thor/lld/interface/gpio/mock/gpio_mock.hpp>
+#include <Thor/lld/interface/gpio/mock/gpio_mock_variant.hpp>
 #else
 #pragma message( "gpio_detail.hpp: Unknown target for LLD" )
 #endif 

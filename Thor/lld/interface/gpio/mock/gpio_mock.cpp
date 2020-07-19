@@ -9,11 +9,13 @@
  *******************************************************************************/
 
 /* Mock Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 #include <Thor/lld/interface/gpio/mock/gpio_mock.hpp>
+#include <Thor/lld/interface/gpio/mock/gpio_mock_variant.hpp>
 
-#if defined( THOR_HLD_GPIO_MOCK )
+#if defined( THOR_LLD_GPIO_MOCK )
 
 /* STL Includes */
 #include <array>
@@ -21,28 +23,38 @@
 
 namespace Thor::LLD::GPIO
 {
-  static ModuleMock *gpio_module_mock;
+  static std::array<IDriver_sPtr, NUM_GPIO_PERIPHS> s_gpio_drivers;
 
-  void assignModuleMock( ModuleMock *mock )
-  {
-    gpio_module_mock = mock;
-  }
-
+  /*-------------------------------------------------
+  LLD->HLD Interface Implementation
+  -------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    return gpio_module_mock->initialize();
+    initializeRegisters();
+    initializeMapping();
+
+    return Chimera::CommonStatusCodes::OK;
   }
 
-  IGPIO_sPtr getDriver( const size_t channel )
+  IDriver_sPtr getDriver( const size_t channel )
   {
-    gpio_module_mock->getDriver( channel );
-    return std::make_shared<DriverMock>();
+    if ( !( channel < NUM_GPIO_PERIPHS ) )
+    {
+      return nullptr;
+    }
+    else if ( !s_gpio_drivers[ channel ] )
+    {
+      s_gpio_drivers[ channel ] = std::make_shared<DriverMock>();
+      s_gpio_drivers[ channel ]->attach( PeripheralRegisterMaps[ channel ] );
+    }
+
+    return s_gpio_drivers[ channel ];
   }
 
   size_t availableChannels()
   {
-    return gpio_module_mock->availableChannels();
+    return NUM_GPIO_PERIPHS;
   }
 }    // namespace Thor::LLD::GPIO
 
-#endif /* THOR_HLD_GPIO_MOCK */
+#endif /* THOR_LLD_GPIO_MOCK */
