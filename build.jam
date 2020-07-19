@@ -124,6 +124,20 @@ alias TARGET_PROPAGATED_OPTIONS
         <use>/THOR/LLD/STM32L4//ALIAS_MCU_OPTIONS
         <cxxflags>$(thor_usage_requirements_cxxflags)
     ;
+
+# -----------------------------------------
+# SIM Propagated Options
+# -----------------------------------------
+alias TARGET_PROPAGATED_OPTIONS
+    :
+    : <Thor>enabled-SIM
+    :
+    : <use>PUB
+      <use>/PRJ//BOOST
+      <use>/THOR/LLD/INTF//ALIAS_MCU_OPTIONS
+      <cxxflags>$(thor_usage_requirements_cxxflags)
+    ;
+
 explicit TARGET_PROPAGATED_OPTIONS ;                # Thor chip specific options that should be propagated to all targets using Thor
 
 

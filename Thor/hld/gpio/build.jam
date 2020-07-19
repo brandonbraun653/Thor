@@ -1,5 +1,5 @@
 # ====================================================
-# Local Rules 
+# Local Rules
 # ====================================================
 local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
     {
@@ -39,11 +39,10 @@ exe hld_gpio_test
   : [ glob test/*.cpp ]
 
     /THOR/HLD//TEST_LIB
-    /THOR/LLD/STM32F4//TEST_LIB
-
     /THOR/LLD/INTF/GPIO//MOCK_LIB
-  
+
   : <link>static
+    <Thor-family>MOCK
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
     <use>/GOOGLE//TEST_PUB

@@ -1,10 +1,114 @@
 # ====================================================
-# Local Rules 
+# Local Rules
 # ====================================================
 local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
-    {
-    alias $(name) : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
-    explicit $(name) ;
-    }
+  {
+  alias $(name) : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
+  explicit $(name) ;
+  }
+
+# ====================================================
+# Local Resources
+# ====================================================
+# ------------------------------------------
+# Build Target Specific Options
+# ------------------------------------------
+local sim_dbg_defs = DEBUG ;
+local sim_dbg_cflags = -ggdb -Og ;
+
+local sim_rel_defs = NDEBUG ;
+local sim_rel_cflags = -O3 ;
+
+# ------------------------------------------
+# Generic STM32L4 Family CFlags
+# ------------------------------------------
+# Applies to all L4 targets, but not propagated to dependents.
+local lib_only_cflags =
+  -fno-common
+  -fmessage-length=0
+  -fno-exceptions
+  -ffunction-sections
+  -fdata-sections
+  -Wall
+  --std=gnu11
+  ;
+
+local lib_only_cxxflags =
+  -fno-common
+  -fmessage-length=0
+  -fno-exceptions
+  -ffunction-sections
+  -fdata-sections
+  -Wall
+  --std=gnu++2a
+  ;
+
+# Assumes all devices are Cortex-M4 processors with HW FPU.
+# Will be propagated to dependents
+local propagated_cflags =
+  -ffunction-sections
+  -fdata-sections
+  ;
+
+local propagated_cxxflags =
+  -ffunction-sections
+  -fdata-sections
+  -fno-rtti
+  ;
+
+# ------------------------------------------
+# Generic STM32L4 Family Linker Flags
+# ------------------------------------------
+# Applies to all L4 targets, but not propagated to dependents.
+local lib_only_link_flags =
+  ;
+
+# Assumes all devices are Cortex-M4 processors with HW FPU.
+# Will be propagated to dependents.
+local propagated_link_flags =
+  -Wl,--gc-sections
+  -Wl,--print-memory-usage
+  ;
 
 use-project /THOR/LLD/INTF/GPIO : gpio ;
+
+# ====================================================
+# Figures out what device we are actually compiling for. By default it will
+# propagate MCU specific defines/cflags/linkflags in the usage-requirements
+# field. This is how so many chip variants are supported without much effort.
+# ====================================================
+alias BUILD_FLAGS
+  :
+  : <variant>debug
+    <Thor>enabled-SIM
+  :
+  : <cflags>$(sim_dbg_cflags)
+    <cxxflags>$(sim_dbg_cflags)
+  ;
+
+alias BUILD_FLAGS
+  :
+  : <variant>release
+    <Thor>enabled-SIM
+  :
+  : <cflags>$(sim_rel_cflags)
+    <cxxflags>$(sim_rel_cflags)
+  ;
+
+explicit BUILD_FLAGS ;
+
+
+alias ALIAS_MCU_OPTIONS
+  :
+  : <Thor>enabled-SIM
+  :
+  # Expect all these to be propagated to all projects
+  : <define>CHIMERA_LITTLE_ENDIAN
+    <define>TARGET_LLD_SIM
+    <cflags>$(propagated_cflags)
+    <cxxflags>$(propagated_cxxflags)
+    <linkflags>$(propagated_link_flags)
+    <use>BUILD_FLAGS
+  ;
+
+explicit ALIAS_MCU_OPTIONS ;
