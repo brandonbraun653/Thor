@@ -102,7 +102,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{D04A89DA-CD1B-41EC-9ACD-F31B0E675F14}</ProjectGuid>
     <BSP_ID>com.sysprogs.arm.stm32</BSP_ID>
-    <BSP_VERSION>2020.01</BSP_VERSION>
+    <BSP_VERSION>2020.06</BSP_VERSION>
     <InPlaceBSPSubdir />
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
