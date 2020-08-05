@@ -24,7 +24,6 @@
 #include <Thor/watchdog>
 
 /* Driver Includes */
-#include <Thor/lld/common/cortex-m4/interrupts.hpp>
 #include <Thor/lld/interface/des/des_intf.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
@@ -98,7 +97,7 @@ namespace Thor::System
     ------------------------------------------------*/
 #if defined( THOR_LLD_DES )
     Thor::LLD::DES::initialize();
-#endif 
+#endif
 
     /*------------------------------------------------
     Initialize interrupt settings
