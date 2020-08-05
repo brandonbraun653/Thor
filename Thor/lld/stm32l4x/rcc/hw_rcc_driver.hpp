@@ -28,7 +28,7 @@
 namespace Thor::LLD::RCC
 {
 
-  class SystemClock : virtual public IClockTree
+  class SystemClock : virtual public ICoreClock
   {
   public:
     ~SystemClock();
@@ -42,7 +42,7 @@ namespace Thor::LLD::RCC
     size_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address ) final override;
 
   private:
-    friend IClockTree *getSystemClockController();
+    friend ICoreClock *getCoreClock();
     SystemClock();
 
     bool configureOscillators( OscillatorSettings &cfg );
@@ -50,7 +50,7 @@ namespace Thor::LLD::RCC
   };
 
 
-  class PeripheralController : virtual public IPeripheralController
+  class PeripheralController : virtual public IPeripheralClock
   {
   public:
     ~PeripheralController();
@@ -62,7 +62,7 @@ namespace Thor::LLD::RCC
     Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index ) final override;
 
   private:
-    friend IPeripheralController *getSystemPeripheralController();
+    friend IPeripheralClock *getPeripheralClock();
     PeripheralController();
   };
 }

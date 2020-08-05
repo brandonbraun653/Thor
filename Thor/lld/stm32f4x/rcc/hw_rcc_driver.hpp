@@ -96,7 +96,7 @@ namespace Thor::LLD::RCC
   /**
    *  Singleton that allows the user to configure a chip's clock at a very high level.
    */
-  class SystemClock : virtual public IClockTree
+  class SystemClock : virtual public ICoreClock
   {
   public:
     ~SystemClock();
@@ -109,12 +109,12 @@ namespace Thor::LLD::RCC
     Chimera::Status_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address, size_t *const freqHz ) final override;
 
   private:
-    friend IClockTree *getSystemClockController();
+    friend ICoreClock *getCoreClock();
     SystemClock();
   };
 
 
-  class PeripheralController : virtual public IPeripheralController
+  class PeripheralController : virtual public IPeripheralClock
   {
   public:
     ~PeripheralController();
@@ -126,7 +126,7 @@ namespace Thor::LLD::RCC
     Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index ) final override;
 
   private:
-    friend IPeripheralController *getSystemPeripheralController();
+    friend IPeripheralClock *getPeripheralClock();
     PeripheralController();
   };
 

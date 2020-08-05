@@ -392,7 +392,7 @@ namespace Thor::LLD::RCC
 
   bool updatePLL( const uint32_t mask, OscillatorSettings &config )
   {
-    auto rcc    = getSystemClockController();
+    auto rcc    = getCoreClock();
     auto result = false;
 
     /*------------------------------------------------
@@ -620,7 +620,7 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   SystemClock Class Implementation
   ------------------------------------------------*/
-  IClockTree *getSystemClockController()
+  ICoreClock *getCoreClock()
   {
     static SystemClock *ref = nullptr;
     if ( ref == nullptr )
@@ -852,9 +852,9 @@ namespace Thor::LLD::RCC
 
     /*------------------------------------------------
     Adjust the flash read access latency (Section 3.3.3 of RM0394)
-     
+
     Note: Currently harcoded to assume a clock increase, but once
-    I have the processor brought up and have some free time, this 
+    I have the processor brought up and have some free time, this
     needs to adjust for a decrease too. Can calculate the desired
     clock frequency from the registers in the config structure.
     ------------------------------------------------*/
@@ -1065,7 +1065,7 @@ namespace Thor::LLD::RCC
     /*------------------------------------------------
     Update the HCLK divisor
     ------------------------------------------------*/
-    if ( cfg.HCLKConfig.configure ) 
+    if ( cfg.HCLKConfig.configure )
     {
       HPRE::set( RCC1_PERIPH, cfg.HCLKConfig.AHBPrescaler );
 
@@ -1082,7 +1082,7 @@ namespace Thor::LLD::RCC
     /*------------------------------------------------
     Update the PCLK1 divisor
     ------------------------------------------------*/
-    if ( cfg.PCLK1Config.configure ) 
+    if ( cfg.PCLK1Config.configure )
     {
       PPRE1::set( RCC1_PERIPH, cfg.PCLK1Config.APB1Prescaler );
 
@@ -1121,7 +1121,7 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   PeripheralController Class Implementation
   ------------------------------------------------*/
-  IPeripheralController *getSystemPeripheralController()
+  IPeripheralClock *getPeripheralClock()
   {
     static PeripheralController *ref = nullptr;
 

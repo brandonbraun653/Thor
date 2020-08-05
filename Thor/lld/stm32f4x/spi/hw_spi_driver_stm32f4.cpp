@@ -34,10 +34,10 @@ namespace Thor::LLD::SPI
   static float calculate_clock_performance( const size_t goal, const size_t actVal, void *const data )
   {
     /*------------------------------------------------
-    Input checks: 
+    Input checks:
       data    --  System's currently configured peripheral source clock
       actVal  --  Peripheral clock divider under consideration
-    
+
     If either are null, permanently indicate worst case performance.
     ------------------------------------------------*/
     if ( !data || !actVal)
@@ -109,7 +109,7 @@ namespace Thor::LLD::SPI
     Thor::LLD::IT::setPriority( periphIRQn, Thor::Interrupt::SPI_IT_PREEMPT_PRIORITY, 0u );
 
     /*------------------------------------------------
-    Driver registration with the backend 
+    Driver registration with the backend
     ------------------------------------------------*/
     Thor::LLD::SPI::spiObjects[ resourceIndex ] = this;
 
@@ -123,13 +123,13 @@ namespace Thor::LLD::SPI
 
   void Driver::clockEnable()
   {
-    auto rcc = Thor::LLD::RCC::getSystemPeripheralController();
+    auto rcc = Thor::LLD::RCC::getPeripheralClock();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
   void Driver::clockDisable()
   {
-    auto rcc = Thor::LLD::RCC::getSystemPeripheralController();
+    auto rcc = Thor::LLD::RCC::getPeripheralClock();
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
@@ -156,7 +156,7 @@ namespace Thor::LLD::SPI
     Find the best clock divisor need to achieve the desired clock frequency
     ------------------------------------------------*/
     size_t clockFreq  = std::numeric_limits<size_t>::max();
-    auto systemClock  = Thor::LLD::RCC::getSystemClockController();
+    auto systemClock  = Thor::LLD::RCC::getCoreClock();
     auto periphAddr   = reinterpret_cast<std::uintptr_t>( periph );
     auto updateStatus = systemClock->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SPI, periphAddr, &clockFreq );
 
@@ -465,7 +465,7 @@ namespace Thor::LLD::SPI
       txfr.waitingOnTX = false;
       txfr.waitingOnRX = true;
 
-      if ( txfr.txTransferCount < txfr.txTransferSize ) 
+      if ( txfr.txTransferCount < txfr.txTransferSize )
       {
         periph->DR = txfr.txBuffer[ txfr.txTransferCount ];
         txfr.txTransferCount++;
@@ -500,7 +500,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Handle Any Errors
     ------------------------------------------------*/
-    if ( ( CR2 & CR2_ERRIE ) && ( SR & ( SR_CRCERR | SR_FRE | SR_MODF | SR_OVR ) ) ) 
+    if ( ( CR2 & CR2_ERRIE ) && ( SR & ( SR_CRCERR | SR_FRE | SR_MODF | SR_OVR ) ) )
     {
       txfr.status = Chimera::SPI::Status::TRANSFER_ERROR;
     }
@@ -527,7 +527,7 @@ void SPI1_IRQHandler()
     Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
-#endif 
+#endif
 
 #if defined( STM32_SPI2_PERIPH_AVAILABLE )
 void SPI2_IRQHandler()
@@ -539,7 +539,7 @@ void SPI2_IRQHandler()
     Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
-#endif 
+#endif
 
 #if defined( STM32_SPI3_PERIPH_AVAILABLE )
 void SPI3_IRQHandler()
@@ -551,7 +551,7 @@ void SPI3_IRQHandler()
     Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
-#endif 
+#endif
 
 #if defined( STM32_SPI4_PERIPH_AVAILABLE )
 void SPI4_IRQHandler()
@@ -563,7 +563,7 @@ void SPI4_IRQHandler()
     Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
-#endif 
+#endif
 
 #if defined( STM32_SPI5_PERIPH_AVAILABLE )
 void SPI5_IRQHandler()
@@ -575,7 +575,7 @@ void SPI5_IRQHandler()
     Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
-#endif 
+#endif
 
 #if defined( STM32_SPI6_PERIPH_AVAILABLE )
 void SPI6_IRQHandler()
@@ -587,6 +587,6 @@ void SPI6_IRQHandler()
     Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
   }
 }
-#endif 
+#endif
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_SPI */

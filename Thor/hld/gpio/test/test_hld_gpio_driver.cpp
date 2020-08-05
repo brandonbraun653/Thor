@@ -40,6 +40,17 @@ namespace Thor::HLD::GPIO
 
     EXPECT_EQ( 0, 0 );
   }
+
+  TEST_F(TestFixture, FreeFunc_Initialize)
+  {
+    using ::testing::Return;
+
+    Thor::LLD::GPIO::Mock::ModuleMock& lld = Thor::LLD::GPIO::Mock::getMockObject();
+
+    EXPECT_CALL( lld, initialize() ).Times(1);
+
+    Thor::GPIO::initialize();
+  }
 }
 
 #endif

@@ -30,6 +30,9 @@
 
 namespace Thor::LLD::DES::Mock
 {
+  /*-------------------------------------------------------------------------------
+  Mock Interfaces
+  -------------------------------------------------------------------------------*/
   /**
    *  Encapsulates the C-style interface to DES so that it can be
    *  mocked appropriately. Useless outside of testing purposes.
@@ -39,17 +42,20 @@ namespace Thor::LLD::DES::Mock
   public:
     virtual ~IModule() = default;
 
+    virtual void initialize()                           = 0;
     virtual void getUniqueId( UniqueID &id )            = 0;
     virtual size_t getFlashSize()                       = 0;
     virtual Chimera::System::Packaging getICPackaging() = 0;
   };
 
-  /**
-   *  Mocks the module's interface. Only intended to help with HLD testing.
-   */
+
+  /*-------------------------------------------------------------------------------
+  Mock Classes
+  -------------------------------------------------------------------------------*/
   class ModuleMock : public IModule
   {
   public:
+    MOCK_METHOD( void, initialize, (), (override) );
     MOCK_METHOD( void, getUniqueId, ( UniqueID & id ), ( override ) );
     MOCK_METHOD( size_t, getFlashSize, (), ( override ) );
     MOCK_METHOD( Chimera::System::Packaging, getICPackaging, (), ( override ) );
@@ -57,8 +63,6 @@ namespace Thor::LLD::DES::Mock
 
   /**
    *  Gets the mock object for this module
-   *  
-   *  TODO: Probably could turn this into a Test class for construction and teardown
    *
    *  @return ModuleMock&
    */

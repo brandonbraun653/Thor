@@ -41,14 +41,14 @@ explicit_alias TEST_LIB : : : :
   <library>/CHIMERA/THREADING//LIB
   <library>/GOOGLE//gtest
   <library>/GOOGLE//gmock
-  <library>/THOR/HLD/DMA//LIB
-  <library>/THOR/HLD/GPIO//LIB
-  <library>/THOR/HLD/SPI//LIB
-  <library>/THOR/HLD/SYSTEM//LIB
-  <library>/THOR/HLD/TIMER//LIB
-  <library>/THOR/HLD/UART//LIB
-  <library>/THOR/HLD/USART//LIB
-  <library>/THOR/HLD/WATCHDOG//LIB
+  # <library>/THOR/HLD/DMA//LIB
+  # <library>/THOR/HLD/GPIO//LIB
+  # <library>/THOR/HLD/SPI//LIB
+  # <library>/THOR/HLD/SYSTEM//LIB
+  # <library>/THOR/HLD/TIMER//LIB
+  # <library>/THOR/HLD/UART//LIB
+  # <library>/THOR/HLD/USART//LIB
+  # <library>/THOR/HLD/WATCHDOG//LIB
   ;
 
 

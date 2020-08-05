@@ -13,38 +13,18 @@ local rule explicit_alias ( name : sources * : requirements * : default-build * 
 # ------------------------------------------
 # Build Target Specific Options
 # ------------------------------------------
-local sim_dbg_defs = DEBUG ;
+local sim_dbg_defs = -DDEBUG ;
 local sim_dbg_cflags = -ggdb -Og ;
+
+local sim_dbg_mock_defs = -DDEBUG ;
+local sim_dbg_mock_cflags = -g -O0 ;
 
 local sim_rel_defs = NDEBUG ;
 local sim_rel_cflags = -O3 ;
 
 # ------------------------------------------
-# Generic STM32L4 Family CFlags
+# Interface CFlags
 # ------------------------------------------
-# Applies to all L4 targets, but not propagated to dependents.
-local lib_only_cflags =
-  -fno-common
-  -fmessage-length=0
-  -fno-exceptions
-  -ffunction-sections
-  -fdata-sections
-  -Wall
-  --std=gnu11
-  ;
-
-local lib_only_cxxflags =
-  -fno-common
-  -fmessage-length=0
-  -fno-exceptions
-  -ffunction-sections
-  -fdata-sections
-  -Wall
-  --std=gnu++2a
-  ;
-
-# Assumes all devices are Cortex-M4 processors with HW FPU.
-# Will be propagated to dependents
 local propagated_cflags =
   -ffunction-sections
   -fdata-sections
@@ -57,20 +37,21 @@ local propagated_cxxflags =
   ;
 
 # ------------------------------------------
-# Generic STM32L4 Family Linker Flags
+# Interface Linker Flags
 # ------------------------------------------
-# Applies to all L4 targets, but not propagated to dependents.
-local lib_only_link_flags =
-  ;
 
-# Assumes all devices are Cortex-M4 processors with HW FPU.
-# Will be propagated to dependents.
 local propagated_link_flags =
   -Wl,--gc-sections
   -Wl,--print-memory-usage
   ;
 
+# ====================================================
+# Interface Projects
+# ====================================================
+use-project /THOR/LLD/INTF/DES  : des ;
 use-project /THOR/LLD/INTF/GPIO : gpio ;
+use-project /THOR/LLD/INTF/IT   : interrupt ;
+use-project /THOR/LLD/INTF/RCC  : rcc ;
 
 # ====================================================
 # Figures out what device we are actually compiling for. By default it will
@@ -84,6 +65,16 @@ alias BUILD_FLAGS
   :
   : <cflags>$(sim_dbg_cflags)
     <cxxflags>$(sim_dbg_cflags)
+  ;
+
+alias BUILD_FLAGS
+  :
+  : <variant>debug
+    <Thor>enabled-SIM
+    <cov>enabled
+  :
+  : <cflags>$(sim_dbg_mock_defs)
+    <cxxflags>$(sim_dbg_mock_cflags)
   ;
 
 alias BUILD_FLAGS
@@ -102,13 +93,19 @@ alias ALIAS_MCU_OPTIONS
   :
   : <Thor>enabled-SIM
   :
-  # Expect all these to be propagated to all projects
   : <define>CHIMERA_LITTLE_ENDIAN
-    <define>TARGET_LLD_SIM
+    <define>TARGET_LLD_MOCK
     <cflags>$(propagated_cflags)
     <cxxflags>$(propagated_cxxflags)
     <linkflags>$(propagated_link_flags)
+
+    <cov>enabled:<cflags>--coverage
+    <cov>enabled:<cxxflags>--coverage
+    <cov>enabled:<linkflags>--coverage
+
     <use>BUILD_FLAGS
+    <use>/GOOGLE//TEST_PUB
+    <use>/GOOGLE//MOCK_PUB
   ;
 
 explicit ALIAS_MCU_OPTIONS ;

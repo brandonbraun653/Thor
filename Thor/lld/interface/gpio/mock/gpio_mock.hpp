@@ -24,8 +24,37 @@
 /* Mock Includes */
 #include "gmock/gmock.h"
 
-namespace Thor::LLD::GPIO
+namespace Thor::LLD::GPIO::Mock
 {
+  /*-------------------------------------------------------------------------------
+  Mock Interfaces
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Encapsulates the C-style interface to GPIO so that it can be
+   *  mocked appropriately. Useless outside of testing purposes.
+   */
+  class IModule
+  {
+  public:
+    virtual ~IModule() = default;
+
+    virtual void initialize()                              = 0;
+    virtual IDriver_sPtr getDriver( const size_t channel ) = 0;
+    virtual size_t availableChannels()                     = 0;
+  };
+
+
+  /*-------------------------------------------------------------------------------
+  Mock Classes
+  -------------------------------------------------------------------------------*/
+  class ModuleMock : public IModule
+  {
+  public:
+    MOCK_METHOD( void, initialize, (), ( override ) );
+    MOCK_METHOD( IDriver_sPtr, getDriver, ( const size_t ), ( override ) );
+    MOCK_METHOD( size_t, availableChannels, (), ( override ) );
+  };
+
   class DriverMock : virtual public Thor::LLD::GPIO::IDriver
   {
   public:
@@ -43,6 +72,12 @@ namespace Thor::LLD::GPIO
     MOCK_METHOD( Chimera::GPIO::Pull, pullGet, ( const uint8_t ), ( override ) );
     MOCK_METHOD( Chimera::GPIO::Alternate, alternateFunctionGet, ( const uint8_t ), ( override ) );
   };
+
+
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
+  ModuleMock &getMockObject();
 
 }    // namespace Thor::LLD::GPIO
 

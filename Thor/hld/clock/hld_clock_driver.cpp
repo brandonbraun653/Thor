@@ -87,7 +87,7 @@ namespace Thor::Clock
   {
     using namespace Thor::LLD::RCC;
 
-    auto rcc = getSystemClockController();
+    auto rcc = getCoreClock();
     return rcc->getClockFrequency( bus );
   }
 
@@ -95,7 +95,7 @@ namespace Thor::Clock
   {
     using namespace Thor::LLD::RCC;
 
-    auto rcc = getSystemClockController();
+    auto rcc = getCoreClock();
     return rcc->setClockFrequency( bus, freq, false );
   }
 

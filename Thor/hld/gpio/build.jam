@@ -39,10 +39,17 @@ exe hld_gpio_test
   : [ glob test/*.cpp ]
 
     /THOR/HLD//TEST_LIB
+    /THOR/HLD/GPIO//LIB
+    /THOR/HLD/SYSTEM//LIB
+    /THOR/LLD/INTF/DES//MOCK_LIB
     /THOR/LLD/INTF/GPIO//MOCK_LIB
+    /THOR/LLD/INTF/IT//MOCK_LIB
+    /THOR/LLD/INTF/RCC//MOCK_LIB
 
   : <link>static
-    <Thor-family>MOCK
+    <Thor>enabled-SIM
+    <cov>enabled
+
     <use>/AURORA//PUB
     <use>/CHIMERA//PUB
     <use>/GOOGLE//TEST_PUB

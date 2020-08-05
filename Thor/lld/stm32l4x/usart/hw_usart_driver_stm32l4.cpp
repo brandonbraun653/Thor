@@ -128,7 +128,7 @@ namespace Thor::LLD::USART
     /*------------------------------------------------
     Ensure the clock is enabled otherwise the hardware is "dead"
     ------------------------------------------------*/
-    auto rccPeriph = Thor::LLD::RCC::getSystemPeripheralController();
+    auto rccPeriph = Thor::LLD::RCC::getPeripheralClock();
     rccPeriph->enableClock( peripheralType, resourceIndex );
 
     /*------------------------------------------------
@@ -183,7 +183,7 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------
     Use the RCC's ability to reset whole peripherals back to default states
     -------------------------------------------------*/
-    auto rcc = Thor::LLD::RCC::getSystemPeripheralController();
+    auto rcc = Thor::LLD::RCC::getPeripheralClock();
     rcc->enableClock( peripheralType, resourceIndex );
     rcc->reset( peripheralType, resourceIndex );
     rcc->disableClock( peripheralType, resourceIndex );
@@ -630,7 +630,7 @@ namespace Thor::LLD::USART
       If no transfer is ongoing, clear out the flags and
       disable TX related interrupts. This is an invalid state.
       ------------------------------------------------*/
-      if ( txTCB.state == StateMachine::TX::TX_READY ) 
+      if ( txTCB.state == StateMachine::TX::TX_READY )
       {
         TCCF::set( periph, ICR_TCCF );
         TCIE::set( periph, 0 );
@@ -788,7 +788,7 @@ namespace Thor::LLD::USART
     /*------------------------------------------------
     Figure out the frequency of the clock that drives the USART
     ------------------------------------------------*/
-    auto rccSys = Thor::LLD::RCC::getSystemClockController();
+    auto rccSys = Thor::LLD::RCC::getCoreClock();
     periphClock = rccSys->getPeriphClock( Chimera::Peripheral::Type::PERIPH_USART, periphAddress );
 
     /*------------------------------------------------

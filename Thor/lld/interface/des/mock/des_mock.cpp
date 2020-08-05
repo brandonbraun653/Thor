@@ -14,29 +14,70 @@
 
 #if defined( THOR_LLD_DES_MOCK )
 
-namespace Thor::LLD:DES
+namespace Thor::LLD::DES
 {
-  static ModuleMock mockObj;
+  /*-------------------------------------------------------------------------------
+  Static Function Declaration
+  -------------------------------------------------------------------------------*/
+  static void ensureModuleMockExists();
 
-  ModuleMock &getMockObject()
+
+  /*-------------------------------------------------------------------------------
+  Mock Public Functions
+  -------------------------------------------------------------------------------*/
+  namespace Mock
   {
-    return mockObj;
+    static ModuleMock *moduleMock;
+
+    ModuleMock &getMockObject()
+    {
+      ensureModuleMockExists();
+      return ( *moduleMock );
+    }
+
+  }    // namespace Mock
+
+
+  /*-------------------------------------------------------------------------------
+  Static Function Definition
+  -------------------------------------------------------------------------------*/
+  static void ensureModuleMockExists()
+  {
+    if ( !Mock::moduleMock )
+    {
+      Mock::moduleMock = new Mock::ModuleMock();
+    }
   }
-  
+
+
+  /*-------------------------------------------------------------------------------
+  Mock C-Style RCC Interface
+  -------------------------------------------------------------------------------*/
+  void initialize()
+  {
+    ensureModuleMockExists();
+    Mock::moduleMock->initialize();
+  }
+
+
   void getUniqueId( UniqueID &id )
   {
-    return mockObj.getUniqueId( id );
+    ensureModuleMockExists();
+    Mock::moduleMock->getUniqueId( id );
   }
+
 
   size_t getFlashSize()
   {
-    return mockObj.getFlashSize();
+    return Mock::moduleMock->getFlashSize();
   }
+
 
   Chimera::System::Packaging getICPackaging()
   {
-    return mockObj.getICPackaging();
+    return Mock::moduleMock->getICPackaging();
   }
+
 }    // namespace Thor::LLD::DES
 
 #endif /* THOR_LLD_DES_MOCK */

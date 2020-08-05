@@ -43,7 +43,7 @@ void SystemInit()
   correct clock frequency, but toggling the nRST pin ends up causing
   the MSI clock to be selected.
   ------------------------------------------------*/
-  auto rcc = getSystemClockController();
+  auto rcc = getCoreClock();
   rcc->enableClock( Chimera::Clock::Bus::HSI16 );
   rcc->setCoreClockSource( Chimera::Clock::Bus::HSI16 );
 
@@ -83,4 +83,4 @@ void SystemInit()
   // Needed for compilation
 }
 
-#endif 
+#endif
