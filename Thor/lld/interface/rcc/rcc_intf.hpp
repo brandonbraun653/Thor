@@ -26,22 +26,57 @@
 
 namespace Thor::LLD::RCC
 {
-  
+  /*-------------------------------------------------------------------------------
+  Forward Declarations
+  -------------------------------------------------------------------------------*/
+  class ICoreClock;
+  class IPeripheralClock;
+
+  /*-------------------------------------------------------------------------------
+  External Functions
+  -------------------------------------------------------------------------------*/
   /**
    *  Initializes all system resources to their default state.
-   *  
-   *  @return void 
+   *
+   *  @return void
    */
   extern void initialize();
 
+  /**
+   *  Acquires the last known reset event type
+   *
+   *  @return Chimera::System::ResetEvent
+   */
   extern Chimera::System::ResetEvent getResetReason();
+
+  /**
+   *  Clears the previous reset reason from hardware
+   *
+   *  @return void
+   */
   extern void clearResetReason();
 
+  /**
+   *  Gets a reference to the core clock controller instance
+   *
+   *  @return ICoreClock *
+   */
+  extern ICoreClock *getCoreClock();
 
-  class IClockTree
+  /**
+   *  Gets a reference to the peripheral clock controller instance
+   *
+   *  @return IPeripheralClock *
+   */
+  extern IPeripheralClock *getPeripheralClock();
+
+  /*-------------------------------------------------------------------------------
+  Interface Classes
+  -------------------------------------------------------------------------------*/
+  class ICoreClock
   {
   public:
-    virtual ~IClockTree() = default;
+    virtual ~ICoreClock() = default;
 
     /**
      *  Enables the requested clock
@@ -91,7 +126,7 @@ namespace Thor::LLD::RCC
     virtual Chimera::Clock::Bus getCoreClockSource() = 0;
 
     /**
-     *  Sets the frequency of the given clock bus 
+     *  Sets the frequency of the given clock bus
      *
      *  @param[in]  clock     The desired clock bus to configure
      *  @param[in]  freq      The frequency to set the bus to
@@ -101,7 +136,7 @@ namespace Thor::LLD::RCC
 
     /**
      *  Gets the frequency of any major system level clock
-     *  
+     *
      *  @param[in]  clock     The clock you wish to retrieve the current frequency of
      *  @return size_t
      */
@@ -117,10 +152,10 @@ namespace Thor::LLD::RCC
     virtual size_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address ) = 0;
   };
 
-  class IPeripheralController
+  class IPeripheralClock
   {
   public:
-    virtual ~IPeripheralController() = default;
+    virtual ~IPeripheralClock() = default;
 
     /**
      *  Resets the peripheral using RCC reset registers
@@ -162,11 +197,6 @@ namespace Thor::LLD::RCC
      */
     virtual Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index ) = 0;
   };
-
-
-  extern IClockTree *getSystemClockController();
-
-  extern IPeripheralController *getSystemPeripheralController();
 
 }    // namespace Thor::LLD::RCC
 

@@ -1,19 +1,21 @@
 **.TMP
+**.a
+**.dump
+**.exe
+**.gcda
+**.gcno
+**.lib
+**.o
+**.obj
+**/.DS_Store
+**/.cache
 **/.idea
 **/.pytest_cache
-**/__pycache__
-**/.cache
 **/.vscode
-**/.DS_Store
-**.obj
+**/__pycache__
 **/build
 **/html
 **/rtf
-**.dump
-**.o 
-**.lib
-**.a
-**.exe
 
 cppcheck/*
 

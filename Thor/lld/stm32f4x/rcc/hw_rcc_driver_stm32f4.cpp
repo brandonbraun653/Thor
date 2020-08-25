@@ -326,7 +326,7 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   SystemClock Class Implementation
   ------------------------------------------------*/
-  IClockTree *getSystemClockController()
+  ICoreClock *getCoreClock()
   {
     static SystemClock *ref = nullptr;
     if( ref == nullptr )
@@ -460,7 +460,7 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   PeripheralController Class Implementation
   ------------------------------------------------*/
-  IPeripheralController *getSystemPeripheralController()
+  IPeripheralClock *getPeripheralClock()
   {
     static PeripheralController *ref = nullptr;
 
@@ -866,7 +866,7 @@ namespace Thor::LLD::RCC
         while ( !PLLRDY::get( RCC1_PERIPH ) )
         {
         }
-        #endif 
+        #endif
       }
     }
 

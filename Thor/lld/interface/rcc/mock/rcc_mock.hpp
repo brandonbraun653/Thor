@@ -13,6 +13,7 @@
 #define THOR_LLD_RCC_MOCK_HPP
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/interface/rcc/rcc_types.hpp>
 
@@ -21,29 +22,78 @@
 /* Google Includes */
 #include "gmock/gmock.h"
 
-namespace Thor::LLD::RCC
+namespace Thor::LLD::RCC::Mock
 {
-  class SystemClockMock : public IClockTree
+  /*-------------------------------------------------------------------------------
+  Mock Interfaces
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Encapsulates the C-style interface to RCC so that it can be
+   *  mocked appropriately. Useless outside of testing purposes.
+   */
+  class IModule
   {
   public:
-    MOCK_METHOD0( configureProjectClocks, Chimera::Status_t() );
-    MOCK_METHOD2( setPeriphClock, Chimera::Status_t( const Chimera::Peripheral::Type, const size_t ) );
-    MOCK_METHOD1( setCoreClock, Chimera::Status_t( const size_t ) );
-    MOCK_METHOD1( setCoreClockSource, Chimera::Status_t( const Thor::Clock::Source ) );
-    MOCK_METHOD2( getClockFrequency, Chimera::Status_t( const ClockType_t, size_t *const ) );
-    MOCK_METHOD3( getPeriphClock, Chimera::Status_t( const Chimera::Peripheral::Type, const std::uintptr_t, size_t *const ) );
+    virtual ~IModule() = default;
+
+    virtual void initialize()                            = 0;
+    virtual void clearResetReason()                      = 0;
+    virtual Chimera::System::ResetEvent getResetReason() = 0;
+    virtual ICoreClock *getCoreClock()                   = 0;
+    virtual IPeripheralClock *getPeripheralClock()       = 0;
   };
 
-  class PeripheralControllerMock : public IPeripheralController
+
+  /*-------------------------------------------------------------------------------
+  Mock Classes
+  -------------------------------------------------------------------------------*/
+  class ModuleMock : public IModule
   {
   public:
-    MOCK_METHOD2( reset, Chimera::Status_t( const Chimera::Peripheral::Type, const size_t ) );
-    MOCK_METHOD2( enableClock, Chimera::Status_t( const Chimera::Peripheral::Type, const size_t ) );
-    MOCK_METHOD2( disableClock, Chimera::Status_t( const Chimera::Peripheral::Type, const size_t ) );
-    MOCK_METHOD2( enableClockLowPower, Chimera::Status_t( const Chimera::Peripheral::Type, const size_t ) );
-    MOCK_METHOD2( disableClockLowPower, Chimera::Status_t( const Chimera::Peripheral::Type, const size_t ) );
+    MOCK_METHOD( void, initialize, (), ( override ) );
+    MOCK_METHOD( void, clearResetReason, (), ( override ) );
+    MOCK_METHOD( Chimera::System::ResetEvent, getResetReason, (), ( override ) );
+    MOCK_METHOD( ICoreClock *, getCoreClock, (), ( override ) );
+    MOCK_METHOD( IPeripheralClock *, getPeripheralClock, (), ( override ) );
   };
-}    // namespace Thor::LLD::RCC
+
+
+  class CoreClockMock : public ICoreClock
+  {
+  public:
+    MOCK_METHOD( void, enableClock, ( const Chimera::Clock::Bus ), ( override ) );
+    MOCK_METHOD( void, disableClock, ( const Chimera::Clock::Bus ), ( override ) );
+    MOCK_METHOD( Chimera::Status_t, configureProjectClocks, (), ( override ) );
+    MOCK_METHOD( Chimera::Status_t, setCoreClockSource, ( const Chimera::Clock::Bus ), ( override ) );
+    MOCK_METHOD( Chimera::Clock::Bus, getCoreClockSource, (), ( override ) );
+    MOCK_METHOD( Chimera::Status_t, setClockFrequency, ( const Chimera::Clock::Bus, const size_t, const bool ), ( override ) );
+    MOCK_METHOD( size_t, getClockFrequency, ( const Chimera::Clock::Bus ), ( override ) );
+    MOCK_METHOD( size_t, getPeriphClock, ( const Chimera::Peripheral::Type, const std::uintptr_t ), ( override ) );
+  };
+
+
+  class PeripheralClockMock : public IPeripheralClock
+  {
+  public:
+    MOCK_METHOD( Chimera::Status_t, reset, ( const Chimera::Peripheral::Type, const size_t ), ( override ) );
+    MOCK_METHOD( Chimera::Status_t, enableClock, ( const Chimera::Peripheral::Type, const size_t ), ( override ) );
+    MOCK_METHOD( Chimera::Status_t, disableClock, ( const Chimera::Peripheral::Type, const size_t ), ( override ) );
+    MOCK_METHOD( Chimera::Status_t, enableClockLowPower, ( const Chimera::Peripheral::Type, const size_t ), ( override ) );
+    MOCK_METHOD( Chimera::Status_t, disableClockLowPower, ( const Chimera::Peripheral::Type, const size_t ), ( override ) );
+  };
+
+
+  /*-------------------------------------------------------------------------------
+  Mock Public Functions
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Gets the mock object for this module
+   *
+   *  @return ModuleMock&
+   */
+  ModuleMock &getMockObject();
+
+}    // namespace Thor::LLD::RCC::Mock
 
 #endif /* THOR_LLD_RCC_MOCK */
 

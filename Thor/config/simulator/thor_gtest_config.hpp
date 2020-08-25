@@ -177,6 +177,12 @@ Low Level Driver Support
 //#define THOR_LLD_DAC
 //#endif
 //
+
+#ifndef THOR_LLD_DES
+#define THOR_LLD_DES
+#define THOR_LLD_DES_MOCK
+#endif
+
 //#ifndef THOR_LLD_DMA
 //#define THOR_LLD_DMA
 //#endif
@@ -229,11 +235,12 @@ Low Level Driver Support
 //#ifndef THOR_LLD_QSPI
 //#define THOR_LLD_QSPI
 //#endif
-//
-//#ifndef THOR_LLD_RCC
-//#define THOR_LLD_RCC
-//#endif
-//
+
+#ifndef THOR_LLD_RCC
+#define THOR_LLD_RCC
+#define THOR_LLD_RCC_MOCK
+#endif
+
 //#ifndef THOR_LLD_RNG
 //#define THOR_LLD_RNG
 //#endif

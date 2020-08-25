@@ -12,6 +12,7 @@
 
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/rcc/mock/rcc_mock.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
 
@@ -19,27 +20,85 @@
 
 namespace Thor::LLD::RCC
 {
-  static SystemClockMock *clockController;
-  static PeripheralControllerMock *periphController;
+  /*-------------------------------------------------------------------------------
+  Static Function Declaration
+  -------------------------------------------------------------------------------*/
+  static void ensureModuleMockExists();
 
-  IClockTree *getSystemClockController()
+
+  /*-------------------------------------------------------------------------------
+  Mock Public Functions
+  -------------------------------------------------------------------------------*/
+  namespace Mock
   {
-    if ( !clockController )
+    static ModuleMock *moduleMock;
+    static CoreClockMock *clockController;
+    static PeripheralClockMock *periphController;
+
+    ModuleMock &getMockObject()
     {
-      clockController = new SystemClockMock();
+      ensureModuleMockExists();
+      return ( *moduleMock );
     }
 
-    return clockController;
+  }    // namespace Mock
+
+
+  /*-------------------------------------------------------------------------------
+  Static Function Definition
+  -------------------------------------------------------------------------------*/
+  static void ensureModuleMockExists()
+  {
+    if ( !Mock::moduleMock )
+    {
+      Mock::moduleMock = new Mock::ModuleMock();
+    }
   }
 
-  IPeripheralController *getSystemPeripheralController()
+
+  /*-------------------------------------------------------------------------------
+  Mock C-Style RCC Interface
+  -------------------------------------------------------------------------------*/
+  void initialize()
   {
-    if ( !periphController )
+    ensureModuleMockExists();
+    Mock::moduleMock->initialize();
+  }
+
+
+  Chimera::System::ResetEvent getResetReason()
+  {
+    ensureModuleMockExists();
+    return Mock::moduleMock->getResetReason();
+  }
+
+
+  void clearResetReason()
+  {
+    ensureModuleMockExists();
+    Mock::moduleMock->clearResetReason();
+  }
+
+
+  ICoreClock *getCoreClock()
+  {
+    if ( !Mock::clockController )
     {
-      periphController = new PeripheralControllerMock();
+      Mock::clockController = new Mock::CoreClockMock();
     }
 
-    return periphController;
+    return Mock::clockController;
+  }
+
+
+  IPeripheralClock *getPeripheralClock()
+  {
+    if ( !Mock::periphController )
+    {
+      Mock::periphController = new Mock::PeripheralClockMock();
+    }
+
+    return Mock::periphController;
   }
 
 }    // namespace Thor::LLD::RCC

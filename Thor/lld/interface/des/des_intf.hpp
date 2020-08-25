@@ -28,9 +28,9 @@ namespace Thor::LLD::DES
   void initialize();
 
   /**
-   *  Gets the unique identifier programmed into the chip at 
+   *  Gets the unique identifier programmed into the chip at
    *  the ST factory.
-   *  
+   *
    *  @param[in]  id    The id data to be updated
    *  @return void
    */
@@ -44,11 +44,12 @@ namespace Thor::LLD::DES
   size_t getFlashSize();
 
   /**
-   *  Gets the physical IC packaging style used 
-   *  
+   *  Gets the physical IC packaging style used
+   *
    *  @return Chimera::System::Packaging
    */
   Chimera::System::Packaging getICPackaging();
+
 }    // namespace Thor::LLD::DES
 
 #endif /* !THOR_LLD_DES_INTERFACE_HPP */

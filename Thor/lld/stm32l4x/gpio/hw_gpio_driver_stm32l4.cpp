@@ -94,7 +94,7 @@ namespace Thor::LLD::GPIO
 
   void Driver::clockEnable()
   {
-    auto rcc   = Thor::LLD::RCC::getSystemPeripheralController();
+    auto rcc   = Thor::LLD::RCC::getPeripheralClock();
     auto index = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( periph ) ).second;
 
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
@@ -102,7 +102,7 @@ namespace Thor::LLD::GPIO
 
   void Driver::clockDisable()
   {
-    auto rcc   = Thor::LLD::RCC::getSystemPeripheralController();
+    auto rcc   = Thor::LLD::RCC::getPeripheralClock();
     auto index = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( periph ) ).second;
 
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
@@ -168,7 +168,7 @@ namespace Thor::LLD::GPIO
   Chimera::Status_t Driver::write( const uint8_t pin, const Chimera::GPIO::State state )
   {
     /*------------------------------------------------
-    Atomically set/clr the appropriate bit 
+    Atomically set/clr the appropriate bit
     ------------------------------------------------*/
     if ( static_cast<bool>( state ) )
     {
@@ -190,7 +190,7 @@ namespace Thor::LLD::GPIO
     static_assert( sizeof( uint64_t ) == sizeof( RegisterMap::AFR ), "Invalid register memory map" );
 
     /*------------------------------------------------
-    Determine the alternate function configuration by 
+    Determine the alternate function configuration by
     going through all the lovely lookup tables.
     ------------------------------------------------*/
     const auto instanceToPinMap = InstanceToAlternateMap.at( periph );
@@ -227,7 +227,7 @@ namespace Thor::LLD::GPIO
     /* Read the input data register and mask off the desired bit */
     const bool state = ( periph->IDR & ( 1u << pin ) ) >> pin;
 
-    if ( state ) 
+    if ( state )
     {
       return Chimera::GPIO::State::HIGH;
     }
@@ -247,7 +247,7 @@ namespace Thor::LLD::GPIO
     Reg32_t cfg_setting = ( periph->MODER & shifted_mask ) >> shift_val;
 
     /*------------------------------------------------
-    Iterate over the possible configuration options and return the 
+    Iterate over the possible configuration options and return the
     first one that matches. Otherwise we don't know what this is.
     ------------------------------------------------*/
     for ( const auto &cfg_option : ModeMap )
@@ -271,7 +271,7 @@ namespace Thor::LLD::GPIO
     Reg32_t cfg_setting = ( periph->OSPEEDR & shifted_mask ) >> shift_val;
 
     /*------------------------------------------------
-    Iterate over the possible configuration options and return the 
+    Iterate over the possible configuration options and return the
     first one that matches. Otherwise we don't know what this is.
     ------------------------------------------------*/
     for ( const auto &cfg_option : SpeedMap )
@@ -295,7 +295,7 @@ namespace Thor::LLD::GPIO
     Reg32_t cfg_setting = ( periph->PUPDR & shifted_mask ) >> shift_val;
 
     /*------------------------------------------------
-    Iterate over the possible configuration options and return the 
+    Iterate over the possible configuration options and return the
     first one that matches. Otherwise we don't know what this is.
     ------------------------------------------------*/
     for ( const auto &cfg_option : PullMap )
@@ -312,7 +312,7 @@ namespace Thor::LLD::GPIO
   Chimera::GPIO::Alternate Driver::alternateFunctionGet( const uint8_t pin )
   {
     /*------------------------------------------------
-    Determine the alternate function configuration by 
+    Determine the alternate function configuration by
     going through all the lovely lookup tables.
     ------------------------------------------------*/
 //    AlternateMap::value_type *instanceToPinMap = nullptr;
@@ -340,7 +340,7 @@ namespace Thor::LLD::GPIO
 //    const AFToReg *registerMap = reinterpret_cast<const AFToReg *>( afConfigMap->second );
 //
 //    const AFToReg::value_type *cfg = registerMap->findWithValue( currentConfig );
-//    if ( cfg ) 
+//    if ( cfg )
 //    {
 //      return cfg->first;
 //    }

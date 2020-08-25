@@ -53,7 +53,7 @@ namespace Thor::System
     ------------------------------------------------*/
 #if defined( THOR_LLD_RCC )
     Thor::LLD::RCC::initialize();
-    Thor::LLD::RCC::getSystemClockController()->configureProjectClocks();
+    Thor::LLD::RCC::getCoreClock()->configureProjectClocks();
 #endif
 
     /*------------------------------------------------

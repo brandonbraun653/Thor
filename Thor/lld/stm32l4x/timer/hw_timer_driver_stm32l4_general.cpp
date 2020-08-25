@@ -69,13 +69,13 @@ namespace Thor::LLD::TIMER
 
   void GeneralDriverImpl::clockEnable()
   {
-    auto rcc = Thor::LLD::RCC::getSystemPeripheralController();
+    auto rcc = Thor::LLD::RCC::getPeripheralClock();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_TIM, mRIndex.value() );
   }
 
   void GeneralDriverImpl::clockDisable()
   {
-    auto rcc = Thor::LLD::RCC::getSystemPeripheralController();
+    auto rcc = Thor::LLD::RCC::getPeripheralClock();
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_TIM, mRIndex.value() );
   }
 
@@ -99,7 +99,7 @@ namespace Thor::LLD::TIMER
       case Chimera::Timer::Channel::CHANNEL_3:
         state ? CC3E::set( mpPeriph, TIM_CCER_CC3E ) : CC3E::set( mpPeriph, 0 );
         break;
-        
+
       case Chimera::Timer::Channel::CHANNEL_4:
         state ? CC4E::set( mpPeriph, TIM_CCER_CC4E ) : CC4E::set( mpPeriph, 0 );
         break;
@@ -160,11 +160,11 @@ namespace Thor::LLD::TIMER
     /*------------------------------------------------
     Only edge aligned mode is supported at the moment
     ------------------------------------------------*/
-    if ( cfg.mode != PWM::Mode::EDGE_ALIGNED ) 
+    if ( cfg.mode != PWM::Mode::EDGE_ALIGNED )
     {
       return Chimera::CommonStatusCodes::NOT_SUPPORTED;
     }
-    
+
     /*------------------------------------------------
     Configure the given channel for PWM
     ------------------------------------------------*/
@@ -175,13 +175,13 @@ namespace Thor::LLD::TIMER
     setOutputComparePreload( cfg.outputChannel, Configuration::ENABLED );
 
     /* Set the polarity */
-    if ( cfg.polarity == PWM::Polarity::ACTIVE_HIGH ) 
+    if ( cfg.polarity == PWM::Polarity::ACTIVE_HIGH )
     {
       setCaptureComparePolarity( cfg.outputChannel, Configuration::CC::Polarity::ACTIVE_HIGH );
     }
     else
     {
-      setCaptureComparePolarity( cfg.outputChannel, Configuration::CC::Polarity::ACTIVE_LOW );  
+      setCaptureComparePolarity( cfg.outputChannel, Configuration::CC::Polarity::ACTIVE_LOW );
     }
 
     /* Set the channel direction to be configured as an output */
@@ -212,7 +212,7 @@ namespace Thor::LLD::TIMER
       case Chimera::Timer::Channel::CHANNEL_3:
         CC3P::set( mpPeriph, val << TIM_CCER_CC3P_Pos );
         break;
-        
+
       case Chimera::Timer::Channel::CHANNEL_4:
         CC4P::set( mpPeriph, val << TIM_CCER_CC4P_Pos );
         break;
@@ -237,7 +237,7 @@ namespace Thor::LLD::TIMER
       case Chimera::Timer::Channel::CHANNEL_3:
         CCR3::set( mpPeriph, val );
         break;
-        
+
       case Chimera::Timer::Channel::CHANNEL_4:
         CCR4::set( mpPeriph, val );
         break;
@@ -262,7 +262,7 @@ namespace Thor::LLD::TIMER
       case Chimera::Timer::Channel::CHANNEL_3:
         CC3S::set( mpPeriph, val << TIM_CCMR2_CC3S_Pos );
         break;
-        
+
       case Chimera::Timer::Channel::CHANNEL_4:
         CC4S::set( mpPeriph, val << TIM_CCMR2_CC4S_Pos );
         break;
@@ -272,7 +272,7 @@ namespace Thor::LLD::TIMER
     }
   }
 
-  
+
   void GeneralDriverImpl::setOutputCompareMode( const Chimera::Timer::Channel channel, const Reg32_t val )
   {
     switch ( channel )
@@ -288,7 +288,7 @@ namespace Thor::LLD::TIMER
       case Chimera::Timer::Channel::CHANNEL_3:
         OC3M::set( mpPeriph, val << TIM_CCMR2_OC3M_Pos );
         break;
-        
+
       case Chimera::Timer::Channel::CHANNEL_4:
         OC4M::set( mpPeriph, val << TIM_CCMR2_OC4M_Pos );
         break;
@@ -313,7 +313,7 @@ namespace Thor::LLD::TIMER
       case Chimera::Timer::Channel::CHANNEL_3:
         OC3PE::set( mpPeriph, val << TIM_CCMR2_OC3PE_Pos );
         break;
-        
+
       case Chimera::Timer::Channel::CHANNEL_4:
         OC4PE::set( mpPeriph, val << TIM_CCMR2_OC4PE_Pos );
         break;

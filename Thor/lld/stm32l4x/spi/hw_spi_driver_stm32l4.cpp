@@ -167,13 +167,13 @@ namespace Thor::LLD::SPI
 
   void Driver::clockEnable()
   {
-    auto rcc = Thor::LLD::RCC::getSystemPeripheralController();
+    auto rcc = Thor::LLD::RCC::getPeripheralClock();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
   void Driver::clockDisable()
   {
-    auto rcc = Thor::LLD::RCC::getSystemPeripheralController();
+    auto rcc = Thor::LLD::RCC::getPeripheralClock();
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
@@ -199,7 +199,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Find the best clock divisor need to achieve the desired clock frequency
     ------------------------------------------------*/
-    auto systemClock = Thor::LLD::RCC::getSystemClockController();
+    auto systemClock = Thor::LLD::RCC::getCoreClock();
     auto periphAddr  = reinterpret_cast<std::uintptr_t>( periph );
     auto clockFreq   = systemClock->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SPI, periphAddr );
 
@@ -469,9 +469,9 @@ namespace Thor::LLD::SPI
     Data transfers must have 8-bit or 16-bit aligned access.
     Currently hardcoded to 8 for development...
     ------------------------------------------------*/
-    // Access the data register as 8-bit aligned 
+    // Access the data register as 8-bit aligned
     auto dr = reinterpret_cast<volatile uint8_t *>( &periph->DR );
-    
+
     // Set the RX FIFO threshold to generate an RXNE event when 8-bits are received
     FRXTH::set( periph, Configuration::FIFOThreshold::RXNE_ON_8BIT );
 
