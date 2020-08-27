@@ -52,7 +52,7 @@ namespace Thor::TIMER
       s_lld_basic_drivers[ x ] = nullptr;
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t initBasicDriverObject( const Thor::HLD::RIndex index )
@@ -68,7 +68,7 @@ namespace Thor::TIMER
       s_lld_basic_drivers[ index.value() ] = LLD::getBasicDriver( index );
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
 
@@ -120,23 +120,23 @@ namespace Thor::TIMER
   Chimera::Status_t BasicDriver::initializeCoreFeature( const Chimera::Timer::CoreFeature feature,
                                                         Chimera::Timer::CoreFeatureInit &init )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t BasicDriver::invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t BasicDriver::setState( const Chimera::Timer::Switchable device,
                                            const Chimera::Timer::SwitchableState state )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t BasicDriver::requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   const Chimera::Timer::Descriptor *BasicDriver::getDeviceInfo()

@@ -50,12 +50,12 @@ namespace Thor::TIMER
       s_lld_low_power_drivers[ x ] = nullptr;
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t initLowPowerDriverObject( const Thor::HLD::RIndex index )
   {
-    if ( ( index.value() < hld_low_power_drivers.size() ) && !hld_low_power_drivers[ index.value() ] ) 
+    if ( ( index.value() < hld_low_power_drivers.size() ) && !hld_low_power_drivers[ index.value() ] )
     {
       /* Initialize the HLD reference */
       auto driver       = std::make_shared<LowPowerDriver>();
@@ -66,7 +66,7 @@ namespace Thor::TIMER
       s_lld_low_power_drivers[ index.value() ] = LLD::getLowPowerDriver( index );
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   LowPowerDriver_sPtr getLowPowerDriver_sPtr( const Chimera::Timer::Peripheral periph, const bool create )
@@ -116,23 +116,23 @@ namespace Thor::TIMER
   -------------------------------------------------*/
   Chimera::Status_t LowPowerDriver::initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t LowPowerDriver::invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t LowPowerDriver::setState( const Chimera::Timer::Switchable device,
                                               const Chimera::Timer::SwitchableState state )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t LowPowerDriver::requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   const Chimera::Timer::Descriptor *LowPowerDriver::getDeviceInfo()

@@ -153,7 +153,7 @@ namespace Thor::LLD::IWDG
     ------------------------------------------------*/
     while ( SR::PVU::get( periph ) ) {}
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::setReload( const uint32_t val )
@@ -176,7 +176,7 @@ namespace Thor::LLD::IWDG
     ------------------------------------------------*/
     while ( SR::RVU::get( periph ) ) {}
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   void Driver::start()

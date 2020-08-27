@@ -50,12 +50,12 @@ namespace Thor::TIMER
       s_lld_advanced_drivers[ x ] = nullptr;
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
-  
+
   Chimera::Status_t initAdvancedDriverObject( const Thor::HLD::RIndex index )
   {
-    if ( ( index.value() < hld_advanced_drivers.size() ) && !hld_advanced_drivers[ index.value() ] ) 
+    if ( ( index.value() < hld_advanced_drivers.size() ) && !hld_advanced_drivers[ index.value() ] )
     {
       /* Initialize the HLD reference */
       auto driver            = std::make_shared<AdvancedDriver>();
@@ -66,7 +66,7 @@ namespace Thor::TIMER
       s_lld_advanced_drivers[ index.value() ] = LLD::getAdvancedDriver( index );
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   AdvancedDriver_sPtr getAdvancedDriver_sPtr( const Chimera::Timer::Peripheral periph, const bool create )
@@ -116,23 +116,23 @@ namespace Thor::TIMER
   -------------------------------------------------*/
   Chimera::Status_t AdvancedDriver::initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t AdvancedDriver::invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t AdvancedDriver::setState( const Chimera::Timer::Switchable device,
                                               const Chimera::Timer::SwitchableState state )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t AdvancedDriver::requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   const Chimera::Timer::Descriptor *AdvancedDriver::getDeviceInfo()

@@ -62,7 +62,7 @@ namespace Thor::SPI
     ------------------------------------------------*/
     if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
     {
-      return Chimera::CommonStatusCodes::OK;
+      return Chimera::Status::OK;
     }
 
     /*------------------------------------------------
@@ -89,7 +89,7 @@ namespace Thor::SPI
 #endif
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   /*------------------------------------------------
@@ -138,7 +138,7 @@ namespace Thor::SPI
   ------------------------------------------------*/
   Chimera::Status_t Driver::init( const Chimera::SPI::DriverConfig &setupStruct )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
     auto lockGuard           = TimedLockGuard( *this );
 
     /*------------------------------------------------
@@ -146,11 +146,11 @@ namespace Thor::SPI
     ------------------------------------------------*/
     if ( !Thor::LLD::SPI::isChannelSupported( setupStruct.HWInit.hwChannel ) )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
     else if ( !lockGuard.try_lock_for( 100 ) )
     {
-      return Chimera::CommonStatusCodes::LOCKED;
+      return Chimera::Status::LOCKED;
     }
 
     /*------------------------------------------------
@@ -176,7 +176,7 @@ namespace Thor::SPI
     result |= MISO->init( config.MISOInit, Chimera::Threading::TIMEOUT_DONT_WAIT );
 
     /* Does the driver take control of the CS pin? */
-    if ( setupStruct.externalCS ) 
+    if ( setupStruct.externalCS )
     {
       setChipSelectControlMode( Chimera::SPI::CSMode::MANUAL );
     }
@@ -186,9 +186,9 @@ namespace Thor::SPI
       result |= CS->init( config.CSInit, 100 );
     }
 
-    if ( result != Chimera::CommonStatusCodes::OK )
+    if ( result != Chimera::Status::OK )
     {
-      return Chimera::CommonStatusCodes::FAILED_INIT;
+      return Chimera::Status::FAILED_INIT;
     }
 
     /* Make sure we aren't selecting a device by accident */
@@ -202,7 +202,7 @@ namespace Thor::SPI
     result |= driver->configure( config );
     result |= driver->registerConfig( &config );
 
-    if ( result != Chimera::CommonStatusCodes::OK )
+    if ( result != Chimera::Status::OK )
     {
       config.validity = false;
     }
@@ -218,7 +218,7 @@ namespace Thor::SPI
       // postProcessorHandles[ lldResourceIndex ] = nullptr;
 
       driver->attachISRWakeup( &s_user_isr_signal[ lldResourceIndex ] );
-      
+
       tmp.fill( 0 );
       snprintf( tmp.data(), tmp.size(), "PP_SPI%d", lldResourceIndex );
       std::string_view threadName = tmp.data();
@@ -239,7 +239,7 @@ namespace Thor::SPI
 
   Chimera::Status_t Driver::deInit()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::setChipSelect( const Chimera::GPIO::State value )
@@ -249,7 +249,7 @@ namespace Thor::SPI
       return CS->setState( value, 100 );
     }
 
-    return Chimera::CommonStatusCodes::FAIL;
+    return Chimera::Status::FAIL;
   }
 
   Chimera::Status_t Driver::setChipSelectControlMode( const Chimera::SPI::CSMode mode )
@@ -260,10 +260,10 @@ namespace Thor::SPI
     if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) && !config.externalCS )
     {
       config.HWInit.csMode = mode;
-      return Chimera::CommonStatusCodes::OK;
+      return Chimera::Status::OK;
     }
 
-    return Chimera::CommonStatusCodes::LOCKED;
+    return Chimera::Status::LOCKED;
   }
 
   Chimera::Status_t Driver::writeBytes( const void *const txBuffer, const size_t length, const size_t timeoutMS )
@@ -280,7 +280,7 @@ namespace Thor::SPI
                                             const size_t timeoutMS )
   {
     auto lockguard = TimedLockGuard( *this );
-    auto result    = Chimera::CommonStatusCodes::OK;
+    auto result    = Chimera::Status::OK;
     auto driver    = s_lld_drivers[ lldResourceIndex ];
 
     /*------------------------------------------------
@@ -288,11 +288,11 @@ namespace Thor::SPI
     ------------------------------------------------*/
     if ( !lockguard.try_lock_for( timeoutMS ) )
     {
-      return Chimera::CommonStatusCodes::LOCKED;
+      return Chimera::Status::LOCKED;
     }
     else if ( ( !txBuffer && !rxBuffer ) || !length || !driver )
     {
-      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     /*------------------------------------------------
@@ -336,7 +336,7 @@ namespace Thor::SPI
           CS->setState( Chimera::GPIO::State::HIGH, 100 );
         }
 
-        return Chimera::CommonStatusCodes::FAIL;
+        return Chimera::Status::FAIL;
         break;
     }
   }
@@ -346,10 +346,10 @@ namespace Thor::SPI
     if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) )
     {
       config.HWInit.txfrMode = mode;
-      return Chimera::CommonStatusCodes::OK;
+      return Chimera::Status::OK;
     }
 
-    return Chimera::CommonStatusCodes::LOCKED;
+    return Chimera::Status::LOCKED;
   }
 
   Chimera::Status_t Driver::setClockFrequency( const size_t freq, const size_t tolerance )
@@ -362,11 +362,11 @@ namespace Thor::SPI
     ------------------------------------------------*/
     if ( !lockguard.try_lock_for( 10 ) )
     {
-      return Chimera::CommonStatusCodes::LOCKED;
+      return Chimera::Status::LOCKED;
     }
     else if ( !driver || !freq )
     {
-      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      return Chimera::Status::NOT_INITIALIZED;
     }
 
     /*------------------------------------------------
@@ -389,15 +389,15 @@ namespace Thor::SPI
   {
     if ( event != Chimera::Event::TRIGGER_TRANSFER_COMPLETE )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
     else if ( awaitTransferComplete.try_acquire_for( timeout ) )
     {
-      return Chimera::CommonStatusCodes::TIMEOUT;
+      return Chimera::Status::TIMEOUT;
     }
     else
     {
-      return Chimera::CommonStatusCodes::OK;
+      return Chimera::Status::OK;
     }
   }
 
@@ -406,7 +406,7 @@ namespace Thor::SPI
   {
     auto result = await( event, timeout );
 
-    if ( result == Chimera::CommonStatusCodes::OK )
+    if ( result == Chimera::Status::OK )
     {
       notifier.release();
     }
@@ -420,12 +420,12 @@ namespace Thor::SPI
   Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
                                               size_t &registrationID )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 }    // namespace Thor::SPI

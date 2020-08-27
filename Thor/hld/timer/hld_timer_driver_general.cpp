@@ -74,7 +74,7 @@ namespace Thor::TIMER
   Chimera::Status_t initGeneralDriverModule()
   {
     s_prv_timer_data.fill( {} );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t initGeneralDriverObject( const Thor::HLD::RIndex index )
@@ -90,7 +90,7 @@ namespace Thor::TIMER
       s_prv_timer_data[ index.value() ].lld_driver = LLD::getGeneralDriver( index );
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   GeneralDriver_sPtr getGeneralDriverObject( const Thor::HLD::RIndex index )
@@ -152,12 +152,12 @@ namespace Thor::TIMER
         return initPWM( init.pwm );
 
       default:
-        return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+        return Chimera::Status::NOT_SUPPORTED;
         break;
     }
   }
 
-  
+
   Chimera::Status_t GeneralDriver::invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize )
   {
     using namespace Chimera::Timer;
@@ -170,7 +170,7 @@ namespace Thor::TIMER
         /* Ensure the parameter spec was met */
         if ( !arg || ( argSize != sizeof( Channel ) ) )
         {
-          return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+          return Chimera::Status::INVAL_FUNC_PARAM;
         }
 
         /* Convert the arguments to the expected types */
@@ -190,11 +190,11 @@ namespace Thor::TIMER
         auto data = reinterpret_cast<DriverAction_PWMDutyCycle_t *>( arg );
         if ( !arg || ( argSize != sizeof( DriverAction_PWMDutyCycle_t ) ) )
         {
-          return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+          return Chimera::Status::INVAL_FUNC_PARAM;
         }
         else if ( ( data->dutyCycle == 0 ) || ( data->dutyCycle >= 100 ) )
         {
-          return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+          return Chimera::Status::NOT_SUPPORTED;
         }
 
         /*------------------------------------------------
@@ -207,7 +207,7 @@ namespace Thor::TIMER
 
         Reg32_t newValue = static_cast<Reg32_t>( reloadPercent * static_cast<float>( reloadValue ) );
 
-        if ( countDirection == Direction::COUNT_UP ) 
+        if ( countDirection == Direction::COUNT_UP )
         {
           compareMatch = newValue;
         }
@@ -221,18 +221,18 @@ namespace Thor::TIMER
       break;
 
       default:
-        return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+        return Chimera::Status::NOT_SUPPORTED;
         break;
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t GeneralDriver::setState( const Chimera::Timer::Switchable device,
                                              const Chimera::Timer::SwitchableState state )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t GeneralDriver::requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize )
@@ -251,7 +251,7 @@ namespace Thor::TIMER
         auto dataPtr = reinterpret_cast<bool *>( arg );
         if ( !arg || ( argSize != sizeof( bool ) ) )
         {
-          return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+          return Chimera::Status::INVAL_FUNC_PARAM;
         }
 
         /*------------------------------------------------
@@ -269,7 +269,7 @@ namespace Thor::TIMER
         auto dataPtr = reinterpret_cast<DataRequest_DriverConfig_t *>( arg );
         if ( !arg || ( argSize != sizeof( DataRequest_DriverConfig_t ) ) )
         {
-          return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+          return Chimera::Status::INVAL_FUNC_PARAM;
         }
 
         /*------------------------------------------------
@@ -289,17 +289,17 @@ namespace Thor::TIMER
         auto dataPtr = reinterpret_cast<DataRequest_ChannelConfig_t *>( arg );
         if ( !arg || ( argSize != sizeof( DataRequest_ChannelConfig_t ) ) )
         {
-          return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+          return Chimera::Status::INVAL_FUNC_PARAM;
         }
 
         /*------------------------------------------------
         Has a valid channel been requested?
         ------------------------------------------------*/
         auto channel = static_cast<size_t>( dataPtr->channel );
-        if ( channel >= s_prv_timer_data[ index ].channelConfig.size() ) 
+        if ( channel >= s_prv_timer_data[ index ].channelConfig.size() )
         {
           dataPtr->validity = false;
-          return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+          return Chimera::Status::INVAL_FUNC_PARAM;
         }
 
         /*------------------------------------------------
@@ -314,11 +314,11 @@ namespace Thor::TIMER
       break;
 
       default:
-        return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+        return Chimera::Status::NOT_SUPPORTED;
         break;
     };
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   const Chimera::Timer::Descriptor *GeneralDriver::getDeviceInfo()
@@ -345,7 +345,7 @@ namespace Thor::TIMER
     ------------------------------------------------*/
     if ( !cfg.validity )
     {
-      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     /*-------------------------------------------------
@@ -354,7 +354,7 @@ namespace Thor::TIMER
     mIndexLLD       = LLD::PeripheralToLLDResourceIndex.at( cfg.peripheral ).second;
     auto peripheral = reinterpret_cast<LLD::RegisterMap *>( LLD::LUT_PeripheralList[ mIndexLLD.value() ] );
     auto driver     = s_prv_timer_data[ mIndexHLD.value() ].lld_driver;
-    auto result     = Chimera::CommonStatusCodes::OK;
+    auto result     = Chimera::Status::OK;
 
     /*-------------------------------------------------
     Configure the base timer settings
@@ -362,7 +362,7 @@ namespace Thor::TIMER
     result |= driver->attach( peripheral );
     result |= driver->initBaseTimer( cfg );
 
-    if ( result == Chimera::CommonStatusCodes::OK )
+    if ( result == Chimera::Status::OK )
     {
       s_prv_timer_data[ mIndexHLD.value() ].baseTimerConfig = cfg;
       s_prv_timer_data[ mIndexHLD.value() ].configured = true;
@@ -380,7 +380,7 @@ namespace Thor::TIMER
     ------------------------------------------------*/
     if ( !cfg.validity )
     {
-      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     /*-------------------------------------------------
@@ -388,7 +388,7 @@ namespace Thor::TIMER
     -------------------------------------------------*/
     auto result = s_prv_timer_data[ mIndexHLD.value() ].lld_driver->initPWM( cfg );
 
-    if ( result == Chimera::CommonStatusCodes::OK )
+    if ( result == Chimera::Status::OK )
     {
       auto index = mIndexHLD.value();
       auto channel = static_cast<size_t>( cfg.outputChannel );
@@ -403,7 +403,7 @@ namespace Thor::TIMER
   Chimera::Status_t GeneralDriver::toggleOutput( const Chimera::Timer::Channel channel, const bool state )
   {
     s_prv_timer_data[ mIndexHLD.value() ].lld_driver->toggleChannel( channel, state );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 }    // namespace Thor::TIMER
 

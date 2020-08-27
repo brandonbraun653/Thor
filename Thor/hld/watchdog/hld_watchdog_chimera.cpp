@@ -23,7 +23,7 @@ namespace Chimera::Watchdog::Backend
 {
   Chimera::Status_t initialize()
   {
-    auto result = Chimera::CommonStatusCodes::OK;
+    auto result = Chimera::Status::OK;
 
     // result |= Thor::Watchdog::initializeIWDG();
     // result |= Thor::Watchdog::initializeWWDG();
@@ -33,7 +33,7 @@ namespace Chimera::Watchdog::Backend
 
   Chimera::Status_t reset()
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Watchdog::Watchdog_sPtr create_shared_ptr()
@@ -56,14 +56,14 @@ namespace Chimera::Watchdog::Backend
     registry.createUnique = create_unique_ptr;
     registry.initialize   = initialize;
     registry.reset        = reset;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
 #else
     registry.isSupported  = false;
     registry.createShared = nullptr;
     registry.createUnique = nullptr;
     registry.initialize   = nullptr;
     registry.reset        = nullptr;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_DRIVER_Watchdog == 1*/
   }
 }    // namespace Chimera::Watchdog::Backend

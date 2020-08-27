@@ -41,7 +41,7 @@ namespace Thor::TIMER
     /*------------------------------------------------
     Prevent re-initialization from occurring
     ------------------------------------------------*/
-    auto result = Chimera::CommonStatusCodes::OK;
+    auto result = Chimera::Status::OK;
     if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
     {
       return result;
@@ -56,7 +56,7 @@ namespace Thor::TIMER
     result |= initLowPowerDriverModule();
 
     /*------------------------------------------------
-    Initialize the LLD module 
+    Initialize the LLD module
     ------------------------------------------------*/
     result |= Thor::LLD::TIMER::initializeModule();
 
@@ -66,7 +66,7 @@ namespace Thor::TIMER
 
   Chimera::Status_t resetModule()
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   void incrementSystemTick()
@@ -130,8 +130,8 @@ namespace Thor::TIMER
   Chimera::Timer::ITimer_rPtr lookUpRawPointer( const Chimera::Timer::Peripheral peripheral )
   {
     /*-------------------------------------------------
-    Due to Thor implementing a persistent driver model, if the 
-    shared_ptr exists, it will never be deleted. Giving out the 
+    Due to Thor implementing a persistent driver model, if the
+    shared_ptr exists, it will never be deleted. Giving out the
     raw pointer is no big deal.
     -------------------------------------------------*/
     if( auto shared_view = lookUpSharedPointer( peripheral ); shared_view )

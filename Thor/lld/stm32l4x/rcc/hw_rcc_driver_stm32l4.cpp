@@ -791,11 +791,11 @@ namespace Thor::LLD::RCC
       setCoreClockSource( Chimera::Clock::Bus::PLLCLK );
       SystemCoreClock = getSysClockFreq();
 
-      return Chimera::CommonStatusCodes::OK;
+      return Chimera::Status::OK;
     }
     else
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
   }
 
@@ -846,7 +846,7 @@ namespace Thor::LLD::RCC
         break;
 
       default:
-        return Chimera::CommonStatusCodes::FAIL;
+        return Chimera::Status::FAIL;
         break;
     }
 
@@ -875,7 +875,7 @@ namespace Thor::LLD::RCC
     The clock is stable now, allow normal program execution
     ------------------------------------------------*/
     Thor::LLD::IT::enableInterrupts( itMask );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Clock::Bus SystemClock::getCoreClockSource()
@@ -910,18 +910,18 @@ namespace Thor::LLD::RCC
     {
       case Chimera::Clock::Bus::HSE:
         Thor::LLD::RCC::setHSEFreq( freq );
-        return Chimera::CommonStatusCodes::OK;
+        return Chimera::Status::OK;
         break;
 
       case Chimera::Clock::Bus::LSE:
         Thor::LLD::RCC::setLSEFreq( freq );
-        return Chimera::CommonStatusCodes::OK;
+        return Chimera::Status::OK;
         break;
 
         // TODO: Handle the more complex cases next
 
       default:
-        return Chimera::CommonStatusCodes::FAIL;
+        return Chimera::Status::FAIL;
         break;
     };
   }
@@ -1144,7 +1144,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t PeripheralController::reset( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->reset;
     auto config      = lookupTable[ index ];
@@ -1167,7 +1167,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t PeripheralController::enableClock( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
     auto config      = lookupTable[ index ];
@@ -1178,7 +1178,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t PeripheralController::disableClock( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
     auto config      = lookupTable[ index ];
@@ -1189,7 +1189,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t PeripheralController::enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
     auto config      = lookupTable[ index ];
@@ -1200,7 +1200,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t PeripheralController::disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
     auto config      = lookupTable[ index ];

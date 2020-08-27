@@ -28,7 +28,7 @@ namespace Thor::LLD::UART
   static Chimera::Status_t initialize()
   {
     // Currently no UARTs are available on supported STM32L4xxx chips.
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   /**

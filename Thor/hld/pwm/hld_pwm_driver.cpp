@@ -28,7 +28,7 @@ namespace Thor::PWM
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initializeModule()
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   /*-------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ namespace Thor::PWM
     ------------------------------------------------*/
     if ( !cfg.validity )
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
 
     /*------------------------------------------------
@@ -63,14 +63,14 @@ namespace Thor::PWM
     mpTimerDriver = Chimera::Timer::createSharedInstance( cfg.timer.peripheral );
     if ( !mpTimerDriver )
     {
-      return Chimera::CommonStatusCodes::NOT_AVAILABLE;
+      return Chimera::Status::NOT_AVAILABLE;
     }
 
     /*------------------------------------------------
     Configure the timer peripheral. This could already be in use
     by another entity, so try not to blow away configuration settings.
     ------------------------------------------------*/
-    auto result = Chimera::CommonStatusCodes::OK;
+    auto result = Chimera::Status::OK;
     bool configured = false;
     CoreFeatureInit tmp;
 
@@ -98,7 +98,7 @@ namespace Thor::PWM
     /*------------------------------------------------
     Assuming everything is OK, save class data
     ------------------------------------------------*/
-    if ( result == Chimera::CommonStatusCodes::OK )
+    if ( result == Chimera::Status::OK )
     {
       mInitialized = true;
       mPWMConfig   = cfg.pwm;
@@ -117,11 +117,11 @@ namespace Thor::PWM
     ------------------------------------------------*/
     if ( !mInitialized )
     {
-      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      return Chimera::Status::NOT_INITIALIZED;
     }
     else if( !try_lock_for( Chimera::Threading::TIMEOUT_25MS ) )
     {
-      return Chimera::CommonStatusCodes::LOCKED;
+      return Chimera::Status::LOCKED;
     }
 
     /*------------------------------------------------
@@ -146,7 +146,7 @@ namespace Thor::PWM
     4. Update the clock prescaler and auto-reload value (converging algorithm)
         a) Allowed to be naive approach due to infrequent calls
     */
-    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
+    return Chimera::Status::NOT_AVAILABLE;
   }
 
   Chimera::Status_t Driver::setDutyCyle( const size_t dutyCycle )
@@ -165,7 +165,7 @@ namespace Thor::PWM
     /*
     1. This one should be pretty simple. Just send a command with the desired state.
     */
-    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
+    return Chimera::Status::NOT_AVAILABLE;
   }
 
   Chimera::Status_t Driver::applyConfig( const size_t freq, const size_t dutyCycle,
@@ -178,11 +178,11 @@ namespace Thor::PWM
     ------------------------------------------------*/
     if ( !mInitialized )
     {
-      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      return Chimera::Status::NOT_INITIALIZED;
     }
     else if( !try_lock_for( Chimera::Threading::TIMEOUT_25MS ) )
     {
-      return Chimera::CommonStatusCodes::LOCKED;
+      return Chimera::Status::LOCKED;
     }
 
     //    /*------------------------------------------------
@@ -203,6 +203,6 @@ namespace Thor::PWM
     //    unlock();
     //    return result;
 
-    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
+    return Chimera::Status::NOT_AVAILABLE;
   }
 }

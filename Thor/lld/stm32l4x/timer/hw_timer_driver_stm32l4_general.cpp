@@ -64,7 +64,7 @@ namespace Thor::LLD::TIMER
 
   Chimera::Status_t GeneralDriverImpl::reset()
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   void GeneralDriverImpl::clockEnable()
@@ -114,7 +114,7 @@ namespace Thor::LLD::TIMER
     mpPeriph = peripheral;
     mRIndex  = RIndex( InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( peripheral ) ).second );
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t GeneralDriverImpl::initBaseTimer( const Chimera::Timer::DriverConfig &cfg )
@@ -150,7 +150,7 @@ namespace Thor::LLD::TIMER
     Re-enable the counter
     ------------------------------------------------*/
     toggleCounter( true );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t GeneralDriverImpl::initPWM( const Chimera::Timer::PWM::Config &cfg )
@@ -162,7 +162,7 @@ namespace Thor::LLD::TIMER
     ------------------------------------------------*/
     if ( cfg.mode != PWM::Mode::EDGE_ALIGNED )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
     /*------------------------------------------------
@@ -193,7 +193,7 @@ namespace Thor::LLD::TIMER
     /* Set the output compare match value */
     setCaptureCompareMatch( cfg.outputChannel, cfg.compareMatch );
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
 

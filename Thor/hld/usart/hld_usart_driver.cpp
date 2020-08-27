@@ -100,7 +100,7 @@ namespace Thor::USART
     Thor::LLD::USART::initialize();
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Driver::Driver() :
@@ -138,7 +138,7 @@ namespace Thor::USART
     auto iterator = ChannelToInstance.at( channel );
 //    if ( !iterator )
 //    {
-//      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+//      return Chimera::Status::NOT_SUPPORTED;
 //    }
 
     Thor::LLD::USART::RegisterMap* instance = iterator.second;
@@ -166,7 +166,7 @@ namespace Thor::USART
 
     usartClassObjects[ resourceIndex ] = this;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
 
@@ -206,13 +206,13 @@ namespace Thor::USART
       postProcessorHandle[ resourceIndex ] = thread.native_handle();
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::end()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
@@ -257,17 +257,17 @@ namespace Thor::USART
       txMode = mode;
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
-    auto error = Chimera::CommonStatusCodes::OK;
+    auto error = Chimera::Status::OK;
     auto iter  = static_cast<uint8_t>( txMode );
 
     if ( iter >= writeFuncPtrs.size() )
     {
-      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      error = Chimera::Status::INVAL_FUNC_PARAM;
     }
     else
     {
@@ -279,12 +279,12 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
-    auto error = Chimera::CommonStatusCodes::OK;
+    auto error = Chimera::Status::OK;
     auto iter  = static_cast<uint8_t>( rxMode );
 
     if ( iter >= readFuncPtrs.size() )
     {
-      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      error = Chimera::Status::INVAL_FUNC_PARAM;
     }
     else
     {
@@ -296,7 +296,7 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::flush( const Chimera::Hardware::SubPeripheral periph )
   {
-    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t error = Chimera::Status::OK;
 
     if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
@@ -308,7 +308,7 @@ namespace Thor::USART
     }
     else
     {
-      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      error = Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     return error;
@@ -389,18 +389,18 @@ namespace Thor::USART
     else
     {
       s_lld_drivers[ resourceIndex ]->killReceive();
-      return Chimera::CommonStatusCodes::OK;
+      return Chimera::Status::OK;
     }
   }
 
 
   Chimera::Status_t Driver::readAsync( uint8_t *const buffer, const size_t len )
   {
-    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t error = Chimera::Status::OK;
 
     if ( !buffer )
     {
-      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      error = Chimera::Status::INVAL_FUNC_PARAM;
     }
     else
     {
@@ -419,7 +419,7 @@ namespace Thor::USART
 
       if ( bytesRead != len )
       {
-        error = Chimera::CommonStatusCodes::EMPTY;
+        error = Chimera::Status::EMPTY;
       }
     }
 
@@ -430,7 +430,7 @@ namespace Thor::USART
                                                  boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
                                                  const size_t hwBufferSize )
   {
-    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t error = Chimera::Status::OK;
 
     if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
@@ -444,7 +444,7 @@ namespace Thor::USART
     }
     else
     {
-      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      error = Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     return error;
@@ -452,7 +452,7 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::disableBuffering( const Chimera::Hardware::SubPeripheral periph )
   {
-    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t error = Chimera::Status::OK;
 
 //    if ( periph == Chimera::Hardware::SubPeripheral::TX )
 //    {
@@ -464,7 +464,7 @@ namespace Thor::USART
 //    }
 //    else
 //    {
-//      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+//      error = Chimera::Status::INVAL_FUNC_PARAM;
 //    }
 
     return error;
@@ -493,22 +493,22 @@ namespace Thor::USART
 
     if ( ( event != TRIGGER_READ_COMPLETE ) && ( event != TRIGGER_WRITE_COMPLETE ) )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
     if ( ( event == TRIGGER_WRITE_COMPLETE ) && !awaitTXComplete.try_acquire_for( timeout ) )
     {
-      return Chimera::CommonStatusCodes::TIMEOUT;
+      return Chimera::Status::TIMEOUT;
     }
     else if ( ( event == TRIGGER_READ_COMPLETE ) && !awaitRXComplete.try_acquire_for( timeout ) )
     {
-      return Chimera::CommonStatusCodes::TIMEOUT;
+      return Chimera::Status::TIMEOUT;
     }
 
     awaitRXComplete.release();
     awaitTXComplete.release();
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
@@ -516,7 +516,7 @@ namespace Thor::USART
   {
     auto result = await( event, timeout );
 
-    if ( result == Chimera::CommonStatusCodes::OK )
+    if ( result == Chimera::Status::OK )
     {
       notifier.release();
     }
@@ -532,7 +532,7 @@ namespace Thor::USART
 
     eventListeners.push_back( listener );
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
@@ -542,12 +542,12 @@ namespace Thor::USART
       if ( iterator->id == registrationID )
       {
         eventListeners.erase( iterator );
-        return Chimera::CommonStatusCodes::OK;
+        return Chimera::Status::OK;
         break;
       }
     }
 
-    return Chimera::CommonStatusCodes::NOT_FOUND;
+    return Chimera::Status::NOT_FOUND;
   }
 
   void Driver::processListeners( const Chimera::Event::Trigger event )
@@ -557,7 +557,7 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
-    Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
+    Chimera::Status_t error = Chimera::Status::BUSY;
 
     if ( rxLock.try_acquire_for( 1000 ))
     {
@@ -569,11 +569,11 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::readInterrupt( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
-    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t error = Chimera::Status::OK;
 
     if ( !rxBuffers.initialized() )
     {
-      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      return Chimera::Status::NOT_INITIALIZED;
     }
 
 
@@ -583,14 +583,14 @@ namespace Thor::USART
 
       error = s_lld_drivers[ resourceIndex ]->receiveIT( rxBuffers.linearBuffer(), length, timeout_mS );
 
-      if ( error == Chimera::CommonStatusCodes::OK )
+      if ( error == Chimera::Status::OK )
       {
         error = Chimera::Serial::Status::RX_IN_PROGRESS;
       }
     }
     else
     {
-      error = Chimera::CommonStatusCodes::MEMORY;
+      error = Chimera::Status::MEMORY;
     }
 
     return error;
@@ -598,11 +598,11 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::readDMA( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
-    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t error = Chimera::Status::OK;
 
     if ( !rxBuffers.initialized() )
     {
-      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      return Chimera::Status::NOT_INITIALIZED;
     }
 
 
@@ -612,14 +612,14 @@ namespace Thor::USART
       memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
       error = s_lld_drivers[ resourceIndex ]->receiveDMA( rxBuffers.linearBuffer(), length, timeout_mS );
 
-      if ( error == Chimera::CommonStatusCodes::OK )
+      if ( error == Chimera::Status::OK )
       {
         error = Chimera::Serial::Status::RX_IN_PROGRESS;
       }
     }
     else
     {
-      error = Chimera::CommonStatusCodes::MEMORY;
+      error = Chimera::Status::MEMORY;
     }
 
     return error;
@@ -628,7 +628,7 @@ namespace Thor::USART
   Chimera::Status_t Driver::writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
     using namespace Chimera::Threading;
-    Chimera::Status_t error = Chimera::CommonStatusCodes::BUSY;
+    Chimera::Status_t error = Chimera::Status::BUSY;
 
     if ( txLock.try_acquire_for( 1000 ) )
     {
@@ -640,11 +640,11 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::writeInterrupt( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
-    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t error = Chimera::Status::OK;
 
     if ( !txBuffers.initialized() )
     {
-      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      return Chimera::Status::NOT_INITIALIZED;
     }
 
     /*------------------------------------------------
@@ -659,7 +659,7 @@ namespace Thor::USART
     else
     {
       size_t pushed = 0;
-      error = Chimera::CommonStatusCodes::BUSY;
+      error = Chimera::Status::BUSY;
       txBuffers.push( buffer, length, pushed );
     }
 
@@ -668,11 +668,11 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::writeDMA( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
   {
-    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t error = Chimera::Status::OK;
 
     if ( !txBuffers.initialized() )
     {
-      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      return Chimera::Status::NOT_INITIALIZED;
     }
 
     /*------------------------------------------------
@@ -687,7 +687,7 @@ namespace Thor::USART
     else
     {
       size_t pushed = 0;
-      error = Chimera::CommonStatusCodes::BUSY;
+      error = Chimera::Status::BUSY;
       txBuffers.push( buffer, length, pushed );
     }
 

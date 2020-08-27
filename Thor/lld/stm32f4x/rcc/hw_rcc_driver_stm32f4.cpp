@@ -72,7 +72,7 @@ namespace Thor::LLD::RCC
   ------------------------------------------------*/
   Chimera::Status_t prjGetHSIValue( size_t *const projectValue )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+    Chimera::Status_t result = Chimera::Status::FAIL;
 
     /*------------------------------------------------
     Typical value of the high speed internal oscillator in Hz
@@ -80,7 +80,7 @@ namespace Thor::LLD::RCC
     if ( projectValue )
     {
       *projectValue = 16000000u;
-      result        = Chimera::CommonStatusCodes::OK;
+      result        = Chimera::Status::OK;
     }
 
     return result;
@@ -88,7 +88,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t prjGetHSEValue( size_t *const projectValue )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+    Chimera::Status_t result = Chimera::Status::FAIL;
 
     /*------------------------------------------------
     Typical value of the high speed internal oscillator in Hz
@@ -96,7 +96,7 @@ namespace Thor::LLD::RCC
     if ( projectValue )
     {
       *projectValue = 25000000u;
-      result        = Chimera::CommonStatusCodes::OK;
+      result        = Chimera::Status::OK;
     }
 
     return result;
@@ -104,7 +104,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t prjGetLSIValue( size_t *const projectValue )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+    Chimera::Status_t result = Chimera::Status::FAIL;
 
     /*------------------------------------------------
     Typical value of the high speed internal oscillator in Hz
@@ -112,7 +112,7 @@ namespace Thor::LLD::RCC
     if ( projectValue )
     {
       *projectValue = 32000u;
-      result        = Chimera::CommonStatusCodes::OK;
+      result        = Chimera::Status::OK;
     }
 
     return result;
@@ -120,8 +120,8 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t prjGetSysClockFreq( size_t *const projectValue )
   {
-    const Chimera::Status_t prjResult = Chimera::CommonStatusCodes::OK;
-    Chimera::Status_t result          = Chimera::CommonStatusCodes::FAIL;
+    const Chimera::Status_t prjResult = Chimera::Status::OK;
+    Chimera::Status_t result          = Chimera::Status::FAIL;
     size_t pllm                       = 0u;
     size_t pllvco                     = 0u;
     size_t pllp                       = 0u;
@@ -168,7 +168,7 @@ namespace Thor::LLD::RCC
       }
 
       *projectValue = sysclockfreq;
-      result        = Chimera::CommonStatusCodes::OK;
+      result        = Chimera::Status::OK;
     }
 
     return result;
@@ -176,12 +176,12 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t prjGetHCLKFreq( size_t *const projectValue )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+    Chimera::Status_t result = Chimera::Status::FAIL;
 
     if ( projectValue )
     {
       *projectValue = SystemCoreClock;
-      result        = Chimera::CommonStatusCodes::OK;
+      result        = Chimera::Status::OK;
     }
 
     return result;
@@ -189,7 +189,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t prjGetPCLK1Freq( size_t *const projectValue )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+    Chimera::Status_t result = Chimera::Status::FAIL;
 
     if ( projectValue )
     {
@@ -197,7 +197,7 @@ namespace Thor::LLD::RCC
       prjGetHCLKFreq( &hclk );
 
       *projectValue = hclk >> APBPrescTable[ ( RCC1_PERIPH->CFGR & CFGR_PPRE1 ) >> CFGR_PPRE1_Pos ];
-      result        = Chimera::CommonStatusCodes::OK;
+      result        = Chimera::Status::OK;
     }
 
     return result;
@@ -205,7 +205,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t prjGetPCLK2Freq( size_t *const projectValue )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+    Chimera::Status_t result = Chimera::Status::FAIL;
 
     if ( projectValue )
     {
@@ -213,7 +213,7 @@ namespace Thor::LLD::RCC
       prjGetHCLKFreq( &hclk );
 
       *projectValue = hclk >> APBPrescTable[ ( RCC1_PERIPH->CFGR & CFGR_PPRE2 ) >> CFGR_PPRE2_Pos ];
-      result        = Chimera::CommonStatusCodes::OK;
+      result        = Chimera::Status::OK;
     }
 
     return result;
@@ -221,7 +221,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t prjGetOscillatorConfig( OscillatorInit *const projectValue )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+    Chimera::Status_t result = Chimera::Status::FAIL;
 
     if ( projectValue )
     {
@@ -261,7 +261,7 @@ namespace Thor::LLD::RCC
       config.PLL.R      = 2;
 
       memcpy( projectValue, &config, sizeof( OscillatorInit ) );
-      result = Chimera::CommonStatusCodes::OK;
+      result = Chimera::Status::OK;
     }
 
     return result;
@@ -269,7 +269,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t prjGetClockConfig( ClockInit *const projectValue )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+    Chimera::Status_t result = Chimera::Status::FAIL;
 
     if ( projectValue )
     {
@@ -285,7 +285,7 @@ namespace Thor::LLD::RCC
       config.FlashLatency   = 4;
 
       memcpy( projectValue, &config, sizeof( ClockInit ) );
-      result = Chimera::CommonStatusCodes::OK;
+      result = Chimera::Status::OK;
     }
 
     return result;
@@ -350,8 +350,8 @@ namespace Thor::LLD::RCC
   {
     using namespace Thor::Driver;
 
-    Chimera::Status_t result          = Chimera::CommonStatusCodes::FAIL;
-    const Chimera::Status_t prjResult = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result          = Chimera::Status::FAIL;
+    const Chimera::Status_t prjResult = Chimera::Status::OK;
 
     /*------------------------------------------------
     Turn on the main internal regulator output voltage
@@ -387,25 +387,25 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t SystemClock::setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t result = Chimera::Status::NOT_SUPPORTED;
     return result;
   }
 
   Chimera::Status_t SystemClock::setCoreClock( const size_t freqHz )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t result = Chimera::Status::NOT_SUPPORTED;
     return result;
   }
 
   Chimera::Status_t SystemClock::setCoreClockSource( const Thor::Clock::Source src )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    Chimera::Status_t result = Chimera::Status::NOT_SUPPORTED;
     return result;
   }
 
   Chimera::Status_t SystemClock::getClockFrequency( const ClockType_t clock, size_t *const freqHz )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+    Chimera::Status_t result = Chimera::Status::FAIL;
 
     if ( freqHz )
     {
@@ -428,7 +428,7 @@ namespace Thor::LLD::RCC
           break;
 
         default:
-          // result = Chimera::CommonStatusCodes::FAIL;
+          // result = Chimera::Status::FAIL;
           break;
       }
     }
@@ -439,7 +439,7 @@ namespace Thor::LLD::RCC
   Chimera::Status_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address,
                                                  size_t *const freqHz )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::FAIL;
+    Chimera::Status_t result = Chimera::Status::FAIL;
 
     auto clockLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->clockSource;
     auto indexLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->resourceIndexMap;
@@ -483,7 +483,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t PeripheralController::reset( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->reset;
     auto config      = lookupTable[ index ];
@@ -506,7 +506,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t PeripheralController::enableClock( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
     auto config      = lookupTable[ index ];
@@ -517,7 +517,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t PeripheralController::disableClock( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
     auto config      = lookupTable[ index ];
@@ -528,7 +528,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t PeripheralController::enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
     auto config      = lookupTable[ index ];
@@ -539,7 +539,7 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t PeripheralController::disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
     auto config      = lookupTable[ index ];
@@ -571,7 +571,7 @@ namespace Thor::LLD::RCC
       ------------------------------------------------*/
       if ( ( ( HSERDY::get( RCC1_PERIPH ) == locked ) || ( HSEON::get( RCC1_PERIPH ) == enabled ) ) && ( init->HSEState == HSEConfig::OFF ) )
       {
-        return Chimera::CommonStatusCodes::FAIL;
+        return Chimera::Status::FAIL;
       }
     }
     else
@@ -614,7 +614,7 @@ namespace Thor::LLD::RCC
       }
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   /**
@@ -642,7 +642,7 @@ namespace Thor::LLD::RCC
       ------------------------------------------------*/
       if ( ( ( HSIRDY::get( RCC1_PERIPH ) == locked ) || ( HSION::get( RCC1_PERIPH ) == enabled ) ) && ( init->HSIState != HSIConfig::ON ) )
       {
-        return Chimera::CommonStatusCodes::FAIL;
+        return Chimera::Status::FAIL;
       }
       else
       {
@@ -689,7 +689,7 @@ namespace Thor::LLD::RCC
       }
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   /**
@@ -724,7 +724,7 @@ namespace Thor::LLD::RCC
       }
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   /**
@@ -809,7 +809,7 @@ namespace Thor::LLD::RCC
       PWREN::set( RCC1_PERIPH, PWRENConfig::OFF );
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   /**
@@ -823,11 +823,11 @@ namespace Thor::LLD::RCC
     using namespace CR;
     using namespace CFGR;
 
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     if ( init->PLL.State == PLLConfig::NONE )
     {
-      result = Chimera::CommonStatusCodes::FAIL;
+      result = Chimera::Status::FAIL;
     }
     else
     {
@@ -908,15 +908,15 @@ namespace Thor::LLD::RCC
 
     if ( ( sysClkSrc == CFGR::SW::HSE ) && !CR::HSERDY::get( RCC1_PERIPH ) )
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
     else if ( ( ( sysClkSrc == CFGR::SW::PLLCLK ) || ( sysClkSrc == CFGR::SW::PLLRCLK ) ) && !CR::PLLRDY::get( RCC1_PERIPH ) )
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
     else if ( ( sysClkSrc == CFGR::SW::HSI ) && !CR::HSIRDY::get( RCC1_PERIPH ) )
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
 
     /*------------------------------------------------
@@ -929,7 +929,7 @@ namespace Thor::LLD::RCC
     {
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   /**
@@ -938,7 +938,7 @@ namespace Thor::LLD::RCC
   static inline Chimera::Status_t PCLK1Config( const ClockInit *init )
   {
     CFGR::PPRE1::set( RCC1_PERIPH, init->APB1CLKDivider );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   /**
@@ -947,7 +947,7 @@ namespace Thor::LLD::RCC
   static inline Chimera::Status_t PCLK2Config( const ClockInit *init )
   {
     CFGR::PPRE2::set( RCC1_PERIPH, init->APB2CLKDivider );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   /**
@@ -956,7 +956,7 @@ namespace Thor::LLD::RCC
   static Chimera::Status_t UpdateFlashLatency( const uint32_t value )
   {
     using namespace Thor::LLD::FLASH;
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     /*------------------------------------------------
     Validate latency configuration since this is such
@@ -976,11 +976,11 @@ namespace Thor::LLD::RCC
    */
   static Chimera::Status_t OscillatorConfig( OscillatorInit *const init )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     if ( !init )
     {
-      result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      result = Chimera::Status::INVAL_FUNC_PARAM;
     }
     else
     {
@@ -1005,11 +1005,11 @@ namespace Thor::LLD::RCC
 
   static Chimera::Status_t ClockConfig( const ClockInit *const init )
   {
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     if ( !init )
     {
-      result = Chimera::CommonStatusCodes::FAIL;
+      result = Chimera::Status::FAIL;
     }
     else
     {

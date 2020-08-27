@@ -39,7 +39,7 @@ namespace Thor::Clock
     /*------------------------------------------------
     Prevent re-initialization from occurring
     ------------------------------------------------*/
-    auto result = Chimera::CommonStatusCodes::OK;
+    auto result = Chimera::Status::OK;
     if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
     {
       return result;
@@ -60,22 +60,22 @@ namespace Thor::Clock
 
   Chimera::Status_t periphEnable( const Chimera::Peripheral::Type periph )
   {
-    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
+    return Chimera::Status::NOT_AVAILABLE;
   }
 
   Chimera::Status_t periphDisable( const Chimera::Peripheral::Type periph )
   {
-    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
+    return Chimera::Status::NOT_AVAILABLE;
   }
 
   Chimera::Status_t enableClock( const Chimera::Clock::Bus bus )
   {
-    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
+    return Chimera::Status::NOT_AVAILABLE;
   }
 
   Chimera::Status_t disableClock( const Chimera::Clock::Bus bus )
   {
-    return Chimera::CommonStatusCodes::NOT_AVAILABLE;
+    return Chimera::Status::NOT_AVAILABLE;
   }
 
   bool isEnabled( const Chimera::Clock::Bus bus )

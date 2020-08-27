@@ -31,7 +31,7 @@ namespace Thor::LLD::FLASH
     initializeRegisters();
     initializeMapping();
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   size_t availableChannels()

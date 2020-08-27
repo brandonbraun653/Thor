@@ -135,7 +135,7 @@ namespace Thor::DMA
     ------------------------------------------------*/
     // for ( size_t x = 0; x < Thor::LLD::DMA::dmaObjects.size(); x++ )
     // {
-    //   if ( Thor::LLD::DMA::dmaObjects[ x ] ) 
+    //   if ( Thor::LLD::DMA::dmaObjects[ x ] )
     //   {
     //     vPortFree( Thor::LLD::DMA::dmaObjects[ x ] );
     //   }
@@ -211,7 +211,7 @@ namespace Thor::DMA
 #endif
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
 
@@ -275,18 +275,18 @@ namespace Thor::DMA
     //     postProcessorHandle[ stream ] = thread.native_handle();
     //   }
     // }
-      
+
     /*------------------------------------------------
     Sort the request resources such that lookup becomes O(log(N))
     ------------------------------------------------*/
     std::sort( RequestGenerators.begin(), RequestGenerators.end(), compareFunction );
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t DMAClass::reset()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t DMAClass::start()
@@ -296,13 +296,13 @@ namespace Thor::DMA
     //   return currentDMAInstance->start( currentStream );
     // }
 
-    return Chimera::CommonStatusCodes::FAIL;
+    return Chimera::Status::FAIL;
   }
 
   Chimera::Status_t DMAClass::configure( const Chimera::DMA::Init &config, const Chimera::DMA::TCB &transfer,
                                          const size_t timeout, Chimera::DMA::TransferHandle_t *const handle )
   {
-    auto result = Chimera::CommonStatusCodes::FAIL;
+    auto result = Chimera::Status::FAIL;
 
     // /*------------------------------------------------
     // Convert from the generic Chimera representation of DMA settings into
@@ -330,19 +330,19 @@ namespace Thor::DMA
 
   Chimera::Status_t DMAClass::abort( Chimera::DMA::TransferHandle_t handle, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t DMAClass::status( Chimera::DMA::TransferHandle_t handle, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t DMAClass::registerListener( const size_t stream, Chimera::Event::Actionable &listener, const size_t timeout,
                                                 size_t &registrationID )
   {
     using namespace Thor::LLD::DMA;
-    auto result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    auto result = Chimera::Status::NOT_SUPPORTED;
 
     // if ( streamIsOnPeripheral( DMA1_PERIPH, stream ) && driverInstanceList[ 0 ] )
     // {
@@ -354,7 +354,7 @@ namespace Thor::DMA
     // }
     // else
     // {
-    //   result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    //   result = Chimera::Status::INVAL_FUNC_PARAM;
     // }
 
     return result;
@@ -362,7 +362,7 @@ namespace Thor::DMA
 
   Chimera::Status_t DMAClass::removeListener( const size_t stream, const size_t registrationID, const size_t timeout )
   {
-    auto result = Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    auto result = Chimera::Status::NOT_SUPPORTED;
 
     // if ( streamIsOnPeripheral( Thor::LLD::DMA::DMA1_PERIPH, stream ) && Thor::LLD::DMA::driverInstanceList[ 0 ] )
     // {
@@ -374,7 +374,7 @@ namespace Thor::DMA
     // }
     // else
     // {
-    //   result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+    //   result = Chimera::Status::INVAL_FUNC_PARAM;
     // }
 
     return result;
@@ -445,7 +445,7 @@ namespace Thor::DMA
   //   // Pull out the stream object
   //   // ------------------------------------------------*/
   //   // streamNum = ( metaInfo->cfgBitField & ConfigBitFields::DMA_STREAM ) >> ConfigBitFields::DMA_STREAM_POS;
-    
+
   //   // if ( metaInfo->cfgBitField & ConfigBitFields::DMA_ON_DMA1 )
   //   // {
   //   //   stream = getStreamRegisters( DMA1_PERIPH, streamNum );
@@ -519,7 +519,7 @@ static void DMA1_Stream1_ISRPostProcessorThread( void *argument )
 {
   using namespace Thor::LLD::DMA;
   constexpr auto resourceIndex = DMA1_STREAM1_RESOURCE_INDEX;
-  
+
   while ( 1 )
   {
     postProcessorSignal[ resourceIndex ].acquire();

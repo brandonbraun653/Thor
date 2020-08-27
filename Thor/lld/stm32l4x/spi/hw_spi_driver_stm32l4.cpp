@@ -63,7 +63,7 @@ namespace Thor::LLD::SPI
     initializeRegisters();
     initializeMapping();
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   bool isChannelSupported( const Chimera::SPI::Channel channel )
@@ -157,12 +157,12 @@ namespace Thor::LLD::SPI
     ------------------------------------------------*/
     Thor::LLD::SPI::spiObjects[ resourceIndex ] = this;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::reset()
   {
-    return Chimera::CommonStatusCodes::FAIL;
+    return Chimera::Status::FAIL;
   }
 
   void Driver::clockEnable()
@@ -205,7 +205,7 @@ namespace Thor::LLD::SPI
 
     if ( clockFreq == std::numeric_limits<size_t>::max() )
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
 
     RegOptimizerData cfg;
@@ -222,7 +222,7 @@ namespace Thor::LLD::SPI
     ------------------------------------------------*/
     if ( setup.HWInit.csMode == Chimera::SPI::CSMode::AUTO_BETWEEN_TRANSFER )
     {
-      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     /*------------------------------------------------
@@ -289,18 +289,18 @@ namespace Thor::LLD::SPI
     /* Finally enable the peripheral */
     SPE::set( periph, CR1_SPE );
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::registerConfig( Chimera::SPI::DriverConfig *config )
   {
     if ( !config )
     {
-      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     this->periphConfig = config;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::transfer( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
@@ -317,7 +317,7 @@ namespace Thor::LLD::SPI
     ------------------------------------------------*/
     if ( !periphConfig )
     {
-      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      return Chimera::Status::NOT_INITIALIZED;
     }
 
     switch ( periphConfig->HWInit.dataSize )
@@ -338,7 +338,7 @@ namespace Thor::LLD::SPI
         break;
 
       default:
-        return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+        return Chimera::Status::NOT_SUPPORTED;
         break;
     }
 
@@ -432,7 +432,7 @@ namespace Thor::LLD::SPI
       continue;
 #endif
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::transferIT( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
@@ -442,7 +442,7 @@ namespace Thor::LLD::SPI
     ------------------------------------------------*/
     if ( BSY::get( periph ) || ( txfr.status != Chimera::SPI::Status::TRANSFER_COMPLETE ) )
     {
-      return Chimera::CommonStatusCodes::BUSY;
+      return Chimera::Status::BUSY;
     }
 
     /*------------------------------------------------
@@ -484,17 +484,17 @@ namespace Thor::LLD::SPI
     txfr.txTransferCount++;
     exitCriticalSection();
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::killTransfer()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   void Driver::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )

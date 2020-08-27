@@ -29,7 +29,7 @@ namespace Chimera::UART::Backend
 
   Chimera::Status_t reset()
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   bool isChannelUART( const Chimera::Serial::Channel channel )
@@ -56,7 +56,7 @@ namespace Chimera::UART::Backend
     registry.initialize    = initialize;
     registry.reset         = reset;
     registry.isChannelUART = isChannelUART;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
 #else
     registry.isSupported   = false;
     registry.createShared  = nullptr;
@@ -64,7 +64,7 @@ namespace Chimera::UART::Backend
     registry.initialize    = nullptr;
     registry.reset         = nullptr;
     registry.isChannelUART = nullptr;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_DRIVER_UART == 1*/
   }
 }    // namespace Chimera::UART::Backend

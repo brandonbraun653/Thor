@@ -69,7 +69,7 @@ namespace Chimera::Clock::Backend
     registry.periphDisable         = periphDisable;
     registry.periphEnable          = periphEnable;
     registry.setFrequency          = setFrequency;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
 #else
     registry.isSupported           = false;
     registry.disableClock          = nullptr;
@@ -80,7 +80,7 @@ namespace Chimera::Clock::Backend
     registry.periphDisable         = nullptr;
     registry.periphEnable          = nullptr;
     registry.setFrequency          = nullptr;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_HLD_CLK */
   }
 }    // namespace Chimera::Clock::Backend

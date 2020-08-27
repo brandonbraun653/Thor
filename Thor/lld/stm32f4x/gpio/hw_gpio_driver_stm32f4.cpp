@@ -34,7 +34,7 @@ namespace Thor::LLD::GPIO
     initializeRegisters();
     initializeMapping();
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   IGPIO_sPtr getDriver( const size_t channel )
@@ -120,7 +120,7 @@ namespace Thor::LLD::GPIO
     tmp |= ( ModeMap[ static_cast<size_t>( drive ) ] & MODER_CFG_X_MSK ) << shift_val;
     periph->MODER = tmp;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed, const size_t timeout )
@@ -132,7 +132,7 @@ namespace Thor::LLD::GPIO
     tmp |= ( SpeedMap[ static_cast<size_t>( speed ) ] & OSPEEDR_CFG_X_MSK ) << shift_val;
     periph->OSPEEDR = tmp;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull, const size_t timeout )
@@ -144,7 +144,7 @@ namespace Thor::LLD::GPIO
     tmp |= ( PullMap[ static_cast<size_t>( pull ) ] & PUPDR_CFG_X_MSK ) << shift_val;
     periph->PUPDR = tmp;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::write( const uint8_t pin, const Chimera::GPIO::State state, const size_t timeout )
@@ -162,7 +162,7 @@ namespace Thor::LLD::GPIO
 
     periph->ODR = temp;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::alternateFunctionSet( const uint8_t pin, const size_t val, const size_t timeout )
@@ -182,7 +182,7 @@ namespace Thor::LLD::GPIO
     temp |= ( AFcfg & mask ) << offset;
     periph->AFR = temp;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   size_t Driver::read( const size_t timeout )

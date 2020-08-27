@@ -28,7 +28,7 @@ namespace Chimera::GPIO::Backend
 
   Chimera::Status_t reset()
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::GPIO::GPIO_sPtr create_shared_ptr()
@@ -49,14 +49,14 @@ namespace Chimera::GPIO::Backend
     registry.createUnique = create_unique_ptr;
     registry.initialize   = initialize;
     registry.reset        = reset;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
 #else
     registry.isSupported  = false;
     registry.createShared = nullptr;
     registry.createUnique = nullptr;
     registry.initialize   = nullptr;
     registry.reset        = nullptr;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_DRIVER_GPIO == 1*/
   }
 }    // namespace Chimera::GPIO::Backend

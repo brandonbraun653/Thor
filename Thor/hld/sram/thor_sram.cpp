@@ -27,32 +27,32 @@ namespace Thor
 
     Chimera::Status_t InternalSRAM::write( const size_t address, const uint8_t *const data, const size_t length )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
     Chimera::Status_t InternalSRAM::read( const size_t address, uint8_t *const data, const size_t length )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
     Chimera::Status_t InternalSRAM::erase( const size_t address, const size_t length )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
     Chimera::Status_t InternalSRAM::writeCompleteCallback( const Chimera::Function::void_func_uint32_t func )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
     Chimera::Status_t InternalSRAM::readCompleteCallback( const Chimera::Function::void_func_uint32_t func )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
     Chimera::Status_t InternalSRAM::eraseCompleteCallback( const Chimera::Function::void_func_uint32_t func )
     {
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
     bool InternalSRAM::isInitialized()
@@ -62,4 +62,4 @@ namespace Thor
   }
 }
 
-#endif 
+#endif

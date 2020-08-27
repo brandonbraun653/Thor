@@ -29,15 +29,15 @@ namespace Thor::Memory
 
   Chimera::Status_t InternalFlash::write( const size_t address, const uint8_t *const data, const size_t length )
   {
-    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t error = Chimera::Status::OK;
 
     if ( !data )
     {
-      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      error = Chimera::Status::INVAL_FUNC_PARAM;
     }
     else if ( HAL_FLASH_Unlock() != HAL_OK )
     {
-      error = Chimera::CommonStatusCodes::LOCKED;
+      error = Chimera::Status::LOCKED;
     }
     else
     {
@@ -86,11 +86,11 @@ namespace Thor::Memory
 
   Chimera::Status_t InternalFlash::read( const size_t address, uint8_t *const data, const size_t length )
   {
-    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t error = Chimera::Status::OK;
 
     if ( !data )
     {
-      error = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      error = Chimera::Status::INVAL_FUNC_PARAM;
     }
     else
     {
@@ -124,11 +124,11 @@ namespace Thor::Memory
      *  Instead, this function will erase the sectors that the address range touches
      *  and leave the consequences of that up to the programmer...
      */
-    Chimera::Status_t error = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t error = Chimera::Status::OK;
 
     if ( HAL_FLASH_Unlock() != HAL_OK )
     {
-      error = Chimera::CommonStatusCodes::BUSY;
+      error = Chimera::Status::BUSY;
     }
     else
     {
@@ -145,7 +145,7 @@ namespace Thor::Memory
 
       if ( HAL_FLASHEx_Erase( &eraseInit, &sectorError ) != HAL_OK )
       {
-        error = Chimera::CommonStatusCodes::FAIL;
+        error = Chimera::Status::FAIL;
       }
 
       HAL_FLASH_Lock();
@@ -156,17 +156,17 @@ namespace Thor::Memory
 
   Chimera::Status_t InternalFlash::writeCompleteCallback( const Chimera::Function::void_func_uint32_t func )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t InternalFlash::readCompleteCallback( const Chimera::Function::void_func_uint32_t func )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t InternalFlash::eraseCompleteCallback( const Chimera::Function::void_func_uint32_t func )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   bool InternalFlash::isInitialized()
@@ -177,7 +177,7 @@ namespace Thor::Memory
 
   Chimera::Status_t InternalFlash::convertHALError( const uint32_t error )
   {
-    Chimera::Status_t convertedError = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t convertedError = Chimera::Status::OK;
 
     switch ( error )
     {
@@ -204,15 +204,15 @@ namespace Thor::Memory
         break;
 
       case HAL_FLASH_ERROR_OPERATION:
-        convertedError = Chimera::CommonStatusCodes::FAIL;
+        convertedError = Chimera::Status::FAIL;
         break;
 
       case HAL_FLASH_ERROR_NONE:
-        convertedError = Chimera::CommonStatusCodes::OK;
+        convertedError = Chimera::Status::OK;
         break;
 
       default:
-        convertedError = Chimera::CommonStatusCodes::UNKNOWN_ERROR;
+        convertedError = Chimera::Status::UNKNOWN_ERROR;
     }
 
     return convertedError;

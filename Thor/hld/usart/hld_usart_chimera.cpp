@@ -29,7 +29,7 @@ namespace Chimera::USART::Backend
 
   Chimera::Status_t reset()
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   bool isChannelUSART( const Chimera::Serial::Channel channel )
@@ -56,7 +56,7 @@ namespace Chimera::USART::Backend
     registry.initialize     = initialize;
     registry.reset          = reset;
     registry.isChannelUSART = isChannelUSART;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
 #else
     registry.isSupported    = false;
     registry.createShared   = nullptr;
@@ -64,7 +64,7 @@ namespace Chimera::USART::Backend
     registry.initialize     = nullptr;
     registry.reset          = nullptr;
     registry.isChannelUSART = nullptr;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_DRIVER_USART == 1*/
   }
 }    // namespace Chimera::USART::Backend

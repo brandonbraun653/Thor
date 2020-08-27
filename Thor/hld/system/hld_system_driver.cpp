@@ -38,12 +38,12 @@ namespace Thor::System
   Chimera::Status_t initialize()
   {
     s_system_info = {};
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t reset()
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t systemStartup()
@@ -106,7 +106,7 @@ namespace Thor::System
     Thor::LLD::IT::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
 #endif
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::System::InterruptMask disableInterrupts()

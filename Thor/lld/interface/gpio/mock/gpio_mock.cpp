@@ -60,7 +60,7 @@ namespace Thor::LLD::GPIO
     initializeRegisters();
     initializeMapping();
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   IDriver_sPtr getDriver( const size_t channel )

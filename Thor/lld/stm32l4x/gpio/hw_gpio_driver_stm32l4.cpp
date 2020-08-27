@@ -34,7 +34,7 @@ namespace Thor::LLD::GPIO
     initializeRegisters();
     initializeMapping();
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   IDriver_sPtr getDriver( const size_t channel )
@@ -124,7 +124,7 @@ namespace Thor::LLD::GPIO
     tmp |= ( ModeMap[ static_cast<size_t>( drive ) ] & MODER_CFG_X_MSK ) << shift_val;
     periph->MODER = tmp;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed )
@@ -143,7 +143,7 @@ namespace Thor::LLD::GPIO
     tmp |= ( SpeedMap[ static_cast<size_t>( speed ) ] & OSPEEDR_CFG_X_MSK ) << shift_val;
     periph->OSPEEDR = tmp;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull )
@@ -162,7 +162,7 @@ namespace Thor::LLD::GPIO
     tmp |= ( PullMap[ static_cast<size_t>( pull ) ] & PUPDR_CFG_X_MSK ) << shift_val;
     periph->PUPDR = tmp;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::write( const uint8_t pin, const Chimera::GPIO::State state )
@@ -182,7 +182,7 @@ namespace Thor::LLD::GPIO
       periph->BSRR = x;
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::alternateFunctionSet( const uint8_t pin, const Chimera::GPIO::Alternate val )
@@ -196,7 +196,7 @@ namespace Thor::LLD::GPIO
     const auto instanceToPinMap = InstanceToAlternateMap.at( periph );
     if ( !instanceToPinMap.second )
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
 
     const auto pinMap      = reinterpret_cast<const PinToAFMap *>( instanceToPinMap.second );
@@ -219,7 +219,7 @@ namespace Thor::LLD::GPIO
     temp |= ( AFcfg & mask ) << offset;
     periph->AFR = temp;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::GPIO::State Driver::read( const uint8_t pin )

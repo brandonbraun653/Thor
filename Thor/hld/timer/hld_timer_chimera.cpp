@@ -79,7 +79,7 @@ namespace Chimera::Timer
       registry.createSharedInstance = createSharedInstance;
       registry.createUniqueInstance = nullptr;
       registry.createUnsafeInstance = createUnsafeInstance;
-      return Chimera::CommonStatusCodes::OK;
+      return Chimera::Status::OK;
 #else
       registry.isSupported          = false;
       registry.initialize           = nullptr;
@@ -91,7 +91,7 @@ namespace Chimera::Timer
       registry.createSharedInstance = nullptr;
       registry.createUniqueInstance = nullptr;
       registry.createUnsafeInstance = nullptr;
-      return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_HLD_TIMER */
     }
   }    // namespace Backend

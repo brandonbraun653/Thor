@@ -28,7 +28,7 @@ namespace Chimera::SPI::Backend
 
   Chimera::Status_t reset()
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::SPI::ISPI_sPtr create_shared_ptr()
@@ -49,14 +49,14 @@ namespace Chimera::SPI::Backend
     registry.createUnique = create_unique_ptr;
     registry.initialize   = initialize;
     registry.reset        = reset;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
 #else
     registry.isSupported  = false;
     registry.createShared = nullptr;
     registry.createUnique = nullptr;
     registry.initialize   = nullptr;
     registry.reset        = nullptr;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_DRIVER_SPI == 1*/
   }
 }    // namespace Chimera::SPI::Backend

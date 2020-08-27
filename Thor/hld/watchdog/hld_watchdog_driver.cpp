@@ -30,19 +30,19 @@
 // {
 //   Chimera::Status_t prjInitialize()
 //   {
-//     Chimera::Status_t resultWWDG = Chimera::CommonStatusCodes::OK;
-//     Chimera::Status_t resultIWDG = Chimera::CommonStatusCodes::OK;
+//     Chimera::Status_t resultWWDG = Chimera::Status::OK;
+//     Chimera::Status_t resultIWDG = Chimera::Status::OK;
 
 //     resultWWDG = Thor::Watchdog::initializeWWDG();
 //     resultIWDG = Thor::Watchdog::initializeIWDG();
 
-//     if ( ( resultIWDG == Chimera::CommonStatusCodes::OK ) && ( resultWWDG == Chimera::CommonStatusCodes::OK ) )
+//     if ( ( resultIWDG == Chimera::Status::OK ) && ( resultWWDG == Chimera::Status::OK ) )
 //     {
-//       return Chimera::CommonStatusCodes::OK;
+//       return Chimera::Status::OK;
 //     }
 //     else
 //     {
-//       return Chimera::CommonStatusCodes::FAIL;
+//       return Chimera::Status::FAIL;
 //     }
 //   }
 // }
@@ -69,7 +69,7 @@ namespace Thor::Watchdog
 
 
     s_wwdg_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Window::Window() : currentPrescaler( 0u )
@@ -89,20 +89,20 @@ namespace Thor::Watchdog
 
     hwDriver->enableClock();
 
-    if ( ( hwDriver->setPrescaler( prescalerRegVal ) != Chimera::CommonStatusCodes::OK ) ||
-         ( hwDriver->setReload( reloadRegVal ) != Chimera::CommonStatusCodes::OK ) ||
-         ( hwDriver->setWindow( windowRegVal ) != Chimera::CommonStatusCodes::OK ) )
+    if ( ( hwDriver->setPrescaler( prescalerRegVal ) != Chimera::Status::OK ) ||
+         ( hwDriver->setReload( reloadRegVal ) != Chimera::Status::OK ) ||
+         ( hwDriver->setWindow( windowRegVal ) != Chimera::Status::OK ) )
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Window::start()
   {
     hwDriver->start();
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Window::stop()
@@ -110,13 +110,13 @@ namespace Thor::Watchdog
     /*------------------------------------------------
     Once enabled, the watchdog cannot be stopped except by a system reset
     ------------------------------------------------*/
-    return Chimera::CommonStatusCodes::LOCKED;
+    return Chimera::Status::LOCKED;
   }
 
   Chimera::Status_t Window::kick()
   {
     hwDriver->reload();
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   size_t Window::getTimeout()
@@ -136,7 +136,7 @@ namespace Thor::Watchdog
 
   Chimera::Status_t Window::pauseOnDebugHalt( const bool enable )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   #endif /* THOR_HLD_WWDG */
@@ -158,7 +158,7 @@ namespace Thor::Watchdog
 
 
     s_iwdg_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Independent::Independent() : currentPrescaler( 0u )
@@ -177,19 +177,19 @@ namespace Thor::Watchdog
 
     hwDriver->start();
 
-    if ( ( hwDriver->setPrescaler( prescalerRegVal ) != Chimera::CommonStatusCodes::OK ) ||
-         ( hwDriver->setReload( reloadRegVal ) != Chimera::CommonStatusCodes::OK ) )
+    if ( ( hwDriver->setPrescaler( prescalerRegVal ) != Chimera::Status::OK ) ||
+         ( hwDriver->setReload( reloadRegVal ) != Chimera::Status::OK ) )
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Independent::start()
   {
     hwDriver->start();
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Independent::stop()
@@ -197,13 +197,13 @@ namespace Thor::Watchdog
     /*------------------------------------------------
     Once enabled, the watchdog cannot be stopped except by a system reset
     ------------------------------------------------*/
-    return Chimera::CommonStatusCodes::LOCKED;
+    return Chimera::Status::LOCKED;
   }
 
   Chimera::Status_t Independent::kick()
   {
     hwDriver->reload();
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   size_t Independent::getTimeout()
@@ -223,7 +223,7 @@ namespace Thor::Watchdog
 
   Chimera::Status_t Independent::pauseOnDebugHalt( const bool enable )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   #endif /* THOR_HLD_IWDG */

@@ -67,7 +67,7 @@ namespace Thor::LLD::TIMER
     initializeRegisters();
     initializeMapping();
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   IAdvancedDriver_sPtr getAdvancedDriver( const Thor::HLD::RIndex channel )
@@ -116,7 +116,7 @@ namespace Thor::LLD::TIMER
 
   Chimera::Status_t AdvancedDriver::attach( RegisterMap *const peripheral )
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
 
@@ -133,7 +133,7 @@ namespace Thor::LLD::TIMER
 
   Chimera::Status_t BasicDriver::attach( RegisterMap *const peripheral )
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   /*-------------------------------------------------------------------------------
@@ -149,7 +149,7 @@ namespace Thor::LLD::TIMER
 
   Chimera::Status_t LowPowerDriver::attach( LPRegisterMap *const peripheral )
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
 }    // namespace Thor::LLD::TIMER

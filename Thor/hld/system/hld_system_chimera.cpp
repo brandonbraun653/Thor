@@ -31,14 +31,14 @@ namespace Chimera::System::Backend
       return Thor::System::initialize();
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t reset()
   {
     auto lld_reset_result = Thor::System::reset();
 
-    if ( lld_reset_result == Chimera::CommonStatusCodes::OK )
+    if ( lld_reset_result == Chimera::Status::OK )
     {
       s_system_initialized = false;
     }
@@ -155,11 +155,11 @@ namespace Chimera::System::Backend
     registry.version_Major          = Version::major;
     registry.version_Minor          = Version::minor;
     registry.version_Patch          = Version::patch;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
 #else
     registry             = {};
     registry.isSupported = false;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
 #endif
   }
 }    // namespace Chimera::System::Backend

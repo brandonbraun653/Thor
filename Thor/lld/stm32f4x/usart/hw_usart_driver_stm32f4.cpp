@@ -70,9 +70,9 @@ namespace Thor::LLD::USART
     starting from a clean slate. There are no guarantees
     on what state the system is in when this is called.
     ------------------------------------------------*/
-    if ( deinit() != Chimera::CommonStatusCodes::OK )
+    if ( deinit() != Chimera::Status::OK )
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
 
     /*------------------------------------------------
@@ -111,7 +111,7 @@ namespace Thor::LLD::USART
     /* Select the desired baud rate */
     BRR::set( periph, calculateBRR( cfg.BaudRate ) );
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::deinit()
@@ -121,7 +121,7 @@ namespace Thor::LLD::USART
     rcc->reset( peripheralType, resourceIndex );
     rcc->disableClock( peripheralType, resourceIndex );
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::reset()
@@ -133,17 +133,17 @@ namespace Thor::LLD::USART
 
     ISRWakeup_external = nullptr;
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::transmit( const uint8_t *const data, const size_t size, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::receive( uint8_t *const data, const size_t size, const size_t timeout )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::enableIT( const Chimera::Hardware::SubPeripheral subPeriph )
@@ -157,7 +157,7 @@ namespace Thor::LLD::USART
     The individual TX and RX functions take care of the nitty gritty details
     ------------------------------------------------*/
     enableIRQ( periphIRQn );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::disableIT( const Chimera::Hardware::SubPeripheral subPeriph )
@@ -165,7 +165,7 @@ namespace Thor::LLD::USART
     using namespace Chimera::Hardware;
     using namespace Thor::LLD::IT;
 
-    Chimera::Status_t result = Chimera::CommonStatusCodes::OK;
+    Chimera::Status_t result = Chimera::Status::OK;
 
     disableIRQ( periphIRQn );
     clearPendingIRQ( periphIRQn );
@@ -181,7 +181,7 @@ namespace Thor::LLD::USART
     }
     else
     {
-      result = Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      result = Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     enableIRQ( periphIRQn );
@@ -194,13 +194,13 @@ namespace Thor::LLD::USART
 #if defined( DEBUG )
     if ( !data || !size )
     {
-      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      return Chimera::Status::INVAL_FUNC_PARAM;
     }
 #endif
 
     if ( !SR::TC::get( periph ) )
     {
-      return Chimera::CommonStatusCodes::BUSY;
+      return Chimera::Status::BUSY;
     }
     else
     {
@@ -230,7 +230,7 @@ namespace Thor::LLD::USART
       exitCriticalSection();
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::receiveIT( uint8_t *const data, const size_t size, const size_t timeout )
@@ -238,14 +238,14 @@ namespace Thor::LLD::USART
 #if defined( DEBUG )
     if ( !data || !size )
     {
-      return Chimera::CommonStatusCodes::INVAL_FUNC_PARAM;
+      return Chimera::Status::INVAL_FUNC_PARAM;
     }
 #endif
 
     if ( SR::RXNE::get( periph ) )
     {
       /* There is a byte in the register that needs to be read by the ISR */
-      return Chimera::CommonStatusCodes::BUSY;
+      return Chimera::Status::BUSY;
     }
     else
     {
@@ -271,34 +271,34 @@ namespace Thor::LLD::USART
       exitCriticalSection();
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::initDMA()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::deinitDMA()
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::enableDMA_IT( const Chimera::Hardware::SubPeripheral periph )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::disableDMA_IT( const Chimera::Hardware::SubPeripheral periph )
   {
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::transmitDMA( const void *const data, const size_t size, const size_t timeout )
   {
     using namespace Chimera::Threading;
 
-    auto result = Chimera::CommonStatusCodes::TIMEOUT;
+    auto result = Chimera::Status::TIMEOUT;
 
     /*------------------------------------------------
     Create the control blocks for configuring a USART DMA transfer
@@ -338,13 +338,13 @@ namespace Thor::LLD::USART
     auto dma = Thor::DMA::DMAClass::get();
     if ( !dma )
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
 
     /*------------------------------------------------
     Acquire exclusive access to the hardware and start the transfer
     ------------------------------------------------*/
-    if ( dma->try_lock_for( timeout ) == Chimera::CommonStatusCodes::OK )
+    if ( dma->try_lock_for( timeout ) == Chimera::Status::OK )
     {
       /*------------------------------------------------
       According to pg.32 of AN4031, the DMA must be initialized
@@ -389,12 +389,12 @@ namespace Thor::LLD::USART
 
     // don't forget to pull the correct signal
 
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   Chimera::Status_t Driver::txTransferStatus()
   {
-    Chimera::Status_t cacheStatus = Chimera::CommonStatusCodes::UNKNOWN_ERROR;
+    Chimera::Status_t cacheStatus = Chimera::Status::UNKNOWN_ERROR;
 
     enterCriticalSection();
     cacheStatus = txTCB.state;
@@ -405,7 +405,7 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::rxTransferStatus()
   {
-    Chimera::Status_t cacheStatus = Chimera::CommonStatusCodes::UNKNOWN_ERROR;
+    Chimera::Status_t cacheStatus = Chimera::Status::UNKNOWN_ERROR;
 
     enterCriticalSection();
     cacheStatus = rxTCB.state;

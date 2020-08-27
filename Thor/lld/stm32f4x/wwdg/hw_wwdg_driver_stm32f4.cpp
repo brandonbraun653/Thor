@@ -172,19 +172,19 @@ namespace Thor::LLD::WWDG
   Chimera::Status_t Driver::setPrescaler( const uint32_t val )
   {
     CFR::WDGTB::set( periph, val );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::setReload( const uint32_t val )
   {
     reloadValue = val;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::setWindow( const uint32_t val )
   {
     CFR::W::set( periph, val );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   void Driver::start()

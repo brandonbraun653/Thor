@@ -28,7 +28,7 @@ namespace Chimera::PWM::Backend
 
   Chimera::Status_t reset()
   {
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::PWM::PWM_sPtr create_shared_ptr()
@@ -43,7 +43,7 @@ namespace Chimera::PWM::Backend
 
   size_t numSupportedChannels()
   {
-    
+
     return 0;    // TODO
   }
 
@@ -56,7 +56,7 @@ namespace Chimera::PWM::Backend
     registry.initialize           = initialize;
     registry.reset                = reset;
     registry.numSupportedChannels = numSupportedChannels;
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
 #else
     registry.isSupported          = false;
     registry.createShared         = nullptr;
@@ -64,7 +64,7 @@ namespace Chimera::PWM::Backend
     registry.initialize           = nullptr;
     registry.reset                = nullptr;
     registry.numSupportedChannels = nullptr;
-    return Chimera::CommonStatusCodes::NOT_SUPPORTED;
+    return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_DRIVER_PWM == 1*/
   }
 }    // namespace Chimera::PWM::Backend

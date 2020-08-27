@@ -31,7 +31,7 @@ namespace Thor::LLD::PWR
     initializeRegisters();
     initializeMapping();
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
 }    // namespace Thor::LLD::POWER

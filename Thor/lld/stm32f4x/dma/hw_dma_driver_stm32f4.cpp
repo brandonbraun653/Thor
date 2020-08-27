@@ -67,7 +67,7 @@ namespace Thor::LLD::DMA
     initializeRegisters();
     initializeMapping();
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   StreamController * getStreamController( const uint8_t resourceIndex )
@@ -94,7 +94,7 @@ namespace Thor::LLD::DMA
   {
     using namespace Chimera::Threading;
 
-    auto result = Chimera::CommonStatusCodes::LOCKED;
+    auto result = Chimera::Status::LOCKED;
 
     if ( this->try_lock_for( 100 ) )
     {
@@ -107,7 +107,7 @@ namespace Thor::LLD::DMA
       streamResourceIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
       streamIRQn          = DMAStream_IRQn[ streamResourceIndex ];
 
-      result = Chimera::CommonStatusCodes::OK;
+      result = Chimera::Status::OK;
     }
 
     return result;
@@ -117,14 +117,14 @@ namespace Thor::LLD::DMA
   {
     using namespace Chimera::Threading;
 
-    auto result = Chimera::CommonStatusCodes::LOCKED;
+    auto result = Chimera::Status::LOCKED;
 
     if ( try_lock_for( 100 ) )
     {
       enterCriticalSection();
 
       wakeupSignal = wakeup;
-      result       = Chimera::CommonStatusCodes::OK;
+      result       = Chimera::Status::OK;
 
       exitCriticalSection();
     }
@@ -136,12 +136,12 @@ namespace Thor::LLD::DMA
   {
     using namespace Chimera::Threading;
 
-    auto result = Chimera::CommonStatusCodes::LOCKED;
+    auto result = Chimera::Status::LOCKED;
 
     if ( try_lock_for( 100 ) )
     {
       enterCriticalSection();
-      result = Chimera::CommonStatusCodes::OK;
+      result = Chimera::Status::OK;
 
       /*------------------------------------------------
       Initialize the control block
@@ -173,7 +173,7 @@ namespace Thor::LLD::DMA
       }
       else
       {
-        return Chimera::CommonStatusCodes::FAIL;
+        return Chimera::Status::FAIL;
       }
 
       /*------------------------------------------------
@@ -237,11 +237,11 @@ namespace Thor::LLD::DMA
   {
     using namespace Chimera::Threading;
 
-    auto result = Chimera::CommonStatusCodes::LOCKED;
+    auto result = Chimera::Status::LOCKED;
 
     if ( try_lock_for( 100 ) )
     {
-      result = Chimera::CommonStatusCodes::OK;
+      result = Chimera::Status::OK;
 
       /*------------------------------------------------
       Set up the interrupt bits
@@ -268,7 +268,7 @@ namespace Thor::LLD::DMA
   {
     // Should abruptly disable the hardware and fire an ISR if there is an ongoing transfer.
     SxCR::EN::set( stream, 0 );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t StreamController::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
@@ -279,7 +279,7 @@ namespace Thor::LLD::DMA
 
     eventListeners.push_back( listener );
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t StreamController::removeListener( const size_t registrationID, const size_t timeout )
@@ -289,19 +289,19 @@ namespace Thor::LLD::DMA
       if ( iterator->id == registrationID )
       {
         eventListeners.erase( iterator );
-        return Chimera::CommonStatusCodes::OK;
+        return Chimera::Status::OK;
         break;
       }
     }
 
-    return Chimera::CommonStatusCodes::NOT_FOUND;
+    return Chimera::Status::NOT_FOUND;
   }
 
   Chimera::Status_t StreamController::postISRProcessing()
   {
     using namespace Chimera::Threading;
 
-    auto result = Chimera::CommonStatusCodes::OK;
+    auto result = Chimera::Status::OK;
 
     TCB cb;
     cb.clear();
@@ -317,7 +317,7 @@ namespace Thor::LLD::DMA
     }
     else
     {
-      return Chimera::CommonStatusCodes::LOCKED;
+      return Chimera::Status::LOCKED;
     }
 
     /*------------------------------------------------
@@ -509,7 +509,7 @@ namespace Thor::LLD::DMA
   {
     periph = peripheral;
     clockEnable();
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t ChannelController::clockEnable()
@@ -518,7 +518,7 @@ namespace Thor::LLD::DMA
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_DMA, index );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t ChannelController::clockDisable()
@@ -527,7 +527,7 @@ namespace Thor::LLD::DMA
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_DMA, index );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t ChannelController::reset()
@@ -536,14 +536,14 @@ namespace Thor::LLD::DMA
     auto index = InstanceToResourceIndex.find( reinterpret_cast<std::uintptr_t>( periph ) )->second;
 
     rcc->reset( Chimera::Peripheral::Type::PERIPH_DMA, index );
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t ChannelController::init()
   {
     if ( !periph )
     {
-      return Chimera::CommonStatusCodes::NOT_INITIALIZED;
+      return Chimera::Status::NOT_INITIALIZED;
     }
 
     /*------------------------------------------------
@@ -586,7 +586,7 @@ namespace Thor::LLD::DMA
       }
     }
 
-    return Chimera::CommonStatusCodes::OK;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t ChannelController::configure( StreamX *const stream, StreamConfig *const config, TCB *const controlBlock )
@@ -599,7 +599,7 @@ namespace Thor::LLD::DMA
     }
     else
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
   }
 
@@ -613,7 +613,7 @@ namespace Thor::LLD::DMA
     }
     else
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
   }
 
@@ -627,14 +627,14 @@ namespace Thor::LLD::DMA
     }
     else
     {
-      return Chimera::CommonStatusCodes::FAIL;
+      return Chimera::Status::FAIL;
     }
   }
 
   Chimera::Status_t ChannelController::registerListener( StreamX *const stream, Chimera::Event::Actionable &listener, const size_t timeout,
                                               size_t &registrationID )
   {
-    auto result          = Chimera::CommonStatusCodes::FAIL;
+    auto result          = Chimera::Status::FAIL;
     size_t resourceIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
 
     if ( ( resourceIndex < streamObjects.size() ) && streamObjects[ resourceIndex ] )
@@ -647,7 +647,7 @@ namespace Thor::LLD::DMA
 
   Chimera::Status_t ChannelController::removeListener( StreamX *const stream, const size_t registrationID, const size_t timeout )
   {
-    auto result          = Chimera::CommonStatusCodes::FAIL;
+    auto result          = Chimera::Status::FAIL;
     size_t resourceIndex = StreamToResourceIndex.find( reinterpret_cast<std::uintptr_t>( stream ) )->second;
 
     if ( ( resourceIndex < streamObjects.size() ) && streamObjects[ resourceIndex ] )
