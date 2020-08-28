@@ -26,7 +26,7 @@ namespace Thor::LLD::PWR
   PeriphRegisterList PeripheralList;
 
   /*-------------------------------------------------
-  Module Functions 
+  Module Functions
   -------------------------------------------------*/
   void initializeMapping()
   {
@@ -34,4 +34,4 @@ namespace Thor::LLD::PWR
   }
 }    // namespace Thor::LLD::POWER
 
-#endif /* TARGET_STM32L4 && THOR_LLD_POWER */
+#endif /* TARGET_STM32L4 && THOR_LLD_PWR */

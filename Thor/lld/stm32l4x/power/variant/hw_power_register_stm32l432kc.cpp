@@ -102,4 +102,4 @@ namespace Thor::LLD::RCC::LookupTables
 
 }    // namespace Thor::LLD::RCC::LookupTables
 
-#endif /* STM32L432xx && THOR_LLD_POWER */
+#endif /* STM32L432xx && THOR_LLD_PWR */

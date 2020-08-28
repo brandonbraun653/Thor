@@ -56,7 +56,6 @@ use-project /THOR/LLD/INTF/IT       : interrupt ;
 use-project /THOR/LLD/INTF/NVIC     : nvic ;
 use-project /THOR/LLD/INTF/POWER    : power ;
 use-project /THOR/LLD/INTF/RCC      : rcc ;
-use-project /THOR/LLD/INTF/SERIAL   : serial ;
 use-project /THOR/LLD/INTF/SPI      : spi ;
 use-project /THOR/LLD/INTF/STARTUP  : startup ;
 use-project /THOR/LLD/INTF/TIMER    : timer ;

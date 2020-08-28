@@ -163,20 +163,23 @@ Low Level Driver Support
 ----------------------------------------------*/
 //#ifndef THOR_LLD_ADC
 //#define THOR_LLD_ADC
+//#define THOR_LLD_ADC_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_CAN
 //#define THOR_LLD_CAN
+//#define THOR_LLD_CAN_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_CRYPTO
 //#define THOR_LLD_CRYPTO
+//#define THOR_LLD_CRYPTO_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_DAC
 //#define THOR_LLD_DAC
+//#define THOR_LLD_DAC_MOCK
 //#endif
-//
 
 #ifndef THOR_LLD_DES
 #define THOR_LLD_DES
@@ -185,18 +188,22 @@ Low Level Driver Support
 
 //#ifndef THOR_LLD_DMA
 //#define THOR_LLD_DMA
+//#define THOR_LLD_DMA_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_ETHR
 //#define THOR_LLD_ETHR
+//#define THOR_LLD_ETHR_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_EXTI
 //#define THOR_LLD_EXTI
+//#define THOR_LLD_EXTI_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_FLASH
 //#define THOR_LLD_FLASH
+//#define THOR_LLD_FLASH_MOCK
 //#endif
 
 #ifndef THOR_LLD_GPIO
@@ -206,14 +213,17 @@ Low Level Driver Support
 
 //#ifndef THOR_LLD_HASH
 //#define THOR_LLD_HASH
+//#define THOR_LLD_HASH_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_I2C
 //#define THOR_LLD_I2C
+//#define THOR_LLD_I2C_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_I2S
 //#define THOR_LLD_I2S
+//#define THOR_LLD_I2S_MOCK
 //#endif
 
 #ifndef THOR_LLD_IT
@@ -223,22 +233,22 @@ Low Level Driver Support
 
 //#ifndef THOR_LLD_IWDG
 //#define THOR_LLD_IWDG
+//#define THOR_LLD_IWDG_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_NVIC
 //#define THOR_LLD_NVIC
-//#endif
-//
-//#ifndef THOR_LLD_PWM
-//#define THOR_LLD_PWM
+//#define THOR_LLD_NVIC_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_PWR
 //#define THOR_LLD_PWR
+//#define THOR_LLD_PWR_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_QSPI
 //#define THOR_LLD_QSPI
+//#define THOR_LLD_QSPI_MOCK
 //#endif
 
 #ifndef THOR_LLD_RCC
@@ -248,18 +258,22 @@ Low Level Driver Support
 
 //#ifndef THOR_LLD_RNG
 //#define THOR_LLD_RNG
+//#define THOR_LLD_RNG_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_RTC
 //#define THOR_LLD_RTC
+//#define THOR_LLD_RTC_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_SDMMC
 //#define THOR_LLD_SDMMC
+//#define THOR_LLD_SDMMC_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_SERIAL
 //#define THOR_LLD_SERIAL
+//#define THOR_LLD_SERIAL_MOCK
 //#endif
 
 #ifndef THOR_LLD_SPI
@@ -269,23 +283,27 @@ Low Level Driver Support
 
 //#ifndef THOR_LLD_TIMER
 //#define THOR_LLD_TIMER
+//#define THOR_LLD_TIMER_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_UART
 //#define THOR_LLD_UART
+//#define THOR_LLD_UART_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_USART
 //#define THOR_LLD_USART
+//#define THOR_LLD_USART_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_USB
 //#define THOR_LLD_USB
+//#define THOR_LLD_USB_MOCK
 //#endif
 //
 //#ifndef THOR_LLD_WWDG
 //#define THOR_LLD_WWDG
+//#define THOR_LLD_WWDG_MOCK
 //#endif
-
 
 #endif  /* !THOR_CONFIG_SIMULATOR_HPP */

@@ -1,5 +1,5 @@
 # ====================================================
-# Local Rules 
+# Local Rules
 # ====================================================
 local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
     {
@@ -13,7 +13,7 @@ local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/stm32l4/power
 # ====================================================
 # Public Targets
 # ====================================================
-explicit_alias PUB : : : : <define>THOR_LLD_POWER ;
+explicit_alias PUB : : : : <define>THOR_LLD_PWR ;
 
 # ====================================================
 # Static Libraries
@@ -50,7 +50,7 @@ exe lld_power_test
   : [ glob test/*.cpp ]
 
     /THOR/LLD/STM32L4//TEST_LIB
-  
+
   : <link>static
     <Thor>enabled-L4
     <use>/AURORA//PUB

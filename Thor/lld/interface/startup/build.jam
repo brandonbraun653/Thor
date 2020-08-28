@@ -1,0 +1,33 @@
+# ====================================================
+# Local Rules
+# ====================================================
+local rule explicit_alias ( name : sources * : requirements * : default-build * : usage-requirements * )
+    {
+    alias $(name) : $(sources) : $(requirements) : $(default-build) : $(usage-requirements) ;
+    explicit $(name) ;
+    }
+
+local path-constant dbg_install_dir = $(ARTIFACTS_DIR)/debug/lld/mock/startup ;
+local path-constant rel_install_dir = $(ARTIFACTS_DIR)/release/lld/mock/startup ;
+
+# ====================================================
+# Public Targets
+# ====================================================
+explicit_alias PUB : : : : ;
+
+# ====================================================
+# Static Libraries
+# ====================================================
+lib lld_startup_mock
+  : [ glob mock/*.cpp ]
+
+  : <link>static
+    <Thor>enabled-SIM
+    <use>/CHIMERA//PUB
+    <use>/GOOGLE//TEST_PUB
+    <use>/GOOGLE//MOCK_PUB
+    <use>/THOR//PUB
+    <use>/THOR//TARGET_PROPAGATED_OPTIONS
+  ;
+explicit lld_startup_mock ;
+explicit_alias MOCK_LIB : lld_startup_mock : : : <library>lld_startup_mock ;
