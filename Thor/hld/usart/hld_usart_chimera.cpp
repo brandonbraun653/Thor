@@ -37,30 +37,23 @@ namespace Chimera::USART::Backend
     return Thor::LLD::USART::isChannelSupported( channel );
   }
 
-  Chimera::USART::USART_sPtr create_shared_ptr()
+  IUSART_sPtr getDriver( const Chimera::Serial::Channel channel )
   {
     return std::make_shared<Thor::USART::Driver>();
-  }
-
-  Chimera::USART::USART_uPtr create_unique_ptr()
-  {
-    return std::make_unique<Thor::USART::Driver>();
   }
 
   Chimera::Status_t registerDriver( Chimera::USART::Backend::DriverConfig &registry )
   {
 #if defined( THOR_HLD_USART )
     registry.isSupported    = true;
-    registry.createShared   = create_shared_ptr;
-    registry.createUnique   = create_unique_ptr;
+    registry.getDriver      = getDriver;
     registry.initialize     = initialize;
     registry.reset          = reset;
     registry.isChannelUSART = isChannelUSART;
     return Chimera::Status::OK;
 #else
     registry.isSupported    = false;
-    registry.createShared   = nullptr;
-    registry.createUnique   = nullptr;
+    registry.getDriver      = nullptr;
     registry.initialize     = nullptr;
     registry.reset          = nullptr;
     registry.isChannelUSART = nullptr;

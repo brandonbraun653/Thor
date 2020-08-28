@@ -22,12 +22,8 @@
 namespace Chimera::DMA::Backend
 {
   Chimera::Status_t initialize();
-
   Chimera::Status_t reset();
-
-  Chimera::DMA::DMA_sPtr create_shared_ptr();
-
-  Chimera::DMA::DMA_uPtr create_unique_ptr();
+  IDMA_sPtr getDriver( const Controller channel );
 }    // namespace Chimera::DMA::Backend
 
 #endif /* !THOR_DMA_CHIMERA_HOOKS_HPP */

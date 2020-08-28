@@ -31,31 +31,24 @@ namespace Chimera::SPI::Backend
     return Chimera::Status::OK;
   }
 
-  Chimera::SPI::ISPI_sPtr create_shared_ptr()
+  ISPI_sPtr getDriver( const Channel channel )
   {
     return std::make_shared<Thor::SPI::Driver>();
-  }
-
-  Chimera::SPI::ISPI_uPtr create_unique_ptr()
-  {
-    return std::make_unique<Thor::SPI::Driver>();
   }
 
   Chimera::Status_t registerDriver( Chimera::SPI::Backend::DriverConfig &registry )
   {
 #if defined( THOR_HLD_SPI )
-    registry.isSupported  = true;
-    registry.createShared = create_shared_ptr;
-    registry.createUnique = create_unique_ptr;
-    registry.initialize   = initialize;
-    registry.reset        = reset;
+    registry.isSupported = true;
+    registry.getDriver   = getDriver;
+    registry.initialize  = initialize;
+    registry.reset       = reset;
     return Chimera::Status::OK;
 #else
-    registry.isSupported  = false;
-    registry.createShared = nullptr;
-    registry.createUnique = nullptr;
-    registry.initialize   = nullptr;
-    registry.reset        = nullptr;
+    registry.isSupported = false;
+    registry.getDriver   = nullptr;
+    registry.initialize  = nullptr;
+    registry.reset       = nullptr;
     return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_DRIVER_SPI == 1*/
   }

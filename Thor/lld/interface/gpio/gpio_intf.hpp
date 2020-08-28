@@ -26,17 +26,17 @@ namespace Thor::LLD::GPIO
   extern Chimera::Status_t initialize();
 
   /**
-   *  Gets a shared pointer to the GPIO driver for a particular channel
+   *  Gets a raw pointer to the GPIO driver for a particular channel
    *
    *  @note Because GPIO hardware is usually grouped into ports, registers, or banks, the
    *        lookup channel is referencing one of those groupings. On STM32, this typically
-   *        means PORTA/B/C/etc. Reference the LLD implementation to figure out which 
+   *        means PORTA/B/C/etc. Reference the LLD implementation to figure out which
    *        channel is mapped to which port.
    *
    *  @param[in] channel      The GPIO channel (port) to grab
    *  @return IDriver_sPtr    Instance of the GPIO driver for the requested channel
    */
-  extern IDriver_sPtr getDriver( const size_t channel );
+  extern IDriver_rPtr getDriver( const size_t channel );
 
   /**
    *  Looks up how many GPIO channels are supported by the low level driver
@@ -46,10 +46,10 @@ namespace Thor::LLD::GPIO
   extern size_t availableChannels();
 
   /**
-   *  Interface specification for the low level GPIO driver. It's expected that the 
+   *  Interface specification for the low level GPIO driver. It's expected that the
    *  implementation will follow the described behavior set to the letter. No thread
    *  safety is assumed with the driver as it's provided by associated GPIO HLD module.
-   *  
+   *
    *  Instances of this driver can be used directly, but it's recommended to use the HLD.
    */
   class IDriver
@@ -64,10 +64,10 @@ namespace Thor::LLD::GPIO
      *  @return void
      */
     virtual void attach( RegisterMap *const peripheral ) = 0;
-  
+
     /**
      *  Enables the peripheral clock
-     *  
+     *
      *  @return void
      */
     virtual void clockEnable() = 0;
@@ -180,7 +180,7 @@ namespace Thor::LLD::GPIO
      *
      *  @param[in]  pin       The pin to act on
      *  @param[in]  timeout   How long to wait for the resource to become available
-     *  @return Thor::LLD::GPIO::Speed 
+     *  @return Thor::LLD::GPIO::Speed
      */
     virtual Thor::LLD::GPIO::Speed speedGet( const uint8_t pin ) = 0;
 

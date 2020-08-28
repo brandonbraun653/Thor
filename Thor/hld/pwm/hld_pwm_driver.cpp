@@ -60,7 +60,7 @@ namespace Thor::PWM
     Check if a timer peripheral exists for the requested PWM channel.
     If it does, grab the driver, creating one if it doesn't exist yet.
     ------------------------------------------------*/
-    mpTimerDriver = Chimera::Timer::createSharedInstance( cfg.timer.peripheral );
+    mpTimerDriver = Chimera::Timer::getSharedInstance( cfg.timer.peripheral );
     if ( !mpTimerDriver )
     {
       return Chimera::Status::NOT_AVAILABLE;
@@ -93,7 +93,7 @@ namespace Thor::PWM
     Configure the GPIO for timer output
     ------------------------------------------------*/
     mpOutputPin = std::make_unique<Thor::GPIO::Driver>();
-    result |= mpOutputPin->init( cfg.outputPin, Chimera::Threading::TIMEOUT_DONT_WAIT );
+    result |= mpOutputPin->init( cfg.outputPin );
 
     /*------------------------------------------------
     Assuming everything is OK, save class data

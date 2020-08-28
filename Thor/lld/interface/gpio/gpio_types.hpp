@@ -14,7 +14,6 @@
 
 /* STL Includes */
 #include <cstdint>
-#include <memory>
 
 /* Chimera Includes */
 #include <Chimera/container>
@@ -22,16 +21,26 @@
 
 namespace Thor::LLD::GPIO
 {
-  /*------------------------------------------------
-  Forward Declarations
-  ------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Foward Declarations
+  -------------------------------------------------------------------------------*/
   class IDriver;
-  using IDriver_sPtr = std::shared_ptr<IDriver>;
   struct RegisterMap;
 
-  /*------------------------------------------------
-  Types
-  ------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
+  using AFToReg      = Chimera::Container::LightFlatMap<Chimera::GPIO::Alternate, Reg32_t>;
+  using AlternateMap = Chimera::Container::LightFlatMap<RegisterMap *, const void *>;
+  using IDriver_rPtr = IDriver *;
+  using IndexMap     = Chimera::Container::LightFlatMap<std::uintptr_t, size_t>;
+  using InstanceMap  = Chimera::Container::LightFlatMap<Chimera::GPIO::Port, RegisterMap *>;
+  using PinToAFMap   = Chimera::Container::LightFlatMap<uint8_t, const AFToReg *>;
+  using PortMap      = Chimera::Container::LightFlatMap<RegisterMap *, Chimera::GPIO::Port>;
+
+  /*-------------------------------------------------------------------------------
+  Enumerations
+  -------------------------------------------------------------------------------*/
   /**
    *  Effectively defines the drive strength of the GPIO output. Actual
    *  strength depends on VDD and the connected load.
@@ -47,14 +56,6 @@ namespace Thor::LLD::GPIO
     NUM_OPTIONS,
     UNKNOWN_SPEED
   };
-
-  using InstanceMap  = Chimera::Container::LightFlatMap<Chimera::GPIO::Port, RegisterMap *>;
-  using PortMap      = Chimera::Container::LightFlatMap<RegisterMap *, Chimera::GPIO::Port>;
-  using IndexMap     = Chimera::Container::LightFlatMap<std::uintptr_t, size_t>;
-  using AlternateMap = Chimera::Container::LightFlatMap<RegisterMap *, const void *>;
-
-  using AFToReg = Chimera::Container::LightFlatMap<Chimera::GPIO::Alternate, Reg32_t>;
-  using PinToAFMap = Chimera::Container::LightFlatMap<uint8_t, const AFToReg *>;
 }
 
 #endif /* !THOR_LLD_GPIO_DRIVER_TYPES_HPP */

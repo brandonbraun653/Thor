@@ -36,31 +36,22 @@ namespace Chimera::Watchdog::Backend
     return Chimera::Status::OK;
   }
 
-  Chimera::Watchdog::Watchdog_sPtr create_shared_ptr()
+  Chimera::Watchdog::IWatchdog_sPtr getDriver( const Channel channel )
   {
     return nullptr;
-    //return std::make_shared<Thor::Watchdog::Independent>();
-  }
-
-  Chimera::Watchdog::Watchdog_uPtr create_unique_ptr()
-  {
-    return nullptr;
-    //return std::make_unique<Thor::Watchdog::Independent>();
   }
 
   Chimera::Status_t registerDriver( Chimera::Watchdog::Backend::DriverConfig &registry )
   {
 #if defined( THOR_HLD_WWDG ) || defined( THOR_HLD_IWDG )
     registry.isSupported  = true;
-    registry.createShared = create_shared_ptr;
-    registry.createUnique = create_unique_ptr;
+    registry.createShared = getDriver;
     registry.initialize   = initialize;
     registry.reset        = reset;
     return Chimera::Status::OK;
 #else
     registry.isSupported  = false;
-    registry.createShared = nullptr;
-    registry.createUnique = nullptr;
+    registry.getDriver    = nullptr;
     registry.initialize   = nullptr;
     registry.reset        = nullptr;
     return Chimera::Status::NOT_SUPPORTED;

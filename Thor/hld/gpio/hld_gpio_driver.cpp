@@ -21,7 +21,7 @@
 
 /* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/hld/gpio/hld_gpio_driver.hpp>
+#include <Thor/gpio>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
 #include <Thor/lld/interface/gpio/gpio_detail.hpp>
 
@@ -29,15 +29,31 @@
 
 namespace Thor::GPIO
 {
+  /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
+  namespace HLD = ::Thor::GPIO;
+  namespace LLD = ::Thor::LLD::GPIO;
+
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
+  static constexpr size_t NUM_DRIVERS = LLD::NUM_GPIO_PERIPHS;
+
+  /*-------------------------------------------------------------------------------
+  Variables
+  -------------------------------------------------------------------------------*/
   // Tracks if the module data has been initialized correctly
   static size_t s_driver_initialized;
 
-  // Stores the low level driver instances
-  static std::array<Thor::LLD::GPIO::IDriver_sPtr, Thor::LLD::GPIO::NUM_GPIO_PERIPHS> drivers;
+  // Stores the high/low level driver instances
+  static HLD::Driver hld_driver[ NUM_DRIVERS ];
+  static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ];
 
-  /*------------------------------------------------
-  High Level Driver Free Functions
-  ------------------------------------------------*/
+
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     /*------------------------------------------------
@@ -53,9 +69,9 @@ namespace Thor::GPIO
     Initialize local memory
     ------------------------------------------------*/
     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
-    for ( size_t x = 0; x < drivers.size(); x++ )
+    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
     {
-      drivers[ x ] = nullptr;
+      hld_shared[ x ] = HLD::Driver_sPtr( &hld_driver[ x ] );
     }
 
     /*------------------------------------------------
@@ -67,21 +83,41 @@ namespace Thor::GPIO
     return result;
   }
 
-  /*------------------------------------------------
-  High Level Driver Class Implementation
-  ------------------------------------------------*/
+
+  Chimera::Status_t reset()
+  {
+    return Chimera::Status::OK;
+  }
+
+
+  Chimera::GPIO::IGPIO_sPtr getDriver( const Chimera::GPIO::Port port )
+  {
+    if ( ( port >= Chimera::GPIO::Port::NUM_OPTIONS ) || ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY ) )
+    {
+      return nullptr;
+    }
+
+    return hld_shared[ static_cast<size_t>( port ) ];
+  }
+
+
+  /*-------------------------------------------------------------------------------
+  Driver Implementation
+  -------------------------------------------------------------------------------*/
   Driver::Driver()
   {
-    channel   = drivers.size();
-    lastState = Chimera::GPIO::State::LOW;
-    initSettings.clear();
+    mChannel   = static_cast<size_t>( NUM_DRIVERS );
+    mLastState = Chimera::GPIO::State::LOW;
+    mInitSettings.clear();
   }
+
 
   Driver::~Driver()
   {
   }
 
-  Chimera::Status_t Driver::init( const Chimera::GPIO::PinInit &pinInit, const size_t timeout )
+
+  Chimera::Status_t Driver::init( const Chimera::GPIO::PinInit &pinInit )
   {
     using namespace Thor::LLD::GPIO;
     using namespace Chimera::Threading;
@@ -91,50 +127,27 @@ namespace Thor::GPIO
     auto locked = false;
 
     /*------------------------------------------------
-    Optionally invoke thread-safe access
-    ------------------------------------------------*/
-    if ( pinInit.threaded )
-    {
-      if ( this->try_lock_for( timeout ) )
-      {
-        locked = true;
-      }
-      else
-      {
-        return Chimera::Status::LOCKED;
-      }
-    }
-
-    /*------------------------------------------------
     Ensure the port enumeration matches up with the LLD
     ------------------------------------------------*/
-    if ( port < drivers.size() )
+    if ( port < NUM_DRIVERS )
     {
-      initSettings    = pinInit;
-      channel         = port;
-      drivers[ port ] = getDriver( port );
-      result          = setMode( pinInit.drive, pinInit.pull );
+      mInitSettings = pinInit;
+      mChannel      = port;
+      result        = setMode( pinInit.drive, pinInit.pull );
 
       // Ignore the return code because if setMode doesn't work, this won't either
       setState( pinInit.state );
     }
     else
     {
-      initSettings.clear();
-    }
-
-    /*------------------------------------------------
-    Clear the lock if nessessary
-    ------------------------------------------------*/
-    if ( locked )
-    {
-      this->unlock();
+      mInitSettings.clear();
     }
 
     return result;
   }
 
-  Chimera::Status_t Driver::init( const Chimera::GPIO::Port port, const uint8_t pin, const size_t timeout )
+
+  Chimera::Status_t Driver::init( const Chimera::GPIO::Port port, const uint8_t pin )
   {
     Chimera::GPIO::PinInit cfg;
     cfg.clear();
@@ -146,166 +159,83 @@ namespace Thor::GPIO
     cfg.state     = Chimera::GPIO::State::LOW;
     cfg.pull      = Chimera::GPIO::Pull::PULL_UP;
 
-    return init( cfg, timeout );
+    return init( cfg );
   }
 
-  Chimera::Status_t Driver::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull, const size_t timeout )
+
+  Chimera::Status_t Driver::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull )
   {
     /*------------------------------------------------
     Function entrancy checks
     ------------------------------------------------*/
-    if ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY )
-    {
-      return Chimera::Status::FAIL;
-    }
-    else if ( !drivers[ channel ] )
+    if ( ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY ) || !LLD::getDriver( mChannel ) )
     {
       return Chimera::Status::NOT_INITIALIZED;
     }
 
     /*------------------------------------------------
-    Optionally invoke thread-safe access
-    ------------------------------------------------*/
-    auto locked = false;
-    auto result = Chimera::Status::FAIL;
-    if ( initSettings.threaded )
-    {
-      if ( this->try_lock_for( timeout ) )
-      {
-        locked = true;
-      }
-      else
-      {
-        return Chimera::Status::LOCKED;
-      }
-    }
-
-    /*------------------------------------------------
     Set up the hardware to implement the desired mode
     ------------------------------------------------*/
-    result = drivers[ channel ]->driveSet( initSettings.pin, drive );
-    result |= drivers[ channel ]->pullSet( initSettings.pin, pull );
-    result |= drivers[ channel ]->speedSet( initSettings.pin, Thor::LLD::GPIO::Speed::HIGH );
+    auto result = Chimera::Status::FAIL;
+    result      = LLD::getDriver( mChannel )->driveSet( mInitSettings.pin, drive );
+    result |= LLD::getDriver( mChannel )->pullSet( mInitSettings.pin, pull );
+    result |= LLD::getDriver( mChannel )->speedSet( mInitSettings.pin, Thor::LLD::GPIO::Speed::HIGH );
 
     /*------------------------------------------------
     Configure the alternate function options
     ------------------------------------------------*/
     if ( ( drive == Chimera::GPIO::Drive::ALTERNATE_OPEN_DRAIN ) || ( drive == Chimera::GPIO::Drive::ALTERNATE_PUSH_PULL ) )
     {
-      result |= drivers[ channel ]->alternateFunctionSet( initSettings.pin, initSettings.alternate );
-    }
-
-    /*------------------------------------------------
-    Clear the lock if nessessary
-    ------------------------------------------------*/
-    if ( locked )
-    {
-      this->unlock();
+      result |= LLD::getDriver( mChannel )->alternateFunctionSet( mInitSettings.pin, mInitSettings.alternate );
     }
 
     return result;
   }
 
-  Chimera::Status_t Driver::setState( const Chimera::GPIO::State state, const size_t timeout )
+
+  Chimera::Status_t Driver::setState( const Chimera::GPIO::State state )
   {
     /*------------------------------------------------
     Function entrancy checks
     ------------------------------------------------*/
-    if ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY )
-    {
-      return Chimera::Status::FAIL;
-    }
-    else if ( !drivers[ channel ] )
+    if ( ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY ) || !LLD::getDriver( mChannel ) )
     {
       return Chimera::Status::NOT_INITIALIZED;
     }
 
     /*------------------------------------------------
-    Optionally invoke thread-safe access
-    ------------------------------------------------*/
-    auto locked = false;
-    auto result = Chimera::Status::FAIL;
-    if ( initSettings.threaded )
-    {
-      if ( this->try_lock_for( timeout ) )
-      {
-        locked = true;
-      }
-      else
-      {
-        return Chimera::Status::LOCKED;
-      }
-    }
-
-    /*------------------------------------------------
     Grab the driver reference and invoke the function
     ------------------------------------------------*/
-    result = drivers[ channel ]->write( initSettings.pin, state );
-
-    /*------------------------------------------------
-    Clear the lock if nessessary
-    ------------------------------------------------*/
-    if ( locked )
-    {
-      this->unlock();
-    }
-
-    return result;
+    return LLD::getDriver( mChannel )->write( mInitSettings.pin, state );
   }
 
-  Chimera::Status_t Driver::getState( Chimera::GPIO::State &state, const size_t timeout )
+
+  Chimera::Status_t Driver::getState( Chimera::GPIO::State &state )
   {
     /*------------------------------------------------
     Function entrancy checks
     ------------------------------------------------*/
-    if ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY )
-    {
-      return Chimera::Status::FAIL;
-    }
-    else if ( !drivers[ channel ] )
+    if ( ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY ) || !LLD::getDriver( mChannel ) )
     {
       return Chimera::Status::NOT_INITIALIZED;
     }
 
     /*------------------------------------------------
-    Optionally invoke thread-safe access
-    ------------------------------------------------*/
-    auto locked = false;
-    if ( initSettings.threaded )
-    {
-      if ( this->try_lock_for( timeout ) )
-      {
-        locked = true;
-      }
-      else
-      {
-        return Chimera::Status::LOCKED;
-      }
-    }
-
-    /*------------------------------------------------
     Grab the driver reference and invoke the function
     ------------------------------------------------*/
-    state = drivers[ channel ]->read( initSettings.pin );
-
-    /*------------------------------------------------
-    Clear the lock if nessessary
-    ------------------------------------------------*/
-    if ( locked )
-    {
-      this->unlock();
-    }
+    state = LLD::getDriver( mChannel )->read( mInitSettings.pin );
 
     return Chimera::Status::OK;
   }
 
-  Chimera::Status_t Driver::toggle( const size_t timeout )
+
+  Chimera::Status_t Driver::toggle()
   {
     using namespace Chimera::GPIO;
 
-    lastState = ( lastState == State::HIGH ) ? State::LOW : State::HIGH;
-    return setState( lastState, timeout );
+    mLastState = ( mLastState == State::HIGH ) ? State::LOW : State::HIGH;
+    return setState( mLastState );
   }
-}
+}    // namespace Thor::GPIO
 
-#endif  /* THOR_DRIVER_GPIO */
+#endif /* THOR_HLD_GPIO */

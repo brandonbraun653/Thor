@@ -22,12 +22,8 @@
 namespace Chimera::Watchdog::Backend
 {
   Chimera::Status_t initialize();
-
   Chimera::Status_t reset();
-
-  Chimera::Watchdog::Watchdog_sPtr create_shared_ptr();
-
-  Chimera::Watchdog::Watchdog_uPtr create_unique_ptr();
+  IWatchdog_sPtr getDriver( const Channel channel );
 }    // namespace Chimera::Watchdog::Backend
 
 #endif /* !THOR_WATCHDOG_CHIMERA_HOOKS_HPP */

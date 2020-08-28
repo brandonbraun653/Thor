@@ -13,7 +13,6 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-//#include <Thor/lld/common/cortex-m4/utilities.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_driver.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_mapping.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
@@ -24,7 +23,7 @@
 
 namespace Thor::LLD::GPIO
 {
-  static std::array<IDriver_sPtr, NUM_GPIO_PERIPHS> s_gpio_drivers;
+  static Driver s_gpio_drivers [ NUM_GPIO_PERIPHS ];
 
   /*-------------------------------------------------
   LLD->HLD Interface Implementation
@@ -37,19 +36,15 @@ namespace Thor::LLD::GPIO
     return Chimera::Status::OK;
   }
 
-  IDriver_sPtr getDriver( const size_t channel )
+  IDriver_rPtr getDriver( const size_t channel )
   {
     if ( !( channel < NUM_GPIO_PERIPHS ) )
     {
       return nullptr;
     }
-    else if ( !s_gpio_drivers[ channel ] )
-    {
-      s_gpio_drivers[ channel ] = std::make_shared<Driver>();
-      s_gpio_drivers[ channel ]->attach( reinterpret_cast<RegisterMap*>( PeripheralList[ channel ] ) );
-    }
-
-    return s_gpio_drivers[ channel ];
+      
+    s_gpio_drivers[ channel ].attach( reinterpret_cast<RegisterMap*>( PeripheralList[ channel ] ) );
+    return &s_gpio_drivers[ channel ];
   }
 
   size_t availableChannels()

@@ -69,28 +69,26 @@ namespace Chimera::Timer
     Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverRegistration &registry )
     {
 #if defined( THOR_HLD_TIMER )
-      registry.isSupported          = true;
-      registry.initialize           = initialize;
-      registry.reset                = reset;
-      registry.delayMicroseconds    = delayMicroseconds;
-      registry.delayMilliseconds    = delayMilliseconds;
-      registry.millis               = millis;
-      registry.micros               = micros;
-      registry.createSharedInstance = createSharedInstance;
-      registry.createUniqueInstance = nullptr;
-      registry.createUnsafeInstance = createUnsafeInstance;
+      registry.isSupported       = true;
+      registry.initialize        = initialize;
+      registry.reset             = reset;
+      registry.delayMicroseconds = delayMicroseconds;
+      registry.delayMilliseconds = delayMilliseconds;
+      registry.millis            = millis;
+      registry.micros            = micros;
+      registry.getSharedInstance = createSharedInstance;
+      registry.getUnsafeInstance = createUnsafeInstance;
       return Chimera::Status::OK;
 #else
-      registry.isSupported          = false;
-      registry.initialize           = nullptr;
-      registry.reset                = nullptr;
-      registry.delayMicroseconds    = nullptr;
-      registry.delayMilliseconds    = nullptr;
-      registry.millis               = nullptr;
-      registry.micros               = nullptr;
-      registry.createSharedInstance = nullptr;
-      registry.createUniqueInstance = nullptr;
-      registry.createUnsafeInstance = nullptr;
+      registry.isSupported       = false;
+      registry.initialize        = nullptr;
+      registry.reset             = nullptr;
+      registry.delayMicroseconds = nullptr;
+      registry.delayMilliseconds = nullptr;
+      registry.millis            = nullptr;
+      registry.micros            = nullptr;
+      registry.getSharedInstance = nullptr;
+      registry.getUnsafeInstance = nullptr;
       return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_HLD_TIMER */
     }

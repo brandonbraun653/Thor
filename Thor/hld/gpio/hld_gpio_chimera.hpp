@@ -22,12 +22,8 @@
 namespace Chimera::GPIO::Backend
 {
   Chimera::Status_t initialize();
-
   Chimera::Status_t reset();
-
-  Chimera::GPIO::GPIO_sPtr create_shared_ptr();
-
-  Chimera::GPIO::GPIO_uPtr create_unique_ptr();
+  IGPIO_sPtr getDriver( const Port port );
 }    // namespace Chimera::GPIO::Backend
 
 #endif /* !THOR_GPIO_CHIMERA_HOOKS_HPP */

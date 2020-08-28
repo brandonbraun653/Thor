@@ -31,19 +31,13 @@ namespace Chimera::PWM::Backend
     return Chimera::Status::OK;
   }
 
-  Chimera::PWM::PWM_sPtr create_shared_ptr()
+  Chimera::PWM::IPWM_sPtr getDriver( const size_t channel )
   {
     return std::make_shared<Thor::PWM::Driver>();
   }
 
-  Chimera::PWM::PWM_uPtr create_unique_ptr()
-  {
-    return std::make_unique<Thor::PWM::Driver>();
-  }
-
   size_t numSupportedChannels()
   {
-
     return 0;    // TODO
   }
 
@@ -51,8 +45,7 @@ namespace Chimera::PWM::Backend
   {
 #if defined( THOR_HLD_PWM )
     registry.isSupported          = true;
-    registry.createShared         = create_shared_ptr;
-    registry.createUnique         = create_unique_ptr;
+    registry.getDriver            = getDriver;
     registry.initialize           = initialize;
     registry.reset                = reset;
     registry.numSupportedChannels = numSupportedChannels;

@@ -171,9 +171,9 @@ namespace Thor::SPI
     MOSI = std::make_unique<Thor::GPIO::Driver>();
     MISO = std::make_unique<Thor::GPIO::Driver>();
 
-    result |= SCK->init( config.SCKInit, Chimera::Threading::TIMEOUT_DONT_WAIT );
-    result |= MOSI->init( config.MOSIInit, Chimera::Threading::TIMEOUT_DONT_WAIT );
-    result |= MISO->init( config.MISOInit, Chimera::Threading::TIMEOUT_DONT_WAIT );
+    result |= SCK->init( config.SCKInit );
+    result |= MOSI->init( config.MOSIInit );
+    result |= MISO->init( config.MISOInit );
 
     /* Does the driver take control of the CS pin? */
     if ( setupStruct.externalCS )
@@ -183,7 +183,7 @@ namespace Thor::SPI
     else
     {
       CS = std::make_shared<Thor::GPIO::Driver>();
-      result |= CS->init( config.CSInit, 100 );
+      result |= CS->init( config.CSInit );
     }
 
     if ( result != Chimera::Status::OK )
@@ -246,7 +246,7 @@ namespace Thor::SPI
   {
     if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) && CS )
     {
-      return CS->setState( value, 100 );
+      return CS->setState( value );
     }
 
     return Chimera::Status::FAIL;
@@ -333,7 +333,7 @@ namespace Thor::SPI
         ------------------------------------------------*/
         if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
         {
-          CS->setState( Chimera::GPIO::State::HIGH, 100 );
+          CS->setState( Chimera::GPIO::State::HIGH );
         }
 
         return Chimera::Status::FAIL;

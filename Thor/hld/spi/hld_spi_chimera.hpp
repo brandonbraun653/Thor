@@ -22,12 +22,8 @@
 namespace Chimera::SPI::Backend
 {
   Chimera::Status_t initialize();
-
   Chimera::Status_t reset();
-
-  Chimera::SPI::ISPI_sPtr create_shared_ptr();
-
-  Chimera::SPI::ISPI_uPtr create_unique_ptr();
+  ISPI_sPtr getDriver( const Channel channel );
 }    // namespace Chimera::SPI::Backend
 
 #endif /* !THOR_SPI_CHIMERA_HOOKS_HPP */

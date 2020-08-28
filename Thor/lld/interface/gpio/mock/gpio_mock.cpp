@@ -26,7 +26,7 @@ namespace Thor::LLD::GPIO
   /*-------------------------------------------------------------------------------
   Static Data
   -------------------------------------------------------------------------------*/
-  static std::array<IDriver_sPtr, NUM_GPIO_PERIPHS> s_gpio_drivers;
+  static std::array<IDriver, NUM_GPIO_PERIPHS> s_gpio_drivers;
 
 
   /*-------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ namespace Thor::LLD::GPIO
     return Chimera::Status::OK;
   }
 
-  IDriver_sPtr getDriver( const size_t channel )
+  IDriver_rPtr getDriver( const size_t channel )
   {
     /*-------------------------------------------------
     Mock behavior
@@ -77,13 +77,9 @@ namespace Thor::LLD::GPIO
     {
       return nullptr;
     }
-    else if ( !s_gpio_drivers[ channel ] )
-    {
-      s_gpio_drivers[ channel ] = std::make_shared<Mock::DriverMock>();
-      s_gpio_drivers[ channel ]->attach( PeripheralRegisterMaps[ channel ] );
-    }
 
-    return s_gpio_drivers[ channel ];
+    s_gpio_drivers[ channel ].attach( PeripheralRegisterMaps[ channel ] );
+    return &s_gpio_drivers[ channel ];
   }
 
   size_t availableChannels()

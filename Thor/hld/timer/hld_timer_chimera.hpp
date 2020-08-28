@@ -31,7 +31,6 @@ namespace Chimera::Timer
     void delayMicroseconds( const size_t val );
     ITimer_rPtr createUnsafeInstance( const Chimera::Timer::Peripheral peripheral );
     ITimer_sPtr createSharedInstance( const Chimera::Timer::Peripheral peripheral );
-    ITimer_uPtr createUniqueInstance( const Chimera::Timer::Peripheral peripheral );
   }    // namespace Backend
 }    // namespace Chimera::Timer
 

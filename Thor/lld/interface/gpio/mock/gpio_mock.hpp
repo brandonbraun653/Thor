@@ -39,7 +39,7 @@ namespace Thor::LLD::GPIO::Mock
     virtual ~IModule() = default;
 
     virtual void initialize()                              = 0;
-    virtual IDriver_sPtr getDriver( const size_t channel ) = 0;
+    virtual IDriver_rPtr getDriver( const size_t channel ) = 0;
     virtual size_t availableChannels()                     = 0;
   };
 
@@ -51,7 +51,7 @@ namespace Thor::LLD::GPIO::Mock
   {
   public:
     MOCK_METHOD( void, initialize, (), ( override ) );
-    MOCK_METHOD( IDriver_sPtr, getDriver, ( const size_t ), ( override ) );
+    MOCK_METHOD( IDriver_rPtr, getDriver, ( const size_t ), ( override ) );
     MOCK_METHOD( size_t, availableChannels, (), ( override ) );
   };
 

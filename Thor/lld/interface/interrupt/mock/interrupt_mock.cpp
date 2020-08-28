@@ -12,8 +12,11 @@
 #include <Chimera/common>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_types.hpp>
+
+#if defined( THOR_LLD_IT_MOCK )
 
 namespace Thor::LLD::IT
 {
@@ -32,3 +35,5 @@ namespace Thor::LLD::IT
   }
 
 }  // namespace Thor::LLD::IT
+
+#endif /* THOR_LLD_IT_MOCK */

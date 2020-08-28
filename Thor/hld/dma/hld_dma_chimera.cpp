@@ -31,15 +31,9 @@ namespace Chimera::DMA::Backend
     return Chimera::Status::OK;
   }
 
-  Chimera::DMA::DMA_sPtr create_shared_ptr()
+  IDMA_sPtr getDriver( const Controller channel )
   {
     return Thor::DMA::DMAClass::get();
-  }
-
-  Chimera::DMA::DMA_uPtr create_unique_ptr()
-  {
-    // This is not allowed because Thor DMA is a singleton
-    return nullptr;
   }
 
 //   Chimera::Status_t registerDriver( Chimera::DMA::Backend::DriverConfig &registry )

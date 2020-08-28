@@ -37,30 +37,23 @@ namespace Chimera::UART::Backend
     return Thor::LLD::UART::isChannelSupported( channel );
   }
 
-  Chimera::UART::UART_sPtr create_shared_ptr()
+  IUART_sPtr getDriver( const Chimera::Serial::Channel channel )
   {
     return std::make_shared<Thor::UART::Driver>();
-  }
-
-  Chimera::UART::UART_uPtr create_unique_ptr()
-  {
-    return std::make_unique<Thor::UART::Driver>();
   }
 
   Chimera::Status_t registerDriver( Chimera::UART::Backend::DriverConfig &registry )
   {
 #if defined( THOR_HLD_UART )
     registry.isSupported   = true;
-    registry.createShared  = create_shared_ptr;
-    registry.createUnique  = create_unique_ptr;
+    registry.getDriver     = getDriver;
     registry.initialize    = initialize;
     registry.reset         = reset;
     registry.isChannelUART = isChannelUART;
     return Chimera::Status::OK;
 #else
     registry.isSupported   = false;
-    registry.createShared  = nullptr;
-    registry.createUnique  = nullptr;
+    registry.getDriver     = nullptr;
     registry.initialize    = nullptr;
     registry.reset         = nullptr;
     registry.isChannelUART = nullptr;
