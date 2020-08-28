@@ -27,14 +27,38 @@
 #include <Thor/spi>
 #include <Thor/lld/interface/spi/spi_detail.hpp>
 #include <Thor/lld/interface/spi/spi_intf.hpp>
+#include <Thor/lld/interface/spi/spi_types.hpp>
 
 #if defined( THOR_HLD_SPI )
 
-static std::array<Thor::SPI::Driver *, Thor::LLD::SPI::NUM_SPI_PERIPHS> s_hld_drivers;
-static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::LLD::SPI::NUM_SPI_PERIPHS> s_user_isr_handle;
-static std::array<Chimera::Threading::BinarySemaphore, Thor::LLD::SPI::NUM_SPI_PERIPHS> s_user_isr_signal;
-static std::array<Chimera::Function::void_func_void_ptr, Thor::LLD::SPI::NUM_SPI_PERIPHS> s_user_isr_thread_func;
+/*-------------------------------------------------------------------------------
+Aliases
+-------------------------------------------------------------------------------*/
+namespace HLD = ::Thor::SPI;
+namespace LLD = ::Thor::LLD::SPI;
 
+using ThreadHandle = Chimera::Threading::detail::native_thread_handle_type;
+using BinarySemphr = Chimera::Threading::BinarySemaphore;
+using ThreadFunctn = Chimera::Function::void_func_void_ptr;
+
+/*-------------------------------------------------------------------------------
+Constants
+-------------------------------------------------------------------------------*/
+static constexpr size_t NUM_DRIVERS = LLD::NUM_SPI_PERIPHS;
+
+/*-------------------------------------------------------------------------------
+Variables
+-------------------------------------------------------------------------------*/
+static size_t s_driver_initialized;
+static HLD::Driver hld_driver[ NUM_DRIVERS ];
+static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ];
+static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ];
+static BinarySemphr s_user_isr_signal[ NUM_DRIVERS ];
+static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ] ;
+
+/*-------------------------------------------------------------------------------
+Private Function Declarations
+-------------------------------------------------------------------------------*/
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
 static void SPI1ISRPostProcessorThread( void *argument );
 #endif
@@ -52,9 +76,9 @@ namespace Thor::SPI
 {
   using namespace Chimera::Threading;
 
-  static size_t s_driver_initialized;
-  static std::array<Thor::LLD::SPI::IDriver_sPtr, Thor::LLD::SPI::NUM_SPI_PERIPHS> s_lld_drivers;
-
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     /*------------------------------------------------
@@ -68,13 +92,11 @@ namespace Thor::SPI
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    Thor::LLD::SPI::initialize();
+    ::LLD::initialize();
 
     /*------------------------------------------------
     Initialize driver object memory
     ------------------------------------------------*/
-    s_lld_drivers.fill( nullptr );
-
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
     s_user_isr_thread_func[ Thor::LLD::SPI::SPI1_RESOURCE_INDEX ] = SPI1ISRPostProcessorThread;
 #endif
@@ -88,13 +110,34 @@ namespace Thor::SPI
     s_user_isr_thread_func[ Thor::LLD::SPI::SPI4_RESOURCE_INDEX ] = SPI4ISRPostProcessorThread;
 #endif
 
+    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
+    {
+      hld_shared[ x ] = ::HLD::Driver_sPtr( &hld_driver[ x ] );
+    }
+
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::Status::OK;
   }
 
-  /*------------------------------------------------
-  Class Specific Functions
-  ------------------------------------------------*/
+  Chimera::Status_t reset()
+  {
+    return Chimera::Status::OK;
+  }
+
+  Chimera::SPI::ISPI_sPtr getDriver( const Chimera::SPI::Channel channel )
+  {
+    if ( ( channel >= Chimera::SPI::Channel::NUM_OPTIONS ) || ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY ) )
+    {
+      return nullptr;
+    }
+
+    return hld_shared[ static_cast<size_t>( channel ) ];
+  }
+
+
+  /*-------------------------------------------------------------------------------
+  Driver Implementation
+  -------------------------------------------------------------------------------*/
   Driver::Driver()
   {
     /*------------------------------------------------
@@ -156,11 +199,8 @@ namespace Thor::SPI
     /*------------------------------------------------
     First register the driver and initialize class vars
     ------------------------------------------------*/
-    auto instance    = Thor::LLD::SPI::ChannelToInstance[ setupStruct.HWInit.hwChannel ];
-    lldResourceIndex = Thor::LLD::SPI::InstanceToResourceIndex[ reinterpret_cast<std::uintptr_t>( instance ) ];
-
-    s_hld_drivers[ lldResourceIndex ] = this;
-    s_lld_drivers[ lldResourceIndex ]  = Thor::LLD::SPI::getDriver( setupStruct.HWInit.hwChannel );
+    auto instance    = ::LLD::ChannelToInstance[ setupStruct.HWInit.hwChannel ];
+    lldResourceIndex = ::LLD::InstanceToResourceIndex[ reinterpret_cast<std::uintptr_t>( instance ) ];
 
     /*------------------------------------------------
     Configure the GPIO
@@ -197,7 +237,7 @@ namespace Thor::SPI
     /*------------------------------------------------
     Configure the SPI hardware
     ------------------------------------------------*/
-    auto driver = s_lld_drivers[ lldResourceIndex ];
+    auto driver = ::LLD::getDriver( config.HWInit.hwChannel );
     result |= driver->attach( instance );
     result |= driver->configure( config );
     result |= driver->registerConfig( &config );
@@ -266,31 +306,26 @@ namespace Thor::SPI
     return Chimera::Status::LOCKED;
   }
 
-  Chimera::Status_t Driver::writeBytes( const void *const txBuffer, const size_t length, const size_t timeoutMS )
+  Chimera::Status_t Driver::writeBytes( const void *const txBuffer, const size_t length )
   {
-    return readWriteBytes( txBuffer, nullptr, length, timeoutMS );
+    return readWriteBytes( txBuffer, nullptr, length );
   }
 
-  Chimera::Status_t Driver::readBytes( void *const rxBuffer, const size_t length, const size_t timeoutMS )
+  Chimera::Status_t Driver::readBytes( void *const rxBuffer, const size_t length )
   {
-    return readWriteBytes( nullptr, rxBuffer, length, timeoutMS );
+    return readWriteBytes( nullptr, rxBuffer, length );
   }
 
-  Chimera::Status_t Driver::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length,
-                                            const size_t timeoutMS )
+  Chimera::Status_t Driver::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length )
   {
     auto lockguard = TimedLockGuard( *this );
     auto result    = Chimera::Status::OK;
-    auto driver    = s_lld_drivers[ lldResourceIndex ];
+    auto driver    = ::LLD::getDriver( config.HWInit.hwChannel );
 
     /*------------------------------------------------
     Input protection & resource acquisition
     ------------------------------------------------*/
-    if ( !lockguard.try_lock_for( timeoutMS ) )
-    {
-      return Chimera::Status::LOCKED;
-    }
-    else if ( ( !txBuffer && !rxBuffer ) || !length || !driver )
+    if ( ( !txBuffer && !rxBuffer ) || !length || !driver )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
@@ -343,28 +378,19 @@ namespace Thor::SPI
 
   Chimera::Status_t Driver::setPeripheralMode( const Chimera::Hardware::PeripheralMode mode )
   {
-    if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) )
-    {
-      config.HWInit.txfrMode = mode;
-      return Chimera::Status::OK;
-    }
-
-    return Chimera::Status::LOCKED;
+    config.HWInit.txfrMode = mode;
+    return Chimera::Status::OK;
   }
 
   Chimera::Status_t Driver::setClockFrequency( const size_t freq, const size_t tolerance )
   {
     auto lockguard = TimedLockGuard( *this );
-    auto driver    = s_lld_drivers[ lldResourceIndex ];
+    auto driver    = ::LLD::getDriver( config.HWInit.hwChannel );
 
     /*------------------------------------------------
     Input protection
     ------------------------------------------------*/
-    if ( !lockguard.try_lock_for( 10 ) )
-    {
-      return Chimera::Status::LOCKED;
-    }
-    else if ( !driver || !freq )
+    if ( !driver || !freq )
     {
       return Chimera::Status::NOT_INITIALIZED;
     }
@@ -440,10 +466,7 @@ static void SPI1ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     s_user_isr_signal[ index ].acquire();
-    if ( auto spi = s_hld_drivers[ index ]; spi )
-    {
-      spi->postISRProcessing();
-    }
+    hld_driver[ index ].postISRProcessing();
   }
 }
 #endif
@@ -456,11 +479,8 @@ static void SPI2ISRPostProcessorThread( void *argument )
 
   while ( 1 )
   {
-    postProcessorSignals[ index ].acquire();
-    if ( auto spi = SPIClassObjects[ index ]; spi )
-    {
-      spi->postISRProcessing();
-    }
+    s_user_isr_signal[ index ].acquire();
+    hld_driver[ index ].postISRProcessing();
   }
 }
 #endif
@@ -474,10 +494,7 @@ static void SPI3ISRPostProcessorThread( void *argument )
   while ( 1 )
   {
     s_user_isr_signal[ index ].acquire();
-    if ( auto spi = s_hld_drivers[ index ]; spi )
-    {
-      spi->postISRProcessing();
-    }
+    hld_driver[ index ].postISRProcessing();
   }
 }
 #endif
@@ -490,11 +507,8 @@ static void SPI4ISRPostProcessorThread( void *argument )
 
   while ( 1 )
   {
-    postProcessorSignals[ index ].acquire();
-    if ( auto spi = SPIClassObjects[ index ]; spi )
-    {
-      spi->postISRProcessing();
-    }
+    s_user_isr_signal[ index ].acquire();
+    hld_driver[ index ].postISRProcessing();
   }
 }
 #endif

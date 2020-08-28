@@ -41,7 +41,7 @@ namespace Thor::LLD::SPI
    *  @param[in] channel        The SPI channel to grab (1 indexed)
    *  @return IDriver_sPtr      Instance of the SPI driver for the requested channel
    */
-  extern IDriver_sPtr getDriver( const Chimera::SPI::Channel channel );
+  extern IDriver_rPtr getDriver( const Chimera::SPI::Channel channel );
 
   class IDriver
   {

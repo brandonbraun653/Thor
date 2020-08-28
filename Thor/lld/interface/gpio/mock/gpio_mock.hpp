@@ -29,15 +29,10 @@ namespace Thor::LLD::GPIO::Mock
   /*-------------------------------------------------------------------------------
   Mock Interfaces
   -------------------------------------------------------------------------------*/
-  /**
-   *  Encapsulates the C-style interface to GPIO so that it can be
-   *  mocked appropriately. Useless outside of testing purposes.
-   */
   class IModule
   {
   public:
-    virtual ~IModule() = default;
-
+    virtual ~IModule()                                     = default;
     virtual void initialize()                              = 0;
     virtual IDriver_rPtr getDriver( const size_t channel ) = 0;
     virtual size_t availableChannels()                     = 0;
@@ -80,7 +75,7 @@ namespace Thor::LLD::GPIO::Mock
   ModuleMock &getModuleMockObject();
   DriverMock &getDriverMockObject( const size_t channel );
 
-}    // namespace Thor::LLD::GPIO
+}    // namespace Thor::LLD::GPIO::Mock
 
 #endif /* THOR_LLD_GPIO_MOCK */
 #endif /* !THOR_LLD_GPIO_MOCK_HPP */

@@ -30,7 +30,7 @@
 
 namespace Thor::LLD::SPI
 {
-  static std::array<IDriver_sPtr, NUM_SPI_PERIPHS> s_spi_drivers;
+  static Driver s_spi_drivers[ NUM_SPI_PERIPHS ];
 
   static float calculate_clock_performance( const size_t goal, const size_t actVal, void *const data )
   {
@@ -79,21 +79,17 @@ namespace Thor::LLD::SPI
     return false;
   }
 
-  IDriver_sPtr getDriver( const Chimera::SPI::Channel channel )
+  IDriver_rPtr getDriver( const Chimera::SPI::Channel channel )
   {
     size_t ch = static_cast<size_t>( channel );
 
-    if ( !( ch < s_spi_drivers.size() ) || !isChannelSupported( channel ) )
+    if ( ( ch >= NUM_SPI_PERIPHS ) || !isChannelSupported( channel ) )
     {
       return nullptr;
     }
-    else if ( !s_spi_drivers[ ch ] )
-    {
-      s_spi_drivers[ ch ] = std::make_shared<Driver>();
-      s_spi_drivers[ ch ]->attach( PeripheralList[ ch ] );
-    }
 
-    return s_spi_drivers[ ch ];
+    s_spi_drivers[ ch ].attach( PeripheralList[ ch ] );
+    return &s_spi_drivers[ ch ];
   }
 
   size_t availableChannels()

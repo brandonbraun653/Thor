@@ -8,24 +8,34 @@
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-#pragma once 
-#ifndef THOR_DRIVER_SPI_COMMON_TYPES_HPP
-#define THOR_DRIVER_SPI_COMMON_TYPES_HPP
+#pragma once
+#ifndef THOR_LLD_SPI_COMMON_TYPES_HPP
+#define THOR_LLD_SPI_COMMON_TYPES_HPP
 
 /* C++ Includes */
 #include <cstdint>
-#include <memory>
 
 /* Chimera Includes */
 #include <Chimera/common>
 
 namespace Thor::LLD::SPI
 {
-  /**
-   *  Forward declaration to ease compilation
-   */
+  /*-------------------------------------------------------------------------------
+  Forward Declarations
+  -------------------------------------------------------------------------------*/
+  class IDriver;
   struct RegisterMap;
 
+  /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
+  using IDriver_rPtr  = IDriver *;
+  using StatusFlags_t = uint32_t;
+  using ErrorFlags_t  = uint32_t;
+
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
   /**
    *  Control block for an ongoing SPI transfer
    */
@@ -43,14 +53,6 @@ namespace Thor::LLD::SPI
     bool waitingOnRX;
     Chimera::Status_t status; /**< Current state of the transfer */
   };
+}    // namespace Thor::LLD::SPI
 
-
-  class IDriver;
-  using IDriver_sPtr = std::shared_ptr<IDriver>;
-  using IDriver_uPtr = std::unique_ptr<IDriver>;
-
-  using StatusFlags_t = uint32_t;
-  using ErrorFlags_t  = uint32_t;
-}
-
-#endif /* !THOR_DRIVER_SPI_COMMON_TYPES_HPP */
+#endif /* !THOR_LLD_SPI_COMMON_TYPES_HPP */

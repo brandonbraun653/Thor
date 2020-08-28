@@ -15,6 +15,7 @@
 
 #if defined( TARGET_LLD_MOCK )
 #include <Thor/lld/interface/spi/mock/spi_mock.hpp>
+#include <Thor/lld/interface/spi/mock/spi_mock_variant.hpp>
 #elif defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/spi/hw_spi_driver.hpp>
 #include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
@@ -27,4 +28,4 @@
 #pragma message( "Unknown target device for SPI low level driver" )
 #endif
 
-#endif  /* !THOR_SPI_DETAIL_HPP */
+#endif /* !THOR_SPI_DETAIL_HPP */

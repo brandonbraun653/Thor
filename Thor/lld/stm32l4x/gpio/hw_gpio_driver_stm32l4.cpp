@@ -23,7 +23,7 @@
 
 namespace Thor::LLD::GPIO
 {
-  static Driver s_gpio_drivers [ NUM_GPIO_PERIPHS ];
+  static Driver s_gpio_drivers[ NUM_GPIO_PERIPHS ];
 
   /*-------------------------------------------------
   LLD->HLD Interface Implementation
@@ -42,7 +42,7 @@ namespace Thor::LLD::GPIO
     {
       return nullptr;
     }
-      
+
     s_gpio_drivers[ channel ].attach( reinterpret_cast<RegisterMap*>( PeripheralList[ channel ] ) );
     return &s_gpio_drivers[ channel ];
   }

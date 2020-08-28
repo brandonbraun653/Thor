@@ -28,12 +28,12 @@ namespace Chimera::SPI::Backend
 
   Chimera::Status_t reset()
   {
-    return Chimera::Status::OK;
+    return Thor::SPI::reset();
   }
 
   ISPI_sPtr getDriver( const Channel channel )
   {
-    return std::make_shared<Thor::SPI::Driver>();
+    return Thor::SPI::getDriver( channel );
   }
 
   Chimera::Status_t registerDriver( Chimera::SPI::Backend::DriverConfig &registry )
@@ -50,6 +50,6 @@ namespace Chimera::SPI::Backend
     registry.initialize  = nullptr;
     registry.reset       = nullptr;
     return Chimera::Status::NOT_SUPPORTED;
-#endif /* THOR_DRIVER_SPI == 1*/
+#endif /* THOR_HLD_SPI */
   }
 }    // namespace Chimera::SPI::Backend

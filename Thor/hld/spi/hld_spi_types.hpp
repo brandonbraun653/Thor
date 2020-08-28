@@ -9,7 +9,16 @@
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_SPI_TYPES_HPP
-#define THOR_SPI_TYPES_HPP
+#ifndef THOR_HLD_SPI_TYPES_HPP
+#define THOR_HLD_SPI_TYPES_HPP
 
-#endif /* !CHIMERA_SPI_TYPES_HPP */
+/* C++ Includes */
+#include <memory>
+
+namespace Thor::SPI
+{
+  class Driver;
+  using Driver_sPtr = std::shared_ptr<Driver>;
+}
+
+#endif /* !THOR_HLD_SPI_TYPES_HPP */

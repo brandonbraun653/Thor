@@ -8,6 +8,9 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
+/* STL Includes */
+#include <array>
+
 /* Mock Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
@@ -16,10 +19,6 @@
 #include <Thor/lld/interface/gpio/mock/gpio_mock_variant.hpp>
 
 #if defined( THOR_LLD_GPIO_MOCK )
-
-/* STL Includes */
-#include <array>
-#include <iostream>
 
 namespace Thor::LLD::GPIO
 {
@@ -45,7 +44,6 @@ namespace Thor::LLD::GPIO
     {
       return s_gpio_drivers[ channel ];
     }
-
   }    // namespace Mock
 
 
@@ -99,7 +97,6 @@ namespace Thor::LLD::GPIO
     -------------------------------------------------*/
     return NUM_GPIO_PERIPHS;
   }
-
 }    // namespace Thor::LLD::GPIO
 
 #endif /* THOR_LLD_GPIO_MOCK */

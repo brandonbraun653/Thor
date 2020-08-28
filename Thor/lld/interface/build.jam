@@ -52,6 +52,7 @@ use-project /THOR/LLD/INTF/DES  : des ;
 use-project /THOR/LLD/INTF/GPIO : gpio ;
 use-project /THOR/LLD/INTF/IT   : interrupt ;
 use-project /THOR/LLD/INTF/RCC  : rcc ;
+use-project /THOR/LLD/INTF/SPI  : spi ;
 
 # ====================================================
 # Figures out what device we are actually compiling for. By default it will

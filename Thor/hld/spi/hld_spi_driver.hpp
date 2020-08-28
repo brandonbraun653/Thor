@@ -27,6 +27,9 @@
 namespace Thor::SPI
 {
   Chimera::Status_t initialize();
+  Chimera::Status_t reset();
+  Chimera::SPI::ISPI_sPtr getDriver( const Chimera::SPI::Channel channel );
+
 
   class Driver : virtual public Chimera::SPI::ISPI, public Chimera::Threading::Lockable
   {
@@ -47,10 +50,9 @@ namespace Thor::SPI
     Chimera::Status_t deInit() final override;
     Chimera::Status_t setChipSelect( const Chimera::GPIO::State value ) final override;
     Chimera::Status_t setChipSelectControlMode( const Chimera::SPI::CSMode mode ) final override;
-    Chimera::Status_t writeBytes( const void *const txBuffer, const size_t length, const size_t timeoutMS ) final override;
-    Chimera::Status_t readBytes( void *const rxBuffer, const size_t length, const size_t timeoutMS ) final override;
-    Chimera::Status_t readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length,
-                                      const size_t timeoutMS ) final override;
+    Chimera::Status_t writeBytes( const void *const txBuffer, const size_t length ) final override;
+    Chimera::Status_t readBytes( void *const rxBuffer, const size_t length ) final override;
+    Chimera::Status_t readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length ) final override;
     Chimera::Status_t setPeripheralMode( const Chimera::Hardware::PeripheralMode mode ) final override;
     Chimera::Status_t setClockFrequency( const size_t freq, const size_t tolerance ) final override;
     size_t getClockFrequency() final override;
@@ -72,10 +74,10 @@ namespace Thor::SPI
   private:
     size_t lldResourceIndex;
     Chimera::SPI::DriverConfig config;  /**< Configuration used to set up the class */
-    Thor::GPIO::Driver_uPtr SCK;          /**< SPI clock gpio pin */
-    Thor::GPIO::Driver_uPtr MOSI;         /**< SPI MOSI gpio pin */
-    Thor::GPIO::Driver_uPtr MISO;         /**< SPI MISO gpio pin */
-    Thor::GPIO::Driver_sPtr CS;           /**< SPI Chip Select gpio pin */
+    Thor::GPIO::Driver_sPtr SCK;        /**< SPI clock gpio pin */
+    Thor::GPIO::Driver_sPtr MOSI;       /**< SPI MOSI gpio pin */
+    Thor::GPIO::Driver_sPtr MISO;       /**< SPI MISO gpio pin */
+    Thor::GPIO::Driver_sPtr CS;         /**< SPI Chip Select gpio pin */
 
     Chimera::Event::ActionableList eventListeners;
     Chimera::Threading::BinarySemaphore awaitTransferComplete; /**< Internal signal for when the current transfer has completed */
@@ -83,4 +85,4 @@ namespace Thor::SPI
 
 }    // namespace Thor::SPI
 
-#endif /* SPI_H_*/
+#endif /* THOR_SPI_HPP */

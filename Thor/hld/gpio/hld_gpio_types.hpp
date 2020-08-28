@@ -13,14 +13,12 @@
 #define THOR_HLD_GPIO_TYPES_HPP
 
 /* C++ Includes */
-#include <cstdint>
 #include <memory>
 
 namespace Thor::GPIO
 {
   class Driver;
   using Driver_sPtr = std::shared_ptr<Driver>;
-  using Driver_uPtr = std::unique_ptr<Driver>;
 }    // namespace Thor::GPIO
 
 #endif /* !THOR_HLD_GPIO_TYPES_HPP */

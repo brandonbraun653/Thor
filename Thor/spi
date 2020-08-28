@@ -1,10 +1,10 @@
 /********************************************************************************
  *  File Name:
  *    spi
- * 
+ *
  *  Description:
  *    Thor SPI Includes
- * 
+ *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
@@ -13,5 +13,6 @@
 #define THOR_SPI_INCLUDES
 
 #include <Thor/hld/spi/hld_spi_driver.hpp>
+#include <Thor/hld/spi/hld_spi_types.hpp>
 
 #endif /* !THOR_SPI_INCLUDES */

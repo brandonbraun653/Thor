@@ -52,7 +52,7 @@ namespace Thor::PWM
     Chimera::Timer::Peripheral mPeripheral;
     Chimera::Timer::PWM::Config mPWMConfig;
 
-    Thor::GPIO::Driver_uPtr mpOutputPin;
+    Thor::GPIO::Driver_sPtr mpOutputPin;
     Chimera::Timer::ITimer_sPtr mpTimerDriver;
 
     Chimera::Status_t applyConfig( const size_t freq, const size_t dutyCycle,

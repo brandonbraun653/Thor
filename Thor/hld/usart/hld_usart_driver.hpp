@@ -73,8 +73,8 @@ namespace Thor::USART
     void postISRProcessing() final override;
 
   private:
-    Thor::GPIO::Driver_uPtr rxPin;
-    Thor::GPIO::Driver_uPtr txPin;
+    Thor::GPIO::Driver_sPtr rxPin;
+    Thor::GPIO::Driver_sPtr txPin;
 
     Chimera::Serial::Channel channel; /**< Hardware channel associated with this driver */
     size_t resourceIndex;             /**< Lookup table index for USART resources */
