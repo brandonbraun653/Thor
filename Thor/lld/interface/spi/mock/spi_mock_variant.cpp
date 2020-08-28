@@ -9,7 +9,10 @@
  *******************************************************************************/
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/spi/mock/spi_mock_variant.hpp>
+
+#if defined( THOR_LLD_SPI_MOCK )
 
 namespace Thor::LLD::SPI
 {
@@ -90,3 +93,5 @@ namespace Thor::LLD::SPI
 
   }
 }  // namespace Thor::LLD::SPI
+
+#endif /* THOR_LLD_SPI_MOCK */

@@ -12,7 +12,10 @@
 #include <cstddef>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/gpio/mock/gpio_mock_variant.hpp>
+
+#if defined( THOR_LLD_GPIO_MOCK )
 
 namespace Thor::LLD::GPIO
 {
@@ -43,3 +46,5 @@ namespace Thor::LLD::GPIO
 
   }
 }  // namespace Thor::LLD::GPIO
+
+#endif /* THOR_LLD_GPIO_MOCK */

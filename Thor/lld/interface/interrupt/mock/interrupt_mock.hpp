@@ -26,6 +26,9 @@ using IRQn_Type = uint16_t;
 
 namespace Thor::LLD::IT
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   void setPriorityGrouping( const uint32_t priorityGroup );
   uint32_t getPriorityGrouping();
   void setPriority( const IRQn_Type IRQn, const uint32_t preemptPriority, const uint32_t subPriority );
@@ -38,7 +41,35 @@ namespace Thor::LLD::IT
   uint32_t getPendingIRQ( const IRQn_Type IRQn );
   uint32_t getActive( const IRQn_Type IRQn );
   void SystemReset();
-}  // namespace Thor::LLD::IT
+}    // namespace Thor::LLD::IT
 
-#endif  /* THOR_LLD_IT_MOCK */
-#endif  /* !THOR_LLD_INTERRUPT_MOCK_HPP */
+
+namespace Thor::LLD::IT::Mock
+{
+  /*-------------------------------------------------------------------------------
+  Mock Interfaces
+  -------------------------------------------------------------------------------*/
+  class IModule
+  {
+  public:
+    virtual ~IModule() = default;
+  };
+
+
+  /*-------------------------------------------------------------------------------
+  Mock Classes
+  -------------------------------------------------------------------------------*/
+  class ModuleMock : public IModule
+  {
+  public:
+  };
+
+
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
+  ModuleMock &getModuleMockObject();
+}    // namespace Thor::LLD::IT::Mock
+
+#endif /* THOR_LLD_IT_MOCK */
+#endif /* !THOR_LLD_INTERRUPT_MOCK_HPP */
