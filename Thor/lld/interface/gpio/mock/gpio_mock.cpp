@@ -26,7 +26,7 @@ namespace Thor::LLD::GPIO
   /*-------------------------------------------------------------------------------
   Static Data
   -------------------------------------------------------------------------------*/
-  static std::array<IDriver, NUM_GPIO_PERIPHS> s_gpio_drivers;
+  static std::array<Mock::DriverMock, NUM_GPIO_PERIPHS> s_gpio_drivers;
 
 
   /*-------------------------------------------------------------------------------
@@ -36,9 +36,14 @@ namespace Thor::LLD::GPIO
   {
     static ModuleMock moduleMock;
 
-    ModuleMock &getMockObject()
+    ModuleMock &getModuleMockObject()
     {
       return moduleMock;
+    }
+
+    DriverMock &getDriverMockObject( const size_t channel )
+    {
+      return s_gpio_drivers[ channel ];
     }
 
   }    // namespace Mock
@@ -52,7 +57,7 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------
     Mock behavior
     -------------------------------------------------*/
-    Mock::getMockObject().initialize();
+    Mock::getModuleMockObject().initialize();
 
     /*-------------------------------------------------
     Driver behavior
@@ -68,7 +73,7 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------
     Mock behavior
     -------------------------------------------------*/
-    Mock::getMockObject().getDriver( channel );
+    Mock::getModuleMockObject().getDriver( channel );
 
     /*-------------------------------------------------
     Driver behavior
@@ -87,13 +92,14 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------
     Mock behavior
     -------------------------------------------------*/
-    Mock::getMockObject().availableChannels();
+    Mock::getModuleMockObject().availableChannels();
 
     /*-------------------------------------------------
     Driver behavior
     -------------------------------------------------*/
     return NUM_GPIO_PERIPHS;
   }
+
 }    // namespace Thor::LLD::GPIO
 
 #endif /* THOR_LLD_GPIO_MOCK */

@@ -22,9 +22,22 @@
 /* Mock Includes */
 #include "gmock/gmock.h"
 
+using IRQn_Type = uint16_t;
+
 namespace Thor::LLD::IT
 {
-  // Nothing for now
+  void setPriorityGrouping( const uint32_t priorityGroup );
+  uint32_t getPriorityGrouping();
+  void setPriority( const IRQn_Type IRQn, const uint32_t preemptPriority, const uint32_t subPriority );
+  void getPriority( const IRQn_Type IRQn, const uint32_t priorityGroup, uint32_t *const preemptPriority,
+                    uint32_t *const subPriority );
+  void enableIRQ( const IRQn_Type IRQn );
+  void disableIRQ( const IRQn_Type IRQn );
+  void setPendingIRQ( const IRQn_Type IRQn );
+  void clearPendingIRQ( const IRQn_Type IRQn );
+  uint32_t getPendingIRQ( const IRQn_Type IRQn );
+  uint32_t getActive( const IRQn_Type IRQn );
+  void SystemReset();
 }  // namespace Thor::LLD::IT
 
 #endif  /* THOR_LLD_IT_MOCK */

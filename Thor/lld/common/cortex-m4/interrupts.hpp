@@ -58,7 +58,7 @@ namespace Thor::LLD::IT
   /**
    *  Gets the priority of an interrupt request
    *
-   *  @param[in]  IRQn            External interrupt number 
+   *  @param[in]  IRQn            External interrupt number
    *  @param[in]  priorityGroup   The priority grouping bits length
    *  @param[out] preemptPriority Pointer to the preemptive priority value
    *  @param[out] subPriority     Pointer to the subPriority value
@@ -69,7 +69,7 @@ namespace Thor::LLD::IT
 
   /**
    *  Enables a device specific interrupt in the NVIC interrupt controller
-   *  
+   *
    *  @param[in]  IRQn            External interrupt number
    *  @retval void
    */

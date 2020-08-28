@@ -45,11 +45,20 @@ namespace Thor::HLD::GPIO
   {
     using ::testing::Return;
 
-    Thor::LLD::GPIO::Mock::ModuleMock& lld = Thor::LLD::GPIO::Mock::getMockObject();
+    Thor::LLD::GPIO::Mock::ModuleMock& lld = Thor::LLD::GPIO::Mock::getModuleMockObject();
 
     EXPECT_CALL( lld, initialize() ).Times(1);
 
     Thor::GPIO::initialize();
+  }
+
+  TEST_F(TestFixture, SanityCheck_Access_LLD_MOCK)
+  {
+    Thor::GPIO::initialize();
+    Thor::LLD::GPIO::Mock::DriverMock& driver = Thor::LLD::GPIO::Mock::getDriverMockObject( 0 );
+
+    EXPECT_CALL( driver, clockDisable() ).Times( 1 );
+    driver.clockDisable();
   }
 }
 

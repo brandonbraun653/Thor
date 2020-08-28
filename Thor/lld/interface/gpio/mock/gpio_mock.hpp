@@ -77,7 +77,8 @@ namespace Thor::LLD::GPIO::Mock
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
-  ModuleMock &getMockObject();
+  ModuleMock &getModuleMockObject();
+  DriverMock &getDriverMockObject( const size_t channel );
 
 }    // namespace Thor::LLD::GPIO
 

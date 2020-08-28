@@ -132,11 +132,11 @@ High Level Driver Support
 //#ifndef THOR_HLD_SERIAL
 //#define THOR_HLD_SERIAL
 //#endif
-//
-//#ifndef THOR_HLD_SPI
-//#define THOR_HLD_SPI
-//#endif
-//
+
+// #ifndef THOR_HLD_SPI
+// #define THOR_HLD_SPI
+// #endif
+
 //#ifndef THOR_HLD_TIMER
 //#define THOR_HLD_TIMER
 //#endif
@@ -215,7 +215,12 @@ Low Level Driver Support
 //#ifndef THOR_LLD_I2S
 //#define THOR_LLD_I2S
 //#endif
-//
+
+#ifndef THOR_LLD_IT
+#define THOR_LLD_IT
+#define THOR_LLD_IT_MOCK
+#endif
+
 //#ifndef THOR_LLD_IWDG
 //#define THOR_LLD_IWDG
 //#endif
@@ -256,11 +261,12 @@ Low Level Driver Support
 //#ifndef THOR_LLD_SERIAL
 //#define THOR_LLD_SERIAL
 //#endif
-//
-//#ifndef THOR_LLD_SPI
-//#define THOR_LLD_SPI
-//#endif
-//
+
+// #ifndef THOR_LLD_SPI
+// #define THOR_LLD_SPI
+// #define THOR_LLD_SPI_MOCK
+// #endif
+
 //#ifndef THOR_LLD_TIMER
 //#define THOR_LLD_TIMER
 //#endif
