@@ -13,11 +13,14 @@
 #define THOR_USART_INTERFACE_HPP
 
 /* C++ Includes */
-#include <cstdint>
+#include <cstddef>
 
 namespace Thor::USART
 {
-  constexpr uint8_t MAX_USART_CHANNELS = 4;
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
+  static constexpr size_t MAX_USART_CHANNELS = 4;
 
 }    // namespace Thor::USART
 

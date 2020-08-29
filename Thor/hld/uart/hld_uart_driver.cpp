@@ -17,7 +17,9 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/uart>
+#include <Thor/lld/interface/uart/uart_detail.hpp>
 #include <Thor/lld/interface/uart/uart_intf.hpp>
+#include <Thor/lld/interface/uart/uart_types.hpp>
 
 #if defined( THOR_HLD_UART )
 

@@ -18,6 +18,12 @@
 
 namespace Thor::Watchdog
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
+  Chimera::Status_t reset();
+  Chimera::Watchdog::IWatchdog_sPtr getDriver( const Chimera::Watchdog::Channel channel );
+
   /**
    *  Initialize the WWDG driver
    *
@@ -25,6 +31,17 @@ namespace Thor::Watchdog
    */
   Chimera::Status_t initializeWWDG();
 
+  /**
+   *  Initialize the WWDG driver
+   *
+   *  @return Chimera::Status_t
+   */
+  Chimera::Status_t initializeIWDG();
+
+
+  /*-------------------------------------------------------------------------------
+  Classes
+  -------------------------------------------------------------------------------*/
   /**
    *   A high resolution Watchdog peripheral driven by PCLK1 off the AHB bus. This
    *   watchdog is intended to protect against software faults and has more advanced
@@ -55,13 +72,6 @@ namespace Thor::Watchdog
   private:
     uint32_t currentPrescaler;
   };
-
-  /**
-   *  Initialize the WWDG driver
-   *
-   *  @return Chimera::Status_t
-   */
-  Chimera::Status_t initializeIWDG();
 
   /**
    *   A low resolution Watchdog peripheral driven by the LSI clock, which is

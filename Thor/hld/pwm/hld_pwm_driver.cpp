@@ -24,15 +24,33 @@
 namespace Thor::PWM
 {
   /*-------------------------------------------------------------------------------
-  Free Function Definitions
+  Public Functions
   -------------------------------------------------------------------------------*/
-  Chimera::Status_t initializeModule()
+  Chimera::Status_t initialize()
   {
     return Chimera::Status::OK;
   }
 
+
+  Chimera::Status_t reset()
+  {
+    return Chimera::Status::OK;
+  }
+
+
+  Chimera::PWM::IPWM_sPtr getDriver( const size_t channel )
+  {
+    return nullptr;
+  }
+
+
+  size_t numSupportedChannels()
+  {
+    return 0;
+  }
+
   /*-------------------------------------------------------------------------------
-  HLD Driver Definitions
+  Classes
   -------------------------------------------------------------------------------*/
   Driver::Driver() : mInitialized( false ), mpOutputPin( nullptr ), mpTimerDriver( nullptr )
   {

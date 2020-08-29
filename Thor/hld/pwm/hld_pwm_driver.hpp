@@ -27,8 +27,18 @@
 
 namespace Thor::PWM
 {
-  Chimera::Status_t initializeModule();
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
+  Chimera::Status_t initialize();
+  Chimera::Status_t reset();
+  Chimera::PWM::IPWM_sPtr getDriver( const size_t channel );
+  size_t numSupportedChannels();
 
+
+  /*-------------------------------------------------------------------------------
+  Classes
+  -------------------------------------------------------------------------------*/
   class Driver : virtual public Chimera::PWM::IPWM, public Chimera::Threading::Lockable
   {
   public:
@@ -55,8 +65,7 @@ namespace Thor::PWM
     Thor::GPIO::Driver_sPtr mpOutputPin;
     Chimera::Timer::ITimer_sPtr mpTimerDriver;
 
-    Chimera::Status_t applyConfig( const size_t freq, const size_t dutyCycle,
-                                   const Chimera::Timer::PWM::Polarity polarity );
+    Chimera::Status_t applyConfig( const size_t freq, const size_t dutyCycle, const Chimera::Timer::PWM::Polarity polarity );
   };
 
 }    // namespace Thor::PWM

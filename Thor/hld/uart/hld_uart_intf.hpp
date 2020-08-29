@@ -13,11 +13,14 @@
 #define THOR_UART_DEFS_HPP
 
 /* C++ Includes */
-#include <cstdint>
+#include <cstddef>
 
 namespace Thor::UART
 {
-  constexpr uint8_t MAX_UART_CHANNELS = 4;
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
+  static constexpr size_t MAX_UART_CHANNELS = 4;
 
 }    // namespace Thor::UART
 

@@ -22,6 +22,9 @@
 
 namespace Chimera::UART::Backend
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     return Thor::UART::initialize();
@@ -29,7 +32,7 @@ namespace Chimera::UART::Backend
 
   Chimera::Status_t reset()
   {
-    return Chimera::Status::OK;
+    return Thor::UART::reset();
   }
 
   bool isChannelUART( const Chimera::Serial::Channel channel )
@@ -39,7 +42,7 @@ namespace Chimera::UART::Backend
 
   IUART_sPtr getDriver( const Chimera::Serial::Channel channel )
   {
-    return std::make_shared<Thor::UART::Driver>();
+    return Thor::UART::getDriver( channel );
   }
 
   Chimera::Status_t registerDriver( Chimera::UART::Backend::DriverConfig &registry )
@@ -58,6 +61,6 @@ namespace Chimera::UART::Backend
     registry.reset         = nullptr;
     registry.isChannelUART = nullptr;
     return Chimera::Status::NOT_SUPPORTED;
-#endif /* THOR_DRIVER_UART == 1*/
+#endif /* THOR_HLD_UART */
   }
 }    // namespace Chimera::UART::Backend

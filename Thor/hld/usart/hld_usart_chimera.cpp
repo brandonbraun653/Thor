@@ -22,6 +22,9 @@
 
 namespace Chimera::USART::Backend
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     return Thor::USART::initialize();
@@ -29,7 +32,7 @@ namespace Chimera::USART::Backend
 
   Chimera::Status_t reset()
   {
-    return Chimera::Status::OK;
+    return Thor::USART::reset();
   }
 
   bool isChannelUSART( const Chimera::Serial::Channel channel )
@@ -39,7 +42,7 @@ namespace Chimera::USART::Backend
 
   IUSART_sPtr getDriver( const Chimera::Serial::Channel channel )
   {
-    return std::make_shared<Thor::USART::Driver>();
+    return Thor::USART::getDriver( channel );
   }
 
   Chimera::Status_t registerDriver( Chimera::USART::Backend::DriverConfig &registry )
@@ -58,6 +61,6 @@ namespace Chimera::USART::Backend
     registry.reset          = nullptr;
     registry.isChannelUSART = nullptr;
     return Chimera::Status::NOT_SUPPORTED;
-#endif /* THOR_DRIVER_USART == 1*/
+#endif /* THOR_HLD_USART */
   }
 }    // namespace Chimera::USART::Backend

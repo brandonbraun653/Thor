@@ -32,13 +32,18 @@
 
 namespace Thor::UART
 {
-  /**
-   *  Initialize the driver
-   *
-   *  @return Chimera::Status_t
-   */
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize();
+  Chimera::Status_t reset();
+  bool isChannelUART( const Chimera::Serial::Channel channel );
+  Chimera::UART::IUART_sPtr getDriver( const Chimera::Serial::Channel channel );
 
+
+  /*-------------------------------------------------------------------------------
+  Classes
+  -------------------------------------------------------------------------------*/
   class Driver : virtual public Chimera::UART::IUART,
                  public Chimera::Threading::Lockable
   {

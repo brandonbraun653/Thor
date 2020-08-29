@@ -17,9 +17,16 @@
 
 namespace Thor::USART
 {
+  /*-------------------------------------------------------------------------------
+  Forward Declarations
+  -------------------------------------------------------------------------------*/
   class Driver;
-  using USARTClass_sPtr = std::shared_ptr<Driver>;
-  using USARTClass_uPtr = std::unique_ptr<Driver>;
+
+
+  /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
+  using Driver_sPtr = std::shared_ptr<Driver>;
 }    // namespace Thor::UART
 
 #endif /* !THOR_USART_TYPES_HPP */

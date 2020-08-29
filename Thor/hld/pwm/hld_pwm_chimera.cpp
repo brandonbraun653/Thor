@@ -23,22 +23,22 @@ namespace Chimera::PWM::Backend
 {
   Chimera::Status_t initialize()
   {
-    return Thor::PWM::initializeModule();
+    return Thor::PWM::initialize();
   }
 
   Chimera::Status_t reset()
   {
-    return Chimera::Status::OK;
+    return Thor::PWM::reset();
   }
 
   Chimera::PWM::IPWM_sPtr getDriver( const size_t channel )
   {
-    return std::make_shared<Thor::PWM::Driver>();
+    return Thor::PWM::getDriver( channel );
   }
 
   size_t numSupportedChannels()
   {
-    return 0;    // TODO
+    return Thor::PWM::numSupportedChannels();
   }
 
   Chimera::Status_t registerDriver( Chimera::PWM::Backend::DriverRegistration &registry )
@@ -52,12 +52,11 @@ namespace Chimera::PWM::Backend
     return Chimera::Status::OK;
 #else
     registry.isSupported          = false;
-    registry.createShared         = nullptr;
-    registry.createUnique         = nullptr;
+    registry.getDriver            = nullptr;
     registry.initialize           = nullptr;
     registry.reset                = nullptr;
     registry.numSupportedChannels = nullptr;
     return Chimera::Status::NOT_SUPPORTED;
-#endif /* THOR_DRIVER_PWM == 1*/
+#endif /* THOR_HLD_PWM */
   }
 }    // namespace Chimera::PWM::Backend

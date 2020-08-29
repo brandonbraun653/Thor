@@ -21,24 +21,27 @@
 
 namespace Chimera::Watchdog::Backend
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     auto result = Chimera::Status::OK;
 
-    // result |= Thor::Watchdog::initializeIWDG();
-    // result |= Thor::Watchdog::initializeWWDG();
+    result |= Thor::Watchdog::initializeIWDG();
+    result |= Thor::Watchdog::initializeWWDG();
 
     return result;
   }
 
   Chimera::Status_t reset()
   {
-    return Chimera::Status::OK;
+    return Thor::Watchdog::reset();
   }
 
   Chimera::Watchdog::IWatchdog_sPtr getDriver( const Channel channel )
   {
-    return nullptr;
+    return Thor::Watchdog::getDriver( channel );
   }
 
   Chimera::Status_t registerDriver( Chimera::Watchdog::Backend::DriverConfig &registry )
@@ -55,6 +58,6 @@ namespace Chimera::Watchdog::Backend
     registry.initialize   = nullptr;
     registry.reset        = nullptr;
     return Chimera::Status::NOT_SUPPORTED;
-#endif /* THOR_DRIVER_Watchdog == 1*/
+#endif /* THOR_HLD_WWDG || THOR_HLD_IWDG */
   }
 }    // namespace Chimera::Watchdog::Backend
