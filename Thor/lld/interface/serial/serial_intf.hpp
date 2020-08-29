@@ -89,22 +89,31 @@ namespace Thor::LLD::Serial
     virtual Chimera::Status_t receive( uint8_t *const data, const size_t size, const size_t timeout ) = 0;
 
     /**
+     *  Gets the current state of the TX transfer
      *
+     *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t txTransferStatus() = 0;
 
     /**
+     *  Gets the current state of the RX transfer
      *
+     *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t rxTransferStatus() = 0;
 
     /**
+     *  Gets some signaling flags that describe specific behaviors in the serial driver
      *
+     *  @return uint32_t
      */
     virtual uint32_t getFlags() = 0;
 
     /**
+     *  Clears specific bits in the signal flags
      *
+     *  @param[in]  flagbits    Bits that are set here will be cleared internally
+     *  @return void
      */
     virtual void clearFlags( const uint32_t flagBits ) = 0;
   };
@@ -216,12 +225,17 @@ namespace Thor::LLD::Serial
     virtual Chimera::Status_t receiveDMA( void *const data, const size_t size, const size_t timeout ) = 0;
 
     /**
+     *  Stops an ongoing transmission, if in progress
      *
+     *  @return void
      */
     virtual void killTransmit() = 0;
 
     /**
+     *  Stops an ongoing reception, if in progress. Any associated data stored with the
+     *  reception is assumed incomplete and will be lost.
      *
+     *  @return void
      */
     virtual void killReceive() = 0;
   };

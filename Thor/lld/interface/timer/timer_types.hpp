@@ -26,7 +26,40 @@
 
 namespace Thor::LLD::TIMER
 {
+  /*-------------------------------------------------------------------------------
+  Forward Declarations
+  -------------------------------------------------------------------------------*/
+  class IAdvancedDriver;
+  class IBasicDriver;
+  class ILowPowerDriver;
+  class GeneralDriverImpl;
 
+  struct RegisterMap;
+  struct LPRegisterMap;
+
+  /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
+  using IAdvancedDriver_sPtr = IAdvancedDriver *;
+  using IAdvancedDriver_uPtr = IAdvancedDriver *;
+  using IBasicDriver_sPtr    = IBasicDriver *;
+  using IBasicDriver_uPtr    = IBasicDriver *;
+  using ILowPowerDriver_sPtr = ILowPowerDriver *;
+  using ILowPowerDriver_uPtr = ILowPowerDriver *;
+  using GeneralDriver_rPtr   = GeneralDriverImpl *;
+
+  // Instance To Resource Index Map
+  using ITRIMap = Chimera::Container::LightFlatMap<std::uintptr_t, size_t>;
+
+  // Peripheral To Resource Index Map
+  using PTRIMapLLD = Chimera::Container::LightFlatMap<Chimera::Timer::Peripheral, Thor::LLD::RIndex>;
+  using PTRIMapHLD = Chimera::Container::LightFlatMap<Chimera::Timer::Peripheral, Thor::HLD::RIndex>;
+
+  using DirectionConverter = std::array<Reg32_t, static_cast<size_t>( Chimera::Timer::Direction::NUM_OPTIONS )>;
+
+  /*-------------------------------------------------------------------------------
+  Enumerations
+  -------------------------------------------------------------------------------*/
   /**
    *  The category of timer peripheral that can exist. Not all
    *  timers have the same capabilities.
@@ -51,12 +84,9 @@ namespace Thor::LLD::TIMER
 
   };
 
-  /**
-   *  Forward declaration to ease compilation
-   */
-  struct RegisterMap;
-  struct LPRegisterMap;
-
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
   struct DeviceDescription
   {
     uint8_t counterWidth;
@@ -65,42 +95,10 @@ namespace Thor::LLD::TIMER
 
     void *registerMap;
 
-    const Chimera::Algorithm::OptionsList* supportedEvents;
-    const Chimera::Algorithm::OptionsList* supportedModes;
+    const Chimera::Algorithm::OptionsList *supportedEvents;
+    const Chimera::Algorithm::OptionsList *supportedModes;
   };
 
-  class IAdvancedDriver;
-  using IAdvancedDriver_sPtr = IAdvancedDriver*;
-  using IAdvancedDriver_uPtr = IAdvancedDriver*;
+}    // namespace Thor::LLD::TIMER
 
-  class IBasicDriver;
-  using IBasicDriver_sPtr = IBasicDriver*;
-  using IBasicDriver_uPtr = IBasicDriver*;
-
-
-  class ILowPowerDriver;
-  using ILowPowerDriver_sPtr = ILowPowerDriver*;
-  using ILowPowerDriver_uPtr = ILowPowerDriver*;
-
-
-  class GeneralDriverImpl;
-  using GeneralDriver_rPtr = GeneralDriverImpl*;
-
-  /*------------------------------------------------
-  Flat Map Data Types
-  ------------------------------------------------*/
-  // Instance To Resource Index Map
-  using ITRIMap = Chimera::Container::LightFlatMap<std::uintptr_t, size_t>;
-
-  // Peripheral To Resource Index Map
-  using PTRIMapLLD = Chimera::Container::LightFlatMap<Chimera::Timer::Peripheral, Thor::LLD::RIndex>;
-  using PTRIMapHLD = Chimera::Container::LightFlatMap<Chimera::Timer::Peripheral, Thor::HLD::RIndex>;
-  
-  /*------------------------------------------------
-  Look Up Table Types
-  ------------------------------------------------*/
-  using DirectionConverter = std::array<Reg32_t, static_cast<size_t>( Chimera::Timer::Direction::NUM_OPTIONS )>;
-
-}    // namespace Thor::LLD::Timer
-
-#endif  /* !LLD_TIMER_INTERFACE_TYPES */
+#endif /* !LLD_TIMER_INTERFACE_TYPES */

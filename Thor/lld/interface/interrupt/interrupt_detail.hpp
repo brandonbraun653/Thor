@@ -22,7 +22,7 @@
 #include <Thor/lld/common/cortex-m4/interrupts.hpp>
 #include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
 #else
-#error Unknown Thor interrupt driver implementation
+#pragma message( "interrupt_detail.hpp: Unknown target for LLD" )
 #endif
 
 #endif /* THOR_INTERRUPT_DETAIL_HPP */

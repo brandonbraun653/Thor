@@ -10,15 +10,18 @@
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_DMA_CONFIG_HPP
-#define THOR_DMA_CONFIG_HPP
+#ifndef THOR_DMA_DETAIL_HPP
+#define THOR_DMA_DETAIL_HPP
 
 #if defined( TARGET_LLD_MOCK )
 #include <Thor/lld/interface/dma/mock/dma_mock.hpp>
+#include <Thor/lld/interface/dma/mock/dma_mock_variant.hpp>
 #elif defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/dma/hw_dma_driver.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_prj.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_mapping.hpp>
+#else
+#pragma message( "dma_detail.hpp: Unknown target for LLD" )
 #endif
 
-#endif /* !THOR_DMA_CONFIG_HPP */
+#endif /* !THOR_DMA_DETAIL_HPP */

@@ -5,7 +5,7 @@
  *   Description:
  *    STM32 Driver Model for Generic Watchdogs
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -22,6 +22,9 @@
 
 namespace Thor::LLD::Watchdog
 {
+  /*-------------------------------------------------------------------------------
+  Classes
+  -------------------------------------------------------------------------------*/
   class Basic
   {
   public:
@@ -37,7 +40,7 @@ namespace Thor::LLD::Watchdog
     /**
      *  Calculates the appropriate hardware prescaler given a desired
      *  timeout in milliseconds
-     *  
+     *
      *  @param[in]  ms            The number of milliseconds to set the timeout to
      *  @return Reg32_t           The hardware register prescaler value
      */
@@ -63,19 +66,19 @@ namespace Thor::LLD::Watchdog
      */
     virtual Chimera::Status_t setPrescaler( const Reg32_t val ) = 0;
 
-    /** 
-     *  Directly assigns the value that hardware counter should be 
+    /**
+     *  Directly assigns the value that hardware counter should be
      *  reloaded to upon the watchdog being refreshed.
      *
      *  @see calculateReload()
-     *  
+     *
      *  @param[in]  val           The reload value to be set
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t setReload( const Reg32_t val ) = 0;
 
     /**
-     *  Places the watchdog hardware in a state such that it needs to be 
+     *  Places the watchdog hardware in a state such that it needs to be
      *  periodically refreshed, otherwise a system reset will occur.
      *
      *  @return void
@@ -84,24 +87,24 @@ namespace Thor::LLD::Watchdog
 
     /**
      *  Refreshes the watchdog counter so that it does not reset the board
-     *  
+     *
      *  @return void
      */
     virtual void reload() = 0;
 
-    /** 
+    /**
      *  Calculates the maximum timeout (mS) that can be achieved with the
      *  given prescaler value.
-     *  
+     *
      *  @param[in]  prescaler     The watchdog clock prescaler (register value)
      *  @return size_t            Millisecond delay
      */
     virtual size_t getMaxTimeout( const Reg32_t prescaler ) = 0;
 
-    /** 
+    /**
      *  Calculates the minimum timeout (mS) that can be achieved with the
      *  given prescaler value.
-     *  
+     *
      *  @param[in]  prescaler     The watchdog clock prescaler (register value)
      *  @return size_t            Millisecond delay
      */
@@ -146,5 +149,4 @@ namespace Thor::LLD::Watchdog
 
 }    // namespace Thor::LLD::Watchdog
 
-
-#endif  /* !THOR_DRIVER_MODEL_WATCHDOG_HPP */
+#endif /* !THOR_DRIVER_MODEL_WATCHDOG_HPP */

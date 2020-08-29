@@ -587,6 +587,8 @@
     <ClCompile Include="..\..\..\Thor\hld\timer\test\test_hld_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\common\cortex-m4\cm4_interrupts.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\des\mock\des_mock.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock_variant.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_driver_stm32l4.cpp" />
@@ -840,8 +842,11 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_detail.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_types.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_model.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock_variant.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_detail.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_intf.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\common\definitions.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KC'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">true</ExcludedFromBuild>

@@ -56,6 +56,6 @@ namespace Thor::LLD::GPIO
     NUM_OPTIONS,
     UNKNOWN_SPEED
   };
-}
+}    // namespace Thor::LLD::GPIO
 
 #endif /* !THOR_LLD_GPIO_DRIVER_TYPES_HPP */

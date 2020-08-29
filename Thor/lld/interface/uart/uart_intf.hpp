@@ -22,8 +22,13 @@
 
 namespace Thor::LLD::UART
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   /**
    *  Initializes the low level driver
+   *
+   *  @return Chimera::Status_t
    */
   static Chimera::Status_t initialize()
   {
@@ -42,6 +47,6 @@ namespace Thor::LLD::UART
     // Currently no UARTs are available on supported STM32L4xxx chips.
     return false;
   }
-}  // namespace
+}    // namespace Thor::LLD::UART
 
-#endif  /* !LLD_UART_INTERFACE_HPP */
+#endif /* !LLD_UART_INTERFACE_HPP */

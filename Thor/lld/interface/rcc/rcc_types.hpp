@@ -17,8 +17,11 @@
 
 namespace Thor::LLD::RCC
 {
-    using ClockType_t = Reg32_t;
+  /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
+  using ClockType_t = Reg32_t;
 
-}
+}    // namespace Thor::LLD::RCC
 
 #endif /* !THOR_RCC_TYPES_HPP */

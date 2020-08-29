@@ -424,6 +424,9 @@
     <Filter Include="Device-specific files">
       <UniqueIdentifier>{e92c257c-8361-406b-9918-29f56eb884ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lld\interface\watchdog\mock">
+      <UniqueIdentifier>{e4219c80-dd7b-40c4-bbed-74f195b89dd3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.xml">
@@ -724,12 +727,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_types.hpp">
       <Filter>lld\interface\spi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog.hpp">
-      <Filter>lld\interface\watchdog</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_model.hpp">
-      <Filter>lld\interface\watchdog</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32f4x\common\definitions.hpp">
       <Filter>lld\stm32f4x\common</Filter>
@@ -1416,6 +1413,21 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_types.hpp">
       <Filter>lld\interface\uart</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_detail.hpp">
+      <Filter>lld\interface\watchdog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_intf.hpp">
+      <Filter>lld\interface\watchdog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\watchdog_types.hpp">
+      <Filter>lld\interface\watchdog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock.hpp">
+      <Filter>lld\interface\watchdog\mock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock_variant.hpp">
+      <Filter>lld\interface\watchdog\mock</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">
@@ -1678,6 +1690,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\test\test_lld_usart_driver.cpp">
       <Filter>lld\stm32l4x\usart\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock.cpp">
+      <Filter>lld\interface\watchdog\mock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock_variant.cpp">
+      <Filter>lld\interface\watchdog\mock</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

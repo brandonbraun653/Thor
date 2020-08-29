@@ -40,35 +40,35 @@ namespace Thor::LLD::RCC
    *
    *  @return void
    */
-  extern void initialize();
+  void initialize();
 
   /**
    *  Acquires the last known reset event type
    *
    *  @return Chimera::System::ResetEvent
    */
-  extern Chimera::System::ResetEvent getResetReason();
+  Chimera::System::ResetEvent getResetReason();
 
   /**
    *  Clears the previous reset reason from hardware
    *
    *  @return void
    */
-  extern void clearResetReason();
+  void clearResetReason();
 
   /**
    *  Gets a reference to the core clock controller instance
    *
    *  @return ICoreClock *
    */
-  extern ICoreClock *getCoreClock();
+  ICoreClock *getCoreClock();
 
   /**
    *  Gets a reference to the peripheral clock controller instance
    *
    *  @return IPeripheralClock *
    */
-  extern IPeripheralClock *getPeripheralClock();
+  IPeripheralClock *getPeripheralClock();
 
   /*-------------------------------------------------------------------------------
   Interface Classes

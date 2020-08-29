@@ -25,7 +25,7 @@
 #include <Thor/lld/stm32l4x/spi/hw_spi_prj.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_mapping.hpp>
 #else
-#pragma message( "Unknown target device for SPI low level driver" )
+#pragma message( "spi_detail.hpp: Unknown target for LLD" )
 #endif
 
 #endif /* !THOR_SPI_DETAIL_HPP */

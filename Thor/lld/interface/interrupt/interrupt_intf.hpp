@@ -25,6 +25,9 @@
 
 namespace Thor::LLD::IT
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   /**
    *  Disables all interrupts and returns a mask indicating which
    *  ISR vector signals should be unmasked in enableInterrupts()
@@ -41,6 +44,6 @@ namespace Thor::LLD::IT
    */
   void enableInterrupts( Chimera::System::InterruptMask &interruptMask );
 
-}    // namespace Thor::Driver
+}    // namespace Thor::LLD::IT
 
 #endif /* !THOR_DRIVER_MODEL_INTERRUPT_HPP */

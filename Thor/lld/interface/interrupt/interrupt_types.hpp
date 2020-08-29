@@ -5,7 +5,7 @@
  *   Description:
  *    STM32 Interrupt Types
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -17,8 +17,15 @@
 
 namespace Thor::LLD::Interrupt
 {
+  /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
   using InterruptSignal_t = int16_t;
 
+
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
   /*------------------------------------------------
   Define numerical boundaries to the number of interrupt signals
   that a given hardware peripheral can support. These must account
@@ -30,9 +37,6 @@ namespace Thor::LLD::Interrupt
   static constexpr InterruptSignal_t UARTSigOffset = USARTSigOffset + USARTMaxSig + 1;
   static constexpr InterruptSignal_t UARTMaxSig    = 10;
 
-}    // namespace Thor::Driver
-
+}    // namespace Thor::LLD::Interrupt
 
 #endif /* !THOR_DRIVER_TYPES_INTERRUPT_HPP */
-
-

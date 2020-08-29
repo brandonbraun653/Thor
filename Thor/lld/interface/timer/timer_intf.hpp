@@ -30,18 +30,18 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------------------------------------
   HLD->LLD Required Free Functions
   -------------------------------------------------------------------------------*/
-  extern void incrementSystemTick();
-  extern size_t millis();
-  extern void delayMilliseconds( const size_t ms );
-  extern void delayMicroseconds( const size_t us );
+  void incrementSystemTick();
+  size_t millis();
+  void delayMilliseconds( const size_t ms );
+  void delayMicroseconds( const size_t us );
 
   /*-------------------------------------------------------------------------------
-  LLD Free Functions
+  Public Functions
   -------------------------------------------------------------------------------*/
   /**
    *  Initializes the low level driver
    */
-  extern Chimera::Status_t initializeModule();
+  Chimera::Status_t initializeModule();
 
   /**
    *  Checks if the given hardware channel is supported on this device.
@@ -72,7 +72,7 @@ namespace Thor::LLD::TIMER
   const DeviceDescription *getPeripheralDescriptor( const Thor::LLD::RIndex lldIndex );
 
   /*-------------------------------------------------------------------------------
-  Timer Driver Class Interface Declarations
+  Classes
   -------------------------------------------------------------------------------*/
   class ICommonDriver
   {

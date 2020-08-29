@@ -10,17 +10,18 @@
  *******************************************************************************/
 
 #pragma once
-#ifndef THOR_LLD_GPIO_INTF_DETAIL_HPP
-#define THOR_LLD_GPIO_INTF_DETAIL_HPP
+#ifndef THOR_LLD_RCC_DETAIL_HPP
+#define THOR_LLD_RCC_DETAIL_HPP
 
-
-#if defined( TARGET_STM32L4 )
+#if defined( TARGET_LLD_MOCK )
+#include <Thor/lld/interface/rcc/mock/rcc_mock.hpp>
+#elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #else
-#pragma message( "gpio_detail.hpp: Unknown target for LLD" )
+#pragma message( "rcc_detail.hpp: Unknown target for LLD" )
 #endif
 
 /* Chimera Includes */
@@ -28,6 +29,9 @@
 
 namespace Thor::LLD::RCC
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   /**
    *  Gets the HSI oscillator frequency in Hz
    *  @return size_t
@@ -43,8 +47,8 @@ namespace Thor::LLD::RCC
   /**
    *  Sets the HSE oscillator frequency in Hz. Given that this is
    *  an external clock, no configuration is performed.
-   * 
-   *  @param[in]  freq    The project's external HSE clock frequency 
+   *
+   *  @param[in]  freq    The project's external HSE clock frequency
    *  @return void
    */
   void setHSEFreq( const size_t freq );
@@ -58,8 +62,8 @@ namespace Thor::LLD::RCC
   /**
    *  Sets the LSE oscillator frequency in Hz. Given that this is
    *  an external clock, no configuration is performed.
-   * 
-   *  @param[in]  freq    The project's external LSE clock frequency 
+   *
+   *  @param[in]  freq    The project's external LSE clock frequency
    *  @return void
    */
   void setLSEFreq( const size_t freq );
@@ -78,12 +82,12 @@ namespace Thor::LLD::RCC
 
   /**
    *  Gets the PLLCLK oscillator frequency in Hz
-   * 
+   *
    *  @note The function input expects a mask to be given that corresponds to
    *        one of the PLL clock outputs. On the L4 chips, if the PLLR clock
    *        is desired, pass in PLLCFGR_PLLR. PLLQ? -> PLLCFGR_PLLQ.
    *        These definitions are in hw_rcc_register_stm32l4<xxxx>.hpp
-   *  
+   *
    *  @param[in]  mask    The desired PLL output clock to get
    *  @return size_t
    */
@@ -122,4 +126,4 @@ namespace Thor::LLD::RCC
   size_t getPCLK2Freq();
 }    // namespace Thor::LLD::RCC
 
-#endif /* !THOR_LLD_GPIO_INTF_DETAIL_HPP */
+#endif /* !THOR_LLD_RCC_DETAIL_HPP */

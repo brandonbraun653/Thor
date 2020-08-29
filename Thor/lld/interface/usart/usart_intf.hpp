@@ -22,11 +22,14 @@
 
 namespace Thor::LLD::USART
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   /**
    *  Initializes the low level driver
    */
   extern Chimera::Status_t initialize();
-  
+
   /**
    *  Checks if the given hardware channel is supported on this device.
    *
@@ -35,6 +38,6 @@ namespace Thor::LLD::USART
    */
   bool isChannelSupported( const Chimera::Serial::Channel channel );
 
-}  // namespace Thor::LLD::USART
+}    // namespace Thor::LLD::USART
 
-#endif  /* !LLD_USART_INTERFACE_HPP */
+#endif /* !LLD_USART_INTERFACE_HPP */

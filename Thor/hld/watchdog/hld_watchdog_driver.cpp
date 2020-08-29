@@ -24,7 +24,7 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/watchdog>
-#include <Thor/lld/interface/watchdog/watchdog.hpp>
+#include <Thor/lld/interface/watchdog/watchdog_detail.hpp>
 
 // namespace Chimera::Watchdog::Backend
 // {

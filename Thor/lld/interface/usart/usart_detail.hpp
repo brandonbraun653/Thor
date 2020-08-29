@@ -15,6 +15,7 @@
 
 #if defined( TARGET_LLD_MOCK )
 #include <Thor/lld/interface/usart/mock/usart_mock.hpp>
+#include <Thor/lld/interface/usart/mock/usart_mock_variant.hpp>
 #elif defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/usart/hw_usart_driver.hpp>
 #include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
@@ -24,7 +25,7 @@
 #include <Thor/lld/stm32l4x/usart/hw_usart_prj.hpp>
 #include <Thor/lld/stm32l4x/usart/hw_usart_mapping.hpp>
 #else
-#pragma message( "Unknown target device for USART low level driver" )
+#pragma message( "usart_detail.hpp: Unknown target for LLD" )
 #endif
 
-#endif  /* !THOR_USART_DETAIL_HPP */
+#endif /* !THOR_USART_DETAIL_HPP */

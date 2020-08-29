@@ -20,10 +20,15 @@
 
 namespace Thor::LLD::GPIO
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   /**
    *  Initializes the low level driver
+   *
+   *  @return Chimera::Status_t
    */
-  extern Chimera::Status_t initialize();
+  Chimera::Status_t initialize();
 
   /**
    *  Gets a raw pointer to the GPIO driver for a particular channel
@@ -36,15 +41,18 @@ namespace Thor::LLD::GPIO
    *  @param[in] channel      The GPIO channel (port) to grab
    *  @return IDriver_sPtr    Instance of the GPIO driver for the requested channel
    */
-  extern IDriver_rPtr getDriver( const size_t channel );
+  IDriver_rPtr getDriver( const size_t channel );
 
   /**
    *  Looks up how many GPIO channels are supported by the low level driver
    *
    *  @return size_t
    */
-  extern size_t availableChannels();
+  size_t availableChannels();
 
+  /*-------------------------------------------------------------------------------
+  Classes
+  -------------------------------------------------------------------------------*/
   /**
    *  Interface specification for the low level GPIO driver. It's expected that the
    *  implementation will follow the described behavior set to the letter. No thread

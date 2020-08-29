@@ -28,6 +28,19 @@
 
 namespace Thor::LLD::DMA
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Initialize the driver
+   *
+   *  @return Chimera::Status_t
+   */
+  Chimera::Status_t initialize();
+
+  /*-------------------------------------------------------------------------------
+  Classes
+  -------------------------------------------------------------------------------*/
   /**
    * Models the interface to a DMA controller peripheral
    */
@@ -38,28 +51,29 @@ namespace Thor::LLD::DMA
 
     /**
      *  Attaches an instance of a DMA peripheral for the class to control
-     *  
+     *
+     *  @param[in]  peripheral        The peripheral to be attached to the driver
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t attach( RegisterMap *const peripheral ) = 0;
 
     /**
      *  Enables the DMA peripheral clock
-     *  
+     *
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t clockEnable() = 0;
 
     /**
      *  Disables the DMA peripheral clock
-     *  
+     *
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t clockDisable() = 0;
 
     /**
      *  Completely resets the entire driver, including all instance resources.
-     *  
+     *
      *  @note init() must be called again before the driver can be reused
      *
      *  @return Chimera::Status_t
@@ -68,7 +82,7 @@ namespace Thor::LLD::DMA
 
     /**
      *  Performs low level driver initialization functionality
-     *  
+     *
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t init() = 0;
@@ -76,7 +90,7 @@ namespace Thor::LLD::DMA
     /**
      *  Reconfigures a stream for a new transfer
      *
-     *  @param[in]  config    The stream's transfer configuration settings
+     *  @param[in]  config            The stream's transfer configuration settings
      *  @return Chimera::Status_t
      *
      *  |  Return Value |               Explanation               |
@@ -87,8 +101,20 @@ namespace Thor::LLD::DMA
      */
     virtual Chimera::Status_t configure( StreamX *const stream, StreamConfig *const config, TCB *const controlBlock ) = 0;
 
+    /**
+     *  Starts the transfer on the given stream
+     *
+     *  @param[in]  stream            The stream to act upon
+     *  @return Chimera::Status_t
+     */
     virtual Chimera::Status_t start( StreamX *const stream ) = 0;
 
+    /**
+     *  Stops the transfer on the given stream
+     *
+     *  @param[in]  stream            The stream to act upon
+     *  @return Chimera::Status_t
+     */
     virtual Chimera::Status_t abort( StreamX *const stream ) = 0;
 
     /**
@@ -131,15 +157,16 @@ namespace Thor::LLD::DMA
      *  when any event completes. This could be transfer complete, transfer
      *  half complete, etc.
      *
-     *  @param[in]  wakeup    Signal to be given to upon ISR events
+     *  @param[in]  wakeup            Signal to be given to upon ISR events
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup ) = 0;
-    
+
     /**
      *  Reconfigures a stream for a new transfer
      *
-     *  @param[in]  config    The stream's transfer configuration settings
+     *  @param[in]  config            The stream's transfer configuration settings
+     *  @param[in]  controlBlcok      Control block for the transfer, describing behavior
      *  @return Chimera::Status_t
      *
      *  |  Return Value |               Explanation               |
@@ -150,15 +177,20 @@ namespace Thor::LLD::DMA
      */
     virtual Chimera::Status_t configure( StreamConfig *const config, TCB *const controlBlock ) = 0;
 
+    /**
+     *  Starts the transfer on this stream
+     *
+     *  @return Chimera::Status_t
+     */
     virtual Chimera::Status_t start() = 0;
 
+    /**
+     *  Stops the transfer on this stream
+     *
+     *  @return Chimera::Status_t
+     */
     virtual Chimera::Status_t abort() = 0;
   };
-
-
-  extern Chimera::Status_t initialize();
-
-  extern Chimera::Status_t registerDriver();
 
 }    // namespace Thor::LLD::DMA
 

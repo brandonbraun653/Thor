@@ -22,10 +22,13 @@
 
 namespace Thor::LLD::SPI
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   /**
    *  Initializes the low level driver
    */
-  extern Chimera::Status_t initialize();
+  Chimera::Status_t initialize();
 
   /**
    *  Checks if the given hardware channel is supported on this device.
@@ -41,8 +44,12 @@ namespace Thor::LLD::SPI
    *  @param[in] channel        The SPI channel to grab (1 indexed)
    *  @return IDriver_sPtr      Instance of the SPI driver for the requested channel
    */
-  extern IDriver_rPtr getDriver( const Chimera::SPI::Channel channel );
+  IDriver_rPtr getDriver( const Chimera::SPI::Channel channel );
 
+
+  /*-------------------------------------------------------------------------------
+  Classes
+  -------------------------------------------------------------------------------*/
   class IDriver
   {
   public:

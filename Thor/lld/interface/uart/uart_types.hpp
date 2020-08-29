@@ -14,7 +14,6 @@
 
 namespace Thor::LLD::UART
 {
+}    // namespace Thor::LLD::UART
 
-}  // namespace Thor::LLD::UART
-
-#endif  /* !LLD_UART_TYPES_HPP */
+#endif /* !LLD_UART_TYPES_HPP */

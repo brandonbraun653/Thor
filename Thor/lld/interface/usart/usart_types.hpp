@@ -18,19 +18,28 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/serial>
 
 namespace Thor::LLD::USART
 {
+  /*-------------------------------------------------------------------------------
+  Forward Declarations
+  -------------------------------------------------------------------------------*/
+  class Driver;
   struct RegisterMap;
 
-  class Driver;
+
+  /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
+  using Driver_rPtr = Driver*;
   using Driver_sPtr = std::shared_ptr<Driver>;
   using Driver_uPtr = std::unique_ptr<Driver>;
 
 
-  /*------------------------------------------------
-  State Machine
-  ------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Enumerations
+  -------------------------------------------------------------------------------*/
   namespace StateMachine
   {
     enum TX : Chimera::Status_t
