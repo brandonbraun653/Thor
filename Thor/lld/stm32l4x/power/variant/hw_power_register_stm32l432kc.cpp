@@ -10,6 +10,7 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
+#include <Thor/lld/interface/power/power_intf.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_driver.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_mapping.hpp>
 #include <Thor/lld/stm32l4x/power/variant/hw_power_register_stm32l432kc.hpp>
@@ -75,8 +76,8 @@ namespace Thor::LLD::RCC::LookupTables
                     nullptr,
                     PWR_ResetConfig,
                     PWR_SourceClock,
-                    &Thor::LLD::PWR::InstanceToResourceIndex,
-                    Thor::LLD::PWR::NUM_POWER_PERIPHS };
+                    Thor::LLD::PWR::NUM_POWER_PERIPHS,
+                    Thor::LLD::PWR::getResourceIndex };
 
   void PWRInit()
   {

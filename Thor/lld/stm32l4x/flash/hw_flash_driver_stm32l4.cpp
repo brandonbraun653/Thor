@@ -23,9 +23,9 @@
 
 namespace Thor::LLD::FLASH
 {
-  /*-------------------------------------------------
-  LLD->HLD Interface Implementation
-  -------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     initializeRegisters();
@@ -37,6 +37,19 @@ namespace Thor::LLD::FLASH
   size_t availableChannels()
   {
     return NUM_FLASH_PERIPHS;
+  }
+
+
+  RIndexType getResourceIndex( const std::uintptr_t address )
+  {
+    if ( address == FLASH_BASE_ADDR )
+    {
+      return FLASH_RESOURCE_INDEX;
+    }
+    else
+    {
+      return INVALID_RESOURCE_INDEX;
+    }
   }
 
   /*-------------------------------------------------

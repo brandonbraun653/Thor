@@ -12,6 +12,9 @@
 #ifndef THOR_LLD_COMMON_TYPES_HPP
 #define THOR_LLD_COMMON_TYPES_HPP
 
+/* STL Includes */
+#include <limits>
+
 /* Chimera Includes */
 #include <Chimera/container>
 
@@ -20,10 +23,20 @@
 
 namespace Thor::LLD
 {
+  /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
   using RIndexType = uint8_t;
   using RIndexMap  = Chimera::Container::LightFlatMap<std::uintptr_t, RIndexType>;
 
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
+  static constexpr uint8_t INVALID_RESOURCE_INDEX = std::numeric_limits<uint8_t>::max();
 
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
   /**
    *  Index type used to access various low level driver resources.
    */

@@ -73,7 +73,7 @@ namespace Thor::System
 #endif
 
 #if defined( THOR_HLD_PWM )
-    Thor::PWM::initializeModule();
+    Thor::PWM::initialize();
 #endif
 
 #if defined( THOR_HLD_SPI )

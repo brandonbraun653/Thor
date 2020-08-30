@@ -955,11 +955,11 @@ namespace Thor::LLD::RCC
   size_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address )
   {
     auto clockLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->clockSource;
-    auto indexLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->resourceIndexMap;
+    auto indexLookupFunc = periphLookupTables[ static_cast<uint8_t>( periph ) ]->getResourceIndex;
 
-    if ( clockLookupTable && indexLookupTable )
+    if ( clockLookupTable && indexLookupFunc )
     {
-      auto index       = indexLookupTable->at( address ).second;
+      auto index       = indexLookupFunc( address );
       auto sourceClock = clockLookupTable[ index ];
 
       return getClockFrequency( sourceClock );

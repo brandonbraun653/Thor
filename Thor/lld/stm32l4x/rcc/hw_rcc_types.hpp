@@ -28,6 +28,10 @@
 
 namespace Thor::LLD::RCC
 {
+
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
   struct RegisterMap
   {
     volatile Reg32_t CR;
@@ -255,8 +259,6 @@ namespace Thor::LLD::RCC
    *  Describes a generic set of registers and configurations for a
    *  peripheral type that allows the RCC driver to generically configure
    *  a large number of peripherals by referencing these lookup tables.
-   *
-   *  @note All pointers here reference a lookup
    */
   struct PCC
   {
@@ -264,8 +266,17 @@ namespace Thor::LLD::RCC
     const RegisterConfig *clockLP;          /**< Lookup Table Pointer: Low power clock configuration registers */
     const RegisterConfig *reset;            /**< Lookup Table Pointer: Peripheral reset registers */
     const Chimera::Clock::Bus *clockSource; /**< Lookup Table Pointer: Which system clock is used on the peripheral */
-    RIndexMap *resourceIndexMap;            /**< Converts a peripheral address into a resource index */
     size_t elements;                        /**< Number of elements in the tables */
+
+    /**
+     *  Function pointer to look up a resource index given the
+     *  address of a peripheral. This will be used to access
+     *  the lookup tables assigned elsewhere in this structure.
+     *
+     *  @param[in]  address         The peripheral address
+     *  @return RIndexType
+     */
+    RIndexType ( *getResourceIndex )( const std::uintptr_t address );
   };
 
   /*------------------------------------------------

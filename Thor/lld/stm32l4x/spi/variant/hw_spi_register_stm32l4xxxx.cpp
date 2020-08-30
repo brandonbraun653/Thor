@@ -14,6 +14,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/hld/dma/hld_dma_intf.hpp>
+#include <Thor/lld/interface/spi/spi_intf.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_driver.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_mapping.hpp>
 #include <Thor/lld/stm32l4x/spi/variant/hw_spi_register_stm32l4xxxx.hpp>
@@ -131,7 +132,7 @@ namespace Thor::LLD::SPI
     ChannelToInstance.append( Chimera::SPI::Channel::SPI3, SPI3_PERIPH );
 #endif
   }
-}    // namespace Thor::LLD::GPIO
+}    // namespace Thor::LLD::SPI
 
 namespace Thor::LLD::RCC::LookupTables
 {
@@ -147,62 +148,62 @@ namespace Thor::LLD::RCC::LookupTables
                     nullptr,
                     SPI_ResetConfig,
                     SPI_SourceClock,
-                    &Thor::LLD::SPI::InstanceToResourceIndex,
-                    Thor::LLD::SPI::NUM_SPI_PERIPHS };
+                    Thor::LLD::SPI::NUM_SPI_PERIPHS,
+                    Thor::LLD::SPI::getResourceIndex };
 
   void SPIInit()
   {
     using namespace Thor::LLD::SPI;
 
-    /*------------------------------------------------
-    SPI clock enable register access lookup table
-    ------------------------------------------------*/
-    #if defined ( STM32_SPI1_PERIPH_AVAILABLE )
+/*------------------------------------------------
+SPI clock enable register access lookup table
+------------------------------------------------*/
+#if defined( STM32_SPI1_PERIPH_AVAILABLE )
     SPI_ClockConfig[ SPI1_RESOURCE_INDEX ].mask = APB2ENR_SPI1EN;
     SPI_ClockConfig[ SPI1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2ENR;
-    #endif
+#endif
 
-    #if defined ( STM32_SPI2_PERIPH_AVAILABLE )
+#if defined( STM32_SPI2_PERIPH_AVAILABLE )
     SPI_ClockConfig[ SPI2_RESOURCE_INDEX ].mask = APB1ENR1_SPI2EN;
     SPI_ClockConfig[ SPI2_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR1;
-    #endif
+#endif
 
-    #if defined ( STM32_SPI3_PERIPH_AVAILABLE )
+#if defined( STM32_SPI3_PERIPH_AVAILABLE )
     SPI_ClockConfig[ SPI3_RESOURCE_INDEX ].mask = APB1ENR1_SPI3EN;
     SPI_ClockConfig[ SPI3_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR1;
-    #endif
+#endif
 
-    /*------------------------------------------------
-    SPI reset register access lookup table
-    ------------------------------------------------*/
-    #if defined ( STM32_SPI1_PERIPH_AVAILABLE )
+/*------------------------------------------------
+SPI reset register access lookup table
+------------------------------------------------*/
+#if defined( STM32_SPI1_PERIPH_AVAILABLE )
     SPI_ResetConfig[ SPI1_RESOURCE_INDEX ].mask = APB2RSTR_SPI1RST;
     SPI_ResetConfig[ SPI1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2RSTR;
-    #endif
+#endif
 
-    #if defined ( STM32_SPI2_PERIPH_AVAILABLE )
-    #pragma message( "NEED SPI 2 DEFINITIONS" )
-    #endif
+#if defined( STM32_SPI2_PERIPH_AVAILABLE )
+#pragma message( "NEED SPI 2 DEFINITIONS" )
+#endif
 
-    #if defined ( STM32_SPI3_PERIPH_AVAILABLE )
+#if defined( STM32_SPI3_PERIPH_AVAILABLE )
     SPI_ResetConfig[ SPI3_RESOURCE_INDEX ].mask = APB1RSTR1_SPI3RST;
     SPI_ResetConfig[ SPI3_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1RSTR1;
-    #endif
+#endif
 
-    /*------------------------------------------------
-    SPI clocking bus source identifier
-    ------------------------------------------------*/
-    #if defined ( STM32_SPI1_PERIPH_AVAILABLE )
+/*------------------------------------------------
+SPI clocking bus source identifier
+------------------------------------------------*/
+#if defined( STM32_SPI1_PERIPH_AVAILABLE )
     SPI_SourceClock[ SPI1_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB2;
-    #endif
+#endif
 
-    #if defined ( STM32_SPI2_PERIPH_AVAILABLE )
+#if defined( STM32_SPI2_PERIPH_AVAILABLE )
     SPI_SourceClock[ SPI2_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
-    #endif
+#endif
 
-    #if defined ( STM32_SPI3_PERIPH_AVAILABLE )
+#if defined( STM32_SPI3_PERIPH_AVAILABLE )
     SPI_SourceClock[ SPI3_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
-    #endif
+#endif
   };
 
 }    // namespace Thor::LLD::RCC::LookupTables

@@ -23,7 +23,6 @@
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/usart/hw_usart_driver.hpp>
 #include <Thor/lld/stm32l4x/usart/hw_usart_prj.hpp>
-#include <Thor/lld/stm32l4x/usart/hw_usart_mapping.hpp>
 #else
 #pragma message( "usart_detail.hpp: Unknown target for LLD" )
 #endif

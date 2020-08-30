@@ -22,12 +22,6 @@
     <Filter Include="hld\dma\test">
       <UniqueIdentifier>{7a5f0e9d-0d50-469a-8871-53bbb82166af}</UniqueIdentifier>
     </Filter>
-    <Filter Include="hld\exti">
-      <UniqueIdentifier>{f520fa42-735e-4550-8e0a-7bbb355fcbee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="hld\flash">
-      <UniqueIdentifier>{e96050cd-f126-41c2-a78d-aeff68f04084}</UniqueIdentifier>
-    </Filter>
     <Filter Include="hld\gpio">
       <UniqueIdentifier>{d99f3776-7abf-4d1e-99b5-3e149a68ac33}</UniqueIdentifier>
     </Filter>
@@ -36,9 +30,6 @@
     </Filter>
     <Filter Include="hld\interrupt">
       <UniqueIdentifier>{a0f09165-7827-4e7c-bb2d-7ccef0ff9f39}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="hld\power">
-      <UniqueIdentifier>{f4fda81c-fcc0-40cb-ad76-d38455dc866f}</UniqueIdentifier>
     </Filter>
     <Filter Include="hld\spi">
       <UniqueIdentifier>{1039975c-e6e2-47c1-a262-879e8a6b0841}</UniqueIdentifier>
@@ -471,18 +462,6 @@
     <ClCompile Include="..\..\..\Thor\hld\dma\test\test_hld_dma_driver.cpp">
       <Filter>hld\dma\test</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Thor\hld\exti\thor_exti.cpp">
-      <Filter>hld\exti</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\hld\exti\exti.hpp">
-      <Filter>hld\exti</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\hld\flash\thor_flash.cpp">
-      <Filter>hld\flash</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\hld\flash\flash.hpp">
-      <Filter>hld\flash</Filter>
-    </ClInclude>
     <ClCompile Include="..\..\..\Thor\hld\gpio\hld_gpio_chimera.cpp">
       <Filter>hld\gpio</Filter>
     </ClCompile>
@@ -509,12 +488,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\hld\interrupt\hld_interrupt_types.hpp">
       <Filter>hld\interrupt</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\hld\power\thor_power.cpp">
-      <Filter>hld\power</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\hld\power\power.hpp">
-      <Filter>hld\power</Filter>
     </ClInclude>
     <ClCompile Include="..\..\..\Thor\hld\spi\hld_spi_chimera.cpp">
       <Filter>hld\spi</Filter>
@@ -1380,9 +1353,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_driver.hpp">
       <Filter>lld\stm32l4x\usart</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_mapping.hpp">
-      <Filter>lld\stm32l4x\usart</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_prj.hpp">
       <Filter>lld\stm32l4x\usart</Filter>
     </ClInclude>
@@ -1427,6 +1397,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock_variant.hpp">
       <Filter>lld\interface\watchdog\mock</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_prv_data.hpp">
+      <Filter>lld\interface\usart</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1679,9 +1652,6 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_driver_stm32l4.cpp">
       <Filter>lld\stm32l4x\usart</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_mapping.cpp">
-      <Filter>lld\stm32l4x\usart</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.cpp">
       <Filter>lld\stm32l4x\usart\variant</Filter>
     </ClCompile>
@@ -1696,6 +1666,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock_variant.cpp">
       <Filter>lld\interface\watchdog\mock</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_data_stm32l4.cpp">
+      <Filter>lld\stm32l4x\usart</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

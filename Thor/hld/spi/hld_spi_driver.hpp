@@ -74,10 +74,10 @@ namespace Thor::SPI
   private:
     size_t lldResourceIndex;
     Chimera::SPI::DriverConfig config;  /**< Configuration used to set up the class */
-    Thor::GPIO::Driver_sPtr SCK;        /**< SPI clock gpio pin */
-    Thor::GPIO::Driver_sPtr MOSI;       /**< SPI MOSI gpio pin */
-    Thor::GPIO::Driver_sPtr MISO;       /**< SPI MISO gpio pin */
-    Thor::GPIO::Driver_sPtr CS;         /**< SPI Chip Select gpio pin */
+    Chimera::GPIO::IGPIO_sPtr SCK;      /**< SPI clock gpio pin */
+    Chimera::GPIO::IGPIO_sPtr MOSI;     /**< SPI MOSI gpio pin */
+    Chimera::GPIO::IGPIO_sPtr MISO;     /**< SPI MISO gpio pin */
+    Chimera::GPIO::IGPIO_sPtr CS;       /**< SPI Chip Select gpio pin */
 
     Chimera::Event::ActionableList eventListeners;
     Chimera::Threading::BinarySemaphore awaitTransferComplete; /**< Internal signal for when the current transfer has completed */

@@ -71,6 +71,15 @@ namespace Thor::LLD::TIMER
    */
   const DeviceDescription *getPeripheralDescriptor( const Thor::LLD::RIndex lldIndex );
 
+  /**
+   *  Looks up a resource index based on a raw peripheral instance
+   *
+   *  @param[in]  address       The peripheral address
+   *  @return RIndexType
+   */
+  RIndexType getResourceIndex( const std::uintptr_t address );
+
+
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/

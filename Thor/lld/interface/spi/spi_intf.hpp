@@ -18,6 +18,7 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/spi/spi_types.hpp>
 
 namespace Thor::LLD::SPI
@@ -45,6 +46,23 @@ namespace Thor::LLD::SPI
    *  @return IDriver_sPtr      Instance of the SPI driver for the requested channel
    */
   IDriver_rPtr getDriver( const Chimera::SPI::Channel channel );
+
+  /**
+   *  Get's the resource index associated with a particular channel. If not
+   *  supported, will return INVALID_RESOURCE_INDEX
+   *
+   *  @param[in]  channel       The channel number to be checked
+   *  @return RIndexType
+   */
+  RIndexType getResourceIndex( const Chimera::SPI::Channel channel );
+
+  /**
+   *  Looks up a resource index based on a raw peripheral instance
+   *
+   *  @param[in]  address       The peripheral address
+   *  @return RIndexType
+   */
+  RIndexType getResourceIndex( const std::uintptr_t address );
 
 
   /*-------------------------------------------------------------------------------

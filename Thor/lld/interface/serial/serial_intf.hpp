@@ -238,6 +238,12 @@ namespace Thor::LLD::Serial
      *  @return void
      */
     virtual void killReceive() = 0;
+
+
+    virtual void attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup ) = 0;
+    virtual CDTCB getTCB_TX() = 0;
+    virtual MDTCB getTCB_RX() = 0;
+    virtual Config getConfiguration() = 0;
   };
 
 }    // namespace Thor::LLD::Serial

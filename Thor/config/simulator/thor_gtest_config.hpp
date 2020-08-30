@@ -145,10 +145,10 @@ High Level Driver Support
 #define THOR_HLD_UART
 #endif
 
-//#ifndef THOR_HLD_USART
-//#define THOR_HLD_USART
-//#endif
-//
+#ifndef THOR_HLD_USART
+#define THOR_HLD_USART
+#endif
+
 //#ifndef THOR_HLD_USB
 //#define THOR_HLD_USB
 //#endif
@@ -285,11 +285,11 @@ Low Level Driver Support
 //#define THOR_LLD_TIMER
 //#define THOR_LLD_TIMER_MOCK
 //#endif
-//
-//#ifndef THOR_LLD_UART
-//#define THOR_LLD_UART
-//#define THOR_LLD_UART_MOCK
-//#endif
+
+#ifndef THOR_LLD_UART
+#define THOR_LLD_UART
+#define THOR_LLD_UART_MOCK
+#endif
 
 #ifndef THOR_LLD_USART
 #define THOR_LLD_USART

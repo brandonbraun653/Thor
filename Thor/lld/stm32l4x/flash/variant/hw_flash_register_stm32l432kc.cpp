@@ -13,6 +13,7 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
+#include <Thor/lld/interface/flash/flash_intf.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_driver.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_mapping.hpp>
 #include <Thor/lld/stm32l4x/flash/variant/hw_flash_register_stm32l432kc.hpp>
@@ -80,10 +81,12 @@ namespace Thor::LLD::RCC::LookupTables
   RegisterConfig FLASH_ResetConfig[ Thor::LLD::FLASH::NUM_FLASH_PERIPHS ];
   Chimera::Clock::Bus FLASH_SourceClock[ Thor::LLD::FLASH::NUM_FLASH_PERIPHS ];
 
-  PCC FLASHLookup = {
-    FLASH_ClockConfig, nullptr, FLASH_ResetConfig, FLASH_SourceClock, &Thor::LLD::FLASH::InstanceToResourceIndex,
-    Thor::LLD::FLASH::NUM_FLASH_PERIPHS
-  };
+  PCC FLASHLookup = { FLASH_ClockConfig,
+                      nullptr,
+                      FLASH_ResetConfig,
+                      FLASH_SourceClock,
+                      Thor::LLD::FLASH::NUM_FLASH_PERIPHS,
+                      Thor::LLD::FLASH::getResourceIndex };
 
   void FLASHInit()
   {

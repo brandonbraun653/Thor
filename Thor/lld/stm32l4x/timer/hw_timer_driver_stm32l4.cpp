@@ -85,6 +85,12 @@ namespace Thor::LLD::TIMER
     return nullptr;
   }
 
+
+  RIndexType getResourceIndex( const std::uintptr_t address )
+  {
+    return InstanceToResourceIndex.at( address ).second;
+  }
+
   /*-------------------------------------------------------------------------------
   LLD Private Free Functions
   -------------------------------------------------------------------------------*/

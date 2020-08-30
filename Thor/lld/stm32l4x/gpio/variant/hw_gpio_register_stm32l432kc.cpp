@@ -15,6 +15,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
+#include <Thor/lld/interface/gpio/gpio_intf.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_driver.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_mapping.hpp>
 #include <Thor/lld/stm32l4x/gpio/variant/hw_gpio_register_stm32l432kc.hpp>
@@ -464,8 +465,8 @@ namespace Thor::LLD::RCC::LookupTables
                      nullptr,
                      GPIO_ResetConfig,
                      GPIO_SourceClock,
-                     &Thor::LLD::GPIO::InstanceToResourceIndex,
-                     Thor::LLD::GPIO::NUM_GPIO_PERIPHS };
+                     Thor::LLD::GPIO::NUM_GPIO_PERIPHS,
+                     Thor::LLD::GPIO::getResourceIndex };
 
   void GPIOInit()
   {

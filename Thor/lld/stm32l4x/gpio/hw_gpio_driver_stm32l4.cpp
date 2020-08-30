@@ -25,9 +25,9 @@ namespace Thor::LLD::GPIO
 {
   static Driver s_gpio_drivers[ NUM_GPIO_PERIPHS ];
 
-  /*-------------------------------------------------
-  LLD->HLD Interface Implementation
-  -------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     initializeRegisters();
@@ -50,6 +50,12 @@ namespace Thor::LLD::GPIO
   size_t availableChannels()
   {
     return NUM_GPIO_PERIPHS;
+  }
+
+
+  RIndexType getResourceIndex( const std::uintptr_t address )
+  {
+    return InstanceToResourceIndex.at( address ).second;
   }
 
   /*-------------------------------------------------

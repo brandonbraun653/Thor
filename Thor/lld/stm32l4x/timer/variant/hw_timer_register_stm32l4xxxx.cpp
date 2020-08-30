@@ -16,6 +16,7 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
+#include <Thor/lld/interface/timer/timer_intf.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_driver.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_mapping.hpp>
 #include <Thor/lld/stm32l4x/timer/variant/hw_timer_register_stm32l4xxxx.hpp>
@@ -147,8 +148,8 @@ namespace Thor::LLD::RCC::LookupTables
                       nullptr,
                       TIMER_ResetConfig,
                       TIMER_SourceClock,
-                      &Thor::LLD::TIMER::InstanceToResourceIndex,
-                      Thor::LLD::TIMER::NUM_TIMER_PERIPHS };
+                      Thor::LLD::TIMER::NUM_TIMER_PERIPHS,
+                      Thor::LLD::TIMER::getResourceIndex };
 
   void TIMERInit()
   {

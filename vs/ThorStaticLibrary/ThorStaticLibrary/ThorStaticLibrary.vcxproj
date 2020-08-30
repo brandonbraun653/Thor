@@ -628,8 +628,8 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_entry_lld_timer.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_lld_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_data_stm32l4.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_driver_stm32l4.cpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_mapping.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\test\test_entry_lld_usart.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\test\test_lld_usart_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.cpp" />
@@ -662,10 +662,6 @@
     <ClCompile Include="..\..\..\Thor\hld\dma\test\test_entry_dma.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\dma\test\test_hld_dma_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\dma\test\test_hld_dma_driver.cpp" />
-    <ClCompile Include="..\..\..\Thor\hld\exti\thor_exti.cpp" />
-    <ClInclude Include="..\..\..\Thor\hld\exti\exti.hpp" />
-    <ClCompile Include="..\..\..\Thor\hld\flash\thor_flash.cpp" />
-    <ClInclude Include="..\..\..\Thor\hld\flash\flash.hpp" />
     <ClCompile Include="..\..\..\Thor\hld\gpio\hld_gpio_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\gpio\hld_gpio_driver.cpp" />
     <ClInclude Include="..\..\..\Thor\hld\gpio\hld_gpio_chimera.hpp" />
@@ -727,8 +723,6 @@
     </ClCompile>
     <ClInclude Include="..\..\..\Thor\hld\interrupt\hld_interrupt_definitions.hpp" />
     <ClInclude Include="..\..\..\Thor\hld\interrupt\hld_interrupt_types.hpp" />
-    <ClCompile Include="..\..\..\Thor\hld\power\thor_power.cpp" />
-    <ClInclude Include="..\..\..\Thor\hld\power\power.hpp" />
     <ClCompile Include="..\..\..\Thor\hld\spi\hld_spi_chimera.cpp" />
     <ClCompile Include="..\..\..\Thor\hld\spi\hld_spi_driver.cpp" />
     <ClInclude Include="..\..\..\Thor\hld\pwm\hld_pwm_chimera.hpp" />
@@ -839,6 +833,7 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_detail.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_prv_data.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_detail.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_types.hpp" />
@@ -2119,7 +2114,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_driver.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.hpp" />

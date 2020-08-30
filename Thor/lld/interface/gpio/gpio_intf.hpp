@@ -16,6 +16,7 @@
 #include <Chimera/gpio>
 
 /* Thor Includes */
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 
 namespace Thor::LLD::GPIO
@@ -49,6 +50,14 @@ namespace Thor::LLD::GPIO
    *  @return size_t
    */
   size_t availableChannels();
+
+  /**
+   *  Looks up a resource index based on a raw peripheral instance
+   *
+   *  @param[in]  address       The peripheral address
+   *  @return RIndexType
+   */
+  RIndexType getResourceIndex( const std::uintptr_t address );
 
   /*-------------------------------------------------------------------------------
   Classes

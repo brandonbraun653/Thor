@@ -19,25 +19,48 @@
 #include <Thor/dma>
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/lld/common/cortex-m4/interrupts.hpp>
+#include <Thor/lld/common/types.hpp>
+#include <Thor/lld/interface/usart/usart_prv_data.hpp>
 #include <Thor/lld/stm32l4x/usart/hw_usart_driver.hpp>
-#include <Thor/lld/stm32l4x/usart/hw_usart_mapping.hpp>
 #include <Thor/lld/stm32l4x/usart/hw_usart_prj.hpp>
 #include <Thor/lld/stm32l4x/usart/hw_usart_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_USART )
 
+/*-------------------------------------------------------------------------------
+Aliases
+-------------------------------------------------------------------------------*/
+namespace LLD = Thor::LLD::USART;
+
 namespace Thor::LLD::USART
 {
-  static std::array<Driver_sPtr, NUM_USART_PERIPHS> s_usart_drivers;
+  /*-------------------------------------------------------------------------------
+  Variables
+  -------------------------------------------------------------------------------*/
+  static Driver s_usart_drivers[ NUM_USART_PERIPHS ];
 
-  /*-------------------------------------------------
-  LLD->HLD Interface Implementation
-  -------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Constants 
+  -------------------------------------------------------------------------------*/
+  static constexpr Chimera::Peripheral::Type s_peripheral_type = Chimera::Peripheral::Type::PERIPH_USART;
+
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     initializeRegisters();
-    initializeMapping();
+
+    /*-------------------------------------------------
+    Reinitialize with the appropriate constructor
+    -------------------------------------------------*/
+    s_usart_drivers[ USART1_RESOURCE_INDEX ] = Driver( USART1_PERIPH );
+    s_usart_drivers[ USART2_RESOURCE_INDEX ] = Driver( USART2_PERIPH );
+
+#if defined( STM32_USART3_PERIPH_AVAILABLE )
+    s_usart_drivers[ USART3_RESOURCE_INDEX ] = Driver( USART3_PERIPH );
+#endif
 
     return Chimera::Status::OK;
   }
@@ -51,50 +74,71 @@ namespace Thor::LLD::USART
 
   bool isChannelSupported( const Chimera::Serial::Channel channel )
   {
-    for ( auto &ch : supportedChannels )
+    if ( channel < Chimera::Serial::Channel::NUM_OPTIONS )
     {
-      if ( ch == channel )
-      {
-        return true;
-      }
+      return ( ConfigMap::ResourceIndex[ static_cast<size_t>( channel ) ] != INVALID_RESOURCE_INDEX );
     }
-
-    return false;
+    else
+    {
+      return false;
+    }
   }
 
-  /*-------------------------------------------------
-  Private LLD Function Implementation
-  -------------------------------------------------*/
-  bool isUSART( const std::uintptr_t address )
+
+  IDriver_rPtr getDriver( const Chimera::Serial::Channel channel )
   {
-    bool result = false;
-
-    for ( auto &val : periphAddressList )
+    if ( isChannelSupported( channel ) )
     {
-      if ( val == address )
-      {
-        result = true;
-      }
+      return &s_usart_drivers[ static_cast<size_t>( channel ) ];
     }
 
-    return result;
+    return nullptr;
   }
 
-  /*-----------------------------------------------------
+
+  RIndexType getResourceIndex( const Chimera::Serial::Channel channel )
+  {
+    if ( isChannelSupported( channel ) )
+    {
+      return ConfigMap::ResourceIndex[ static_cast<size_t>( channel ) ];
+    }
+
+    return INVALID_RESOURCE_INDEX;
+  }
+
+
+  RIndexType getResourceIndex( const std::uintptr_t address )
+  {
+    if ( address == reinterpret_cast<std::uintptr_t>( USART1_PERIPH ) )
+    {
+      return USART1_RESOURCE_INDEX;
+    }
+    else if ( address == reinterpret_cast<std::uintptr_t>( USART2_PERIPH ) )
+    {
+      return USART2_RESOURCE_INDEX;
+    }
+#if defined( STM32_USART3_PERIPH_AVAILABLE )
+    else if ( address == reinterpret_cast<std::uintptr_t>( USART3_PERIPH ) )
+    {
+      return USART3_RESOURCE_INDEX;
+    }
+#endif
+
+    return INVALID_RESOURCE_INDEX;
+  }
+
+
+  /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
-  -----------------------------------------------------*/
+  -------------------------------------------------------------------------------*/
   Driver::Driver( RegisterMap *peripheral ) : periph( peripheral )
   {
-    const auto address = reinterpret_cast<std::uintptr_t>( peripheral );
-    peripheralType     = Chimera::Peripheral::Type::PERIPH_USART;
-    resourceIndex      = Thor::LLD::USART::InstanceToResourceIndex.at( address ).second;
-    periphIRQn         = IRQSignals[ resourceIndex ];
-    dmaTXSignal        = TXDMASignals[ resourceIndex ];
-    dmaRXSignal        = RXDMASignals[ resourceIndex ];
-
-    usartObjects[ resourceIndex ] = this;
+    resourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
   }
 
+  Driver::Driver() : periph( nullptr )
+  {
+  }
 
   Driver::~Driver()
   {
@@ -129,7 +173,7 @@ namespace Thor::LLD::USART
     Ensure the clock is enabled otherwise the hardware is "dead"
     ------------------------------------------------*/
     auto rccPeriph = Thor::LLD::RCC::getPeripheralClock();
-    rccPeriph->enableClock( peripheralType, resourceIndex );
+    rccPeriph->enableClock( s_peripheral_type, resourceIndex );
 
     /*------------------------------------------------
     Follow the initialization sequence as defined in RM0394 Rev 4, pg.1202
@@ -184,9 +228,9 @@ namespace Thor::LLD::USART
     Use the RCC's ability to reset whole peripherals back to default states
     -------------------------------------------------*/
     auto rcc = Thor::LLD::RCC::getPeripheralClock();
-    rcc->enableClock( peripheralType, resourceIndex );
-    rcc->reset( peripheralType, resourceIndex );
-    rcc->disableClock( peripheralType, resourceIndex );
+    rcc->enableClock( s_peripheral_type, resourceIndex );
+    rcc->reset( s_peripheral_type, resourceIndex );
+    rcc->disableClock( s_peripheral_type, resourceIndex );
 
     return Chimera::Status::OK;
   }
@@ -221,8 +265,8 @@ namespace Thor::LLD::USART
     Ignore the subperiph argument as the actual transmit
     and receive functions called by the user handle that.
     -------------------------------------------------*/
-    Thor::LLD::IT::setPriority( periphIRQn, Thor::Interrupt::USART_IT_PREEMPT_PRIORITY, 0u );
-    Thor::LLD::IT::enableIRQ( periphIRQn );
+    Thor::LLD::IT::setPriority( Resource::IRQSignals[ resourceIndex ], Thor::Interrupt::USART_IT_PREEMPT_PRIORITY, 0u );
+    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
 
     return Chimera::Status::OK;
   }
@@ -237,8 +281,8 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------
     Disable system level interrupt from peripheral, to prevent glitching
     -------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( periphIRQn );
-    Thor::LLD::IT::clearPendingIRQ( periphIRQn );
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
 
     /*-------------------------------------------------
     Disable interrupt event generation inside the peripheral
@@ -260,7 +304,7 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------
     Re-enable the system level interrupts so other events can get through
     -------------------------------------------------*/
-    Thor::LLD::IT::enableIRQ( periphIRQn );
+    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
 
     return result;
   }
@@ -410,7 +454,7 @@ namespace Thor::LLD::USART
     //    init.pAlign    = Chimera::DMA::PeripheralAlignment::ALIGN_BYTE;
     //    init.pInc      = Chimera::DMA::PeripheralIncrement::DISABLED;
     //    init.priority  = Chimera::DMA::Priority::MEDIUM;
-    //    init.request   = dmaTXSignal;
+    //    init.request   = Resource::TXDMASignals[ resourceIndex ];
     //
     //    Chimera::DMA::TCB tcb;
     //
@@ -821,13 +865,13 @@ namespace Thor::LLD::USART
 
   inline void Driver::enterCriticalSection()
   {
-    Thor::LLD::IT::disableIRQ( periphIRQn );
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
   }
 
 
   inline void Driver::exitCriticalSection()
   {
-    Thor::LLD::IT::enableIRQ( periphIRQn );
+    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
   }
 }    // namespace Thor::LLD::USART
 
@@ -835,12 +879,7 @@ namespace Thor::LLD::USART
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
 void USART1_IRQHandler( void )
 {
-  static constexpr size_t index = Thor::LLD::USART::USART1_RESOURCE_INDEX;
-
-  if ( Thor::LLD::USART::usartObjects[ index ] )
-  {
-    Thor::LLD::USART::usartObjects[ index ]->IRQHandler();
-  }
+  ::LLD::s_usart_drivers[ ::LLD::USART1_RESOURCE_INDEX ].IRQHandler();
 }
 #endif /* STM32_USART1_PERIPH_AVAILABLE */
 
@@ -848,12 +887,7 @@ void USART1_IRQHandler( void )
 #if defined( STM32_USART2_PERIPH_AVAILABLE )
 void USART2_IRQHandler( void )
 {
-  static constexpr size_t index = Thor::LLD::USART::USART2_RESOURCE_INDEX;
-
-  if ( Thor::LLD::USART::usartObjects[ index ] )
-  {
-    Thor::LLD::USART::usartObjects[ index ]->IRQHandler();
-  }
+  ::LLD::s_usart_drivers[ ::LLD::USART2_RESOURCE_INDEX ].IRQHandler();
 }
 #endif /* STM32_USART2_PERIPH_AVAILABLE */
 
@@ -861,12 +895,7 @@ void USART2_IRQHandler( void )
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
 void USART3_IRQHandler( void )
 {
-  static constexpr size_t index = Thor::LLD::USART::USART3_RESOURCE_INDEX;
-
-  if ( Thor::LLD::USART::usartObjects[ index ] )
-  {
-    Thor::LLD::USART::usartObjects[ index ]->IRQHandler();
-  }
+  ::LLD::s_usart_drivers[ ::LLD::USART3_RESOURCE_INDEX ].IRQHandler();
 }
 #endif /* STM32_USART3_PERIPH_AVAILABLE */
 

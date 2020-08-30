@@ -23,10 +23,33 @@
 
 #if defined( THOR_HLD_UART )
 
+/*-------------------------------------------------------------------------------
+Aliases
+-------------------------------------------------------------------------------*/
+namespace HLD = ::Thor::UART;
+namespace LLD = ::Thor::LLD::UART;
+
+
+/*-------------------------------------------------------------------------------
+Constants
+-------------------------------------------------------------------------------*/
+static constexpr size_t NUM_DRIVERS = LLD::NUM_UART_PERIPHS;
+
+
+/*-------------------------------------------------------------------------------
+Variables
+-------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------
+Private Functions
+-------------------------------------------------------------------------------*/
+
 namespace Thor::UART
 {
   static size_t s_driver_initialized;
 
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
@@ -34,16 +57,34 @@ namespace Thor::UART
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    #if defined( THOR_LLD_UART )
     Thor::LLD::UART::initialize();
-    #else
-    #pragma message("HLD UART driver enabled but the required LLD is not")
-    #endif
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::Status::OK;
   }
 
+
+  Chimera::Status_t reset()
+  {
+    return Chimera::Status::OK;
+  }
+
+
+  bool isChannelUART( const Chimera::Serial::Channel channel )
+  {
+    return false;
+  }
+
+
+  Chimera::UART::IUART_sPtr getDriver( const Chimera::Serial::Channel channel )
+  {
+    return nullptr;
+  }
+
+
+  /*-------------------------------------------------------------------------------
+  Driver Implementation
+  -------------------------------------------------------------------------------*/
   Driver::Driver()
   {
   }

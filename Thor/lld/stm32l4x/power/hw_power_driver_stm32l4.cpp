@@ -34,6 +34,19 @@ namespace Thor::LLD::PWR
     return Chimera::Status::OK;
   }
 
+
+  RIndexType getResourceIndex( const std::uintptr_t address )
+  {
+    if ( address == POWER1_BASE_ADDR )
+    {
+      return POWER1_RESOURCE_INDEX;
+    }
+    else
+    {
+      return INVALID_RESOURCE_INDEX;
+    }
+  }
+
 }    // namespace Thor::LLD::POWER
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_POWER */

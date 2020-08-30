@@ -33,6 +33,7 @@ namespace Thor::LLD::SPI::Mock
     virtual Chimera::Status_t initialize()                         = 0;
     virtual bool isChannelSupported( const Chimera::SPI::Channel ) = 0;
     virtual IDriver_rPtr getDriver( const Chimera::SPI::Channel )  = 0;
+    virtual size_t getResourceIndex( const Chimera::SPI::Channel ) = 0;
   };
 
   /*-------------------------------------------------------------------------------
@@ -44,6 +45,7 @@ namespace Thor::LLD::SPI::Mock
     MOCK_METHOD( Chimera::Status_t, initialize, (), ( override ) );
     MOCK_METHOD( bool, isChannelSupported, ( const Chimera::SPI::Channel ), ( override ) );
     MOCK_METHOD( IDriver_rPtr, getDriver, ( const Chimera::SPI::Channel ), ( override ) );
+    MOCK_METHOD( size_t, getResourceIndex, ( const Chimera::SPI::Channel ), ( override ) );
   };
 
   class DriverMock : virtual public Thor::LLD::SPI::IDriver

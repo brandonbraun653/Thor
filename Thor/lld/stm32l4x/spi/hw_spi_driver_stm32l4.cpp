@@ -97,6 +97,19 @@ namespace Thor::LLD::SPI
     return NUM_SPI_PERIPHS;
   }
 
+
+  RIndexType getResourceIndex( const Chimera::SPI::Channel channel )
+  {
+    // TODO: fix this later when you revamp the hardware driver...make it look like usart
+    return 0;
+  }
+
+
+  RIndexType getResourceIndex( const std::uintptr_t address )
+  {
+    return InstanceToResourceIndex.at( address ).second;
+  }
+
   /*-------------------------------------------------
   Private LLD Function Implementation
   -------------------------------------------------*/

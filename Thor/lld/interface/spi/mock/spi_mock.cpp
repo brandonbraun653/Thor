@@ -13,6 +13,7 @@
 
 /* Mock Includes */
 #include <Thor/cfg>
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/spi/spi_intf.hpp>
 #include <Thor/lld/interface/spi/spi_types.hpp>
 #include <Thor/lld/interface/spi/mock/spi_mock.hpp>
@@ -26,6 +27,15 @@ namespace Thor::LLD::SPI
   Variables
   -------------------------------------------------------------------------------*/
   static std::array<Mock::DriverMock, NUM_SPI_PERIPHS> s_spi_drivers;
+
+  static const std::array<size_t, static_cast<size_t>( Chimera::SPI::Channel::NUM_OPTIONS )> s_resource_index = {
+    SPI1_RESOURCE_INDEX,
+    SPI2_RESOURCE_INDEX,
+    SPI3_RESOURCE_INDEX,
+    SPI4_RESOURCE_INDEX,
+    INVALID_RESOURCE_INDEX,
+    INVALID_RESOURCE_INDEX
+  };
 
   /*-------------------------------------------------------------------------------
   Mock Public Functions
@@ -97,6 +107,27 @@ namespace Thor::LLD::SPI
     size_t ch = static_cast<size_t>( channel );
     s_spi_drivers[ ch ].attach( PeripheralRegisterMaps[ ch ] );
     return &s_spi_drivers[ ch ];
+  }
+
+
+  size_t getResourceIndex( const Chimera::SPI::Channel channel )
+  {
+    /*-------------------------------------------------
+    Mock behavior
+    -------------------------------------------------*/
+    Mock::getModuleMockObject().getResourceIndex( channel );
+
+    /*-------------------------------------------------
+    Driver behavior
+    -------------------------------------------------*/
+    if( channel < Chimera::SPI::Channel::NUM_OPTIONS )
+    {
+      return s_resource_index[ static_cast<size_t>( channel ) ];
+    }
+    else
+    {
+      return INVALID_RESOURCE_INDEX;
+    }
   }
 }    // namespace Thor::LLD::SPI
 

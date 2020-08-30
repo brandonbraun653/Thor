@@ -38,7 +38,7 @@ namespace Thor::LLD::SPI
   static constexpr uint32_t SPI1_RESOURCE_INDEX = 0u;
   static constexpr uint32_t SPI2_RESOURCE_INDEX = 1u;
   static constexpr uint32_t SPI3_RESOURCE_INDEX = 2u;
-  static constexpr uint32_t SPI4_RESOURCE_INDEX = 2u;
+  static constexpr uint32_t SPI4_RESOURCE_INDEX = 3u;
 
   /*-------------------------------------------------------------------------------
   Structures

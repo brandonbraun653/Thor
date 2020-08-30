@@ -21,6 +21,7 @@
 #include <Chimera/serial>
 
 /* Driver Includes */
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432kc.hpp>
 
 /*-------------------------------------------------
@@ -48,7 +49,7 @@ namespace Thor::LLD::USART
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base
   -------------------------------------------------*/
-  static constexpr size_t NUM_USART_PERIPHS = 3;
+  static constexpr RIndexType NUM_USART_PERIPHS = 3;
 
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
   static constexpr uint32_t USART1_BASE_ADDR = Thor::System::MemoryMap::USART1_PERIPH_START_ADDRESS;
@@ -69,22 +70,10 @@ namespace Thor::LLD::USART
 #endif
 
   /*-------------------------------------------------
-  Peripheral Resource Lookup Indices
-  -------------------------------------------------*/
-  static constexpr uint32_t USART1_RESOURCE_INDEX = 0u;
-  static constexpr uint32_t USART2_RESOURCE_INDEX = 1u;
-  static constexpr uint32_t USART3_RESOURCE_INDEX = 2u;
-
-  /*-------------------------------------------------
   Lookup addresses
   -------------------------------------------------*/
   static constexpr std::array<uint32_t, NUM_USART_PERIPHS> periphAddressList = { USART1_BASE_ADDR, USART2_BASE_ADDR,
                                                                                  USART3_BASE_ADDR };
-
-  /*------------------------------------------------
-  Supported Hardware Channels
-  ------------------------------------------------*/
-  extern const std::array<Chimera::Serial::Channel, NUM_USART_PERIPHS> supportedChannels;
 
   /*-------------------------------------------------
   Peripheral Register Definitions
