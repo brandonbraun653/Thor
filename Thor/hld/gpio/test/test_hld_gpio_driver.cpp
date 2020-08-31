@@ -26,6 +26,13 @@
 
 namespace Thor::HLD::GPIO
 {
+  void reset_test()
+  {
+    ::Thor::GPIO::reset();
+
+    ASSERT_TRUE( ::testing::Mock::VerifyAndClearExpectations( &Thor::LLD::GPIO::Mock::getModuleMockObject() ) );
+  }
+
 
   TEST_F(TestFixture, DriverConstructor)
   {
@@ -47,6 +54,8 @@ namespace Thor::HLD::GPIO
 
     Thor::LLD::GPIO::Mock::ModuleMock& lld = Thor::LLD::GPIO::Mock::getModuleMockObject();
 
+    
+    reset_test();
     EXPECT_CALL( lld, initialize() ).Times(1);
 
     Thor::GPIO::initialize();
@@ -54,6 +63,7 @@ namespace Thor::HLD::GPIO
 
   TEST_F(TestFixture, SanityCheck_Access_LLD_MOCK)
   {
+    reset_test();
     Thor::GPIO::initialize();
     Thor::LLD::GPIO::Mock::DriverMock& driver = Thor::LLD::GPIO::Mock::getDriverMockObject( 0 );
 

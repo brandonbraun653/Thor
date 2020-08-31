@@ -71,7 +71,11 @@ namespace Thor::GPIO
     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
     for ( size_t x = 0; x < NUM_DRIVERS; x++ )
     {
+      #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_GPIO )
+      hld_shared[ x ] = HLD::Driver_sPtr( new HLD::Driver() );
+      #else
       hld_shared[ x ] = HLD::Driver_sPtr( &hld_driver[ x ] );
+      #endif 
     }
 
     /*------------------------------------------------
@@ -86,6 +90,18 @@ namespace Thor::GPIO
 
   Chimera::Status_t reset()
   {
+    /*------------------------------------------------
+    Only allow clearing of local data during testing
+    ------------------------------------------------*/
+    #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_GPIO )
+    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+
+    for ( auto x = 0; x < NUM_DRIVERS; x++ )
+    {
+      hld_shared[ x ].reset();
+    }
+    #endif 
+
     return Chimera::Status::OK;
   }
 

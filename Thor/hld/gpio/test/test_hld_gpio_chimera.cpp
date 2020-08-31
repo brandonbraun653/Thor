@@ -29,7 +29,7 @@ namespace Thor::HLD::GPIO
   {
     EXPECT_EQ( 0, 0 );
 
-    Chimera::GPIO::Backend::initialize();
+    //Chimera::GPIO::Backend::initialize();
   }
 }    // namespace Thor::HLD::GPIO
 #endif
