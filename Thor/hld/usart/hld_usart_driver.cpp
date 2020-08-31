@@ -138,7 +138,20 @@ namespace Thor::USART
   }
 
 
-  Chimera::USART::IUSART_sPtr getDriver( const Chimera::Serial::Channel channel )
+  Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
+  {
+    if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    {
+      return &hld_driver[ idx ];
+    }
+    else
+    {
+      return nullptr;
+    }
+  }
+
+
+  Driver_sPtr getDriverShared( const Chimera::Serial::Channel channel )
   {
     if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
