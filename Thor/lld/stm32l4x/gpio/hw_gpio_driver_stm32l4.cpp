@@ -53,7 +53,7 @@ namespace Thor::LLD::GPIO
   }
 
 
-  RIndexType getResourceIndex( const std::uintptr_t address )
+  RIndex_t getResourceIndex( const std::uintptr_t address )
   {
     return InstanceToResourceIndex.at( address ).second;
   }

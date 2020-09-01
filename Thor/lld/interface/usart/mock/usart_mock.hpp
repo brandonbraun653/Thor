@@ -36,8 +36,8 @@ namespace Thor::LLD::USART::Mock
     virtual Chimera::Status_t initialize()                                = 0;
     virtual bool isChannelSupported( const Chimera::Serial::Channel )     = 0;
     virtual IDriver_rPtr getDriver( const Chimera::Serial::Channel )      = 0;
-    virtual RIndexType getResourceIndex( const Chimera::Serial::Channel ) = 0;
-    virtual RIndexType getResourceIndex( void * )                         = 0;
+    virtual RIndex_t getResourceIndex( const Chimera::Serial::Channel ) = 0;
+    virtual RIndex_t getResourceIndex( void * )                         = 0;
   };
 
 
@@ -50,8 +50,8 @@ namespace Thor::LLD::USART::Mock
     MOCK_METHOD( Chimera::Status_t, initialize, (), ( override ) );
     MOCK_METHOD( bool, isChannelSupported, ( const Chimera::Serial::Channel ), ( override ) );
     MOCK_METHOD( IDriver_rPtr, getDriver, ( const Chimera::Serial::Channel ), ( override ) );
-    MOCK_METHOD( RIndexType, getResourceIndex, ( const Chimera::Serial::Channel ), ( override ) );
-    MOCK_METHOD( RIndexType, getResourceIndex, ( void * ), ( override ) );
+    MOCK_METHOD( RIndex_t, getResourceIndex, ( const Chimera::Serial::Channel ), ( override ) );
+    MOCK_METHOD( RIndex_t, getResourceIndex, ( void * ), ( override ) );
   };
 
   class DriverMock : virtual public Thor::LLD::USART::IDriver

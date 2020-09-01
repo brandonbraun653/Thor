@@ -50,15 +50,18 @@ namespace Chimera::USART::Backend
     return Thor::USART::initialize();
   }
 
+
   Chimera::Status_t reset()
   {
     return Thor::USART::reset();
   }
 
+
   bool isChannelUSART( const Chimera::Serial::Channel channel )
   {
     return Thor::LLD::USART::isChannelSupported( channel );
   }
+
 
   Driver_sPtr getDriver( const Chimera::Serial::Channel channel )
   {
@@ -73,6 +76,7 @@ namespace Chimera::USART::Backend
     }
   }
 
+
   Chimera::Status_t registerDriver( Chimera::USART::Backend::DriverConfig &registry )
   {
 #if defined( THOR_HLD_USART )
@@ -83,11 +87,8 @@ namespace Chimera::USART::Backend
     registry.isChannelUSART = isChannelUSART;
     return Chimera::Status::OK;
 #else
-    registry.isSupported    = false;
-    registry.getDriver      = nullptr;
-    registry.initialize     = nullptr;
-    registry.reset          = nullptr;
-    registry.isChannelUSART = nullptr;
+    memset( &registry, 0, sizeof( Chimera::USART::Backend::DriverConfig ) );
+    registry.isSupported = false;
     return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_HLD_USART */
   }

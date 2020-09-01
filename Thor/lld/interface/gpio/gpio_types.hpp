@@ -19,24 +19,27 @@
 #include <Chimera/container>
 #include <Chimera/gpio>
 
+
 namespace Thor::LLD::GPIO
 {
   /*-------------------------------------------------------------------------------
   Foward Declarations
   -------------------------------------------------------------------------------*/
-  class IDriver;
+  class Driver;
   struct RegisterMap;
 
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
+  using Driver_rPtr  = Driver *;
+
   using AFToReg      = Chimera::Container::LightFlatMap<Chimera::GPIO::Alternate, Reg32_t>;
   using AlternateMap = Chimera::Container::LightFlatMap<RegisterMap *, const void *>;
-  using IDriver_rPtr = IDriver *;
   using IndexMap     = Chimera::Container::LightFlatMap<std::uintptr_t, size_t>;
   using InstanceMap  = Chimera::Container::LightFlatMap<Chimera::GPIO::Port, RegisterMap *>;
   using PinToAFMap   = Chimera::Container::LightFlatMap<uint8_t, const AFToReg *>;
   using PortMap      = Chimera::Container::LightFlatMap<RegisterMap *, Chimera::GPIO::Port>;
+
 
   /*-------------------------------------------------------------------------------
   Enumerations

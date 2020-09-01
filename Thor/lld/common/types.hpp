@@ -26,8 +26,8 @@ namespace Thor::LLD
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
-  using RIndexType = uint8_t;
-  using RIndexMap  = Chimera::Container::LightFlatMap<std::uintptr_t, RIndexType>;
+  using RIndex_t = uint8_t;
+  using RIndexMap  = Chimera::Container::LightFlatMap<std::uintptr_t, RIndex_t>;
 
   /*-------------------------------------------------------------------------------
   Constants
@@ -40,7 +40,7 @@ namespace Thor::LLD
   /**
    *  Index type used to access various low level driver resources.
    */
-  struct RIndex : type_safe::strong_typedef<RIndex, RIndexType>,
+  struct RIndex : type_safe::strong_typedef<RIndex, RIndex_t>,
                   type_safe::strong_typedef_op::equality_comparison<RIndex>,
                   type_safe::strong_typedef_op::relational_comparison<RIndex>
   {
@@ -51,7 +51,7 @@ namespace Thor::LLD
      *
      *  @return size_t
      */
-    constexpr RIndexType value() const
+    constexpr RIndex_t value() const
     {
       return type_safe::get( *this );
     }
@@ -61,7 +61,7 @@ namespace Thor::LLD
      *
      *  @return size_t
      */
-    constexpr operator RIndexType() const
+    constexpr operator RIndex_t() const
     {
       return value();
     }

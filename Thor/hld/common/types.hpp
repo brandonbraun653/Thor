@@ -20,9 +20,9 @@
 
 namespace Thor::HLD
 {
-  using RIndexType = uint8_t;
-  using RIndexMap  = Chimera::Container::LightFlatMap<std::uintptr_t, RIndexType>;
-  struct RIndex : type_safe::strong_typedef<RIndex, RIndexType>,
+  using RIndex_t = uint8_t;
+  using RIndexMap  = Chimera::Container::LightFlatMap<std::uintptr_t, RIndex_t>;
+  struct RIndex : type_safe::strong_typedef<RIndex, RIndex_t>,
                   type_safe::strong_typedef_op::equality_comparison<RIndex>,
                   type_safe::strong_typedef_op::relational_comparison<RIndex>
   {
@@ -33,17 +33,17 @@ namespace Thor::HLD
      *
      *  @return size_t
      */
-    constexpr RIndexType value() const
+    constexpr RIndex_t value() const
     {
       return type_safe::get( *this );
     }
-    
+
     /**
      *  Implicit conversion when assinging to a variable of the underlying type
      *
      *  @return size_t
      */
-    constexpr operator RIndexType() const
+    constexpr operator RIndex_t() const
     {
       return value();
     }

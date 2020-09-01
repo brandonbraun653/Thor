@@ -484,7 +484,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|STM32L432KB'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(AuroraIncDir);$(SolutionDir);$(ThorIncDir);$(BoostIncDir);$(FreeRTOSIncDir);$(FreeRTOSPortDir);$(FreeRTOSCfgDir);$(ChimeraPortDir);$(ChimeraCfgDir);$(ChimeraIncDir)</AdditionalIncludeDirectories>
       <Optimization>Os</Optimization>
       <PreprocessorDefinitions>TARGET_STM32L4;STM32L432xx;$(ChimeraCompilerDefines);$(ProjectCompilerDefines);%(ClCompile.PreprocessorDefinitions);</PreprocessorDefinitions>
       <CLanguageStandard>C2x</CLanguageStandard>
@@ -636,6 +636,7 @@
     <ClInclude Include="..\..\..\Thor\config\boost\boostStub.hpp" />
     <ClInclude Include="..\..\..\Thor\config\chimera\chimeraPort.hpp" />
     <ClInclude Include="..\..\..\Thor\config\config.hpp" />
+    <ClInclude Include="..\..\..\Thor\config\etl\etl_profile.h" />
     <ClInclude Include="..\..\..\Thor\config\freertos\FreeRTOSConfig.h" />
     <ClInclude Include="..\..\..\Thor\config\hardware\thor_stm32f4x_config.hpp" />
     <ClInclude Include="..\..\..\Thor\config\hardware\thor_stm32l4x_config.hpp" />

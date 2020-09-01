@@ -32,6 +32,15 @@ namespace Thor::LLD::GPIO
   Chimera::Status_t initialize();
 
   /**
+   *  Checks if the given hardware channel is supported on this device.
+   *
+   *  @param[in] port         The GPIO port to grab
+   *  @param[in] pin          Which pin on the given port
+   *  @return bool
+   */
+  bool isSupported( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
+
+  /**
    *  Gets a raw pointer to the GPIO driver for a particular channel
    *
    *  @note Because GPIO hardware is usually grouped into ports, registers, or banks, the
@@ -39,36 +48,25 @@ namespace Thor::LLD::GPIO
    *        means PORTA/B/C/etc. Reference the LLD implementation to figure out which
    *        channel is mapped to which port.
    *
-   *  @param[in] channel      The GPIO channel (port) to grab
+   *  @param[in] port         The GPIO port to grab
+   *  @param[in] pin          Which pin on the given port
    *  @return IDriver_sPtr    Instance of the GPIO driver for the requested channel
    */
-  IDriver_rPtr getDriver( const size_t channel );
+  Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 
   /**
-   *  Looks up how many GPIO channels are supported by the low level driver
+   *  Get's the resource index associated with a particular channel. If not
+   *  supported, will return INVALID_RESOURCE_INDEX
    *
-   *  @return size_t
+   *  @param[in] port         The GPIO port to grab
+   *  @param[in] pin          Which pin on the given port
+   *  @return RIndex_t
    */
-  size_t availableChannels();
-
-  /**
-   *  Looks up a resource index based on a raw peripheral instance
-   *
-   *  @param[in]  address       The peripheral address
-   *  @return RIndexType
-   */
-  RIndexType getResourceIndex( const std::uintptr_t address );
+  RIndex_t getResourceIndex( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  /**
-   *  Interface specification for the low level GPIO driver. It's expected that the
-   *  implementation will follow the described behavior set to the letter. No thread
-   *  safety is assumed with the driver as it's provided by associated GPIO HLD module.
-   *
-   *  Instances of this driver can be used directly, but it's recommended to use the HLD.
-   */
   class IDriver
   {
   public:

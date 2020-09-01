@@ -274,9 +274,9 @@ namespace Thor::LLD::RCC
      *  the lookup tables assigned elsewhere in this structure.
      *
      *  @param[in]  address         The peripheral address
-     *  @return RIndexType
+     *  @return RIndex_t
      */
-    RIndexType ( *getResourceIndex )( const std::uintptr_t address );
+    RIndex_t ( *getResourceIndex )( const std::uintptr_t address );
   };
 
   /*------------------------------------------------

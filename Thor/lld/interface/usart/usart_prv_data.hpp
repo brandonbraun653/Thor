@@ -3,7 +3,8 @@
  *    usart_prv_data.hpp
  *
  *  Description:
- *    Declaration of data that must be defined by the LLD implementation.
+ *    Declaration of data that must be defined by the LLD implementation or is
+ *    shared among all possible drivers.
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
@@ -20,6 +21,7 @@
 
 /* Thor Includes */
 #include <Thor/lld/common/macros.hpp>
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/usart/usart_detail.hpp>
 
 namespace Thor::LLD::USART
@@ -27,9 +29,9 @@ namespace Thor::LLD::USART
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
-  static constexpr uint8_t USART1_RESOURCE_INDEX = 0u;
-  static constexpr uint8_t USART2_RESOURCE_INDEX = 1u;
-  static constexpr uint8_t USART3_RESOURCE_INDEX = 2u;
+  static constexpr RIndex_t USART1_RESOURCE_INDEX = 0u;
+  static constexpr RIndex_t USART2_RESOURCE_INDEX = 1u;
+  static constexpr RIndex_t USART3_RESOURCE_INDEX = 2u;
 
   /*-------------------------------------------------------------------------------
   Peripheral Instances:

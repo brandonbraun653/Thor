@@ -107,7 +107,7 @@ namespace Thor::LLD::USART
   }
 
 
-  RIndexType getResourceIndex( const Chimera::Serial::Channel channel )
+  RIndex_t getResourceIndex( const Chimera::Serial::Channel channel )
   {
     /*-------------------------------------------------
     Mock behavior
@@ -128,7 +128,7 @@ namespace Thor::LLD::USART
   }
 
 
-  RIndexType getResourceIndex( void *instance )
+  RIndex_t getResourceIndex( void *instance )
   {
     return INVALID_RESOURCE_INDEX;
   }

@@ -1,10 +1,9 @@
 /********************************************************************************
  *  File Name:
- *    usart.hpp
+ *    usart_detail.hpp
  *
  *  Description:
- *    Common header for Thor USART that configures the driver based on which
- *    chip family is being compiled against.
+ *    Includes the LLD specific headers for chip implementation details
  *
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/

@@ -47,26 +47,27 @@ namespace Thor::LLD::USART
    *  Gets a raw pointer to the driver for a particular channel
    *
    *  @param[in] channel        The channel to grab
-   *  @return IDriver_rPtr      Instance of the driver for the requested channel
+   *  @return Driver_rPtr      Instance of the driver for the requested channel
    */
-  IDriver_rPtr getDriver( const Chimera::Serial::Channel channel );
+  Driver_rPtr getDriver( const Chimera::Serial::Channel channel );
 
   /**
    *  Get's the resource index associated with a particular channel. If not
    *  supported, will return INVALID_RESOURCE_INDEX
    *
    *  @param[in]  channel       The channel number to be checked
-   *  @return RIndexType
+   *  @return RIndex_t
    */
-  RIndexType getResourceIndex( const Chimera::Serial::Channel channel );
+  RIndex_t getResourceIndex( const Chimera::Serial::Channel channel );
 
   /**
-   *  Looks up a resource index based on a raw peripheral instance
+   *  Looks up a resource index based on a raw peripheral instance. If not
+   *  supported, will return INVALID_RESOURCE_INDEX
    *
    *  @param[in]  address       The peripheral address
-   *  @return RIndexType
+   *  @return RIndex_t
    */
-  RIndexType getResourceIndex( const std::uintptr_t address );
+  RIndex_t getResourceIndex( const std::uintptr_t address );
 
   /*-------------------------------------------------------------------------------
   Classes

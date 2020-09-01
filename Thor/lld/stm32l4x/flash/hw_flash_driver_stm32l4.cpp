@@ -40,7 +40,7 @@ namespace Thor::LLD::FLASH
   }
 
 
-  RIndexType getResourceIndex( const std::uintptr_t address )
+  RIndex_t getResourceIndex( const std::uintptr_t address )
   {
     if ( address == FLASH_BASE_ADDR )
     {

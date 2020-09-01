@@ -28,28 +28,28 @@ namespace Thor::GPIO
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
-  Chimera::GPIO::IGPIO_sPtr getDriver( const Chimera::GPIO::Port port );
+  Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
+  Driver_sPtr getDriverShared( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
+
 
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Driver : virtual public Chimera::GPIO::IGPIO, public Chimera::Threading::Lockable
+  class Driver : public Chimera::Threading::Lockable
   {
   public:
     Driver();
     ~Driver();
 
-    Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit ) final override;
-    Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin ) final override;
-    Chimera::Status_t setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull ) final override;
-    Chimera::Status_t setState( const Chimera::GPIO::State state ) final override;
-    Chimera::Status_t getState( Chimera::GPIO::State &state ) final override;
-    Chimera::Status_t toggle() final override;
+    Chimera::Status_t init( const Chimera::GPIO::PinInit &pinInit );
+    Chimera::Status_t init( const Chimera::GPIO::Port port, const uint8_t pin );
+    Chimera::Status_t setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull );
+    Chimera::Status_t setState( const Chimera::GPIO::State state );
+    Chimera::Status_t getState( Chimera::GPIO::State &state );
+    Chimera::Status_t toggle();
 
   private:
-    uint8_t mChannel;
-    Chimera::GPIO::State mLastState;
-    Chimera::GPIO::PinInit mInitSettings;
+    Chimera::GPIO::PinInit mInit;
   };
 }    // namespace Thor::GPIO
 

@@ -75,9 +75,9 @@ namespace Thor::LLD::TIMER
    *  Looks up a resource index based on a raw peripheral instance
    *
    *  @param[in]  address       The peripheral address
-   *  @return RIndexType
+   *  @return RIndex_t
    */
-  RIndexType getResourceIndex( const std::uintptr_t address );
+  RIndex_t getResourceIndex( const std::uintptr_t address );
 
 
   /*-------------------------------------------------------------------------------

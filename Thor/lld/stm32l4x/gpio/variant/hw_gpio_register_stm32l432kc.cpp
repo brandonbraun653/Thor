@@ -23,10 +23,16 @@
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
 
+
+/* ETL Includes */
+#include "etl/flat_map.h"
+
 #if defined( STM32L432xx ) && defined( THOR_LLD_GPIO )
 
 namespace Thor::LLD::GPIO
 {
+  static etl::flat_map<size_t, size_t, 100> hello;
+
   /*------------------------------------------------
   Pin Alternate Function Mapping: Port A
   See Table 15 of DS11451

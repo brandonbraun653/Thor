@@ -49,7 +49,7 @@ namespace Thor::LLD::USART
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base
   -------------------------------------------------*/
-  static constexpr RIndexType NUM_USART_PERIPHS = 3;
+  static constexpr RIndex_t NUM_USART_PERIPHS = 3;
 
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
   static constexpr uint32_t USART1_BASE_ADDR = Thor::System::MemoryMap::USART1_PERIPH_START_ADDRESS;

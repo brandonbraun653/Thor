@@ -48,16 +48,6 @@ namespace Thor::LLD::GPIO
   static constexpr uint32_t GPIOH_BASE_ADDR = Thor::System::MemoryMap::GPIOH_PERIPH_START_ADDRESS;
 
   /*-------------------------------------------------
-  Peripheral Resource Lookup Indices
-  -------------------------------------------------*/
-  static constexpr uint32_t GPIOA_RESOURCE_INDEX = 0u;
-  static constexpr uint32_t GPIOB_RESOURCE_INDEX = 1u;
-  static constexpr uint32_t GPIOC_RESOURCE_INDEX = 2u;
-  static constexpr uint32_t GPIOD_RESOURCE_INDEX = 3u;
-  static constexpr uint32_t GPIOE_RESOURCE_INDEX = 4u;
-  static constexpr uint32_t GPIOH_RESOURCE_INDEX = 5u;
-
-  /*-------------------------------------------------
   Lookup addresses
   -------------------------------------------------*/
   static constexpr size_t NUM_GPIO_PERIPHS                                 = 6;

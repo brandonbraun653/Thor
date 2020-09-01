@@ -52,17 +52,17 @@ namespace Thor::LLD::SPI
    *  supported, will return INVALID_RESOURCE_INDEX
    *
    *  @param[in]  channel       The channel number to be checked
-   *  @return RIndexType
+   *  @return RIndex_t
    */
-  RIndexType getResourceIndex( const Chimera::SPI::Channel channel );
+  RIndex_t getResourceIndex( const Chimera::SPI::Channel channel );
 
   /**
    *  Looks up a resource index based on a raw peripheral instance
    *
    *  @param[in]  address       The peripheral address
-   *  @return RIndexType
+   *  @return RIndex_t
    */
-  RIndexType getResourceIndex( const std::uintptr_t address );
+  RIndex_t getResourceIndex( const std::uintptr_t address );
 
 
   /*-------------------------------------------------------------------------------

@@ -418,6 +418,9 @@
     <Filter Include="lld\interface\watchdog\mock">
       <UniqueIdentifier>{e4219c80-dd7b-40c4-bbed-74f195b89dd3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="config\etl">
+      <UniqueIdentifier>{b2629b0b-0e7c-480e-a3e8-4313d95c9597}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.xml">
@@ -1400,6 +1403,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_prv_data.hpp">
       <Filter>lld\interface\usart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\config\etl\etl_profile.h">
+      <Filter>config\etl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -35,7 +35,7 @@ namespace Thor::LLD::PWR
   }
 
 
-  RIndexType getResourceIndex( const std::uintptr_t address )
+  RIndex_t getResourceIndex( const std::uintptr_t address )
   {
     if ( address == POWER1_BASE_ADDR )
     {

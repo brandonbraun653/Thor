@@ -41,7 +41,7 @@ namespace Thor::LLD::USART
   static Driver s_usart_drivers[ NUM_USART_PERIPHS ];
 
   /*-------------------------------------------------------------------------------
-  Constants 
+  Constants
   -------------------------------------------------------------------------------*/
   static constexpr Chimera::Peripheral::Type s_peripheral_type = Chimera::Peripheral::Type::PERIPH_USART;
 
@@ -96,7 +96,7 @@ namespace Thor::LLD::USART
   }
 
 
-  RIndexType getResourceIndex( const Chimera::Serial::Channel channel )
+  RIndex_t getResourceIndex( const Chimera::Serial::Channel channel )
   {
     if ( isChannelSupported( channel ) )
     {
@@ -107,7 +107,7 @@ namespace Thor::LLD::USART
   }
 
 
-  RIndexType getResourceIndex( const std::uintptr_t address )
+  RIndex_t getResourceIndex( const std::uintptr_t address )
   {
     if ( address == reinterpret_cast<std::uintptr_t>( USART1_PERIPH ) )
     {

@@ -24,7 +24,7 @@ namespace Chimera::USART::Backend
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
   bool isChannelUSART( const Chimera::Serial::Channel channel );
-  IUSART_sPtr getDriver( const Chimera::Serial::Channel channel );
+  Driver_sPtr getDriver( const Chimera::Serial::Channel channel );
 }    // namespace Chimera::USART::Backend
 
 #endif /* !THOR_USART_CHIMERA_HOOKS_HPP */
