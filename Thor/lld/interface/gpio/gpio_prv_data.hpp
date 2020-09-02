@@ -23,40 +23,93 @@
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_detail.hpp>
+#include <Thor/lld/interface/gpio/gpio_types.hpp>
 
 namespace Thor::LLD::GPIO
 {
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
-  static constexpr size_t DRIVER_MAX_PORTS         = 8;  /**< Max physical GPIO ports supported by the driver */
-  static constexpr size_t DRIVER_MAX_PINS_PER_PORT = 16; /**< Max pins per port supported by the driver */
+  static constexpr size_t DRIVER_MAX_PORTS         = static_cast<size_t>( Chimera::GPIO::Port::NUM_OPTIONS );
+  static constexpr size_t DRIVER_MAX_PINS_PER_PORT = 16;
   static constexpr size_t DRIVER_MAX_PINS          = DRIVER_MAX_PORTS * DRIVER_MAX_PINS_PER_PORT;
 
   /*-------------------------------------------------
   These allow the project to describe available GPIOs
   in a highly configurable way.
   -------------------------------------------------*/
-  extern const RIndex_t GPIOA_RESOURCE_INDEX; /**< Chip defined resource index for PortA */
-  extern const RIndex_t GPIOB_RESOURCE_INDEX; /**< Chip defined resource index for PortB */
-  extern const RIndex_t GPIOC_RESOURCE_INDEX; /**< Chip defined resource index for PortC */
-  extern const RIndex_t GPIOD_RESOURCE_INDEX; /**< Chip defined resource index for PortD */
-  extern const RIndex_t GPIOE_RESOURCE_INDEX; /**< Chip defined resource index for PortE */
-  extern const RIndex_t GPIOF_RESOURCE_INDEX; /**< Chip defined resource index for PortF */
-  extern const RIndex_t GPIOG_RESOURCE_INDEX; /**< Chip defined resource index for PortG */
-  extern const RIndex_t GPIOH_RESOURCE_INDEX; /**< Chip defined resource index for PortH */
+  extern const PortAttributes portAttributes[ NUM_GPIO_PERIPHS ]; /**< Array of PortAttributes, sized as PRJ_MAX_PORT */
 
-  extern const uint8_t GPIOA_NUM_PINS; /**< Chip defined number of pins available on PortA */
-  extern const uint8_t GPIOB_NUM_PINS; /**< Chip defined number of pins available on PortB */
-  extern const uint8_t GPIOC_NUM_PINS; /**< Chip defined number of pins available on PortC */
-  extern const uint8_t GPIOD_NUM_PINS; /**< Chip defined number of pins available on PortD */
-  extern const uint8_t GPIOE_NUM_PINS; /**< Chip defined number of pins available on PortE */
-  extern const uint8_t GPIOF_NUM_PINS; /**< Chip defined number of pins available on PortF */
-  extern const uint8_t GPIOG_NUM_PINS; /**< Chip defined number of pins available on PortG */
-  extern const uint8_t GPIOH_NUM_PINS; /**< Chip defined number of pins available on PortH */
+  /*-------------------------------------------------
+  These are defined at the interface layer, but must
+  remain private. No need to define project side.
+  -------------------------------------------------*/
+  extern const uint8_t portIndex[ DRIVER_MAX_PORTS ];
 
-  extern const uint8_t PRJ_MAX_PORTS; /**< Chip defined absolute max GPIO ports */
-  extern const uint8_t PRJ_MAX_PINS;  /**< Chip defined absolute max GPIO pins */
+  /*-------------------------------------------------------------------------------
+  Peripheral Instances:
+    Memory mapped structs that allow direct access to the registers of a peripheral
+  -------------------------------------------------------------------------------*/
+  #if defined( STM32_GPIOA_PERIPH_AVAILABLE )
+    extern RegisterMap *GPIOA_PERIPH;
+  #endif
+  #if defined( STM32_GPIOB_PERIPH_AVAILABLE )
+    extern RegisterMap *GPIOB_PERIPH;
+  #endif
+  #if defined( STM32_GPIOC_PERIPH_AVAILABLE )
+    extern RegisterMap *GPIOC_PERIPH;
+  #endif
+  #if defined( STM32_GPIOD_PERIPH_AVAILABLE )
+    extern RegisterMap *GPIOD_PERIPH;
+  #endif
+  #if defined( STM32_GPIOE_PERIPH_AVAILABLE )
+    extern RegisterMap *GPIOE_PERIPH;
+  #endif
+  #if defined( STM32_GPIOF_PERIPH_AVAILABLE )
+    extern RegisterMap *GPIOF_PERIPH;
+  #endif
+  #if defined( STM32_GPIOG_PERIPH_AVAILABLE )
+    extern RegisterMap *GPIOG_PERIPH;
+  #endif
+  #if defined( STM32_GPIOH_PERIPH_AVAILABLE )
+    extern RegisterMap *GPIOH_PERIPH;
+  #endif
+  #if defined( STM32_GPIOI_PERIPH_AVAILABLE )
+    extern RegisterMap *GPIOI_PERIPH;
+  #endif
+  #if defined( STM32_GPIOJ_PERIPH_AVAILABLE )
+    extern RegisterMap *GPIOJ_PERIPH;
+  #endif
+  #if defined( STM32_GPIOK_PERIPH_AVAILABLE )
+    extern RegisterMap *GPIOK_PERIPH;
+  #endif
+
+
+  /*-------------------------------------------------------------------------------
+  Configuration Maps:
+    These convert high level configuration options into low level register config
+    options. The idea is to allow the user to specify some general options, then
+    convert that over to what the peripheral understands during config/init steps.
+  -------------------------------------------------------------------------------*/
+  namespace ConfigMap
+  {
+    extern LLD_CONST Reg32_t PullMap[ static_cast<size_t>( Chimera::GPIO::Pull::NUM_OPTIONS ) ];
+    extern LLD_CONST Reg32_t ModeMap[ static_cast<size_t>( Chimera::GPIO::Drive::NUM_OPTIONS ) ];
+    extern LLD_CONST Reg32_t SpeedMap[ static_cast<size_t>( Thor::LLD::GPIO::Speed::NUM_OPTIONS ) ];
+    extern LLD_CONST Reg32_t PortToIteratorMap[ static_cast<size_t>( Chimera::GPIO::Port::NUM_OPTIONS ) ];
+  }
+
+
+  /*-------------------------------------------------------------------------------
+  Peripheral Resources:
+    These objects define critical resources used in the low level driver. The goal
+    is to minimize memory consumption, so these arrays only hold enough information
+    for the currently configured number of peripherals. They are intended to be
+    accessed directly via the _ResourceIndex_ attribute of the ConfigMap namespace.
+  -------------------------------------------------------------------------------*/
+  namespace Resource
+  {
+  }
 
 }    // namespace Thor::LLD::GPIO
 

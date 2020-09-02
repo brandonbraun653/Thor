@@ -15,37 +15,39 @@
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/gpio>
-#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_mapping.hpp>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
 
 namespace Thor::LLD::GPIO
 {
-  class Driver : public IDriver
+  class Driver
   {
   public:
     Driver();
     ~Driver();
 
-    void attach( RegisterMap *const peripheral ) final override;
-    void clockEnable() final override;
-    void clockDisable() final override;
-    Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive ) final override;
-    Chimera::Status_t speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed ) final override;
-    Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull ) final override;
-    Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state ) final override;
-    Chimera::Status_t alternateFunctionSet( const uint8_t pin, const Chimera::GPIO::Alternate val ) final override;
-    Chimera::GPIO::State read( const uint8_t pin ) final override;
-    Chimera::GPIO::Drive driveGet( const uint8_t pin ) final override;
-    Thor::LLD::GPIO::Speed speedGet( const uint8_t pin ) final override;
-    Chimera::GPIO::Pull pullGet( const uint8_t pin ) final override;
-    Chimera::GPIO::Alternate alternateFunctionGet( const uint8_t pin ) final override;
+    void attach( RegisterMap *const peripheral );
+    void clockEnable();
+    void clockDisable();
+    Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive );
+    Chimera::Status_t speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed );
+    Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull );
+    Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state );
+    Chimera::Status_t alternateFunctionSet( const uint8_t pin, const Chimera::GPIO::Alternate val );
+    Chimera::GPIO::State read( const uint8_t pin );
+    Chimera::GPIO::Drive driveGet( const uint8_t pin );
+    Thor::LLD::GPIO::Speed speedGet( const uint8_t pin );
+    Chimera::GPIO::Pull pullGet( const uint8_t pin );
+    Chimera::GPIO::Alternate alternateFunctionGet( const uint8_t pin );
 
   private:
-    RegisterMap *periph;
+    friend bool attachDriverInstances( Driver *const, const size_t );
+
+    RegisterMap *mPeriph;
+    Chimera::GPIO::Port mPort;
+    Chimera::GPIO::Pin mPin;
   };
 }    // namespace Thor::LLD::GPIO
 

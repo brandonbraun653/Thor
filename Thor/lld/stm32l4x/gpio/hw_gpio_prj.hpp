@@ -12,6 +12,15 @@
 #ifndef THOR_HW_GPIO_PROJECT_HPP
 #define THOR_HW_GPIO_PROJECT_HPP
 
+
+/*------------------------------------------------
+All STM32L4 devices
+------------------------------------------------*/
+#include <Thor/lld/stm32l4x/gpio/variant/hw_gpio_register_stm32l4xxxx.hpp>
+
+/*------------------------------------------------
+Chip specific STM32L4 devices
+------------------------------------------------*/
 #if defined( STM32L432xx )
 #include <Thor/lld/stm32l4x/gpio/variant/hw_gpio_register_stm32l432kc.hpp>
 #endif

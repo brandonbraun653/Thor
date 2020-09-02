@@ -1194,9 +1194,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver.hpp">
       <Filter>lld\stm32l4x\gpio</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_mapping.hpp">
-      <Filter>lld\stm32l4x\gpio</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_prj.hpp">
       <Filter>lld\stm32l4x\gpio</Filter>
     </ClInclude>
@@ -1302,9 +1299,6 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_detail.hpp">
       <Filter>lld\interface\spi</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.hpp">
-      <Filter>lld\stm32l4x\gpio\variant</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l4xxxx.hpp">
       <Filter>lld\stm32l4x\spi\variant</Filter>
     </ClInclude>
@@ -1406,6 +1400,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\config\etl\etl_profile.h">
       <Filter>config\etl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_prv_data.hpp">
+      <Filter>lld\interface\gpio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l4xxxx.hpp">
+      <Filter>lld\stm32l4x\gpio\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.hpp">
+      <Filter>lld\stm32l4x\gpio\variant</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1522,12 +1525,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.cpp">
       <Filter>lld\stm32l4x\des\variant</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver_stm32l4.cpp">
-      <Filter>lld\stm32l4x\gpio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_mapping.cpp">
-      <Filter>lld\stm32l4x\gpio</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\test\test_entry_lld_gpio.cpp">
       <Filter>lld\stm32l4x\gpio\test</Filter>
@@ -1655,9 +1652,6 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver_stm32l4_general.cpp">
       <Filter>lld\stm32l4x\timer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_driver_stm32l4.cpp">
-      <Filter>lld\stm32l4x\usart</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.cpp">
       <Filter>lld\stm32l4x\usart\variant</Filter>
     </ClCompile>
@@ -1673,8 +1667,20 @@
     <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock_variant.cpp">
       <Filter>lld\interface\watchdog\mock</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_data_stm32l4.cpp">
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_data.cpp">
+      <Filter>lld\stm32l4x\gpio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver.cpp">
+      <Filter>lld\stm32l4x\gpio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_data.cpp">
       <Filter>lld\stm32l4x\usart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_driver.cpp">
+      <Filter>lld\stm32l4x\usart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\gpio\gpio_intf.cpp">
+      <Filter>lld\interface\gpio</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -221,9 +221,9 @@ namespace Thor::SPI
     ------------------------------------------------*/
     config = setupStruct;
 
-    SCK  = Thor::GPIO::getDriver( config.SCKInit.port );
-    MOSI = Thor::GPIO::getDriver( config.MOSIInit.port );
-    MISO = Thor::GPIO::getDriver( config.MISOInit.port );
+    SCK  = Chimera::GPIO::getDriver( config.SCKInit.port, config.SCKInit.pin );
+    MOSI = Chimera::GPIO::getDriver( config.MOSIInit.port, config.MOSIInit.pin );
+    MISO = Chimera::GPIO::getDriver( config.MISOInit.port, config.MISOInit.pin );
 
     result |= SCK->init( config.SCKInit );
     result |= MOSI->init( config.MOSIInit );
@@ -236,7 +236,7 @@ namespace Thor::SPI
     }
     else
     {
-      CS = std::make_shared<Thor::GPIO::Driver>();
+      CS = Chimera::GPIO::getDriver( config.CSInit.port, config.CSInit.pin );
       result |= CS->init( config.CSInit );
     }
 

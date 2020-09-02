@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    hw_gpio_driver_STM32L4.cpp
+ *    hw_gpio_driver.cpp
  *
  *  Description:
  *    Implements the LLD interface to the STM32L4 series GPIO hardware.
@@ -13,8 +13,8 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
+#include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_driver.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_mapping.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
@@ -23,7 +23,15 @@
 
 namespace Thor::LLD::GPIO
 {
-  static Driver s_gpio_drivers[ NUM_GPIO_PERIPHS ];
+  /*-------------------------------------------------------------------------------
+  Variables
+  -------------------------------------------------------------------------------*/
+  /*-------------------------------------------------
+  Sadly this will consume far more memory on larger
+  devices. Given that a single pin is the "absolute
+  unit" for a GPIO control, this is just how it is.
+  -------------------------------------------------*/
+  static Driver s_gpio_drivers[ NUM_GPIO_PINS ];
 
   /*-------------------------------------------------------------------------------
   Public Functions
@@ -31,55 +39,44 @@ namespace Thor::LLD::GPIO
   Chimera::Status_t initialize()
   {
     initializeRegisters();
-    initializeMapping();
 
-    return Chimera::Status::OK;
+    /*-------------------------------------------------
+    Attach all the expected peripherals to the drivers
+    -------------------------------------------------*/
+    if ( attachDriverInstances( s_gpio_drivers, NUM_GPIO_PINS ) )
+    {
+      return Chimera::Status::OK;
+    }
+    else
+    {
+      return Chimera::Status::FAIL;
+    }
   }
 
-  IDriver_rPtr getDriver( const size_t channel )
+  Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
   {
-    if ( !( channel < NUM_GPIO_PERIPHS ) )
+    if ( auto idx = getResourceIndex( port, pin ); idx != INVALID_RESOURCE_INDEX )
+    {
+      return &s_gpio_drivers[ idx ];
+    }
+    else
     {
       return nullptr;
     }
-
-    s_gpio_drivers[ channel ].attach( reinterpret_cast<RegisterMap*>( PeripheralList[ channel ] ) );
-    return &s_gpio_drivers[ channel ];
   }
-
-  size_t availableChannels()
-  {
-    return NUM_GPIO_PERIPHS;
-  }
-
 
   RIndex_t getResourceIndex( const std::uintptr_t address )
   {
-    return InstanceToResourceIndex.at( address ).second;
+    #pragma message("oh no the gpio won't work")
+    return INVALID_RESOURCE_INDEX;
   }
 
-  /*-------------------------------------------------
-  Private LLD Function Implementation
-  -------------------------------------------------*/
-  bool isGPIO( const std::uintptr_t address )
-  {
-    bool result = false;
-
-    for ( auto &val : periphAddressList )
-    {
-      if ( val == address )
-      {
-        result = true;
-      }
-    }
-
-    return result;
-  }
 
   /*-----------------------------------------------------
   Low Level Driver Implementation
   -----------------------------------------------------*/
-  Driver::Driver() : periph( nullptr )
+  Driver::Driver() :
+      mPeriph( nullptr ), mPort( Chimera::GPIO::Port::UNKNOWN_PORT ), mPin( std::numeric_limits<decltype( mPin )>::max() )
   {
   }
 
@@ -89,14 +86,14 @@ namespace Thor::LLD::GPIO
 
   void Driver::attach( RegisterMap *const peripheral )
   {
-    periph = peripheral;
+    mPeriph = peripheral;
     clockEnable();
   }
 
   void Driver::clockEnable()
   {
     auto rcc   = Thor::LLD::RCC::getPeripheralClock();
-    auto index = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( periph ) ).second;
+    auto index = getResourceIndex( mPort, mPin );
 
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
   }
@@ -104,7 +101,7 @@ namespace Thor::LLD::GPIO
   void Driver::clockDisable()
   {
     auto rcc   = Thor::LLD::RCC::getPeripheralClock();
-    auto index = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( periph ) ).second;
+    auto index = getResourceIndex( mPort, mPin );
 
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
   }
@@ -120,10 +117,10 @@ namespace Thor::LLD::GPIO
     3. Assign bits from (2) with new value, masked appropriately
     4. Push into the device register
     ------------------------------------------------*/
-    Reg32_t tmp = periph->MODER;
+    Reg32_t tmp = mPeriph->MODER;
     tmp &= ~( MODER_CFG_X_MSK << shift_val );
-    tmp |= ( ModeMap[ static_cast<size_t>( drive ) ] & MODER_CFG_X_MSK ) << shift_val;
-    periph->MODER = tmp;
+    tmp |= ( ConfigMap::ModeMap[ static_cast<size_t>( drive ) ] & MODER_CFG_X_MSK ) << shift_val;
+    mPeriph->MODER = tmp;
 
     return Chimera::Status::OK;
   }
@@ -139,10 +136,10 @@ namespace Thor::LLD::GPIO
     3. Assign bits from (2) with new value, masked appropriately
     4. Push into the device register
     ------------------------------------------------*/
-    Reg32_t tmp = periph->OSPEEDR;
+    Reg32_t tmp = mPeriph->OSPEEDR;
     tmp &= ~( OSPEEDR_CFG_X_MSK << shift_val );
-    tmp |= ( SpeedMap[ static_cast<size_t>( speed ) ] & OSPEEDR_CFG_X_MSK ) << shift_val;
-    periph->OSPEEDR = tmp;
+    tmp |= ( ConfigMap::SpeedMap[ static_cast<size_t>( speed ) ] & OSPEEDR_CFG_X_MSK ) << shift_val;
+    mPeriph->OSPEEDR = tmp;
 
     return Chimera::Status::OK;
   }
@@ -158,10 +155,10 @@ namespace Thor::LLD::GPIO
     3. Assign bits from (2) with new value, masked appropriately
     4. Push into the device register
     ------------------------------------------------*/
-    Reg32_t tmp = periph->PUPDR;
+    Reg32_t tmp = mPeriph->PUPDR;
     tmp &= ~( PUPDR_CFG_X_MSK << shift_val );
-    tmp |= ( PullMap[ static_cast<size_t>( pull ) ] & PUPDR_CFG_X_MSK ) << shift_val;
-    periph->PUPDR = tmp;
+    tmp |= ( ConfigMap::PullMap[ static_cast<size_t>( pull ) ] & PUPDR_CFG_X_MSK ) << shift_val;
+    mPeriph->PUPDR = tmp;
 
     return Chimera::Status::OK;
   }
@@ -174,13 +171,13 @@ namespace Thor::LLD::GPIO
     if ( static_cast<bool>( state ) )
     {
       /* The lower 16 bits control the "set" functionality */
-      periph->BSRR = static_cast<Reg32_t>( 1u << pin ) & 0x0000FFFF;
+      mPeriph->BSRR = static_cast<Reg32_t>( 1u << pin ) & 0x0000FFFF;
     }
     else
     {
       /* The upper 16 bits control the "clr" functionality */
-      auto x       = static_cast<Reg32_t>( 1u << ( pin + 16 ) ) & 0xFFFF0000;
-      periph->BSRR = x;
+      auto x        = static_cast<Reg32_t>( 1u << ( pin + 16 ) ) & 0xFFFF0000;
+      mPeriph->BSRR = x;
     }
 
     return Chimera::Status::OK;
@@ -188,37 +185,21 @@ namespace Thor::LLD::GPIO
 
   Chimera::Status_t Driver::alternateFunctionSet( const uint8_t pin, const Chimera::GPIO::Alternate val )
   {
-    static_assert( sizeof( uint64_t ) == sizeof( RegisterMap::AFR ), "Invalid register memory map" );
-
     /*------------------------------------------------
-    Determine the alternate function configuration by
-    going through all the lovely lookup tables.
+    Initialize some working variables
     ------------------------------------------------*/
-    const auto instanceToPinMap = InstanceToAlternateMap.at( periph );
-    if ( !instanceToPinMap.second )
-    {
-      return Chimera::Status::FAIL;
-    }
-
-    const auto pinMap      = reinterpret_cast<const PinToAFMap *>( instanceToPinMap.second );
-    const auto afConfigMap = pinMap->at( pin );
-
-    const AFToReg *registerMap     = reinterpret_cast<const AFToReg *>( afConfigMap.second );
-    const auto afRegisterConfigMap = registerMap->at( val );
-
-
     uint64_t temp         = 0u;
     const uint64_t offset = pin * AFR_CFG_X_WID;
     const uint64_t mask   = AFR_CFG_X_MSK;
-    const uint64_t AFcfg  = afRegisterConfigMap.second;
+    const uint64_t AFcfg  = static_cast<uint64_t>( findAlternateFunction( mPort, pin, val ) );
 
     /*------------------------------------------------
     64-bit wide read-modify-write sequence to AFRL & AFRH
     ------------------------------------------------*/
-    temp = periph->AFR;
+    temp = mPeriph->AFR;
     temp &= ~( mask << offset );
     temp |= ( AFcfg & mask ) << offset;
-    periph->AFR = temp;
+    mPeriph->AFR = temp;
 
     return Chimera::Status::OK;
   }
@@ -226,7 +207,7 @@ namespace Thor::LLD::GPIO
   Chimera::GPIO::State Driver::read( const uint8_t pin )
   {
     /* Read the input data register and mask off the desired bit */
-    const bool state = ( periph->IDR & ( 1u << pin ) ) >> pin;
+    const bool state = ( mPeriph->IDR & ( 1u << pin ) ) >> pin;
 
     if ( state )
     {
@@ -245,13 +226,13 @@ namespace Thor::LLD::GPIO
     Reg32_t const shifted_mask = MODER_CFG_X_MSK << shift_val;
 
     /* Read the current configuration value and shift it to the zero-th bit*/
-    Reg32_t cfg_setting = ( periph->MODER & shifted_mask ) >> shift_val;
+    Reg32_t cfg_setting = ( mPeriph->MODER & shifted_mask ) >> shift_val;
 
     /*------------------------------------------------
     Iterate over the possible configuration options and return the
     first one that matches. Otherwise we don't know what this is.
     ------------------------------------------------*/
-    for ( const auto &cfg_option : ModeMap )
+    for ( const auto &cfg_option : ConfigMap::ModeMap )
     {
       if ( cfg_option == cfg_setting )
       {
@@ -269,13 +250,13 @@ namespace Thor::LLD::GPIO
     Reg32_t const shifted_mask = OSPEEDR_CFG_X_MSK << shift_val;
 
     /* Read the current configuration value and shift it to the zero-th bit*/
-    Reg32_t cfg_setting = ( periph->OSPEEDR & shifted_mask ) >> shift_val;
+    Reg32_t cfg_setting = ( mPeriph->OSPEEDR & shifted_mask ) >> shift_val;
 
     /*------------------------------------------------
     Iterate over the possible configuration options and return the
     first one that matches. Otherwise we don't know what this is.
     ------------------------------------------------*/
-    for ( const auto &cfg_option : SpeedMap )
+    for ( const auto &cfg_option : ConfigMap::SpeedMap )
     {
       if ( cfg_option == cfg_setting )
       {
@@ -293,13 +274,13 @@ namespace Thor::LLD::GPIO
     Reg32_t const shifted_mask = PUPDR_CFG_X_MSK << shift_val;
 
     /* Read the current configuration value and shift it to the zero-th bit*/
-    Reg32_t cfg_setting = ( periph->PUPDR & shifted_mask ) >> shift_val;
+    Reg32_t cfg_setting = ( mPeriph->PUPDR & shifted_mask ) >> shift_val;
 
     /*------------------------------------------------
     Iterate over the possible configuration options and return the
     first one that matches. Otherwise we don't know what this is.
     ------------------------------------------------*/
-    for ( const auto &cfg_option : PullMap )
+    for ( const auto &cfg_option : ConfigMap::PullMap )
     {
       if ( cfg_option == cfg_setting )
       {
@@ -312,40 +293,7 @@ namespace Thor::LLD::GPIO
 
   Chimera::GPIO::Alternate Driver::alternateFunctionGet( const uint8_t pin )
   {
-    /*------------------------------------------------
-    Determine the alternate function configuration by
-    going through all the lovely lookup tables.
-    ------------------------------------------------*/
-//    AlternateMap::value_type *instanceToPinMap = nullptr;
-//    if ( !InstanceToAlternateMap.exists( periph, &instanceToPinMap ) )
-//    {
-//      return Chimera::GPIO::Alternate::NONE;
-//    }
-//
-//    const PinToAFMap *pinMap             = reinterpret_cast<const PinToAFMap *>( instanceToPinMap->second );
-//    PinToAFMap::value_type *afConfigMap = nullptr;
-//    if ( !pinMap->exists( pin, &afConfigMap ) )
-//    {
-//      return Chimera::GPIO::Alternate::NONE;
-//    }
-//
-//
-//
-//    const uint64_t offset = pin * AFR_CFG_X_WID;
-//    const uint64_t mask   = AFR_CFG_X_MSK << offset;
-//
-//    /*------------------------------------------------
-//    64-bit wide read-modify-write sequence to AFRL & AFRH
-//    ------------------------------------------------*/
-//    Reg8_t currentConfig = static_cast<Reg8_t>( ( periph->AFR & mask ) >> offset );
-//    const AFToReg *registerMap = reinterpret_cast<const AFToReg *>( afConfigMap->second );
-//
-//    const AFToReg::value_type *cfg = registerMap->findWithValue( currentConfig );
-//    if ( cfg )
-//    {
-//      return cfg->first;
-//    }
-
+    // Currently not supported
     return Chimera::GPIO::Alternate::NONE;
   }
 

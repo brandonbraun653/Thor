@@ -21,6 +21,9 @@
 #include <Chimera/gpio>
 #include <Chimera/thread>
 
+/* Thor Includes */
+#include <Thor/hld/gpio/hld_gpio_types.hpp>
+
 namespace Thor::GPIO
 {
   /*-------------------------------------------------------------------------------

@@ -12,6 +12,9 @@
 #ifndef THOR_LLD_GPIO_DRIVER_INTERFACE_HPP
 #define THOR_LLD_GPIO_DRIVER_INTERFACE_HPP
 
+/* STL Includes */
+#include <limits>
+
 /* Chimera Includes */
 #include <Chimera/gpio>
 
@@ -22,7 +25,12 @@
 namespace Thor::LLD::GPIO
 {
   /*-------------------------------------------------------------------------------
-  Public Functions
+  Constants
+  -------------------------------------------------------------------------------*/
+  static constexpr Reg32_t BAD_ALT_FUNC = std::numeric_limits<Reg32_t>::max();
+
+  /*-------------------------------------------------------------------------------
+  Public Functions (Implemented by the project)
   -------------------------------------------------------------------------------*/
   /**
    *  Initializes the low level driver
@@ -32,15 +40,6 @@ namespace Thor::LLD::GPIO
   Chimera::Status_t initialize();
 
   /**
-   *  Checks if the given hardware channel is supported on this device.
-   *
-   *  @param[in] port         The GPIO port to grab
-   *  @param[in] pin          Which pin on the given port
-   *  @return bool
-   */
-  bool isSupported( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
-
-  /**
    *  Gets a raw pointer to the GPIO driver for a particular channel
    *
    *  @note Because GPIO hardware is usually grouped into ports, registers, or banks, the
@@ -48,21 +47,66 @@ namespace Thor::LLD::GPIO
    *        means PORTA/B/C/etc. Reference the LLD implementation to figure out which
    *        channel is mapped to which port.
    *
-   *  @param[in] port         The GPIO port to grab
-   *  @param[in] pin          Which pin on the given port
+   *  @param[in]  port        The GPIO port to grab
+   *  @param[in]  pin         Which pin on the given port
    *  @return IDriver_sPtr    Instance of the GPIO driver for the requested channel
    */
   Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 
   /**
+   *  Looks up a resource index based on a raw peripheral instance. If not
+   *  supported, will return INVALID_RESOURCE_INDEX
+   *
+   *  @param[in]  address       The peripheral address
+   *  @return RIndex_t
+   */
+  RIndex_t getResourceIndex( const std::uintptr_t address );
+
+
+  /*-------------------------------------------------------------------------------
+  Private Functions (Implemented at the interface layer)
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Checks if the given hardware channel is supported on this device.
+   *
+   *  @param[in]  port        The GPIO port to grab
+   *  @param[in]  pin         Which pin on the given port
+   *  @return bool
+   */
+  bool isSupported( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
+
+  /**
    *  Get's the resource index associated with a particular channel. If not
    *  supported, will return INVALID_RESOURCE_INDEX
    *
-   *  @param[in] port         The GPIO port to grab
-   *  @param[in] pin          Which pin on the given port
+   *  @param[in]  port        The GPIO port to grab
+   *  @param[in]  pin         Which pin on the given port, ranged from [0, DRIVER_MAX_PINS_PER_PORT]
    *  @return RIndex_t
    */
   RIndex_t getResourceIndex( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
+
+  /**
+   *  Initializes the GPIO drivers by attaching the appropriate peripheral
+   *
+   *  @param[in]  driverList  List of driver objects to be initialized
+   *  @param[in]  numDrivers  How many drivers are in driverList
+   *  @return bool
+   */
+  bool attachDriverInstances( Driver *const driverList, const size_t numDrivers );
+
+  /**
+   *  Searches through const configuration data to find the alternate function
+   *  register configuration value for the given inputs. If any of the inputs
+   *  are not supported, will return BAD_ALT_FUNC.
+   *
+   *  @param[in]  port        The port belonging to the pin
+   *  @param[in]  pin         The pin to be reconfigured
+   *  @param[in]  alt         The desired alternate function
+   *  @return Reg32_t
+   */
+  Reg32_t findAlternateFunction( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin,
+                                 const Chimera::GPIO::Alternate alt );
+
 
   /*-------------------------------------------------------------------------------
   Classes

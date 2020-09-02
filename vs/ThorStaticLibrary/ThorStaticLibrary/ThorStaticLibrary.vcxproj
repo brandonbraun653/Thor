@@ -587,6 +587,7 @@
     <ClCompile Include="..\..\..\Thor\hld\timer\test\test_hld_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\common\cortex-m4\cm4_interrupts.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\des\mock\des_mock.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\gpio\gpio_intf.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock_variant.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp" />
@@ -596,8 +597,8 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\test\test_entry_lld_flash.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\test\test_lld_flash_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\variant\hw_flash_register_stm32l432kc.cpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver_stm32l4.cpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_mapping.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_data.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\test\test_entry_lld_gpio.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\test\test_lld_gpio_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.cpp" />
@@ -628,8 +629,8 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_entry_lld_timer.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\test\test_lld_timer_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\variant\hw_timer_register_stm32l4xxxx.cpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_data_stm32l4.cpp" />
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_driver_stm32l4.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_data.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\test\test_entry_lld_usart.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\test\test_lld_usart_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.cpp" />
@@ -809,6 +810,7 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\flash\flash.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_detail.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_intf.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_prv_data.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\gpio_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\mock\gpio_mock.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\interrupt_detail.hpp" />
@@ -2079,10 +2081,10 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\variant\hw_flash_register_stm32l432kc.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l4xxxx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\interrupt\hw_interrupt_prj.hpp" />

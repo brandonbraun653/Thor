@@ -16,7 +16,6 @@
 #include <cstdint>
 
 /* Chimera Includes */
-#include <Chimera/container>
 #include <Chimera/gpio>
 
 
@@ -32,14 +31,6 @@ namespace Thor::LLD::GPIO
   Aliases
   -------------------------------------------------------------------------------*/
   using Driver_rPtr  = Driver *;
-
-  using AFToReg      = Chimera::Container::LightFlatMap<Chimera::GPIO::Alternate, Reg32_t>;
-  using AlternateMap = Chimera::Container::LightFlatMap<RegisterMap *, const void *>;
-  using IndexMap     = Chimera::Container::LightFlatMap<std::uintptr_t, size_t>;
-  using InstanceMap  = Chimera::Container::LightFlatMap<Chimera::GPIO::Port, RegisterMap *>;
-  using PinToAFMap   = Chimera::Container::LightFlatMap<uint8_t, const AFToReg *>;
-  using PortMap      = Chimera::Container::LightFlatMap<RegisterMap *, Chimera::GPIO::Port>;
-
 
   /*-------------------------------------------------------------------------------
   Enumerations
@@ -59,6 +50,40 @@ namespace Thor::LLD::GPIO
     NUM_OPTIONS,
     UNKNOWN_SPEED
   };
+
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Pair of values that map the Chimera alternate functions
+   *  into the processor's register value
+   */
+  struct AlternateFunc
+  {
+    Reg8_t registerAltFunc;                  /**< Register value to configure AF */
+    Chimera::GPIO::Alternate chimeraAltFunc; /**< Chimera value associated with AF */
+  };
+
+  /**
+   *  A collection of attributes associated with a pin
+   */
+  struct PinAttributes
+  {
+    Chimera::GPIO::Pin pinID; /**< ID of the pin this struct is describing */
+    uint8_t afListSize;       /**< How many elements are in the AF list */
+    const AlternateFunc *altFunc;  /**< List of alternate functions associated with the pin */
+  };
+
+  /**
+   *  A collection of attributes associated with a port
+   */
+  struct PortAttributes
+  {
+    Chimera::GPIO::Port portID; /**< ID of the port this struct is describing */
+    uint8_t pinListSize;        /**< How many elements are in the pin list */
+    const PinAttributes *pins;       /**< List of pin attributes associated with the port */
+  };
+
 }    // namespace Thor::LLD::GPIO
 
 #endif /* !THOR_LLD_GPIO_DRIVER_TYPES_HPP */

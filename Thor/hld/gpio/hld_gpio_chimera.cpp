@@ -31,7 +31,7 @@ namespace LLD = ::Thor::LLD::GPIO;
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
-static constexpr size_t NUM_DRIVERS = ::LLD::NUM_GPIO_PERIPHS;
+static constexpr size_t NUM_DRIVERS = ::LLD::MAX_NUM_PINS;
 
 /*-------------------------------------------------------------------------------
 Variables
@@ -59,7 +59,8 @@ namespace Chimera::GPIO::Backend
 
   Chimera::GPIO::Driver_sPtr getDriver( const Port port, const Pin pin )
   {
-    return Thor::GPIO::getDriver( port, pin );
+    auto idx = ::LLD::getResourceIndex( port, pin );
+    return s_shared_driver[ idx ];
   }
 
 

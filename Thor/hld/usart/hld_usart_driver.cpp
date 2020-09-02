@@ -188,8 +188,8 @@ namespace Thor::USART
     /*------------------------------------------------
     Create the hardware drivers
     ------------------------------------------------*/
-    txPin = Thor::GPIO::getDriver( pins.tx.port );
-    rxPin = Thor::GPIO::getDriver( pins.rx.port );
+    txPin = Chimera::GPIO::getDriver( pins.tx.port, pins.tx.pin );
+    rxPin = Chimera::GPIO::getDriver( pins.rx.port, pins.rx.pin );
 
     /*------------------------------------------------
     Initialize/Configure hardware drivers

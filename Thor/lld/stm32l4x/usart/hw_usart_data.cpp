@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    hw_usart_mapping.cpp
+ *    hw_usart_data.cpp
  *
  *  Description:
  *    Provides structures for conversion and mapping between data types for fast
@@ -100,7 +100,7 @@ namespace Thor::LLD::USART
       nullptr,
       #endif
     };
-    
+
 
     LLD_CONST Reg32_t RXDMASignals[ NUM_USART_PERIPHS ] = {
       Thor::DMA::Source::S_USART1_RX,

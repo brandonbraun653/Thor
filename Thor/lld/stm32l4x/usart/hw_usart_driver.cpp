@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    hw_usart_driver_STM32L4.cpp
+ *    hw_usart_driver.cpp
  *
  *  Description:
  *    Implements the LLD interface to the STM32L4 series USART hardware.
@@ -85,7 +85,7 @@ namespace Thor::LLD::USART
   }
 
 
-  IDriver_rPtr getDriver( const Chimera::Serial::Channel channel )
+  Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
   {
     if ( isChannelSupported( channel ) )
     {
