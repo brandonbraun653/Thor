@@ -311,6 +311,235 @@ namespace Thor::LLD::GPIO
 
   /* clang-format on */
 
+
+  namespace Internal
+  { /* clang-format off */
+    /*-------------------------------------------------------------------------------
+    PORT A CONFIGURATION
+    -------------------------------------------------------------------------------*/
+    /*-------------------------------------------------
+    Alternate Function Array
+    -------------------------------------------------*/
+    static const AlternateFunc port_a0_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a1_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a2_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a3_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a4_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a5_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a6_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a7_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a8_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a9_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a10_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a11_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a12_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a13_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a14_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    
+    static const AlternateFunc port_a15_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
+      // More here
+    };
+
+    /*-------------------------------------------------
+    Pin Attributes Array
+    -------------------------------------------------*/
+
+    // TODO: Conver list size to sizeof
+
+    static const PinAttributes port_a_pin_attributes[ GPIOA_NUM_PINS ] = {
+      { .pinID = 0, .afListSize = 1, .altFunc = port_a0_alt_func },
+      { .pinID = 1, .afListSize = 1, .altFunc = port_a1_alt_func },      
+      { .pinID = 2, .afListSize = 1, .altFunc = port_a2_alt_func },
+      { .pinID = 3, .afListSize = 1, .altFunc = port_a3_alt_func },
+      { .pinID = 4, .afListSize = 1, .altFunc = port_a4_alt_func },
+      { .pinID = 5, .afListSize = 1, .altFunc = port_a5_alt_func },
+      { .pinID = 6, .afListSize = 1, .altFunc = port_a6_alt_func },
+      { .pinID = 7, .afListSize = 1, .altFunc = port_a7_alt_func },
+      { .pinID = 8, .afListSize = 1, .altFunc = port_a8_alt_func },
+      { .pinID = 9, .afListSize = 1, .altFunc = port_a9_alt_func },
+      { .pinID = 10, .afListSize = 1, .altFunc = port_a10_alt_func },
+      { .pinID = 11, .afListSize = 1, .altFunc = port_a11_alt_func },
+      { .pinID = 12, .afListSize = 1, .altFunc = port_a12_alt_func },
+      { .pinID = 13, .afListSize = 1, .altFunc = port_a13_alt_func },
+      { .pinID = 14, .afListSize = 1, .altFunc = port_a14_alt_func },
+      { .pinID = 15, .afListSize = 1, .altFunc = port_a15_alt_func }
+    };
+
+    
+    /*-------------------------------------------------------------------------------
+    PORT B CONFIGURATION
+    -------------------------------------------------------------------------------*/
+    /*-------------------------------------------------
+    Alternate Function Array
+    -------------------------------------------------*/
+    static const AlternateFunc port_b0_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    };
+
+    static const AlternateFunc port_b1_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    };
+
+    static const AlternateFunc port_b3_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    };
+
+    static const AlternateFunc port_b4_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    };
+
+    static const AlternateFunc port_b5_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    };
+
+    static const AlternateFunc port_b6_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    };
+
+    static const AlternateFunc port_b7_alt_func[ 1 ] = { 
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    };
+
+    /*-------------------------------------------------
+    Pin Attributes Array
+    -------------------------------------------------*/
+    static const PinAttributes port_b_pin_attributes[ GPIOB_NUM_PINS ] = {
+      { .pinID = 0, .afListSize = 1, .altFunc = port_b0_alt_func },
+      { .pinID = 1, .afListSize = 1, .altFunc = port_b1_alt_func },
+      // Pin 2 not supported
+      { .pinID = 3, .afListSize = 1, .altFunc = port_b3_alt_func },
+      { .pinID = 4, .afListSize = 1, .altFunc = port_b4_alt_func },
+      { .pinID = 5, .afListSize = 1, .altFunc = port_b5_alt_func },
+      { .pinID = 6, .afListSize = 1, .altFunc = port_b6_alt_func },
+      { .pinID = 7, .afListSize = 1, .altFunc = port_b7_alt_func },
+    };
+
+
+    /*-------------------------------------------------------------------------------
+    PORT C CONFIGURATION
+    -------------------------------------------------------------------------------*/
+    /*-------------------------------------------------
+    Alternate Function Array
+    -------------------------------------------------*/
+    static const AlternateFunc port_c14_alt_func[ 1 ] = { {
+        .registerAltFunc = AF15_EVENTOUT,
+        .chimeraAltFunc  = Chimera::GPIO::Alternate::EVENTOUT,
+    } };
+
+    static const AlternateFunc port_c15_alt_func[ 1 ] = { {
+        .registerAltFunc = AF15_EVENTOUT,
+        .chimeraAltFunc  = Chimera::GPIO::Alternate::EVENTOUT,
+    } };
+
+    /*-------------------------------------------------
+    Pin Attributes Array
+    -------------------------------------------------*/
+    static const PinAttributes port_c_pin_attributes[ GPIOC_NUM_PINS ] = {
+      { .pinID = 14, .afListSize = 1, .altFunc = port_c14_alt_func },
+      { .pinID = 15, .afListSize = 1, .altFunc = port_c15_alt_func }
+    };
+    /* clang-format on */
+  }    // namespace Internal
+
+  extern const PortAttributes portAttributes[ NUM_GPIO_PERIPHS ] = {
+    // GPIO A
+    { 
+      .portID      = Chimera::GPIO::Port::PORTA,
+      .pinListSize = GPIOA_NUM_PINS,
+      .pins        = Internal::port_a_pin_attributes
+    },
+
+    // GPIO B
+    { 
+      .portID      = Chimera::GPIO::Port::PORTB, 
+      .pinListSize = GPIOB_NUM_PINS,
+      .pins        = Internal::port_b_pin_attributes
+    },
+
+    // GPIO C
+    { 
+      .portID      = Chimera::GPIO::Port::PORTC, 
+      .pinListSize = GPIOC_NUM_PINS, 
+      .pins        = Internal::port_c_pin_attributes 
+    }
+  };
+
+
   void initializeRegisters()
   {
   }

@@ -64,62 +64,6 @@ namespace Thor::LLD::GPIO
   static constexpr uint8_t PRJ_MAX_PORTS = NUM_GPIO_PERIPHS;
   static constexpr uint8_t PRJ_MAX_PINS  = NUM_GPIO_PINS;
 
-
-  namespace Internal
-  {
-    /*-------------------------------------------------------------------------------
-    PORT A CONFIGURATION
-    -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------------------------------------
-    PORT B CONFIGURATION
-    -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------------------------------------
-    PORT C CONFIGURATION
-    -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------
-    Alternate Function Array
-    -------------------------------------------------*/
-    static const AlternateFunc port_c14_alt_func[ 1 ] = { {
-        .registerAltFunc = AF15_EVENTOUT,
-        .chimeraAltFunc  = Chimera::GPIO::Alternate::EVENTOUT,
-    } };
-
-    static const AlternateFunc port_c15_alt_func[ 1 ] = { {
-        .registerAltFunc = AF15_EVENTOUT,
-        .chimeraAltFunc  = Chimera::GPIO::Alternate::EVENTOUT,
-    } };
-
-    /*-------------------------------------------------
-    Pin Attributes Array
-    -------------------------------------------------*/
-    static const PinAttributes port_c_pin_attributes[ GPIOC_NUM_PINS ] = {
-      { .pinID = 14, .afListSize = 1, .altFunc = port_c14_alt_func },
-      { .pinID = 15, .afListSize = 1, .altFunc = port_c15_alt_func }
-    };
-  }
-
-  static const PortAttributes portAttributes[ NUM_GPIO_PERIPHS ] = {
-    // GPIO A
-    {
-      Chimera::GPIO::Port::PORTA,
-      0,
-      nullptr
-    },
-
-    // GPIO B
-    {
-      Chimera::GPIO::Port::PORTB,
-      0,
-      nullptr
-    },
-
-    // GPIO C
-    {
-      .portID = Chimera::GPIO::Port::PORTC,
-      .pinListSize = 2,
-      .pins = Internal::port_c_pin_attributes
-    }
-  };
 }    // namespace Thor::LLD::GPIO
 
 #endif /* !THOR_HW_GPIO_REGISTER_STM32L432KC_HPP */
