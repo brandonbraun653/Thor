@@ -27,252 +27,9 @@
 
 namespace Thor::LLD::GPIO
 {
-
-  /*------------------------------------------------
-  Pin Alternate Function Mapping: Port A
-  See Table 15 of DS11451
-  ------------------------------------------------*/
-  /* clang-format off */
-//  static const AFToReg PA0_AFMap{
-//    { Chimera::GPIO::Alternate::TIM2_CH1,       AF1_TIM2      },
-//    { Chimera::GPIO::Alternate::USART2_CTS,     AF7_USART2    },
-//    { Chimera::GPIO::Alternate::COMP1_OUT,      AF12_COMP1    },
-//    { Chimera::GPIO::Alternate::SAI1_EXTCLK,    AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::TIM2_ETR,       AF14_TIM2     },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA1_AFMap{
-//    { Chimera::GPIO::Alternate::TIM2_CH2,       AF1_TIM2      },
-//    { Chimera::GPIO::Alternate::I2C1_SMBA,      AF4_I2C1      },
-//    { Chimera::GPIO::Alternate::SPI1_SCK,       AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::USART2_RTS_DE,  AF7_USART2    },
-//    { Chimera::GPIO::Alternate::TIM15_CH1N,     AF14_TIM15    },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA2_AFMap{
-//    { Chimera::GPIO::Alternate::TIM2_CH3,       AF1_TIM2      },
-//    { Chimera::GPIO::Alternate::USART2_TX,      AF7_USART2    },
-//    { Chimera::GPIO::Alternate::LPUART1_TX,     AF8_LPUART1   },
-//    { Chimera::GPIO::Alternate::QUADSPI_BK1_NCS,AF10_QUADSPI  },
-//    { Chimera::GPIO::Alternate::COMP2_OUT,      AF12_COMP2    },
-//    { Chimera::GPIO::Alternate::TIM15_CH1,      AF14_TIM15    },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA3_AFMap{
-//    { Chimera::GPIO::Alternate::TIM2_CH4,       AF1_TIM2      },
-//    { Chimera::GPIO::Alternate::USART2_RX,      AF7_USART2    },
-//    { Chimera::GPIO::Alternate::LPUART1_RX,     AF8_LPUART1   },
-//    { Chimera::GPIO::Alternate::QUADSPI_CLK,    AF10_QUADSPI  },
-//    { Chimera::GPIO::Alternate::SAI1_MCLK_A,    AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::TIM15_CH2,      AF14_TIM15    },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA4_AFMap{
-//    { Chimera::GPIO::Alternate::SPI1_NSS,       AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::SPI3_NSS,       AF6_SPI3      },
-//    { Chimera::GPIO::Alternate::USART2_CK,      AF7_USART2    },
-//    { Chimera::GPIO::Alternate::SAI1_FS_B,      AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::LPTIM2_OUT,     AF14_LPTIM2   },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA5_AFMap{
-//    { Chimera::GPIO::Alternate::TIM2_CH1,       AF1_TIM2      },
-//    { Chimera::GPIO::Alternate::TIM2_ETR,       AF2_TIM2      },
-//    { Chimera::GPIO::Alternate::SPI1_SCK,       AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::LPTIM2_ETR,     AF14_LPTIM2   },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA6_AFMap{
-//    { Chimera::GPIO::Alternate::TIM1_BKIN,      AF1_TIM1      },
-//    { Chimera::GPIO::Alternate::SPI1_MISO,      AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::COMP1_OUT,      AF6_COMP1     },
-//    { Chimera::GPIO::Alternate::USART3_CTS,     AF7_USART3    },
-//    { Chimera::GPIO::Alternate::LPUART1_CTS,    AF8_LPUART1   },
-//    { Chimera::GPIO::Alternate::QUADSPI_BK1_IO3,AF10_QUADSPI  },
-//    { Chimera::GPIO::Alternate::TIM1_BKIN_COMP2,AF12_COMP2    },
-//    { Chimera::GPIO::Alternate::TIM16_CH1,      AF14_TIM16    },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA7_AFMap{
-//    { Chimera::GPIO::Alternate::TIM1_CH1N,      AF1_TIM1      },
-//    { Chimera::GPIO::Alternate::I2C3_SCL,       AF4_I2C3      },
-//    { Chimera::GPIO::Alternate::SPI1_MOSI,      AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::QUADSPI_BK1_IO2,AF10_QUADSPI  },
-//    { Chimera::GPIO::Alternate::COMP2_OUT,      AF12_COMP2    },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA8_AFMap{
-//    { Chimera::GPIO::Alternate::MCO,            AF0_MCO       },
-//    { Chimera::GPIO::Alternate::TIM1_CH1,       AF1_TIM1      },
-//    { Chimera::GPIO::Alternate::USART1_CK,      AF7_USART1    },
-//    { Chimera::GPIO::Alternate::SWPMI1_IO,      AF12_SWPMI1   },
-//    { Chimera::GPIO::Alternate::SAI1_SCK_A,     AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::LPTIM2_OUT,     AF14_LPTIM2   },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA9_AFMap{
-//    { Chimera::GPIO::Alternate::TIM1_CH2,       AF1_TIM1      },
-//    { Chimera::GPIO::Alternate::I2C1_SCL,       AF4_I2C1      },
-//    { Chimera::GPIO::Alternate::USART1_TX,      AF7_USART1    },
-//    { Chimera::GPIO::Alternate::SAI1_FS_A,      AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::TIM15_BKIN,     AF14_TIM15    },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA10_AFMap{
-//    { Chimera::GPIO::Alternate::TIM1_CH3,       AF1_TIM1      },
-//    { Chimera::GPIO::Alternate::I2C1_SDA,       AF4_I2C1      },
-//    { Chimera::GPIO::Alternate::USART1_RX,      AF7_USART1    },
-//    { Chimera::GPIO::Alternate::USB_CRS_SYNC,   AF10_USB_FS   },
-//    { Chimera::GPIO::Alternate::SAI1_SD_A,      AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA11_AFMap{
-//    { Chimera::GPIO::Alternate::TIM1_CH4,       AF1_TIM1      },
-//    { Chimera::GPIO::Alternate::TIM1_BKIN2,     AF2_TIM1      },
-//    { Chimera::GPIO::Alternate::SPI1_MISO,      AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::COMP1_OUT,      AF6_SPI3      },
-//    { Chimera::GPIO::Alternate::USART1_CTS,     AF7_USART1    },
-//    { Chimera::GPIO::Alternate::CAN1_RX,        AF9_CAN1      },
-//    { Chimera::GPIO::Alternate::USB_DM,         AF10_USB_FS   },
-//    { Chimera::GPIO::Alternate::TIM1_BKIN2_COMP1,AF12_COMP1   },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA12_AFMap{
-//    { Chimera::GPIO::Alternate::TIM1_ETR,       AF1_TIM1      },
-//    { Chimera::GPIO::Alternate::SPI1_MOSI,      AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::USART1_RTS_DE,  AF7_USART1    },
-//    { Chimera::GPIO::Alternate::CAN1_TX,        AF9_CAN1      },
-//    { Chimera::GPIO::Alternate::USB_DP,         AF10_USB_FS   },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA13_AFMap{
-//    { Chimera::GPIO::Alternate::JTMSSWDIO,      AF0_SWJ       },
-//    { Chimera::GPIO::Alternate::IR_OUT,         AF1_IR        },
-//    { Chimera::GPIO::Alternate::USB_NOE,        AF10_USB_FS   },
-//    { Chimera::GPIO::Alternate::SWPMI1_TX,      AF12_SWPMI1   },
-//    { Chimera::GPIO::Alternate::SAI1_SD_B,      AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA14_AFMap{
-//    { Chimera::GPIO::Alternate::JTCKSWCLK,      AF0_SWJ       },
-//    { Chimera::GPIO::Alternate::LPTIM1_OUT,     AF1_LPTIM1    },
-//    { Chimera::GPIO::Alternate::I2C1_SMBA,      AF4_I2C1      },
-//    { Chimera::GPIO::Alternate::SWPMI1_RX,      AF12_SWPMI1   },
-//    { Chimera::GPIO::Alternate::SAI1_FS_B,      AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PA15_AFMap{
-//    { Chimera::GPIO::Alternate::JTDI,           AF0_SWJ       },
-//    { Chimera::GPIO::Alternate::TIM2_CH1,       AF1_TIM2      },
-//    { Chimera::GPIO::Alternate::TIM2_ETR,       AF2_TIM2      },
-//    { Chimera::GPIO::Alternate::USART2_RX,      AF3_USART2    },
-//    { Chimera::GPIO::Alternate::SPI1_NSS,       AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::SPI3_NSS,       AF6_SPI3      },
-//    { Chimera::GPIO::Alternate::USART3_RTS_DE,  AF7_USART3    },
-//    { Chimera::GPIO::Alternate::TSC_G3_IO1,     AF9_TSC       },
-//    { Chimera::GPIO::Alternate::SWPMI1_SUSPEND, AF12_SWPMI1   },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const PinToAFMap PA_PinAF{
-//    { 0,  &PA0_AFMap  },
-//    { 1,  &PA1_AFMap  },
-//    { 2,  &PA2_AFMap  },
-//    { 3,  &PA3_AFMap  },
-//    { 4,  &PA4_AFMap  },
-//    { 5,  &PA5_AFMap  },
-//    { 6,  &PA6_AFMap  },
-//    { 7,  &PA7_AFMap  },
-//    { 8,  &PA8_AFMap  },
-//    { 9,  &PA9_AFMap  },
-//    { 10, &PA10_AFMap },
-//    { 11, &PA11_AFMap },
-//    { 12, &PA12_AFMap },
-//    { 13, &PA13_AFMap },
-//    { 14, &PA14_AFMap },
-//    { 15, &PA15_AFMap }
-//  };
-
-  /*------------------------------------------------
-  Pin Alternate Function Mapping: Port B
-  See Table 15 of DS11451
-  ------------------------------------------------*/
-//  static const AFToReg PB0_AFMap{
-//    { Chimera::GPIO::Alternate::TIM1_CH2N,      AF1_TIM2      },
-//    { Chimera::GPIO::Alternate::SPI1_NSS,       AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::USART3_CK,      AF7_USART3    },
-//    { Chimera::GPIO::Alternate::QUADSPI_BK1_IO1,AF10_QUADSPI  },
-//    { Chimera::GPIO::Alternate::COMP1_OUT,      AF12_COMP1    },
-//    { Chimera::GPIO::Alternate::SAI1_EXTCLK,    AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PB1_AFMap{
-//    { Chimera::GPIO::Alternate::TIM1_CH3N,      AF1_TIM1      },
-//    { Chimera::GPIO::Alternate::USART3_RTS_DE,  AF7_USART3    },
-//    { Chimera::GPIO::Alternate::LPUART1_RTS_DE, AF8_LPUART1   },
-//    { Chimera::GPIO::Alternate::QUADSPI_BK1_IO0,AF10_QUADSPI  },
-//    { Chimera::GPIO::Alternate::LPTIM2_IN1,     AF14_LPTIM2   },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PB3_AFMap{
-//    { Chimera::GPIO::Alternate::JTDO_TRACESWO,  AF0_SWJ       },
-//    { Chimera::GPIO::Alternate::TIM2_CH2,       AF1_TIM2      },
-//    { Chimera::GPIO::Alternate::SPI1_SCK,       AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::SPI3_SCK,       AF6_SPI3      },
-//    { Chimera::GPIO::Alternate::USART1_RTS_DE,  AF7_USART1    },
-//    { Chimera::GPIO::Alternate::SAI1_SCK_B,     AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PB4_AFMap{
-//    { Chimera::GPIO::Alternate::NJTRST,         AF0_SWJ       },
-//    { Chimera::GPIO::Alternate::I2C3_SDA,       AF4_I2C3      },
-//    { Chimera::GPIO::Alternate::SPI1_MISO,      AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::SPI3_MISO,      AF6_SPI3      },
-//    { Chimera::GPIO::Alternate::USART1_CTS,     AF7_USART1    },
-//    { Chimera::GPIO::Alternate::TSC_G2_IO1,     AF9_TSC       },
-//    { Chimera::GPIO::Alternate::SAI1_MCLK_B,    AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PB5_AFMap{
-//    { Chimera::GPIO::Alternate::LPTIM1_IN1,     AF1_TIM1      },
-//    { Chimera::GPIO::Alternate::I2C1_SMBA,      AF4_I2C1      },
-//    { Chimera::GPIO::Alternate::SPI1_MOSI,      AF5_SPI1      },
-//    { Chimera::GPIO::Alternate::SPI3_MOSI,      AF6_SPI3      },
-//    { Chimera::GPIO::Alternate::USART1_CK,      AF7_USART1    },
-//    { Chimera::GPIO::Alternate::TSC_G2_IO2,     AF9_TSC       },
-//    { Chimera::GPIO::Alternate::COMP2_OUT,      AF12_COMP2    },
-//    { Chimera::GPIO::Alternate::SAI1_SD_B,      AF13_SAI1     },
-//    { Chimera::GPIO::Alternate::TIM16_BKIN,     AF14_TIM16    },
-//    { Chimera::GPIO::Alternate::EVENTOUT,       AF15_EVENTOUT }
-//  };
-//
-//  static const AFToReg PB6_AFMap{
-
-//  };
-
-
-  /* clang-format on */
-
-
+  /*-------------------------------------------------------------------------------
+  Pin Alternate Configuration Mapping: See Table 15 of DS11451
+  -------------------------------------------------------------------------------*/
   namespace Internal
   { /* clang-format off */
     /*-------------------------------------------------------------------------------
@@ -281,99 +38,160 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------
     Alternate Function Array
     -------------------------------------------------*/
-    static const AlternateFunc port_a0_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a0_alt_func[] = {
+      { .registerAltFunc = AF1_TIM2,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM2_CH1    },
+      { .registerAltFunc = AF7_USART2,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART2_CTS  },
+      { .registerAltFunc = AF12_COMP1,        .chimeraAltFunc = Chimera::GPIO::Alternate::COMP1_OUT   },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_EXTCLK },
+      { .registerAltFunc = AF14_TIM2,         .chimeraAltFunc = Chimera::GPIO::Alternate::TIM2_ETR    },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    
-    static const AlternateFunc port_a1_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a1_alt_func[] = {
+      { .registerAltFunc = AF1_TIM2,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM2_CH2      },
+      { .registerAltFunc = AF4_I2C1,          .chimeraAltFunc = Chimera::GPIO::Alternate::I2C1_SMBA     },
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_SCK      },
+      { .registerAltFunc = AF7_USART2,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART2_RTS_DE },
+      { .registerAltFunc = AF14_TIM15,        .chimeraAltFunc = Chimera::GPIO::Alternate::TIM15_CH1N    },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT      },
     };
 
-    
-    static const AlternateFunc port_a2_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a2_alt_func[] = {
+      { .registerAltFunc = AF1_TIM2,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM2_CH3        },
+      { .registerAltFunc = AF7_USART2,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART2_TX       },
+      { .registerAltFunc = AF8_LPUART1,       .chimeraAltFunc = Chimera::GPIO::Alternate::LPUART1_TX      },
+      { .registerAltFunc = AF10_QUADSPI,      .chimeraAltFunc = Chimera::GPIO::Alternate::QUADSPI_BK1_NCS },
+      { .registerAltFunc = AF12_COMP2,        .chimeraAltFunc = Chimera::GPIO::Alternate::COMP2_OUT       },
+      { .registerAltFunc = AF14_TIM15,        .chimeraAltFunc = Chimera::GPIO::Alternate::TIM15_CH1       },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT        },
     };
 
-    
-    static const AlternateFunc port_a3_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a3_alt_func[] = {
+      { .registerAltFunc = AF1_TIM2,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM2_CH4    },
+      { .registerAltFunc = AF7_USART2,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART2_RX   },
+      { .registerAltFunc = AF8_LPUART1,       .chimeraAltFunc = Chimera::GPIO::Alternate::LPUART1_RX  },
+      { .registerAltFunc = AF10_QUADSPI,      .chimeraAltFunc = Chimera::GPIO::Alternate::QUADSPI_CLK },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_MCLK_A },
+      { .registerAltFunc = AF14_TIM15,        .chimeraAltFunc = Chimera::GPIO::Alternate::TIM15_CH2   },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    
-    static const AlternateFunc port_a4_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a4_alt_func[] = {
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_NSS    },
+      { .registerAltFunc = AF6_SPI3,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI3_NSS    },
+      { .registerAltFunc = AF7_USART2,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART2_CK   },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_FS_B   },
+      { .registerAltFunc = AF14_LPTIM2,       .chimeraAltFunc = Chimera::GPIO::Alternate::LPTIM2_OUT  },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    
-    static const AlternateFunc port_a5_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a5_alt_func[] = {
+      { .registerAltFunc = AF1_TIM2,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM2_CH1    },
+      { .registerAltFunc = AF2_TIM2,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM2_ETR    },
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_SCK    },
+      { .registerAltFunc = AF14_LPTIM2,       .chimeraAltFunc = Chimera::GPIO::Alternate::LPTIM2_ETR  },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    
-    static const AlternateFunc port_a6_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a6_alt_func[] = {
+      { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_BKIN       },
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_MISO       },
+      { .registerAltFunc = AF6_COMP1,         .chimeraAltFunc = Chimera::GPIO::Alternate::COMP1_OUT       },
+      { .registerAltFunc = AF7_USART3,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART3_CTS      },
+      { .registerAltFunc = AF8_LPUART1,       .chimeraAltFunc = Chimera::GPIO::Alternate::LPUART1_CTS     },
+      { .registerAltFunc = AF10_QUADSPI,      .chimeraAltFunc = Chimera::GPIO::Alternate::QUADSPI_BK1_IO3 },
+      { .registerAltFunc = AF12_COMP2,        .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_BKIN_COMP2 },
+      { .registerAltFunc = AF14_TIM16,        .chimeraAltFunc = Chimera::GPIO::Alternate::TIM16_CH1       },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT        },
     };
 
-    
-    static const AlternateFunc port_a7_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a7_alt_func[] = {
+      { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_CH1N       },
+      { .registerAltFunc = AF4_I2C3,          .chimeraAltFunc = Chimera::GPIO::Alternate::I2C3_SCL        },
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_MOSI       },
+      { .registerAltFunc = AF10_QUADSPI,      .chimeraAltFunc = Chimera::GPIO::Alternate::QUADSPI_BK1_IO2 },
+      { .registerAltFunc = AF12_COMP2,        .chimeraAltFunc = Chimera::GPIO::Alternate::COMP2_OUT       },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT        },
     };
 
-    
-    static const AlternateFunc port_a8_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a8_alt_func[] = {
+      { .registerAltFunc = AF0_MCO,           .chimeraAltFunc = Chimera::GPIO::Alternate::MCO         },
+      { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_CH1    },
+      { .registerAltFunc = AF7_USART1,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_CK   },
+      { .registerAltFunc = AF12_SWPMI1,       .chimeraAltFunc = Chimera::GPIO::Alternate::SWPMI1_IO   },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_SCK_A  },
+      { .registerAltFunc = AF14_LPTIM2,       .chimeraAltFunc = Chimera::GPIO::Alternate::LPTIM2_OUT  },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    
-    static const AlternateFunc port_a9_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a9_alt_func[] = {
+      { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_CH2    },
+      { .registerAltFunc = AF4_I2C1,          .chimeraAltFunc = Chimera::GPIO::Alternate::I2C1_SCL    },
+      { .registerAltFunc = AF7_USART1,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_TX   },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_FS_A   },
+      { .registerAltFunc = AF14_TIM15,        .chimeraAltFunc = Chimera::GPIO::Alternate::TIM15_BKIN  },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    
-    static const AlternateFunc port_a10_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a10_alt_func[] = {
+      { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_CH3      },
+      { .registerAltFunc = AF4_I2C1,          .chimeraAltFunc = Chimera::GPIO::Alternate::I2C1_SDA      },
+      { .registerAltFunc = AF7_USART1,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_RX     },
+      { .registerAltFunc = AF10_USB_FS,       .chimeraAltFunc = Chimera::GPIO::Alternate::USB_CRS_SYNC  },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_SD_A     },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT      },
     };
 
-    
-    static const AlternateFunc port_a11_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a11_alt_func[] = {
+      { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_CH4          },
+      { .registerAltFunc = AF2_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_BKIN2        },
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_MISO         },
+      { .registerAltFunc = AF6_SPI3,          .chimeraAltFunc = Chimera::GPIO::Alternate::COMP1_OUT         },
+      { .registerAltFunc = AF7_USART1,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_CTS        },
+      { .registerAltFunc = AF9_CAN1,          .chimeraAltFunc = Chimera::GPIO::Alternate::CAN1_RX           },
+      { .registerAltFunc = AF10_USB_FS,       .chimeraAltFunc = Chimera::GPIO::Alternate::USB_DM            },
+      { .registerAltFunc = AF12_COMP1,        .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_BKIN2_COMP1  },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT          },
     };
 
-    
-    static const AlternateFunc port_a12_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a12_alt_func[] = {
+      { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_ETR      },
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_MOSI     },
+      { .registerAltFunc = AF7_USART1,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_RTS_DE },
+      { .registerAltFunc = AF9_CAN1,          .chimeraAltFunc = Chimera::GPIO::Alternate::CAN1_TX       },
+      { .registerAltFunc = AF10_USB_FS,       .chimeraAltFunc = Chimera::GPIO::Alternate::USB_DP        },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT      },
     };
 
-    
-    static const AlternateFunc port_a13_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a13_alt_func[] = {
+      { .registerAltFunc = AF0_SWJ,           .chimeraAltFunc = Chimera::GPIO::Alternate::JTMSSWDIO },
+      { .registerAltFunc = AF1_IR,            .chimeraAltFunc = Chimera::GPIO::Alternate::IR_OUT    },
+      { .registerAltFunc = AF10_USB_FS,       .chimeraAltFunc = Chimera::GPIO::Alternate::USB_NOE   },
+      { .registerAltFunc = AF12_SWPMI1,       .chimeraAltFunc = Chimera::GPIO::Alternate::SWPMI1_TX },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_SD_B },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT  },
     };
 
-    
-    static const AlternateFunc port_a14_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a14_alt_func[] = {
+      { .registerAltFunc = AF0_SWJ,           .chimeraAltFunc = Chimera::GPIO::Alternate::JTCKSWCLK   },
+      { .registerAltFunc = AF1_LPTIM1,        .chimeraAltFunc = Chimera::GPIO::Alternate::LPTIM1_OUT  },
+      { .registerAltFunc = AF4_I2C1,          .chimeraAltFunc = Chimera::GPIO::Alternate::I2C1_SMBA   },
+      { .registerAltFunc = AF12_SWPMI1,       .chimeraAltFunc = Chimera::GPIO::Alternate::SWPMI1_RX   },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_FS_B   },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    
-    static const AlternateFunc port_a15_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT },
-      // More here
+    static const AlternateFunc port_a15_alt_func[] = {
+      { .registerAltFunc = AF0_SWJ,           .chimeraAltFunc = Chimera::GPIO::Alternate::JTDI            },
+      { .registerAltFunc = AF1_TIM2,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM2_CH1        },
+      { .registerAltFunc = AF2_TIM2,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM2_ETR        },
+      { .registerAltFunc = AF3_USART2,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART2_RX       },
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_NSS        },
+      { .registerAltFunc = AF6_SPI3,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI3_NSS        },
+      { .registerAltFunc = AF7_USART3,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART3_RTS_DE   },
+      { .registerAltFunc = AF9_TSC,           .chimeraAltFunc = Chimera::GPIO::Alternate::TSC_G3_IO1      },
+      { .registerAltFunc = AF12_SWPMI1,       .chimeraAltFunc = Chimera::GPIO::Alternate::SWPMI1_SUSPEND  },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT        },
     };
 
     /*-------------------------------------------------
@@ -381,7 +199,7 @@ namespace Thor::LLD::GPIO
     -------------------------------------------------*/
     static const PinAttributes port_a_pin_attributes[ GPIOA_NUM_PINS ] = {
       { .pinID = 0,  .afListSize = ARRAY_COUNT( port_a0_alt_func ),  .altFunc = port_a0_alt_func  },
-      { .pinID = 1,  .afListSize = ARRAY_COUNT( port_a1_alt_func ),  .altFunc = port_a1_alt_func  },      
+      { .pinID = 1,  .afListSize = ARRAY_COUNT( port_a1_alt_func ),  .altFunc = port_a1_alt_func  },
       { .pinID = 2,  .afListSize = ARRAY_COUNT( port_a2_alt_func ),  .altFunc = port_a2_alt_func  },
       { .pinID = 3,  .afListSize = ARRAY_COUNT( port_a3_alt_func ),  .altFunc = port_a3_alt_func  },
       { .pinID = 4,  .afListSize = ARRAY_COUNT( port_a4_alt_func ),  .altFunc = port_a4_alt_func  },
@@ -398,49 +216,82 @@ namespace Thor::LLD::GPIO
       { .pinID = 15, .afListSize = ARRAY_COUNT( port_a15_alt_func ), .altFunc = port_a15_alt_func }
     };
 
-    
+
     /*-------------------------------------------------------------------------------
     PORT B CONFIGURATION
     -------------------------------------------------------------------------------*/
     /*-------------------------------------------------
     Alternate Function Array
     -------------------------------------------------*/
-    static const AlternateFunc port_b0_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    static const AlternateFunc port_b0_alt_func[] = {
+      { .registerAltFunc = AF1_TIM2,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_CH2N       },
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_NSS        },
+      { .registerAltFunc = AF7_USART3,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART3_CK       },
+      { .registerAltFunc = AF10_QUADSPI,      .chimeraAltFunc = Chimera::GPIO::Alternate::QUADSPI_BK1_IO1 },
+      { .registerAltFunc = AF12_COMP1,        .chimeraAltFunc = Chimera::GPIO::Alternate::COMP1_OUT       },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_EXTCLK     },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT        },
     };
 
-    static const AlternateFunc port_b1_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    static const AlternateFunc port_b1_alt_func[] = {
+      { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_CH3N       },
+      { .registerAltFunc = AF7_USART3,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART3_RTS_DE   },
+      { .registerAltFunc = AF8_LPUART1,       .chimeraAltFunc = Chimera::GPIO::Alternate::LPUART1_RTS_DE  },
+      { .registerAltFunc = AF10_QUADSPI,      .chimeraAltFunc = Chimera::GPIO::Alternate::QUADSPI_BK1_IO0 },
+      { .registerAltFunc = AF14_LPTIM2,       .chimeraAltFunc = Chimera::GPIO::Alternate::LPTIM2_IN1      },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT        },
     };
 
-    static const AlternateFunc port_b3_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    static const AlternateFunc port_b3_alt_func[] = {
+      { .registerAltFunc = AF0_SWJ,           .chimeraAltFunc = Chimera::GPIO::Alternate::JTDO_TRACESWO },
+      { .registerAltFunc = AF1_TIM2,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM2_CH2      },
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_SCK      },
+      { .registerAltFunc = AF6_SPI3,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI3_SCK      },
+      { .registerAltFunc = AF7_USART1,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_RTS_DE },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_SCK_B    },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT      },
     };
 
-    static const AlternateFunc port_b4_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    static const AlternateFunc port_b4_alt_func[] = {
+      { .registerAltFunc = AF0_SWJ,           .chimeraAltFunc = Chimera::GPIO::Alternate::NJTRST      },
+      { .registerAltFunc = AF4_I2C3,          .chimeraAltFunc = Chimera::GPIO::Alternate::I2C3_SDA    },
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_MISO   },
+      { .registerAltFunc = AF6_SPI3,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI3_MISO   },
+      { .registerAltFunc = AF7_USART1,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_CTS  },
+      { .registerAltFunc = AF9_TSC,           .chimeraAltFunc = Chimera::GPIO::Alternate::TSC_G2_IO1  },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_MCLK_B },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    static const AlternateFunc port_b5_alt_func[] = { 
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT }
+    static const AlternateFunc port_b5_alt_func[] = {
+      { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::LPTIM1_IN1  },
+      { .registerAltFunc = AF4_I2C1,          .chimeraAltFunc = Chimera::GPIO::Alternate::I2C1_SMBA   },
+      { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_MOSI   },
+      { .registerAltFunc = AF6_SPI3,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI3_MOSI   },
+      { .registerAltFunc = AF7_USART1,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_CK   },
+      { .registerAltFunc = AF9_TSC,           .chimeraAltFunc = Chimera::GPIO::Alternate::TSC_G2_IO2  },
+      { .registerAltFunc = AF12_COMP2,        .chimeraAltFunc = Chimera::GPIO::Alternate::COMP2_OUT   },
+      { .registerAltFunc = AF13_SAI1,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_SD_B   },
+      { .registerAltFunc = AF14_TIM16,        .chimeraAltFunc = Chimera::GPIO::Alternate::TIM16_BKIN  },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    static const AlternateFunc port_b6_alt_func[] = { 
-      { .registerAltFunc =  AF1_LPTIM1   , .chimeraAltFunc = Chimera::GPIO::Alternate::LPTIM1_ETR },
-      { .registerAltFunc =  AF4_I2C1     , .chimeraAltFunc = Chimera::GPIO::Alternate::I2C1_SCL   },
-      { .registerAltFunc =  AF7_USART1   , .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_TX  },
-      { .registerAltFunc =  AF9_TSC      , .chimeraAltFunc = Chimera::GPIO::Alternate::TSC_G2_IO3 },
-      { .registerAltFunc =  AF13_SAI1    , .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_FS_B  },
-      { .registerAltFunc =  AF14_TIM16   , .chimeraAltFunc = Chimera::GPIO::Alternate::TIM16_CH1N },
-      { .registerAltFunc =  AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT   }
+    static const AlternateFunc port_b6_alt_func[] = {
+      { .registerAltFunc =  AF1_LPTIM1,       .chimeraAltFunc = Chimera::GPIO::Alternate::LPTIM1_ETR },
+      { .registerAltFunc =  AF4_I2C1,         .chimeraAltFunc = Chimera::GPIO::Alternate::I2C1_SCL   },
+      { .registerAltFunc =  AF7_USART1,       .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_TX  },
+      { .registerAltFunc =  AF9_TSC,          .chimeraAltFunc = Chimera::GPIO::Alternate::TSC_G2_IO3 },
+      { .registerAltFunc =  AF13_SAI1,        .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_FS_B  },
+      { .registerAltFunc =  AF14_TIM16,       .chimeraAltFunc = Chimera::GPIO::Alternate::TIM16_CH1N },
+      { .registerAltFunc =  AF15_EVENTOUT,    .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT   }
     };
 
-    static const AlternateFunc port_b7_alt_func[] = { 
-      { .registerAltFunc = AF1_LPTIM1,    .chimeraAltFunc = Chimera::GPIO::Alternate::LPTIM1_IN2  },
-      { .registerAltFunc = AF4_I2C1,      .chimeraAltFunc = Chimera::GPIO::Alternate::I2C1_SDA    },
-      { .registerAltFunc = AF7_USART1,    .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_RX   },
-      { .registerAltFunc = AF9_TSC,       .chimeraAltFunc = Chimera::GPIO::Alternate::TSC_G2_IO4  },
-      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    }
+    static const AlternateFunc port_b7_alt_func[] = {
+      { .registerAltFunc = AF1_LPTIM1,        .chimeraAltFunc = Chimera::GPIO::Alternate::LPTIM1_IN2  },
+      { .registerAltFunc = AF4_I2C1,          .chimeraAltFunc = Chimera::GPIO::Alternate::I2C1_SDA    },
+      { .registerAltFunc = AF7_USART1,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_RX   },
+      { .registerAltFunc = AF9_TSC,           .chimeraAltFunc = Chimera::GPIO::Alternate::TSC_G2_IO4  },
+      { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    }
     };
 
     /*-------------------------------------------------
@@ -464,15 +315,13 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------
     Alternate Function Array
     -------------------------------------------------*/
-    static const AlternateFunc port_c14_alt_func[] = { {
-        .registerAltFunc = AF15_EVENTOUT,
-        .chimeraAltFunc  = Chimera::GPIO::Alternate::EVENTOUT,
-    } };
+    static const AlternateFunc port_c14_alt_func[] = {
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc  = Chimera::GPIO::Alternate::EVENTOUT }
+    };
 
-    static const AlternateFunc port_c15_alt_func[] = { {
-        .registerAltFunc = AF15_EVENTOUT,
-        .chimeraAltFunc  = Chimera::GPIO::Alternate::EVENTOUT,
-    } };
+    static const AlternateFunc port_c15_alt_func[] = {
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc  = Chimera::GPIO::Alternate::EVENTOUT }
+    };
 
     /*-------------------------------------------------
     Pin Attributes Array
@@ -486,24 +335,24 @@ namespace Thor::LLD::GPIO
 
   extern const PortAttributes portAttributes[ NUM_GPIO_PERIPHS ] = {
     // GPIO A
-    { 
+    {
       .portID      = Chimera::GPIO::Port::PORTA,
       .pinListSize = GPIOA_NUM_PINS,
       .pins        = Internal::port_a_pin_attributes
     },
 
     // GPIO B
-    { 
-      .portID      = Chimera::GPIO::Port::PORTB, 
+    {
+      .portID      = Chimera::GPIO::Port::PORTB,
       .pinListSize = GPIOB_NUM_PINS,
       .pins        = Internal::port_b_pin_attributes
     },
 
     // GPIO C
-    { 
-      .portID      = Chimera::GPIO::Port::PORTC, 
-      .pinListSize = GPIOC_NUM_PINS, 
-      .pins        = Internal::port_c_pin_attributes 
+    {
+      .portID      = Chimera::GPIO::Port::PORTC,
+      .pinListSize = GPIOC_NUM_PINS,
+      .pins        = Internal::port_c_pin_attributes
     }
   };
 
