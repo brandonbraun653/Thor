@@ -34,21 +34,37 @@ namespace Thor::LLD::GPIO
   static constexpr size_t DRIVER_MAX_PINS_PER_PORT = 16;
   static constexpr size_t DRIVER_MAX_PINS          = DRIVER_MAX_PORTS * DRIVER_MAX_PINS_PER_PORT;
 
+  static constexpr size_t GPIOA_PIN_RINDEX_OFFSET = 0;
+  static constexpr size_t GPIOB_PIN_RINDEX_OFFSET = GPIOA_PIN_RINDEX_OFFSET + GPIOA_NUM_PINS;
+  static constexpr size_t GPIOC_PIN_RINDEX_OFFSET = GPIOB_PIN_RINDEX_OFFSET + GPIOB_NUM_PINS;
+  static constexpr size_t GPIOD_PIN_RINDEX_OFFSET = GPIOC_PIN_RINDEX_OFFSET + GPIOC_NUM_PINS;
+  static constexpr size_t GPIOE_PIN_RINDEX_OFFSET = GPIOD_PIN_RINDEX_OFFSET + GPIOD_NUM_PINS;
+  static constexpr size_t GPIOF_PIN_RINDEX_OFFSET = GPIOE_PIN_RINDEX_OFFSET + GPIOE_NUM_PINS;
+  static constexpr size_t GPIOG_PIN_RINDEX_OFFSET = GPIOF_PIN_RINDEX_OFFSET + GPIOF_NUM_PINS;
+  static constexpr size_t GPIOH_PIN_RINDEX_OFFSET = GPIOG_PIN_RINDEX_OFFSET + GPIOG_NUM_PINS;
+  static constexpr size_t GPIOI_PIN_RINDEX_OFFSET = GPIOH_PIN_RINDEX_OFFSET + GPIOH_NUM_PINS;
+  static constexpr size_t GPIOJ_PIN_RINDEX_OFFSET = GPIOI_PIN_RINDEX_OFFSET + GPIOI_NUM_PINS;
+  static constexpr size_t GPIOK_PIN_RINDEX_OFFSET = GPIOJ_PIN_RINDEX_OFFSET + GPIOJ_NUM_PINS;
+  static constexpr size_t GPIOL_PIN_RINDEX_OFFSET = GPIOK_PIN_RINDEX_OFFSET + GPIOK_NUM_PINS;
+
+  /*-------------------------------------------------------------------------------
+  Project Defined Constants
+  -------------------------------------------------------------------------------*/
   /*-------------------------------------------------
   These allow the project to describe available GPIOs
   in a highly configurable way.
   -------------------------------------------------*/
-  extern const PortAttributes portAttributes[ NUM_GPIO_PERIPHS ]; /**< Array of PortAttributes, sized as PRJ_MAX_PORT */
+  extern const PortAttributes prjPortAttributes[ NUM_GPIO_PERIPHS ];
 
   /*-------------------------------------------------
-  These are defined at the interface layer, but must
-  remain private. No need to define project side.
+  List of all the port addresses, organized by
+  resource index.
   -------------------------------------------------*/
-  extern const uint8_t portIndex[ DRIVER_MAX_PORTS ];
+  extern const std::uintptr_t prjPortAddress[ NUM_GPIO_PERIPHS ];
 
   /*-------------------------------------------------------------------------------
   Peripheral Instances:
-    Memory mapped structs that allow direct access to the registers of a peripheral
+    Memory mapped structures that allow direct access to peripheral registers
   -------------------------------------------------------------------------------*/
   #if defined( STM32_GPIOA_PERIPH_AVAILABLE )
     extern RegisterMap *GPIOA_PERIPH;
@@ -98,19 +114,6 @@ namespace Thor::LLD::GPIO
     extern LLD_CONST Reg32_t SpeedMap[ static_cast<size_t>( Thor::LLD::GPIO::Speed::NUM_OPTIONS ) ];
     extern LLD_CONST Reg32_t PortToIteratorMap[ static_cast<size_t>( Chimera::GPIO::Port::NUM_OPTIONS ) ];
   }
-
-
-  /*-------------------------------------------------------------------------------
-  Peripheral Resources:
-    These objects define critical resources used in the low level driver. The goal
-    is to minimize memory consumption, so these arrays only hold enough information
-    for the currently configured number of peripherals. They are intended to be
-    accessed directly via the _ResourceIndex_ attribute of the ConfigMap namespace.
-  -------------------------------------------------------------------------------*/
-  namespace Resource
-  {
-  }
-
 }    // namespace Thor::LLD::GPIO
 
 #endif /* !THOR_LLD_GPIO_DATA_HPP */

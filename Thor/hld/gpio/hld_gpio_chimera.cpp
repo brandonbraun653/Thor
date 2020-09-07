@@ -21,6 +21,7 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
 #include <Thor/lld/interface/gpio/gpio_detail.hpp>
+#include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
 
 /*-------------------------------------------------------------------------------
 Aliases
@@ -31,7 +32,7 @@ namespace LLD = ::Thor::LLD::GPIO;
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
-static constexpr size_t NUM_DRIVERS = ::LLD::MAX_NUM_PINS;
+static constexpr size_t NUM_DRIVERS = ::LLD::NUM_GPIO_PINS;
 
 /*-------------------------------------------------------------------------------
 Variables
@@ -59,7 +60,7 @@ namespace Chimera::GPIO::Backend
 
   Chimera::GPIO::Driver_sPtr getDriver( const Port port, const Pin pin )
   {
-    auto idx = ::LLD::getResourceIndex( port, pin );
+    auto idx = ::LLD::getPinResourceIndex( port, pin );
     return s_shared_driver[ idx ];
   }
 

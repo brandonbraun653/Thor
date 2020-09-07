@@ -49,7 +49,7 @@ namespace Thor::LLD::GPIO
   static constexpr RIndex_t GPIOL_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
 
   static constexpr uint8_t GPIOA_NUM_PINS = 16;
-  static constexpr uint8_t GPIOB_NUM_PINS = 8;
+  static constexpr uint8_t GPIOB_NUM_PINS = 7;
   static constexpr uint8_t GPIOC_NUM_PINS = 2;
   static constexpr uint8_t GPIOD_NUM_PINS = 0;
   static constexpr uint8_t GPIOE_NUM_PINS = 0;

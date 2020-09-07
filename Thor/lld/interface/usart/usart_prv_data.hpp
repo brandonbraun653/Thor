@@ -22,6 +22,7 @@
 /* Thor Includes */
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 #include <Thor/lld/interface/usart/usart_detail.hpp>
 
 namespace Thor::LLD::USART

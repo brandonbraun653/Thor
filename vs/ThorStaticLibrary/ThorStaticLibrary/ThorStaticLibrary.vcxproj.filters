@@ -151,135 +151,6 @@
     <Filter Include="lld\interface\watchdog">
       <UniqueIdentifier>{ddd3d425-7654-41dd-ba25-039cc19ebdb8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="lld\stm32f4x">
-      <UniqueIdentifier>{aece04d8-4217-4c68-b98b-023e37e713ef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\common">
-      <UniqueIdentifier>{18a482c2-a66b-466e-9835-8b7fd532b303}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\dma">
-      <UniqueIdentifier>{8e297310-4284-47bd-9b74-24c15489a322}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\dma\test">
-      <UniqueIdentifier>{838bcdb1-b886-4e45-b1b4-58610e1bc93e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\dma\variant">
-      <UniqueIdentifier>{10f08f77-9f1b-44fc-935a-1164aeb74bb1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\flash">
-      <UniqueIdentifier>{a612df6e-6320-442a-8a8a-2b18942f152d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\flash\test">
-      <UniqueIdentifier>{a89b8b7d-37a6-4500-8f4b-4fe05ab29330}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\flash\variant">
-      <UniqueIdentifier>{581623f4-24d0-467f-8fe7-b722dfe74deb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\gpio">
-      <UniqueIdentifier>{3c4dfeea-b6c1-49db-a27f-7224eecd6e04}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\gpio\test">
-      <UniqueIdentifier>{cfedfdb0-bbf6-43d4-8497-859d42d21bb6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\gpio\variant">
-      <UniqueIdentifier>{a41d103e-eed9-4030-bac4-d7eccd8014f4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\interrupt">
-      <UniqueIdentifier>{b9181dab-57f4-4fe3-a4e6-d7e88d6fefea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\interrupt\variant">
-      <UniqueIdentifier>{49891465-f684-420d-aa97-07ecf1dfaaa0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\iwdg">
-      <UniqueIdentifier>{c9f4049d-f0de-4c8b-bb1e-4341ab7d31bc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\iwdg\variant">
-      <UniqueIdentifier>{fe14f6e5-a0ce-4f81-8fa4-27faa19c990e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\nvic">
-      <UniqueIdentifier>{31887560-b56f-46a4-8b6f-8222bcc50ed2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\nvic\test">
-      <UniqueIdentifier>{e1ba97b1-6516-4e6e-a9b2-9c2c2a3343ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\nvic\variant">
-      <UniqueIdentifier>{8ae03ced-c256-441d-83d2-18d1233762ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\power">
-      <UniqueIdentifier>{1cfb7317-6164-4635-bfd0-7adda15e6e5f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\power\test">
-      <UniqueIdentifier>{d12f4784-a362-4bcf-beea-e8e67d626f05}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\power\variant">
-      <UniqueIdentifier>{66752c21-a907-4a6c-ae63-052807f59b76}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\rcc">
-      <UniqueIdentifier>{e69942bb-b77c-4dd5-b2bd-1bae02ff4d79}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\rcc\config">
-      <UniqueIdentifier>{105fc7f5-5c67-452b-b5ff-591afa4a3f3d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\rcc\test">
-      <UniqueIdentifier>{98422eb1-d073-4e91-93d8-6df226cfe536}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\rcc\variant">
-      <UniqueIdentifier>{fd8887f5-e289-4773-b27f-2b83fdda8d53}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\spi">
-      <UniqueIdentifier>{2b741c1d-5021-4844-9245-d59cbf6350af}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\spi\test">
-      <UniqueIdentifier>{cfda359a-97ec-444c-ac16-f08d3f2d0920}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\spi\variant">
-      <UniqueIdentifier>{814f5277-7019-4b34-b757-c634e5ba5403}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\startup">
-      <UniqueIdentifier>{6d95abb7-4540-47a1-9358-72e78f781d1b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\system">
-      <UniqueIdentifier>{4c18fa9f-6aa0-4087-9636-4ccf4e8fc1fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\system\variant">
-      <UniqueIdentifier>{2d650f5f-f369-4364-a71d-a4be182f5ee1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\timer">
-      <UniqueIdentifier>{a5f09e3d-9996-4cad-b422-22e6df9a19fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\timer\test">
-      <UniqueIdentifier>{2a4a6056-86a6-4ad9-a8fe-bc95df65b415}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\timer\variant">
-      <UniqueIdentifier>{190f9df4-f68d-460f-928f-87ef4b2ecf74}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\uart">
-      <UniqueIdentifier>{71d2d627-2a20-430f-9d76-706c6f4592fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\uart\test">
-      <UniqueIdentifier>{5fccdb14-ff6c-4c8b-afcf-e1db26481af4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\uart\variant">
-      <UniqueIdentifier>{8c2990b1-64b2-47e7-bc38-280b20c340d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\usart">
-      <UniqueIdentifier>{35a58d71-84a2-4d96-a8ea-df32a8cf04b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\usart\test">
-      <UniqueIdentifier>{bb60c346-9ab5-4d4e-9b25-8febcaf028a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\usart\variant">
-      <UniqueIdentifier>{e3673670-ba9a-4b49-a0d3-9274a85870c1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\wwdg">
-      <UniqueIdentifier>{acecfb6e-8696-4d23-a0f9-55f05a1f563f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\wwdg\test">
-      <UniqueIdentifier>{ee2d5931-5329-47e6-9fe1-c792418b45d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lld\stm32f4x\wwdg\variant">
-      <UniqueIdentifier>{1e487ace-187d-45c6-9dd8-289372a7af8c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="config\hardware">
       <UniqueIdentifier>{8f467ed2-0128-4a72-907e-c0d9d3a9d60c}</UniqueIdentifier>
     </Filter>
@@ -412,14 +283,32 @@
     <Filter Include="lld\stm32l4x\usart\variant">
       <UniqueIdentifier>{9eafbe46-3f1b-4b24-b36c-bdb5b24083fb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Device-specific files">
-      <UniqueIdentifier>{e92c257c-8361-406b-9918-29f56eb884ea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="lld\interface\watchdog\mock">
       <UniqueIdentifier>{e4219c80-dd7b-40c4-bbed-74f195b89dd3}</UniqueIdentifier>
     </Filter>
     <Filter Include="config\etl">
       <UniqueIdentifier>{b2629b0b-0e7c-480e-a3e8-4313d95c9597}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\gpio\test">
+      <UniqueIdentifier>{ed95e916-92fd-4747-9744-606c908b88ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\timer\sim">
+      <UniqueIdentifier>{a265b69e-cfaf-454a-88a0-10e675996bd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\gpio\sim">
+      <UniqueIdentifier>{69a9a00e-0b2b-409d-b7ea-092dcd7858ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\system">
+      <UniqueIdentifier>{ab6bd6c8-cf3f-432f-a886-85af8b9884fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\system\sim">
+      <UniqueIdentifier>{6750ac78-ec47-4aa1-9b56-4626d65ecea5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\interrupt\sim">
+      <UniqueIdentifier>{058c16c3-dc41-497e-8853-8672ffa8e805}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lld\interface\common">
+      <UniqueIdentifier>{89e434f4-a58e-4caf-aaa2-dfed0ea7e216}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -704,333 +593,6 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_types.hpp">
       <Filter>lld\interface\spi</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\common\definitions.hpp">
-      <Filter>lld\stm32f4x\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\common\types.hpp">
-      <Filter>lld\stm32f4x\common</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_driver_stm32f4.cpp">
-      <Filter>lld\stm32f4x\dma</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_mapping.cpp">
-      <Filter>lld\stm32f4x\dma</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_driver.hpp">
-      <Filter>lld\stm32f4x\dma</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_mapping.hpp">
-      <Filter>lld\stm32f4x\dma</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_prj.hpp">
-      <Filter>lld\stm32f4x\dma</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\hw_dma_types.hpp">
-      <Filter>lld\stm32f4x\dma</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\test\test_lld_dma_driver.cpp">
-      <Filter>lld\stm32f4x\dma\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\variant\hw_dma_register_stm32f446xx.cpp">
-      <Filter>lld\stm32f4x\dma\variant</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\dma\variant\hw_dma_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\dma\variant</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_driver_stm32f4.cpp">
-      <Filter>lld\stm32f4x\flash</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_mapping.cpp">
-      <Filter>lld\stm32f4x\flash</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_driver.hpp">
-      <Filter>lld\stm32f4x\flash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_mapping.hpp">
-      <Filter>lld\stm32f4x\flash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_prj.hpp">
-      <Filter>lld\stm32f4x\flash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\hw_flash_types.hpp">
-      <Filter>lld\stm32f4x\flash</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\test\test_lld_flash_driver.cpp">
-      <Filter>lld\stm32f4x\flash\test</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\flash\variant\hw_flash_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\flash\variant</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_driver_stm32f4.cpp">
-      <Filter>lld\stm32f4x\gpio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_mapping.cpp">
-      <Filter>lld\stm32f4x\gpio</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_driver.hpp">
-      <Filter>lld\stm32f4x\gpio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_mapping.hpp">
-      <Filter>lld\stm32f4x\gpio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_prj.hpp">
-      <Filter>lld\stm32f4x\gpio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\hw_gpio_types.hpp">
-      <Filter>lld\stm32f4x\gpio</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\test\test_lld_gpio_driver.cpp">
-      <Filter>lld\stm32f4x\gpio\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\variant\hw_gpio_register_stm32f446xx.cpp">
-      <Filter>lld\stm32f4x\gpio\variant</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\gpio\variant\hw_gpio_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\gpio\variant</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\interrupt\hw_it_prj.hpp">
-      <Filter>lld\stm32f4x\interrupt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\interrupt\variant\hw_it_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\interrupt\variant</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_driver_stm32f4.cpp">
-      <Filter>lld\stm32f4x\iwdg</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_mapping.cpp">
-      <Filter>lld\stm32f4x\iwdg</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_driver.hpp">
-      <Filter>lld\stm32f4x\iwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_mapping.hpp">
-      <Filter>lld\stm32f4x\iwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_prj.hpp">
-      <Filter>lld\stm32f4x\iwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\hw_iwdg_types.hpp">
-      <Filter>lld\stm32f4x\iwdg</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\iwdg\variant\hw_iwdg_register_stm32f446xx.cpp">
-      <Filter>lld\stm32f4x\iwdg\variant</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\iwdg\variant\hw_iwdg_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\iwdg\variant</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_driver_stm32f4.cpp">
-      <Filter>lld\stm32f4x\nvic</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_driver.hpp">
-      <Filter>lld\stm32f4x\nvic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_prj.hpp">
-      <Filter>lld\stm32f4x\nvic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\hw_nvic_types.hpp">
-      <Filter>lld\stm32f4x\nvic</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\test\test_lld_nvic_driver.cpp">
-      <Filter>lld\stm32f4x\nvic\test</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\nvic\variant\hw_nvic_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\nvic\variant</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_driver_stm32f4.cpp">
-      <Filter>lld\stm32f4x\power</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_mapping.cpp">
-      <Filter>lld\stm32f4x\power</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_driver.hpp">
-      <Filter>lld\stm32f4x\power</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_mapping.hpp">
-      <Filter>lld\stm32f4x\power</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_prj.hpp">
-      <Filter>lld\stm32f4x\power</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\hw_power_types.hpp">
-      <Filter>lld\stm32f4x\power</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\test\test_lld_power_driver.cpp">
-      <Filter>lld\stm32f4x\power\test</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\power\variant\hw_power_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\power\variant</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_driver_stm32f4.cpp">
-      <Filter>lld\stm32f4x\rcc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_mapping.cpp">
-      <Filter>lld\stm32f4x\rcc</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_driver.hpp">
-      <Filter>lld\stm32f4x\rcc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_driver_prv.hpp">
-      <Filter>lld\stm32f4x\rcc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_mapping.hpp">
-      <Filter>lld\stm32f4x\rcc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_prj.hpp">
-      <Filter>lld\stm32f4x\rcc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\hw_rcc_types.hpp">
-      <Filter>lld\stm32f4x\rcc</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\config\hw_rcc_config_stm32f446xx.cpp">
-      <Filter>lld\stm32f4x\rcc\config</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\config\hw_rcc_config_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\rcc\config</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\test\test_lld_rcc_driver.cpp">
-      <Filter>lld\stm32f4x\rcc\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\variant\hw_rcc_register_stm32f446xx.cpp">
-      <Filter>lld\stm32f4x\rcc\variant</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\rcc\variant\hw_rcc_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\rcc\variant</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_driver_stm32f4.cpp">
-      <Filter>lld\stm32f4x\spi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_mapping.cpp">
-      <Filter>lld\stm32f4x\spi</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_driver.hpp">
-      <Filter>lld\stm32f4x\spi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_mapping.hpp">
-      <Filter>lld\stm32f4x\spi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_prj.hpp">
-      <Filter>lld\stm32f4x\spi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\hw_spi_types.hpp">
-      <Filter>lld\stm32f4x\spi</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\test\test_lld_spi_driver.cpp">
-      <Filter>lld\stm32f4x\spi\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\variant\hw_spi_register_stm32f446xx.cpp">
-      <Filter>lld\stm32f4x\spi\variant</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\spi\variant\hw_spi_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\spi\variant</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\startup\startup_common_init.cpp">
-      <Filter>lld\stm32f4x\startup</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\startup\startup_stm32f446xx.c">
-      <Filter>lld\stm32f4x\startup</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\startup\startup_stm32f4xxxx.hpp">
-      <Filter>lld\stm32f4x\startup</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\system\sys_common_exit.cpp">
-      <Filter>lld\stm32f4x\system</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\system\sys_common_init.cpp">
-      <Filter>lld\stm32f4x\system</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\system\sys_memory_map_prj.hpp">
-      <Filter>lld\stm32f4x\system</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\system\variant\sys_memory_map_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\system\variant</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_lld_timer_driver.cpp">
-      <Filter>lld\stm32f4x\timer\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\variant\hw_timer_register_stm32f446xx.cpp">
-      <Filter>lld\stm32f4x\timer\variant</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_driver.cpp">
-      <Filter>lld\stm32f4x\uart</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_mapping.cpp">
-      <Filter>lld\stm32f4x\uart</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_driver.hpp">
-      <Filter>lld\stm32f4x\uart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_mapping.hpp">
-      <Filter>lld\stm32f4x\uart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_prj.hpp">
-      <Filter>lld\stm32f4x\uart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\hw_uart_types.hpp">
-      <Filter>lld\stm32f4x\uart</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\test\test_lld_uart_driver.cpp">
-      <Filter>lld\stm32f4x\uart\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\variant\hw_uart_register_stm32f446xx.cpp">
-      <Filter>lld\stm32f4x\uart\variant</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\uart\variant\hw_uart_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\uart\variant</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_driver_stm32f4.cpp">
-      <Filter>lld\stm32f4x\usart</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_mapping.cpp">
-      <Filter>lld\stm32f4x\usart</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_driver.hpp">
-      <Filter>lld\stm32f4x\usart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_mapping.hpp">
-      <Filter>lld\stm32f4x\usart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_prj.hpp">
-      <Filter>lld\stm32f4x\usart</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\hw_usart_types.hpp">
-      <Filter>lld\stm32f4x\usart</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\test\test_lld_usart_driver.cpp">
-      <Filter>lld\stm32f4x\usart\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\variant\hw_usart_register_stm32f446xx.cpp">
-      <Filter>lld\stm32f4x\usart\variant</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\usart\variant\hw_usart_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\usart\variant</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_driver_stm32f4.cpp">
-      <Filter>lld\stm32f4x\wwdg</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_mapping.cpp">
-      <Filter>lld\stm32f4x\wwdg</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_driver.hpp">
-      <Filter>lld\stm32f4x\wwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_mapping.hpp">
-      <Filter>lld\stm32f4x\wwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_prj.hpp">
-      <Filter>lld\stm32f4x\wwdg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\hw_wwdg_types.hpp">
-      <Filter>lld\stm32f4x\wwdg</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\test\test_lld_wwdg_driver.cpp">
-      <Filter>lld\stm32f4x\wwdg\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\variant\hw_wwdg_register_stm32f446xx.cpp">
-      <Filter>lld\stm32f4x\wwdg\variant</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\wwdg\variant\hw_wwdg_register_stm32f446xx.hpp">
-      <Filter>lld\stm32f4x\wwdg\variant</Filter>
-    </ClInclude>
     <None Include="..\..\..\Thor\watchdog" />
     <None Include="..\..\..\Thor\lld\interface\spi\mock\build.jam">
       <Filter>lld\interface\spi\mock</Filter>
@@ -1066,9 +628,6 @@
     <None Include="..\..\..\Thor\lld\stm32l4x\build.jam">
       <Filter>lld\stm32l4x</Filter>
     </None>
-    <None Include="..\..\..\Thor\lld\stm32f4x\build.jam">
-      <Filter>lld\stm32f4x</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Thor\config\config.hpp">
@@ -1095,9 +654,6 @@
     <ClInclude Include="..\..\..\Thor\hld\timer\hld_timer_driver.hpp">
       <Filter>hld\timer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\timer\hw_timer_driver.hpp">
-      <Filter>lld\stm32f4x\timer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\hld\watchdog\hld_watchdog_chimera.hpp">
       <Filter>hld\watchdog</Filter>
     </ClInclude>
@@ -1106,9 +662,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\hld\version.hpp">
       <Filter>hld</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32f4x\version.hpp">
-      <Filter>lld\stm32f4x</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\rcc\mock\rcc_mock.hpp">
       <Filter>lld\interface\rcc\mock</Filter>
@@ -1410,6 +963,24 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.hpp">
       <Filter>lld\stm32l4x\gpio\variant</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\timer\sim\timer_sim_variant.hpp">
+      <Filter>lld\interface\timer\sim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\sim\gpio_sim_variant.hpp">
+      <Filter>lld\interface\gpio\sim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\system\sim\system_sim_memory_map.hpp">
+      <Filter>lld\interface\system\sim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\interrupt\sim\interrupt_sim_variant.hpp">
+      <Filter>lld\interface\interrupt\sim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\common\peripheral_interface.hpp">
+      <Filter>lld\interface\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\gpio\sim\gpio_sim_types.hpp">
+      <Filter>lld\interface\gpio\sim</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">
@@ -1436,44 +1007,8 @@
     <ClCompile Include="..\..\..\Thor\hld\usart\test\test_entry_usart.cpp">
       <Filter>hld\usart\test</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\dma\test\test_entry_lld_dma.cpp">
-      <Filter>lld\stm32f4x\dma\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\flash\test\test_entry_lld_flash.cpp">
-      <Filter>lld\stm32f4x\flash\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\gpio\test\test_entry_lld_gpio.cpp">
-      <Filter>lld\stm32f4x\gpio\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\nvic\test\test_entry_lld_nvic.cpp">
-      <Filter>lld\stm32f4x\nvic\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\power\test\test_entry_lld_power.cpp">
-      <Filter>lld\stm32f4x\power\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\rcc\test\test_entry_lld_rcc.cpp">
-      <Filter>lld\stm32f4x\rcc\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\spi\test\test_entry_lld_spi.cpp">
-      <Filter>lld\stm32f4x\spi\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\test\test_entry_lld_timer.cpp">
-      <Filter>lld\stm32f4x\timer\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\uart\test\test_entry_lld_uart.cpp">
-      <Filter>lld\stm32f4x\uart\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\usart\test\test_entry_lld_usart.cpp">
-      <Filter>lld\stm32f4x\usart\test</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\wwdg\test\test_entry_lld_wwdg.cpp">
-      <Filter>lld\stm32f4x\wwdg\test</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Thor\hld\timer\hld_timer_driver.cpp">
       <Filter>hld\timer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32f4x\timer\hw_timer_driver.cpp">
-      <Filter>lld\stm32f4x\timer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\hld\watchdog\hld_watchdog_chimera.cpp">
       <Filter>hld\watchdog</Filter>
@@ -1681,6 +1216,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\interface\gpio\gpio_intf.cpp">
       <Filter>lld\interface\gpio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\gpio\sim\gpio_sim_variant.cpp">
+      <Filter>lld\interface\gpio\sim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\gpio\sim\gpio_sim_driver.cpp">
+      <Filter>lld\interface\gpio\sim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\common\peripheral_interface.cpp">
+      <Filter>lld\interface\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\gpio\sim\gpio_sim_data.cpp">
+      <Filter>lld\interface\gpio\sim</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

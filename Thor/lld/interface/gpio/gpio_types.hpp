@@ -30,7 +30,7 @@ namespace Thor::LLD::GPIO
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
-  using Driver_rPtr  = Driver *;
+  using Driver_rPtr = Driver *;
 
   /*-------------------------------------------------------------------------------
   Enumerations
@@ -69,9 +69,9 @@ namespace Thor::LLD::GPIO
    */
   struct PinAttributes
   {
-    Chimera::GPIO::Pin pinID; /**< ID of the pin this struct is describing */
-    uint8_t afListSize;       /**< How many elements are in the AF list */
-    const AlternateFunc *altFunc;  /**< List of alternate functions associated with the pin */
+    Chimera::GPIO::Pin pinID;     /**< ID of the pin this struct is describing */
+    uint8_t afListSize;           /**< How many elements are in the AF list */
+    const AlternateFunc *altFunc; /**< List of alternate functions associated with the pin */
   };
 
   /**
@@ -81,7 +81,7 @@ namespace Thor::LLD::GPIO
   {
     Chimera::GPIO::Port portID; /**< ID of the port this struct is describing */
     uint8_t pinListSize;        /**< How many elements are in the pin list */
-    const PinAttributes *pins;       /**< List of pin attributes associated with the port */
+    const PinAttributes *pins;  /**< List of pin attributes associated with the port */
   };
 
 }    // namespace Thor::LLD::GPIO

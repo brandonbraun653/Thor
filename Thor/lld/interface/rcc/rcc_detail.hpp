@@ -99,7 +99,7 @@ namespace Thor::LLD::RCC
    *  @param[in]  mask    The desired PLL output clock to set
    *  @return bool
    */
-  bool updatePLL( const uint32_t mask, OscillatorSettings &config );
+  //bool updatePLL( const uint32_t mask, OscillatorSettings &config );
 
   /**
    *  Get's the CPU core system clock frequency in Hz

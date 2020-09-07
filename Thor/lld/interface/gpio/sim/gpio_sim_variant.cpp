@@ -17,13 +17,10 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_driver.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
+#include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
+#include <Thor/lld/interface/gpio/sim/gpio_sim_variant.hpp>
 
-
-#if defined( STM32L432xx ) && defined( THOR_LLD_GPIO )
+#if defined( _SIM ) && defined( THOR_LLD_GPIO )
 
 namespace Thor::LLD::GPIO
 {
@@ -363,9 +360,9 @@ namespace Thor::LLD::GPIO
 
 
   extern const std::uintptr_t prjPortAddress[ NUM_GPIO_PERIPHS ] = {
-    static_cast<std::uintptr_t>( GPIOA_PERIPH ),
-    static_cast<std::uintptr_t>( GPIOB_PERIPH ),
-    static_cast<std::uintptr_t>( GPIOC_PERIPH )
+    reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ),
+    reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ),
+    reinterpret_cast<std::uintptr_t>( GPIOC_PERIPH )
   };
 
   void initializeRegisters()
@@ -379,51 +376,51 @@ namespace Thor::LLD::RCC::LookupTables
   Lookup tables for register access on a peripheral by peripheral basis.
   Indexing must match the lookup table hw_gpio_mapping.hpp
   ------------------------------------------------*/
-  RegisterConfig GPIO_ClockConfig[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
-  RegisterConfig GPIO_ResetConfig[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
-  Chimera::Clock::Bus GPIO_SourceClock[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
+  //RegisterConfig GPIO_ClockConfig[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
+  //RegisterConfig GPIO_ResetConfig[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
+  //Chimera::Clock::Bus GPIO_SourceClock[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
 
-  PCC GPIOLookup = { GPIO_ClockConfig,
-                     nullptr,
-                     GPIO_ResetConfig,
-                     GPIO_SourceClock,
-                     Thor::LLD::GPIO::NUM_GPIO_PERIPHS,
-                     Thor::LLD::GPIO::getResourceIndex };
+  //PCC GPIOLookup = { GPIO_ClockConfig,
+  //                   nullptr,
+  //                   GPIO_ResetConfig,
+  //                   GPIO_SourceClock,
+  //                   Thor::LLD::GPIO::NUM_GPIO_PERIPHS,
+  //                   Thor::LLD::GPIO::getResourceIndex };
 
   void GPIOInit()
   {
     using namespace Thor::LLD::GPIO;
 
-    /*------------------------------------------------
-    GPIO clock enable register access lookup table
-    ------------------------------------------------*/
-    GPIO_ClockConfig[ GPIOA_RESOURCE_INDEX ].mask = AHB2ENR_GPIOAEN;
-    GPIO_ClockConfig[ GPIOA_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2ENR;
+    ///*------------------------------------------------
+    //GPIO clock enable register access lookup table
+    //------------------------------------------------*/
+    //GPIO_ClockConfig[ GPIOA_RESOURCE_INDEX ].mask = AHB2ENR_GPIOAEN;
+    //GPIO_ClockConfig[ GPIOA_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2ENR;
 
-    GPIO_ClockConfig[ GPIOB_RESOURCE_INDEX ].mask = AHB2ENR_GPIOBEN;
-    GPIO_ClockConfig[ GPIOB_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2ENR;
+    //GPIO_ClockConfig[ GPIOB_RESOURCE_INDEX ].mask = AHB2ENR_GPIOBEN;
+    //GPIO_ClockConfig[ GPIOB_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2ENR;
 
-    GPIO_ClockConfig[ GPIOC_RESOURCE_INDEX ].mask = AHB2ENR_GPIOCEN;
-    GPIO_ClockConfig[ GPIOC_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2ENR;
+    //GPIO_ClockConfig[ GPIOC_RESOURCE_INDEX ].mask = AHB2ENR_GPIOCEN;
+    //GPIO_ClockConfig[ GPIOC_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2ENR;
 
-    /*------------------------------------------------
-    GPIO reset register access lookup table
-    ------------------------------------------------*/
-    GPIO_ResetConfig[ GPIOA_RESOURCE_INDEX ].mask = AHB2RSTR_GPIOARST;
-    GPIO_ResetConfig[ GPIOA_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2RSTR;
+    ///*------------------------------------------------
+    //GPIO reset register access lookup table
+    //------------------------------------------------*/
+    //GPIO_ResetConfig[ GPIOA_RESOURCE_INDEX ].mask = AHB2RSTR_GPIOARST;
+    //GPIO_ResetConfig[ GPIOA_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2RSTR;
 
-    GPIO_ResetConfig[ GPIOB_RESOURCE_INDEX ].mask = AHB2RSTR_GPIOBRST;
-    GPIO_ResetConfig[ GPIOB_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2RSTR;
+    //GPIO_ResetConfig[ GPIOB_RESOURCE_INDEX ].mask = AHB2RSTR_GPIOBRST;
+    //GPIO_ResetConfig[ GPIOB_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2RSTR;
 
-    GPIO_ResetConfig[ GPIOC_RESOURCE_INDEX ].mask = AHB2RSTR_GPIOCRST;
-    GPIO_ResetConfig[ GPIOC_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2RSTR;
+    //GPIO_ResetConfig[ GPIOC_RESOURCE_INDEX ].mask = AHB2RSTR_GPIOCRST;
+    //GPIO_ResetConfig[ GPIOC_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2RSTR;
 
-    /*------------------------------------------------
-    GPIO clocking bus source identifier
-    ------------------------------------------------*/
-    GPIO_SourceClock[ GPIOA_RESOURCE_INDEX ] = Chimera::Clock::Bus::PCLK2;
-    GPIO_SourceClock[ GPIOB_RESOURCE_INDEX ] = Chimera::Clock::Bus::PCLK2;
-    GPIO_SourceClock[ GPIOC_RESOURCE_INDEX ] = Chimera::Clock::Bus::PCLK2;
+    ///*------------------------------------------------
+    //GPIO clocking bus source identifier
+    //------------------------------------------------*/
+    //GPIO_SourceClock[ GPIOA_RESOURCE_INDEX ] = Chimera::Clock::Bus::PCLK2;
+    //GPIO_SourceClock[ GPIOB_RESOURCE_INDEX ] = Chimera::Clock::Bus::PCLK2;
+    //GPIO_SourceClock[ GPIOC_RESOURCE_INDEX ] = Chimera::Clock::Bus::PCLK2;
   };
 
 }    // namespace Thor::LLD::RCC::LookupTables

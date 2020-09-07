@@ -16,6 +16,8 @@
 #if defined( TARGET_LLD_MOCK )
 #include <Thor/lld/interface/timer/mock/timer_mock.hpp>
 #include <Thor/lld/interface/timer/mock/timer_mock_variant.hpp>
+#elif defined( TARGET_LLD_TEST )
+#include <Thor/lld/interface/timer/sim/timer_sim_variant.hpp>
 #elif defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/timer/hw_timer_driver.hpp>
 #elif defined( TARGET_STM32L4 )

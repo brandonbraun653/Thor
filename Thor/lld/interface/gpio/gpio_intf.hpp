@@ -53,18 +53,8 @@ namespace Thor::LLD::GPIO
    */
   Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 
-  /**
-   *  Looks up a resource index based on a raw peripheral instance. If not
-   *  supported, will return INVALID_RESOURCE_INDEX
-   *
-   *  @param[in]  address       The peripheral address
-   *  @return RIndex_t
-   */
-  RIndex_t getResourceIndex( const std::uintptr_t address );
-
-
   /*-------------------------------------------------------------------------------
-  Private Functions (Implemented at the interface layer)
+  Public Functions (Implemented at the interface layer)
   -------------------------------------------------------------------------------*/
   /**
    *  Checks if the given hardware channel is supported on this device.
@@ -76,14 +66,44 @@ namespace Thor::LLD::GPIO
   bool isSupported( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 
   /**
-   *  Get's the resource index associated with a particular channel. If not
-   *  supported, will return INVALID_RESOURCE_INDEX
+   *  Gets the resource index associated with a particular port/pin combination.
+   *  If not supported, will return INVALID_RESOURCE_INDEX.
+   * 
+   *  This computes a special resource index that is associated with the driver
+   *  for each pin.
    *
    *  @param[in]  port        The GPIO port to grab
    *  @param[in]  pin         Which pin on the given port, ranged from [0, DRIVER_MAX_PINS_PER_PORT]
    *  @return RIndex_t
    */
-  RIndex_t getResourceIndex( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
+  RIndex_t getPinResourceIndex( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
+
+  /**
+   *  Looks up an index value that can be used to access distributed resources
+   *  associated with a peripheral instance. If the address is invalid, this will
+   *  return INVALID_RESOURCE_INDEX.
+   *
+   *  @param[in]  address       Memory address the peripheral is mapped to
+   *  @return RIndex_t
+   */
+  RIndex_t getResourceIndex( const std::uintptr_t address );
+
+  /**
+   *  Gets attributes associated with a particular pin
+   *
+   *  @param[in]  port    Port to get the attributes for
+   *  @param[in]  pin     Pin to get the attributes for
+   *  @return PinAttributes*
+   */
+  const PinAttributes *getPinAttributes( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
+
+  /**
+   *  Gets the pin attributes list for all pins associated with a port
+   *
+   *  @param[in]  port    Port to get the attributes for
+   *  @return PortAttributes*
+   */
+  const PortAttributes* getPortAttributes( const Chimera::GPIO::Port port );
 
   /**
    *  Initializes the GPIO drivers by attaching the appropriate peripheral
@@ -111,6 +131,10 @@ namespace Thor::LLD::GPIO
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
+  /*-------------------------------------------------
+  Virtual class that defines the expected interface.
+  Useful for mocking purposes.
+  -------------------------------------------------*/
   class IDriver
   {
   public:
@@ -260,6 +284,40 @@ namespace Thor::LLD::GPIO
      *  @return Chimera::GPIO::Alternate
      */
     virtual Chimera::GPIO::Alternate alternateFunctionGet( const uint8_t pin ) = 0;
+  };
+
+
+  /*-------------------------------------------------
+  Concrete driver declaration. Implements the interface
+  of the virtual class, but doesn't inherit due to the
+  memory penalties. Definition is done project side.
+  -------------------------------------------------*/
+  class Driver
+  {
+  public:
+    Driver();
+    ~Driver();
+
+    void attach( RegisterMap *const peripheral );
+    void clockEnable();
+    void clockDisable();
+    Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive );
+    Chimera::Status_t speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed );
+    Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull );
+    Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state );
+    Chimera::Status_t alternateFunctionSet( const uint8_t pin, const Chimera::GPIO::Alternate val );
+    Chimera::GPIO::State read( const uint8_t pin );
+    Chimera::GPIO::Drive driveGet( const uint8_t pin );
+    Thor::LLD::GPIO::Speed speedGet( const uint8_t pin );
+    Chimera::GPIO::Pull pullGet( const uint8_t pin );
+    Chimera::GPIO::Alternate alternateFunctionGet( const uint8_t pin );
+
+  private:
+    friend bool attachDriverInstances( Driver *const, const size_t );
+
+    RegisterMap *mPeriph;
+    Chimera::GPIO::Port mPort;
+    Chimera::GPIO::Pin mPin;
   };
 }    // namespace Thor::LLD::GPIO
 
