@@ -744,9 +744,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\des\variant\hw_des_register_stm32l432xx.hpp">
       <Filter>lld\stm32l4x\des\variant</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver.hpp">
-      <Filter>lld\stm32l4x\gpio</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_prj.hpp">
       <Filter>lld\stm32l4x\gpio</Filter>
     </ClInclude>

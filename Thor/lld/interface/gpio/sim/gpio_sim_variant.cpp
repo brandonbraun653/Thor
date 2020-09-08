@@ -20,7 +20,7 @@
 #include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
 #include <Thor/lld/interface/gpio/sim/gpio_sim_variant.hpp>
 
-#if defined( _SIM ) && defined( THOR_LLD_GPIO )
+#if defined( TARGET_LLD_TEST ) && defined( THOR_LLD_GPIO )
 
 namespace Thor::LLD::GPIO
 {

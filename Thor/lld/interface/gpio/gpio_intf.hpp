@@ -68,7 +68,7 @@ namespace Thor::LLD::GPIO
   /**
    *  Gets the resource index associated with a particular port/pin combination.
    *  If not supported, will return INVALID_RESOURCE_INDEX.
-   * 
+   *
    *  This computes a special resource index that is associated with the driver
    *  for each pin.
    *
@@ -87,6 +87,14 @@ namespace Thor::LLD::GPIO
    *  @return RIndex_t
    */
   RIndex_t getResourceIndex( const std::uintptr_t address );
+
+  /**
+   *  Gets the GPIO port associated with a peripheral address
+   *
+   *  @param[in]  address       Memory address the peripheral is mapped to
+   *  @return Chimera::GPIO::Port
+   */
+  Chimera::GPIO::Port getPort( const std::uintptr_t address );
 
   /**
    *  Gets attributes associated with a particular pin
@@ -316,8 +324,6 @@ namespace Thor::LLD::GPIO
     friend bool attachDriverInstances( Driver *const, const size_t );
 
     RegisterMap *mPeriph;
-    Chimera::GPIO::Port mPort;
-    Chimera::GPIO::Pin mPin;
   };
 }    // namespace Thor::LLD::GPIO
 

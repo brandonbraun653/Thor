@@ -1284,7 +1284,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\hw_flash_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\variant\hw_flash_register_stm32l432kc.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\hw_gpio_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.hpp" />

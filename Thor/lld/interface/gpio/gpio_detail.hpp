@@ -24,7 +24,6 @@
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32f4x/gpio/hw_gpio_types.hpp>
 #elif defined( TARGET_STM32L4 )
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_driver.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
 #else

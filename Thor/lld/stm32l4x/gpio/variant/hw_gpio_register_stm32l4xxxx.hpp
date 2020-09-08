@@ -15,6 +15,9 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Chimera Includes */
+#include <Chimera/common>
+
 /* Driver Includes */
 #include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432kc.hpp>
 

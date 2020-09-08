@@ -15,6 +15,11 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Thor Includes */
+#include <Thor/cfg>
+
+#if defined( TARGET_LLD_TEST ) && defined( THOR_LLD_GPIO )
+
 namespace Thor::System::MemoryMap
 {
   /*-------------------------------------------------
@@ -209,4 +214,5 @@ namespace Thor::System::MemoryMap
 
 }    // namespace Thor::System::MemoryMap
 
+#endif  
 #endif  /* !THOR_LLD_SIM_SYSTEM_MEMORY_MAP_HPP */

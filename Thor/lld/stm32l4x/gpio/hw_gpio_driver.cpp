@@ -14,7 +14,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_driver.hpp>
+#include <Thor/lld/interface/gpio/gpio_intf.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
@@ -55,7 +55,7 @@ namespace Thor::LLD::GPIO
 
   Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
   {
-    if ( auto idx = getResourceIndex( port, pin ); idx != INVALID_RESOURCE_INDEX )
+    if ( auto idx = getPinResourceIndex( port, pin ); idx != INVALID_RESOURCE_INDEX )
     {
       return &s_gpio_drivers[ idx ];
     }
@@ -65,18 +65,11 @@ namespace Thor::LLD::GPIO
     }
   }
 
-  RIndex_t getResourceIndex( const std::uintptr_t address )
-  {
-    #pragma message("oh no the gpio won't work")
-    return INVALID_RESOURCE_INDEX;
-  }
-
 
   /*-----------------------------------------------------
   Low Level Driver Implementation
   -----------------------------------------------------*/
-  Driver::Driver() :
-      mPeriph( nullptr ), mPort( Chimera::GPIO::Port::UNKNOWN_PORT ), mPin( std::numeric_limits<decltype( mPin )>::max() )
+  Driver::Driver() : mPeriph( nullptr )
   {
   }
 
@@ -93,7 +86,7 @@ namespace Thor::LLD::GPIO
   void Driver::clockEnable()
   {
     auto rcc   = Thor::LLD::RCC::getPeripheralClock();
-    auto index = getResourceIndex( mPort, mPin );
+    auto index = getResourceIndex( reinterpret_cast<std::uintptr_t>( mPeriph ) );
 
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
   }
@@ -101,7 +94,7 @@ namespace Thor::LLD::GPIO
   void Driver::clockDisable()
   {
     auto rcc   = Thor::LLD::RCC::getPeripheralClock();
-    auto index = getResourceIndex( mPort, mPin );
+    auto index = getResourceIndex( reinterpret_cast<std::uintptr_t>( mPeriph ) );
 
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
   }
@@ -188,10 +181,11 @@ namespace Thor::LLD::GPIO
     /*------------------------------------------------
     Initialize some working variables
     ------------------------------------------------*/
+    const auto port       = getPort( reinterpret_cast<std::uintptr_t>( mPeriph ) );
     uint64_t temp         = 0u;
     const uint64_t offset = pin * AFR_CFG_X_WID;
     const uint64_t mask   = AFR_CFG_X_MSK;
-    const uint64_t AFcfg  = static_cast<uint64_t>( findAlternateFunction( mPort, pin, val ) );
+    const uint64_t AFcfg  = static_cast<uint64_t>( findAlternateFunction( port, pin, val ) );
 
     /*------------------------------------------------
     64-bit wide read-modify-write sequence to AFRL & AFRH

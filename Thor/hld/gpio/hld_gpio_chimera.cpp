@@ -48,6 +48,11 @@ namespace Chimera::GPIO::Backend
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
+    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
+    {
+      s_shared_driver[ x ] = Chimera::GPIO::Driver_sPtr( &s_raw_driver[ x ] );
+    }
+
     return Thor::GPIO::initialize();
   }
 

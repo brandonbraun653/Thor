@@ -38,7 +38,7 @@ namespace Thor::GPIO
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
-  static constexpr size_t NUM_DRIVERS = LLD::MAX_NUM_PINS;
+  static constexpr size_t NUM_DRIVERS = LLD::NUM_GPIO_PINS;
 
   /*-------------------------------------------------------------------------------
   Variables
@@ -104,7 +104,7 @@ namespace Thor::GPIO
 
   Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
   {
-    if ( auto idx = LLD::getResourceIndex( port, pin ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    if ( auto idx = LLD::getPinResourceIndex( port, pin ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return &hld_driver[ idx ];
     }
@@ -116,7 +116,7 @@ namespace Thor::GPIO
 
   Driver_sPtr getDriverShared( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
   {
-    if ( auto idx = LLD::getResourceIndex( port, pin ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    if ( auto idx = LLD::getPinResourceIndex( port, pin ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return hld_shared[ idx ];
     }
@@ -146,7 +146,7 @@ namespace Thor::GPIO
     using namespace Chimera::Threading;
 
     auto result = Chimera::Status::FAIL;
-    auto idx    = LLD::getResourceIndex( pinInit.port, pinInit.pin );
+    auto idx    = LLD::getPinResourceIndex( pinInit.port, pinInit.pin );
     auto locked = false;
 
     /*------------------------------------------------

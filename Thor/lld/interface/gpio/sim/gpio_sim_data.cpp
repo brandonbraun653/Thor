@@ -12,7 +12,10 @@
 #include <cstddef>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/gpio/gpio_detail.hpp>
+
+#if defined( TARGET_LLD_TEST ) && defined( THOR_LLD_GPIO )
 
 namespace Thor::LLD::GPIO
 {
@@ -29,3 +32,5 @@ namespace Thor::LLD::GPIO
   RegisterMap *GPIOC_PERIPH = &C;
 #endif
 }    // namespace Thor::LLD::GPIO
+
+#endif 

@@ -252,9 +252,6 @@ namespace Thor::LLD::GPIO
         Attach the peripheral
         -------------------------------------------------*/
         driverList[ resourceIndex ].attach( periphInstance );
-        driverList[ resourceIndex ].mPort = currentPort;
-        driverList[ resourceIndex ].mPin  = currentPin;
-
         initializedPins++;
 
         /*-------------------------------------------------
@@ -507,6 +504,96 @@ namespace Thor::LLD::GPIO
     }
 
     return INVALID_RESOURCE_INDEX;
+  }
+
+
+  Chimera::GPIO::Port getPort( const std::uintptr_t address )
+  {
+    /*-------------------------------------------------
+    Look through all the registered port addresses and
+    see if the given address parameter matches.
+    -------------------------------------------------*/
+    for ( size_t idx = 0; idx < ARRAY_COUNT( prjPortAddress ); idx++ )
+    {
+      if ( address != prjPortAddress[ idx ] )
+      {
+        continue;
+      }
+
+      /*-------------------------------------------------
+      We support it! Figure out which peripheral it is
+      -------------------------------------------------*/
+      if ( address == reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ) )
+      {
+        return Chimera::GPIO::Port::PORTA;
+      }
+#if defined( STM32_GPIOB_PERIPH_AVAILABLE )
+      else if ( address == reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ) )
+      {
+        return Chimera::GPIO::Port::PORTB;
+      }
+#endif
+#if defined( STM32_GPIOC_PERIPH_AVAILABLE )
+      else if ( address == reinterpret_cast<std::uintptr_t>( GPIOC_PERIPH ) )
+      {
+        return Chimera::GPIO::Port::PORTC;
+      }
+#endif
+#if defined( STM32_GPIOD_PERIPH_AVAILABLE )
+      else if ( address == reinterpret_cast<std::uintptr_t>( GPIOD_PERIPH ) )
+      {
+        return Chimera::GPIO::Port::PORTD;
+      }
+#endif
+#if defined( STM32_GPIOE_PERIPH_AVAILABLE )
+      else if ( address == reinterpret_cast<std::uintptr_t>( GPIOE_PERIPH ) )
+      {
+        return Chimera::GPIO::Port::PORTE;
+      }
+#endif
+#if defined( STM32_GPIOF_PERIPH_AVAILABLE )
+      else if ( address == reinterpret_cast<std::uintptr_t>( GPIOF_PERIPH ) )
+      {
+        return Chimera::GPIO::Port::PORTF;
+      }
+#endif
+#if defined( STM32_GPIOG_PERIPH_AVAILABLE )
+      else if ( address == reinterpret_cast<std::uintptr_t>( GPIOG_PERIPH ) )
+      {
+        return Chimera::GPIO::Port::PORTG;
+      }
+#endif
+#if defined( STM32_GPIOH_PERIPH_AVAILABLE )
+      else if ( address == reinterpret_cast<std::uintptr_t>( GPIOH_PERIPH ) )
+      {
+        return Chimera::GPIO::Port::PORTH;
+      }
+#endif
+#if defined( STM32_GPIOI_PERIPH_AVAILABLE )
+      else if ( address == reinterpret_cast<std::uintptr_t>( GPIOI_PERIPH ) )
+      {
+        return Chimera::GPIO::Port::PORTI;
+      }
+#endif
+#if defined( STM32_GPIOJ_PERIPH_AVAILABLE )
+      else if ( address == reinterpret_cast<std::uintptr_t>( GPIOJ_PERIPH ) )
+      {
+        return Chimera::GPIO::Port::PORTJ;
+      }
+#endif
+#if defined( STM32_GPIOK_PERIPH_AVAILABLE )
+      else if ( address == reinterpret_cast<std::uintptr_t>( GPIOK_PERIPH ) )
+      {
+        return Chimera::GPIO::Port::PORTK;
+      }
+#endif
+      else
+      {
+        return Chimera::GPIO::Port::UNKNOWN_PORT;
+      }
+    }
+
+    return Chimera::GPIO::Port::UNKNOWN_PORT;
   }
 
 }  // namespace Thor::LLD::GPIO

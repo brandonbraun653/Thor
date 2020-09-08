@@ -17,9 +17,12 @@
 #include <cstddef>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 #include <Thor/lld/interface/system/sim/system_sim_memory_map.hpp>
+
+#if defined( TARGET_LLD_TEST ) && defined( THOR_LLD_GPIO )
 
 /*-------------------------------------------------
 Peripheral Availability
@@ -149,4 +152,5 @@ namespace Thor::LLD::GPIO
 
 }    // namespace Thor::LLD::GPIO
 
+#endif 
 #endif /* !THOR_HW_GPIO_REGISTER_STM32L432KC_HPP */

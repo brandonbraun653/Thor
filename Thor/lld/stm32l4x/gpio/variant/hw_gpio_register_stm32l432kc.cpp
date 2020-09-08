@@ -17,7 +17,7 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_driver.hpp>
+#include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
@@ -363,9 +363,9 @@ namespace Thor::LLD::GPIO
 
 
   extern const std::uintptr_t prjPortAddress[ NUM_GPIO_PERIPHS ] = {
-    static_cast<std::uintptr_t>( GPIOA_PERIPH ),
-    static_cast<std::uintptr_t>( GPIOB_PERIPH ),
-    static_cast<std::uintptr_t>( GPIOC_PERIPH )
+    reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ),
+    reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ),
+    reinterpret_cast<std::uintptr_t>( GPIOC_PERIPH )
   };
 
   void initializeRegisters()
