@@ -18,6 +18,7 @@
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/gpio>
+#include <Chimera/utility>
 
 /* Thor Includes */
 #include <Thor/cfg>
@@ -102,6 +103,7 @@ namespace Thor::GPIO
     return Chimera::Status::OK;
   }
 
+
   Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
   {
     if ( auto idx = LLD::getPinResourceIndex( port, pin ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
@@ -113,6 +115,7 @@ namespace Thor::GPIO
       return nullptr;
     }
   }
+
 
   Driver_sPtr getDriverShared( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
   {
@@ -126,11 +129,12 @@ namespace Thor::GPIO
     }
   }
 
-
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mInit( {} )
+  Driver::Driver() :
+      mAlternate( Chimera::GPIO::Alternate::NONE ), mPin( std::numeric_limits<decltype( mPin )>::max() ),
+      mPort( Chimera::GPIO::Port::UNKNOWN_PORT )
   {
   }
 
@@ -154,15 +158,13 @@ namespace Thor::GPIO
     ------------------------------------------------*/
     if ( idx < NUM_DRIVERS )
     {
-      mInit  = pinInit;
-      result = setMode( pinInit.drive, pinInit.pull );
+      mAlternate = pinInit.alternate;
+      mPin       = pinInit.pin;
+      mPort      = pinInit.port;
+      result     = setMode( pinInit.drive, pinInit.pull );
 
       // Ignore the return code because if setMode doesn't work, this won't either
       setState( pinInit.state );
-    }
-    else
-    {
-      mInit.clear();
     }
 
     return result;
@@ -191,7 +193,7 @@ namespace Thor::GPIO
     Function entrancy checks
     ------------------------------------------------*/
     auto result = Chimera::Status::FAIL;
-    auto driver = LLD::getDriver( mInit.port, mInit.pin );
+    auto driver = LLD::getDriver( mPort, mPin );
     if ( ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY ) || !driver )
     {
       return Chimera::Status::NOT_INITIALIZED;
@@ -200,16 +202,16 @@ namespace Thor::GPIO
     /*------------------------------------------------
     Set up the hardware to implement the desired mode
     ------------------------------------------------*/
-    result = driver->driveSet( mInit.pin, drive );
-    result |= driver->pullSet( mInit.pin, pull );
-    result |= driver->speedSet( mInit.pin, Thor::LLD::GPIO::Speed::HIGH );
+    result = driver->driveSet( mPin, drive );
+    result |= driver->pullSet( mPin, pull );
+    result |= driver->speedSet( mPin, Thor::LLD::GPIO::Speed::HIGH );
 
     /*------------------------------------------------
     Configure the alternate function options
     ------------------------------------------------*/
     if ( ( drive == Chimera::GPIO::Drive::ALTERNATE_OPEN_DRAIN ) || ( drive == Chimera::GPIO::Drive::ALTERNATE_PUSH_PULL ) )
     {
-      result |= driver->alternateFunctionSet( mInit.pin, mInit.alternate );
+      result |= driver->alternateFunctionSet( mPin, mAlternate );
     }
 
     return result;
@@ -221,7 +223,7 @@ namespace Thor::GPIO
     /*------------------------------------------------
     Function entrancy checks
     ------------------------------------------------*/
-    auto driver = LLD::getDriver( mInit.port, mInit.pin );
+    auto driver = LLD::getDriver( mPort, mPin );
     if ( ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY ) || !driver )
     {
       return Chimera::Status::NOT_INITIALIZED;
@@ -230,7 +232,7 @@ namespace Thor::GPIO
     /*------------------------------------------------
     Grab the driver reference and invoke the function
     ------------------------------------------------*/
-    return driver->write( mInit.pin, state );
+    return driver->write( mPin, state );
   }
 
 
@@ -239,7 +241,7 @@ namespace Thor::GPIO
     /*------------------------------------------------
     Function entrancy checks
     ------------------------------------------------*/
-    auto driver = LLD::getDriver( mInit.port, mInit.pin );
+    auto driver = LLD::getDriver( mPort, mPin );
     if ( ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY ) || !driver )
     {
       return Chimera::Status::NOT_INITIALIZED;
@@ -248,7 +250,7 @@ namespace Thor::GPIO
     /*------------------------------------------------
     Grab the driver reference and invoke the function
     ------------------------------------------------*/
-    state = driver->read( mInit.pin );
+    state = driver->read( mPin );
 
     return Chimera::Status::OK;
   }
@@ -258,7 +260,7 @@ namespace Thor::GPIO
   {
     using namespace Chimera::GPIO;
 
-    auto state = LLD::getDriver( mInit.port, mInit.pin )->read( mInit.pin );
+    auto state = LLD::getDriver( mPort, mPin )->read( mPin );
     state      = ( state == State::HIGH ) ? State::LOW : State::HIGH;
     return setState( state );
   }

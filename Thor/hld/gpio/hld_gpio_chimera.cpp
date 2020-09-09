@@ -92,7 +92,7 @@ namespace Chimera::GPIO
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mPin( std::numeric_limits<decltype( mPin )>::max() ), mPort( Port::NUM_OPTIONS )
+  Driver::Driver() : mDriver( nullptr )
   {
   }
 
@@ -107,37 +107,39 @@ namespace Chimera::GPIO
   -------------------------------------------------*/
   Chimera::Status_t Driver::init( const Chimera::GPIO::PinInit &pinInit )
   {
-    return ::HLD::getDriver( mPort, mPin )->init( pinInit );
+    mDriver = ::LLD::getDriver( pinInit.port, pinInit.pin );
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->init( pinInit );
   }
 
 
   Chimera::Status_t Driver::init( const Chimera::GPIO::Port port, const uint8_t pin )
   {
-    return ::HLD::getDriver( mPort, mPin )->init( port, pin );
+    mDriver = ::LLD::getDriver( port, pin );
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->init( port, pin );
   }
 
 
   Chimera::Status_t Driver::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull )
   {
-    return ::HLD::getDriver( mPort, mPin )->setMode( drive, pull );
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->setMode( drive, pull );
   }
 
 
   Chimera::Status_t Driver::setState( const Chimera::GPIO::State state )
   {
-    return ::HLD::getDriver( mPort, mPin )->setState( state );
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->setState( state );
   }
 
 
   Chimera::Status_t Driver::getState( Chimera::GPIO::State &state )
   {
-    return ::HLD::getDriver( mPort, mPin )->getState( state );
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->getState( state );
   }
 
 
   Chimera::Status_t Driver::toggle()
   {
-    return ::HLD::getDriver( mPort, mPin )->toggle();
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->toggle();
   }
 
 
@@ -146,26 +148,26 @@ namespace Chimera::GPIO
   -------------------------------------------------*/
   void Driver::lock()
   {
-    ::HLD::getDriver( mPort, mPin )->lock();
+    static_cast<::HLD::Driver_rPtr>( mDriver )->lock();
   }
 
   void Driver::lockFromISR()
   {
-    ::HLD::getDriver( mPort, mPin )->lockFromISR();
+    static_cast<::HLD::Driver_rPtr>( mDriver )->lockFromISR();
   }
 
   bool Driver::try_lock_for( const size_t timeout )
   {
-    return ::HLD::getDriver( mPort, mPin )->try_lock_for( timeout );
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->try_lock_for( timeout );
   }
 
   void Driver::unlock()
   {
-    ::HLD::getDriver( mPort, mPin )->unlock();
+    static_cast<::HLD::Driver_rPtr>( mDriver )->unlock();
   }
 
   void Driver::unlockFromISR()
   {
-    ::HLD::getDriver( mPort, mPin )->unlockFromISR();
+    static_cast<::HLD::Driver_rPtr>( mDriver )->unlockFromISR();
   }
 }    // namespace Chimera::GPIO

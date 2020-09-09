@@ -122,6 +122,87 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------
     Compute the resource index
     -------------------------------------------------*/
+//    switch ( port )
+//    {
+//      
+//      default:
+//        return INVALID_RESOURCE_INDEX;
+//        break;
+//    };
+//
+//    if ( address == reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ) )
+//    {
+//      return GPIOA_RESOURCE_INDEX;
+//    }
+//#if defined( STM32_GPIOB_PERIPH_AVAILABLE )
+//    else if ( address == reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ) )
+//    {
+//      return GPIOB_RESOURCE_INDEX;
+//    }
+//#endif
+//#if defined( STM32_GPIOC_PERIPH_AVAILABLE )
+//    else if ( address == reinterpret_cast<std::uintptr_t>( GPIOC_PERIPH ) )
+//    {
+//      return GPIOC_RESOURCE_INDEX;
+//    }
+//#endif
+//#if defined( STM32_GPIOD_PERIPH_AVAILABLE )
+//    else if ( address == reinterpret_cast<std::uintptr_t>( GPIOD_PERIPH ) )
+//    {
+//      return GPIOD_RESOURCE_INDEX;
+//    }
+//#endif
+//#if defined( STM32_GPIOE_PERIPH_AVAILABLE )
+//    else if ( address == reinterpret_cast<std::uintptr_t>( GPIOE_PERIPH ) )
+//    {
+//      return GPIOE_RESOURCE_INDEX;
+//    }
+//#endif
+//#if defined( STM32_GPIOF_PERIPH_AVAILABLE )
+//    else if ( address == reinterpret_cast<std::uintptr_t>( GPIOF_PERIPH ) )
+//    {
+//      return GPIOF_RESOURCE_INDEX;
+//    }
+//#endif
+//#if defined( STM32_GPIOG_PERIPH_AVAILABLE )
+//    else if ( address == reinterpret_cast<std::uintptr_t>( GPIOG_PERIPH ) )
+//    {
+//      return GPIOG_RESOURCE_INDEX;
+//    }
+//#endif
+//#if defined( STM32_GPIOH_PERIPH_AVAILABLE )
+//    else if ( address == reinterpret_cast<std::uintptr_t>( GPIOH_PERIPH ) )
+//    {
+//      return GPIOH_RESOURCE_INDEX;
+//    }
+//#endif
+//#if defined( STM32_GPIOI_PERIPH_AVAILABLE )
+//    else if ( address == reinterpret_cast<std::uintptr_t>( GPIOI_PERIPH ) )
+//    {
+//      return GPIOI_RESOURCE_INDEX;
+//    }
+//#endif
+//#if defined( STM32_GPIOJ_PERIPH_AVAILABLE )
+//    else if ( address == reinterpret_cast<std::uintptr_t>( GPIOJ_PERIPH ) )
+//    {
+//      return GPIOJ_RESOURCE_INDEX;
+//    }
+//#endif
+//#if defined( STM32_GPIOK_PERIPH_AVAILABLE )
+//    else if ( address == reinterpret_cast<std::uintptr_t>( GPIOK_PERIPH ) )
+//    {
+//      return GPIOK_RESOURCE_INDEX;
+//    }
+//#endif
+//    else
+//    {
+//      return INVALID_RESOURCE_INDEX;
+//    }
+//  }
+//
+//  return INVALID_RESOURCE_INDEX;
+
+
     // Base offset from a port perspective
     const size_t offset = pinOffset[ static_cast<uint8_t>( port ) ];
 

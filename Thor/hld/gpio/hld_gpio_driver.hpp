@@ -52,7 +52,9 @@ namespace Thor::GPIO
     Chimera::Status_t toggle();
 
   private:
-    Chimera::GPIO::PinInit mInit;
+    Chimera::GPIO::Alternate mAlternate;
+    Chimera::GPIO::Pin mPin;
+    Chimera::GPIO::Port mPort;
   };
 }    // namespace Thor::GPIO
 
