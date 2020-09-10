@@ -32,6 +32,7 @@ namespace LLD = ::Thor::LLD::GPIO;
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
+  // Each Chimera driver is associated with a pin, not the peripheral instance
 static constexpr size_t NUM_DRIVERS = ::LLD::NUM_GPIO_PINS;
 
 /*-------------------------------------------------------------------------------

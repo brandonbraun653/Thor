@@ -29,7 +29,7 @@ namespace Thor::LLD::GPIO
   devices. Given that a single pin is the "absolute
   unit" for a GPIO control, this is just how it is.
   -------------------------------------------------*/
-  static Driver s_gpio_drivers[ NUM_GPIO_PINS ];
+  static Driver s_gpio_drivers[ NUM_GPIO_PERIPHS ];
 
   /*-------------------------------------------------------------------------------
   Public Functions
@@ -41,7 +41,7 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------
     Attach all the expected peripherals to the drivers
     -------------------------------------------------*/
-    if ( attachDriverInstances( s_gpio_drivers, NUM_GPIO_PINS ) )
+    if ( attachDriverInstances( s_gpio_drivers, ARRAY_COUNT( s_gpio_drivers ) ) )
     {
       return Chimera::Status::OK;
     }
@@ -53,7 +53,7 @@ namespace Thor::LLD::GPIO
 
   Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
   {
-    if ( auto idx = getPinResourceIndex( port, pin ); idx != INVALID_RESOURCE_INDEX )
+    if ( auto idx = getResourceIndex( port ); idx != INVALID_RESOURCE_INDEX )
     {
       return &s_gpio_drivers[ idx ];
     }

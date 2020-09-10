@@ -66,19 +66,6 @@ namespace Thor::LLD::GPIO
   bool isSupported( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 
   /**
-   *  Gets the resource index associated with a particular port/pin combination.
-   *  If not supported, will return INVALID_RESOURCE_INDEX.
-   *
-   *  This computes a special resource index that is associated with the driver
-   *  for each pin.
-   *
-   *  @param[in]  port        The GPIO port to grab
-   *  @param[in]  pin         Which pin on the given port, ranged from [0, DRIVER_MAX_PINS_PER_PORT]
-   *  @return RIndex_t
-   */
-  RIndex_t getPinResourceIndex( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
-
-  /**
    *  Looks up an index value that can be used to access distributed resources
    *  associated with a peripheral instance. If the address is invalid, this will
    *  return INVALID_RESOURCE_INDEX.
@@ -87,6 +74,31 @@ namespace Thor::LLD::GPIO
    *  @return RIndex_t
    */
   RIndex_t getResourceIndex( const std::uintptr_t address );
+
+  /**
+   *  Looks up an index value that can be used to access distributed resources
+   *  associated with a peripheral instance. If the port is invalid, this will
+   *  return INVALID_RESOURCE_INDEX.
+   *
+   *  @param[in]  port          Which port to get the resource index for
+   *  @return RIndex_t
+   */
+  RIndex_t getResourceIndex( const Chimera::GPIO::Port port );
+
+  /**
+   *  Gets the resource index associated with a particular port/pin combination.
+   *  If not supported, will return INVALID_RESOURCE_INDEX.
+   *
+   *  This function adds additional checks to ensure that the exact combination
+   *  exists in hardware. The resource index returned access the peripheral driver
+   *  for the given hardware pin. Multiple indexes can correspond with a single
+   *  peripheral instance in hardware.
+   *
+   *  @param[in]  port        The GPIO port to grab
+   *  @param[in]  pin         Which pin on the given port, ranged from [0, DRIVER_MAX_PINS_PER_PORT]
+   *  @return RIndex_t
+   */
+  RIndex_t getPinResourceIndex( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 
   /**
    *  Gets the GPIO port associated with a peripheral address
@@ -321,8 +333,6 @@ namespace Thor::LLD::GPIO
     Chimera::GPIO::Alternate alternateFunctionGet( const uint8_t pin );
 
   private:
-    friend bool attachDriverInstances( Driver *const, const size_t );
-
     RegisterMap *mPeriph;
   };
 }    // namespace Thor::LLD::GPIO

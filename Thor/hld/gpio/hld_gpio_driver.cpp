@@ -39,6 +39,7 @@ namespace Thor::GPIO
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
+  // Each HLD driver is associated with a pin, not the peripheral instance
   static constexpr size_t NUM_DRIVERS = LLD::NUM_GPIO_PINS;
 
   /*-------------------------------------------------------------------------------
@@ -146,9 +147,6 @@ namespace Thor::GPIO
 
   Chimera::Status_t Driver::init( const Chimera::GPIO::PinInit &pinInit )
   {
-    using namespace Thor::LLD::GPIO;
-    using namespace Chimera::Threading;
-
     auto result = Chimera::Status::FAIL;
     auto idx    = LLD::getPinResourceIndex( pinInit.port, pinInit.pin );
     auto locked = false;
