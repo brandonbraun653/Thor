@@ -13,31 +13,14 @@
 #define THOR_HW_SPI_REGISTER_STM32L4XXXX_HPP
 
 /* C++ Includes */
-#include <array>
 #include <cstdint>
-#include <cstddef>
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/spi>
 
 /* Driver Includes */
 #include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432kc.hpp>
 
-/*-------------------------------------------------
-Peripheral Availability
--------------------------------------------------*/
-// Available on every STM32L4 device
-#define STM32_SPI1_PERIPH_AVAILABLE
-
-
-#if defined( STM32L412xx )
-#define STM32_SPI2_PERIPH_AVAILABLE
-#endif
-
-#if defined( STM32L432xx )
-#define STM32_SPI3_PERIPH_AVAILABLE
-#endif
 
 namespace Thor::LLD::SPI
 {
@@ -51,42 +34,9 @@ namespace Thor::LLD::SPI
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base
   -------------------------------------------------*/
-  static constexpr size_t NUM_SPI_PERIPHS = 3;
-
-#if defined( STM32_SPI1_PERIPH_AVAILABLE )
   static constexpr uint32_t SPI1_BASE_ADDR = Thor::System::MemoryMap::SPI1_PERIPH_START_ADDRESS;
-#else
-  static constexpr uint32_t SPI1_BASE_ADDR = std::numeric_limits<uint32_t>::max();
-#endif
-
-#if defined( STM32_SPI2_PERIPH_AVAILABLE )
   static constexpr uint32_t SPI2_BASE_ADDR = Thor::System::MemoryMap::SPI2_PERIPH_START_ADDRESS;
-#else
-  static constexpr uint32_t SPI2_BASE_ADDR = std::numeric_limits<uint32_t>::max();
-#endif
-
-#if defined( STM32_SPI3_PERIPH_AVAILABLE )
   static constexpr uint32_t SPI3_BASE_ADDR = Thor::System::MemoryMap::SPI3_PERIPH_START_ADDRESS;
-#else
-  static constexpr uint32_t SPI3_BASE_ADDR = std::numeric_limits<uint32_t>::max();
-#endif
-
-  /*-------------------------------------------------
-  Peripheral Resource Lookup Indices
-  -------------------------------------------------*/
-  static constexpr uint32_t SPI1_RESOURCE_INDEX = 0u;
-  static constexpr uint32_t SPI2_RESOURCE_INDEX = 1u;
-  static constexpr uint32_t SPI3_RESOURCE_INDEX = 2u;
-
-  /*-------------------------------------------------
-  Lookup addresses
-  -------------------------------------------------*/
-  static constexpr std::array<uint32_t, NUM_SPI_PERIPHS> periphAddressList = { SPI1_BASE_ADDR, SPI2_BASE_ADDR, SPI3_BASE_ADDR };
-
-  /*------------------------------------------------
-  Supported Hardware Channels
-  ------------------------------------------------*/
-  extern const std::array<Chimera::SPI::Channel, NUM_SPI_PERIPHS> supportedChannels;
 
   /*-------------------------------------------------
   Peripheral Register Definitions
@@ -195,8 +145,8 @@ namespace Thor::LLD::SPI
   static constexpr Reg32_t CR2_LDMATX      = CR2_LDMATX_Msk;
 
   /********************  Bit definition for SR register  ********************/
-  static constexpr Reg32_t SR_Msk          = 0x1FF3;
-  static constexpr Reg32_t SR_Rst          = 0x0002;
+  static constexpr Reg32_t SR_Msk = 0x1FF3;
+  static constexpr Reg32_t SR_Rst = 0x0002;
 
   static constexpr Reg32_t SR_RXNE_Pos   = ( 0U );
   static constexpr Reg32_t SR_RXNE_Msk   = ( 0x1UL << SR_RXNE_Pos );

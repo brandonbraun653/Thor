@@ -611,6 +611,7 @@
     <ClCompile Include="..\..\..\Thor\lld\interface\gpio\sim\gpio_sim_data.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\gpio\sim\gpio_sim_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\gpio\sim\gpio_sim_variant.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\spi\spi_intf.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock_variant.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp">
@@ -863,26 +864,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_driver_stm32l4.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_mapping.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_data.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\test\test_entry_lld_spi.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -903,16 +886,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l4xxxx.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l432kc.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_reset.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -1251,6 +1225,7 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\mock\spi_mock.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_detail.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_intf.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_prv_data.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\startup\startup_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\system\sim\system_sim_memory_map.hpp" />
@@ -1305,10 +1280,9 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\hw_rcc_types.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\rcc\variant\hw_rcc_register_stm32l432xx.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_driver.hpp" />
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_mapping.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l432kc.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l4xxxx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\startup\hw_startup_stm32l4xxxx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\system\sys_memory_map_prj.hpp" />

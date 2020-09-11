@@ -9,7 +9,6 @@
  ********************************************************************************/
 
 /* C++ Includes */
-#include <array>
 #include <cstring>
 
 /* Aurora Includes */

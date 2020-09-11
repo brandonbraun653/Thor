@@ -3,7 +3,7 @@
  *    gpio.hpp
  *
  *  Description:
- *    Implements the Thor GPIO driver
+ *    Thor GPIO high level driver
  *
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -27,7 +27,7 @@
 namespace Thor::GPIO
 {
   /*-------------------------------------------------------------------------------
-  Chimera Module Interface Public Functions
+  Public Functions
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize();
   Chimera::Status_t reset();

@@ -3,7 +3,7 @@
  *    spi_types.hpp
  *
  *  Description:
- *    Common SPI types used in Thor drivers
+ *    Common LLD SPI types
  *
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -23,13 +23,13 @@ namespace Thor::LLD::SPI
   /*-------------------------------------------------------------------------------
   Forward Declarations
   -------------------------------------------------------------------------------*/
-  class IDriver;
+  class Driver;
   struct RegisterMap;
 
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
-  using IDriver_rPtr  = IDriver *;
+  using Driver_rPtr  = Driver *;
   using StatusFlags_t = uint32_t;
   using ErrorFlags_t  = uint32_t;
 

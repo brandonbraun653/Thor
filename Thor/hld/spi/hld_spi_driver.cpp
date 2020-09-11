@@ -115,7 +115,11 @@ namespace Thor::SPI
     -------------------------------------------------*/
     for ( size_t x = 0; x < NUM_DRIVERS; x++ )
     {
+#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_SPI )
+      hld_shared[ x ] = ::HLD::Driver_sPtr( new ::HLD::Driver() );
+#else
       hld_shared[ x ] = ::HLD::Driver_sPtr( &hld_driver[ x ] );
+#endif
     }
 
     /*-------------------------------------------------
@@ -125,13 +129,39 @@ namespace Thor::SPI
     return Chimera::Status::OK;
   }
 
+
   Chimera::Status_t reset()
   {
+    /*------------------------------------------------
+    Only allow clearing of local data during testing
+    ------------------------------------------------*/
+#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_GPIO )
     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+
+    for ( auto x = 0; x < NUM_DRIVERS; x++ )
+    {
+      hld_shared[ x ].reset();
+    }
+#endif
+
     return Chimera::Status::OK;
   }
 
-  Chimera::SPI::ISPI_sPtr getDriver( const Chimera::SPI::Channel channel )
+
+  Driver_rPtr getDriver( const Chimera::SPI::Channel channel )
+  {
+    if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    {
+      return &hld_driver[ idx ];
+    }
+    else
+    {
+      return nullptr;
+    }
+  }
+
+
+  Driver_sPtr getDriverShared( const Chimera::SPI::Channel channel )
   {
     if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
@@ -147,25 +177,16 @@ namespace Thor::SPI
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver()
+  Driver::Driver() : SCK( nullptr ), MOSI( nullptr ), MISO( nullptr ), CS( nullptr )
   {
-    /*------------------------------------------------
-    Lazy initialize all driver memory in case the user forgot
-    ------------------------------------------------*/
-    if ( s_driver_initialized != Chimera::DRIVER_INITIALIZED_KEY )
-    {
-      initialize();
-    }
-
-    /*------------------------------------------------
-    Default initialize class member variables
-    ------------------------------------------------*/
-    config = {};
+    config.clear();
   }
+
 
   Driver::~Driver()
   {
   }
+
 
   void Driver::postISRProcessing()
   {
@@ -196,7 +217,7 @@ namespace Thor::SPI
     /*------------------------------------------------
     Should we even bother creating this?
     ------------------------------------------------*/
-    if ( !::LLD::isChannelSupported( setupStruct.HWInit.hwChannel ) )
+    if ( !::LLD::isSupported( setupStruct.HWInit.hwChannel ) )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -208,13 +229,11 @@ namespace Thor::SPI
     /*------------------------------------------------
     First register the driver and initialize class vars
     ------------------------------------------------*/
-    lldResourceIndex = ::LLD::getResourceIndex( setupStruct.HWInit.hwChannel );
-    if (  lldResourceIndex == ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    auto lldResourceIndex = ::LLD::getResourceIndex( setupStruct.HWInit.hwChannel );
+    if ( lldResourceIndex == ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
-
-    auto instance = ::LLD::ChannelToInstance[ setupStruct.HWInit.hwChannel ];
 
     /*------------------------------------------------
     Configure the GPIO
@@ -252,7 +271,6 @@ namespace Thor::SPI
     Configure the SPI hardware
     ------------------------------------------------*/
     auto driver = ::LLD::getDriver( config.HWInit.hwChannel );
-    result |= driver->attach( instance );
     result |= driver->configure( config );
     result |= driver->registerConfig( &config );
 
@@ -287,19 +305,22 @@ namespace Thor::SPI
     return result;
   }
 
+
   Chimera::SPI::DriverConfig Driver::getInit()
   {
     return config;
   }
+
 
   Chimera::Status_t Driver::deInit()
   {
     return Chimera::Status::NOT_SUPPORTED;
   }
 
+
   Chimera::Status_t Driver::setChipSelect( const Chimera::GPIO::State value )
   {
-    if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) && CS )
+    if ( CS )
     {
       return CS->setState( value );
     }
@@ -307,12 +328,13 @@ namespace Thor::SPI
     return Chimera::Status::FAIL;
   }
 
+
   Chimera::Status_t Driver::setChipSelectControlMode( const Chimera::SPI::CSMode mode )
   {
     /*------------------------------------------------
     Only valid if the SPI driver has control of the chip select
     ------------------------------------------------*/
-    if ( Chimera::Threading::TimedLockGuard( *this ).try_lock_for( 10 ) && !config.externalCS )
+    if ( !config.externalCS )
     {
       config.HWInit.csMode = mode;
       return Chimera::Status::OK;
@@ -321,21 +343,23 @@ namespace Thor::SPI
     return Chimera::Status::LOCKED;
   }
 
+
   Chimera::Status_t Driver::writeBytes( const void *const txBuffer, const size_t length )
   {
     return readWriteBytes( txBuffer, nullptr, length );
   }
+
 
   Chimera::Status_t Driver::readBytes( void *const rxBuffer, const size_t length )
   {
     return readWriteBytes( nullptr, rxBuffer, length );
   }
 
+
   Chimera::Status_t Driver::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length )
   {
-    auto lockguard = TimedLockGuard( *this );
-    auto result    = Chimera::Status::OK;
-    auto driver    = ::LLD::getDriver( config.HWInit.hwChannel );
+    auto result = Chimera::Status::OK;
+    auto driver = ::LLD::getDriver( config.HWInit.hwChannel );
 
     /*------------------------------------------------
     Input protection & resource acquisition
@@ -391,20 +415,20 @@ namespace Thor::SPI
     }
   }
 
+
   Chimera::Status_t Driver::setPeripheralMode( const Chimera::Hardware::PeripheralMode mode )
   {
     config.HWInit.txfrMode = mode;
     return Chimera::Status::OK;
   }
 
+
   Chimera::Status_t Driver::setClockFrequency( const size_t freq, const size_t tolerance )
   {
-    auto lockguard = TimedLockGuard( *this );
-    auto driver    = ::LLD::getDriver( config.HWInit.hwChannel );
-
     /*------------------------------------------------
     Input protection
     ------------------------------------------------*/
+    auto driver = ::LLD::getDriver( config.HWInit.hwChannel );
     if ( !driver || !freq )
     {
       return Chimera::Status::NOT_INITIALIZED;
@@ -417,11 +441,12 @@ namespace Thor::SPI
     return driver->configure( config );
   }
 
+
   size_t Driver::getClockFrequency()
   {
-    /* Shouldn't need a lock as this is atomic on 32-bit ARM processors */
     return config.HWInit.clockFreq;
   }
+
 
   /*------------------------------------------------
   Async IO Interface
@@ -442,6 +467,7 @@ namespace Thor::SPI
     }
   }
 
+
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
                                    const size_t timeout )
   {
@@ -455,6 +481,7 @@ namespace Thor::SPI
     return result;
   }
 
+
   /*------------------------------------------------
   Listener Interface
   ------------------------------------------------*/
@@ -463,6 +490,7 @@ namespace Thor::SPI
   {
     return Chimera::Status::NOT_SUPPORTED;
   }
+
 
   Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
   {

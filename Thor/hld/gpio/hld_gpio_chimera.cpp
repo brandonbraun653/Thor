@@ -8,9 +8,6 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* STL Includes */
-#include <memory>
-
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/gpio>
@@ -152,20 +149,24 @@ namespace Chimera::GPIO
     static_cast<::HLD::Driver_rPtr>( mDriver )->lock();
   }
 
+
   void Driver::lockFromISR()
   {
     static_cast<::HLD::Driver_rPtr>( mDriver )->lockFromISR();
   }
+
 
   bool Driver::try_lock_for( const size_t timeout )
   {
     return static_cast<::HLD::Driver_rPtr>( mDriver )->try_lock_for( timeout );
   }
 
+
   void Driver::unlock()
   {
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlock();
   }
+
 
   void Driver::unlockFromISR()
   {

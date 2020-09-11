@@ -12,15 +12,15 @@
 #ifndef THOR_GPIO_CHIMERA_HOOKS_HPP
 #define THOR_GPIO_CHIMERA_HOOKS_HPP
 
-/* STL Includes */
-#include <memory>
-
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/gpio>
 
 namespace Chimera::GPIO::Backend
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
   Driver_sPtr getDriver( const Port port, const Pin pin );

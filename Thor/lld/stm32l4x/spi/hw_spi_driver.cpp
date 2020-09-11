@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    hw_spi_driver_STM32L4.cpp
+ *    hw_spi_driver.cpp
  *
  *  Description:
  *    Implements the LLD interface to the STM32L4 series SPI hardware.
@@ -15,13 +15,14 @@
 /* Chimera Includes */
 #include <Chimera/algorithm>
 #include <Chimera/common>
+#include <Chimera/utility>
 
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
-#include <Thor/lld/common/cortex-m4/interrupts.hpp>
-#include <Thor/lld/stm32l4x/spi/hw_spi_driver.hpp>
-#include <Thor/lld/stm32l4x/spi/hw_spi_mapping.hpp>
+
+#include <Thor/lld/interface/spi/spi_prv_data.hpp>
+#include <Thor/lld/interface/spi/spi_intf.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_prj.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
@@ -30,8 +31,14 @@
 
 namespace Thor::LLD::SPI
 {
+  /*-------------------------------------------------------------------------------
+  Variables
+  -------------------------------------------------------------------------------*/
   static Driver s_spi_drivers[ NUM_SPI_PERIPHS ];
 
+  /*-------------------------------------------------------------------------------
+  Private Functions
+  -------------------------------------------------------------------------------*/
   static float calculate_clock_performance( const size_t goal, const size_t actVal, void *const data )
   {
     /*------------------------------------------------
@@ -55,84 +62,45 @@ namespace Thor::LLD::SPI
     return fAchieved - fGoal;
   }
 
-  /*-------------------------------------------------
-  LLD->HLD Interface Implementation
-  -------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     initializeRegisters();
-    initializeMapping();
 
-    return Chimera::Status::OK;
-  }
-
-  bool isChannelSupported( const Chimera::SPI::Channel channel )
-  {
-    for ( auto &num : supportedChannels )
+    /*-------------------------------------------------
+    Attach all the expected peripherals to the drivers
+    -------------------------------------------------*/
+    if ( attachDriverInstances( s_spi_drivers, ARRAY_COUNT( s_spi_drivers ) ) )
     {
-      if ( ( num == channel ) && ( num != Chimera::SPI::Channel::NOT_SUPPORTED ) )
-      {
-        return true;
-      }
+      return Chimera::Status::OK;
     }
-
-    return false;
+    else
+    {
+      return Chimera::Status::FAIL;
+    }
   }
 
-  IDriver_rPtr getDriver( const Chimera::SPI::Channel channel )
-  {
-    size_t ch = static_cast<size_t>( channel );
 
-    if ( ( ch >= NUM_SPI_PERIPHS ) || !isChannelSupported( channel ) )
+  Driver_rPtr getDriver( const Chimera::SPI::Channel channel )
+  {
+    if ( auto idx = getResourceIndex( channel ); idx != INVALID_RESOURCE_INDEX )
+    {
+      return &s_spi_drivers[ idx ];
+    }
+    else
     {
       return nullptr;
     }
-
-    s_spi_drivers[ ch ].attach( PeripheralList[ ch ] );
-    return &s_spi_drivers[ ch ];
-  }
-
-  size_t availableChannels()
-  {
-    return NUM_SPI_PERIPHS;
   }
 
 
-  RIndex_t getResourceIndex( const Chimera::SPI::Channel channel )
-  {
-    // TODO: fix this later when you revamp the hardware driver...make it look like usart
-    return 0;
-  }
-
-
-  RIndex_t getResourceIndex( const std::uintptr_t address )
-  {
-    return InstanceToResourceIndex.at( address ).second;
-  }
-
-  /*-------------------------------------------------
-  Private LLD Function Implementation
-  -------------------------------------------------*/
-  bool isSPI( const std::uintptr_t address )
-  {
-    bool result = false;
-
-    for ( auto &val : periphAddressList )
-    {
-      if ( val == address )
-      {
-        result = true;
-      }
-    }
-
-    return result;
-  }
-
-  /*-----------------------------------------------------
+  /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
-  -----------------------------------------------------*/
+  -------------------------------------------------------------------------------*/
   Driver::Driver() :
-      ISRWakeup_external( nullptr ), periph( nullptr ), periphConfig( nullptr ),
+      ISRWakeup_external( nullptr ), mPeriph( nullptr ), periphConfig( nullptr ),
       resourceIndex( std::numeric_limits<size_t>::max() )
   {
     memset( &txfr, 0, sizeof( txfr ) );
@@ -143,36 +111,31 @@ namespace Thor::LLD::SPI
   {
   }
 
+
   Chimera::Status_t Driver::attach( RegisterMap *const peripheral )
   {
     /*------------------------------------------------
     Get peripheral descriptor settings
     ------------------------------------------------*/
-    periph        = peripheral;
-    resourceIndex = InstanceToResourceIndex.at( reinterpret_cast<std::uintptr_t>( periph ) ).second;
-    periphIRQn    = IRQSignals[ resourceIndex ];
-    dmaTXSignal   = TXDMASignals[ resourceIndex ];
-    dmaRXSignal   = RXDMASignals[ resourceIndex ];
+    mPeriph        = peripheral;
+    resourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
 
     /*------------------------------------------------
     Handle the ISR configuration
     ------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( periphIRQn );
-    Thor::LLD::IT::clearPendingIRQ( periphIRQn );
-    Thor::LLD::IT::setPriority( periphIRQn, Thor::Interrupt::SPI_IT_PREEMPT_PRIORITY, 0u );
-
-    /*------------------------------------------------
-    Driver registration with the backend
-    ------------------------------------------------*/
-    Thor::LLD::SPI::spiObjects[ resourceIndex ] = this;
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::IT::setPriority( Resource::IRQSignals[ resourceIndex ], Thor::Interrupt::SPI_IT_PREEMPT_PRIORITY, 0u );
 
     return Chimera::Status::OK;
   }
 
+
   Chimera::Status_t Driver::reset()
   {
-    return Chimera::Status::FAIL;
+    return Chimera::Status::OK;
   }
+
 
   void Driver::clockEnable()
   {
@@ -180,21 +143,25 @@ namespace Thor::LLD::SPI
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
+
   void Driver::clockDisable()
   {
     auto rcc = Thor::LLD::RCC::getPeripheralClock();
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
+
   size_t Driver::getErrorFlags()
   {
     return 0;
   }
 
+
   size_t Driver::getStatusFlags()
   {
     return 0;
   }
+
 
   Chimera::Status_t Driver::configure( const Chimera::SPI::DriverConfig &setup )
   {
@@ -209,7 +176,7 @@ namespace Thor::LLD::SPI
     Find the best clock divisor need to achieve the desired clock frequency
     ------------------------------------------------*/
     auto systemClock = Thor::LLD::RCC::getCoreClock();
-    auto periphAddr  = reinterpret_cast<std::uintptr_t>( periph );
+    auto periphAddr  = reinterpret_cast<std::uintptr_t>( mPeriph );
     auto clockFreq   = systemClock->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SPI, periphAddr );
 
     if ( clockFreq == std::numeric_limits<size_t>::max() )
@@ -238,54 +205,54 @@ namespace Thor::LLD::SPI
     Follow the configuration sequence from RM0390
     ------------------------------------------------*/
     /* Clear any faults */
-    if ( MODF::get( periph ) )
+    if ( MODF::get( mPeriph ) )
     {
-      volatile Reg32_t dummyRead = SR_ALL::get( periph );
+      volatile Reg32_t dummyRead = SR_ALL::get( mPeriph );
     }
 
     /* Destroy all previous settings */
-    CR1_ALL::set( periph, CR1_Rst );
-    CR2_ALL::set( periph, CR2_Rst );
-    CRCPOLY::set( periph, CRCPR_Rst );
-    RXCRC::set( periph, RXCRCR_Rst );
-    TXCRC::set( periph, TXCRCR_Rst );
+    CR1_ALL::set( mPeriph, CR1_Rst );
+    CR2_ALL::set( mPeriph, CR2_Rst );
+    CRCPOLY::set( mPeriph, CRCPR_Rst );
+    RXCRC::set( mPeriph, RXCRCR_Rst );
+    TXCRC::set( mPeriph, TXCRCR_Rst );
 
     /* Bit Transfer Order */
-    LSBFIRST::set( periph, BitOrderToRegConfig[ static_cast<size_t>( setup.HWInit.bitOrder ) ] );
+    LSBFIRST::set( mPeriph, ConfigMap::BitOrderToRegConfig[ static_cast<size_t>( setup.HWInit.bitOrder ) ] );
 
     /* Transfer Bit Width */
-    DS::set( periph, DataSizeToRegConfig[ static_cast<size_t>( setup.HWInit.dataSize ) ] );
+    DS::set( mPeriph, ConfigMap::DataSizeToRegConfig[ static_cast<size_t>( setup.HWInit.dataSize ) ] );
 
     /* Peripheral Clock Divisor */
-    BR::set( periph, clockDivisor );
+    BR::set( mPeriph, clockDivisor );
 
     /* Master/Slave Control Mode */
-    MSTR::set( periph, ControlModeToRegConfig[ static_cast<size_t>( setup.HWInit.controlMode ) ] );
+    MSTR::set( mPeriph, ConfigMap::ControlModeToRegConfig[ static_cast<size_t>( setup.HWInit.controlMode ) ] );
 
-    SSM::set( periph, CR1_SSM );
-    SSI::set( periph, CR1_SSI );
+    SSM::set( mPeriph, CR1_SSM );
+    SSI::set( mPeriph, CR1_SSI );
 
     /* Clock Phase and Polarity */
     switch ( setup.HWInit.clockMode )
     {
       case Chimera::SPI::ClockMode::MODE0:
-        CPOL::set( periph, 0u );
-        CPHA::set( periph, 0u );
+        CPOL::set( mPeriph, 0u );
+        CPHA::set( mPeriph, 0u );
         break;
 
       case Chimera::SPI::ClockMode::MODE1:
-        CPOL::set( periph, 0u );
-        CPHA::set( periph, CR1_CPHA );
+        CPOL::set( mPeriph, 0u );
+        CPHA::set( mPeriph, CR1_CPHA );
         break;
 
       case Chimera::SPI::ClockMode::MODE2:
-        CPOL::set( periph, CR1_CPOL );
-        CPHA::set( periph, 0u );
+        CPOL::set( mPeriph, CR1_CPOL );
+        CPHA::set( mPeriph, 0u );
         break;
 
       case Chimera::SPI::ClockMode::MODE3:
-        CPOL::set( periph, CR1_CPOL );
-        CPHA::set( periph, CR1_CPHA );
+        CPOL::set( mPeriph, CR1_CPOL );
+        CPHA::set( mPeriph, CR1_CPHA );
         break;
 
       default:
@@ -293,13 +260,14 @@ namespace Thor::LLD::SPI
     }
 
     /* Configure CR2 */
-    SSOE::set( periph, CR2_SSOE );
+    SSOE::set( mPeriph, CR2_SSOE );
 
     /* Finally enable the peripheral */
-    SPE::set( periph, CR1_SPE );
+    SPE::set( mPeriph, CR1_SPE );
 
     return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t Driver::registerConfig( Chimera::SPI::DriverConfig *config )
   {
@@ -311,6 +279,7 @@ namespace Thor::LLD::SPI
     this->periphConfig = config;
     return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t Driver::transfer( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
   {
@@ -358,8 +327,8 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Disable all interrupts
     ------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( periphIRQn );
-    CR2_ALL::clear( periph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    CR2_ALL::clear( mPeriph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
 
     /*------------------------------------------------
     Write the data in a blocking fashion
@@ -371,7 +340,7 @@ namespace Thor::LLD::SPI
       assign the next set of data to be transfered
       ------------------------------------------------*/
 #if defined( EMBEDDED )
-      while ( !TXE::get( periph ) && BSY::get( periph ) )
+      while ( !TXE::get( mPeriph ) && BSY::get( mPeriph ) )
         continue;
 #endif
 
@@ -395,12 +364,12 @@ namespace Thor::LLD::SPI
       ------------------------------------------------*/
       if ( bytesPerTransfer == 1 )
       {
-        auto *dr = reinterpret_cast<volatile uint8_t *>( &periph->DR );
+        auto *dr = reinterpret_cast<volatile uint8_t *>( &mPeriph->DR );
         *dr      = txData;
       }
       else
       {
-        auto *dr = reinterpret_cast<volatile uint16_t *>( &periph->DR );
+        auto *dr = reinterpret_cast<volatile uint16_t *>( &mPeriph->DR );
         *dr      = txData;
       }
 
@@ -411,10 +380,10 @@ namespace Thor::LLD::SPI
       if ( rxBufferPtr )
       {
 #if defined( EMBEDDED )
-        while ( !RXNE::get( periph ) )
+        while ( !RXNE::get( mPeriph ) )
           continue;
 #endif
-        rxData = periph->DR;
+        rxData = mPeriph->DR;
 
         if ( ( bytesTransfered + 1u ) == bufferSize )
         {
@@ -437,19 +406,20 @@ namespace Thor::LLD::SPI
     TX FIFO transfers are finished.
     ------------------------------------------------*/
 #if defined( EMBEDDED )
-    while ( BSY::get( periph ) )
+    while ( BSY::get( mPeriph ) )
       continue;
 #endif
 
     return Chimera::Status::OK;
   }
 
+
   Chimera::Status_t Driver::transferIT( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
   {
     /*------------------------------------------------
     Make sure the transfer can begin
     ------------------------------------------------*/
-    if ( BSY::get( periph ) || ( txfr.status != Chimera::SPI::Status::TRANSFER_COMPLETE ) )
+    if ( BSY::get( mPeriph ) || ( txfr.status != Chimera::SPI::Status::TRANSFER_COMPLETE ) )
     {
       return Chimera::Status::BUSY;
     }
@@ -457,9 +427,9 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Configure the interrupts
     ------------------------------------------------*/
-    Thor::LLD::IT::enableIRQ( periphIRQn );
+    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
     enterCriticalSection();
-    CR2_ALL::set( periph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
+    CR2_ALL::set( mPeriph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
 
     /*------------------------------------------------
     Queue up the transfer
@@ -479,10 +449,10 @@ namespace Thor::LLD::SPI
     Currently hardcoded to 8 for development...
     ------------------------------------------------*/
     // Access the data register as 8-bit aligned
-    auto dr = reinterpret_cast<volatile uint8_t *>( &periph->DR );
+    auto dr = reinterpret_cast<volatile uint8_t *>( &mPeriph->DR );
 
     // Set the RX FIFO threshold to generate an RXNE event when 8-bits are received
-    FRXTH::set( periph, Configuration::FIFOThreshold::RXNE_ON_8BIT );
+    FRXTH::set( mPeriph, Configuration::FIFOThreshold::RXNE_ON_8BIT );
 
     /*------------------------------------------------
     Start the transfer
@@ -496,20 +466,24 @@ namespace Thor::LLD::SPI
     return Chimera::Status::OK;
   }
 
+
   Chimera::Status_t Driver::transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
   {
     return Chimera::Status::NOT_SUPPORTED;
   }
+
 
   Chimera::Status_t Driver::killTransfer()
   {
     return Chimera::Status::NOT_SUPPORTED;
   }
 
+
   void Driver::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )
   {
     ISRWakeup_external = wakeup;
   }
+
 
   HWTransfer Driver::getTransferBlock()
   {
@@ -523,29 +497,32 @@ namespace Thor::LLD::SPI
     return copy;
   }
 
+
   inline void Driver::enterCriticalSection()
   {
-    Thor::LLD::IT::disableIRQ( periphIRQn );
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
   }
+
 
   inline void Driver::exitCriticalSection()
   {
-    Thor::LLD::IT::enableIRQ( periphIRQn );
+    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
   }
+
 
   void Driver::IRQHandler()
   {
     /*------------------------------------------------
     Save critical register information
     ------------------------------------------------*/
-    const volatile Reg32_t SR  = SR_ALL::get( periph );
-    const volatile Reg32_t CR2 = CR2_ALL::get( periph );
+    const volatile Reg32_t SR  = SR_ALL::get( mPeriph );
+    const volatile Reg32_t CR2 = CR2_ALL::get( mPeriph );
 
     /*------------------------------------------------
     Data transfers must have 8-bit or 16-bit aligned access.
     Currently hardcoded to 8 for development...
     ------------------------------------------------*/
-    auto dr = reinterpret_cast<volatile uint8_t *>( &periph->DR );
+    auto dr = reinterpret_cast<volatile uint8_t *>( &mPeriph->DR );
 
     /*------------------------------------------------
     HW TX Buffer Empty (Next frame can be buffered)
@@ -569,7 +546,7 @@ namespace Thor::LLD::SPI
         The TX half of the transfer is complete. Disable the
         TX FIFO empty ISR signal.
         ------------------------------------------------*/
-        TXEIE::set( periph, ~CR2_TXEIE );
+        TXEIE::set( mPeriph, ~CR2_TXEIE );
 
         /*------------------------------------------------
         The user could have also requested a TX only transfer
@@ -578,7 +555,7 @@ namespace Thor::LLD::SPI
         ------------------------------------------------*/
         if ( !txfr.rxBuffer )
         {
-          RXNEIE::set( periph, ~CR2_RXNEIE );
+          RXNEIE::set( mPeriph, ~CR2_RXNEIE );
           txfr.status = Chimera::SPI::Status::TRANSFER_COMPLETE;
         }
       }
@@ -600,7 +577,7 @@ namespace Thor::LLD::SPI
 
       if ( txfr.rxTransferCount == txfr.rxTransferSize )
       {
-        RXNEIE::set( periph, ~CR2_RXNEIE );
+        RXNEIE::set( mPeriph, ~CR2_RXNEIE );
         txfr.status = Chimera::SPI::Status::TRANSFER_COMPLETE;
       }
     }
@@ -637,36 +614,24 @@ namespace Thor::LLD::SPI
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
 void SPI1_IRQHandler()
 {
-  static constexpr size_t index = 0;
-
-  if ( Thor::LLD::SPI::spiObjects[ index ] )
-  {
-    Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
-  }
+  using namespace Thor::LLD::SPI;
+  s_spi_drivers[ SPI1_RESOURCE_INDEX ].IRQHandler();
 }
 #endif
 
 #if defined( STM32_SPI2_PERIPH_AVAILABLE )
 void SPI2_IRQHandler()
 {
-  static constexpr size_t index = 1;
-
-  if ( Thor::LLD::SPI::spiObjects[ index ] )
-  {
-    Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
-  }
+  using namespace Thor::LLD::SPI;
+  s_spi_drivers[ SPI2_RESOURCE_INDEX ].IRQHandler();
 }
 #endif
 
 #if defined( STM32_SPI3_PERIPH_AVAILABLE )
 void SPI3_IRQHandler()
 {
-  static constexpr size_t index = 2;
-
-  if ( Thor::LLD::SPI::spiObjects[ index ] )
-  {
-    Thor::LLD::SPI::spiObjects[ index ]->IRQHandler();
-  }
+  using namespace Thor::LLD::SPI;
+  s_spi_drivers[ SPI3_RESOURCE_INDEX ].IRQHandler();
 }
 #endif
 

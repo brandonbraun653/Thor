@@ -12,7 +12,6 @@
 #ifndef THOR_HW_GPIO_PROJECT_HPP
 #define THOR_HW_GPIO_PROJECT_HPP
 
-
 /*------------------------------------------------
 All STM32L4 devices
 ------------------------------------------------*/

@@ -14,35 +14,16 @@
 
 /* C++ Includes */
 #include <cstdint>
-#include <array>
 
 /* Driver Includes */
 #include <Thor/lld/common/registers/field_accessor.hpp>
-#include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_prj.hpp>
 
 namespace Thor::LLD::SPI
 {
-  struct RegisterMap
-  {
-    volatile uint32_t CR1;    /**< SPI Control register 1,      Address offset: 0x00 */
-    volatile uint32_t CR2;    /**< SPI Control register 2,      Address offset: 0x04 */
-    volatile uint32_t SR;     /**< SPI Status register,         Address offset: 0x08 */
-    volatile uint32_t DR;     /**< SPI data register,           Address offset: 0x0C */
-    volatile uint32_t CRCPR;  /**< SPI CRC polynomial register, Address offset: 0x10 */
-    volatile uint32_t RXCRCR; /**< SPI Rx CRC register,         Address offset: 0x14 */
-    volatile uint32_t TXCRCR; /**< SPI Tx CRC register,         Address offset: 0x18 */
-  };
-
-  class Driver;
-  using DriverInstanceList = std::array<Driver *, NUM_SPI_PERIPHS>;
-  using PeriphRegisterList = std::array<RegisterMap *, NUM_SPI_PERIPHS>;
-  using DMASignalList      = std::array<Reg32_t, NUM_SPI_PERIPHS>;
-  using IRQSignalList      = std::array<IRQn_Type, NUM_SPI_PERIPHS>;
-
-  /*------------------------------------------------
-  Configuration
-  ------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
   namespace Configuration
   {
     namespace Direction
@@ -148,6 +129,25 @@ namespace Thor::LLD::SPI
     }
   }      // namespace Configuration
 
+
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
+  struct RegisterMap
+  {
+    volatile uint32_t CR1;    /**< SPI Control register 1,      Address offset: 0x00 */
+    volatile uint32_t CR2;    /**< SPI Control register 2,      Address offset: 0x04 */
+    volatile uint32_t SR;     /**< SPI Status register,         Address offset: 0x08 */
+    volatile uint32_t DR;     /**< SPI data register,           Address offset: 0x0C */
+    volatile uint32_t CRCPR;  /**< SPI CRC polynomial register, Address offset: 0x10 */
+    volatile uint32_t RXCRCR; /**< SPI Rx CRC register,         Address offset: 0x14 */
+    volatile uint32_t TXCRCR; /**< SPI Tx CRC register,         Address offset: 0x18 */
+  };
+
+
+  /*-------------------------------------------------------------------------------
+  Classes
+  -------------------------------------------------------------------------------*/
   /*------------------------------------------------
   Control Register 1
   ------------------------------------------------*/
@@ -207,7 +207,7 @@ namespace Thor::LLD::SPI
   RX CRC Register
   ------------------------------------------------*/
   REG_ACCESSOR( RegisterMap, RXCRCR, RXCRCR_RXCRC_Msk, RXCRC, BIT_ACCESS_RW );
-  
+
   /*------------------------------------------------
   TX CRC Register
   ------------------------------------------------*/

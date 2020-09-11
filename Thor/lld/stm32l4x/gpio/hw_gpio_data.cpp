@@ -10,8 +10,10 @@
  ********************************************************************************/
 
 /* STL Includes */
-#include <array>
 #include <limits>
+
+/* Chimera Includes */
+#include <Chimera/gpio>
 
 /* Driver Includes */
 #include <Thor/cfg>
@@ -25,25 +27,25 @@ namespace Thor::LLD::GPIO
   Peripheral Memory Maps
   -------------------------------------------------------------------------------*/
 #if defined( STM32_GPIOA_PERIPH_AVAILABLE )
-  RegisterMap *GPIOA_PERIPH = reinterpret_cast<RegisterMap*>( GPIOA_BASE_ADDR );
+  RegisterMap *GPIOA_PERIPH = reinterpret_cast<RegisterMap *>( GPIOA_BASE_ADDR );
 #endif
 #if defined( STM32_GPIOB_PERIPH_AVAILABLE )
-  RegisterMap *GPIOB_PERIPH = reinterpret_cast<RegisterMap*>( GPIOB_BASE_ADDR );
+  RegisterMap *GPIOB_PERIPH = reinterpret_cast<RegisterMap *>( GPIOB_BASE_ADDR );
 #endif
 #if defined( STM32_GPIOC_PERIPH_AVAILABLE )
-  RegisterMap *GPIOC_PERIPH = reinterpret_cast<RegisterMap*>( GPIOC_BASE_ADDR );
+  RegisterMap *GPIOC_PERIPH = reinterpret_cast<RegisterMap *>( GPIOC_BASE_ADDR );
 #endif
 #if defined( STM32_GPIOD_PERIPH_AVAILABLE )
-  RegisterMap *GPIOD_PERIPH = reinterpret_cast<RegisterMap*>( GPIOD_BASE_ADDR );
+  RegisterMap *GPIOD_PERIPH = reinterpret_cast<RegisterMap *>( GPIOD_BASE_ADDR );
 #endif
 #if defined( STM32_GPIOE_PERIPH_AVAILABLE )
-  RegisterMap *GPIOE_PERIPH = reinterpret_cast<RegisterMap*>( GPIOE_BASE_ADDR );
+  RegisterMap *GPIOE_PERIPH = reinterpret_cast<RegisterMap *>( GPIOE_BASE_ADDR );
 #endif
 #if defined( STM32_GPIOH_PERIPH_AVAILABLE )
-  RegisterMap *GPIOH_PERIPH = reinterpret_cast<RegisterMap*>( GPIOH_BASE_ADDR );
+  RegisterMap *GPIOH_PERIPH = reinterpret_cast<RegisterMap *>( GPIOH_BASE_ADDR );
 #endif
 
-/*-------------------------------------------------------------------------------
+  /*-------------------------------------------------------------------------------
   Configuration Maps
   -------------------------------------------------------------------------------*/
   namespace ConfigMap
@@ -92,7 +94,7 @@ namespace Thor::LLD::GPIO
   -------------------------------------------------------------------------------*/
   namespace Resource
   { /* clang-format off */
-  
+
   } /* clang-format on */
 
 }    // namespace Thor::LLD::GPIO

@@ -3,7 +3,7 @@
  *    hw_gpio_register_stm32l432kc.hpp
  *
  *  Description:
- *    GPIO register definitions for the STM32L432KC series chips.
+ *    GPIO definitions for the STM32L432KC series chips.
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -18,11 +18,10 @@
 
 /* Thor Includes */
 #include <Thor/lld/common/types.hpp>
-#include <Thor/lld/interface/gpio/gpio_types.hpp>
 
-/*-------------------------------------------------
-Peripheral Availability
--------------------------------------------------*/
+/*-------------------------------------------------------------------------------
+Macros
+-------------------------------------------------------------------------------*/
 #define STM32_GPIOA_PERIPH_AVAILABLE
 #define STM32_GPIOB_PERIPH_AVAILABLE
 #define STM32_GPIOC_PERIPH_AVAILABLE

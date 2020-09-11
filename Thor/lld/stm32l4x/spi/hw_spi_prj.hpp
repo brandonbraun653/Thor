@@ -12,8 +12,16 @@
 #ifndef THOR_HW_SPI_PROJECT_HPP
 #define THOR_HW_SPI_PROJECT_HPP
 
-#if defined( STM32L432xx )
+/*------------------------------------------------
+All STM32L4 devices
+------------------------------------------------*/
 #include <Thor/lld/stm32l4x/spi/variant/hw_spi_register_stm32l4xxxx.hpp>
+
+/*------------------------------------------------
+Chip specific STM32L4 devices
+------------------------------------------------*/
+#if defined( STM32L432xx )
+#include <Thor/lld/stm32l4x/spi/variant/hw_spi_register_stm32l432kc.hpp>
 #endif
 
 #endif /* !THOR_HW_SPI_PROJECT_HPP */

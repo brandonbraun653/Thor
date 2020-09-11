@@ -831,12 +831,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\flash\variant\hw_flash_register_stm32l432kc.hpp">
       <Filter>lld\stm32l4x\flash\variant</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_driver.hpp">
-      <Filter>lld\stm32l4x\spi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_mapping.hpp">
-      <Filter>lld\stm32l4x\spi</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_prj.hpp">
       <Filter>lld\stm32l4x\spi</Filter>
     </ClInclude>
@@ -848,9 +842,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_detail.hpp">
       <Filter>lld\interface\spi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l4xxxx.hpp">
-      <Filter>lld\stm32l4x\spi\variant</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\hld\pwm\hld_pwm_chimera.hpp">
       <Filter>hld\pwm</Filter>
@@ -977,6 +968,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\gpio\sim\gpio_sim_types.hpp">
       <Filter>lld\interface\gpio\sim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\spi\spi_prv_data.hpp">
+      <Filter>lld\interface\spi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l4xxxx.hpp">
+      <Filter>lld\stm32l4x\spi\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l432kc.hpp">
+      <Filter>lld\stm32l4x\spi\variant</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1112,12 +1112,6 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\flash\variant\hw_flash_register_stm32l432kc.cpp">
       <Filter>lld\stm32l4x\flash\variant</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_driver_stm32l4.cpp">
-      <Filter>lld\stm32l4x\spi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_mapping.cpp">
-      <Filter>lld\stm32l4x\spi</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\test\test_entry_lld_spi.cpp">
       <Filter>lld\stm32l4x\spi\test</Filter>
     </ClCompile>
@@ -1126,9 +1120,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\gpio\variant\hw_gpio_register_stm32l432kc.cpp">
       <Filter>lld\stm32l4x\gpio\variant</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l4xxxx.cpp">
-      <Filter>lld\stm32l4x\spi\variant</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\common\cortex-m4\cm4_interrupts.cpp">
       <Filter>lld\common\cortex-m4</Filter>
@@ -1225,6 +1216,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\interface\gpio\sim\gpio_sim_data.cpp">
       <Filter>lld\interface\gpio\sim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_driver.cpp">
+      <Filter>lld\stm32l4x\spi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\hw_spi_data.cpp">
+      <Filter>lld\stm32l4x\spi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l432kc.cpp">
+      <Filter>lld\stm32l4x\spi\variant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\spi\spi_intf.cpp">
+      <Filter>lld\interface\spi</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

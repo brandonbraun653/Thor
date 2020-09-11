@@ -12,18 +12,18 @@
 #ifndef THOR_SPI_CHIMERA_HOOKS_HPP
 #define THOR_SPI_CHIMERA_HOOKS_HPP
 
-/* STL Includes */
-#include <memory>
-
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/spi>
 
 namespace Chimera::SPI::Backend
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
-  ISPI_sPtr getDriver( const Channel channel );
+  Driver_sPtr getDriver( const Channel channel );
 }    // namespace Chimera::SPI::Backend
 
 #endif /* !THOR_SPI_CHIMERA_HOOKS_HPP */
