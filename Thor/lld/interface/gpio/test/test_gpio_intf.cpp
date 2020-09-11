@@ -8,14 +8,16 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-#if defined( THOR_LLD_TEST_GPIO_INTF )
 
 /* Chimera Includes */
 #include <Chimera/utility>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
 #include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
+
+#if defined( TARGET_LLD_TEST ) && defined( THOR_LLD_GPIO )
 
 /* GTest Includes */
 #include <gtest/gtest.h>
@@ -28,13 +30,13 @@ namespace Thor::LLD::GPIO
   FUT: isSupported()
   Range: Normal & Robust
   -------------------------------------------------------------------------------*/
-  TEST( Robust_DriverSupport, InvalidInputs )
+  TEST( Robust_GPIO_DriverSupport, InvalidInputs )
   {
     EXPECT_EQ( false, isSupported( Chimera::GPIO::Port::NUM_OPTIONS, 0 ) );
     EXPECT_EQ( false, isSupported( Chimera::GPIO::Port::PORTA, std::numeric_limits<Chimera::GPIO::Pin>::max() ) );
   }
 
-  TEST( Normal_DriverSupport, ValidInputs )
+  TEST( Normal_GPIO_DriverSupport, ValidInputs )
   {
     /*-------------------------------------------------
     This section uses hard coded values defined in the
@@ -80,13 +82,13 @@ namespace Thor::LLD::GPIO
   FUT: getPinResourceIndex()
   Range: Normal & Robust
   -------------------------------------------------------------------------------*/
-  TEST( Robust_PinResourceIndex, InvalidInputs )
+  TEST( Robust_GPIO_PinResourceIndex, InvalidInputs )
   {
     EXPECT_EQ( INVALID_RESOURCE_INDEX, getPinResourceIndex( Chimera::GPIO::Port::NUM_OPTIONS, 0 ) );
     EXPECT_EQ( INVALID_RESOURCE_INDEX, getPinResourceIndex( Chimera::GPIO::Port::PORTA, std::numeric_limits<Chimera::GPIO::Pin>::max() ) );
   }
 
-  TEST( Normal_PinResourceIndex, ValidInputs )
+  TEST( Normal_GPIO_PinResourceIndex, ValidInputs )
   {
     EXPECT_EQ( 0, getPinResourceIndex( Chimera::GPIO::Port::PORTA, 0 ) );
     EXPECT_EQ( 1, getPinResourceIndex( Chimera::GPIO::Port::PORTA, 1 ) );
@@ -126,7 +128,7 @@ namespace Thor::LLD::GPIO
   FUT: getResourceIndex()
   Range: Normal & Robust
   -------------------------------------------------------------------------------*/
-  TEST( Robust_ResourceIndex, InvalidInputs )
+  TEST( Robust_GPIO_ResourceIndex, InvalidInputs )
   {
     // Variant 1: Peripheral Address
     EXPECT_EQ( INVALID_RESOURCE_INDEX, getResourceIndex( reinterpret_cast<std::uintptr_t>( nullptr ) ) );
@@ -139,7 +141,7 @@ namespace Thor::LLD::GPIO
     EXPECT_EQ( INVALID_RESOURCE_INDEX, getResourceIndex( Chimera::GPIO::Port::PORTD ) );
   }
 
-  TEST( Normal_ResourceIndex, ValidInputs )
+  TEST( Normal_GPIO_ResourceIndex, ValidInputs )
   {
     // Variant 1: Peripheral Address
     EXPECT_EQ( GPIOA_RESOURCE_INDEX, getResourceIndex( reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ) ) );
@@ -157,15 +159,15 @@ namespace Thor::LLD::GPIO
   FUT: getPinAttributes()
   Range: Normal & Robust
   -------------------------------------------------------------------------------*/
-  TEST( Robust_PinAttributes, InvalidInputs )
+  TEST( Robust_GPIO_PinAttributes, InvalidInputs )
   {
     EXPECT_EQ( nullptr, getPinAttributes( Chimera::GPIO::Port::NUM_OPTIONS, 0 ) );
     EXPECT_EQ( nullptr, getPinAttributes( Chimera::GPIO::Port::PORTI, 0 ) );
     EXPECT_EQ( nullptr, getPinAttributes( Chimera::GPIO::Port::PORTA, std::numeric_limits<Chimera::GPIO::Pin>::max() ) );
   }
 
-  TEST( Normal_PinAttributes, ValidInputs )
-  { 
+  TEST( Normal_GPIO_PinAttributes, ValidInputs )
+  {
     static constexpr size_t a = static_cast<size_t>( Chimera::GPIO::Port::PORTA );
     static constexpr size_t b = static_cast<size_t>( Chimera::GPIO::Port::PORTB );
     static constexpr size_t c = static_cast<size_t>( Chimera::GPIO::Port::PORTC );
@@ -188,13 +190,13 @@ namespace Thor::LLD::GPIO
   FUT: getPortAttributes()
   Range: Normal & Robust
   -------------------------------------------------------------------------------*/
-  TEST( Robust_PortAttributes, InvalidInputs )
+  TEST( Robust_GPIO_PortAttributes, InvalidInputs )
   {
     EXPECT_EQ( nullptr, getPortAttributes( Chimera::GPIO::Port::NUM_OPTIONS ) );
     EXPECT_EQ( nullptr, getPortAttributes( Chimera::GPIO::Port::PORTK ) );
   }
 
-  TEST( Normal_PortAttributes, ValidInputs )
+  TEST( Normal_GPIO_PortAttributes, ValidInputs )
   {
     const auto tmp1 = &prjPortAttributes[ static_cast<size_t>( Chimera::GPIO::Port::PORTA ) ];
     EXPECT_EQ( tmp1, getPortAttributes( Chimera::GPIO::Port::PORTA ) );
@@ -206,19 +208,19 @@ namespace Thor::LLD::GPIO
     EXPECT_EQ( tmp3, getPortAttributes( Chimera::GPIO::Port::PORTC ) );
   }
 
-  
+
   /*-------------------------------------------------------------------------------
   FUT: getPort()
   Range: Normal & Robust
   -------------------------------------------------------------------------------*/
-  TEST( Robust_GetPort, InvalidInputs )
+  TEST( Robust_GPIO_GetPort, InvalidInputs )
   {
     EXPECT_EQ( Chimera::GPIO::Port::UNKNOWN_PORT, getPort( reinterpret_cast<std::uintptr_t>( nullptr ) ) );
     EXPECT_EQ( Chimera::GPIO::Port::UNKNOWN_PORT, getPort( std::numeric_limits<std::uintptr_t>::min() ) );
     EXPECT_EQ( Chimera::GPIO::Port::UNKNOWN_PORT, getPort( std::numeric_limits<std::uintptr_t>::max() ) );
   }
 
-  TEST( Normal_GetPort, ValidInputs )
+  TEST( Normal_GPIO_GetPort, ValidInputs )
   {
     EXPECT_EQ( Chimera::GPIO::Port::PORTA, getPort( reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ) ) );
     EXPECT_EQ( Chimera::GPIO::Port::PORTB, getPort( reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ) ) );
@@ -230,7 +232,7 @@ namespace Thor::LLD::GPIO
   FUT: attachDriverInstances()
   Range: Normal & Robust
   -------------------------------------------------------------------------------*/
-  TEST( Robust_AttachDriver, InvalidInputs )
+  TEST( Robust_GPIO_AttachDriver, InvalidInputs )
   {
     EXPECT_EQ( false, attachDriverInstances( nullptr, 1 ) );
     EXPECT_EQ( false, attachDriverInstances( fakeDriverList, 0 ) );
@@ -239,7 +241,7 @@ namespace Thor::LLD::GPIO
     EXPECT_EQ( false, attachDriverInstances( fakeDriverList, NUM_GPIO_PINS + 1 ) );
   }
 
-  TEST( Normal_AttachDriver, ValidInputs )
+  TEST( Normal_GPIO_AttachDriver, ValidInputs )
   {
     EXPECT_EQ( true, attachDriverInstances( fakeDriverList, ARRAY_COUNT( fakeDriverList ) ) );
   }
@@ -249,7 +251,7 @@ namespace Thor::LLD::GPIO
   FUT: findAlternateFunction()
   Range: Normal & Robust
   -------------------------------------------------------------------------------*/
-  TEST( Robust_FindAlt, InvalidInputs )
+  TEST( Robust_GPIO_FindAlt, InvalidInputs )
   {
     // Bad port
     EXPECT_EQ( BAD_ALT_FUNC,
@@ -263,7 +265,7 @@ namespace Thor::LLD::GPIO
 
   }
 
-  TEST( Normal_FindAlt, ValidInputs )
+  TEST( Normal_GPIO_FindAlt, ValidInputs )
   {
     EXPECT_EQ( AF1_TIM2, findAlternateFunction( Chimera::GPIO::Port::PORTA, 0, Chimera::GPIO::Alternate::TIM2_CH1 ) );
     EXPECT_EQ( AF10_QUADSPI,

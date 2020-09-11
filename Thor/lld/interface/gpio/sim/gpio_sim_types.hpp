@@ -13,7 +13,7 @@
 #define THOR_LLD_GPIO_SIM_TYPES_HPP
 
 /* STL Includes */
-#include <cstddef>
+#include <cstdint>
 
 namespace Thor::LLD::GPIO
 {

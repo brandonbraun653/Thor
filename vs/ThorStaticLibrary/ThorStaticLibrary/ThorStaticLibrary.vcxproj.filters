@@ -310,6 +310,9 @@
     <Filter Include="lld\interface\common">
       <UniqueIdentifier>{89e434f4-a58e-4caf-aaa2-dfed0ea7e216}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lld\interface\spi\sim">
+      <UniqueIdentifier>{91d973d7-dbe9-4a9e-94e2-2b681c9cd438}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.xml">
@@ -978,6 +981,12 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\spi\variant\hw_spi_register_stm32l432kc.hpp">
       <Filter>lld\stm32l4x\spi\variant</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\spi\sim\spi_sim_types.hpp">
+      <Filter>lld\interface\spi\sim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\spi\sim\spi_sim_variant.hpp">
+      <Filter>lld\interface\spi\sim</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Thor\config\boost\thor_boost_stub.cpp">
@@ -1228,6 +1237,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\interface\spi\spi_intf.cpp">
       <Filter>lld\interface\spi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\spi\sim\spi_sim_data.cpp">
+      <Filter>lld\interface\spi\sim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\spi\sim\spi_sim_driver.cpp">
+      <Filter>lld\interface\spi\sim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\spi\sim\spi_sim_variant.cpp">
+      <Filter>lld\interface\spi\sim</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

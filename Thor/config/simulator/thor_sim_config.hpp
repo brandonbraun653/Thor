@@ -248,11 +248,11 @@ Low Level Driver Support
 //#ifndef THOR_LLD_SERIAL
 //#define THOR_LLD_SERIAL
 //#endif
-//
-//#ifndef THOR_LLD_SPI
-//#define THOR_LLD_SPI
-//#endif
-//
+
+#ifndef THOR_LLD_SPI
+#define THOR_LLD_SPI
+#endif
+
 //#ifndef THOR_LLD_TIMER
 //#define THOR_LLD_TIMER
 //#endif
