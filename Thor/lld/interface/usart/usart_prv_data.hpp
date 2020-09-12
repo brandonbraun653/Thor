@@ -28,13 +28,6 @@
 namespace Thor::LLD::USART
 {
   /*-------------------------------------------------------------------------------
-  Constants
-  -------------------------------------------------------------------------------*/
-  static constexpr RIndex_t USART1_RESOURCE_INDEX = 0u;
-  static constexpr RIndex_t USART2_RESOURCE_INDEX = 1u;
-  static constexpr RIndex_t USART3_RESOURCE_INDEX = 2u;
-
-  /*-------------------------------------------------------------------------------
   Peripheral Instances:
     Memory mapped structs that allow direct access to the registers of a peripheral
   -------------------------------------------------------------------------------*/
@@ -60,7 +53,6 @@ namespace Thor::LLD::USART
     extern LLD_CONST Reg32_t CharWidth[ static_cast<size_t>( Chimera::Serial::CharWid::NUM_OPTIONS ) ];
     extern LLD_CONST Reg32_t Parity[ static_cast<size_t>( Chimera::Serial::Parity::NUM_OPTIONS ) ];
     extern LLD_CONST Reg32_t StopBits[ static_cast<size_t>( Chimera::Serial::StopBits::NUM_OPTIONS ) ];
-    extern LLD_CONST uint8_t ResourceIndex[ static_cast<size_t>( Chimera::Serial::Channel::NUM_OPTIONS ) ];
   }    // namespace ConfigMap
 
 
@@ -73,11 +65,9 @@ namespace Thor::LLD::USART
   -------------------------------------------------------------------------------*/
   namespace Resource
   {
-    extern LLD_CONST RegisterMap *PeripheralList[ NUM_USART_PERIPHS ];
     extern LLD_CONST Reg32_t RXDMASignals[ NUM_USART_PERIPHS ];
     extern LLD_CONST Reg32_t TXDMASignals[ NUM_USART_PERIPHS ];
     extern LLD_CONST IRQn_Type IRQSignals[ NUM_USART_PERIPHS ];
-    extern LLD_CONST Chimera::Serial::Channel SerialChannel[ NUM_USART_PERIPHS ];
   }
 }    // namespace Thor::LLD::USART
 

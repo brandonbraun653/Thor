@@ -21,9 +21,8 @@
 #include <Thor/lld/common/cortex-m4/interrupts.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/usart/usart_prv_data.hpp>
-#include <Thor/lld/stm32l4x/usart/hw_usart_driver.hpp>
-#include <Thor/lld/stm32l4x/usart/hw_usart_prj.hpp>
-#include <Thor/lld/stm32l4x/usart/hw_usart_types.hpp>
+#include <Thor/lld/interface/usart/usart_detail.hpp>
+#include <Thor/lld/interface/usart/usart_intf.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_USART )
@@ -53,22 +52,16 @@ namespace Thor::LLD::USART
     initializeRegisters();
 
     /*-------------------------------------------------
-    Reinitialize with the appropriate constructor
+    Attach all the expected peripherals to the drivers
     -------------------------------------------------*/
-    s_usart_drivers[ USART1_RESOURCE_INDEX ] = Driver( USART1_PERIPH );
-    s_usart_drivers[ USART2_RESOURCE_INDEX ] = Driver( USART2_PERIPH );
-
-#if defined( STM32_USART3_PERIPH_AVAILABLE )
-    s_usart_drivers[ USART3_RESOURCE_INDEX ] = Driver( USART3_PERIPH );
-#endif
-
-    return Chimera::Status::OK;
-  }
-
-
-  size_t availableChannels()
-  {
-    return NUM_USART_PERIPHS;
+    if ( attachDriverInstances( s_usart_drivers, ARRAY_COUNT( s_usart_drivers ) ) )
+    {
+      return Chimera::Status::OK;
+    }
+    else
+    {
+      return Chimera::Status::FAIL;
+    }
   }
 
 
@@ -76,7 +69,7 @@ namespace Thor::LLD::USART
   {
     if ( channel < Chimera::Serial::Channel::NUM_OPTIONS )
     {
-      return ( ConfigMap::ResourceIndex[ static_cast<size_t>( channel ) ] != INVALID_RESOURCE_INDEX );
+      return ( getResourceIndex( channel ) != INVALID_RESOURCE_INDEX );
     }
     else
     {
@@ -95,47 +88,9 @@ namespace Thor::LLD::USART
     return nullptr;
   }
 
-
-  RIndex_t getResourceIndex( const Chimera::Serial::Channel channel )
-  {
-    if ( isChannelSupported( channel ) )
-    {
-      return ConfigMap::ResourceIndex[ static_cast<size_t>( channel ) ];
-    }
-
-    return INVALID_RESOURCE_INDEX;
-  }
-
-
-  RIndex_t getResourceIndex( const std::uintptr_t address )
-  {
-    if ( address == reinterpret_cast<std::uintptr_t>( USART1_PERIPH ) )
-    {
-      return USART1_RESOURCE_INDEX;
-    }
-    else if ( address == reinterpret_cast<std::uintptr_t>( USART2_PERIPH ) )
-    {
-      return USART2_RESOURCE_INDEX;
-    }
-#if defined( STM32_USART3_PERIPH_AVAILABLE )
-    else if ( address == reinterpret_cast<std::uintptr_t>( USART3_PERIPH ) )
-    {
-      return USART3_RESOURCE_INDEX;
-    }
-#endif
-
-    return INVALID_RESOURCE_INDEX;
-  }
-
-
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver( RegisterMap *peripheral ) : periph( peripheral )
-  {
-    resourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
-  }
-
   Driver::Driver() : periph( nullptr )
   {
   }
@@ -144,6 +99,20 @@ namespace Thor::LLD::USART
   {
   }
 
+  Chimera::Status_t Driver::attach( RegisterMap *peripheral )
+  {
+    if ( auto idx = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) ); idx != INVALID_RESOURCE_INDEX )
+    {
+      periph        = peripheral;
+      resourceIndex = idx;
+
+      return Chimera::Status::OK;
+    }
+    else 
+    {
+      return Chimera::Status::FAIL;
+    }
+  }
 
   Chimera::Status_t Driver::init( const Thor::LLD::Serial::Config &cfg )
   {

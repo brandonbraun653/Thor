@@ -260,11 +260,11 @@ Low Level Driver Support
 //#ifndef THOR_LLD_UART
 //#define THOR_LLD_UART
 //#endif
-//
-//#ifndef THOR_LLD_USART
-//#define THOR_LLD_USART
-//#endif
-//
+
+#ifndef THOR_LLD_USART
+#define THOR_LLD_USART
+#endif
+
 //#ifndef THOR_LLD_USB
 //#define THOR_LLD_USB
 //#endif

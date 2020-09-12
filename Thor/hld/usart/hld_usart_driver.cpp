@@ -134,7 +134,7 @@ namespace Thor::USART
 
   bool isChannelUSART( const Chimera::Serial::Channel channel )
   {
-    return ::LLD::isChannelSupported( channel );
+    return ::LLD::isSupported( channel );
   }
 
 

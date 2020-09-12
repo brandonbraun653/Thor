@@ -24,19 +24,6 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432kc.hpp>
 
-/*-------------------------------------------------
-Peripheral Availability
--------------------------------------------------*/
-// Available on every STM32L4 device
-#define STM32_USART1_PERIPH_AVAILABLE
-#define STM32_USART2_PERIPH_AVAILABLE
-
-#if defined( STM32L432xx )
-// Device doesn't have USART3
-#else
-#define STM32_USART3_PERIPH_AVAILABLE
-#endif
-
 namespace Thor::LLD::USART
 {
   /**
@@ -49,31 +36,10 @@ namespace Thor::LLD::USART
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base
   -------------------------------------------------*/
-  static constexpr RIndex_t NUM_USART_PERIPHS = 3;
-
-#if defined( STM32_USART1_PERIPH_AVAILABLE )
   static constexpr uint32_t USART1_BASE_ADDR = Thor::System::MemoryMap::USART1_PERIPH_START_ADDRESS;
-#else
-  static constexpr uint32_t USART1_BASE_ADDR = std::numeric_limits<uint32_t>::max();
-#endif
-
-#if defined( STM32_USART2_PERIPH_AVAILABLE )
   static constexpr uint32_t USART2_BASE_ADDR = Thor::System::MemoryMap::USART2_PERIPH_START_ADDRESS;
-#else
-  static constexpr uint32_t USART2_BASE_ADDR = std::numeric_limits<uint32_t>::max();
-#endif
-
-#if defined( STM32_USART3_PERIPH_AVAILABLE )
   static constexpr uint32_t USART3_BASE_ADDR = Thor::System::MemoryMap::USART3_PERIPH_START_ADDRESS;
-#else
-  static constexpr uint32_t USART3_BASE_ADDR = std::numeric_limits<uint32_t>::max();
-#endif
 
-  /*-------------------------------------------------
-  Lookup addresses
-  -------------------------------------------------*/
-  static constexpr std::array<uint32_t, NUM_USART_PERIPHS> periphAddressList = { USART1_BASE_ADDR, USART2_BASE_ADDR,
-                                                                                 USART3_BASE_ADDR };
 
   /*-------------------------------------------------
   Peripheral Register Definitions

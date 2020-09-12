@@ -18,15 +18,18 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/lld/common/interrupts/usart_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/serial/serial_intf.hpp>
 #include <Thor/lld/interface/serial/serial_types.hpp>
 #include <Thor/lld/interface/usart/usart_types.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
 namespace Thor::LLD::USART
 {
   /*-------------------------------------------------------------------------------
-  Public Functions
+  Public Functions (Implemented by the project)
   -------------------------------------------------------------------------------*/
   /**
    *  Initializes the low level driver
@@ -36,20 +39,24 @@ namespace Thor::LLD::USART
   Chimera::Status_t initialize();
 
   /**
-   *  Checks if the given hardware channel is supported on this device.
-   *
-   *  @param[in]  channel       The channel number to be checked
-   *  @return bool
-   */
-  bool isChannelSupported( const Chimera::Serial::Channel channel );
-
-  /**
    *  Gets a raw pointer to the driver for a particular channel
    *
    *  @param[in] channel        The channel to grab
    *  @return Driver_rPtr      Instance of the driver for the requested channel
    */
   Driver_rPtr getDriver( const Chimera::Serial::Channel channel );
+
+
+  /*-------------------------------------------------------------------------------
+  Public Functions (Implemented by the interface layer)
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Checks if the given hardware channel is supported on this device.
+   *
+   *  @param[in]  channel       The channel number to be checked
+   *  @return bool
+   */
+  bool isSupported( const Chimera::Serial::Channel channel );
 
   /**
    *  Get's the resource index associated with a particular channel. If not
@@ -69,13 +76,127 @@ namespace Thor::LLD::USART
    */
   RIndex_t getResourceIndex( const std::uintptr_t address );
 
+  /**
+   *  Gets the channel associated with a peripheral address
+   *
+   *  @param[in]  address       Memory address the peripheral is mapped to
+   *  @return Chimera::Serial::Channel
+   */
+  Chimera::Serial::Channel getChannel( const std::uintptr_t address );
+
+  /**
+   *  Initializes the drivers by attaching the appropriate peripheral
+   *
+   *  @param[in]  driverList    List of driver objects to be initialized
+   *  @param[in]  numDrivers    How many drivers are in driverList
+   *  @return bool
+   */
+  bool attachDriverInstances( Driver *const driverList, const size_t numDrivers );
+
+
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
+  /*-------------------------------------------------
+  Virtual class that defines the expected interface.
+  Useful for mocking purposes.
+  -------------------------------------------------*/
   class IDriver : virtual public Thor::LLD::Serial::Basic, virtual public Thor::LLD::Serial::Extended
   {
   public:
     virtual ~IDriver() = default;
+  };
+
+
+  /*-------------------------------------------------
+  Concrete driver declaration. Implements the interface
+  of the virtual class, but doesn't inherit due to the
+  memory penalties. Definition is done project side.
+  -------------------------------------------------*/
+  class Driver
+  {
+  public:
+    Driver();
+    ~Driver();
+
+    /**
+     *  Attaches a peripheral instance to the interaction model
+     *
+     *  @param[in]  peripheral    Memory mapped struct of the desired SPI peripheral
+     *  @return void
+     */
+    Chimera::Status_t attach( RegisterMap *const peripheral );
+    Chimera::Status_t init( const Thor::LLD::Serial::Config &cfg );
+    Chimera::Status_t deinit();
+    Chimera::Status_t reset();
+    Chimera::Status_t transmit( const uint8_t *const data, const size_t size, const size_t timeout );
+    Chimera::Status_t receive( uint8_t *const data, const size_t size, const size_t timeout );
+    Chimera::Status_t enableIT( const Chimera::Hardware::SubPeripheral periph );
+    Chimera::Status_t disableIT( const Chimera::Hardware::SubPeripheral periph );
+    Chimera::Status_t transmitIT( const uint8_t *const data, const size_t size, const size_t timeout );
+    Chimera::Status_t receiveIT( uint8_t *const data, const size_t size, const size_t timeout );
+    Chimera::Status_t initDMA();
+    Chimera::Status_t deinitDMA();
+    Chimera::Status_t enableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
+    Chimera::Status_t disableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
+    Chimera::Status_t transmitDMA( const void *const data, const size_t size, const size_t timeout );
+    Chimera::Status_t receiveDMA( void *const data, const size_t size, const size_t timeout );
+    Chimera::Status_t txTransferStatus();
+    Chimera::Status_t rxTransferStatus();
+    uint32_t getFlags();
+    void clearFlags( const uint32_t flagBits );
+    void killTransmit();
+    void killReceive();
+    void attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup );
+    Thor::LLD::Serial::CDTCB getTCB_TX();
+    Thor::LLD::Serial::MDTCB getTCB_RX();
+    Thor::LLD::Serial::Config getConfiguration();
+
+  protected:
+    friend void(::USART1_IRQHandler )();
+    friend void(::USART2_IRQHandler )();
+    friend void(::USART3_IRQHandler )();
+
+    /**
+     *  Generic interrupt handler for all USART specific ISR signals
+     *
+     *  @return void
+     */
+    void IRQHandler();
+
+  private:
+    RegisterMap *periph;           /**< Points to the hardware registers for this instance */
+    size_t resourceIndex;          /**< Derived lookup table index for resource access */
+    volatile Reg32_t runtimeFlags; /**< Error/process flags set at runtime to indicate state */
+
+    /*------------------------------------------------
+    Asynchronous Event Listeners
+    ------------------------------------------------*/
+    Chimera::Threading::BinarySemaphore * ISRWakeup_external;
+
+    /*------------------------------------------------
+    Transfer Control Blocks
+    ------------------------------------------------*/
+    Thor::LLD::Serial::CDTCB txTCB;
+    Thor::LLD::Serial::MDTCB rxTCB;
+
+    /**
+     *  Calculates the appropriate configuration value for the Baud Rate Register
+     *  given a desired baud rate.
+     *
+     *  @param[in]  desiredBaud   The baud rate to be configured
+     */
+    uint32_t calculateBRR( const size_t desiredBaud );
+
+    /**
+     *  Disables the USART interrupts
+     */
+    inline void enterCriticalSection();
+
+    /**
+     *  Enables the USART interrupts
+     */
+    inline void exitCriticalSection();
   };
 }    // namespace Thor::LLD::USART
 

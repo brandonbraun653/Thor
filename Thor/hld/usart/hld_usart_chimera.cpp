@@ -59,7 +59,7 @@ namespace Chimera::USART::Backend
 
   bool isChannelUSART( const Chimera::Serial::Channel channel )
   {
-    return Thor::LLD::USART::isChannelSupported( channel );
+    return Thor::LLD::USART::isSupported( channel );
   }
 
 

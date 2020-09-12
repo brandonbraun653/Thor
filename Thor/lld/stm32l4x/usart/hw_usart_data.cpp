@@ -51,31 +51,6 @@ namespace Thor::LLD::USART
       Configuration::Stop::BIT_1_5,
       Configuration::Stop::BIT_2
     };
-
-    LLD_CONST uint8_t ResourceIndex[ static_cast<size_t>( Chimera::Serial::Channel::NUM_OPTIONS ) ] = {
-      // Channel 1
-      #if defined( STM32_USART1_PERIPH_AVAILABLE )
-      USART1_RESOURCE_INDEX,
-      #else
-      INVALID_RESOURCE_INDEX,
-      #endif
-      #if defined( STM32_USART2_PERIPH_AVAILABLE )
-      USART2_RESOURCE_INDEX,
-      #else
-      INVALID_RESOURCE_INDEX,
-      #endif
-      #if defined( STM32_USART3_PERIPH_AVAILABLE )
-      USART3_RESOURCE_INDEX,
-      #else
-      INVALID_RESOURCE_INDEX,
-      #endif
-
-      INVALID_RESOURCE_INDEX, // SERIAL4
-      INVALID_RESOURCE_INDEX,
-      INVALID_RESOURCE_INDEX,
-      INVALID_RESOURCE_INDEX,
-      INVALID_RESOURCE_INDEX
-    };
   } /* clang-format on */
 
   /*-------------------------------------------------------------------------------
@@ -83,66 +58,43 @@ namespace Thor::LLD::USART
   -------------------------------------------------------------------------------*/
   namespace Resource
   { /* clang-format off */
-    LLD_CONST RegisterMap *PeripheralList[ NUM_USART_PERIPHS ] = {
-      #if defined( STM32_USART1_PERIPH_AVAILABLE )
-      USART1_PERIPH,
-      #else
-      nullptr,
-      #endif
-      #if defined( STM32_USART2_PERIPH_AVAILABLE )
-      USART2_PERIPH,
-      #else
-      nullptr,
-      #endif
-      #if defined( STM32_USART3_PERIPH_AVAILABLE )
-      USART3_PERIPH,
-      #else
-      nullptr,
-      #endif
-    };
-
-
     LLD_CONST Reg32_t RXDMASignals[ NUM_USART_PERIPHS ] = {
+#if defined( STM32_USART1_PERIPH_AVAILABLE )
       Thor::DMA::Source::S_USART1_RX,
+#endif
+#if defined( STM32_USART2_PERIPH_AVAILABLE )
       Thor::DMA::Source::S_USART2_RX,
+#endif
+#if defined( STM32_USART3_PERIPH_AVAILABLE )
       Thor::DMA::Source::S_USART3_RX
+#endif
     };
 
 
     LLD_CONST Reg32_t TXDMASignals[ NUM_USART_PERIPHS ] = {
+#if defined( STM32_USART1_PERIPH_AVAILABLE )
       Thor::DMA::Source::S_USART1_TX,
+#endif
+#if defined( STM32_USART2_PERIPH_AVAILABLE )
       Thor::DMA::Source::S_USART2_TX,
+#endif
+#if defined( STM32_USART3_PERIPH_AVAILABLE )
       Thor::DMA::Source::S_USART3_TX
+#endif 
     };
 
 
     LLD_CONST IRQn_Type IRQSignals[ NUM_USART_PERIPHS ] = {
+#if defined( STM32_USART1_PERIPH_AVAILABLE )
       USART1_IRQn,
+#endif
+#if defined( STM32_USART2_PERIPH_AVAILABLE )
       USART2_IRQn,
+#endif
+#if defined( STM32_USART3_PERIPH_AVAILABLE )
       USART3_IRQn
+#endif
     };
-
-
-    LLD_CONST Chimera::Serial::Channel SerialChannel[ NUM_USART_PERIPHS ] = {
-      #if defined ( STM32_USART1_PERIPH_AVAILABLE )
-      Chimera::Serial::Channel::SERIAL1,
-      #else
-      Chimera::Serial::Channel::NOT_SUPPORTED,
-      #endif
-
-      #if defined ( STM32_USART2_PERIPH_AVAILABLE )
-      Chimera::Serial::Channel::SERIAL2,
-      #else
-      Chimera::Serial::Channel::NOT_SUPPORTED,
-      #endif
-
-      #if defined ( STM32_USART3_PERIPH_AVAILABLE )
-      Chimera::Serial::Channel::SERIAL3,
-      #else
-      Chimera::Serial::Channel::NOT_SUPPORTED,
-      #endif
-    };
-
   } /* clang-format on */
 
 }    // namespace Thor::LLD::USART

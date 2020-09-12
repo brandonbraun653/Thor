@@ -27,15 +27,9 @@
 /*-------------------------------------------------
 Peripheral Availability
 -------------------------------------------------*/
-// Available on every STM32L4 device
 #define STM32_USART1_PERIPH_AVAILABLE
 #define STM32_USART2_PERIPH_AVAILABLE
 
-#if defined( STM32L432xx )
-// Device doesn't have USART3
-#else
-#define STM32_USART3_PERIPH_AVAILABLE
-#endif
 
 namespace Thor::LLD::USART
 {
@@ -46,34 +40,18 @@ namespace Thor::LLD::USART
    */
   void initializeRegisters();
 
-  /*-------------------------------------------------
-  Peripheral Instance Memory Map Base
-  -------------------------------------------------*/
-  static constexpr RIndex_t NUM_USART_PERIPHS = 3;
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
+  static constexpr size_t NUM_USART_PERIPHS = 2;
 
-#if defined( STM32_USART1_PERIPH_AVAILABLE )
+  static constexpr RIndex_t USART1_RESOURCE_INDEX = 0u;
+  static constexpr RIndex_t USART2_RESOURCE_INDEX = 1u;
+  static constexpr RIndex_t USART3_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
+
   static constexpr uint32_t USART1_BASE_ADDR = Thor::System::MemoryMap::USART1_PERIPH_START_ADDRESS;
-#else
-  static constexpr uint32_t USART1_BASE_ADDR = std::numeric_limits<uint32_t>::max();
-#endif
-
-#if defined( STM32_USART2_PERIPH_AVAILABLE )
   static constexpr uint32_t USART2_BASE_ADDR = Thor::System::MemoryMap::USART2_PERIPH_START_ADDRESS;
-#else
-  static constexpr uint32_t USART2_BASE_ADDR = std::numeric_limits<uint32_t>::max();
-#endif
-
-#if defined( STM32_USART3_PERIPH_AVAILABLE )
   static constexpr uint32_t USART3_BASE_ADDR = Thor::System::MemoryMap::USART3_PERIPH_START_ADDRESS;
-#else
-  static constexpr uint32_t USART3_BASE_ADDR = std::numeric_limits<uint32_t>::max();
-#endif
-
-  /*-------------------------------------------------
-  Lookup addresses
-  -------------------------------------------------*/
-  static constexpr std::array<uint32_t, NUM_USART_PERIPHS> periphAddressList = { USART1_BASE_ADDR, USART2_BASE_ADDR,
-                                                                                 USART3_BASE_ADDR };
 
 }    // namespace Thor::LLD::USART
 
