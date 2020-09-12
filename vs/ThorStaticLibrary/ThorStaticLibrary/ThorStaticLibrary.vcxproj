@@ -615,6 +615,10 @@
     <ClCompile Include="..\..\..\Thor\lld\interface\spi\sim\spi_sim_driver.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\spi\sim\spi_sim_variant.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\spi\spi_intf.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\usart\sim\usart_sim_data.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\usart\sim\usart_sim_driver.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\usart\sim\usart_sim_variant.cpp" />
+    <ClCompile Include="..\..\..\Thor\lld\interface\usart\usart_intf.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\interface\watchdog\mock\watchdog_mock_variant.cpp" />
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\des\hw_des_driver.cpp">
@@ -1047,16 +1051,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_1|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RF24_2|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l432kc.cpp" />
     <ClInclude Include="..\..\..\Thor\config\boost\boostStub.hpp" />
     <ClInclude Include="..\..\..\Thor\config\chimera\chimeraPort.hpp" />
     <ClInclude Include="..\..\..\Thor\config\config.hpp" />
@@ -1268,6 +1263,8 @@
     <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_detail.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_intf.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\uart\uart_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\usart\sim\usart_sim_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\interface\usart\sim\usart_sim_variant.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_prv_data.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_detail.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_intf.hpp" />
@@ -1328,6 +1325,7 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_driver.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_prj.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_types.hpp" />
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l432kc.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.hpp" />
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\version.hpp" />
   </ItemGroup>

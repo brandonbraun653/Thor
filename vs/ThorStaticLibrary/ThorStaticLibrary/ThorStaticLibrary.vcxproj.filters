@@ -313,6 +313,9 @@
     <Filter Include="lld\interface\spi\sim">
       <UniqueIdentifier>{91d973d7-dbe9-4a9e-94e2-2b681c9cd438}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lld\interface\usart\sim">
+      <UniqueIdentifier>{02c9d1b8-21d9-49da-8a51-65c1e75798f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="stm32.xml">
@@ -900,9 +903,6 @@
     <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\hw_usart_types.hpp">
       <Filter>lld\stm32l4x\usart</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.hpp">
-      <Filter>lld\stm32l4x\usart\variant</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\usart\usart_detail.hpp">
       <Filter>lld\interface\usart</Filter>
     </ClInclude>
@@ -986,6 +986,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Thor\lld\interface\spi\sim\spi_sim_variant.hpp">
       <Filter>lld\interface\spi\sim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\usart\sim\usart_sim_types.hpp">
+      <Filter>lld\interface\usart\sim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\interface\usart\sim\usart_sim_variant.hpp">
+      <Filter>lld\interface\usart\sim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.hpp">
+      <Filter>lld\stm32l4x\usart\variant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l432kc.hpp">
+      <Filter>lld\stm32l4x\usart\variant</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1184,9 +1196,6 @@
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\timer\hw_timer_driver_stm32l4_general.cpp">
       <Filter>lld\stm32l4x\timer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l4xxxx.cpp">
-      <Filter>lld\stm32l4x\usart\variant</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\test\test_entry_lld_usart.cpp">
       <Filter>lld\stm32l4x\usart\test</Filter>
     </ClCompile>
@@ -1246,6 +1255,21 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Thor\lld\interface\spi\sim\spi_sim_variant.cpp">
       <Filter>lld\interface\spi\sim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\usart\sim\usart_sim_data.cpp">
+      <Filter>lld\interface\usart\sim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\usart\sim\usart_sim_driver.cpp">
+      <Filter>lld\interface\usart\sim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\usart\sim\usart_sim_variant.cpp">
+      <Filter>lld\interface\usart\sim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\interface\usart\usart_intf.cpp">
+      <Filter>lld\interface\usart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Thor\lld\stm32l4x\usart\variant\hw_usart_register_stm32l432kc.cpp">
+      <Filter>lld\stm32l4x\usart\variant</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
