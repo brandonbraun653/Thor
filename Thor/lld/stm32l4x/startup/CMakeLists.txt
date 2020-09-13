@@ -13,22 +13,21 @@ set(LINK_LIBS
 # ====================================================
 # Variant Library
 # ====================================================
-set(VARIANT thor_lld_stm32l4_gpio_variant)
+set(VARIANT thor_lld_stm32l4_startup_variant)
 if(${THOR_CHIP} MATCHES "^L432$")
-  add_library(${VARIANT} STATIC variant/hw_gpio_register_stm32l432kc.cpp)
+  add_library(${VARIANT} STATIC hw_startup_stm32l432xx.c)
   target_link_libraries(${VARIANT} PRIVATE ${LINK_LIBS})
   export(TARGETS ${VARIANT} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${VARIANT}.cmake")
 else()
-  message(FATAL_ERROR "Unsupported STM32L4 driver variant for: gpio")
+  message(FATAL_ERROR "Unsupported STM32L4 driver variant for: startup")
 endif()
 
 # ====================================================
 # Driver Library (+ Variant)
 # ====================================================
-set(CORE thor_lld_stm32l4_gpio)
+set(CORE thor_lld_stm32l4_startup)
 add_library(${CORE} STATIC
-  hw_gpio_driver.cpp
-  hw_gpio_data.cpp
+  hw_startup_reset.cpp
 )
 target_link_libraries(${CORE} PRIVATE ${LINK_LIBS} ${VARIANT})
 export(TARGETS ${CORE} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${CORE}.cmake")
