@@ -27,7 +27,7 @@ target_link_libraries(${LLD} INTERFACE
   thor_lld_stm32l4_rcc
   thor_lld_stm32l4_spi
   thor_lld_stm32l4_startup
-  thor_lld_stm32l4_syste
+  thor_lld_stm32l4_system
   thor_lld_stm32l4_timer
   thor_lld_stm32l4_usart
 )
