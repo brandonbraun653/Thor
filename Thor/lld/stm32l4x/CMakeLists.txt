@@ -21,7 +21,7 @@ add_library(${LLD} INTERFACE)
 target_link_libraries(${LLD} INTERFACE
   thor_lld_stm32l4_des
   thor_lld_stm32l4_flash
-  thor_lld_stm32l4_gpi
+  thor_lld_stm32l4_gpio
   thor_lld_stm32l4_interrupt
   thor_lld_stm32l4_power
   thor_lld_stm32l4_rcc

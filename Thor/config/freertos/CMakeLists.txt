@@ -3,20 +3,18 @@
 # ====================================================
 set(LINK_LIBS
   aurora_inc        # Aurora public headers
-  Boost::boost      # Boost public headers
+  type_safe_inc     # Type safe public headers
   thor_inc          # Thor public headers
   chimera_inc       # Chimera public headers
-  lld_ext_inc_dep   # 3rd Party headers
   prj_device_target # Compiler options for target device
 )
 
 # ====================================================
 # Interface Library
 # ====================================================
-set(HLD thor_hld_pwm)
-add_library(${HLD} STATIC
-  hld_pwm_chimera.cpp
-  hld_pwm_driver.cpp
+set(CFG thor_cfg_freertos)
+add_library(${CFG} STATIC
+  thor_freertos_hooks_prj.cpp
 )
-target_link_libraries(${HLD} PRIVATE ${LINK_LIBS})
-export(TARGETS ${HLD} FILE "${PROJECT_BINARY_DIR}/Thor/hld/${HLD}.cmake")
+target_link_libraries(${CFG} PRIVATE ${LINK_LIBS})
+export(TARGETS ${CFG} FILE "${PROJECT_BINARY_DIR}/Thor/cfg/${CFG}.cmake")

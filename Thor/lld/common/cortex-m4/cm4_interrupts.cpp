@@ -8,10 +8,15 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
+/* STL Includes */
+#include <cstdint>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/cmsis/configuration.hpp>
 #include <Thor/lld/common/cmsis/core/include/core_cm4.h>
+
+#if defined( CORTEX_M4 )
 
 namespace Thor::LLD::IT
 {
@@ -72,3 +77,5 @@ namespace Thor::LLD::IT
     NVIC_SystemReset();
   }
 }    // namespace Thor::LLD::IT
+
+#endif /* CORTEX_M4 */
