@@ -7,31 +7,30 @@ add_subdirectory("interface")
 # ====================================================
 # Select the appropriate Low Level Driver
 # ====================================================
-if(${THOR_FAMILY} MATCHES "^L4$")
-  add_subdirectory("stm32l4x")
-elseif(${THOR_FAMILY} MATCHES "^MOCK$")
-  message("Matched mock family")
+if(Toolchain::HAS_GCC_ARM_NONE_EABI)
+  if(${THOR_FAMILY} MATCHES "^L4$")
+    add_subdirectory("stm32l4x")
+  else()
+    message(FATAL_ERROR "No low level driver was found for Thor Family: ${THOR_FAMILY}!")
+  endif()
 else()
-  message(FATAL_ERROR "No low level driver was found for Thor Family: ${THOR_FAMILY}!")
+  # If not using the arm-none-eabi compiler, then the LLD is provided by either
+  # the MOCK or SIM drivers at the interface layer.
 endif()
 
 # ====================================================
-# Various exports
+# Common headers needed by low level drivers
 # ====================================================
+set(EXT_INCLUDES lld_common_inc)
+add_library(${EXT_INCLUDES} INTERFACE)
 
-# LLD Common Include External Dependencies
-add_library(lld_ext_inc_dep INTERFACE)
-target_link_libraries(lld_ext_inc_dep INTERFACE
-  lld_common_inc_dep
+target_link_libraries(${EXT_INCLUDES} INTERFACE type_safe_inc)
 
-  freertos_inc freertos_port freertos_cfg
-)
-
-if(FREERTOS)
-  target_link_libraries(lld_ext_inc_dep INTERFACE
+if(Toolchain::REQUIRES_THREAD_FREERTOS)
+  target_link_libraries(${EXT_INCLUDES} INTERFACE
     freertos_inc
     freertos_port
     freertos_cfg
   )
 endif()
-export(TARGETS lld_ext_inc_dep FILE "${PROJECT_BINARY_DIR}/Thor/lld/ext-inc-dep.cmake")
+export(TARGETS ${EXT_INCLUDES} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${EXT_INCLUDES}.cmake")

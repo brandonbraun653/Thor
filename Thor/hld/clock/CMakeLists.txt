@@ -6,7 +6,7 @@ set(LINK_LIBS
   Boost::boost      # Boost public headers
   thor_inc          # Thor public headers
   chimera_inc       # Chimera public headers
-  lld_ext_inc_dep   # 3rd Party headers
+  lld_common_inc   # 3rd Party headers
   prj_device_target # Compiler options for target device
 )
 

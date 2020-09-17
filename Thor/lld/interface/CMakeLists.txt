@@ -20,7 +20,7 @@ add_subdirectory("usart")
 add_subdirectory("watchdog")
 
 # ====================================================
-# All LLD_INTF Drivers
+# All Low Level Interface Drivers
 # ====================================================
 set(LLD_INTF thor_lld_intf)
 add_library(${LLD_INTF} INTERFACE)
@@ -31,3 +31,16 @@ target_link_libraries(${LLD_INTF} INTERFACE
   thor_lld_intf_usart
 )
 export(TARGETS ${LLD_INTF} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${LLD_INTF}.cmake")
+
+
+# ====================================================
+# All Simulated Low Level Drivers
+# ====================================================
+set(LLD_INTF_SIM thor_lld_sim)
+add_library(${LLD_INTF_SIM} INTERFACE)
+target_link_libraries(${LLD_INTF_SIM} INTERFACE
+  thor_lld_sim_spi
+  thor_lld_sim_gpio
+  thor_lld_sim_usart
+)
+export(TARGETS ${LLD_INTF_SIM} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${LLD_INTF_SIM}.cmake")
