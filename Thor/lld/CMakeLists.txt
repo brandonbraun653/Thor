@@ -26,7 +26,7 @@ add_library(${EXT_INCLUDES} INTERFACE)
 
 target_link_libraries(${EXT_INCLUDES} INTERFACE type_safe_inc)
 
-if(Toolchain::REQUIRES_THREAD_FREERTOS)
+if(Toolchain::REQUIRES_FREERTOS_THREADS)
   target_link_libraries(${EXT_INCLUDES} INTERFACE
     freertos_inc
     freertos_port
