@@ -26,7 +26,7 @@
 #include <Thor/lld/interface/timer/timer_detail.hpp>
 
 
-#if defined( THOR_HLD_TIMER )
+
 
 namespace Thor::TIMER
 {
@@ -50,15 +50,15 @@ namespace Thor::TIMER
     /*------------------------------------------------
     Initialize HLD module
     ------------------------------------------------*/
-    result |= initAdvancedDriverModule();
-    result |= initBasicDriverModule();
-    result |= initGeneralDriverModule();
-    result |= initLowPowerDriverModule();
+    // result |= initAdvancedDriverModule();
+    // result |= initBasicDriverModule();
+    // result |= initGeneralDriverModule();
+    // result |= initLowPowerDriverModule();
 
     /*------------------------------------------------
     Initialize the LLD module
     ------------------------------------------------*/
-    result |= Thor::LLD::TIMER::initializeModule();
+    //result |= Thor::LLD::TIMER::initializeModule();
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return result;
@@ -97,6 +97,7 @@ namespace Thor::TIMER
   /*-------------------------------------------------------------------------------
   Driver Free Functions
   -------------------------------------------------------------------------------*/
+#if defined( THOR_HLD_TIMER )
   bool isInitialized()
   {
     return s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY;
@@ -188,6 +189,7 @@ namespace Thor::TIMER
         break;
     }
   }
-}
 
 #endif /* THOR_HLD_TIMER */
+
+}

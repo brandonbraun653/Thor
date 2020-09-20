@@ -304,9 +304,10 @@ High Level Driver Support
 #define THOR_HLD_GPIO
 #endif
 
-#ifndef THOR_HLD_PWM
-#define THOR_HLD_PWM
-#endif
+// Not supported, pending rewrite in Chimera-23
+// #ifndef THOR_HLD_PWM
+// #define THOR_HLD_PWM
+// #endif
 
 #ifndef THOR_HLD_SPI
 #define THOR_HLD_SPI
@@ -316,9 +317,10 @@ High Level Driver Support
 #define THOR_HLD_SYSTEM
 #endif
 
-#ifndef THOR_HLD_TIMER
-#define THOR_HLD_TIMER
-#endif
+// Not supported, pending rewrite in Chimera-23
+// #ifndef THOR_HLD_TIMER
+// #define THOR_HLD_TIMER
+// #endif
 
 #ifndef THOR_HLD_USART
 #define THOR_HLD_USART
@@ -355,9 +357,10 @@ Low Level Driver Support
 #define THOR_LLD_SPI
 #endif
 
-#ifndef THOR_LLD_TIMER
-#define THOR_LLD_TIMER
-#endif
+// Not supported, pending rewrite in Chimera-23
+// #ifndef THOR_LLD_TIMER
+// #define THOR_LLD_TIMER
+// #endif
 
 #ifndef THOR_LLD_USART
 #define THOR_LLD_USART

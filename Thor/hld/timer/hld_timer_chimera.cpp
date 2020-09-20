@@ -68,7 +68,9 @@ namespace Chimera::Timer
 
     Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverRegistration &registry )
     {
-#if defined( THOR_HLD_TIMER )
+      /*-------------------------------------------------
+      Some functionality will always be enabled
+      -------------------------------------------------*/
       registry.isSupported       = true;
       registry.initialize        = initialize;
       registry.reset             = reset;
@@ -76,21 +78,16 @@ namespace Chimera::Timer
       registry.delayMilliseconds = delayMilliseconds;
       registry.millis            = millis;
       registry.micros            = micros;
+
+#if defined( THOR_HLD_TIMER )
       registry.getSharedInstance = createSharedInstance;
       registry.getUnsafeInstance = createUnsafeInstance;
-      return Chimera::Status::OK;
 #else
-      registry.isSupported       = false;
-      registry.initialize        = nullptr;
-      registry.reset             = nullptr;
-      registry.delayMicroseconds = nullptr;
-      registry.delayMilliseconds = nullptr;
-      registry.millis            = nullptr;
-      registry.micros            = nullptr;
       registry.getSharedInstance = nullptr;
       registry.getUnsafeInstance = nullptr;
-      return Chimera::Status::NOT_SUPPORTED;
 #endif /* THOR_HLD_TIMER */
+
+      return Chimera::Status::OK;
     }
   }    // namespace Backend
 

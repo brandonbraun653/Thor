@@ -22,12 +22,12 @@
 #include <Thor/lld/stm32l4x/timer/hw_timer_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_TIMER )
+#if defined( TARGET_STM32L4 )
 
 namespace Thor::LLD::TIMER
 {
   /*-------------------------------------------------------------------------------
-  HLD->LLD Required Free Functions
+  Chimera Required Free Functions
   -------------------------------------------------------------------------------*/
   static size_t systemTick = 0u;
 
@@ -62,6 +62,8 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------------------------------------
   LLD Public Free Functions
   -------------------------------------------------------------------------------*/
+#if defined( THOR_LLD_TIMER )
+
   Chimera::Status_t initializeModule()
   {
     initializeRegisters();
@@ -157,6 +159,7 @@ namespace Thor::LLD::TIMER
   {
     return Chimera::Status::OK;
   }
+#endif
 
 }    // namespace Thor::LLD::TIMER
 
