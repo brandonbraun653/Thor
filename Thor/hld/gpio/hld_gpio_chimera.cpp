@@ -105,14 +105,14 @@ namespace Chimera::GPIO
   -------------------------------------------------*/
   Chimera::Status_t Driver::init( const Chimera::GPIO::PinInit &pinInit )
   {
-    mDriver = ::LLD::getDriver( pinInit.port, pinInit.pin );
+    mDriver = ::HLD::getDriver( pinInit.port, pinInit.pin );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->init( pinInit );
   }
 
 
   Chimera::Status_t Driver::init( const Chimera::GPIO::Port port, const uint8_t pin )
   {
-    mDriver = ::LLD::getDriver( port, pin );
+    mDriver = ::HLD::getDriver( port, pin );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->init( port, pin );
   }
 

@@ -103,6 +103,7 @@ namespace Chimera::SPI
   -------------------------------------------------*/
   Chimera::Status_t Driver::init( const Chimera::SPI::DriverConfig &setupStruct )
   {
+    mDriver = ::HLD::getDriver( setupStruct.HWInit.hwChannel );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->init( setupStruct );
   }
 
