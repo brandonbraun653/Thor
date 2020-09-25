@@ -211,8 +211,7 @@ namespace Thor::SPI
   ------------------------------------------------*/
   Chimera::Status_t Driver::init( const Chimera::SPI::DriverConfig &setupStruct )
   {
-    Chimera::Status_t result = Chimera::Status::OK;
-    auto lockGuard           = TimedLockGuard( *this );
+    auto result = Chimera::Status::OK;
 
     /*------------------------------------------------
     Should we even bother creating this?
@@ -220,10 +219,6 @@ namespace Thor::SPI
     if ( !::LLD::isSupported( setupStruct.HWInit.hwChannel ) )
     {
       return Chimera::Status::NOT_SUPPORTED;
-    }
-    else if ( !lockGuard.try_lock_for( 100 ) )
-    {
-      return Chimera::Status::LOCKED;
     }
 
     /*------------------------------------------------
@@ -320,12 +315,16 @@ namespace Thor::SPI
 
   Chimera::Status_t Driver::setChipSelect( const Chimera::GPIO::State value )
   {
+    /*-------------------------------------------------
+    Setting a chip select is only valid if we've been
+    configured to have control of one.
+    -------------------------------------------------*/
     if ( CS )
     {
       return CS->setState( value );
     }
 
-    return Chimera::Status::FAIL;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
@@ -337,10 +336,9 @@ namespace Thor::SPI
     if ( !config.externalCS )
     {
       config.HWInit.csMode = mode;
-      return Chimera::Status::OK;
     }
 
-    return Chimera::Status::LOCKED;
+    return Chimera::Status::OK;
   }
 
 
