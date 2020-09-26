@@ -238,7 +238,8 @@ namespace Thor::USART
       std::string_view threadName = tmp.data();
 
       Chimera::Threading::Thread thread;
-      thread.initialize( s_user_isr_thread_func[ resourceIndex ], nullptr, Chimera::Threading::Priority::MAXIMUM, 500, threadName );
+      thread.initialize( s_user_isr_thread_func[ resourceIndex ], nullptr, Chimera::Threading::Priority::MAXIMUM,
+                         STACK_BYTES( 250 ), threadName );
       thread.start();
       s_user_isr_handle[ resourceIndex ] = thread.native_handle();
     }

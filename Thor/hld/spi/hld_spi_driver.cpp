@@ -291,8 +291,8 @@ namespace Thor::SPI
       std::string_view threadName = tmp.data();
 
       Chimera::Threading::Thread thread;
-      thread.initialize( s_user_isr_thread_func[ lldResourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5, 500,
-                         threadName );
+      thread.initialize( s_user_isr_thread_func[ lldResourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5,
+                         STACK_BYTES( 250 ), threadName );
       thread.start();
       s_user_isr_handle[ lldResourceIndex ] = thread.native_handle();
     }

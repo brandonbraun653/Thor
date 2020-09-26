@@ -12,11 +12,10 @@
 #include <Thor/cfg>
 #include <Thor/system>
 
+#if defined( CORTEX_M4 ) && defined( EMBEDDED )
+
 /* Driver Includes */
 #include <Thor/lld/common/cortex-m4/register.hpp>
-
-
-#if defined( EMBEDDED )
 
 #ifdef __cplusplus
 extern "C"
@@ -25,7 +24,6 @@ extern "C"
 
   /**
    *  Exception handler registered with the isr vector array
-   *
    *  @note Pulls the fault stack and calls a C function that interprets it
    *
    *  @return void
@@ -71,7 +69,6 @@ extern "C"
    */
   void HardFault_HandlerC( unsigned long *hardfault_args )
   {
-#if defined( CORTEX_M4 ) || defined( CORTEX_M7 )
     /*------------------------------------------------
     Common Registers Between Cortex M4 & M7
     ------------------------------------------------*/
@@ -89,10 +86,7 @@ extern "C"
     volatile unsigned long _AFSR = *SCB_REG_AFSR; /* Auxiliary Fault Status Register */
     volatile unsigned long _BFAR = *SCB_REG_BFAR; /* Bus Fault Address Register */
     volatile unsigned long _MMAR = *SCB_REG_MMAR; /* MemManage Fault Address Register */
-
-#if defined( CORTEX_M4 )
     volatile unsigned long _DFSR = *SCB_REG_DFSR;    // Debug Fault Status Register
-#endif
 
     stacked_r0  = ( ( unsigned long )hardfault_args[ 0 ] );
     stacked_r1  = ( ( unsigned long )hardfault_args[ 1 ] );
@@ -102,7 +96,6 @@ extern "C"
     stacked_lr  = ( ( unsigned long )hardfault_args[ 5 ] );
     stacked_pc  = ( ( unsigned long )hardfault_args[ 6 ] );
     stacked_psr = ( ( unsigned long )hardfault_args[ 7 ] );
-#endif
 
 // TODO Switch behavior based on debug or release
 #if defined( __GNUC__ )
@@ -118,4 +111,4 @@ extern "C"
 }
 #endif
 
-#endif /* EMBEDDED */
+#endif /* CORTEX_M4 && EMBEDDED */

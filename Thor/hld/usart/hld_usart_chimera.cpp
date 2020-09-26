@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* STL Includes */
+#include <cstdint>
 #include <memory>
 
 /* Chimera Includes */
@@ -47,6 +48,14 @@ namespace Chimera::USART::Backend
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
+    for ( auto x = 0; x < NUM_DRIVERS; x++ )
+    {
+      if ( !s_shared_driver[ x ] )
+      {
+        s_shared_driver[ x ] = Driver_sPtr( &s_raw_driver[ x ] );
+      }
+    }
+
     return Thor::USART::initialize();
   }
 
@@ -114,7 +123,7 @@ namespace Chimera::USART
   Chimera::Status_t Driver::assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins )
   {
     mChannel = channel;
-    return Chimera::Status::FAIL;
+    return ::HLD::getDriver( mChannel )->assignHW( channel, pins );
   }
 
 

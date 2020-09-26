@@ -8,9 +8,12 @@ include("${COMMON_TOOL_ROOT}/cmake/options/thor.cmake")
 # ====================================================
 if(Toolchain::REQUIRES_FREERTOS_THREADS)
   # Thor Config Options
-  add_library(freertos_cfg INTERFACE)
-  target_include_directories(freertos_cfg INTERFACE "Thor/config/freertos")
-  export(TARGETS freertos_cfg FILE "${PROJECT_BINARY_DIR}/ProjectConfig/freertos-cfg.cmake")
+  if(NOT CUSTOM_FREERTOS_CFG)
+    message(STATUS "Using Thor default FreeRTOS configuration")
+    add_library(freertos_cfg INTERFACE)
+    target_include_directories(freertos_cfg INTERFACE "Thor/config/freertos")
+    export(TARGETS freertos_cfg FILE "${PROJECT_BINARY_DIR}/ProjectConfig/freertos-cfg.cmake")
+  endif()
 
   # Heap Selection
   add_library(freertos_heap INTERFACE)
