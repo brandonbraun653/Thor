@@ -10,6 +10,7 @@
 
 /* C++ Includes */
 #include <array>
+#include <cstdint>
 #include <memory>
 
 /* Boost Includes */
@@ -298,22 +299,22 @@ namespace Thor::USART
     return Chimera::Status::OK;
   }
 
-  Chimera::Status_t Driver::write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::write( const void *const buffer, const size_t length  )
   {
     auto error = Chimera::Status::OK;
 
     switch( txMode )
     {
       case Chimera::Hardware::PeripheralMode::BLOCKING:
-        error = writeBlocking( buffer, length, timeout_mS );
+        error = writeBlocking( buffer, length );
         break;
 
       case Chimera::Hardware::PeripheralMode::INTERRUPT:
-        error = writeInterrupt( buffer, length, timeout_mS );
+        error = writeInterrupt( buffer, length );
         break;
 
       case Chimera::Hardware::PeripheralMode::DMA:
-        error = writeDMA( buffer, length, timeout_mS );
+        error = writeDMA( buffer, length );
         break;
 
       default:
@@ -324,22 +325,22 @@ namespace Thor::USART
     return error;
   }
 
-  Chimera::Status_t Driver::read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::read( void *const buffer, const size_t length )
   {
     auto error = Chimera::Status::OK;
 
     switch( rxMode )
     {
       case Chimera::Hardware::PeripheralMode::BLOCKING:
-        error = readBlocking( buffer, length, timeout_mS );
+        error = readBlocking( buffer, length );
         break;
 
       case Chimera::Hardware::PeripheralMode::INTERRUPT:
-        error = readInterrupt( buffer, length, timeout_mS );
+        error = readInterrupt( buffer, length );
         break;
 
       case Chimera::Hardware::PeripheralMode::DMA:
-        error = readDMA( buffer, length, timeout_mS );
+        error = readDMA( buffer, length );
         break;
 
       default:
@@ -439,8 +440,7 @@ namespace Thor::USART
   {
     if ( state )
     {
-      return ::LLD::getDriver( channel )->receiveIT( rxBuffers.linearBuffer(), rxBuffers.linearSize(),
-                                                        Chimera::Threading::TIMEOUT_DONT_WAIT );
+      return ::LLD::getDriver( channel )->receiveIT( rxBuffers.linearBuffer(), rxBuffers.linearSize() );
     }
     else
     {
@@ -620,20 +620,13 @@ namespace Thor::USART
   }
 
 
-  Chimera::Status_t Driver::readBlocking( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::readBlocking( void *const buffer, const size_t length )
   {
-    Chimera::Status_t error = Chimera::Status::BUSY;
-
-    if ( rxLock.try_acquire_for( 1000 ))
-    {
-      error = ::LLD::getDriver( channel )->receive( buffer, length, timeout_mS );
-    }
-
-    return error;
+    return ::LLD::getDriver( channel )->receive( buffer, length );
   }
 
 
-  Chimera::Status_t Driver::readInterrupt( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::readInterrupt( void *const buffer, const size_t length  )
   {
     Chimera::Status_t error = Chimera::Status::OK;
 
@@ -642,11 +635,10 @@ namespace Thor::USART
       return Chimera::Status::NOT_INITIALIZED;
     }
 
-    if ( ( length <= rxBuffers.linearSize() ) && rxLock.try_acquire_for( timeout_mS ) )
+    if ( length <= rxBuffers.linearSize() )
     {
       memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
-
-      error = ::LLD::getDriver( channel )->receiveIT( rxBuffers.linearBuffer(), length, timeout_mS );
+      error = ::LLD::getDriver( channel )->receiveIT( rxBuffers.linearBuffer(), length );
 
       if ( error == Chimera::Status::OK )
       {
@@ -662,7 +654,7 @@ namespace Thor::USART
   }
 
 
-  Chimera::Status_t Driver::readDMA( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::readDMA( void *const buffer, const size_t length )
   {
     Chimera::Status_t error = Chimera::Status::OK;
 
@@ -671,11 +663,10 @@ namespace Thor::USART
       return Chimera::Status::NOT_INITIALIZED;
     }
 
-    if ( ( length <= rxBuffers.linearSize() ) && rxLock.try_acquire_for( 1000 ) )
+    if ( length <= rxBuffers.linearSize() )
     {
-
       memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
-      error = ::LLD::getDriver( channel )->receiveDMA( rxBuffers.linearBuffer(), length, timeout_mS );
+      error = ::LLD::getDriver( channel )->receiveDMA( rxBuffers.linearBuffer(), length );
 
       if ( error == Chimera::Status::OK )
       {
@@ -691,21 +682,13 @@ namespace Thor::USART
   }
 
 
-  Chimera::Status_t Driver::writeBlocking( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::writeBlocking( const void *const buffer, const size_t length )
   {
-    using namespace Chimera::Threading;
-    Chimera::Status_t error = Chimera::Status::BUSY;
-
-    if ( txLock.try_acquire_for( 1000 ) )
-    {
-      error = ::LLD::getDriver( channel )->transmit( buffer, length, timeout_mS );
-    }
-
-    return error;
+    return ::LLD::getDriver( channel )->transmit( buffer, length );
   }
 
 
-  Chimera::Status_t Driver::writeInterrupt( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::writeInterrupt( const void *const buffer, const size_t length )
   {
     Chimera::Status_t error = Chimera::Status::OK;
 
@@ -721,20 +704,20 @@ namespace Thor::USART
     if ( txLock.try_acquire() )
     {
       awaitTXComplete.try_acquire();
-      error = ::LLD::getDriver( channel )->transmitIT( buffer, length, timeout_mS );
+      error = ::LLD::getDriver( channel )->transmitIT( buffer, length );
     }
     else
     {
       size_t pushed = 0;
       error = Chimera::Status::BUSY;
-      txBuffers.push( buffer, length, pushed );
+      txBuffers.push( reinterpret_cast<const uint8_t *const>( buffer ), length, pushed );
     }
 
     return error;
   }
 
 
-  Chimera::Status_t Driver::writeDMA( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::writeDMA( const void *const buffer, const size_t length )
   {
     Chimera::Status_t error = Chimera::Status::OK;
 
@@ -750,13 +733,13 @@ namespace Thor::USART
     if ( txLock.try_acquire() )
     {
       awaitTXComplete.try_acquire();
-      error = ::LLD::getDriver( channel )->transmitDMA( buffer, length, timeout_mS );
+      error = ::LLD::getDriver( channel )->transmitDMA( buffer, length );
     }
     else
     {
       size_t pushed = 0;
       error = Chimera::Status::BUSY;
-      txBuffers.push( buffer, length, pushed );
+      txBuffers.push( reinterpret_cast<const uint8_t *const>( buffer ), length, pushed );
     }
 
     return error;

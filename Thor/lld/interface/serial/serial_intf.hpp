@@ -70,10 +70,9 @@ namespace Thor::LLD::Serial
      *
      *  @param[in]  data      The buffer to transmit from
      *  @param[in]  size      How much data to transfer in bytes
-     *  @param[in]  timeout   How long to wait in milliseconds for the hardware to become available
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t transmit( const uint8_t *const data, const size_t size, const size_t timeout ) = 0;
+    virtual Chimera::Status_t transmit( const void *const data, const size_t size ) = 0;
 
     /**
      *  Receive data using blocking mode. The function will not return in the given
@@ -83,10 +82,9 @@ namespace Thor::LLD::Serial
      *
      *  @param[in]  data      The buffer to read into
      *  @param[in]  size      How much data to receive in bytes
-     *  @param[in]  timeout   How long to wait in milliseconds for the hardware to become available
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t receive( uint8_t *const data, const size_t size, const size_t timeout ) = 0;
+    virtual Chimera::Status_t receive( void *const data, const size_t size ) = 0;
 
     /**
      *  Gets the current state of the TX transfer
@@ -151,10 +149,9 @@ namespace Thor::LLD::Serial
      *
      *  @param[in]  data      The data to be transmitted
      *  @param[in]  size      How long the data is in bytes
-     *  @param[in]  timeout   How long to wait in milliseconds for the hardware to become available
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t transmitIT( const uint8_t *const data, const size_t size, const size_t timeout ) = 0;
+    virtual Chimera::Status_t transmitIT( const void *const data, const size_t size ) = 0;
 
     /**
      *  Receive data using interrupt mode. If none arrives immediately, the driver should
@@ -163,10 +160,9 @@ namespace Thor::LLD::Serial
      *
      *  @param[in]  data      The data to be transmitted
      *  @param[in]  size      How long the data is in bytes
-     *  @param[in]  timeout   How long to wait in milliseconds for the hardware to become available
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t receiveIT( uint8_t *const data, const size_t size, const size_t timeout ) = 0;
+    virtual Chimera::Status_t receiveIT( void *const data, const size_t size ) = 0;
 
     /**
      *  Initializes the necessary DMA hardware
@@ -207,10 +203,9 @@ namespace Thor::LLD::Serial
      *
      *  @param[in]  data      The data to be transmitted
      *  @param[in]  size      How long the data is in bytes
-     *  @param[in]  timeout   How long to wait in milliseconds for the hardware to become available
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t transmitDMA( const void *const data, const size_t size, const size_t timeout ) = 0;
+    virtual Chimera::Status_t transmitDMA( const void *const data, const size_t size ) = 0;
 
     /**
      *  Receive data using interrupt mode. If none arrives immediately, the driver should
@@ -219,10 +214,9 @@ namespace Thor::LLD::Serial
      *
      *  @param[in]  data      The data to be transmitted
      *  @param[in]  size      How long the data is in bytes
-     *  @param[in]  timeout   How long to wait in milliseconds for the hardware to become available
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t receiveDMA( void *const data, const size_t size, const size_t timeout ) = 0;
+    virtual Chimera::Status_t receiveDMA( void *const data, const size_t size ) = 0;
 
     /**
      *  Stops an ongoing transmission, if in progress

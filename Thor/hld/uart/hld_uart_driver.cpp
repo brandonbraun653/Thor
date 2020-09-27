@@ -125,12 +125,12 @@ namespace Thor::UART
     return Chimera::Status::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::write( const void *const buffer, const size_t length )
   {
     return Chimera::Status::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS )
+  Chimera::Status_t Driver::read( void *const buffer, const size_t length )
   {
     return Chimera::Status::NOT_SUPPORTED;
   }

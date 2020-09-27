@@ -108,7 +108,7 @@ namespace Thor::LLD::USART
 
       return Chimera::Status::OK;
     }
-    else 
+    else
     {
       return Chimera::Status::FAIL;
     }
@@ -214,14 +214,14 @@ namespace Thor::LLD::USART
   }
 
 
-  Chimera::Status_t Driver::transmit( const uint8_t *const data, const size_t size, const size_t timeout )
+  Chimera::Status_t Driver::transmit( const void *const data, const size_t size )
   {
     // Blocking mode not allowed
     return Chimera::Status::NOT_SUPPORTED;
   }
 
 
-  Chimera::Status_t Driver::receive( uint8_t *const data, const size_t size, const size_t timeout )
+  Chimera::Status_t Driver::receive( void *const data, const size_t size )
   {
     // Blocking mode not allowed
     return Chimera::Status::NOT_SUPPORTED;
@@ -279,7 +279,7 @@ namespace Thor::LLD::USART
   }
 
 
-  Chimera::Status_t Driver::transmitIT( const uint8_t *const data, const size_t size, const size_t timeout )
+  Chimera::Status_t Driver::transmitIT( const void *const data, const size_t size )
   {
 #if defined( DEBUG )
     /*-------------------------------------------------
@@ -301,12 +301,14 @@ namespace Thor::LLD::USART
     }
     else    // No on-going transfers
     {
+      auto transferData = reinterpret_cast<const uint8_t *const>( data );
+
       /*------------------------------------------------
       Prep the transfer control block
       ------------------------------------------------*/
       enterCriticalSection();
 
-      txTCB.buffer    = &data[ 1 ]; /* Point to the next byte */
+      txTCB.buffer    = &transferData[ 1 ]; /* Point to the next byte */
       txTCB.expected  = size;
       txTCB.remaining = size - 1u; /* Pre-decrement to account for this first byte TX */
       txTCB.state     = StateMachine::TX::TX_ONGOING;
@@ -315,7 +317,7 @@ namespace Thor::LLD::USART
       Shove the byte into the transmit data register, kicking off the
       transfer. Re-enable interrupts so we can catch the TX complete event.
       ------------------------------------------------*/
-      periph->TDR = data[ 0 ];
+      periph->TDR = transferData[ 0 ];
 
       /*------------------------------------------------
       Turn on the transmitter & enable TDR interrupt so we know
@@ -332,7 +334,7 @@ namespace Thor::LLD::USART
   }
 
 
-  Chimera::Status_t Driver::receiveIT( uint8_t *const data, const size_t size, const size_t timeout )
+  Chimera::Status_t Driver::receiveIT( void *const data, const size_t size )
   {
 #if defined( DEBUG )
     /*-------------------------------------------------
@@ -365,7 +367,7 @@ namespace Thor::LLD::USART
       /*------------------------------------------------
       Prep the transfer control block to receive data
       ------------------------------------------------*/
-      rxTCB.buffer    = data;
+      rxTCB.buffer    = reinterpret_cast<uint8_t *const>( data );
       rxTCB.expected  = size;
       rxTCB.remaining = size;
       rxTCB.state     = StateMachine::RX::RX_ONGOING;
@@ -406,7 +408,7 @@ namespace Thor::LLD::USART
   }
 
 
-  Chimera::Status_t Driver::transmitDMA( const void *const data, const size_t size, const size_t timeout )
+  Chimera::Status_t Driver::transmitDMA( const void *const data, const size_t size )
   {
     using namespace Chimera::Threading;
     return Chimera::Status::NOT_SUPPORTED;
@@ -498,7 +500,7 @@ namespace Thor::LLD::USART
   }
 
 
-  Chimera::Status_t Driver::receiveDMA( void *const data, const size_t size, const size_t timeout )
+  Chimera::Status_t Driver::receiveDMA( void *const data, const size_t size )
   {
     // auto dma = Thor::DMA::DMAClass::get();
 

@@ -44,54 +44,33 @@ namespace Thor::UART
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Driver : virtual public Chimera::UART::IUART,
-                 public Chimera::Threading::Lockable
+  class Driver : public Chimera::Threading::Lockable
   {
   public:
     Driver();
     ~Driver();
-
-    Chimera::Status_t assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins ) final override;
-
-    Chimera::Status_t begin( const Chimera::Hardware::PeripheralMode txMode,
-                             const Chimera::Hardware::PeripheralMode rxMode ) final override;
-
-    Chimera::Status_t end() final override;
-
-    Chimera::Status_t configure( const Chimera::Serial::Config &config ) final override;
-
-    Chimera::Status_t setBaud( const uint32_t baud ) final override;
-
-    Chimera::Status_t setMode( const Chimera::Hardware::SubPeripheral periph,
-                               const Chimera::Hardware::PeripheralMode mode ) final override;
-
-    Chimera::Status_t write( const uint8_t *const buffer, const size_t length, const uint32_t timeout_mS = 500 ) final override;
-
-    Chimera::Status_t read( uint8_t *const buffer, const size_t length, const uint32_t timeout_mS = 500 ) final override;
-
-    Chimera::Status_t flush( const Chimera::Hardware::SubPeripheral periph ) final override;
-
-    Chimera::Status_t toggleAsyncListening( const bool state ) final override;
-    Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len ) final override;
-
+    Chimera::Status_t assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins );
+    Chimera::Status_t begin( const Chimera::Hardware::PeripheralMode txMode, const Chimera::Hardware::PeripheralMode rxMode );
+    Chimera::Status_t end();
+    Chimera::Status_t configure( const Chimera::Serial::Config &config );
+    Chimera::Status_t setBaud( const uint32_t baud );
+    Chimera::Status_t setMode( const Chimera::Hardware::SubPeripheral periph, const Chimera::Hardware::PeripheralMode mode );
+    Chimera::Status_t write( const void *const buffer, const size_t length );
+    Chimera::Status_t read( void *const buffer, const size_t length );
+    Chimera::Status_t flush( const Chimera::Hardware::SubPeripheral periph );
+    Chimera::Status_t toggleAsyncListening( const bool state );
+    Chimera::Status_t readAsync( uint8_t *const buffer, const size_t len );
     Chimera::Status_t enableBuffering( const Chimera::Hardware::SubPeripheral periph,
                                        boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
-                                       const size_t hwBufferSize ) final override;
-
-    Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph ) final override;
-
-    Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID ) final override;
-
-    Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout ) final override;
-
-    bool available( size_t *const bytes = nullptr ) final override;
-
-    Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout ) final override;
-
+                                       const size_t hwBufferSize );
+    Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph );
+    Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID );
+    Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout );
+    bool available( size_t *const bytes = nullptr );
+    Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout );
     Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
-                             const size_t timeout ) final override;
-
-    void postISRProcessing() final override;
+                             const size_t timeout );
+    void postISRProcessing();
   };
 }    // namespace Thor::UART
 

@@ -455,7 +455,7 @@ namespace Thor::SPI
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
-    else if ( awaitTransferComplete.try_acquire_for( timeout ) )
+    else if ( !awaitTransferComplete.try_acquire_for( timeout ) )
     {
       return Chimera::Status::TIMEOUT;
     }
