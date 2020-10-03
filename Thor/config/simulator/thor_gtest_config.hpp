@@ -56,11 +56,11 @@ High Level Driver Support
 //#ifndef THOR_HLD_ADC
 //#define THOR_HLD_ADC
 //#endif
-//
-//#ifndef THOR_HLD_CAN
-//#define THOR_HLD_CAN
-//#endif
-//
+
+#ifndef THOR_HLD_CAN
+#define THOR_HLD_CAN
+#endif
+
 //#ifndef THOR_HLD_CRYPTO
 //#define THOR_HLD_CRYPTO
 //#endif
@@ -165,12 +165,12 @@ Low Level Driver Support
 //#define THOR_LLD_ADC
 //#define THOR_LLD_ADC_MOCK
 //#endif
-//
-//#ifndef THOR_LLD_CAN
-//#define THOR_LLD_CAN
-//#define THOR_LLD_CAN_MOCK
-//#endif
-//
+
+#ifndef THOR_LLD_CAN
+#define THOR_LLD_CAN
+#define THOR_LLD_CAN_MOCK
+#endif
+
 //#ifndef THOR_LLD_CRYPTO
 //#define THOR_LLD_CRYPTO
 //#define THOR_LLD_CRYPTO_MOCK

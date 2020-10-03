@@ -56,11 +56,11 @@ High Level Driver Support
 //#ifndef THOR_HLD_ADC
 //#define THOR_HLD_ADC
 //#endif
-//
-//#ifndef THOR_HLD_CAN
-//#define THOR_HLD_CAN
-//#endif
-//
+
+#ifndef THOR_HLD_CAN
+#define THOR_HLD_CAN
+#endif
+
 //#ifndef THOR_HLD_CRYPTO
 //#define THOR_HLD_CRYPTO
 //#endif
