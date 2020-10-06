@@ -299,6 +299,23 @@ namespace Thor::LLD::CAN
   static constexpr Reg32_t BTR_SILM_Msk = ( 0x1UL << BTR_SILM_Pos );
   static constexpr Reg32_t BTR_SILM     = BTR_SILM_Msk;
 
+  /******************  Bit definition for TIxR register  ********************/
+  static constexpr Reg32_t TIxR_TXRQ_Pos = ( 0U );
+  static constexpr Reg32_t TIxR_TXRQ_Msk = ( 0x1UL << TIxR_TXRQ_Pos );
+  static constexpr Reg32_t TIxR_TXRQ     = TIxR_TXRQ_Msk;
+  static constexpr Reg32_t TIxR_RTR_Pos  = ( 1U );
+  static constexpr Reg32_t TIxR_RTR_Msk  = ( 0x1UL << TIxR_RTR_Pos );
+  static constexpr Reg32_t TIxR_RTR      = TIxR_RTR_Msk;
+  static constexpr Reg32_t TIxR_IDE_Pos  = ( 2U );
+  static constexpr Reg32_t TIxR_IDE_Msk  = ( 0x1UL << TIxR_IDE_Pos );
+  static constexpr Reg32_t TIxR_IDE      = TIxR_IDE_Msk;
+  static constexpr Reg32_t TIxR_EXID_Pos = ( 3U );
+  static constexpr Reg32_t TIxR_EXID_Msk = ( 0x3FFFFUL << TIxR_EXID_Pos );
+  static constexpr Reg32_t TIxR_EXID     = TIxR_EXID_Msk;
+  static constexpr Reg32_t TIxR_STID_Pos = ( 21U );
+  static constexpr Reg32_t TIxR_STID_Msk = ( 0x7FFUL << TIxR_STID_Pos );
+  static constexpr Reg32_t TIxR_STID     = TIxR_STID_Msk;
+
   /******************  Bit definition for TI0R register  ********************/
   static constexpr Reg32_t TI0R_TXRQ_Pos = ( 0U );
   static constexpr Reg32_t TI0R_TXRQ_Msk = ( 0x1UL << TI0R_TXRQ_Pos );

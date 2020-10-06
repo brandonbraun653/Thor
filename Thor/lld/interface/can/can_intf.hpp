@@ -19,6 +19,7 @@
 #include <Chimera/can>
 
 /* Thor Includes */
+#include <Thor/lld/common/interrupts/can_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/can/can_types.hpp>
 
@@ -222,8 +223,24 @@ namespace Thor::LLD::CAN
 
     void attach( RegisterMap *const peripheral );
 
+
+  protected:
+    void CAN1_TX_IRQHandler();
+    void CAN1_FIFO0_IRQHandler();
+    void CAN1_FIFO1_IRQHandler();
+    void CAN1_ERR_STS_CHG_IRQHandler();
+    void enterCriticalSection();
+    void exitCriticalSection();
+
   private:
+    friend void( ::CAN1_FIFO0_IRQHandler )();
+    friend void( ::CAN1_TX_IRQHandler )();
+    friend void( ::CAN1_ERR_STS_CHG_IRQHandler )();
+    friend void( ::CAN1_FIFO1_IRQHandler )();
+
     RegisterMap *mPeriph;
+    size_t mResourceIndex;
+    Chimera::Threading::BinarySemaphore *mISRWakeup_external;
   };
 }    // namespace Thor::LLD::CAN
 

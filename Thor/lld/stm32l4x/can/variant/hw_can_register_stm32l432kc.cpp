@@ -23,16 +23,17 @@
 
 namespace Thor::LLD::CAN
 {
-
+  void initializeRegisters()
+  {
+  }
 }  // namespace Thor::LLD::can
 
 
 namespace Thor::LLD::RCC::LookupTables
 {
-   /*------------------------------------------------
-  Lookup tables for register access on a peripheral by peripheral basis.
-  Indexing must match the lookup table hw_spi_mapping.hpp
-  ------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
   RegisterConfig CAN_ClockConfig[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
   RegisterConfig CAN_ResetConfig[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
   Chimera::Clock::Bus CAN_SourceClock[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
@@ -44,31 +45,34 @@ namespace Thor::LLD::RCC::LookupTables
                     Thor::LLD::CAN::NUM_CAN_PERIPHS,
                     Thor::LLD::CAN::getResourceIndex };
 
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   void CANInit()
   {
     using namespace Thor::LLD::CAN;
 
-/*------------------------------------------------
-CAN clock enable register access lookup table
-------------------------------------------------*/
+    /*------------------------------------------------
+    CAN clock enable register access lookup table
+    ------------------------------------------------*/
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
-    CAN_ClockConfig[ CAN1_RESOURCE_INDEX ].mask = APB2ENR_CAN1EN;
-    CAN_ClockConfig[ CAN1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2ENR;
+    CAN_ClockConfig[ CAN1_RESOURCE_INDEX ].mask = APB1ENR1_CAN1EN;
+    CAN_ClockConfig[ CAN1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR1;
 #endif
 
-/*------------------------------------------------
-CAN reset register access lookup table
-------------------------------------------------*/
+    /*------------------------------------------------
+    CAN reset register access lookup table
+    ------------------------------------------------*/
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
-    CAN_ResetConfig[ CAN1_RESOURCE_INDEX ].mask = APB2RSTR_CAN1RST;
-    CAN_ResetConfig[ CAN1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB2RSTR;
+    CAN_ResetConfig[ CAN1_RESOURCE_INDEX ].mask = APB1RSTR1_CAN1RST;
+    CAN_ResetConfig[ CAN1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1RSTR;
 #endif
 
-/*------------------------------------------------
-CAN clocking bus source identifier
-------------------------------------------------*/
+    /*------------------------------------------------
+    CAN clocking bus source identifier
+    ------------------------------------------------*/
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
-    CAN_SourceClock[ CAN1_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB2;
+    CAN_SourceClock[ CAN1_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
 #endif
 
   };

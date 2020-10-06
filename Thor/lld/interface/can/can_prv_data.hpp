@@ -24,6 +24,7 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/can/can_detail.hpp>
 #include <Thor/lld/interface/can/can_types.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
 namespace Thor::LLD::CAN
 {
@@ -42,13 +43,6 @@ namespace Thor::LLD::CAN
   #if defined( STM32_CAN1_PERIPH_AVAILABLE )
     extern RegisterMap *CAN1_PERIPH;
   #endif
-  #if defined( STM32_CAN2_PERIPH_AVAILABLE )
-    extern RegisterMap *CAN2_PERIPH;
-  #endif
-  #if defined( STM32_CAN3_PERIPH_AVAILABLE )
-    extern RegisterMap *CAN3_PERIPH;
-  #endif
-
 
   /*-------------------------------------------------------------------------------
   Configuration Maps:
@@ -58,7 +52,34 @@ namespace Thor::LLD::CAN
   -------------------------------------------------------------------------------*/
   namespace ConfigMap
   {
+    extern LLD_CONST Reg32_t IdMode[ static_cast<size_t>( Chimera::CAN::IdMode::NUM_OPTIONS ) ];
+    extern LLD_CONST Reg32_t FilterMode[ static_cast<size_t>( Chimera::CAN::FilterMode::NUM_OPTIONS ) ];
+    extern LLD_CONST Reg32_t FrameType[ static_cast<size_t>( Chimera::CAN::FrameType::NUM_OPTIONS ) ];
   }
+
+
+  /*-------------------------------------------------------------------------------
+  Peripheral Resources
+  -------------------------------------------------------------------------------*/
+  namespace Resource
+  {
+    /**
+     *  Indexes into the second dimension of the IRQSignals array to
+     *  identify the interrupt request number in a more friendly manner.
+     */
+    enum IRQHandlerIndex : uint8_t
+    {
+      TRANSMIT = 0,
+      RECEIVE_0,
+      RECEIVE_1,
+      ERROR_STATUS_CHANGE,
+
+      NUM_OPTIONS,
+      UNKNOWN,
+    };
+
+    extern LLD_CONST IRQn_Type IRQSignals[ NUM_CAN_PERIPHS ][ NUM_CAN_IRQ_HANDLERS ];
+  }    // namespace ResourceMap
 }    // namespace Thor::LLD::CAN
 
 #endif /* !THOR_LLD_CAN_DATA_HPP */
