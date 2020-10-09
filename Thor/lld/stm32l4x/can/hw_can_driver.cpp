@@ -293,12 +293,12 @@ namespace Thor::LLD::CAN
     mRXPin->init( cfg.RXInit );
 
     /*-------------------------------------------------
-    Set up Bit Timing. Don't allow an error > 5%.
+    Set up Bit Timing
     -------------------------------------------------*/
     float actualBaud = static_cast<float>( prv_set_baud_rate( mPeriph, cfg ) );
     float desiredBaud = static_cast<float>( cfg.HWInit.baudRate );
 
-    if ( 0.05f > std::abs( Aurora::Math::percentError( actualBaud, desiredBaud ) ) )
+    if ( cfg.HWInit.maxBaudError > std::abs( Aurora::Math::percentError( actualBaud, desiredBaud ) ) )
     {
       return Chimera::Status::FAILED_INIT;
     }
