@@ -79,6 +79,56 @@ namespace Thor::LLD::CAN
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
+
+  /*------------------------------------------------
+  Master Control Register
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, MCR, MCR_Msk, MCR_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, MCR, MCR_INRQ_Msk, INRQ, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, MCR, MCR_SLEEP_Msk, SLEEP, BIT_ACCESS_RW );
+
+  /*------------------------------------------------
+  Master Status Register
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, MSR, MSR_Msk, MSR_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, MSR, MSR_INAK_Msk, INAK, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, MSR, MSR_SLAK_Msk, SLAK, BIT_ACCESS_R );
+
+  /*------------------------------------------------
+  Transmit Status Register
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, TSR, TSR_Msk, TSR_ALL, BIT_ACCESS_RW );
+
+  /*------------------------------------------------
+  Receive FIFO 0 Register
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, RF0R, RF0R_Msk, RF0R_ALL, BIT_ACCESS_RW );
+
+  /*------------------------------------------------
+  Receive FIFO 1 Register
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, RF1R, RF1R_Msk, RF1R_ALL, BIT_ACCESS_RW );
+
+  /*------------------------------------------------
+  Interrupt Enable Register
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, IER, IER_Msk, IER_ALL, BIT_ACCESS_RW );
+
+  /*------------------------------------------------
+  Error Status Register
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, ESR, ESR_Msk, ESR_ALL, BIT_ACCESS_RW );
+
+  /*------------------------------------------------
+  Bit Timing Register
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, BTR, BTR_Msk, BTR_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, BTR, BTR_BRP_Msk, BRP, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, BTR, BTR_TS1_Msk, TS1, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, BTR, BTR_TS2_Msk, TS2, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, BTR, BTR_SJW_Msk, SJW, BIT_ACCESS_RW );
+
+
 }  // namespace Thor::LLD::CAN
 
 #endif  /* !THOR_HW_CAN_TYPES_HPP */

@@ -16,7 +16,9 @@
 #include <limits>
 
 /* Chimera Includes */
+#include <Chimera/common>
 #include <Chimera/can>
+#include <Chimera/gpio>
 
 /* Thor Includes */
 #include <Thor/lld/common/interrupts/can_interrupt_vectors.hpp>
@@ -222,7 +224,8 @@ namespace Thor::LLD::CAN
     ~Driver();
 
     void attach( RegisterMap *const peripheral );
-
+    Chimera::Status_t configure( const Chimera::CAN::DriverConfig &cfg );
+    Chimera::Status_t applyFilter( const Chimera::CAN::Filter &filter );
 
   protected:
     void CAN1_TX_IRQHandler();
@@ -241,6 +244,9 @@ namespace Thor::LLD::CAN
     RegisterMap *mPeriph;
     size_t mResourceIndex;
     Chimera::Threading::BinarySemaphore *mISRWakeup_external;
+
+    Chimera::GPIO::Driver_sPtr mTXPin;
+    Chimera::GPIO::Driver_sPtr mRXPin;
   };
 }    // namespace Thor::LLD::CAN
 

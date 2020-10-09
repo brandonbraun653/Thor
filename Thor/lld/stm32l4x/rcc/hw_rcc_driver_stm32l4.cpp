@@ -83,6 +83,10 @@ namespace Thor::LLD::RCC
       ------------------------------------------------*/
       periphLookupTables.fill( nullptr );
 
+#if defined( THOR_LLD_CAN )
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_CAN ) ] = &LookupTables::CANLookup;
+#endif
+
 #if defined( THOR_LLD_DMA )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ] = &LookupTables::DMALookup;
 #endif

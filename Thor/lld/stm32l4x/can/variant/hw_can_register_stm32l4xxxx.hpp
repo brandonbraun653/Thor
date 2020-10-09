@@ -40,6 +40,9 @@ namespace Thor::LLD::CAN
   Peripheral Register Definitions
   -------------------------------------------------*/
   /*******************  Bit definition for MCR register  ********************/
+  static constexpr Reg32_t MCR_Msk = 0x000180FF;
+  static constexpr Reg32_t MCR_Rst = 0x00010002;
+
   static constexpr Reg32_t MCR_INRQ_Pos  = ( 0U );
   static constexpr Reg32_t MCR_INRQ_Msk  = ( 0x1UL << MCR_INRQ_Pos );
   static constexpr Reg32_t MCR_INRQ      = MCR_INRQ_Msk;
@@ -69,6 +72,9 @@ namespace Thor::LLD::CAN
   static constexpr Reg32_t MCR_RESET     = MCR_RESET_Msk;
 
   /*******************  Bit definition for MSR register  ********************/
+  static constexpr Reg32_t MSR_Msk = 0x00000F1F;
+  static constexpr Reg32_t MSR_Rst = 0x00000C02;
+
   static constexpr Reg32_t MSR_INAK_Pos  = ( 0U );
   static constexpr Reg32_t MSR_INAK_Msk  = ( 0x1UL << MSR_INAK_Pos );
   static constexpr Reg32_t MSR_INAK      = MSR_INAK_Msk;
@@ -98,6 +104,9 @@ namespace Thor::LLD::CAN
   static constexpr Reg32_t MSR_RX        = MSR_RX_Msk;
 
   /*******************  Bit definition for TSR register  ********************/
+  static constexpr Reg32_t TSR_Msk = 0xFF8F8F8F;
+  static constexpr Reg32_t TSR_Rst = 0x1C000000;
+
   static constexpr Reg32_t TSR_RQCP0_Pos = ( 0U );
   static constexpr Reg32_t TSR_RQCP0_Msk = ( 0x1UL << TSR_RQCP0_Pos );
   static constexpr Reg32_t TSR_RQCP0     = TSR_RQCP0_Msk;
@@ -174,6 +183,9 @@ namespace Thor::LLD::CAN
   static constexpr Reg32_t TSR_LOW2     = TSR_LOW2_Msk;
 
   /*******************  Bit definition for RF0R register  *******************/
+  static constexpr Reg32_t RF0R_Msk = 0x0000003B;
+  static constexpr Reg32_t RF0R_Rst = 0x00000000;
+
   static constexpr Reg32_t RF0R_FMP0_Pos  = ( 0U );
   static constexpr Reg32_t RF0R_FMP0_Msk  = ( 0x3UL << RF0R_FMP0_Pos );
   static constexpr Reg32_t RF0R_FMP0      = RF0R_FMP0_Msk;
@@ -188,6 +200,9 @@ namespace Thor::LLD::CAN
   static constexpr Reg32_t RF0R_RFOM0     = RF0R_RFOM0_Msk;
 
   /*******************  Bit definition for RF1R register  *******************/
+  static constexpr Reg32_t RF1R_Msk = 0x0000003B;
+  static constexpr Reg32_t RF1R_Rst = 0x00000000;
+
   static constexpr Reg32_t RF1R_FMP1_Pos  = ( 0U );
   static constexpr Reg32_t RF1R_FMP1_Msk  = ( 0x3UL << RF1R_FMP1_Pos );
   static constexpr Reg32_t RF1R_FMP1      = RF1R_FMP1_Msk;
@@ -202,6 +217,9 @@ namespace Thor::LLD::CAN
   static constexpr Reg32_t RF1R_RFOM1     = RF1R_RFOM1_Msk;
 
   /********************  Bit definition for IER register  *******************/
+  static constexpr Reg32_t IER_Msk = 0x00038F7F;
+  static constexpr Reg32_t IER_Rst = 0x00000000;
+
   static constexpr Reg32_t IER_TMEIE_Pos  = ( 0U );
   static constexpr Reg32_t IER_TMEIE_Msk  = ( 0x1UL << IER_TMEIE_Pos );
   static constexpr Reg32_t IER_TMEIE      = IER_TMEIE_Msk;
@@ -246,6 +264,9 @@ namespace Thor::LLD::CAN
   static constexpr Reg32_t IER_SLKIE      = IER_SLKIE_Msk;
 
   /********************  Bit definition for ESR register  *******************/
+  static constexpr Reg32_t ESR_Msk = 0xFFFF0077;
+  static constexpr Reg32_t ESR_Rst = 0x00000000;
+
   static constexpr Reg32_t ESR_EWGF_Pos = ( 0U );
   static constexpr Reg32_t ESR_EWGF_Msk = ( 0x1UL << ESR_EWGF_Pos );
   static constexpr Reg32_t ESR_EWGF     = ESR_EWGF_Msk;
@@ -271,6 +292,9 @@ namespace Thor::LLD::CAN
   static constexpr Reg32_t ESR_REC     = ESR_REC_Msk;
 
   /*******************  Bit definition for BTR register  ********************/
+  static constexpr Reg32_t BTR_Msk = 0xC37F03FF;
+  static constexpr Reg32_t BTR_Rst = 0x01230000;
+
   static constexpr Reg32_t BTR_BRP_Pos  = ( 0U );
   static constexpr Reg32_t BTR_BRP_Msk  = ( 0x3FFUL << BTR_BRP_Pos );
   static constexpr Reg32_t BTR_BRP      = BTR_BRP_Msk;

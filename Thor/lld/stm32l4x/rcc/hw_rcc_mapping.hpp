@@ -21,6 +21,7 @@
 #include <Chimera/container>
 
 /* Driver Includes */
+#include <Thor/lld/stm32l4x/can/hw_can_prj.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
@@ -60,6 +61,18 @@ namespace Thor::LLD::RCC
 
   namespace LookupTables
   {
+#if defined( THOR_LLD_CAN )
+    /**
+     *  Power Peripheral Config Lookup Tables
+     */
+    extern void CANInit();
+
+    extern PCC CANLookup;
+    extern RegisterConfig CAN_ClockConfig[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
+    extern RegisterConfig CAN_ResetConfig[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
+    extern Chimera::Clock::Bus CAN_SourceClock[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
+#endif /* THOR_LLD_CAN */
+
 #if defined( THOR_LLD_FLASH )
     /**
      *  Power Peripheral Config Lookup Tables
