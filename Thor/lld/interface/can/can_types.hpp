@@ -43,7 +43,6 @@ namespace Thor::LLD::CAN
 
     RX_MAILBOX_1,
     RX_MAILBOX_2,
-    RX_MAILBOX_3,
 
     NUM_OPTIONS,
     UNKNOWN

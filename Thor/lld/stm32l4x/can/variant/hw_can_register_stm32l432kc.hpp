@@ -30,6 +30,9 @@ namespace Thor::LLD::CAN
   -------------------------------------------------------------------------------*/
   static constexpr size_t NUM_CAN_PERIPHS      = 1;
   static constexpr size_t NUM_CAN_IRQ_HANDLERS = 4; /**< Number of unique interrupts on each peripheral */
+  static constexpr size_t NUM_CAN_TX_MAILBOX   = 3;
+  static constexpr size_t NUM_CAN_RX_MAILBOX   = 2;
+  static constexpr size_t CAN_RX_FIFO_DEPTH    = 3;
 
   static constexpr RIndex_t CAN1_RESOURCE_INDEX = 0u;
 

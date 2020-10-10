@@ -96,7 +96,7 @@ namespace Thor::LLD::CAN
     If we are already in sleep mode, the sleep bit must
     be cleared first. See RM0394 44.4.3.
     -------------------------------------------------*/
-    if( SLEEP::get( periph ) )
+    if ( SLEEP::get( periph ) )
     {
       prv_exit_sleep_mode( periph );
     }
@@ -105,7 +105,7 @@ namespace Thor::LLD::CAN
     Ask to enter init mode
     -------------------------------------------------*/
     INRQ::set( periph, MCR_INRQ );
-    while( !INAK::get( periph ) )
+    while ( !INAK::get( periph ) )
     {
       continue;
     }
@@ -115,7 +115,7 @@ namespace Thor::LLD::CAN
   void prv_exit_initialization_mode( RegisterMap *const periph )
   {
     INRQ::clear( periph, MCR_INRQ );
-    while( INAK::get( periph ) )
+    while ( INAK::get( periph ) )
     {
       continue;
     }
@@ -134,7 +134,7 @@ namespace Thor::LLD::CAN
   void prv_enter_sleep_mode( RegisterMap *const periph )
   {
     SLEEP::set( periph, MCR_SLEEP );
-    while( !SLAK::get( periph ) )
+    while ( !SLAK::get( periph ) )
     {
       continue;
     }
@@ -144,7 +144,7 @@ namespace Thor::LLD::CAN
   void prv_exit_sleep_mode( RegisterMap *const periph )
   {
     SLEEP::clear( periph, MCR_SLEEP );
-    while( SLAK::get( periph ) )
+    while ( SLAK::get( periph ) )
     {
       continue;
     }
@@ -204,7 +204,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Prevent div/0 in calculations below
     -------------------------------------------------*/
-    if( !pclk )
+    if ( !pclk )
     {
       return std::numeric_limits<size_t>::max();
     }
@@ -213,7 +213,7 @@ namespace Thor::LLD::CAN
     Calculate the expected output baud rate. Taken from
     RM0394 Figure 488.
     -------------------------------------------------*/
-    float tq = ( 1.0f / ( float )pclk ) * ( float )( brp + 1 );
+    float tq             = ( 1.0f / ( float )pclk ) * ( float )( brp + 1 );
     float tbs1           = tq * ( float )( ts1 + 1 );
     float tbs2           = tq * ( float )( ts2 + 1 );
     float nominalBitTime = tq + tbs1 + tbs2;
@@ -224,7 +224,7 @@ namespace Thor::LLD::CAN
     a div/0 without having to do extremely precise
     floating point comparisons.
     -------------------------------------------------*/
-    if( nominalBitTime < 0.0000001f )
+    if ( nominalBitTime < 0.0000001f )
     {
       return std::numeric_limits<size_t>::max();
     }
@@ -242,16 +242,16 @@ namespace Thor::LLD::CAN
       mPeriph( nullptr ), mResourceIndex( std::numeric_limits<size_t>::max() ), mISRWakeup_external( nullptr ),
       mTXPin( nullptr ), mRXPin( nullptr )
   {
-
   }
 
 
   Driver::~Driver()
   {
-
   }
 
-
+  /*-------------------------------------------------------------------------------
+  Configuration
+  -------------------------------------------------------------------------------*/
   void Driver::attach( RegisterMap *const peripheral )
   {
     /*------------------------------------------------
@@ -263,11 +263,12 @@ namespace Thor::LLD::CAN
     /*------------------------------------------------
     Handle the ISR configuration
     ------------------------------------------------*/
-    for(auto handlerIdx =0; handlerIdx<NUM_CAN_IRQ_HANDLERS; handlerIdx++)
+    for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
     {
       Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
       Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
-      Thor::LLD::IT::setPriority( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ], Thor::Interrupt::CAN_IT_PREEMPT_PRIORITY, 0u );
+      Thor::LLD::IT::setPriority( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ],
+                                  Thor::Interrupt::CAN_IT_PREEMPT_PRIORITY, 0u );
     }
 
     return Chimera::Status::OK;
@@ -276,6 +277,8 @@ namespace Thor::LLD::CAN
 
   Chimera::Status_t Driver::configure( const Chimera::CAN::DriverConfig &cfg )
   {
+    using namespace Chimera::CAN;
+
     /*-------------------------------------------------
     Reset the driver registers to default values then
     configure hardware for initialization.
@@ -286,26 +289,29 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Initialize the GPIO drivers
     -------------------------------------------------*/
-    mTXPin = Chimera::GPIO::getDriver( cfg.TXInit.port, cfg.TXInit.pin );
-    mTXPin->init( cfg.TXInit );
+    if ( !mTXPin )
+    {
+      mTXPin = Chimera::GPIO::getDriver( cfg.TXInit.port, cfg.TXInit.pin );
+    }
 
-    mRXPin = Chimera::GPIO::getDriver( cfg.RXInit.port, cfg.RXInit.pin );
+    if ( !mRXPin )
+    {
+      mRXPin = Chimera::GPIO::getDriver( cfg.RXInit.port, cfg.RXInit.pin );
+    }
+
+    mTXPin->init( cfg.TXInit );
     mRXPin->init( cfg.RXInit );
 
     /*-------------------------------------------------
     Set up Bit Timing
     -------------------------------------------------*/
-    float actualBaud = static_cast<float>( prv_set_baud_rate( mPeriph, cfg ) );
+    float actualBaud  = static_cast<float>( prv_set_baud_rate( mPeriph, cfg ) );
     float desiredBaud = static_cast<float>( cfg.HWInit.baudRate );
 
     if ( cfg.HWInit.maxBaudError > std::abs( Aurora::Math::percentError( actualBaud, desiredBaud ) ) )
     {
       return Chimera::Status::FAILED_INIT;
     }
-
-    /*-------------------------------------------------
-    Set up filter scaling and mode
-    -------------------------------------------------*/
 
     /*-------------------------------------------------
     Request to leave init mode
@@ -316,10 +322,317 @@ namespace Thor::LLD::CAN
 
   Chimera::Status_t Driver::applyFilter( const Chimera::CAN::Filter &filter )
   {
+    // Must be done in init mode
 
+
+    /*-------------------------------------------------
+    Set up filter scaling and mode. These bits are shared
+    across a wide nubmer of
+    -------------------------------------------------*/
+    // switch( cfg.HWInit.filterMode )
+    // {
+    //   case Chimera::CAN::FilterMode::ID_LIST:
+
+    //     break;
+
+    //   case Chimera::CAN::FilterMode::MASK:
+
+    //     break;
+
+    //   default:
+    //     return Chimera::Status::FAILED_INIT;
+    //     break;
+    // }
+
+    // switch( cfg.HWInit.filterWidth )
+    // {
+    //   case Chimera::CAN::FilterWidth::WIDTH_16BIT:
+
+    //     break;
+
+    //   case Chimera::CAN::FilterWidth::WIDTH_32BIT:
+
+    //     break;
+
+    //   default:
+    //     return Chimera::Status::FAILED_INIT;
+    //     break;
+    // }
   }
 
-}
+
+  Chimera::Status_t Driver::enableISRSignal( const Chimera::CAN::InterruptType signal )
+  {
+    using namespace Chimera::CAN;
+
+    /*-------------------------------------------------
+    Enable an ISR event based on RM0394 Fig. 490. Proper
+    functionality assumes that the NVIC controller has
+    been correctly initialized.
+    -------------------------------------------------*/
+    switch( signal )
+    {
+      /*-------------------------------------------------
+      Transmit Interrupts
+      -------------------------------------------------*/
+      case InterruptType::TRANSMIT_MAILBOX_EMPTY:
+
+        break;
+
+      /*-------------------------------------------------
+      FIFO Interrupts
+      -------------------------------------------------*/
+      case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
+
+        break;
+
+      case InterruptType::RECEIVE_FIFO_FULL:
+
+        break;
+
+      case InterruptType::RECEIVE_FIFO_OVERRUN:
+
+        break;
+
+      /*-------------------------------------------------
+      Status Change Interrupts
+      -------------------------------------------------*/
+      case InterruptType::SLEEP_EVENT:
+
+        break;
+
+      case InterruptType::WAKEUP_EVENT:
+
+        break;
+
+      /*-------------------------------------------------
+      Error Interrupts
+      -------------------------------------------------*/
+      case InterruptType::ERROR_PENDING:
+
+        break;
+
+      case InterruptType::ERROR_CODE_EVENT:
+
+        break;
+
+      case InterruptType::ERROR_BUS_OFF_EVENT:
+
+        break;
+
+      case InterruptType::ERROR_PASSIVE_EVENT:
+
+        break;
+
+      case InterruptType::ERROR_WARNING_EVENT:
+
+        break;
+
+      default:
+        return Chimera::Status::NOT_SUPPORTED;
+        break;
+    };
+  }
+
+
+  void Driver::disableISRSignal( const Chimera::CAN::InterruptType signal )
+  {
+    using namespace Chimera::CAN;
+
+    /*-------------------------------------------------
+    Disable an ISR event based on RM0394 Fig. 490
+    -------------------------------------------------*/
+    switch( signal )
+    {
+      /*-------------------------------------------------
+      Transmit Interrupts
+      -------------------------------------------------*/
+      case InterruptType::TRANSMIT_MAILBOX_EMPTY:
+
+        break;
+
+      /*-------------------------------------------------
+      FIFO Interrupts
+      -------------------------------------------------*/
+      case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
+
+        break;
+
+      case InterruptType::RECEIVE_FIFO_FULL:
+
+        break;
+
+      case InterruptType::RECEIVE_FIFO_OVERRUN:
+
+        break;
+
+      /*-------------------------------------------------
+      Status Change Interrupts
+      -------------------------------------------------*/
+      case InterruptType::SLEEP_EVENT:
+
+        break;
+
+      case InterruptType::WAKEUP_EVENT:
+
+        break;
+
+      /*-------------------------------------------------
+      Error Interrupts
+      -------------------------------------------------*/
+      case InterruptType::ERROR_PENDING:
+
+        break;
+
+      case InterruptType::ERROR_CODE_EVENT:
+
+        break;
+
+      case InterruptType::ERROR_BUS_OFF_EVENT:
+
+        break;
+
+      case InterruptType::ERROR_PASSIVE_EVENT:
+
+        break;
+
+      case InterruptType::ERROR_WARNING_EVENT:
+
+        break;
+
+      default:
+        // Do nothing, it's not supported.
+        break;
+    };
+  }
+
+  void Driver::enterDebugMode( const Chimera::CAN::DebugMode mode )
+  {
+    using namespace Chimera::CAN;
+
+    /*-------------------------------------------------
+    Request to configure the hardware
+    -------------------------------------------------*/
+    prv_enter_initialization_mode( mPeriph );
+
+    /*-------------------------------------------------
+    Appropriately configure the debug mode
+    -------------------------------------------------*/
+    switch( mode )
+    {
+      case DebugMode::SILENT:
+        SLIM::set( mPeriph, ConfigMap::DebugMode[ static_cast<size_t>( DebugMode::SILENT ) ] );
+        LBKM::clear( mPeriph, ConfigMap::DebugMode[ static_cast<size_t>( DebugMode::LOOPBACK ) ] );
+        break;
+
+      case DebugMode::LOOPBACK:
+        SLIM::clear( mPeriph, ConfigMap::DebugMode[ static_cast<size_t>( DebugMode::SILENT ) ] );
+        LBKM::set( mPeriph, ConfigMap::DebugMode[ static_cast<size_t>( DebugMode::LOOPBACK ) ] );
+        break;
+
+      case DebugMode::LOOPBACK_AND_SILENT:
+        SLIM::set( mPeriph, ConfigMap::DebugMode[ static_cast<size_t>( DebugMode::SILENT ) ] );
+        LBKM::set( mPeriph, ConfigMap::DebugMode[ static_cast<size_t>( DebugMode::LOOPBACK ) ] );
+        break;
+
+      default:
+        SLIM::clear( mPeriph, ConfigMap::DebugMode[ static_cast<size_t>( DebugMode::SILENT ) ] );
+        LBKM::clear( mPeriph, ConfigMap::DebugMode[ static_cast<size_t>( DebugMode::LOOPBACK ) ] );
+        break;
+    };
+
+    /*-------------------------------------------------
+    Apply the debug configuration
+    -------------------------------------------------*/
+    prv_enter_normal_mode( mPeriph );
+  }
+
+
+  void Driver::exitDebugMode()
+  {
+    using namespace Chimera::CAN;
+
+    /*-------------------------------------------------
+    Go to init mode, reconfigure, go to normal mode
+    -------------------------------------------------*/
+    prv_enter_initialization_mode( mPeriph );
+    SLIM::clear( mPeriph, ConfigMap::DebugMode[ static_cast<size_t>( DebugMode::SILENT ) ] );
+    LBKM::clear( mPeriph, ConfigMap::DebugMode[ static_cast<size_t>( DebugMode::LOOPBACK ) ] );
+    prv_enter_normal_mode( mPeriph );
+  }
+
+
+  /*-------------------------------------------------------------------------------
+  Transmit & Receive Operations
+  -------------------------------------------------------------------------------*/
+  bool Driver::txMailboxAvailable( Mailbox &which )
+  {
+    /*-------------------------------------------------
+    Return the first mailbox that is not empty
+    -------------------------------------------------*/
+    if ( TME0::get( mPeriph ) )
+    {
+      which = Mailbox::TX_MAILBOX_1;
+      return true;
+    }
+    else if ( TME1::get( mPeriph ) )
+    {
+      which = Mailbox::TX_MAILBOX_2;
+      return true;
+    }
+    else if ( TME2::get( mPeriph ) )
+    {
+      which = Mailbox::TX_MAILBOX_3;
+      return true;
+    }
+    else
+    {
+      which = Mailbox::UNKNOWN;
+      return false;
+    }
+  }
+
+
+  bool Driver::rxMailboxAvailable( Mailbox &which )
+  {
+    /*-------------------------------------------------
+    Return the first FIFO that has a pending message
+    -------------------------------------------------*/
+    size_t fifo0PendingMessages = FMP0::get( mPeriph ) >> RF0R_FMP0_Pos;
+    size_t fifo1PendingMessages = FMP1::get( mPeriph ) >> RF1R_FMP1_Pos;
+
+    if( fifo0PendingMessages )
+    {
+      which = Mailbox::RX_MAILBOX_1;
+      return true;
+    }
+    else if( fifo1PendingMessages )
+    {
+      which = Mailbox::RX_MAILBOX_2;
+      return true;
+    }
+    else
+    {
+      which = Mailbox::UNKNOWN;
+      return false;
+    }
+  }
+
+
+  Chimera::Status_t Driver::send( const Mailbox which, const Chimera::CAN::BasicFrame &frame )
+  {
+  }
+
+
+  Chimera::Status_t Driver::receive( const Mailbox which, Chimera::CAN::BasicFrame &frame )
+  {
+  }
+
+
+  /*-------------------------------------------------------------------------------
+  Asynchronous Operation
+  -------------------------------------------------------------------------------*/
+}    // namespace Thor::LLD::CAN
 
 /*-------------------------------------------------------------------------------
 Interrupt Vectors

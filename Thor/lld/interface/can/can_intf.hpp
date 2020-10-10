@@ -129,11 +129,25 @@ namespace Thor::LLD::CAN
 
     virtual Chimera::Status_t applyFilter( const Chimera::CAN::Filter &filter ) = 0;
 
+    /**
+     *  Turns on interrupts for the given signal type, if supported.
+     *
+     *  @param[in]  signal        The ISR event to enable
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t enableISRSignal( const Chimera::CAN::InterruptType signal ) = 0;
+
+    /**
+     *  Turns off interrupts for the given signal type, if supported.
+     *
+     *  @param[in]  signal        The ISR event to enable
+     *  @return void
+     */
+    virtual void disableISRSignal( const Chimera::CAN::InterruptType signal ) = 0;
+
     virtual void freezeOnDebug( const bool doFreeze ) = 0;
 
     virtual void invokeMasterResetRequest() = 0;
-
-    virtual void invokeInitializationRequest() = 0;
 
     virtual void useAutoRetransmit( const bool doAutoRTX ) = 0;
 
@@ -145,6 +159,11 @@ namespace Thor::LLD::CAN
 
     virtual void exitSleepMode() = 0;
 
+    virtual void enterDebugMode( const Chimera::CAN::DebugMode mode ) = 0;
+
+    virtual void exitDebugMode() = 0;
+
+
     /*-------------------------------------------------------------------------------
     Transmit & Receive Operations
     -------------------------------------------------------------------------------*/
@@ -155,22 +174,15 @@ namespace Thor::LLD::CAN
      *  @param[out] which         If a mailbox is available, will return its ID
      *  @return bool
      */
-    virtual bool txMailboxAvailable( const Mailbox *which ) = 0;
+    virtual bool txMailboxAvailable( Mailbox &which ) = 0;
 
     /**
      *  Looks through the hardware RX FIFOs to see if any mailbox contains a message.
      *
+     *  @param[out] which         If a mailbox is available, will return its ID
      *  @return bool
      */
-    virtual bool rxMailboxAvailable() = 0;
-
-    /**
-     *  Clears the given RX mailbox of data
-     *
-     *  @param[in]  which         The mailbox to clear
-     *  @return void
-     */
-    virtual void mailboxClear( const Mailbox which ) = 0;
+    virtual bool rxMailboxAvailable( Mailbox &which ) = 0;
 
     /**
      *  Places the given frame into the TX FIFOs for transmission.
@@ -223,9 +235,28 @@ namespace Thor::LLD::CAN
     Driver();
     ~Driver();
 
+    /*-------------------------------------------------------------------------------
+    Configuration
+    -------------------------------------------------------------------------------*/
     void attach( RegisterMap *const peripheral );
     Chimera::Status_t configure( const Chimera::CAN::DriverConfig &cfg );
     Chimera::Status_t applyFilter( const Chimera::CAN::Filter &filter );
+    Chimera::Status_t enableISRSignal( const Chimera::CAN::InterruptType signal );
+    void disableISRSignal( const Chimera::CAN::InterruptType signal );
+    void enterDebugMode( const Chimera::CAN::DebugMode mode );
+    void exitDebugMode();
+
+    /*-------------------------------------------------------------------------------
+    Transmit & Receive Operations
+    -------------------------------------------------------------------------------*/
+    bool txMailboxAvailable(  Mailbox &which );
+    bool rxMailboxAvailable(  Mailbox &which );
+    Chimera::Status_t send( const Mailbox which, const Chimera::CAN::BasicFrame &frame );
+    Chimera::Status_t receive( const Mailbox which, Chimera::CAN::BasicFrame &frame );
+
+    /*-------------------------------------------------------------------------------
+    Asynchronous Operation
+    -------------------------------------------------------------------------------*/
 
   protected:
     void CAN1_TX_IRQHandler();
