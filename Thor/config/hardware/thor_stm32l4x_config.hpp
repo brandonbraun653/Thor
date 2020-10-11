@@ -296,6 +296,10 @@ Low Level Driver Support
 /*----------------------------------------------
 High Level Driver Support
 ----------------------------------------------*/
+#ifndef THOR_HLD_CAN
+#define THOR_HLD_CAN
+#endif
+
 #ifndef THOR_HLD_CLK
 #define THOR_HLD_CLK
 #endif

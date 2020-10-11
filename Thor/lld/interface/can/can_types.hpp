@@ -5,7 +5,7 @@
  *  Description:
  *    Common LLD CAN Types
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -68,17 +68,51 @@ namespace Thor::LLD::CAN
   /*-------------------------------------------------------------------------------
   Structures
   -------------------------------------------------------------------------------*/
-  struct EventData
+  struct ISREventContext
   {
-    EventType whatHappened;
+    /**
+     *  Describes which event is being handled by this structure
+     */
+    Chimera::CAN::InterruptType isrEvent;
 
+    /**
+     *  Union holding possible event contexts, interpreted by
+     *  the isrEvent variable above. These describe what actually
+     *  happened in the last ISR event.
+     */
     union _EventData
     {
-      // fill with struct defs
-      struct _ErrorEvent
+      /*-------------------------------------------------
+      Transmit Interrupt
+      -------------------------------------------------*/
+      struct _Transmit
       {
 
-      } errorEvent;
+      } txEvent;
+
+      /*-------------------------------------------------
+      Receive Interrupt
+      -------------------------------------------------*/
+      struct _Receive
+      {
+
+      } rxEvent;
+
+      /*-------------------------------------------------
+      Status Change Interrupt
+      -------------------------------------------------*/
+      struct _StatusChange
+      {
+
+      } stsEvent;
+
+      /*-------------------------------------------------
+      Data associated with Error Interrupts
+      -------------------------------------------------*/
+      struct _Error
+      {
+
+      } errEvent;
 
     } details;
   };

@@ -46,8 +46,6 @@ namespace Thor::CAN
     Driver();
     ~Driver();
 
-    void postISRProcessing();
-
     /*-------------------------------------------------
     Interface: Hardware
     -------------------------------------------------*/
@@ -74,13 +72,30 @@ namespace Thor::CAN
     Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
                              const size_t timeout );
 
-  private:
-    Chimera::CAN::DriverConfig mConfig; /**< Configuration used to set up the class */
-    Chimera::GPIO::Driver_sPtr mPinTX;  /**< CAN TX Pin */
-    Chimera::GPIO::Driver_sPtr mPinRX;  /**< CAN RX Pin */
+    /*-------------------------------------------------
+    ISR Event Handlers
+    -------------------------------------------------*/
+    void ProcessISREvent_TX();
+    void ProcessISREvent_RX();
+    void ProcessISREvent_Error();
+    void ProcessISREvent_StatusChange();
 
+  private:
+    /*-------------------------------------------------
+    Cached configuration settings
+    -------------------------------------------------*/
+    Chimera::CAN::DriverConfig mConfig;
+
+    /*-------------------------------------------------
+    Queues for transmitting and receiving frames
+    -------------------------------------------------*/
+    Chimera::Threading::Queue mTxQueue;
+    Chimera::Threading::Queue mRxQueue;
+
+    /*-------------------------------------------------
+    Callbacks that can be executed upon an event
+    -------------------------------------------------*/
     Chimera::Event::ActionableList eventListeners;
-    Chimera::Threading::BinarySemaphore awaitTransferComplete; /**< Internal signal for current transfer completed */
   };
 
 }    // namespace Thor::CAN

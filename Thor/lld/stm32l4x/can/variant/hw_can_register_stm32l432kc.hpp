@@ -36,6 +36,11 @@ namespace Thor::LLD::CAN
 
   static constexpr RIndex_t CAN1_RESOURCE_INDEX = 0u;
 
+  static constexpr RIndex_t CAN_TX_ISR_SIGNAL_INDEX  = 0u;
+  static constexpr RIndex_t CAN_RX_ISR_SIGNAL_INDEX  = 1u;
+  static constexpr RIndex_t CAN_STS_ISR_SIGNAL_INDEX = 2u;
+  static constexpr RIndex_t CAN_ERR_ISR_SIGNAL_INDEX = 3u;
+
 }    // namespace Thor::LLD::CAN
 
 #endif /* !THOR_LLD_CAN_REGISTER_STM32L432KC_HPP */

@@ -24,7 +24,6 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/can>
-#include <Thor/can>
 #include <Thor/lld/interface/can/can_detail.hpp>
 #include <Thor/lld/interface/can/can_intf.hpp>
 #include <Thor/lld/interface/can/can_types.hpp>
@@ -45,31 +44,25 @@ using ThreadFunctn = Chimera::Function::void_func_void_ptr;
 Constants
 -------------------------------------------------------------------------------*/
 static constexpr size_t NUM_DRIVERS = LLD::NUM_CAN_PERIPHS;
+static constexpr size_t NUM_ISR_SIG = LLD::NUM_CAN_IRQ_HANDLERS;
 
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
-static size_t s_driver_initialized;                        /**< Tracks the module level initialization state */
-static HLD::Driver hld_driver[ NUM_DRIVERS ];              /**< Driver objects */
-static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ];         /**< Shared references to driver objects */
-static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ];      /**< Handle to the ISR post processing thread */
-static BinarySemphr s_user_isr_signal[ NUM_DRIVERS ];      /**< Lock for each ISR post processing thread */
-static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ]; /**< RTOS aware function to execute at end of ISR */
+static size_t s_driver_initialized;                                       /**< Tracks the module level initialization state */
+static HLD::Driver hld_driver[ NUM_DRIVERS ];                             /**< Driver objects */
+static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ];                        /**< Shared references to driver objects */
+static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ][ NUM_ISR_SIG ];      /**< Handle to the ISR post processing thread */
+static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ][ NUM_ISR_SIG ]; /**< RTOS aware function to execute at end of ISR */
 
 /*-------------------------------------------------------------------------------
 Private Function Declarations
 -------------------------------------------------------------------------------*/
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
-static void CAN1ISRPostProcessorThread( void *argument );
-#endif
-#if defined( STM32_CAN2_PERIPH_AVAILABLE )
-static void CAN2ISRPostProcessorThread( void *argument );
-#endif
-#if defined( STM32_CAN3_PERIPH_AVAILABLE )
-static void CAN3ISRPostProcessorThread( void *argument );
-#endif
-#if defined( STM32_CAN4_PERIPH_AVAILABLE )
-static void CAN4ISRPostProcessorThread( void *argument );
+static void CAN1ISR_TXHandler( void *argument );
+static void CAN1ISR_RXHandler( void *argument );
+static void CAN1ISR_StatusChangeHandler( void *argument );
+static void CAN1ISR_ErrHandler( void *argument );
 #endif
 
 namespace Thor::CAN
@@ -134,16 +127,10 @@ namespace Thor::CAN
     Initialize ISR post-processing routines
     ------------------------------------------------*/
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ] = CAN1ISRPostProcessorThread;
-#endif
-#if defined( STM32_CAN2_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[::LLD::CAN2_RESOURCE_INDEX ] = CAN2ISRPostProcessorThread;
-#endif
-#if defined( STM32_CAN3_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[::LLD::CAN3_RESOURCE_INDEX ] = CAN3ISRPostProcessorThread;
-#endif
-#if defined( STM32_CAN4_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[::LLD::CAN4_RESOURCE_INDEX ] = CAN4ISRPostProcessorThread;
+    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][ ::LLD::CAN_TX_ISR_SIGNAL_INDEX ] = CAN1ISR_TXHandler;
+    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][ ::LLD::CAN_RX_ISR_SIGNAL_INDEX ] = CAN1ISR_RXHandler;
+    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][ ::LLD::CAN_STS_ISR_SIGNAL_INDEX ] = CAN1ISR_StatusChangeHandler;
+    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][ ::LLD::CAN_ERR_ISR_SIGNAL_INDEX ] = CAN1ISR_ErrHandler;
 #endif
 
     /*-------------------------------------------------
@@ -213,7 +200,7 @@ namespace Thor::CAN
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mPinTX( nullptr ), mPinRX( nullptr )
+  Driver::Driver()
   {
     mConfig.clear();
   }
@@ -223,78 +210,136 @@ namespace Thor::CAN
   {
   }
 
-
-  void Driver::postISRProcessing()
-  {
-
-  }
-
   /*------------------------------------------------
   HW Interface
   ------------------------------------------------*/
-  Chimera::Status_t open( const Chimera::CAN::DriverConfig &cfg )
+  Chimera::Status_t Driver::open( const Chimera::CAN::DriverConfig &cfg )
   {
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
-    if( !validateCfg( cfg ) )
+    if ( !validateCfg( cfg ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     /*-------------------------------------------------
-
+    Initialize the Low Level Driver
     -------------------------------------------------*/
+    auto lld = ::LLD::getDriver( cfg.HWInit.channel );
+    if ( auto sts = lld->configure( cfg ); sts != Chimera::Status::OK )
+    {
+      return sts;
+    }
 
+    /*-------------------------------------------------
+    Initialize the Queues
+    -------------------------------------------------*/
+    bool queuesCreated = true;
 
+    mTxQueue.lock();
+    queuesCreated |= mTxQueue.create( cfg.HWInit.txElements, sizeof( Chimera::CAN::BasicFrame ), cfg.HWInit.txBuffer );
+    mTxQueue.unlock();
+
+    mRxQueue.lock();
+    queuesCreated |= mRxQueue.create( cfg.HWInit.rxElements, sizeof( Chimera::CAN::BasicFrame ), cfg.HWInit.rxBuffer );
+    mRxQueue.unlock();
+
+    if( queuesCreated )
+    {
+      mTxQueue.clear( Chimera::Threading::TIMEOUT_DONT_WAIT );
+      mRxQueue.clear( Chimera::Threading::TIMEOUT_DONT_WAIT );
+    }
+    else
+    {
+      return Chimera::Status::FAILED_INIT;
+    }
+
+    /*-------------------------------------------------
+    Register the ISR thread handlers
+    -------------------------------------------------*/
+    size_t lldResourceIndex = ::LLD::getResourceIndex( cfg.HWInit.channel );
+
+    for(auto isr_idx=0; isr_idx<::LLD::NUM_CAN_IRQ_HANDLERS; isr_idx++)
+    {
+      if ( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ] )
+      {
+        Chimera::Threading::Thread thread;
+        thread.initialize( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ], nullptr, Chimera::Threading::Priority::LEVEL_5,
+                           STACK_BYTES( 250 ), nullptr );
+        thread.start();
+        s_user_isr_handle[ lldResourceIndex ][ isr_idx ] = thread.native_handle();
+      }
+    }
 
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t close()
+  Chimera::Status_t Driver::close()
   {
+    using namespace Chimera::CAN;
+
+    /*-------------------------------------------------
+    Clear out the queues
+    -------------------------------------------------*/
+    mTxQueue.clear( Chimera::Threading::TIMEOUT_DONT_WAIT );
+    mRxQueue.clear( Chimera::Threading::TIMEOUT_DONT_WAIT );
+
+    /*-------------------------------------------------
+    Disable all ISR signals
+    -------------------------------------------------*/
+    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
+    for( auto isr=0; isr < static_cast<size_t>( InterruptType::NUM_OPTIONS ); isr++)
+    {
+      lld->disableISRSignal( static_cast<InterruptType>( isr ) );
+    }
+
+
+    // De-init the lld
+    // De-register threads??
+    // Clear the GPIO configs to be inputs
     return Chimera::Status::OK;
   }
 
 
-  Chimera::CAN::CANStatus getStatus()
+  Chimera::CAN::CANStatus Driver::getStatus()
   {
     return Chimera::CAN::CANStatus();
   }
 
 
-  Chimera::Status_t send( const Chimera::CAN::BasicFrame &frame )
+  Chimera::Status_t Driver::send( const Chimera::CAN::BasicFrame &frame )
   {
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t receive( Chimera::CAN::BasicFrame &frame, const size_t timeout )
+  Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame, const size_t timeout )
   {
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t subscribe( const Chimera::CAN::Identifier_t id, Chimera::CAN::FrameCallback_t callback )
+  Chimera::Status_t Driver::subscribe( const Chimera::CAN::Identifier_t id, Chimera::CAN::FrameCallback_t callback )
   {
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t unsubscribe( const Chimera::CAN::Identifier_t id )
+  Chimera::Status_t Driver::unsubscribe( const Chimera::CAN::Identifier_t id )
   {
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t filter( const Chimera::CAN::Filter *const list, const size_t size )
+  Chimera::Status_t Driver::filter( const Chimera::CAN::Filter *const list, const size_t size )
   {
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t flush( Chimera::CAN::BufferType buffer )
+  Chimera::Status_t Driver::flush( Chimera::CAN::BufferType buffer )
   {
     return Chimera::Status::OK;
   }
@@ -305,18 +350,18 @@ namespace Thor::CAN
   ------------------------------------------------*/
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
-    if ( event != Chimera::Event::TRIGGER_TRANSFER_COMPLETE )
-    {
-      return Chimera::Status::NOT_SUPPORTED;
-    }
-    else if ( !awaitTransferComplete.try_acquire_for( timeout ) )
-    {
-      return Chimera::Status::TIMEOUT;
-    }
-    else
-    {
-      return Chimera::Status::OK;
-    }
+    // if ( event != Chimera::Event::TRIGGER_TRANSFER_COMPLETE )
+    // {
+    //   return Chimera::Status::NOT_SUPPORTED;
+    // }
+    // else if ( !awaitTransferComplete.try_acquire_for( timeout ) )
+    // {
+    //   return Chimera::Status::TIMEOUT;
+    // }
+    // else
+    // {
+    //   return Chimera::Status::OK;
+    // }
   }
 
 
@@ -349,59 +394,132 @@ namespace Thor::CAN
     return Chimera::Status::NOT_SUPPORTED;
   }
 
+  /*-------------------------------------------------
+  ISR Event Handlers
+  -------------------------------------------------*/
+  void Driver::ProcessISREvent_TX()
+  {
+    // Enqueue new TX if ready
+    // Handle any errors with a previously pending TX
+    // Execute user callback
+  }
+
+
+  void Driver::ProcessISREvent_RX()
+  {
+    // Dump data into queue for as many fifos as possible
+    // Execute user callback
+  }
+
+
+  void Driver::ProcessISREvent_Error()
+  {
+    // Maybe reset the driver?
+    // Execute user callback
+  }
+
+
+  void Driver::ProcessISREvent_StatusChange()
+  {
+    // Not sure if there will be much to do here
+    // Execute user callback
+  }
+
 }    // namespace Thor::CAN
 
-
+/*-------------------------------------------------------------------------------
+High Priority Threads:
+These handle ISR events with the context of a full scheduler
+-------------------------------------------------------------------------------*/
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
-static void CAN1ISRPostProcessorThread( void *argument )
+static void CAN1ISR_TXHandler( void *argument )
 {
-  constexpr auto index = ::LLD::CAN1_RESOURCE_INDEX;
+  using namespace Chimera::CAN;
 
+  /*-------------------------------------------------
+  Get a reference to the semaphore that will be given
+  to once an event occurs.
+  -------------------------------------------------*/
+  auto sig = ::LLD::getDriver( Channel::CAN0 )->getISRSignal( InterruptType::TX_ISR );
+
+  /*-------------------------------------------------
+  Acquire the signal in a blocking manner. Once the
+  ISR has signaled the event, process it here.
+  -------------------------------------------------*/
   while ( 1 )
   {
-    s_user_isr_signal[ index ].acquire();
-    hld_driver[ index ].postISRProcessing();
+    sig->acquire();
+    hld_driver[ ::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_TX();
   }
 }
-#endif
 
-#if defined( STM32_CAN2_PERIPH_AVAILABLE )
-static void CAN2ISRPostProcessorThread( void *argument )
+
+static void CAN1ISR_RXHandler( void *argument )
 {
-  constexpr auto index = ::LLD::CAN2_RESOURCE_INDEX;
+  using namespace Chimera::CAN;
 
+  /*-------------------------------------------------
+  Get a reference to the semaphore that will be given
+  to once an event occurs.
+  -------------------------------------------------*/
+  auto sig = ::LLD::getDriver( Channel::CAN0 )->getISRSignal( InterruptType::RX_ISR );
+
+  /*-------------------------------------------------
+  Acquire the signal in a blocking manner. Once the
+  ISR has signaled the event, process it here.
+  -------------------------------------------------*/
   while ( 1 )
   {
-    s_user_isr_signal[ index ].acquire();
-    hld_driver[ index ].postISRProcessing();
+    sig->acquire();
+    hld_driver[ ::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_RX();
   }
 }
-#endif
 
-#if defined( STM32_CAN3_PERIPH_AVAILABLE )
-static void CAN3ISRPostProcessorThread( void *argument )
+
+static void CAN1ISR_StatusChangeHandler( void *argument )
 {
-  constexpr auto index = ::LLD::CAN3_RESOURCE_INDEX;
+  using namespace Chimera::CAN;
 
+  /*-------------------------------------------------
+  Get a reference to the semaphore that will be given
+  to once an event occurs.
+  -------------------------------------------------*/
+  auto sig = ::LLD::getDriver( Channel::CAN0 )->getISRSignal( InterruptType::STS_ISR );
+
+  /*-------------------------------------------------
+  Acquire the signal in a blocking manner. Once the
+  ISR has signaled the event, process it here.
+  -------------------------------------------------*/
   while ( 1 )
   {
-    s_user_isr_signal[ index ].acquire();
-    hld_driver[ index ].postISRProcessing();
+    sig->acquire();
+    hld_driver[ ::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_StatusChange();
   }
 }
-#endif
 
-#if defined( STM32_CAN4_PERIPH_AVAILABLE )
-static void CAN4ISRPostProcessorThread( void *argument )
+
+static void CAN1ISR_ErrHandler( void *argument )
 {
-  constexpr auto index = ::LLD::CAN4_RESOURCE_INDEX;
+  using namespace Chimera::CAN;
 
+  /*-------------------------------------------------
+  Get a reference to the semaphore that will be given
+  to once an event occurs.
+  -------------------------------------------------*/
+  auto sig = ::LLD::getDriver( Channel::CAN0 )->getISRSignal( InterruptType::ERR_ISR );
+
+  /*-------------------------------------------------
+  Acquire the signal in a blocking manner. Once the
+  ISR has signaled the event, process it here.
+  -------------------------------------------------*/
   while ( 1 )
   {
-    s_user_isr_signal[ index ].acquire();
-    hld_driver[ index ].postISRProcessing();
+    sig->acquire();
+    hld_driver[ ::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_StatusChange();
   }
 }
-#endif
+
+#endif  /* STM32_CAN1_PERIPH_AVAILABLE */
+
 
 #endif /* THOR_HLD_CAN */

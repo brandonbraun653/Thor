@@ -87,6 +87,14 @@ namespace Thor::LLD::CAN
    */
   size_t prv_get_baud_rate( RegisterMap *const periph );
 
+  /**
+   *  Checks that a given frame is valid for the driver
+   *
+   *  @param[in]  frame       Frame to be checked
+   *  @return bool
+   */
+  bool prv_validate_frame( const Chimera::CAN::BasicFrame &frame );
+
 }  // namespace Thor::LLD::CAN
 
 #endif  /* !THOR_LLD_PRIVATE_CAN_DRIVER_HPP */

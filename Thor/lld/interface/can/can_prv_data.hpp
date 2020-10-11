@@ -31,6 +31,12 @@ namespace Thor::LLD::CAN
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
+  static constexpr RIndex_t RIDX_TX_MAILBOX_1 = 0;
+  static constexpr RIndex_t RIDX_TX_MAILBOX_2 = 1;
+  static constexpr RIndex_t RIDX_TX_MAILBOX_3 = 2;
+
+  static constexpr RIndex_t RIDX_RX_MAILBOX_1 = 0;
+  static constexpr RIndex_t RIDX_RX_MAILBOX_2 = 1;
 
   /*-------------------------------------------------------------------------------
   Project Defined Constants

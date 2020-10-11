@@ -235,12 +235,24 @@ namespace Thor::LLD::CAN
   }
 
 
+  bool prv_validate_frame( const Chimera::CAN::BasicFrame &frame )
+  {
+    using namespace Chimera::CAN;
+
+    bool result = true;
+
+    result |= ( frame.dataLength != 0 );
+    result |= ( frame.idMode < IdentifierMode::NUM_OPTIONS );
+    //result |= ( frame.id is valid? What makes a valid id? )
+
+    return result;
+  }
+
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
   Driver::Driver() :
-      mPeriph( nullptr ), mResourceIndex( std::numeric_limits<size_t>::max() ), mISRWakeup_external( nullptr ),
-      mTXPin( nullptr ), mRXPin( nullptr )
+      mPeriph( nullptr ), mResourceIndex( std::numeric_limits<size_t>::max() ), mTXPin( nullptr ), mRXPin( nullptr )
   {
   }
 
@@ -265,13 +277,19 @@ namespace Thor::LLD::CAN
     ------------------------------------------------*/
     for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
     {
+      /*-------------------------------------------------
+      Configure the NVIC with the desired settings
+      -------------------------------------------------*/
       Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
       Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
       Thor::LLD::IT::setPriority( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ],
                                   Thor::Interrupt::CAN_IT_PREEMPT_PRIORITY, 0u );
-    }
 
-    return Chimera::Status::OK;
+      /*-------------------------------------------------
+      Reset the semaphores to their un-signaled state
+      -------------------------------------------------*/
+      mISREventSignal[ handlerIdx ].try_acquire();
+    }
   }
 
 
@@ -370,62 +388,86 @@ namespace Thor::LLD::CAN
     functionality assumes that the NVIC controller has
     been correctly initialized.
     -------------------------------------------------*/
-    switch( signal )
+    switch ( signal )
     {
       /*-------------------------------------------------
       Transmit Interrupts
       -------------------------------------------------*/
       case InterruptType::TRANSMIT_MAILBOX_EMPTY:
-
+        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_TX_ISR_SIGNAL_INDEX ] );
+        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_TX_ISR_SIGNAL_INDEX ] );
+        TMEIE::set( mPeriph, IER_TMEIE );
         break;
 
       /*-------------------------------------------------
-      FIFO Interrupts
+      FIFO Interrupts: Operate on both FIFOs at once
       -------------------------------------------------*/
       case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
-
+        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        FMPIE0::set( mPeriph, IER_FMPIE0 );
+        FMPIE1::set( mPeriph, IER_FMPIE1 );
         break;
 
       case InterruptType::RECEIVE_FIFO_FULL:
-
+        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        FFIE0::set( mPeriph, IER_FFIE0 );
+        FFIE1::set( mPeriph, IER_FFIE1 );
         break;
 
       case InterruptType::RECEIVE_FIFO_OVERRUN:
-
+        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        FOVIE0::set( mPeriph, IER_FOVIE0 );
+        FOVIE1::set( mPeriph, IER_FOVIE1 );
         break;
 
       /*-------------------------------------------------
       Status Change Interrupts
       -------------------------------------------------*/
       case InterruptType::SLEEP_EVENT:
-
+        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
+        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
+        SLKIE::set( mPeriph, IER_SLKIE );
         break;
 
       case InterruptType::WAKEUP_EVENT:
-
+        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
+        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
+        WKUIE::set( mPeriph, IER_WKUIE );
         break;
 
       /*-------------------------------------------------
-      Error Interrupts
+      Error Interrupts: Error signals are additionally
+      masked by ERRIE, so ensure it is on.
       -------------------------------------------------*/
-      case InterruptType::ERROR_PENDING:
-
-        break;
-
       case InterruptType::ERROR_CODE_EVENT:
-
+        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        ERRIE::set( mPeriph, IER_ERRIE );
+        LECIE::set( mPeriph, IER_LECIE );
         break;
 
       case InterruptType::ERROR_BUS_OFF_EVENT:
-
+        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        ERRIE::set( mPeriph, IER_ERRIE );
+        BOFIE::set( mPeriph, IER_BOFIE );
         break;
 
       case InterruptType::ERROR_PASSIVE_EVENT:
-
+        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        ERRIE::set( mPeriph, IER_ERRIE );
+        EPVIE::set( mPeriph, IER_EPVIE );
         break;
 
       case InterruptType::ERROR_WARNING_EVENT:
-
+        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        ERRIE::set( mPeriph, IER_ERRIE );
+        EWGIE::set( mPeriph, IER_EWGIE );
         break;
 
       default:
@@ -442,62 +484,71 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Disable an ISR event based on RM0394 Fig. 490
     -------------------------------------------------*/
-    switch( signal )
+    switch ( signal )
     {
       /*-------------------------------------------------
       Transmit Interrupts
       -------------------------------------------------*/
       case InterruptType::TRANSMIT_MAILBOX_EMPTY:
-
+        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_TX_ISR_SIGNAL_INDEX ] );
+        TMEIE::clear( mPeriph, IER_TMEIE );
         break;
 
       /*-------------------------------------------------
       FIFO Interrupts
       -------------------------------------------------*/
       case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
-
+        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        FMPIE0::clear( mPeriph, IER_FMPIE0 );
+        FMPIE1::clear( mPeriph, IER_FMPIE1 );
         break;
 
       case InterruptType::RECEIVE_FIFO_FULL:
-
+        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        FFIE0::clear( mPeriph, IER_FFIE0 );
+        FFIE1::clear( mPeriph, IER_FFIE1 );
         break;
 
       case InterruptType::RECEIVE_FIFO_OVERRUN:
-
+        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        FOVIE0::clear( mPeriph, IER_FOVIE0 );
+        FOVIE1::clear( mPeriph, IER_FOVIE1 );
         break;
 
       /*-------------------------------------------------
       Status Change Interrupts
       -------------------------------------------------*/
       case InterruptType::SLEEP_EVENT:
-
+        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
+        SLKIE::clear( mPeriph, IER_SLKIE );
         break;
 
       case InterruptType::WAKEUP_EVENT:
-
+        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
+        WKUIE::clear( mPeriph, IER_WKUIE );
         break;
 
       /*-------------------------------------------------
       Error Interrupts
       -------------------------------------------------*/
-      case InterruptType::ERROR_PENDING:
-
-        break;
-
       case InterruptType::ERROR_CODE_EVENT:
-
+        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        LECIE::clear( mPeriph, IER_LECIE );
         break;
 
       case InterruptType::ERROR_BUS_OFF_EVENT:
-
+        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        BOFIE::clear( mPeriph, IER_BOFIE );
         break;
 
       case InterruptType::ERROR_PASSIVE_EVENT:
-
+        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        EPVIE::clear( mPeriph, IER_EPVIE );
         break;
 
       case InterruptType::ERROR_WARNING_EVENT:
-
+        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        EWGIE::clear( mPeriph, IER_EWGIE );
         break;
 
       default:
@@ -505,6 +556,7 @@ namespace Thor::LLD::CAN
         break;
     };
   }
+
 
   void Driver::enterDebugMode( const Chimera::CAN::DebugMode mode )
   {
@@ -518,7 +570,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Appropriately configure the debug mode
     -------------------------------------------------*/
-    switch( mode )
+    switch ( mode )
     {
       case DebugMode::SILENT:
         SLIM::set( mPeriph, ConfigMap::DebugMode[ static_cast<size_t>( DebugMode::SILENT ) ] );
@@ -601,12 +653,12 @@ namespace Thor::LLD::CAN
     size_t fifo0PendingMessages = FMP0::get( mPeriph ) >> RF0R_FMP0_Pos;
     size_t fifo1PendingMessages = FMP1::get( mPeriph ) >> RF1R_FMP1_Pos;
 
-    if( fifo0PendingMessages )
+    if ( fifo0PendingMessages )
     {
       which = Mailbox::RX_MAILBOX_1;
       return true;
     }
-    else if( fifo1PendingMessages )
+    else if ( fifo1PendingMessages )
     {
       which = Mailbox::RX_MAILBOX_2;
       return true;
@@ -621,17 +673,433 @@ namespace Thor::LLD::CAN
 
   Chimera::Status_t Driver::send( const Mailbox which, const Chimera::CAN::BasicFrame &frame )
   {
+    using namespace Chimera::CAN;
+
+    /*-------------------------------------------------
+    Can we even send this type of frame?
+    -------------------------------------------------*/
+    if( !prv_validate_frame( frame ) )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
+    /*-------------------------------------------------
+    Enter a critical section to guarantee the mailbox
+    will only be modified by this function.
+    -------------------------------------------------*/
+    enterCriticalSection();
+
+    /*-------------------------------------------------
+    Validate that the mailbox is actually free
+    -------------------------------------------------*/
+    volatile TxMailbox* box = nullptr;
+
+    switch ( which )
+    {
+      case Mailbox::TX_MAILBOX_1:
+        if ( !TME0::get( mPeriph ) )
+        {
+          exitCriticalSection();
+          return Chimera::Status::NOT_READY;
+        }
+
+        box = &mPeriph->sTxMailBox[ RIDX_TX_MAILBOX_1 ];
+        break;
+
+      case Mailbox::TX_MAILBOX_2:
+        if ( !TME1::get( mPeriph ) )
+        {
+          exitCriticalSection();
+          return Chimera::Status::NOT_READY;
+        }
+
+        box = &mPeriph->sTxMailBox[ RIDX_TX_MAILBOX_2 ];
+        break;
+
+      case Mailbox::TX_MAILBOX_3:
+        if ( !TME2::get( mPeriph ) )
+        {
+          exitCriticalSection();
+          return Chimera::Status::NOT_READY;
+        }
+
+        box = &mPeriph->sTxMailBox[ RIDX_TX_MAILBOX_3 ];
+        break;
+
+      default:
+        exitCriticalSection();
+        return Chimera::Status::INVAL_FUNC_PARAM;
+        break;
+    };
+
+    /*-------------------------------------------------
+    Reset the mailbox
+    -------------------------------------------------*/
+    box->TIR  = 0;
+    box->TDHR = 0;
+    box->TDLR = 0;
+    box->TDTR = 0;
+
+    /*-------------------------------------------------
+    Assign the STD/EXT ID
+    -------------------------------------------------*/
+    if( frame.idMode == IdentifierMode::STANDARD )
+    {
+      box->TIR |= ( frame.id & ID_MASK_11_BIT ) << TIxR_STID_Pos;
+      box->TIR &= ~TIxR_IDE;
+    }
+    else // Extended
+    {
+      box->TIR |= ( ( frame.id & ID_MASK_29_BIT ) << TIxR_EXID_Pos );
+      box->TIR |= TIxR_IDE;
+    }
+
+    /*-------------------------------------------------
+    Assign the remote transmition type
+    -------------------------------------------------*/
+    if( frame.frameType == FrameType::DATA )
+    {
+      box->TIR &= ~TIxR_RTR;
+    }
+    else // Remote frame
+    {
+      box->TIR |= TIxR_RTR;
+    }
+
+    /*-------------------------------------------------
+    Assign byte length of the transfer
+    -------------------------------------------------*/
+    box->TDTR |= ( ( frame.dataLength & TDT0R_DLC_Msk ) << TDT0R_DLC_Pos );
+
+    /*-------------------------------------------------
+    Assign the data payload
+    -------------------------------------------------*/
+    box->TDLR |= ( ( frame.data[ 0 ] & 0xFF ) << TDL0R_DATA0_Pos );
+    box->TDLR |= ( ( frame.data[ 1 ] & 0xFF ) << TDL0R_DATA1_Pos );
+    box->TDLR |= ( ( frame.data[ 2 ] & 0xFF ) << TDL0R_DATA2_Pos );
+    box->TDLR |= ( ( frame.data[ 3 ] & 0xFF ) << TDL0R_DATA3_Pos );
+    box->TDHR |= ( ( frame.data[ 4 ] & 0xFF ) << TDH0R_DATA4_Pos );
+    box->TDHR |= ( ( frame.data[ 5 ] & 0xFF ) << TDH0R_DATA5_Pos );
+    box->TDHR |= ( ( frame.data[ 6 ] & 0xFF ) << TDH0R_DATA6_Pos );
+    box->TDHR |= ( ( frame.data[ 7 ] & 0xFF ) << TDH0R_DATA7_Pos );
+
+    /*-------------------------------------------------
+    Ensure interrupts are enabled for important events
+    -------------------------------------------------*/
+    enableISRSignal( InterruptType::TRANSMIT_MAILBOX_EMPTY );
+
+    /*-------------------------------------------------
+    Finally, move the mailbox to a "ready for tx" state
+    -------------------------------------------------*/
+    box->TIR |= TIxR_TXRQ;
+
+    /*-------------------------------------------------
+    Exit the critical section and return success.
+    -------------------------------------------------*/
+    exitCriticalSection();
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::receive( const Mailbox which, Chimera::CAN::BasicFrame &frame )
   {
+    using namespace Chimera::CAN;
+
+    /*-------------------------------------------------
+    Enter a critical section to guarantee the mailbox
+    will only be modified by this function.
+    -------------------------------------------------*/
+    enterCriticalSection();
+
+    /*-------------------------------------------------
+    Ensure the FIFO actually has data for us
+    -------------------------------------------------*/
+    volatile RxMailbox* box = nullptr;
+
+    switch( which )
+    {
+      case Mailbox::RX_MAILBOX_1:
+        if( !FMP0::get( mPeriph ) )
+        {
+          exitCriticalSection();
+          return Chimera::Status::NOT_READY;
+        }
+
+        box = &mPeriph->sFIFOMailBox[ RIDX_RX_MAILBOX_1 ];
+        break;
+
+      case Mailbox::RX_MAILBOX_2:
+        if( !FMP1::get( mPeriph ) )
+        {
+          exitCriticalSection();
+          return Chimera::Status::NOT_READY;
+        }
+
+        box = &mPeriph->sFIFOMailBox[ RIDX_RX_MAILBOX_2 ];
+        break;
+
+      default:
+        exitCriticalSection();
+        frame.clear();
+        return Chimera::Status::NOT_AVAILABLE;
+        break;
+    }
+
+    /*-------------------------------------------------
+    Makes sure there isn't strange data in the frame
+    -------------------------------------------------*/
+    frame.clear();
+
+    /*-------------------------------------------------
+    Read out the STD/EXT ID
+    -------------------------------------------------*/
+    if( !( box->RIR & RI0R_IDE ) )
+    {
+      frame.id = ( ( box->RIR & RI0R_STID_Msk ) >> RI0R_STID_Pos );
+    }
+    else // Extended
+    {
+      frame.id = ( ( box->RIR & RI0R_EXID_Msk ) >> RI0R_EXID_Pos );
+    }
+
+    /*-------------------------------------------------
+    Read out the frame type
+    -------------------------------------------------*/
+    if( !( box->RIR & RI0R_RTR ))
+    {
+      frame.frameType = FrameType::DATA;
+    }
+    else // Remote
+    {
+      frame.frameType = FrameType::REMOTE;
+    }
+
+    /*-------------------------------------------------
+    Read out the filter match idx and payload length
+    -------------------------------------------------*/
+    frame.filterIndex = ( ( box->RDTR & RDT0R_FMI_Msk ) >> RDT0R_FMI_Pos );
+    frame.dataLength = ( ( box->RDTR & RDT0R_DLC_Msk ) >> RDT0R_DLC_Pos );
+
+    /*-------------------------------------------------
+    Read out the payload
+    -------------------------------------------------*/
+    const Reg32_t dataLo = box->RDLR;
+    const Reg32_t dataHi = box->RDHR;
+
+    frame.data[ 0 ] = ( ( dataLo & RDL0R_DATA0_Msk ) >> RDL0R_DATA0_Pos );
+    frame.data[ 1 ] = ( ( dataLo & RDL0R_DATA1_Msk ) >> RDL0R_DATA1_Pos );
+    frame.data[ 2 ] = ( ( dataLo & RDL0R_DATA2_Msk ) >> RDL0R_DATA2_Pos );
+    frame.data[ 3 ] = ( ( dataLo & RDL0R_DATA3_Msk ) >> RDL0R_DATA3_Pos );
+    frame.data[ 4 ] = ( ( dataHi & RDH0R_DATA4_Msk ) >> RDH0R_DATA4_Pos );
+    frame.data[ 5 ] = ( ( dataHi & RDH0R_DATA5_Msk ) >> RDH0R_DATA5_Pos );
+    frame.data[ 6 ] = ( ( dataHi & RDH0R_DATA6_Msk ) >> RDH0R_DATA6_Pos );
+    frame.data[ 7 ] = ( ( dataHi & RDH0R_DATA7_Msk ) >> RDH0R_DATA7_Pos );
+
+    /*-------------------------------------------------
+    Let the FIFO know we've read the message so it can
+    load in the next one if it exists. Don't leave
+    until HW acks the release by clearing the bit.
+    -------------------------------------------------*/
+    switch( which )
+    {
+      case Mailbox::RX_MAILBOX_1:
+        RFOM0::set( mPeriph, RF0R_RFOM0 );
+        while( RFOM0::get( mPeriph ) )
+        {
+          continue;
+        }
+        break;
+
+      case Mailbox::RX_MAILBOX_2:
+        RFOM1::set( mPeriph, RF1R_RFOM1 );
+        while( RFOM1::get( mPeriph ) )
+        {
+          continue;
+        }
+        break;
+
+      default:
+        // Do nothing. This cannot get hit.
+        break;
+    }
+
+    /*-------------------------------------------------
+    Exit the critical section and return success
+    -------------------------------------------------*/
+    exitCriticalSection();
+    return Chimera::Status::OK;
   }
 
 
   /*-------------------------------------------------------------------------------
   Asynchronous Operation
   -------------------------------------------------------------------------------*/
+  Chimera::Threading::BinarySemaphore *Driver::getISRSignal( Chimera::CAN::InterruptType signal )
+  {
+    using namespace Chimera::CAN;
+    switch ( signal )
+    {
+      /*-------------------------------------------------
+      Transmit Interrupts
+      -------------------------------------------------*/
+      // case InterruptType::TX_ISR:
+      case InterruptType::TRANSMIT_MAILBOX_EMPTY:
+        return &mISREventSignal[ CAN_TX_ISR_SIGNAL_INDEX ];
+        break;
+
+      /*-------------------------------------------------
+      FIFO Interrupts
+      -------------------------------------------------*/
+      // case InterruptType::RX_ISR:
+      case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
+      case InterruptType::RECEIVE_FIFO_FULL:
+      case InterruptType::RECEIVE_FIFO_OVERRUN:
+        return &mISREventSignal[ CAN_RX_ISR_SIGNAL_INDEX ];
+        break;
+
+      /*-------------------------------------------------
+      Status Change
+      -------------------------------------------------*/
+      // case InterruptType::STS_ISR:
+      case InterruptType::SLEEP_EVENT:
+      case InterruptType::WAKEUP_EVENT:
+        return &mISREventSignal[ CAN_STS_ISR_SIGNAL_INDEX ];
+        break;
+
+      /*-------------------------------------------------
+      Error Interrupts
+      -------------------------------------------------*/
+      // case InterruptType::ERR_ISR
+      case InterruptType::ERROR_CODE_EVENT:
+      case InterruptType::ERROR_BUS_OFF_EVENT:
+      case InterruptType::ERROR_PASSIVE_EVENT:
+      case InterruptType::ERROR_WARNING_EVENT:
+        return &mISREventSignal[ CAN_ERR_ISR_SIGNAL_INDEX ];
+        break;
+
+      default:
+        return nullptr;
+        break;
+    };
+  }
+
+
+  const ISREventContext *const Driver::getISRContext( const Chimera::CAN::InterruptType isr )
+  {
+    using namespace Chimera::CAN;
+    switch ( isr )
+    {
+      /*-------------------------------------------------
+      Transmit Interrupts
+      -------------------------------------------------*/
+      // case InterruptType::TX_ISR:
+      case InterruptType::TRANSMIT_MAILBOX_EMPTY:
+        return &mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ];
+        break;
+
+      /*-------------------------------------------------
+      FIFO Interrupts
+      -------------------------------------------------*/
+      // case InterruptType::RX_ISR:
+      case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
+      case InterruptType::RECEIVE_FIFO_FULL:
+      case InterruptType::RECEIVE_FIFO_OVERRUN:
+        return &mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ];
+        break;
+
+      /*-------------------------------------------------
+      Status Change
+      -------------------------------------------------*/
+      // case InterruptType::STS_ISR:
+      case InterruptType::SLEEP_EVENT:
+      case InterruptType::WAKEUP_EVENT:
+        return &mISREventContext[ CAN_STS_ISR_SIGNAL_INDEX ];
+        break;
+
+      /*-------------------------------------------------
+      Error Interrupts
+      -------------------------------------------------*/
+      // case InterruptType::ERR_ISR
+      case InterruptType::ERROR_CODE_EVENT:
+      case InterruptType::ERROR_BUS_OFF_EVENT:
+      case InterruptType::ERROR_PASSIVE_EVENT:
+      case InterruptType::ERROR_WARNING_EVENT:
+        return &mISREventContext[ CAN_ERR_ISR_SIGNAL_INDEX ];
+        break;
+
+      default:
+        return nullptr;
+        break;
+    };
+  }
+
+
+  /*-------------------------------------------------------------------------------
+  Protected Functions
+  -------------------------------------------------------------------------------*/
+  /**
+   *  This ISR handles events generated by:
+   *    - Transmit mailbox 0/1/2 is empty
+   */
+  void Driver::CAN1_TX_IRQHandler()
+  {
+    // Acknowledge the ISR event by clearing RQCP0/1/2 in CAN_TSR
+
+    // give to the tx signal
+  }
+
+  /**
+   *  This ISR handles events generated by:
+   *    - Reception of a new message
+   *    - FIFO0 is full
+   *    - FIFO0 has overrun
+   */
+  void Driver::CAN1_FIFO0_IRQHandler()
+  {
+    // give to the fifo new message signal
+  }
+
+  /**
+   *  This ISR handles events generated by:
+   *    - Reception of a new message
+   *    - FIFO1 is full
+   *    - FIFO1 has overrun
+   */
+  void Driver::CAN1_FIFO1_IRQHandler()
+  {
+    // give to the fifo new message signal
+  }
+
+  /**
+   *  This ISR handles events generated by:
+   *    - Error conditions (multiple kinds)
+   *    - Wakeup from SOF monitored on RX pin
+   *    - Entry into sleep mode
+   */
+  void Driver::CAN1_ERR_STS_CHG_IRQHandler()
+  {
+    // Figure out what fired
+    // Give to either status change or error signals
+  }
+
+
+  void Driver::enterCriticalSection()
+  {
+    for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
+    {
+      IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
+    }
+  }
+
+
+  void Driver::exitCriticalSection()
+  {
+    for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
+    {
+      IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
+    }
+  }
+
 }    // namespace Thor::LLD::CAN
 
 /*-------------------------------------------------------------------------------

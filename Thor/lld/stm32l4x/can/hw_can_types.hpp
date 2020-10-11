@@ -109,12 +109,18 @@ namespace Thor::LLD::CAN
   ------------------------------------------------*/
   REG_ACCESSOR( RegisterMap, RF0R, RF0R_Msk, RF0R_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, RF0R, RF0R_FMP0_Msk, FMP0, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, RF0R, RF0R_RFOM0_Msk, RFOM0, BIT_ACCESS_RS );
+  REG_ACCESSOR( RegisterMap, RF0R, RF0R_FOVR0_Msk, FOVR0, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, RF0R, RF0R_FULL0_Msk, FULL0, BIT_ACCESS_RCW1 );
 
   /*------------------------------------------------
   Receive FIFO 1 Register
   ------------------------------------------------*/
   REG_ACCESSOR( RegisterMap, RF1R, RF1R_Msk, RF1R_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, RF1R, RF1R_FMP1_Msk, FMP1, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, RF1R, RF1R_RFOM1_Msk, RFOM1, BIT_ACCESS_RS );
+  REG_ACCESSOR( RegisterMap, RF1R, RF1R_FOVR1_Msk, FOVR1, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, RF1R, RF1R_FULL1_Msk, FULL1, BIT_ACCESS_RCW1 );
 
   /*------------------------------------------------
   Interrupt Enable Register

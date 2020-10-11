@@ -206,21 +206,32 @@ namespace Thor::LLD::CAN
     Asynchronous Operation
     -------------------------------------------------------------------------------*/
     /**
-     *  Attaches a signal to the driver that allows awakening a high priority
-     *  thread for processing asynchronous events.
+     *  Gets the driver's semaphore associated with an ISR event. The semaphore
+     *  will be given to upon event occurance, unblocking a task that is pending.
      *
-     *  @param[in]  wakeup        The wakeup signal to set on events
-     *  @return void
+     *  @warning Only a single thread should consume the signal. The purpose of
+     *  this function is to allow a high priority thread in the HLD to process
+     *  the event outside of the limited ISR context.
+     *
+     *  @param[in]  signal        Which ISR signal to get the semaphore for
+     *  @return Chimera::Threading::BinarySemaphore *
      */
-    virtual void attachEventWakeup( Chimera::Threading::BinarySemaphore *const wakeup ) = 0;
+    virtual Chimera::Threading::BinarySemaphore* getISRSignal( Chimera::CAN::InterruptType signal ) = 0;
 
     /**
      *  Gets any information that was posted in relation to the last
-     *  hardware event.
+     *  ISR event.
      *
-     *  @return EventData&
+     *  @note This is limited to read-only because of the single producer
+     *  many consumer data model. The ISR produces, you consume. Copy out
+     *  the data inside of a critical section to guarantee the ISR won't
+     *  modify the structure while reading.
+     *
+     *  @param[in]  isr           The ISR event type to get the context for
+     *
+     *  @return const ISREventContext *const
      */
-    virtual EventData& getLastEventData() = 0;
+    virtual const ISREventContext *const getISRContext( const Chimera::CAN::InterruptType isr ) = 0;
   };
 
 
@@ -257,14 +268,23 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------------------------------------
     Asynchronous Operation
     -------------------------------------------------------------------------------*/
+    Chimera::Threading::BinarySemaphore* getISRSignal( Chimera::CAN::InterruptType signal );
+    const ISREventContext *const getISRContext( const Chimera::CAN::InterruptType isr );
+
+    /*-------------------------------------------------------------------------------
+    ISR Protection Mechanisms
+    -------------------------------------------------------------------------------*/
+    void enterCriticalSection();
+    void exitCriticalSection();
 
   protected:
+    /*-------------------------------------------------------------------------------
+    ISR Handlers
+    -------------------------------------------------------------------------------*/
     void CAN1_TX_IRQHandler();
     void CAN1_FIFO0_IRQHandler();
     void CAN1_FIFO1_IRQHandler();
     void CAN1_ERR_STS_CHG_IRQHandler();
-    void enterCriticalSection();
-    void exitCriticalSection();
 
   private:
     friend void( ::CAN1_FIFO0_IRQHandler )();
@@ -272,10 +292,21 @@ namespace Thor::LLD::CAN
     friend void( ::CAN1_ERR_STS_CHG_IRQHandler )();
     friend void( ::CAN1_FIFO1_IRQHandler )();
 
+    /*-------------------------------------------------
+    Peripheral descriptive information
+    -------------------------------------------------*/
     RegisterMap *mPeriph;
     size_t mResourceIndex;
-    Chimera::Threading::BinarySemaphore *mISRWakeup_external;
 
+    /*-------------------------------------------------
+    ISR signaling and context buffers
+    -------------------------------------------------*/
+    ISREventContext mISREventContext[ NUM_CAN_IRQ_HANDLERS ];
+    Chimera::Threading::BinarySemaphore mISREventSignal[ NUM_CAN_IRQ_HANDLERS ];
+
+    /*-------------------------------------------------
+    GPIO handles for configuring TX/RX pins appropriately
+    -------------------------------------------------*/
     Chimera::GPIO::Driver_sPtr mTXPin;
     Chimera::GPIO::Driver_sPtr mRXPin;
   };
