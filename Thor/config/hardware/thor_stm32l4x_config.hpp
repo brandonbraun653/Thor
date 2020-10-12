@@ -325,6 +325,9 @@ High Level Driver Support
 // #ifndef THOR_HLD_TIMER
 // #define THOR_HLD_TIMER
 // #endif
+#ifndef THOR_HLD_UART
+#define THOR_HLD_UART
+#endif
 
 #ifndef THOR_HLD_USART
 #define THOR_HLD_USART
@@ -368,6 +371,10 @@ Low Level Driver Support
 // Not supported, pending rewrite in Chimera-23
 // #ifndef THOR_LLD_TIMER
 // #define THOR_LLD_TIMER
+// #endif
+
+// #ifndef THOR_LLD_UART
+// #define THOR_LLD_UART
 // #endif
 
 #ifndef THOR_LLD_USART

@@ -87,7 +87,16 @@ namespace Thor::LLD::CAN
       -------------------------------------------------*/
       struct _Transmit
       {
+        struct _ErrorCodes
+        {
+          bool txError;
+          bool arbLost;
+          bool txOk;
+        };
 
+        _ErrorCodes mailbox0;
+        _ErrorCodes mailbox1;
+        _ErrorCodes mailbox2;
       } txEvent;
 
       /*-------------------------------------------------

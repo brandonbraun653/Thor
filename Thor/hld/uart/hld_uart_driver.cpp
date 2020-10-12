@@ -33,8 +33,8 @@ namespace LLD = ::Thor::LLD::UART;
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
-static constexpr size_t NUM_DRIVERS = LLD::NUM_UART_PERIPHS;
-
+static constexpr size_t NUM_DRIVERS = 1; //LLD::NUM_UART_PERIPHS;
+#pragma warning("Missing LLD UART driver")
 
 /*-------------------------------------------------------------------------------
 Variables
@@ -76,7 +76,7 @@ namespace Thor::UART
   }
 
 
-  Chimera::UART::IUART_sPtr getDriver( const Chimera::Serial::Channel channel )
+  Chimera::UART::Driver_sPtr getDriver( const Chimera::Serial::Channel channel )
   {
     return nullptr;
   }

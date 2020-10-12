@@ -78,7 +78,7 @@ namespace Thor::PWM
     Check if a timer peripheral exists for the requested PWM channel.
     If it does, grab the driver, creating one if it doesn't exist yet.
     ------------------------------------------------*/
-    mpTimerDriver = Chimera::Timer::getSharedInstance( cfg.timer.peripheral );
+    mpTimerDriver = nullptr; //Chimera::Timer::getSharedInstance( cfg.timer.peripheral );
     if ( !mpTimerDriver )
     {
       return Chimera::Status::NOT_AVAILABLE;
@@ -92,20 +92,20 @@ namespace Thor::PWM
     bool configured = false;
     CoreFeatureInit tmp;
 
-    mpTimerDriver->requestData( DriverData::IS_CONFIGURED, &configured, sizeof( configured ) );
+    //mpTimerDriver->requestData( DriverData::IS_CONFIGURED, &configured, sizeof( configured ) );
 
     /* Configure the base timer if needed */
     if ( !configured || cfg.timer.overwrite )
     {
       memset( &tmp, 0, sizeof( tmp ) );
       tmp.base = cfg.timer;
-      result |= mpTimerDriver->initializeCoreFeature( CoreFeature::BASE_TIMER, tmp );
+      //result |= mpTimerDriver->initializeCoreFeature( CoreFeature::BASE_TIMER, tmp );
     }
 
     /* Configure the PWM portion of the timer */
     memset( &tmp, 0, sizeof( tmp ) );
     tmp.pwm = cfg.pwm;
-    result |= mpTimerDriver->initializeCoreFeature( CoreFeature::PWM_OUTPUT, tmp );
+    //result |= mpTimerDriver->initializeCoreFeature( CoreFeature::PWM_OUTPUT, tmp );
 
     /*------------------------------------------------
     Configure the GPIO for timer output
@@ -146,13 +146,13 @@ namespace Thor::PWM
     Enable the PWM output
     ------------------------------------------------*/
     auto action = state ? DriverAction::PWM_ENABLE_CHANNEL : DriverAction::PWM_DISABLE_CHANNEL;
-    auto result = mpTimerDriver->invokeAction( action, &mPWMConfig.outputChannel, sizeof( mPWMConfig.outputChannel ) );
+    //auto result = mpTimerDriver->invokeAction( action, &mPWMConfig.outputChannel, sizeof( mPWMConfig.outputChannel ) );
 
     /*------------------------------------------------
     Unlock the driver and return the result
     ------------------------------------------------*/
     unlock();
-    return result;
+    return Chimera::Status::NOT_AVAILABLE;
   }
 
   Chimera::Status_t Driver::setFrequency( const size_t freq )
@@ -175,7 +175,8 @@ namespace Thor::PWM
     action.channel = mPWMConfig.outputChannel;
     action.dutyCycle = dutyCycle;
 
-    return mpTimerDriver->invokeAction( DriverAction::PWM_SET_DUTY_CYCLE, &action, sizeof( DriverAction_PWMDutyCycle_t ) );
+    //return mpTimerDriver->invokeAction( DriverAction::PWM_SET_DUTY_CYCLE, &action, sizeof( DriverAction_PWMDutyCycle_t ) );
+    return Chimera::Status::NOT_AVAILABLE;
   }
 
   Chimera::Status_t Driver::setPolarity( const Chimera::Timer::PWM::Polarity polarity )

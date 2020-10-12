@@ -31,9 +31,9 @@ namespace Chimera::DMA::Backend
     return Chimera::Status::OK;
   }
 
-  IDMA_sPtr getDriver( const Controller channel )
+  Driver_sPtr getDriver( const Controller channel )
   {
-    return Thor::DMA::DMAClass::get();
+    return nullptr;
   }
 
 //   Chimera::Status_t registerDriver( Chimera::DMA::Backend::DriverConfig &registry )

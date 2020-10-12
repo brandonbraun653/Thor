@@ -24,6 +24,7 @@
 #include <Thor/lld/common/interrupts/can_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/can/can_types.hpp>
+#include <Thor/lld/interface/can/can_detail.hpp>
 
 namespace Thor::LLD::CAN
 {

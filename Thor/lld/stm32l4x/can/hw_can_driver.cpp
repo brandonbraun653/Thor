@@ -29,6 +29,7 @@
 #include <Thor/lld/interface/can/can_prv_data.hpp>
 #include <Thor/lld/stm32l4x/can/hw_can_prj.hpp>
 #include <Thor/lld/stm32l4x/can/hw_can_types.hpp>
+#include <Thor/lld/stm32l4x/can/hw_can_prv_driver.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_CAN )
@@ -335,6 +336,7 @@ namespace Thor::LLD::CAN
     Request to leave init mode
     -------------------------------------------------*/
     prv_exit_initialization_mode( mPeriph );
+    return Chimera::Status::OK;
   }
 
 
@@ -342,6 +344,7 @@ namespace Thor::LLD::CAN
   {
     // Must be done in init mode
 
+    return Chimera::Status::NOT_SUPPORTED;
 
     /*-------------------------------------------------
     Set up filter scaling and mode. These bits are shared
@@ -474,6 +477,8 @@ namespace Thor::LLD::CAN
         return Chimera::Status::NOT_SUPPORTED;
         break;
     };
+
+    return Chimera::Status::OK;
   }
 
 
@@ -1043,9 +1048,62 @@ namespace Thor::LLD::CAN
    */
   void Driver::CAN1_TX_IRQHandler()
   {
-    // Acknowledge the ISR event by clearing RQCP0/1/2 in CAN_TSR
+    /*-------------------------------------------------
+    Ensure the ISR type is set correctly
+    -------------------------------------------------*/
+    mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].isrEvent = Chimera::CAN::InterruptType::TRANSMIT_MAILBOX_EMPTY;
 
-    // give to the tx signal
+    /*-------------------------------------------------
+    Read the latest value of the transmit status register
+    -------------------------------------------------*/
+    const Reg32_t tsr = mPeriph->TSR;
+
+    /*-------------------------------------------------
+    Mailbox 0 Transmit Complete
+    -------------------------------------------------*/
+    if( tsr & TSR_RQCP0 )
+    {
+      // Copy out the results of the last event
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.txError = TERR0::get( mPeriph );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.arbLost = ALST0::get( mPeriph );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.txOk    = TXOK0::get( mPeriph );
+
+      // Acknowledge event. Setting this bit clears the above registers.
+      RQCP0::set( mPeriph, TSR_RQCP0 );
+    }
+
+    /*-------------------------------------------------
+    Mailbox 1 Transmit Complete
+    -------------------------------------------------*/
+    if( tsr & TSR_RQCP1 )
+    {
+      // Copy out the results of the last event
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.txError = TERR1::get( mPeriph );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.arbLost = ALST1::get( mPeriph );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.txOk    = TXOK1::get( mPeriph );
+
+      // Acknowledge event. Setting this bit clears the above registers.
+      RQCP1::set( mPeriph, TSR_RQCP1 );
+    }
+
+    /*-------------------------------------------------
+    Mailbox 2 Transmit Complete
+    -------------------------------------------------*/
+    if( tsr & TSR_RQCP2 )
+    {
+      // Copy out the results of the last event
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.txError = TERR2::get( mPeriph );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.arbLost = ALST2::get( mPeriph );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.txOk    = TXOK2::get( mPeriph );
+
+      // Acknowledge event. Setting this bit clears the above registers.
+      RQCP2::set( mPeriph, TSR_RQCP2 );
+    }
+
+    /*-------------------------------------------------
+    Awaken high priority thread for processing this ISR
+    -------------------------------------------------*/
+    mISREventSignal[ CAN_TX_ISR_SIGNAL_INDEX ].releaseFromISR();
   }
 
   /**

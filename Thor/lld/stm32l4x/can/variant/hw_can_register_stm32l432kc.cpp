@@ -65,7 +65,7 @@ namespace Thor::LLD::RCC::LookupTables
     ------------------------------------------------*/
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
     CAN_ResetConfig[ CAN1_RESOURCE_INDEX ].mask = APB1RSTR1_CAN1RST;
-    CAN_ResetConfig[ CAN1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1RSTR;
+    CAN_ResetConfig[ CAN1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1RSTR1;
 #endif
 
     /*------------------------------------------------

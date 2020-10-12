@@ -3553,3 +3553,5 @@ namespace Thor::LLD::CAN
   static constexpr Reg32_t F13R2_FB31     = F13R2_FB31_Msk;
 
 }    // namespace Thor::LLD::CAN
+
+#endif /* THOR_HW_CAN_REGISTER_STM32L4XXXX_HPP */

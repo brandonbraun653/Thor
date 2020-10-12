@@ -45,114 +45,114 @@ namespace Thor::TIMER
   /*-------------------------------------------------------------------------------
   High Level Driver Declaration
   -------------------------------------------------------------------------------*/
-  class AdvancedDriver : virtual public Chimera::Timer::ITimer,
-                         public Chimera::Threading::Lockable
-  {
-  public:
-    /*------------------------------------------------
-    Advanced Driver Interface
-    ------------------------------------------------*/
-    AdvancedDriver();
-    ~AdvancedDriver();
+  // class AdvancedDriver : virtual public Chimera::Timer::HWInterface,
+  //                        public Chimera::Threading::Lockable
+  // {
+  // public:
+  //   /*------------------------------------------------
+  //   Advanced Driver Interface
+  //   ------------------------------------------------*/
+  //   AdvancedDriver();
+  //   ~AdvancedDriver();
 
-    /*-------------------------------------------------
-    Chimera ITimer Interface
-    -------------------------------------------------*/
-    Chimera::Status_t initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init ) final override;
-    Chimera::Status_t invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize ) final override;
-    Chimera::Status_t setState( const Chimera::Timer::Switchable device, const Chimera::Timer::SwitchableState state ) final override;
-    Chimera::Status_t requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize ) final override;
-    const Chimera::Timer::Descriptor * getDeviceInfo() final override;
+  //   /*-------------------------------------------------
+  //   Chimera ITimer Interface
+  //   -------------------------------------------------*/
+  //   Chimera::Status_t initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init ) final override;
+  //   Chimera::Status_t invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize ) final override;
+  //   Chimera::Status_t setState( const Chimera::Timer::Switchable device, const Chimera::Timer::SwitchableState state ) final override;
+  //   Chimera::Status_t requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize ) final override;
+  //   const Chimera::Timer::Descriptor * getDeviceInfo() final override;
 
-  private:
-    friend Chimera::Status_t initAdvancedDriverObject( const Thor::HLD::RIndex );
-    Thor::HLD::RIndex mIndexHLD;
-    Thor::LLD::RIndex mIndexLLD;
-  };
+  // private:
+  //   friend Chimera::Status_t initAdvancedDriverObject( const Thor::HLD::RIndex );
+  //   Thor::HLD::RIndex mIndexHLD;
+  //   Thor::LLD::RIndex mIndexLLD;
+  // };
 
-  class GeneralDriver : virtual public Chimera::Timer::ITimer,
-                        public Chimera::Threading::Lockable
-  {
-  public:
-    /*-------------------------------------------------
-    Chimera ITimer Interface
-    -------------------------------------------------*/
-    Chimera::Status_t initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init ) final override;
-    Chimera::Status_t invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize ) final override;
-    Chimera::Status_t setState( const Chimera::Timer::Switchable device, const Chimera::Timer::SwitchableState state ) final override;
-    Chimera::Status_t requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize ) final override;
-    const Chimera::Timer::Descriptor * getDeviceInfo() final override;
-    
-    /*------------------------------------------------
-    General Driver Interface
-    ------------------------------------------------*/
-    GeneralDriver();
-    ~GeneralDriver();
+  // class GeneralDriver : virtual public Chimera::Timer::HWInterface,
+  //                       public Chimera::Threading::Lockable
+  // {
+  // public:
+  //   /*-------------------------------------------------
+  //   Chimera ITimer Interface
+  //   -------------------------------------------------*/
+  //   Chimera::Status_t initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init ) final override;
+  //   Chimera::Status_t invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize ) final override;
+  //   Chimera::Status_t setState( const Chimera::Timer::Switchable device, const Chimera::Timer::SwitchableState state ) final override;
+  //   Chimera::Status_t requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize ) final override;
+  //   const Chimera::Timer::Descriptor * getDeviceInfo() final override;
 
-    Chimera::Status_t initCoreTimer( const Chimera::Timer::DriverConfig &cfg );
+  //   /*------------------------------------------------
+  //   General Driver Interface
+  //   ------------------------------------------------*/
+  //   GeneralDriver();
+  //   ~GeneralDriver();
 
-    /*------------------------------------------------
-    PWM Functionality
-    ------------------------------------------------*/
-    Chimera::Status_t initPWM( const Chimera::Timer::PWM::Config &cfg );
-    Chimera::Status_t toggleOutput( const Chimera::Timer::Channel channel, const bool state );
+  //   Chimera::Status_t initCoreTimer( const Chimera::Timer::DriverConfig &cfg );
+
+  //   /*------------------------------------------------
+  //   PWM Functionality
+  //   ------------------------------------------------*/
+  //   Chimera::Status_t initPWM( const Chimera::Timer::PWM::Config &cfg );
+  //   Chimera::Status_t toggleOutput( const Chimera::Timer::Channel channel, const bool state );
 
 
-  private:
-    friend Chimera::Status_t initGeneralDriverObject( const Thor::HLD::RIndex );
-    Thor::HLD::RIndex mIndexHLD;
-    Thor::LLD::RIndex mIndexLLD;
-  };
+  // private:
+  //   friend Chimera::Status_t initGeneralDriverObject( const Thor::HLD::RIndex );
+  //   Thor::HLD::RIndex mIndexHLD;
+  //   Thor::LLD::RIndex mIndexLLD;
+  // };
 
-  class BasicDriver : virtual public Chimera::Timer::ITimer,
-                      public Chimera::Threading::Lockable
-  {
-  public:
-    /*------------------------------------------------
-    Basic Driver Interface
-    ------------------------------------------------*/
-    BasicDriver();
-    ~BasicDriver();
+  // class BasicDriver : virtual public Chimera::Timer::HWInterface,
+  //                     public Chimera::Threading::Lockable
+  // {
+  // public:
+  //   /*------------------------------------------------
+  //   Basic Driver Interface
+  //   ------------------------------------------------*/
+  //   BasicDriver();
+  //   ~BasicDriver();
 
-    /*-------------------------------------------------
-    Chimera ITimer Interface
-    -------------------------------------------------*/
-    Chimera::Status_t initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init ) final override;
-    Chimera::Status_t invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize ) final override;
-    Chimera::Status_t setState( const Chimera::Timer::Switchable device, const Chimera::Timer::SwitchableState state ) final override;
-    Chimera::Status_t requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize ) final override;
-    const Chimera::Timer::Descriptor * getDeviceInfo() final override;
+  //   /*-------------------------------------------------
+  //   Chimera ITimer Interface
+  //   -------------------------------------------------*/
+  //   Chimera::Status_t initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init ) final override;
+  //   Chimera::Status_t invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize ) final override;
+  //   Chimera::Status_t setState( const Chimera::Timer::Switchable device, const Chimera::Timer::SwitchableState state ) final override;
+  //   Chimera::Status_t requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize ) final override;
+  //   const Chimera::Timer::Descriptor * getDeviceInfo() final override;
 
-  private:
-    friend Chimera::Status_t initBasicDriverObject( const Thor::HLD::RIndex );
-    Thor::HLD::RIndex mIndexHLD;
-    Thor::LLD::RIndex mIndexLLD;
-  };
+  // private:
+  //   friend Chimera::Status_t initBasicDriverObject( const Thor::HLD::RIndex );
+  //   Thor::HLD::RIndex mIndexHLD;
+  //   Thor::LLD::RIndex mIndexLLD;
+  // };
 
-  class LowPowerDriver : virtual public Chimera::Timer::ITimer,
-                         public Chimera::Threading::Lockable
-  {
-  public:
-    /*------------------------------------------------
-    Low Power Driver Interface
-    ------------------------------------------------*/
-    LowPowerDriver();
-    ~LowPowerDriver();
+  // class LowPowerDriver : virtual public Chimera::Timer::HWInterface,
+  //                        public Chimera::Threading::Lockable
+  // {
+  // public:
+  //   /*------------------------------------------------
+  //   Low Power Driver Interface
+  //   ------------------------------------------------*/
+  //   LowPowerDriver();
+  //   ~LowPowerDriver();
 
-    /*-------------------------------------------------
-    Chimera ITimer Interface
-    -------------------------------------------------*/
-    Chimera::Status_t initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init ) final override;
-    Chimera::Status_t invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize ) final override;
-    Chimera::Status_t setState( const Chimera::Timer::Switchable device, const Chimera::Timer::SwitchableState state ) final override;
-    Chimera::Status_t requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize ) final override;
-    const Chimera::Timer::Descriptor * getDeviceInfo() final override;
+  //   /*-------------------------------------------------
+  //   Chimera ITimer Interface
+  //   -------------------------------------------------*/
+  //   Chimera::Status_t initializeCoreFeature( const Chimera::Timer::CoreFeature feature, Chimera::Timer::CoreFeatureInit &init ) final override;
+  //   Chimera::Status_t invokeAction( const Chimera::Timer::DriverAction action, void *arg, const size_t argSize ) final override;
+  //   Chimera::Status_t setState( const Chimera::Timer::Switchable device, const Chimera::Timer::SwitchableState state ) final override;
+  //   Chimera::Status_t requestData( const Chimera::Timer::DriverData data, void *arg, const size_t argSize ) final override;
+  //   const Chimera::Timer::Descriptor * getDeviceInfo() final override;
 
-  private:
-    friend Chimera::Status_t initLowPowerDriverObject( const Thor::HLD::RIndex );
-    Thor::HLD::RIndex mIndexHLD;
-    Thor::LLD::RIndex mIndexLLD;
-  };
+  // private:
+  //   friend Chimera::Status_t initLowPowerDriverObject( const Thor::HLD::RIndex );
+  //   Thor::HLD::RIndex mIndexHLD;
+  //   Thor::LLD::RIndex mIndexLLD;
+  // };
 }    // namespace Thor::TIMER
 
 #endif /* !THOR_HLD_TIMER_DRIVER_HPP */

@@ -49,11 +49,26 @@ static constexpr size_t NUM_ISR_SIG = LLD::NUM_CAN_IRQ_HANDLERS;
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
-static size_t s_driver_initialized;                                       /**< Tracks the module level initialization state */
-static HLD::Driver hld_driver[ NUM_DRIVERS ];                             /**< Driver objects */
-static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ];                        /**< Shared references to driver objects */
-static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ][ NUM_ISR_SIG ];      /**< Handle to the ISR post processing thread */
-static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ][ NUM_ISR_SIG ]; /**< RTOS aware function to execute at end of ISR */
+static size_t s_driver_initialized;
+
+/*-------------------------------------------------
+Instances of the CAN driver in object and ptr form
+-------------------------------------------------*/
+static HLD::Driver hld_driver[ NUM_DRIVERS ];
+static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ];
+
+/*-------------------------------------------------
+High priority threads & handles that process more
+complex ISR functionality.
+-------------------------------------------------*/
+static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ][ NUM_ISR_SIG ];
+static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ][ NUM_ISR_SIG ];
+
+/*-------------------------------------------------
+Wakeup signals used to allow external threads to
+pend on interrupt processing events.
+-------------------------------------------------*/
+static BinarySemphr s_user_isr_signal[ NUM_DRIVERS ][ NUM_ISR_SIG ];
 
 /*-------------------------------------------------------------------------------
 Private Function Declarations
@@ -272,6 +287,12 @@ namespace Thor::CAN
       }
     }
 
+    /*-------------------------------------------------
+    Initialize the ISR events to listen to
+    -------------------------------------------------*/
+    lld->enableISRSignal( Chimera::CAN::InterruptType::TX_ISR );
+    lld->enableISRSignal( Chimera::CAN::InterruptType::RX_ISR );
+
     return Chimera::Status::OK;
   }
 
@@ -311,25 +332,63 @@ namespace Thor::CAN
 
   Chimera::Status_t Driver::send( const Chimera::CAN::BasicFrame &frame )
   {
-    return Chimera::Status::OK;
+    using namespace Chimera::CAN;
+    using namespace Chimera::Threading;
+
+    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
+    auto box = ::LLD::Mailbox::UNKNOWN;
+    auto enq = Chimera::Status::OK;
+
+    /*-------------------------------------------------
+    Ensure transmit ISR is enabled
+    -------------------------------------------------*/
+    lld->enableISRSignal( Chimera::CAN::InterruptType::TX_ISR );
+
+    /*-------------------------------------------------
+    Post directly to hardware mailbox if possible but
+    enqueue the message if not.
+    -------------------------------------------------*/
+    if( lld->txMailboxAvailable( box ) )
+    {
+      return lld->send( box, frame );
+    }
+    else
+    {
+      mTxQueue.lock();
+      if( !mTxQueue.push( &frame, TIMEOUT_DONT_WAIT ) )
+      {
+        enq = Chimera::Status::FULL;
+      }
+      mTxQueue.unlock();
+    }
+
+    return enq;
   }
 
 
   Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame, const size_t timeout )
   {
-    return Chimera::Status::OK;
-  }
+    /*-------------------------------------------------
+    Data is pushed into this queue via an interrupt
+    based message pump. The ISR awakens a high priority
+    thread that assembles the raw data from hardware
+    into the rx queue, until it can be read here.
+    -------------------------------------------------*/
+    if( mRxQueue.try_lock_for( timeout ) )
+    {
+      auto result = Chimera::Status::OK;
+      if( mRxQueue.available() && !mRxQueue.pop( &frame, TIMEOUT_DONT_WAIT ))
+      {
+        result = Chimera::Status::FAILED_READ;
+      }
+      mRxQueue.unlock();
 
-
-  Chimera::Status_t Driver::subscribe( const Chimera::CAN::Identifier_t id, Chimera::CAN::FrameCallback_t callback )
-  {
-    return Chimera::Status::OK;
-  }
-
-
-  Chimera::Status_t Driver::unsubscribe( const Chimera::CAN::Identifier_t id )
-  {
-    return Chimera::Status::OK;
+      return result;
+    }
+    else
+    {
+      return Chimera::Status::LOCKED;
+    }
   }
 
 
@@ -350,6 +409,8 @@ namespace Thor::CAN
   ------------------------------------------------*/
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
+    return Chimera::Status::NOT_SUPPORTED;
+
     // if ( event != Chimera::Event::TRIGGER_TRANSFER_COMPLETE )
     // {
     //   return Chimera::Status::NOT_SUPPORTED;
@@ -399,16 +460,121 @@ namespace Thor::CAN
   -------------------------------------------------*/
   void Driver::ProcessISREvent_TX()
   {
-    // Enqueue new TX if ready
-    // Handle any errors with a previously pending TX
-    // Execute user callback
+    using namespace Chimera::CAN;
+    using namespace Chimera::Threading;
+
+    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
+    auto box = ::LLD::Mailbox::UNKNOWN;
+
+    /*-------------------------------------------------
+    Get the context of the last ISR
+    -------------------------------------------------*/
+    auto context = lld->getISRContext( InterruptType::RX_ISR );
+
+    /*-------------------------------------------------
+    Dequeue the next frames and push them to the hw
+    mailboxes for transmission.
+    -------------------------------------------------*/
+    bool dequeueResult = false;
+    auto transmitResult = Chimera::Status::OK;
+
+    BasicFrame tmpFrame;
+    tmpFrame.clear();
+
+    while( lld->txMailboxAvailable( box ) )
+    {
+      mTxQueue.lock();
+
+      if( mTxQueue.available() )
+      {
+        /*-------------------------------------------------
+        Pull out the next message
+        -------------------------------------------------*/
+        dequeueResult = mTxQueue.pop( &tmpFrame, TIMEOUT_DONT_WAIT );
+        mTxQueue.unlock();
+
+        /*-------------------------------------------------
+        Write the message to the hw mailbox
+        -------------------------------------------------*/
+        transmitResult = lld->send( box, tmpFrame );
+
+        /*-------------------------------------------------
+        Handle any errors
+        -------------------------------------------------*/
+        if( !dequeueResult || ( transmitResult != Chimera::Status::OK ) )
+        {
+          Chimera::insert_debug_breakpoint();
+          break;
+        }
+      }
+      else
+      {
+        mTxQueue.unlock();
+        break;
+      }
+    }
+
+    /*-------------------------------------------------
+    Invoke any user callback
+    -------------------------------------------------*/
+    // TX?
+    // TX Error?
+
+    /*-------------------------------------------------
+    Signal internal semaphores for events
+    -------------------------------------------------*/
+    // Any events to signal?
   }
 
 
   void Driver::ProcessISREvent_RX()
   {
-    // Dump data into queue for as many fifos as possible
-    // Execute user callback
+    using namespace Chimera::CAN;
+    using namespace Chimera::Threading;
+
+    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
+    auto box = ::LLD::Mailbox::UNKNOWN;
+
+    /*-------------------------------------------------
+    Get the context of the last ISR
+    -------------------------------------------------*/
+    auto context = lld->getISRContext( InterruptType::RX_ISR );
+
+    /*-------------------------------------------------
+    Enqueue all available messages
+    -------------------------------------------------*/
+    bool enqueueResult = false;
+    auto receiveResult = Chimera::Status::OK;
+
+    BasicFrame tmpFrame;
+    tmpFrame.clear();
+
+    while( lld->rxMailboxAvailable( box ) )
+    {
+      receiveResult = lld->receive( box, tmpFrame );
+
+      /*-------------------------------------------------
+      Update the queue with the new frame
+      -------------------------------------------------*/
+      mRxQueue.lock();
+      enqueueResult = mRxQueue.push( &tmpFrame, TIMEOUT_DONT_WAIT );
+      mRxQueue.unlock();
+
+      /*-------------------------------------------------
+      If we can't enqueue or the RX failed somehow, the
+      frame was just lost.
+      -------------------------------------------------*/
+      if( !enqueueResult || ( receiveResult != Chimera::Status::OK ) )
+      {
+        Chimera::insert_debug_breakpoint();
+        break;
+      }
+    }
+
+    /*-------------------------------------------------
+    Invoke user call back on the RX event
+    -------------------------------------------------*/
+    // todo
   }
 
 

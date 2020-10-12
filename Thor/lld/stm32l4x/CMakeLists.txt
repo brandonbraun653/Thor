@@ -1,6 +1,7 @@
 # ====================================================
 # Add the projects for all the supported drivers
 # ====================================================
+add_subdirectory("can")
 add_subdirectory("des")
 add_subdirectory("flash")
 add_subdirectory("gpio")
@@ -19,6 +20,7 @@ add_subdirectory("usart")
 set(LLD thor_lld_stm32l4)
 add_library(${LLD} INTERFACE)
 target_link_libraries(${LLD} INTERFACE
+  thor_lld_stm32l4_can
   thor_lld_stm32l4_des
   thor_lld_stm32l4_flash
   thor_lld_stm32l4_gpio

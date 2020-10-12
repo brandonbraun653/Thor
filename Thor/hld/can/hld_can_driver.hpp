@@ -54,8 +54,6 @@ namespace Thor::CAN
     Chimera::CAN::CANStatus getStatus();
     Chimera::Status_t send( const Chimera::CAN::BasicFrame &frame );
     Chimera::Status_t receive( Chimera::CAN::BasicFrame &frame, const size_t timeout );
-    Chimera::Status_t subscribe( const Chimera::CAN::Identifier_t id, Chimera::CAN::FrameCallback_t callback );
-    Chimera::Status_t unsubscribe( const Chimera::CAN::Identifier_t id );
     Chimera::Status_t filter( const Chimera::CAN::Filter *const list, const size_t size );
     Chimera::Status_t flush( Chimera::CAN::BufferType buffer );
 

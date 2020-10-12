@@ -404,7 +404,7 @@ namespace Thor::USART
       awaitTXComplete.release();
       txLock.release();
 
-      processListeners( Chimera::Event::TRIGGER_WRITE_COMPLETE );
+      processListeners( Chimera::Event::Trigger::TRIGGER_WRITE_COMPLETE );
     }
 
     if ( ( flags & ::LLD::Runtime::Flag::RX_COMPLETE ) || ( flags & Runtime::Flag::RX_LINE_IDLE_ABORT ) )
@@ -431,7 +431,7 @@ namespace Thor::USART
       awaitRXComplete.release();
       rxLock.release();
 
-      processListeners( Chimera::Event::TRIGGER_READ_COMPLETE );
+      processListeners( Chimera::Event::Trigger::TRIGGER_READ_COMPLETE );
     }
   }
 
@@ -551,16 +551,16 @@ namespace Thor::USART
   {
     using namespace Chimera::Event;
 
-    if ( ( event != TRIGGER_READ_COMPLETE ) && ( event != TRIGGER_WRITE_COMPLETE ) )
+    if ( ( event != Trigger::TRIGGER_READ_COMPLETE ) && ( event != Trigger::TRIGGER_WRITE_COMPLETE ) )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
 
-    if ( ( event == TRIGGER_WRITE_COMPLETE ) && !awaitTXComplete.try_acquire_for( timeout ) )
+    if ( ( event == Trigger::TRIGGER_WRITE_COMPLETE ) && !awaitTXComplete.try_acquire_for( timeout ) )
     {
       return Chimera::Status::TIMEOUT;
     }
-    else if ( ( event == TRIGGER_READ_COMPLETE ) && !awaitRXComplete.try_acquire_for( timeout ) )
+    else if ( ( event == Trigger::TRIGGER_READ_COMPLETE ) && !awaitRXComplete.try_acquire_for( timeout ) )
     {
       return Chimera::Status::TIMEOUT;
     }

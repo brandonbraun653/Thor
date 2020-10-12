@@ -80,7 +80,7 @@ namespace Thor::LLD::CAN
     }
 #endif
 
-    return Chimera::CAN::Channel::NOT_SUPPORTED;
+    return Chimera::CAN::Channel::UNKNOWN;
   }
 
 
@@ -101,7 +101,7 @@ namespace Thor::LLD::CAN
     Chimera::Status_t result = Chimera::Status::OK;
 
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
-    result |= driverList[ CAN1_RESOURCE_INDEX ].attach( CAN1_PERIPH );
+    driverList[ CAN1_RESOURCE_INDEX ].attach( CAN1_PERIPH );
 #endif
 
     return result == Chimera::Status::OK;

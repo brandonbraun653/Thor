@@ -56,17 +56,7 @@ namespace Chimera::Timer
       Thor::TIMER::delayMicroseconds( val );
     }
 
-    ITimer_rPtr createUnsafeInstance( const Chimera::Timer::Peripheral peripheral )
-    {
-      return Thor::TIMER::lookUpRawPointer( peripheral );
-    }
-
-    ITimer_sPtr createSharedInstance( const Chimera::Timer::Peripheral peripheral )
-    {
-      return Thor::TIMER::lookUpSharedPointer( peripheral );
-    }
-
-    Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverRegistration &registry )
+    Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverConfig &registry )
     {
       /*-------------------------------------------------
       Some functionality will always be enabled
@@ -78,14 +68,6 @@ namespace Chimera::Timer
       registry.delayMilliseconds = delayMilliseconds;
       registry.millis            = millis;
       registry.micros            = micros;
-
-#if defined( THOR_HLD_TIMER )
-      registry.getSharedInstance = createSharedInstance;
-      registry.getUnsafeInstance = createUnsafeInstance;
-#else
-      registry.getSharedInstance = nullptr;
-      registry.getUnsafeInstance = nullptr;
-#endif /* THOR_HLD_TIMER */
 
       return Chimera::Status::OK;
     }

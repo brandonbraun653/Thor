@@ -109,7 +109,7 @@ namespace Chimera::CAN
 
     if( mDriver )
     {
-      return static_cast<::HLD::Driver_rPtr>( mDriver )->open( cfg.HWInit.channel );
+      return static_cast<::HLD::Driver_rPtr>( mDriver )->open( cfg );
     }
     else
     {
@@ -139,18 +139,6 @@ namespace Chimera::CAN
   Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame, const size_t timeout )
   {
     return static_cast<::HLD::Driver_rPtr>( mDriver )->receive( frame, timeout );
-  }
-
-
-  Chimera::Status_t Driver::subscribe( const Chimera::CAN::Identifier_t id, Chimera::CAN::FrameCallback_t callback )
-  {
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->subscribe( id, callback );
-  }
-
-
-  Chimera::Status_t Driver::unsubscribe( const Chimera::CAN::Identifier_t id )
-  {
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->unsubscribe( id );
   }
 
 

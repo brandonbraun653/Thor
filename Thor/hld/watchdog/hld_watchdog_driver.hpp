@@ -22,7 +22,7 @@ namespace Thor::Watchdog
   Public Functions
   -------------------------------------------------------------------------------*/
   Chimera::Status_t reset();
-  Chimera::Watchdog::IWatchdog_sPtr getDriver( const Chimera::Watchdog::Channel channel );
+  Chimera::Watchdog::Driver_sPtr getDriver( const Chimera::Watchdog::Channel channel );
 
   /**
    *  Initialize the WWDG driver
@@ -47,7 +47,7 @@ namespace Thor::Watchdog
    *   watchdog is intended to protect against software faults and has more advanced
    *   capabilities than the Independent Watchdog.
    */
-  class Window : virtual public Chimera::Watchdog::IWatchdog, public Chimera::Threading::Lockable
+  class Window : virtual public Chimera::Watchdog::HWInterface, public Chimera::Threading::Lockable
   {
   public:
     Window();
@@ -79,7 +79,7 @@ namespace Thor::Watchdog
    *   to protect against issues deriving from a faulty system clock that would not
    *   trip the window watchdog.
    */
-  class Independent : virtual public Chimera::Watchdog::IWatchdog, public Chimera::Threading::Lockable
+  class Independent : virtual public Chimera::Watchdog::HWInterface, public Chimera::Threading::Lockable
   {
   public:
     Independent();

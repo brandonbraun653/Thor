@@ -39,7 +39,7 @@ namespace Chimera::Watchdog::Backend
     return Thor::Watchdog::reset();
   }
 
-  Chimera::Watchdog::IWatchdog_sPtr getDriver( const Channel channel )
+  Chimera::Watchdog::Driver_sPtr getDriver( const Channel channel )
   {
     return Thor::Watchdog::getDriver( channel );
   }
