@@ -7,7 +7,7 @@ set(LINK_LIBS
   aurora_inc        # Aurora public headers
   Boost::boost      # Boost headers
   lld_common_inc   # 3rd Party headers
-  prj_device_target # Compiler options for target device
+  thor_lld_stm32l4x_build_options
 )
 
 # ====================================================

@@ -46,3 +46,17 @@ target_link_libraries(${LLD_INTF_SIM} INTERFACE
   thor_lld_sim_usart
 )
 export(TARGETS ${LLD_INTF_SIM} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${LLD_INTF_SIM}.cmake")
+
+# ====================================================
+# Custom Compiler Options:
+# By default always build release variant
+# ====================================================
+set(BUILD_OPTIONS thor_lld_intf_build_options)
+add_library(${BUILD_OPTIONS} INTERFACE)
+target_link_libraries(${BUILD_OPTIONS} INTERFACE
+  prj_build_target
+  #prj_build_target_rel
+  #prj_build_target_dbg
+  prj_device_target
+)
+export(TARGETS ${BUILD_OPTIONS} FILE "${PROJECT_BINARY_DIR}/Thor/${BUILD_OPTIONS}.cmake")

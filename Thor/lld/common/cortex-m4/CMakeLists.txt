@@ -4,7 +4,8 @@
 set(LINK_LIBS
   thor_inc          # Thor public headers
   chimera_inc       # Chimera public headers
-  prj_device_target # Compiler options for target device
+  prj_device_target
+  prj_build_target # Compiler options for target device
 )
 
 # ====================================================
