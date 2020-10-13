@@ -114,6 +114,7 @@ namespace Thor::LLD::USART
     }
   }
 
+
   Chimera::Status_t Driver::init( const Thor::LLD::Serial::Config &cfg )
   {
     /*------------------------------------------------
@@ -323,9 +324,9 @@ namespace Thor::LLD::USART
       Turn on the transmitter & enable TDR interrupt so we know
       when we can stage the next byte transfer.
       ------------------------------------------------*/
+      TE::set( periph, CR1_TE );
+      TXEIE::set( periph, CR1_TXEIE );
       enableIT( Chimera::Hardware::SubPeripheral::TX );
-      REG_FORCE_SET( TXEIE, periph, CR1_TXEIE );
-      REG_FORCE_SET( TE, periph, CR1_TE );
 
       exitCriticalSection();
     }
@@ -362,7 +363,7 @@ namespace Thor::LLD::USART
       /*------------------------------------------------
       Only turn on RXNE so as to detect when the first byte arrives
       ------------------------------------------------*/
-      REG_FORCE_SET( RXNEIE, periph, CR1_RXNEIE );
+      RXNEIE::set( periph, CR1_RXNEIE );
 
       /*------------------------------------------------
       Prep the transfer control block to receive data
@@ -375,8 +376,7 @@ namespace Thor::LLD::USART
       /*------------------------------------------------
       Turn on the RX hardware to begin listening for data
       ------------------------------------------------*/
-      REG_FORCE_SET( RE, periph, CR1_RE );
-
+      RE::set( periph, CR1_RE );
       exitCriticalSection();
     }
 
@@ -697,8 +697,8 @@ namespace Thor::LLD::USART
         /*------------------------------------------------
         Exit the TX ISR cleanly by disabling related interrupts
         ------------------------------------------------*/
-        TCIE::set( periph, 0 );
-        TXEIE::set( periph, 0 );
+        TCIE::clear( periph, CR1_TCIE );
+        TXEIE::clear( periph, CR1_TXEIE );
         runtimeFlags |= Runtime::Flag::TX_COMPLETE;
 
         /*------------------------------------------------
@@ -850,7 +850,7 @@ namespace Thor::LLD::USART
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
 void USART1_IRQHandler( void )
 {
-  ::LLD::s_usart_drivers[ ::LLD::USART1_RESOURCE_INDEX ].IRQHandler();
+  ::LLD::s_usart_drivers[::LLD::USART1_RESOURCE_INDEX ].IRQHandler();
 }
 #endif /* STM32_USART1_PERIPH_AVAILABLE */
 
@@ -858,7 +858,7 @@ void USART1_IRQHandler( void )
 #if defined( STM32_USART2_PERIPH_AVAILABLE )
 void USART2_IRQHandler( void )
 {
-  ::LLD::s_usart_drivers[ ::LLD::USART2_RESOURCE_INDEX ].IRQHandler();
+  ::LLD::s_usart_drivers[::LLD::USART2_RESOURCE_INDEX ].IRQHandler();
 }
 #endif /* STM32_USART2_PERIPH_AVAILABLE */
 
@@ -866,7 +866,7 @@ void USART2_IRQHandler( void )
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
 void USART3_IRQHandler( void )
 {
-  ::LLD::s_usart_drivers[ ::LLD::USART3_RESOURCE_INDEX ].IRQHandler();
+  ::LLD::s_usart_drivers[::LLD::USART3_RESOURCE_INDEX ].IRQHandler();
 }
 #endif /* STM32_USART3_PERIPH_AVAILABLE */
 
