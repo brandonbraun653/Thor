@@ -29,7 +29,7 @@ namespace Thor::LLD::CAN
     switch ( channel )
     {
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
-      case Chimera::CAN::Channel::CAN1:
+      case Chimera::CAN::Channel::CAN0:
         return true;
         break;
 #endif
@@ -59,7 +59,7 @@ namespace Thor::LLD::CAN
     switch ( channel )
     {
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
-      case Chimera::CAN::Channel::CAN1:
+      case Chimera::CAN::Channel::CAN0:
         return CAN1_RESOURCE_INDEX;
         break;
 #endif
@@ -76,7 +76,7 @@ namespace Thor::LLD::CAN
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( CAN1_PERIPH ) )
     {
-      return Chimera::CAN::Channel::CAN1;
+      return Chimera::CAN::Channel::CAN0;
     }
 #endif
 

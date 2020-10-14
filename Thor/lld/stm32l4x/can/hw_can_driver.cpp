@@ -97,28 +97,19 @@ namespace Thor::LLD::CAN
     If we are already in sleep mode, the sleep bit must
     be cleared first. See RM0394 44.4.3.
     -------------------------------------------------*/
-    if ( SLEEP::get( periph ) )
-    {
-      prv_exit_sleep_mode( periph );
-    }
+    SLEEP::clear( periph, MCR_SLEEP );
 
     /*-------------------------------------------------
-    Ask to enter init mode
+    Don't bother doing anything if device already in
+    init mode. Otherwise request the transition.
     -------------------------------------------------*/
-    INRQ::set( periph, MCR_INRQ );
-    while ( !INAK::get( periph ) )
+    if ( !INRQ::get( periph ) )
     {
-      continue;
-    }
-  }
-
-
-  void prv_exit_initialization_mode( RegisterMap *const periph )
-  {
-    INRQ::clear( periph, MCR_INRQ );
-    while ( INAK::get( periph ) )
-    {
-      continue;
+      INRQ::set( periph, MCR_INRQ );
+      while ( !INAK::get( periph ) )
+      {
+        continue;
+      }
     }
   }
 
@@ -126,28 +117,33 @@ namespace Thor::LLD::CAN
   void prv_enter_normal_mode( RegisterMap *const periph )
   {
     /*-------------------------------------------------
-    This command is the same
+    Don't bother doing anything if device already not
+    in init mode. Otherwise request the transition.
     -------------------------------------------------*/
-    prv_exit_initialization_mode( periph );
+    if ( INRQ::get( periph ) )
+    {
+      INRQ::clear( periph, MCR_INRQ );
+      while ( INAK::get( periph ) )
+      {
+        continue;
+      }
+    }
   }
 
 
   void prv_enter_sleep_mode( RegisterMap *const periph )
   {
-    SLEEP::set( periph, MCR_SLEEP );
-    while ( !SLAK::get( periph ) )
+    /*-------------------------------------------------
+    Don't bother doing anything if device already in
+    sleep mode. Otherwise request the transition.
+    -------------------------------------------------*/
+    if ( !SLEEP::get( periph ) )
     {
-      continue;
-    }
-  }
-
-
-  void prv_exit_sleep_mode( RegisterMap *const periph )
-  {
-    SLEEP::clear( periph, MCR_SLEEP );
-    while ( SLAK::get( periph ) )
-    {
-      continue;
+      SLEEP::set( periph, MCR_SLEEP );
+      while ( !SLAK::get( periph ) )
+      {
+        continue;
+      }
     }
   }
 
@@ -244,7 +240,7 @@ namespace Thor::LLD::CAN
 
     result |= ( frame.dataLength != 0 );
     result |= ( frame.idMode < IdentifierMode::NUM_OPTIONS );
-    //result |= ( frame.id is valid? What makes a valid id? )
+    // result |= ( frame.id is valid? What makes a valid id? )
 
     return result;
   }
@@ -252,14 +248,25 @@ namespace Thor::LLD::CAN
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() :
-      mPeriph( nullptr ), mResourceIndex( std::numeric_limits<size_t>::max() ), mTXPin( nullptr ), mRXPin( nullptr )
+  Driver::Driver() : mPeriph( nullptr ), mResourceIndex( std::numeric_limits<size_t>::max() )
   {
   }
 
 
   Driver::~Driver()
   {
+    /*-------------------------------------------------
+    Disable peripheral level ISR signals
+    -------------------------------------------------*/
+    for ( auto signalIdx = 0; signalIdx < static_cast<size_t>( Chimera::CAN::InterruptType::NUM_OPTIONS ); signalIdx++ )
+    {
+      disableISRSignal( static_cast<Chimera::CAN::InterruptType>( signalIdx ) );
+    }
+
+    /*-------------------------------------------------
+    Reduce power consumption
+    -------------------------------------------------*/
+    disableClock();
   }
 
   /*-------------------------------------------------------------------------------
@@ -267,14 +274,21 @@ namespace Thor::LLD::CAN
   -------------------------------------------------------------------------------*/
   void Driver::attach( RegisterMap *const peripheral )
   {
+    using namespace Chimera::CAN;
+
     /*------------------------------------------------
     Get peripheral descriptor settings
     ------------------------------------------------*/
     mPeriph        = peripheral;
     mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
 
+    /*-------------------------------------------------
+    Enable the peripheral clock
+    -------------------------------------------------*/
+    enableClock();
+
     /*------------------------------------------------
-    Handle the ISR configuration
+    System level ISR configuration
     ------------------------------------------------*/
     for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
     {
@@ -291,6 +305,28 @@ namespace Thor::LLD::CAN
       -------------------------------------------------*/
       mISREventSignal[ handlerIdx ].try_acquire();
     }
+
+    /*-------------------------------------------------
+    Disable peripheral level ISR signals
+    -------------------------------------------------*/
+    for ( auto signalIdx = 0; signalIdx < static_cast<size_t>( InterruptType::NUM_OPTIONS ); signalIdx++ )
+    {
+      disableISRSignal( static_cast<InterruptType>( signalIdx ) );
+    }
+  }
+
+
+  void Driver::enableClock()
+  {
+    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_CAN, mResourceIndex );
+  }
+
+
+  void Driver::disableClock()
+  {
+    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_CAN, mResourceIndex );
   }
 
 
@@ -299,27 +335,31 @@ namespace Thor::LLD::CAN
     using namespace Chimera::CAN;
 
     /*-------------------------------------------------
+    Initialize the GPIO drivers
+    -------------------------------------------------*/
+    auto txPin = Chimera::GPIO::getDriver( cfg.TXInit.port, cfg.TXInit.pin );
+    auto rxPin = Chimera::GPIO::getDriver( cfg.RXInit.port, cfg.RXInit.pin );
+
+    if ( !txPin || !rxPin )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
+    auto pinConfigError = Chimera::Status::OK;
+    pinConfigError |= txPin->init( cfg.TXInit );
+    pinConfigError |= rxPin->init( cfg.RXInit );
+
+    if( pinConfigError != Chimera::Status::OK )
+    {
+      return Chimera::Status::FAILED_INIT;
+    }
+
+    /*-------------------------------------------------
     Reset the driver registers to default values then
     configure hardware for initialization.
     -------------------------------------------------*/
     prv_reset( mPeriph );
     prv_enter_initialization_mode( mPeriph );
-
-    /*-------------------------------------------------
-    Initialize the GPIO drivers
-    -------------------------------------------------*/
-    if ( !mTXPin )
-    {
-      mTXPin = Chimera::GPIO::getDriver( cfg.TXInit.port, cfg.TXInit.pin );
-    }
-
-    if ( !mRXPin )
-    {
-      mRXPin = Chimera::GPIO::getDriver( cfg.RXInit.port, cfg.RXInit.pin );
-    }
-
-    mTXPin->init( cfg.TXInit );
-    mRXPin->init( cfg.RXInit );
 
     /*-------------------------------------------------
     Set up Bit Timing
@@ -335,7 +375,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Request to leave init mode
     -------------------------------------------------*/
-    prv_exit_initialization_mode( mPeriph );
+    prv_enter_normal_mode( mPeriph );
     return Chimera::Status::OK;
   }
 
@@ -495,7 +535,6 @@ namespace Thor::LLD::CAN
       Transmit Interrupts
       -------------------------------------------------*/
       case InterruptType::TRANSMIT_MAILBOX_EMPTY:
-        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_TX_ISR_SIGNAL_INDEX ] );
         TMEIE::clear( mPeriph, IER_TMEIE );
         break;
 
@@ -503,19 +542,16 @@ namespace Thor::LLD::CAN
       FIFO Interrupts
       -------------------------------------------------*/
       case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
-        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
         FMPIE0::clear( mPeriph, IER_FMPIE0 );
         FMPIE1::clear( mPeriph, IER_FMPIE1 );
         break;
 
       case InterruptType::RECEIVE_FIFO_FULL:
-        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
         FFIE0::clear( mPeriph, IER_FFIE0 );
         FFIE1::clear( mPeriph, IER_FFIE1 );
         break;
 
       case InterruptType::RECEIVE_FIFO_OVERRUN:
-        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
         FOVIE0::clear( mPeriph, IER_FOVIE0 );
         FOVIE1::clear( mPeriph, IER_FOVIE1 );
         break;
@@ -524,12 +560,10 @@ namespace Thor::LLD::CAN
       Status Change Interrupts
       -------------------------------------------------*/
       case InterruptType::SLEEP_EVENT:
-        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
         SLKIE::clear( mPeriph, IER_SLKIE );
         break;
 
       case InterruptType::WAKEUP_EVENT:
-        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
         WKUIE::clear( mPeriph, IER_WKUIE );
         break;
 
@@ -537,22 +571,18 @@ namespace Thor::LLD::CAN
       Error Interrupts
       -------------------------------------------------*/
       case InterruptType::ERROR_CODE_EVENT:
-        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
         LECIE::clear( mPeriph, IER_LECIE );
         break;
 
       case InterruptType::ERROR_BUS_OFF_EVENT:
-        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
         BOFIE::clear( mPeriph, IER_BOFIE );
         break;
 
       case InterruptType::ERROR_PASSIVE_EVENT:
-        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
         EPVIE::clear( mPeriph, IER_EPVIE );
         break;
 
       case InterruptType::ERROR_WARNING_EVENT:
-        IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
         EWGIE::clear( mPeriph, IER_EWGIE );
         break;
 
@@ -683,7 +713,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Can we even send this type of frame?
     -------------------------------------------------*/
-    if( !prv_validate_frame( frame ) )
+    if ( !prv_validate_frame( frame ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
@@ -697,7 +727,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Validate that the mailbox is actually free
     -------------------------------------------------*/
-    volatile TxMailbox* box = nullptr;
+    volatile TxMailbox *box = nullptr;
 
     switch ( which )
     {
@@ -748,12 +778,12 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Assign the STD/EXT ID
     -------------------------------------------------*/
-    if( frame.idMode == IdentifierMode::STANDARD )
+    if ( frame.idMode == IdentifierMode::STANDARD )
     {
       box->TIR |= ( frame.id & ID_MASK_11_BIT ) << TIxR_STID_Pos;
       box->TIR &= ~TIxR_IDE;
     }
-    else // Extended
+    else    // Extended
     {
       box->TIR |= ( ( frame.id & ID_MASK_29_BIT ) << TIxR_EXID_Pos );
       box->TIR |= TIxR_IDE;
@@ -762,11 +792,11 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Assign the remote transmition type
     -------------------------------------------------*/
-    if( frame.frameType == FrameType::DATA )
+    if ( frame.frameType == FrameType::DATA )
     {
       box->TIR &= ~TIxR_RTR;
     }
-    else // Remote frame
+    else    // Remote frame
     {
       box->TIR |= TIxR_RTR;
     }
@@ -819,12 +849,12 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Ensure the FIFO actually has data for us
     -------------------------------------------------*/
-    volatile RxMailbox* box = nullptr;
+    volatile RxMailbox *box = nullptr;
 
-    switch( which )
+    switch ( which )
     {
       case Mailbox::RX_MAILBOX_1:
-        if( !FMP0::get( mPeriph ) )
+        if ( !FMP0::get( mPeriph ) )
         {
           exitCriticalSection();
           return Chimera::Status::NOT_READY;
@@ -834,7 +864,7 @@ namespace Thor::LLD::CAN
         break;
 
       case Mailbox::RX_MAILBOX_2:
-        if( !FMP1::get( mPeriph ) )
+        if ( !FMP1::get( mPeriph ) )
         {
           exitCriticalSection();
           return Chimera::Status::NOT_READY;
@@ -858,11 +888,11 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Read out the STD/EXT ID
     -------------------------------------------------*/
-    if( !( box->RIR & RI0R_IDE ) )
+    if ( !( box->RIR & RI0R_IDE ) )
     {
       frame.id = ( ( box->RIR & RI0R_STID_Msk ) >> RI0R_STID_Pos );
     }
-    else // Extended
+    else    // Extended
     {
       frame.id = ( ( box->RIR & RI0R_EXID_Msk ) >> RI0R_EXID_Pos );
     }
@@ -870,11 +900,11 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Read out the frame type
     -------------------------------------------------*/
-    if( !( box->RIR & RI0R_RTR ))
+    if ( !( box->RIR & RI0R_RTR ) )
     {
       frame.frameType = FrameType::DATA;
     }
-    else // Remote
+    else    // Remote
     {
       frame.frameType = FrameType::REMOTE;
     }
@@ -883,7 +913,7 @@ namespace Thor::LLD::CAN
     Read out the filter match idx and payload length
     -------------------------------------------------*/
     frame.filterIndex = ( ( box->RDTR & RDT0R_FMI_Msk ) >> RDT0R_FMI_Pos );
-    frame.dataLength = ( ( box->RDTR & RDT0R_DLC_Msk ) >> RDT0R_DLC_Pos );
+    frame.dataLength  = ( ( box->RDTR & RDT0R_DLC_Msk ) >> RDT0R_DLC_Pos );
 
     /*-------------------------------------------------
     Read out the payload
@@ -905,11 +935,11 @@ namespace Thor::LLD::CAN
     load in the next one if it exists. Don't leave
     until HW acks the release by clearing the bit.
     -------------------------------------------------*/
-    switch( which )
+    switch ( which )
     {
       case Mailbox::RX_MAILBOX_1:
         RFOM0::set( mPeriph, RF0R_RFOM0 );
-        while( RFOM0::get( mPeriph ) )
+        while ( RFOM0::get( mPeriph ) )
         {
           continue;
         }
@@ -917,7 +947,7 @@ namespace Thor::LLD::CAN
 
       case Mailbox::RX_MAILBOX_2:
         RFOM1::set( mPeriph, RF1R_RFOM1 );
-        while( RFOM1::get( mPeriph ) )
+        while ( RFOM1::get( mPeriph ) )
         {
           continue;
         }
@@ -975,6 +1005,7 @@ namespace Thor::LLD::CAN
       Error Interrupts
       -------------------------------------------------*/
       // case InterruptType::ERR_ISR
+      case InterruptType::ERROR_PENDING:
       case InterruptType::ERROR_CODE_EVENT:
       case InterruptType::ERROR_BUS_OFF_EVENT:
       case InterruptType::ERROR_PASSIVE_EVENT:
@@ -983,6 +1014,7 @@ namespace Thor::LLD::CAN
         break;
 
       default:
+        Chimera::insert_debug_breakpoint();
         return nullptr;
         break;
     };
@@ -1061,7 +1093,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Mailbox 0 Transmit Complete
     -------------------------------------------------*/
-    if( tsr & TSR_RQCP0 )
+    if ( tsr & TSR_RQCP0 )
     {
       // Copy out the results of the last event
       mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.txError = TERR0::get( mPeriph );
@@ -1075,7 +1107,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Mailbox 1 Transmit Complete
     -------------------------------------------------*/
-    if( tsr & TSR_RQCP1 )
+    if ( tsr & TSR_RQCP1 )
     {
       // Copy out the results of the last event
       mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.txError = TERR1::get( mPeriph );
@@ -1089,7 +1121,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Mailbox 2 Transmit Complete
     -------------------------------------------------*/
-    if( tsr & TSR_RQCP2 )
+    if ( tsr & TSR_RQCP2 )
     {
       // Copy out the results of the last event
       mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.txError = TERR2::get( mPeriph );

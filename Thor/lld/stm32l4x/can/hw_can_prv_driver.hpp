@@ -38,14 +38,6 @@ namespace Thor::LLD::CAN
   void prv_enter_initialization_mode( RegisterMap *const periph );
 
   /**
-   *  Asks the hardware to leave initialization mode
-   *
-   *  @param[in]  periph      Memory mapped struct to the peripheral
-   *  @return void
-   */
-  void prv_exit_initialization_mode( RegisterMap *const periph );
-
-  /**
    *  Asks the hardware to enter normal mode
    *
    *  @param[in]  periph      Memory mapped struct to the peripheral
@@ -60,14 +52,6 @@ namespace Thor::LLD::CAN
    *  @return void
    */
   void prv_enter_sleep_mode( RegisterMap *const periph );
-
-  /**
-   *  Asks the hardware to exit sleep mode
-   *
-   *  @param[in]  periph      Memory mapped struct to the peripheral
-   *  @return void
-   */
-  void prv_exit_sleep_mode( RegisterMap *const periph );
 
   /**
    *  Configures the peripheral baud rate appropriately

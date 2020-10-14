@@ -119,6 +119,9 @@ namespace Thor::LLD::CAN
      */
     virtual void attach( RegisterMap *const peripheral ) = 0;
 
+    virtual void enableClock() = 0;
+    virtual void disableClock() = 0;
+
     /**
      *  Configure the CAN bus driver with the appropriate settings. These are
      *  more generic settings that apply across all CAN implementations.
@@ -217,7 +220,7 @@ namespace Thor::LLD::CAN
      *  @param[in]  signal        Which ISR signal to get the semaphore for
      *  @return Chimera::Threading::BinarySemaphore *
      */
-    virtual Chimera::Threading::BinarySemaphore* getISRSignal( Chimera::CAN::InterruptType signal ) = 0;
+    virtual Chimera::Threading::BinarySemaphore *getISRSignal( Chimera::CAN::InterruptType signal ) = 0;
 
     /**
      *  Gets any information that was posted in relation to the last
@@ -251,6 +254,8 @@ namespace Thor::LLD::CAN
     Configuration
     -------------------------------------------------------------------------------*/
     void attach( RegisterMap *const peripheral );
+    void enableClock();
+    void disableClock();
     Chimera::Status_t configure( const Chimera::CAN::DriverConfig &cfg );
     Chimera::Status_t applyFilter( const Chimera::CAN::Filter &filter );
     Chimera::Status_t enableISRSignal( const Chimera::CAN::InterruptType signal );
@@ -261,15 +266,15 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------------------------------------
     Transmit & Receive Operations
     -------------------------------------------------------------------------------*/
-    bool txMailboxAvailable(  Mailbox &which );
-    bool rxMailboxAvailable(  Mailbox &which );
+    bool txMailboxAvailable( Mailbox &which );
+    bool rxMailboxAvailable( Mailbox &which );
     Chimera::Status_t send( const Mailbox which, const Chimera::CAN::BasicFrame &frame );
     Chimera::Status_t receive( const Mailbox which, Chimera::CAN::BasicFrame &frame );
 
     /*-------------------------------------------------------------------------------
     Asynchronous Operation
     -------------------------------------------------------------------------------*/
-    Chimera::Threading::BinarySemaphore* getISRSignal( Chimera::CAN::InterruptType signal );
+    Chimera::Threading::BinarySemaphore *getISRSignal( Chimera::CAN::InterruptType signal );
     const ISREventContext *const getISRContext( const Chimera::CAN::InterruptType isr );
 
     /*-------------------------------------------------------------------------------
@@ -304,12 +309,6 @@ namespace Thor::LLD::CAN
     -------------------------------------------------*/
     ISREventContext mISREventContext[ NUM_CAN_IRQ_HANDLERS ];
     Chimera::Threading::BinarySemaphore mISREventSignal[ NUM_CAN_IRQ_HANDLERS ];
-
-    /*-------------------------------------------------
-    GPIO handles for configuring TX/RX pins appropriately
-    -------------------------------------------------*/
-    Chimera::GPIO::Driver_sPtr mTXPin;
-    Chimera::GPIO::Driver_sPtr mRXPin;
   };
 }    // namespace Thor::LLD::CAN
 
