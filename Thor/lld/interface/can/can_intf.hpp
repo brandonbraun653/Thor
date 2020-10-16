@@ -232,10 +232,18 @@ namespace Thor::LLD::CAN
      *  modify the structure while reading.
      *
      *  @param[in]  isr           The ISR event type to get the context for
-     *
      *  @return const ISREventContext *const
      */
     virtual const ISREventContext *const getISRContext( const Chimera::CAN::InterruptType isr ) = 0;
+
+    /**
+     *  Callback for the HLD to inform the LLD that the associated ISR event
+     *  has been properly handled and it's ok to re-enable the signal.
+     *
+     *  @param[in]  isr           The ISR signal to indicate was handled
+     *  @return void
+     */
+    virtual void setISRHandled( const Chimera::CAN::InterruptType isr ) = 0;
   };
 
 
@@ -276,6 +284,7 @@ namespace Thor::LLD::CAN
     -------------------------------------------------------------------------------*/
     Chimera::Threading::BinarySemaphore *getISRSignal( Chimera::CAN::InterruptType signal );
     const ISREventContext *const getISRContext( const Chimera::CAN::InterruptType isr );
+    void setISRHandled( const Chimera::CAN::InterruptType isr );
 
     /*-------------------------------------------------------------------------------
     ISR Protection Mechanisms
@@ -293,10 +302,10 @@ namespace Thor::LLD::CAN
     void CAN1_ERR_STS_CHG_IRQHandler();
 
   private:
-    friend void( ::CAN1_FIFO0_IRQHandler )();
     friend void( ::CAN1_TX_IRQHandler )();
-    friend void( ::CAN1_ERR_STS_CHG_IRQHandler )();
-    friend void( ::CAN1_FIFO1_IRQHandler )();
+    friend void( ::CAN1_RX0_IRQHandler )();
+    friend void( ::CAN1_RX1_IRQHandler )();
+    friend void( ::CAN1_SCE_IRQHandler )();
 
     /*-------------------------------------------------
     Peripheral descriptive information

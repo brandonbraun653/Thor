@@ -79,6 +79,9 @@ namespace Thor::LLD::CAN
    */
   bool prv_validate_frame( const Chimera::CAN::BasicFrame &frame );
 
+  bool prv_in_normal_mode( RegisterMap *const periph );
+
+
 }  // namespace Thor::LLD::CAN
 
 #endif  /* !THOR_LLD_PRIVATE_CAN_DRIVER_HPP */

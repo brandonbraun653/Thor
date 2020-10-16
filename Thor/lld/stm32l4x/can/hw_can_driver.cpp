@@ -236,14 +236,26 @@ namespace Thor::LLD::CAN
   {
     using namespace Chimera::CAN;
 
-    bool result = true;
-
-    result |= ( frame.dataLength != 0 );
-    result |= ( frame.idMode < IdentifierMode::NUM_OPTIONS );
-    // result |= ( frame.id is valid? What makes a valid id? )
-
-    return result;
+    /* clang-format off */
+    if ( ( frame.dataLength == 0 ) ||
+         ( frame.idMode >= IdentifierMode::NUM_OPTIONS ) ||
+         ( frame.frameType >= FrameType::NUM_OPTIONS ) )
+    /* clang-format on */
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
   }
+
+
+  bool prv_in_normal_mode( RegisterMap *const periph )
+  {
+    return INRQ::get( periph ) == 0;
+  }
+
 
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
@@ -281,11 +293,6 @@ namespace Thor::LLD::CAN
     ------------------------------------------------*/
     mPeriph        = peripheral;
     mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
-
-    /*-------------------------------------------------
-    Enable the peripheral clock
-    -------------------------------------------------*/
-    enableClock();
 
     /*------------------------------------------------
     System level ISR configuration
@@ -349,7 +356,7 @@ namespace Thor::LLD::CAN
     pinConfigError |= txPin->init( cfg.TXInit );
     pinConfigError |= rxPin->init( cfg.RXInit );
 
-    if( pinConfigError != Chimera::Status::OK )
+    if ( pinConfigError != Chimera::Status::OK )
     {
       return Chimera::Status::FAILED_INIT;
     }
@@ -371,6 +378,12 @@ namespace Thor::LLD::CAN
     {
       return Chimera::Status::FAILED_INIT;
     }
+
+    /*-------------------------------------------------
+    Set up the resync jump width
+    -------------------------------------------------*/
+    Reg32_t shiftedJumpWidth = ( cfg.HWInit.resyncJumpWidth & BTR_SJW_Wid ) << BTR_SJW_Pos;
+    SJW::set( mPeriph, shiftedJumpWidth );
 
     /*-------------------------------------------------
     Request to leave init mode
@@ -719,6 +732,14 @@ namespace Thor::LLD::CAN
     }
 
     /*-------------------------------------------------
+    Make sure we are in normal mode
+    -------------------------------------------------*/
+    if ( !prv_in_normal_mode( mPeriph ) )
+    {
+      prv_enter_normal_mode( mPeriph );
+    }
+
+    /*-------------------------------------------------
     Enter a critical section to guarantee the mailbox
     will only be modified by this function.
     -------------------------------------------------*/
@@ -817,11 +838,6 @@ namespace Thor::LLD::CAN
     box->TDHR |= ( ( frame.data[ 5 ] & 0xFF ) << TDH0R_DATA5_Pos );
     box->TDHR |= ( ( frame.data[ 6 ] & 0xFF ) << TDH0R_DATA6_Pos );
     box->TDHR |= ( ( frame.data[ 7 ] & 0xFF ) << TDH0R_DATA7_Pos );
-
-    /*-------------------------------------------------
-    Ensure interrupts are enabled for important events
-    -------------------------------------------------*/
-    enableISRSignal( InterruptType::TRANSMIT_MAILBOX_EMPTY );
 
     /*-------------------------------------------------
     Finally, move the mailbox to a "ready for tx" state
@@ -1005,7 +1021,6 @@ namespace Thor::LLD::CAN
       Error Interrupts
       -------------------------------------------------*/
       // case InterruptType::ERR_ISR
-      case InterruptType::ERROR_PENDING:
       case InterruptType::ERROR_CODE_EVENT:
       case InterruptType::ERROR_BUS_OFF_EVENT:
       case InterruptType::ERROR_PASSIVE_EVENT:
@@ -1071,6 +1086,64 @@ namespace Thor::LLD::CAN
   }
 
 
+  void Driver::setISRHandled( const Chimera::CAN::InterruptType isr )
+  {
+    using namespace Chimera::CAN;
+
+    /*-------------------------------------------------
+    For now, all this means is that it's ok to reenable
+    the given ISR signal. The event was handled ok.
+    -------------------------------------------------*/
+    enterCriticalSection();
+    enableISRSignal( isr );
+
+    auto isrBit = ( 1u << static_cast<size_t>( isr ) );
+
+    switch ( isr )
+    {
+      /*-------------------------------------------------
+      Transmit Interrupts
+      -------------------------------------------------*/
+      case InterruptType::TRANSMIT_MAILBOX_EMPTY:
+        mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].isrPending &= ~isrBit;
+        break;
+
+      /*-------------------------------------------------
+      FIFO Interrupts
+      -------------------------------------------------*/
+      case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
+      case InterruptType::RECEIVE_FIFO_FULL:
+      case InterruptType::RECEIVE_FIFO_OVERRUN:
+        mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].isrPending &= ~isrBit;
+        break;
+
+      /*-------------------------------------------------
+      Status Change Interrupts
+      -------------------------------------------------*/
+      case InterruptType::SLEEP_EVENT:
+      case InterruptType::WAKEUP_EVENT:
+        mISREventContext[ CAN_STS_ISR_SIGNAL_INDEX ].isrPending &= ~isrBit;
+        break;
+
+      /*-------------------------------------------------
+      Error Interrupts
+      -------------------------------------------------*/
+      case InterruptType::ERROR_CODE_EVENT:
+      case InterruptType::ERROR_BUS_OFF_EVENT:
+      case InterruptType::ERROR_PASSIVE_EVENT:
+      case InterruptType::ERROR_WARNING_EVENT:
+        mISREventContext[ CAN_ERR_ISR_SIGNAL_INDEX ].isrPending &= ~isrBit;
+        break;
+
+      default:
+        // Do nothing, it's not supported.
+        break;
+    };
+
+    exitCriticalSection();
+  }
+
+
   /*-------------------------------------------------------------------------------
   Protected Functions
   -------------------------------------------------------------------------------*/
@@ -1083,7 +1156,8 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Ensure the ISR type is set correctly
     -------------------------------------------------*/
-    mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].isrEvent = Chimera::CAN::InterruptType::TRANSMIT_MAILBOX_EMPTY;
+    mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].isrPending |=
+        ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::TRANSMIT_MAILBOX_EMPTY ) );
 
     /*-------------------------------------------------
     Read the latest value of the transmit status register
@@ -1096,9 +1170,9 @@ namespace Thor::LLD::CAN
     if ( tsr & TSR_RQCP0 )
     {
       // Copy out the results of the last event
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.txError = TERR0::get( mPeriph );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.arbLost = ALST0::get( mPeriph );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.txOk    = TXOK0::get( mPeriph );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.txError = static_cast<bool>( TERR0::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.arbLost = static_cast<bool>( ALST0::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.txOk    = static_cast<bool>( TXOK0::get( mPeriph ) );
 
       // Acknowledge event. Setting this bit clears the above registers.
       RQCP0::set( mPeriph, TSR_RQCP0 );
@@ -1110,9 +1184,9 @@ namespace Thor::LLD::CAN
     if ( tsr & TSR_RQCP1 )
     {
       // Copy out the results of the last event
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.txError = TERR1::get( mPeriph );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.arbLost = ALST1::get( mPeriph );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.txOk    = TXOK1::get( mPeriph );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.txError = static_cast<bool>( TERR1::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.arbLost = static_cast<bool>( ALST1::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.txOk    = static_cast<bool>( TXOK1::get( mPeriph ) );
 
       // Acknowledge event. Setting this bit clears the above registers.
       RQCP1::set( mPeriph, TSR_RQCP1 );
@@ -1124,9 +1198,9 @@ namespace Thor::LLD::CAN
     if ( tsr & TSR_RQCP2 )
     {
       // Copy out the results of the last event
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.txError = TERR2::get( mPeriph );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.arbLost = ALST2::get( mPeriph );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.txOk    = TXOK2::get( mPeriph );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.txError = static_cast<bool>( TERR2::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.arbLost = static_cast<bool>( ALST2::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.txOk    = static_cast<bool>( TXOK2::get( mPeriph ) );
 
       // Acknowledge event. Setting this bit clears the above registers.
       RQCP2::set( mPeriph, TSR_RQCP2 );
@@ -1168,8 +1242,172 @@ namespace Thor::LLD::CAN
    */
   void Driver::CAN1_ERR_STS_CHG_IRQHandler()
   {
-    // Figure out what fired
-    // Give to either status change or error signals
+    /*-------------------------------------------------
+    Define flags for detecting event categories
+    -------------------------------------------------*/
+    constexpr Reg32_t IER_EN_STS     = ( IER_WKUIE | IER_SLKIE );
+    constexpr Reg32_t IER_EN_ERR_ALL = ( IER_ERRIE );
+    constexpr Reg32_t IER_EN_ERR     = ( IER_EWGIE | IER_EPVIE | IER_BOFIE | IER_LECIE );
+    constexpr Reg32_t EVENT_STS      = ( MSR_WKUI | MSR_SLAKI );
+    constexpr Reg32_t EVENT_ERR      = ( ESR_EWGF | ESR_EPVF | ESR_BOFF | ESR_LEC );
+
+    /*-------------------------------------------------
+    Read the relevant status registers
+    -------------------------------------------------*/
+    const Reg32_t IER = IER_ALL::get( mPeriph );    // Interrupt enable register
+    const Reg32_t ESR = ESR_ALL::get( mPeriph );    // Error status register
+    const Reg32_t MSR = MSR_ALL::get( mPeriph );    // Master status register
+
+    /*-------------------------------------------------
+    Handle Status Change Events
+    -------------------------------------------------*/
+    if ( ( IER & IER_EN_STS ) && ( MSR & EVENT_STS ) )
+    {
+      constexpr size_t sigIdx = CAN_STS_ISR_SIGNAL_INDEX;
+      bool hpThreadShouldWake = false;
+
+      /*-------------------------------------------------
+      Parse Sleep Event
+      -------------------------------------------------*/
+      constexpr uint16_t sleepBit = ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::SLEEP_EVENT ) );
+
+      if ( ( IER & IER_SLKIE ) && ( MSR & MSR_SLAKI ) )
+      {
+        disableISRSignal( Chimera::CAN::InterruptType::SLEEP_EVENT );
+        mISREventContext[ sigIdx ].details.stsEvent.sleepAck = true;
+        mISREventContext[ sigIdx ].isrPending |= sleepBit;
+        hpThreadShouldWake = true;
+      }
+      else if ( !( mISREventContext[ sigIdx ].isrPending & sleepBit ) )
+      {
+        mISREventContext[ sigIdx ].details.stsEvent.sleepAck = false;
+      }
+
+      /*-------------------------------------------------
+      Parse Wakeup Event
+      -------------------------------------------------*/
+      constexpr uint16_t wakeupBit = ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::WAKEUP_EVENT ) );
+
+      if ( ( IER & IER_WKUIE ) && ( MSR & MSR_WKUI ) )
+      {
+        disableISRSignal( Chimera::CAN::InterruptType::WAKEUP_EVENT );
+        mISREventContext[ sigIdx ].details.stsEvent.wakeup = true;
+        mISREventContext[ sigIdx ].isrPending |= wakeupBit;
+        hpThreadShouldWake = true;
+      }
+      else if ( !( mISREventContext[ sigIdx ].isrPending & wakeupBit ) )
+      {
+        mISREventContext[ sigIdx ].details.stsEvent.wakeup = false;
+      }
+
+      /*-------------------------------------------------
+      Awaken high priority thread for processing this ISR
+      -------------------------------------------------*/
+      if ( hpThreadShouldWake )
+      {
+        mISREventSignal[ CAN_STS_ISR_SIGNAL_INDEX ].releaseFromISR();
+      }
+    }
+
+    /*-------------------------------------------------
+    Handle Error Events
+    -------------------------------------------------*/
+    if ( ( IER & IER_EN_ERR_ALL ) && ( IER & IER_EN_ERR ) && ( ESR & EVENT_ERR ) )
+    {
+      constexpr size_t sigIdx = CAN_ERR_ISR_SIGNAL_INDEX;
+      bool hpThreadShouldWake = false;
+
+      /*-------------------------------------------------
+      Acknowledge that we hit the error ISR. This is done
+      by setting the bit as opposed to clearing.
+      -------------------------------------------------*/
+      ERRI::set( mPeriph, MSR_ERRI );
+
+      /*-------------------------------------------------
+      Update the error counters
+      -------------------------------------------------*/
+      mISREventContext[ sigIdx ].details.errEvent.txErrorCount = static_cast<uint8_t>( ( ( ESR & ESR_TEC ) >> ESR_TEC_Pos ) );
+      mISREventContext[ sigIdx ].details.errEvent.rxErrorCount = static_cast<uint8_t>( ( ( ESR & ESR_REC ) >> ESR_REC_Pos ) );
+
+      /*-------------------------------------------------
+      Parse Warning Errors
+      -------------------------------------------------*/
+      constexpr uint16_t warningBit = ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::ERROR_WARNING_EVENT ) );
+
+      if ( ( IER & IER_EWGIE ) && ( ESR & ESR_EWGF ) )
+      {
+        disableISRSignal( Chimera::CAN::InterruptType::ERROR_WARNING_EVENT );
+        mISREventContext[ sigIdx ].details.errEvent.warning = true;
+        mISREventContext[ sigIdx ].isrPending |= warningBit;
+        hpThreadShouldWake = true;
+      }
+      else if ( !( mISREventContext[ sigIdx ].isrPending & warningBit ) )
+      {
+        mISREventContext[ sigIdx ].details.errEvent.warning = false;
+      }
+      // else higher priority thread hasn't handled the event yet
+
+      /*-------------------------------------------------
+      Parse Passive Errors
+      -------------------------------------------------*/
+      constexpr uint16_t passiveBit = ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::ERROR_WARNING_EVENT ) );
+
+      if ( ( IER & IER_EPVIE ) && ( ESR & ESR_EPVF ) )
+      {
+        disableISRSignal( Chimera::CAN::InterruptType::ERROR_PASSIVE_EVENT );
+        mISREventContext[ sigIdx ].details.errEvent.passive = true;
+        mISREventContext[ sigIdx ].isrPending |= passiveBit;
+        hpThreadShouldWake = true;
+      }
+      else if ( !( mISREventContext[ sigIdx ].isrPending & passiveBit ) )
+      {
+        mISREventContext[ sigIdx ].details.errEvent.passive = false;
+      }
+      // else higher priority thread hasn't handled the event yet
+
+      /*-------------------------------------------------
+      Parse Bus Off Errors
+      -------------------------------------------------*/
+      constexpr uint16_t busOffBit = ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::ERROR_BUS_OFF_EVENT ) );
+
+      if ( ( IER & IER_BOFIE ) && ( ESR & ESR_BOFF ) )
+      {
+        disableISRSignal( Chimera::CAN::InterruptType::ERROR_BUS_OFF_EVENT );
+        mISREventContext[ sigIdx ].details.errEvent.busOff = true;
+        mISREventContext[ sigIdx ].isrPending |= busOffBit;
+        hpThreadShouldWake = true;
+      }
+      else if ( !( mISREventContext[ sigIdx ].isrPending & busOffBit ) )
+      {
+        mISREventContext[ sigIdx ].details.errEvent.busOff = false;
+      }
+
+      /*-------------------------------------------------
+      Parse Last Error Code Errors
+      -------------------------------------------------*/
+      constexpr uint16_t errorCodeBit = ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::ERROR_CODE_EVENT ) );
+
+      if ( ( IER & IER_LECIE ) && ( ESR & ESR_LEC ) )
+      {
+        disableISRSignal( Chimera::CAN::InterruptType::ERROR_CODE_EVENT );
+        mISREventContext[ sigIdx ].details.errEvent.lastErrorCode = static_cast<ErrorCode>( ( ESR & ESR_LEC ) >> ESR_LEC_Pos );
+        mISREventContext[ sigIdx ].isrPending |= errorCodeBit;
+        hpThreadShouldWake = true;
+      }
+      else if ( !( mISREventContext[ sigIdx ].isrPending & errorCodeBit ) )
+      {
+        mISREventContext[ sigIdx ].details.errEvent.lastErrorCode = ErrorCode::NO_ERROR;
+      }
+      // else higher priority thread hasn't handled the event yet
+
+      /*-------------------------------------------------
+      Awaken high priority thread for processing this ISR
+      -------------------------------------------------*/
+      if ( hpThreadShouldWake )
+      {
+        mISREventSignal[ sigIdx ].releaseFromISR();
+      }
+    }
   }
 
 
@@ -1202,19 +1440,19 @@ void CAN1_TX_IRQHandler()
   s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN1_TX_IRQHandler();
 }
 
-void CAN1_FIFO0_IRQHandler()
+void CAN1_RX0_IRQHandler()
 {
   using namespace Thor::LLD::CAN;
   s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN1_FIFO0_IRQHandler();
 }
 
-void CAN1_FIFO1_IRQHandler()
+void CAN1_RX1_IRQHandler()
 {
   using namespace Thor::LLD::CAN;
   s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN1_FIFO1_IRQHandler();
 }
 
-void CAN1_ERR_STS_CHG_IRQHandler()
+void CAN1_SCE_IRQHandler()
 {
   using namespace Thor::LLD::CAN;
   s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN1_ERR_STS_CHG_IRQHandler();

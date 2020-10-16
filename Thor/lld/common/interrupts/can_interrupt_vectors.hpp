@@ -19,9 +19,9 @@ extern "C"
 #endif
 
   void CAN1_TX_IRQHandler();
-  void CAN1_FIFO0_IRQHandler();
-  void CAN1_FIFO1_IRQHandler();
-  void CAN1_ERR_STS_CHG_IRQHandler();
+  void CAN1_RX0_IRQHandler();
+  void CAN1_RX1_IRQHandler();
+  void CAN1_SCE_IRQHandler();
 
 #if defined( __cplusplus )
 }

@@ -88,6 +88,7 @@ namespace Thor::LLD::CAN
   REG_ACCESSOR( RegisterMap, MCR, MCR_Msk, MCR_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, MCR, MCR_INRQ_Msk, INRQ, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, MCR, MCR_SLEEP_Msk, SLEEP, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, MCR, MCR_DBF_Msk, DBF, BIT_ACCESS_RW );
 
   /*------------------------------------------------
   Master Status Register
@@ -95,6 +96,7 @@ namespace Thor::LLD::CAN
   REG_ACCESSOR( RegisterMap, MSR, MSR_Msk, MSR_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, MSR, MSR_INAK_Msk, INAK, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, MSR, MSR_SLAK_Msk, SLAK, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, MSR, MSR_ERRI_Msk, ERRI, BIT_ACCESS_RCW1 );
 
   /*------------------------------------------------
   Transmit Status Register

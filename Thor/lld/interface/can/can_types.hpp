@@ -64,16 +64,38 @@ namespace Thor::LLD::CAN
     UNKNOWN
   };
 
+  /**
+   *  Error code key for the CAN_ESR register in the LEC field.
+   *  These values match up with the field after is has been
+   *  shifted to right-aligned, so do __NOT__ modify the order.
+   */
+  enum class ErrorCode : uint8_t
+  {
+    NO_ERROR,
+    STUFF_ERROR,
+    FORM_ERROR,
+    ACK_ERROR,
+    BIT_RECESSIVE_ERROR,
+    BIT_DOMINANT_ERROR,
+    CRC_ERROR,
+    SW_ERROR,
+
+    NUM_OPTIONS,
+    UNKNOWN
+  };
 
   /*-------------------------------------------------------------------------------
   Structures
   -------------------------------------------------------------------------------*/
+  struct MailboxError
+  {
+    bool txError;
+    bool arbLost;
+  };
+
   struct ISREventContext
   {
-    /**
-     *  Describes which event is being handled by this structure
-     */
-    Chimera::CAN::InterruptType isrEvent;
+    uint16_t isrPending; /**< Bit-field (BFPendingISR) indicating ISR events needing handled */
 
     /**
      *  Union holding possible event contexts, interpreted by
@@ -112,7 +134,8 @@ namespace Thor::LLD::CAN
       -------------------------------------------------*/
       struct _StatusChange
       {
-
+        bool sleepAck;
+        bool wakeup;
       } stsEvent;
 
       /*-------------------------------------------------
@@ -120,7 +143,12 @@ namespace Thor::LLD::CAN
       -------------------------------------------------*/
       struct _Error
       {
-
+        uint8_t rxErrorCount;
+        uint8_t txErrorCount;
+        ErrorCode lastErrorCode;
+        bool busOff;
+        bool passive;
+        bool warning;
       } errEvent;
 
     } details;

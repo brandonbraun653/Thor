@@ -70,6 +70,9 @@ namespace Thor::LLD::CAN
   static constexpr Reg32_t MCR_RESET_Pos = ( 15U );
   static constexpr Reg32_t MCR_RESET_Msk = ( 0x1UL << MCR_RESET_Pos );
   static constexpr Reg32_t MCR_RESET     = MCR_RESET_Msk;
+  static constexpr Reg32_t MCR_DBF_Pos   = ( 16U );
+  static constexpr Reg32_t MCR_DBF_Msk   = ( 0x1UL << MCR_DBF_Pos );
+  static constexpr Reg32_t MCR_DBF       = MCR_DBF_Msk;
 
   /*******************  Bit definition for MSR register  ********************/
   static constexpr Reg32_t MSR_Msk = 0x00000F1F;
@@ -311,6 +314,7 @@ namespace Thor::LLD::CAN
   static constexpr Reg32_t BTR_TS2_0    = ( 0x1UL << BTR_TS2_Pos );
   static constexpr Reg32_t BTR_TS2_1    = ( 0x2UL << BTR_TS2_Pos );
   static constexpr Reg32_t BTR_TS2_2    = ( 0x4UL << BTR_TS2_Pos );
+  static constexpr Reg32_t BTR_SJW_Wid  = ( 0x3UL );
   static constexpr Reg32_t BTR_SJW_Pos  = ( 24U );
   static constexpr Reg32_t BTR_SJW_Msk  = ( 0x3UL << BTR_SJW_Pos );
   static constexpr Reg32_t BTR_SJW      = BTR_SJW_Msk;
