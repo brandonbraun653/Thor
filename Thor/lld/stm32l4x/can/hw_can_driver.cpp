@@ -1350,7 +1350,7 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Parse Passive Errors
       -------------------------------------------------*/
-      constexpr uint16_t passiveBit = ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::ERROR_WARNING_EVENT ) );
+      constexpr uint16_t passiveBit = ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::ERROR_PASSIVE_EVENT ) );
 
       if ( ( IER & IER_EPVIE ) && ( ESR & ESR_EPVF ) )
       {
