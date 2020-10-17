@@ -47,7 +47,7 @@ namespace Thor::LLD::CAN
   struct FilterReg
   {
     uint32_t FR1; /**< CAN Filter bank register 1 */
-    uint32_t FR2; /**< CAN Filter bank register 1 */
+    uint32_t FR2; /**< CAN Filter bank register 2 */
   };
 
   struct RegisterMap
@@ -73,7 +73,7 @@ namespace Thor::LLD::CAN
     uint32_t RESERVED4;                       /**< Reserved, 0x218                                                    */
     volatile uint32_t FA1R;                   /**< CAN filter activation register,      Address offset: 0x21C         */
     uint32_t RESERVED5[ 8 ];                  /**< Reserved, 0x220-0x23F                                              */
-    volatile FilterReg sFilterRegister[ 28 ]; /**< CAN Filter Register,                 Address offset: 0x240-0x31C   */
+    volatile FilterReg sFilterBank[ 14 ];     /**< CAN Filter Register,                 Address offset: 0x240-0x31C   */
   };
 
   static_assert( NUM_CAN_TX_MAILBOX == ARRAY_COUNT( RegisterMap::sTxMailBox ) );
@@ -176,6 +176,11 @@ namespace Thor::LLD::CAN
   REG_ACCESSOR( RegisterMap, BTR, BTR_SJW_Msk, SJW, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, BTR, BTR_SILM_Msk, SLIM, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, BTR, BTR_LBKM_Msk, LBKM, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Filter Master Register
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, FMR, FMR_FINIT_Msk, FINIT, BIT_ACCESS_RW );
 
 
 }  // namespace Thor::LLD::CAN

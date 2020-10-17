@@ -393,45 +393,201 @@ namespace Thor::LLD::CAN
   }
 
 
-  Chimera::Status_t Driver::applyFilter( const Chimera::CAN::Filter &filter )
+  Chimera::Status_t Driver::applyFilters( MessageFilter *const filterList, const size_t filterSize )
   {
-    // Must be done in init mode
-
-    return Chimera::Status::NOT_SUPPORTED;
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    if( !filterList || !filterSize || ( filterSize > NUM_CAN_MAX_FILTERS ) )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
 
     /*-------------------------------------------------
-    Set up filter scaling and mode. These bits are shared
-    across a wide nubmer of
+    Arrange the filters by how much space they consume.
+    This allows for an easier placement algorithm.
     -------------------------------------------------*/
-    // switch( cfg.HWInit.filterMode )
-    // {
-    //   case Chimera::CAN::FilterMode::ID_LIST:
+    uint8_t sortedFilterIdx[ NUM_CAN_MAX_FILTERS ];
+    CLEAR_ARRAY( sortedFilterIdx );
 
-    //     break;
+    if ( !sortFiltersBySize( filterList, filterSize, sortedFilterIdx ) )
+    {
+      return Chimera::Status::FAIL;
+    }
 
-    //   case Chimera::CAN::FilterMode::MASK:
+    /*-------------------------------------------------
+    Configuration requires being in initialization mode
+    and the FINIT bit set in the CAN_FMR register.
+    -------------------------------------------------*/
+    prv_enter_initialization_mode( mPeriph );
+    FINIT::set( mPeriph, FMR_FINIT );
 
-    //     break;
+    /*-------------------------------------------------
+    Reset the entire filter configuration
+    -------------------------------------------------*/
+    mPeriph->FM1R  = 0;
+    mPeriph->FS1R  = 0;
+    mPeriph->FFA1R = 0;
+    mPeriph->FA1R  = 0;
 
-    //   default:
-    //     return Chimera::Status::FAILED_INIT;
-    //     break;
-    // }
+    for( uint8_t bankIdx = 0; bankIdx < NUM_CAN_FILTER_BANKS; bankIdx++ )
+    {
+      mPeriph->sFilterBank[ bankIdx ].FR1 = 0;
+      mPeriph->sFilterBank[ bankIdx ].FR2 = 0;
+    }
 
-    // switch( cfg.HWInit.filterWidth )
-    // {
-    //   case Chimera::CAN::FilterWidth::WIDTH_16BIT:
+    /*-------------------------------------------------
+    Attempt to place each filter in the filter banks
+    -------------------------------------------------*/
+    auto result = Chimera::Status::OK;
 
-    //     break;
+    size_t bankIdx           = 0;           // Which hardware filter bank currently being processed
+    size_t userIdx           = 0;           // Which user filter currently being processed
+    size_t fltrIdx           = 0;           // Generic index tracking progress of filter processing
+    uint8_t fifo0FMI         = 0;           // Current filter match index for FIFO0
+    uint8_t fifo1FMI         = 0;           // Current filter match index for FIFO1
+    MessageFilter *filter    = nullptr;     // Pointer to the current user filter
+    FilterReg usedFilterMask = { 0, 0 };    // Dummy filter to indicate where the filter is used
 
-    //   case Chimera::CAN::FilterWidth::WIDTH_32BIT:
+    do
+    {
+      /*-------------------------------------------------
+      Grab the highest priority filter to place next
+      -------------------------------------------------*/
+      userIdx = sortedFilterIdx[ fltrIdx ];
+      filter   = &filterList[ userIdx ];
 
-    //     break;
+      /*-------------------------------------------------
+      For the current filter bank, is there room to place
+      next filter? If not, move to the next bank.
+      -------------------------------------------------*/
+      if(0 /* !filterFits() */)
+      {
+        bankIdx++;
+        continue; // Force the increment to go through the loop checks
+      }
 
-    //   default:
-    //     return Chimera::Status::FAILED_INIT;
-    //     break;
-    // }
+      // I'll have to be able to check the current configuration
+      // of the filter bank to see what kind of mode it's in from
+      // the last filter. I'm pretty sure each bank can only hold
+      // one kind of configuration...
+
+      /*-------------------------------------------------
+      Configure Mask/List Mode
+      -------------------------------------------------*/
+      switch( filter->mode )
+      {
+        case Chimera::CAN::FilterMode::ID_LIST:
+          mPeriph->FM1R |= ( 1u << fltrIdx );
+          break;
+
+        case Chimera::CAN::FilterMode::MASK:
+          mPeriph->FM1R &= ~( 1u << fltrIdx );
+          break;
+
+        default:
+          return Chimera::Status::NOT_INITIALIZED;
+          break;
+      };
+
+      /*-------------------------------------------------
+      Configure Scaling
+      -------------------------------------------------*/
+      switch( filter->scale )
+      {
+        case Chimera::CAN::FilterWidth::WIDTH_16BIT:
+          mPeriph->FS1R &= ~( 1u << fltrIdx );
+          break;
+
+        case Chimera::CAN::FilterWidth::WIDTH_32BIT:
+          mPeriph->FS1R |= ( 1u << fltrIdx );
+          break;
+
+        default:
+          return Chimera::Status::NOT_INITIALIZED;
+          break;
+      };
+
+      /*-------------------------------------------------
+      Configure FIFO Assignment
+      -------------------------------------------------*/
+      switch( filter->fifoBank )
+      {
+        case Mailbox::RX_MAILBOX_1:
+          mPeriph->FFA1R &= ~( 1u << fltrIdx );
+          filter->assignedFMI = fifo0FMI;
+          fifo0FMI++;
+          break;
+
+        case Mailbox::RX_MAILBOX_2:
+          mPeriph->FFA1R |= ( 1u << fltrIdx );
+          filter->assignedFMI = fifo1FMI;
+          fifo1FMI++;
+          break;
+
+        default:
+          return Chimera::Status::NOT_INITIALIZED;
+          break;
+      };
+
+      // Handle errors of too many filters being assigned
+      // to a single FIFO. Max is...how many??? Or should
+      // I let this number run wild and use the checks
+      // above to guarantee that by this point in the alg
+      // the filter will fit?
+
+      /*-------------------------------------------------
+      Configure Activation State
+      -------------------------------------------------*/
+      if( filter->active )
+      {
+        mPeriph->FA1R |= ( 1u << fltrIdx );
+      }
+      else
+      {
+        mPeriph->FA1R &= ~( 1u << fltrIdx );
+      }
+
+      /*-------------------------------------------------
+      Assign the filter to the current bank
+      -------------------------------------------------*/
+      // This will depend on the four mode types and the
+      // identifier being in 11bit or 29bit mode.
+
+      // How am I going to track the "Free" bits in a filter?
+      // Maybe I could have a dummy filter register and mask
+      // off bits. Could I use a positional offset and a
+      // write mask? A lot of the answer to "how do I do this"
+      // is going to get answered by the "can this filter fit"
+      // question that got us to this point in the first place.
+
+      // What about using a "slot" concept? Each filter
+      // can have up to four of them. An enum can define
+      // for a given mode, the max number of slots, then
+      // the "does it fit" function can say "Yes, it does
+      // fit, here is the slot it goes into" and give back
+      // the enum value. A giant switch statement can then
+      // be used to write the data exactly as each slot
+      // defines itself.
+
+      // Hmmm...Maybe two enum types are needed. One for
+      // the filter mode (mask/list/scale combo) and another
+      // for the slot within that mode. The slots themselves
+      // would be pretty generic (SLOT_1/2/3/4) and only make
+      // sense in the context of a mode.
+
+      // This sounds like nested switch cases. Might want to
+      // make individual functions for this so it's at least
+      // clean to read...
+
+      /*-------------------------------------------------
+      Update the tracking data
+      -------------------------------------------------*/
+      //fCurrent++;
+
+    } while ( ( bankIdx < NUM_CAN_FILTER_BANKS ) && ( userIdx < filterSize ) );
+
+    return result;
   }
 
 
@@ -1170,9 +1326,9 @@ namespace Thor::LLD::CAN
     if ( tsr & TSR_RQCP0 )
     {
       // Copy out the results of the last event
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.txError = static_cast<bool>( TERR0::get( mPeriph ) );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.arbLost = static_cast<bool>( ALST0::get( mPeriph ) );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox0.txOk    = static_cast<bool>( TXOK0::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 0 ].txError = static_cast<bool>( TERR0::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 0 ].arbLost = static_cast<bool>( ALST0::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 0 ].txOk    = static_cast<bool>( TXOK0::get( mPeriph ) );
 
       // Acknowledge event. Setting this bit clears the above registers.
       RQCP0::set( mPeriph, TSR_RQCP0 );
@@ -1184,9 +1340,9 @@ namespace Thor::LLD::CAN
     if ( tsr & TSR_RQCP1 )
     {
       // Copy out the results of the last event
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.txError = static_cast<bool>( TERR1::get( mPeriph ) );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.arbLost = static_cast<bool>( ALST1::get( mPeriph ) );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox1.txOk    = static_cast<bool>( TXOK1::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 1 ].txError = static_cast<bool>( TERR1::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 1 ].arbLost = static_cast<bool>( ALST1::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 1 ].txOk    = static_cast<bool>( TXOK1::get( mPeriph ) );
 
       // Acknowledge event. Setting this bit clears the above registers.
       RQCP1::set( mPeriph, TSR_RQCP1 );
@@ -1198,9 +1354,9 @@ namespace Thor::LLD::CAN
     if ( tsr & TSR_RQCP2 )
     {
       // Copy out the results of the last event
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.txError = static_cast<bool>( TERR2::get( mPeriph ) );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.arbLost = static_cast<bool>( ALST2::get( mPeriph ) );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].details.txEvent.mailbox2.txOk    = static_cast<bool>( TXOK2::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 2 ].txError = static_cast<bool>( TERR2::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 2 ].arbLost = static_cast<bool>( ALST2::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 2 ].txOk  = static_cast<bool>( TXOK2::get( mPeriph ) );
 
       // Acknowledge event. Setting this bit clears the above registers.
       RQCP2::set( mPeriph, TSR_RQCP2 );
@@ -1274,13 +1430,13 @@ namespace Thor::LLD::CAN
       if ( ( IER & IER_SLKIE ) && ( MSR & MSR_SLAKI ) )
       {
         disableISRSignal( Chimera::CAN::InterruptType::SLEEP_EVENT );
-        mISREventContext[ sigIdx ].details.stsEvent.sleepAck = true;
+        mISREventContext[ sigIdx ].event.sts.sleepAck = true;
         mISREventContext[ sigIdx ].isrPending |= sleepBit;
         hpThreadShouldWake = true;
       }
       else if ( !( mISREventContext[ sigIdx ].isrPending & sleepBit ) )
       {
-        mISREventContext[ sigIdx ].details.stsEvent.sleepAck = false;
+        mISREventContext[ sigIdx ].event.sts.sleepAck = false;
       }
 
       /*-------------------------------------------------
@@ -1291,13 +1447,13 @@ namespace Thor::LLD::CAN
       if ( ( IER & IER_WKUIE ) && ( MSR & MSR_WKUI ) )
       {
         disableISRSignal( Chimera::CAN::InterruptType::WAKEUP_EVENT );
-        mISREventContext[ sigIdx ].details.stsEvent.wakeup = true;
+        mISREventContext[ sigIdx ].event.sts.wakeup = true;
         mISREventContext[ sigIdx ].isrPending |= wakeupBit;
         hpThreadShouldWake = true;
       }
       else if ( !( mISREventContext[ sigIdx ].isrPending & wakeupBit ) )
       {
-        mISREventContext[ sigIdx ].details.stsEvent.wakeup = false;
+        mISREventContext[ sigIdx ].event.sts.wakeup = false;
       }
 
       /*-------------------------------------------------
@@ -1326,8 +1482,8 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Update the error counters
       -------------------------------------------------*/
-      mISREventContext[ sigIdx ].details.errEvent.txErrorCount = static_cast<uint8_t>( ( ( ESR & ESR_TEC ) >> ESR_TEC_Pos ) );
-      mISREventContext[ sigIdx ].details.errEvent.rxErrorCount = static_cast<uint8_t>( ( ( ESR & ESR_REC ) >> ESR_REC_Pos ) );
+      mISREventContext[ sigIdx ].event.err.txErrorCount = static_cast<uint8_t>( ( ( ESR & ESR_TEC ) >> ESR_TEC_Pos ) );
+      mISREventContext[ sigIdx ].event.err.rxErrorCount = static_cast<uint8_t>( ( ( ESR & ESR_REC ) >> ESR_REC_Pos ) );
 
       /*-------------------------------------------------
       Parse Warning Errors
@@ -1337,13 +1493,13 @@ namespace Thor::LLD::CAN
       if ( ( IER & IER_EWGIE ) && ( ESR & ESR_EWGF ) )
       {
         disableISRSignal( Chimera::CAN::InterruptType::ERROR_WARNING_EVENT );
-        mISREventContext[ sigIdx ].details.errEvent.warning = true;
+        mISREventContext[ sigIdx ].event.err.warning = true;
         mISREventContext[ sigIdx ].isrPending |= warningBit;
         hpThreadShouldWake = true;
       }
       else if ( !( mISREventContext[ sigIdx ].isrPending & warningBit ) )
       {
-        mISREventContext[ sigIdx ].details.errEvent.warning = false;
+        mISREventContext[ sigIdx ].event.err.warning = false;
       }
       // else higher priority thread hasn't handled the event yet
 
@@ -1355,13 +1511,13 @@ namespace Thor::LLD::CAN
       if ( ( IER & IER_EPVIE ) && ( ESR & ESR_EPVF ) )
       {
         disableISRSignal( Chimera::CAN::InterruptType::ERROR_PASSIVE_EVENT );
-        mISREventContext[ sigIdx ].details.errEvent.passive = true;
+        mISREventContext[ sigIdx ].event.err.passive = true;
         mISREventContext[ sigIdx ].isrPending |= passiveBit;
         hpThreadShouldWake = true;
       }
       else if ( !( mISREventContext[ sigIdx ].isrPending & passiveBit ) )
       {
-        mISREventContext[ sigIdx ].details.errEvent.passive = false;
+        mISREventContext[ sigIdx ].event.err.passive = false;
       }
       // else higher priority thread hasn't handled the event yet
 
@@ -1373,13 +1529,13 @@ namespace Thor::LLD::CAN
       if ( ( IER & IER_BOFIE ) && ( ESR & ESR_BOFF ) )
       {
         disableISRSignal( Chimera::CAN::InterruptType::ERROR_BUS_OFF_EVENT );
-        mISREventContext[ sigIdx ].details.errEvent.busOff = true;
+        mISREventContext[ sigIdx ].event.err.busOff = true;
         mISREventContext[ sigIdx ].isrPending |= busOffBit;
         hpThreadShouldWake = true;
       }
       else if ( !( mISREventContext[ sigIdx ].isrPending & busOffBit ) )
       {
-        mISREventContext[ sigIdx ].details.errEvent.busOff = false;
+        mISREventContext[ sigIdx ].event.err.busOff = false;
       }
 
       /*-------------------------------------------------
@@ -1390,13 +1546,13 @@ namespace Thor::LLD::CAN
       if ( ( IER & IER_LECIE ) && ( ESR & ESR_LEC ) )
       {
         disableISRSignal( Chimera::CAN::InterruptType::ERROR_CODE_EVENT );
-        mISREventContext[ sigIdx ].details.errEvent.lastErrorCode = static_cast<ErrorCode>( ( ESR & ESR_LEC ) >> ESR_LEC_Pos );
+        mISREventContext[ sigIdx ].event.err.lastErrorCode = static_cast<ErrorCode>( ( ESR & ESR_LEC ) >> ESR_LEC_Pos );
         mISREventContext[ sigIdx ].isrPending |= errorCodeBit;
         hpThreadShouldWake = true;
       }
       else if ( !( mISREventContext[ sigIdx ].isrPending & errorCodeBit ) )
       {
-        mISREventContext[ sigIdx ].details.errEvent.lastErrorCode = ErrorCode::NO_ERROR;
+        mISREventContext[ sigIdx ].event.err.lastErrorCode = ErrorCode::NO_ERROR;
       }
       // else higher priority thread hasn't handled the event yet
 

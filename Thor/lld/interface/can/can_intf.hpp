@@ -89,11 +89,25 @@ namespace Thor::LLD::CAN
   /**
    *  Initializes the CAN drivers by attaching the appropriate peripheral
    *
-   *  @param[in]  driverList  List of driver objects to be initialized
-   *  @param[in]  numDrivers  How many drivers are in driverList
+   *  @param[in]  driverList    List of driver objects to be initialized
+   *  @param[in]  numDrivers    How many drivers are in driverList
    *  @return bool
    */
   bool attachDriverInstances( Driver *const driverList, const size_t numDrivers );
+
+  /**
+   *  Takes the given filter list and organizes them by size, from largest to smalles.
+   *  This helps with assigning filters to hardware banks by placing them into a logical order.
+   *
+   *  @note Size is determined by the number of bytes each filter takes up in a bank.
+   *        Generally this is configurable from 2-8 bytes.
+   *
+   *  @param[in]  filterList    List of configured filters to be sorted
+   *  @param[in]  listSize      Number of filters the list can hold. All lists must match this length.
+   *  @param[out] indexList     On successful sort, will contain indices of the sorted filterList
+   *  @return bool              True if the list was filtered, false if there was some problem
+   */
+  bool sortFiltersBySize( const MessageFilter *const filterList, const uint8_t listSize, uint8_t *const indexList );
 
 
   /*-------------------------------------------------------------------------------
@@ -119,7 +133,16 @@ namespace Thor::LLD::CAN
      */
     virtual void attach( RegisterMap *const peripheral ) = 0;
 
+    /**
+     *  Enables the peripheral clock for the configured instance
+     *  @return void
+     */
     virtual void enableClock() = 0;
+
+    /**
+     *  Disables the peripheral clock for the configured instance
+     *  @return void
+     */
     virtual void disableClock() = 0;
 
     /**
@@ -131,7 +154,19 @@ namespace Thor::LLD::CAN
      */
     virtual Chimera::Status_t configure( const Chimera::CAN::DriverConfig &cfg ) = 0;
 
-    virtual Chimera::Status_t applyFilter( const Chimera::CAN::Filter &filter ) = 0;
+    /**
+     *  Applies the given filter list onto the hardware filter banks. The list
+     *  objects will be updated to include its assigned match index (FMI), assuming
+     *  the filter was successfully configured.
+     *
+     *  @note This operation will destroy any previous filter configuration and
+     *        replace it with the one given.
+     *
+     *  @param[in]  filterList    List of filters that should be configured
+     *  @param[in]  filterSize    How many filters are in the list
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t applyFilters( MessageFilter *const filterList, const size_t filterSize ) = 0;
 
     /**
      *  Turns on interrupts for the given signal type, if supported.
@@ -265,7 +300,7 @@ namespace Thor::LLD::CAN
     void enableClock();
     void disableClock();
     Chimera::Status_t configure( const Chimera::CAN::DriverConfig &cfg );
-    Chimera::Status_t applyFilter( const Chimera::CAN::Filter &filter );
+    Chimera::Status_t applyFilters( MessageFilter *const filterList, const size_t filterSize );
     Chimera::Status_t enableISRSignal( const Chimera::CAN::InterruptType signal );
     void disableISRSignal( const Chimera::CAN::InterruptType signal );
     void enterDebugMode( const Chimera::CAN::DebugMode mode );

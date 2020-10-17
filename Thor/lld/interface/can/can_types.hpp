@@ -18,6 +18,8 @@
 /* Chimera Includes */
 #include <Chimera/can>
 
+/* Thor Includes */
+#include <Thor/lld/interface/can/can_detail.hpp>
 
 namespace Thor::LLD::CAN
 {
@@ -50,8 +52,8 @@ namespace Thor::LLD::CAN
 
   enum class TXPriority : uint8_t
   {
-    IDENTIFIER_DRIVEN,  /**< CAN ID determines priority for TX */
-    REQUEST_DRIVEN,     /**< First come first serve TX priority */
+    IDENTIFIER_DRIVEN, /**< CAN ID determines priority for TX */
+    REQUEST_DRIVEN,    /**< First come first serve TX priority */
 
     NUM_OPTIONS,
     UNKNOWN
@@ -66,7 +68,7 @@ namespace Thor::LLD::CAN
 
   /**
    *  Error code key for the CAN_ESR register in the LEC field.
-   *  These values match up with the field after is has been
+   *  These values match up with the LEC field after is has been
    *  shifted to right-aligned, so do __NOT__ modify the order.
    */
   enum class ErrorCode : uint8_t
@@ -84,22 +86,42 @@ namespace Thor::LLD::CAN
     UNKNOWN
   };
 
+  enum class CompositeFilterMode : uint8_t
+  {
+    MODE_16BIT_ID,
+    MODE_16BIT_MASK,
+    MODE_32BIT_ID,
+    MODE_32BIT_MASK,
+
+    NUM_OPTIONS,
+    UNKNOWN
+  };
+
+  enum class FilterSlot : uint8_t
+  {
+    SLOT_0,
+    SLOT_1,
+    SLOT_2,
+    SLOT_3,
+
+    NUM_OPTIONS,
+    UNKNOWN
+  };
+
   /*-------------------------------------------------------------------------------
   Structures
   -------------------------------------------------------------------------------*/
-  struct MailboxError
-  {
-    bool txError;
-    bool arbLost;
-  };
-
+  /**
+   *  Describes information about what happened in a CAN ISR. There are
+   *  multiple kinds of events and all of them are captured here.
+   */
   struct ISREventContext
   {
-    uint16_t isrPending; /**< Bit-field (BFPendingISR) indicating ISR events needing handled */
+    uint16_t isrPending; /**< Bit-field indicating ISR events needing handled */
 
     /**
      *  Union holding possible event contexts, interpreted by
-     *  the isrEvent variable above. These describe what actually
+     *  the isrPending variable above. These describe what actually
      *  happened in the last ISR event.
      */
     union _EventData
@@ -109,50 +131,60 @@ namespace Thor::LLD::CAN
       -------------------------------------------------*/
       struct _Transmit
       {
-        struct _ErrorCodes
-        {
-          bool txError;
-          bool arbLost;
-          bool txOk;
-        };
-
-        _ErrorCodes mailbox0;
-        _ErrorCodes mailbox1;
-        _ErrorCodes mailbox2;
-      } txEvent;
+        bool txError; /**< A transmit error occurred */
+        bool arbLost; /**< Arbitration was lost */
+        bool txOk;    /**< Transmit was ok */
+      } tx[ NUM_CAN_TX_MAILBOX ];
 
       /*-------------------------------------------------
       Receive Interrupt
       -------------------------------------------------*/
       struct _Receive
       {
-
-      } rxEvent;
+      } rx[ NUM_CAN_RX_MAILBOX ];
 
       /*-------------------------------------------------
       Status Change Interrupt
       -------------------------------------------------*/
       struct _StatusChange
       {
-        bool sleepAck;
-        bool wakeup;
-      } stsEvent;
+        bool sleepAck; /**< Device has gone to sleep */
+        bool wakeup;   /**< Device has woken up */
+      } sts;
 
       /*-------------------------------------------------
       Data associated with Error Interrupts
       -------------------------------------------------*/
       struct _Error
       {
-        uint8_t rxErrorCount;
-        uint8_t txErrorCount;
-        ErrorCode lastErrorCode;
-        bool busOff;
-        bool passive;
-        bool warning;
-      } errEvent;
+        uint8_t rxErrorCount;    /**< Last receive error count */
+        uint8_t txErrorCount;    /**< Last transmit error count */
+        ErrorCode lastErrorCode; /**< Last general error code */
+        bool busOff;             /**< Bus has been disabled */
+        bool passive;            /**< Bus has gone to passive state */
+        bool warning;            /**< Bus has hit warning threshold for transceiver */
+      } err;
 
-    } details;
+    } event;
   };
+
+
+  /**
+   *  Filter description on a message ID that can be *almost*
+   *  directly applied to hardware.
+   */
+  struct MessageFilter
+  {
+    bool active;                     /**< Should this filter be active? */
+    uint32_t identifier;             /**< Determines dominant/recessive bit level for the matching identifier */
+    uint32_t mask;                   /**< Optional: If mask mode, determines bits used for id comparison */
+    Mailbox fifoBank;                /**< Which filter bank this message should be placed in */
+    Chimera::CAN::FilterMode mode;   /**< Mask or list filter mode */
+    Chimera::CAN::FilterWidth scale; /**< How many bits the filter consumes */
+    uint8_t assignedFMI;             /**< Read only. Contains the filter's match index once assigned to a hw filter bank */
+  };
+
+
 }    // namespace Thor::LLD::CAN
 
 #endif /* !THOR_LLD_CAN_DRIVER_TYPES_HPP */

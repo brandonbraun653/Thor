@@ -79,8 +79,13 @@ namespace Thor::LLD::CAN
    */
   bool prv_validate_frame( const Chimera::CAN::BasicFrame &frame );
 
+  /**
+   *  Checks if the hardware is in normal mode
+   *
+   *  @param[in]  periph      Memory mapped struct to the peripheral
+   *  @return bool
+   */
   bool prv_in_normal_mode( RegisterMap *const periph );
-
 
 }  // namespace Thor::LLD::CAN
 
