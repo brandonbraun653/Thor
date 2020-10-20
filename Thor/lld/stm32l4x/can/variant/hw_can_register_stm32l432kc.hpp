@@ -32,7 +32,7 @@ namespace Thor::LLD::CAN
   static constexpr size_t NUM_CAN_IRQ_HANDLERS = 4; /**< Number of unique interrupts on each peripheral */
   static constexpr size_t NUM_CAN_TX_MAILBOX   = 3;
   static constexpr size_t NUM_CAN_RX_MAILBOX   = 2;
-  static constexpr size_t NUM_CAN_FILTER_BANKS = 14;
+  static constexpr size_t NUM_CAN_FILTER_BANKS = 14; /**< Technically 28, but other 14 is for CAN2, which isn't on L4 */
   static constexpr size_t NUM_CAN_MAX_FILTERS  = NUM_CAN_FILTER_BANKS * 4;    // Each bank can hold a max of four 16-bit filters
   static constexpr size_t CAN_RX_FIFO_DEPTH    = 3;
 

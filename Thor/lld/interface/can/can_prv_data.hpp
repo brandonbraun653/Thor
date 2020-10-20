@@ -60,8 +60,6 @@ namespace Thor::LLD::CAN
   {
     extern LLD_CONST Reg32_t DebugMode[ static_cast<size_t>( Chimera::CAN::DebugMode::NUM_OPTIONS ) ];
     extern LLD_CONST Reg32_t IdentifierMode[ static_cast<size_t>( Chimera::CAN::IdentifierMode::NUM_OPTIONS ) ];
-    extern LLD_CONST Reg32_t FilterMode[ static_cast<size_t>( Chimera::CAN::FilterMode::NUM_OPTIONS ) ];
-    extern LLD_CONST Reg32_t FilterWidth[ static_cast<size_t>( Chimera::CAN::FilterWidth::NUM_OPTIONS ) ];
     extern LLD_CONST Reg32_t FrameType[ static_cast<size_t>( Chimera::CAN::FrameType::NUM_OPTIONS ) ];
   }
 

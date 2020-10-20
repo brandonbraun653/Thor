@@ -29,6 +29,7 @@ set(CORE thor_lld_stm32l4_can)
 add_library(${CORE} STATIC
   hw_can_driver.cpp
   hw_can_data.cpp
+  hw_can_prv_driver.cpp
 )
 target_link_libraries(${CORE} PRIVATE ${LINK_LIBS} ${VARIANT})
 export(TARGETS ${CORE} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${CORE}.cmake")

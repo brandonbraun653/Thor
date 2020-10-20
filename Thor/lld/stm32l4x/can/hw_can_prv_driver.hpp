@@ -87,6 +87,33 @@ namespace Thor::LLD::CAN
    */
   bool prv_in_normal_mode( RegisterMap *const periph );
 
-}  // namespace Thor::LLD::CAN
+  /**
+   *  Looks at the given filter bank registers and determines if the
+   *  filter configuration will fit. Assuming it does, returns which
+   *  slot it fits into.
+   *
+   *  @param[in]  filter      The user's filter that is trying to be applied
+   *  @param[in]  bank        Hardware filter bank to be analyzed
+   *  @param[out] slot        Slot the filter fits into
+   *  @return bool
+   */
+  bool prv_does_filter_fit( const MessageFilter *const filter, volatile FilterReg *const bank, FilterSlot &slot );
 
-#endif  /* !THOR_LLD_PRIVATE_CAN_DRIVER_HPP */
+  /**
+   *  Assigns the filter to the given slot, overwriting anything
+   *  that currently exists.
+   *
+   *  @param[in]  filter      The user's filter that is trying to be applied
+   *  @param[in]  bank        Hardware filter bank to be analyzed
+   *  @param[in]  slot        Slot the filter fits into
+   *  @return bool
+   */
+  bool prv_assign_filter( const MessageFilter *const filter, volatile FilterReg *const bank, const FilterSlot slot );
+
+  Mailbox prv_get_filter_bank_fifo( RegisterMap *const periph, const size_t bank_idx );
+
+  Chimera::CAN::FilterMode prv_get_filter_bank_mode( RegisterMap *const periph, const size_t bank_idx );
+
+}    // namespace Thor::LLD::CAN
+
+#endif /* !THOR_LLD_PRIVATE_CAN_DRIVER_HPP */

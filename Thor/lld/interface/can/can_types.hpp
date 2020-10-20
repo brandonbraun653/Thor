@@ -35,6 +35,16 @@ namespace Thor::LLD::CAN
   using Driver_rPtr = Driver *;
 
   /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
+  /*-------------------------------------------------
+  Magic numbers that are used to indicate a filter
+  has been reset. Generated from random.org.
+  -------------------------------------------------*/
+  static constexpr Reg32_t FLTR_RST_1 = 0x2083d26f;
+  static constexpr Reg32_t FLTR_RST_2 = 0xbde27d78;
+
+  /*-------------------------------------------------------------------------------
   Enumerations
   -------------------------------------------------------------------------------*/
   enum class Mailbox : uint8_t
@@ -81,17 +91,6 @@ namespace Thor::LLD::CAN
     BIT_DOMINANT_ERROR,
     CRC_ERROR,
     SW_ERROR,
-
-    NUM_OPTIONS,
-    UNKNOWN
-  };
-
-  enum class CompositeFilterMode : uint8_t
-  {
-    MODE_16BIT_ID,
-    MODE_16BIT_MASK,
-    MODE_32BIT_ID,
-    MODE_32BIT_MASK,
 
     NUM_OPTIONS,
     UNKNOWN
@@ -175,13 +174,13 @@ namespace Thor::LLD::CAN
    */
   struct MessageFilter
   {
-    bool active;                     /**< Should this filter be active? */
-    uint32_t identifier;             /**< Determines dominant/recessive bit level for the matching identifier */
-    uint32_t mask;                   /**< Optional: If mask mode, determines bits used for id comparison */
-    Mailbox fifoBank;                /**< Which filter bank this message should be placed in */
-    Chimera::CAN::FilterMode mode;   /**< Mask or list filter mode */
-    Chimera::CAN::FilterWidth scale; /**< How many bits the filter consumes */
-    uint8_t assignedFMI;             /**< Read only. Contains the filter's match index once assigned to a hw filter bank */
+    bool valid;                    /**< Should this filter configuration even be trusted as valid? */
+    bool active;                   /**< Should this filter be active? */
+    uint32_t identifier;           /**< Determines dominant/recessive bit level for the matching identifier */
+    uint32_t mask;                 /**< Optional: If mask mode, determines bits used for id comparison */
+    Mailbox fifoBank;              /**< Which filter bank this message should be placed in */
+    Chimera::CAN::FilterMode mode; /**< Hardware filtering mode */
+    uint8_t assignedFMI;           /**< Read only. Contains the filter's match index once assigned to a hw filter bank */
   };
 
 

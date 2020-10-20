@@ -76,188 +76,6 @@ namespace Thor::LLD::CAN
 
 
   /*-------------------------------------------------------------------------------
-  Private Functions
-  -------------------------------------------------------------------------------*/
-  void prv_reset( RegisterMap *const periph )
-  {
-    MCR_ALL::set( periph, MCR_Rst );
-    MSR_ALL::set( periph, MSR_Rst );
-    TSR_ALL::set( periph, TSR_Rst );
-    RF0R_ALL::set( periph, RF0R_Rst );
-    RF1R_ALL::set( periph, RF1R_Rst );
-    IER_ALL::set( periph, IER_Rst );
-    ESR_ALL::set( periph, ESR_Rst );
-    BTR_ALL::set( periph, BTR_Rst );
-  }
-
-
-  void prv_enter_initialization_mode( RegisterMap *const periph )
-  {
-    /*-------------------------------------------------
-    If we are already in sleep mode, the sleep bit must
-    be cleared first. See RM0394 44.4.3.
-    -------------------------------------------------*/
-    SLEEP::clear( periph, MCR_SLEEP );
-
-    /*-------------------------------------------------
-    Don't bother doing anything if device already in
-    init mode. Otherwise request the transition.
-    -------------------------------------------------*/
-    if ( !INRQ::get( periph ) )
-    {
-      INRQ::set( periph, MCR_INRQ );
-      while ( !INAK::get( periph ) )
-      {
-        continue;
-      }
-    }
-  }
-
-
-  void prv_enter_normal_mode( RegisterMap *const periph )
-  {
-    /*-------------------------------------------------
-    Don't bother doing anything if device already not
-    in init mode. Otherwise request the transition.
-    -------------------------------------------------*/
-    if ( INRQ::get( periph ) )
-    {
-      INRQ::clear( periph, MCR_INRQ );
-      while ( INAK::get( periph ) )
-      {
-        continue;
-      }
-    }
-  }
-
-
-  void prv_enter_sleep_mode( RegisterMap *const periph )
-  {
-    /*-------------------------------------------------
-    Don't bother doing anything if device already in
-    sleep mode. Otherwise request the transition.
-    -------------------------------------------------*/
-    if ( !SLEEP::get( periph ) )
-    {
-      SLEEP::set( periph, MCR_SLEEP );
-      while ( !SLAK::get( periph ) )
-      {
-        continue;
-      }
-    }
-  }
-
-
-  size_t prv_set_baud_rate( RegisterMap *const periph, const Chimera::CAN::DriverConfig &cfg )
-  {
-    /*-------------------------------------------------
-    Grab a few preliminary variables. These equations
-    are derived from RM0394 Figure 488.
-    -------------------------------------------------*/
-    size_t pclk = Thor::LLD::RCC::getCoreClock()->getPeriphClock( Chimera::Peripheral::Type::PERIPH_CAN,
-                                                                  reinterpret_cast<std::uintptr_t>( periph ) );
-
-    float nominalBitTime = 1.0f / ( float )( cfg.HWInit.baudRate );
-    float clkPeriod      = 1.0f / ( float )( pclk );
-    float tq             = nominalBitTime / ( float )( cfg.HWInit.timeQuanta );
-    float tsync          = tq;
-    float est_tbs1       = ( cfg.HWInit.samplePointPercent * nominalBitTime ) - tsync;
-    float est_tbs2       = nominalBitTime - tsync - est_tbs1;
-
-    /*-------------------------------------------------
-    Calculate configuration settings for BTR register
-    -------------------------------------------------*/
-    Reg32_t brp = static_cast<Reg32_t>( tq / clkPeriod ) - 1;
-    Reg32_t ts1 = static_cast<Reg32_t>( est_tbs1 / tq ) - 1;
-    Reg32_t ts2 = static_cast<Reg32_t>( est_tbs2 / tq ) - 1;
-
-    /*-------------------------------------------------
-    Apply the configuration values
-    -------------------------------------------------*/
-    BRP::set( periph, ( brp << BTR_BRP_Pos ) );
-    TS1::set( periph, ( ts1 << BTR_TS1_Pos ) );
-    TS2::set( periph, ( ts2 << BTR_TS2_Pos ) );
-
-    /*-------------------------------------------------
-    Calculate the actual configured baud rate
-    -------------------------------------------------*/
-    return prv_get_baud_rate( periph );
-  }
-
-
-  size_t prv_get_baud_rate( RegisterMap *const periph )
-  {
-    using namespace Thor::LLD::RCC;
-    using namespace Chimera::Peripheral;
-
-    /*-------------------------------------------------
-    Grab a few preliminary variables
-    -------------------------------------------------*/
-    Reg32_t brp = BRP::get( periph ) >> BTR_BRP_Pos;
-    Reg32_t ts1 = TS1::get( periph ) >> BTR_TS1_Pos;
-    Reg32_t ts2 = TS2::get( periph ) >> BTR_TS2_Pos;
-    size_t pclk = getCoreClock()->getPeriphClock( Type::PERIPH_CAN, reinterpret_cast<std::uintptr_t>( periph ) );
-
-    /*-------------------------------------------------
-    Prevent div/0 in calculations below
-    -------------------------------------------------*/
-    if ( !pclk )
-    {
-      return std::numeric_limits<size_t>::max();
-    }
-
-    /*-------------------------------------------------
-    Calculate the expected output baud rate. Taken from
-    RM0394 Figure 488.
-    -------------------------------------------------*/
-    float tq             = ( 1.0f / ( float )pclk ) * ( float )( brp + 1 );
-    float tbs1           = tq * ( float )( ts1 + 1 );
-    float tbs2           = tq * ( float )( ts2 + 1 );
-    float nominalBitTime = tq + tbs1 + tbs2;
-
-    /*-------------------------------------------------
-    Assume that a bit time corresponding to 10 MBit is
-    invalid (not supported by standard). Also prevents
-    a div/0 without having to do extremely precise
-    floating point comparisons.
-    -------------------------------------------------*/
-    if ( nominalBitTime < 0.0000001f )
-    {
-      return std::numeric_limits<size_t>::max();
-    }
-    else
-    {
-      return static_cast<size_t>( 1.0f / nominalBitTime );
-    }
-  }
-
-
-  bool prv_validate_frame( const Chimera::CAN::BasicFrame &frame )
-  {
-    using namespace Chimera::CAN;
-
-    /* clang-format off */
-    if ( ( frame.dataLength == 0 ) ||
-         ( frame.idMode >= IdentifierMode::NUM_OPTIONS ) ||
-         ( frame.frameType >= FrameType::NUM_OPTIONS ) )
-    /* clang-format on */
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }
-  }
-
-
-  bool prv_in_normal_mode( RegisterMap *const periph )
-  {
-    return INRQ::get( periph ) == 0;
-  }
-
-
-  /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
   Driver::Driver() : mPeriph( nullptr ), mResourceIndex( std::numeric_limits<size_t>::max() )
@@ -395,16 +213,18 @@ namespace Thor::LLD::CAN
 
   Chimera::Status_t Driver::applyFilters( MessageFilter *const filterList, const size_t filterSize )
   {
+    using namespace Chimera::CAN;
+
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
-    if( !filterList || !filterSize || ( filterSize > NUM_CAN_MAX_FILTERS ) )
+    if ( !filterList || !filterSize || ( filterSize > NUM_CAN_MAX_FILTERS ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     /*-------------------------------------------------
-    Arrange the filters by how much space they consume.
+    Sort the filters by how much space they consume.
     This allows for an easier placement algorithm.
     -------------------------------------------------*/
     uint8_t sortedFilterIdx[ NUM_CAN_MAX_FILTERS ];
@@ -430,24 +250,29 @@ namespace Thor::LLD::CAN
     mPeriph->FFA1R = 0;
     mPeriph->FA1R  = 0;
 
-    for( uint8_t bankIdx = 0; bankIdx < NUM_CAN_FILTER_BANKS; bankIdx++ )
+    for ( uint8_t bankIdx = 0; bankIdx < NUM_CAN_FILTER_BANKS; bankIdx++ )
     {
-      mPeriph->sFilterBank[ bankIdx ].FR1 = 0;
-      mPeriph->sFilterBank[ bankIdx ].FR2 = 0;
+      // Use magic values to help figure out in-use filters
+      mPeriph->sFilterBank[ bankIdx ].FR1 = FLTR_RST_1;
+      mPeriph->sFilterBank[ bankIdx ].FR2 = FLTR_RST_2;
     }
 
     /*-------------------------------------------------
     Attempt to place each filter in the filter banks
     -------------------------------------------------*/
-    auto result = Chimera::Status::OK;
+    bool bankConfigured       = false;      // Tracks if the current bank has been configured already
+    size_t bankIdx            = 0;          // Which hardware filter bank currently being processed
+    size_t userIdx            = 0;          // Which user filter currently being processed
+    size_t fltrIdx            = 0;          // Generic index tracking progress of filter processing
+    size_t numValidFilters    = 0;          // Number of valid filter configurations attempted to be placed
+    size_t numPlacedFilters   = 0;          // Number of filters that were successfully placed
+    uint8_t fifo0FMI_current  = 0;          // Current filter match index for FIFO0
+    uint8_t fifo1FMI_current  = 0;          // Current filter match index for FIFO1
+    uint8_t fifo0FMI_toAssign = 0;          // Remaining match indices to assign on the current filter bank
+    uint8_t fifo1FMI_toAssign = 0;          // Remaining match indices to assign on the current filter bank
+    MessageFilter *filter     = nullptr;    // Pointer to the current user filter
+    volatile FilterReg *bank  = nullptr;    // Current bank being processed
 
-    size_t bankIdx           = 0;           // Which hardware filter bank currently being processed
-    size_t userIdx           = 0;           // Which user filter currently being processed
-    size_t fltrIdx           = 0;           // Generic index tracking progress of filter processing
-    uint8_t fifo0FMI         = 0;           // Current filter match index for FIFO0
-    uint8_t fifo1FMI         = 0;           // Current filter match index for FIFO1
-    MessageFilter *filter    = nullptr;     // Pointer to the current user filter
-    FilterReg usedFilterMask = { 0, 0 };    // Dummy filter to indicate where the filter is used
 
     do
     {
@@ -455,52 +280,133 @@ namespace Thor::LLD::CAN
       Grab the highest priority filter to place next
       -------------------------------------------------*/
       userIdx = sortedFilterIdx[ fltrIdx ];
-      filter   = &filterList[ userIdx ];
+      filter  = &filterList[ userIdx ];
+      bank    = &mPeriph->sFilterBank[ bankIdx ];
 
       /*-------------------------------------------------
-      For the current filter bank, is there room to place
-      next filter? If not, move to the next bank.
+      Is the filter even marked as valid? No point trying
+      to place it unless it is.
       -------------------------------------------------*/
-      if(0 /* !filterFits() */)
+      if( !filter->valid )
       {
-        bankIdx++;
-        continue; // Force the increment to go through the loop checks
+        fltrIdx++;
+        continue;
       }
 
-      // I'll have to be able to check the current configuration
-      // of the filter bank to see what kind of mode it's in from
-      // the last filter. I'm pretty sure each bank can only hold
-      // one kind of configuration...
+      /*-------------------------------------------------
+      Is the filter the right type to be placed in this
+      filter bank? Can't mix filter modes willy nilly. A
+      new mode requires a new filter bank.
+      -------------------------------------------------*/
+      if( bankConfigured && ( filter->mode != prv_get_filter_bank_mode( mPeriph, bankIdx ) ) )
+      {
+        /*-------------------------------------------------
+        FMI is linear, so if the bank is partially assigned
+        then the remaining unassigned filters are skipped.
+        The skipping needs to be tracked.
+        -------------------------------------------------*/
+        if( prv_get_filter_bank_fifo( mPeriph, bankIdx ) == Mailbox::RX_MAILBOX_1 )
+        {
+          fifo0FMI_current += fifo0FMI_toAssign;
+          fifo0FMI_toAssign = 0;
+        }
+        else
+        {
+          fifo1FMI_current += fifo1FMI_toAssign;
+          fifo1FMI_toAssign = 0;
+        }
+
+        /*-------------------------------------------------
+        Reset the trackers for the next bank
+        -------------------------------------------------*/
+        bankIdx++;
+        bankConfigured = false;
+        continue;
+      }
+      else
+      {
+        /*-------------------------------------------------
+        New bank! The next filter is guaranteed to fit
+        because it determines the bank properties.
+
+        Reset the FMI counters based on the new mode.
+        -------------------------------------------------*/
+        uint8_t *fmi = &fifo0FMI_toAssign;
+        if( filter->fifoBank == Mailbox::RX_MAILBOX_2 )
+        {
+          fmi = &fifo1FMI_toAssign;
+        }
+
+        switch( filter->mode)
+        {
+          case FilterMode::MODE_16BIT_LIST:
+            *fmi = 4;
+            break;
+
+          case FilterMode::MODE_16BIT_MASK:
+          case FilterMode::MODE_32BIT_LIST:
+            *fmi = 2;
+            break;
+
+          case FilterMode::MODE_32BIT_MASK:
+            *fmi = 1;
+            break;
+
+          default:
+            return Chimera::Status::FAIL;
+            break;
+        };
+      }
 
       /*-------------------------------------------------
-      Configure Mask/List Mode
+      Alright, so the filter is the correct type, but is
+      there room in the bank to hold it? If not, move on
+      to the next bank.
       -------------------------------------------------*/
-      switch( filter->mode )
+      auto nextSlot = FilterSlot::UNKNOWN;
+
+      if ( prv_does_filter_fit( filter, bank, nextSlot ) )
       {
-        case Chimera::CAN::FilterMode::ID_LIST:
-          mPeriph->FM1R |= ( 1u << fltrIdx );
-          break;
-
-        case Chimera::CAN::FilterMode::MASK:
-          mPeriph->FM1R &= ~( 1u << fltrIdx );
-          break;
-
-        default:
-          return Chimera::Status::NOT_INITIALIZED;
-          break;
-      };
+        /*-------------------------------------------------
+        Phew, all the checks passed. Now to actually start
+        assigning the filter into hardware.
+        -------------------------------------------------*/
+        numValidFilters++;
+        prv_assign_filter( filter, bank, nextSlot );
+      }
+      else
+      {
+        /*-------------------------------------------------
+        Move on to the next bank. This one is out of room.
+        -------------------------------------------------*/
+        bankIdx++;
+        bankConfigured = false;
+        continue;
+      }
 
       /*-------------------------------------------------
-      Configure Scaling
+      Configure Mask/List Mode & Scale
       -------------------------------------------------*/
-      switch( filter->scale )
+      switch ( filter->mode )
       {
-        case Chimera::CAN::FilterWidth::WIDTH_16BIT:
-          mPeriph->FS1R &= ~( 1u << fltrIdx );
+        case Chimera::CAN::FilterMode::MODE_16BIT_LIST:
+          mPeriph->FM1R |= ( 1u << bankIdx );     // Mask
+          mPeriph->FS1R &= ~( 1u << bankIdx );    // Scale
           break;
 
-        case Chimera::CAN::FilterWidth::WIDTH_32BIT:
-          mPeriph->FS1R |= ( 1u << fltrIdx );
+        case Chimera::CAN::FilterMode::MODE_16BIT_MASK:
+          mPeriph->FM1R &= ~( 1u << bankIdx );    // Mask
+          mPeriph->FS1R &= ~( 1u << bankIdx );    // Scale
+          break;
+
+        case Chimera::CAN::FilterMode::MODE_32BIT_LIST:
+          mPeriph->FM1R |= ( 1u << bankIdx );     // Mask
+          mPeriph->FS1R |= ( 1u << bankIdx );     // Scale
+          break;
+
+        case Chimera::CAN::FilterMode::MODE_32BIT_MASK:
+          mPeriph->FM1R &= ~( 1u << bankIdx );    // Mask
+          mPeriph->FS1R |= ( 1u << bankIdx );     // Scale
           break;
 
         default:
@@ -511,18 +417,20 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Configure FIFO Assignment
       -------------------------------------------------*/
-      switch( filter->fifoBank )
+      switch ( filter->fifoBank )
       {
         case Mailbox::RX_MAILBOX_1:
-          mPeriph->FFA1R &= ~( 1u << fltrIdx );
-          filter->assignedFMI = fifo0FMI;
-          fifo0FMI++;
+          mPeriph->FFA1R &= ~( 1u << bankIdx );
+          filter->assignedFMI = fifo0FMI_current;
+          fifo0FMI_current++;
+          fifo0FMI_toAssign--;
           break;
 
         case Mailbox::RX_MAILBOX_2:
-          mPeriph->FFA1R |= ( 1u << fltrIdx );
-          filter->assignedFMI = fifo1FMI;
-          fifo1FMI++;
+          mPeriph->FFA1R |= ( 1u << bankIdx );
+          filter->assignedFMI = fifo1FMI_current;
+          fifo1FMI_current++;
+          fifo1FMI_toAssign--;
           break;
 
         default:
@@ -530,64 +438,44 @@ namespace Thor::LLD::CAN
           break;
       };
 
-      // Handle errors of too many filters being assigned
-      // to a single FIFO. Max is...how many??? Or should
-      // I let this number run wild and use the checks
-      // above to guarantee that by this point in the alg
-      // the filter will fit?
-
       /*-------------------------------------------------
       Configure Activation State
       -------------------------------------------------*/
-      if( filter->active )
+      if ( filter->active )
       {
-        mPeriph->FA1R |= ( 1u << fltrIdx );
+        mPeriph->FA1R |= ( 1u << bankIdx );
       }
       else
       {
-        mPeriph->FA1R &= ~( 1u << fltrIdx );
+        mPeriph->FA1R &= ~( 1u << bankIdx );
       }
 
       /*-------------------------------------------------
-      Assign the filter to the current bank
+      Update tracking data
       -------------------------------------------------*/
-      // This will depend on the four mode types and the
-      // identifier being in 11bit or 29bit mode.
+      fltrIdx++;              // Just completed parsing one of the user's filters
+      numPlacedFilters++;     // Just completed parsing a valid filter
+      bankConfigured = true;  // The current filter bank has been configured at least once now
 
-      // How am I going to track the "Free" bits in a filter?
-      // Maybe I could have a dummy filter register and mask
-      // off bits. Could I use a positional offset and a
-      // write mask? A lot of the answer to "how do I do this"
-      // is going to get answered by the "can this filter fit"
-      // question that got us to this point in the first place.
+    } while ( ( bankIdx < NUM_CAN_FILTER_BANKS ) && ( fltrIdx < filterSize ) );
 
-      // What about using a "slot" concept? Each filter
-      // can have up to four of them. An enum can define
-      // for a given mode, the max number of slots, then
-      // the "does it fit" function can say "Yes, it does
-      // fit, here is the slot it goes into" and give back
-      // the enum value. A giant switch statement can then
-      // be used to write the data exactly as each slot
-      // defines itself.
+    /*-------------------------------------------------
+    Leave filter initialization mode
+    -------------------------------------------------*/
+    FINIT::clear( mPeriph, FMR_FINIT );
+    prv_enter_normal_mode( mPeriph );
 
-      // Hmmm...Maybe two enum types are needed. One for
-      // the filter mode (mask/list/scale combo) and another
-      // for the slot within that mode. The slots themselves
-      // would be pretty generic (SLOT_1/2/3/4) and only make
-      // sense in the context of a mode.
-
-      // This sounds like nested switch cases. Might want to
-      // make individual functions for this so it's at least
-      // clean to read...
-
-      /*-------------------------------------------------
-      Update the tracking data
-      -------------------------------------------------*/
-      //fCurrent++;
-
-    } while ( ( bankIdx < NUM_CAN_FILTER_BANKS ) && ( userIdx < filterSize ) );
-
-    return result;
+    /*-------------------------------------------------
+    Were all the filters placed?
+    -------------------------------------------------*/
+    if ( numPlacedFilters == numValidFilters )
+    {
+      return Chimera::Status::OK;
+    }
+    else
+    {
+      return Chimera::Status::FULL;
+    }
   }
 
 
@@ -1356,7 +1244,7 @@ namespace Thor::LLD::CAN
       // Copy out the results of the last event
       mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 2 ].txError = static_cast<bool>( TERR2::get( mPeriph ) );
       mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 2 ].arbLost = static_cast<bool>( ALST2::get( mPeriph ) );
-      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 2 ].txOk  = static_cast<bool>( TXOK2::get( mPeriph ) );
+      mISREventContext[ CAN_TX_ISR_SIGNAL_INDEX ].event.tx[ 2 ].txOk    = static_cast<bool>( TXOK2::get( mPeriph ) );
 
       // Acknowledge event. Setting this bit clears the above registers.
       RQCP2::set( mPeriph, TSR_RQCP2 );

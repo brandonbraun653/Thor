@@ -155,6 +155,14 @@ namespace Thor::LLD::CAN
     using namespace Chimera::CAN;
 
     /*-------------------------------------------------
+    Protect against bad inputs
+    -------------------------------------------------*/
+    if( !filter || !filter->valid )
+    {
+      return 0;
+    }
+
+    /*-------------------------------------------------
     Assign a size metric to each filter. Essentially
     there are four possible choices based on the scale
     and mode registers (CAN_FSCx & CAN_FMBx).
@@ -168,20 +176,20 @@ namespace Thor::LLD::CAN
 
     Taken from RM0394 (Rev 4) Fig. 484
     -------------------------------------------------*/
-    if ( ( filter->mode == FilterMode::MASK ) && ( filter->scale == FilterWidth::WIDTH_32BIT ) )
+    if ( filter->mode == FilterMode::MODE_32BIT_MASK  )
     {
       return 8;
     }
-    else if( ( filter->mode == FilterMode::ID_LIST ) && ( filter->scale == FilterWidth::WIDTH_32BIT ) )
+    else if( filter->mode == FilterMode::MODE_32BIT_LIST )
     {
       // 32-bit filters have priority over 16-bit, so make its "size" just a little larger
       return 5;
     }
-    else if( ( filter->mode == FilterMode::MASK ) && ( filter->scale == FilterWidth::WIDTH_16BIT ) )
+    else if( filter->mode == FilterMode::MODE_16BIT_MASK )
     {
       return 4;
     }
-    else if( ( filter->mode == FilterMode::ID_LIST ) && ( filter->scale == FilterWidth::WIDTH_16BIT ) )
+    else if( filter->mode == FilterMode::MODE_16BIT_LIST )
     {
       return 2;
     }

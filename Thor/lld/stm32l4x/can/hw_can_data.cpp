@@ -49,18 +49,6 @@ namespace Thor::LLD::CAN
       TIxR_IDE  // Extended
     };
 
-    // Definitions correspond with the CAN_FM1R register
-    LLD_CONST Reg32_t FilterMode[ static_cast<size_t>( Chimera::CAN::FilterMode::NUM_OPTIONS ) ] = {
-      0,        // Mask
-      1         // Id List
-    };
-
-    // Definitions correspond with the CAN_FS1R register
-    LLD_CONST Reg32_t FilterWidth[ static_cast<size_t>( Chimera::CAN::FilterWidth::NUM_OPTIONS ) ] = {
-      0,        // Dual 16 bit width
-      1         // Single 32 bit width
-    };
-
     // Definitions correspond with the CAN_TIxR & CAN_RIxR registers
     LLD_CONST Reg32_t FrameType[ static_cast<size_t>( Chimera::CAN::FrameType::NUM_OPTIONS ) ] = {
       0,        // Data Frame

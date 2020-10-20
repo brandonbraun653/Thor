@@ -73,7 +73,7 @@ namespace Thor::LLD::CAN
     uint32_t RESERVED4;                       /**< Reserved, 0x218                                                    */
     volatile uint32_t FA1R;                   /**< CAN filter activation register,      Address offset: 0x21C         */
     uint32_t RESERVED5[ 8 ];                  /**< Reserved, 0x220-0x23F                                              */
-    volatile FilterReg sFilterBank[ 14 ];     /**< CAN Filter Register,                 Address offset: 0x240-0x31C   */
+    volatile FilterReg sFilterBank[ 28 ];     /**< CAN Filter Register,                 Address offset: 0x240-0x31C   */
   };
 
   static_assert( NUM_CAN_TX_MAILBOX == ARRAY_COUNT( RegisterMap::sTxMailBox ) );
