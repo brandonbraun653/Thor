@@ -15,6 +15,9 @@
 /* STL Includes */
 #include <limits>
 
+/* Aurora Includes */
+#include <Aurora/container>
+
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/can>
@@ -347,6 +350,12 @@ namespace Thor::LLD::CAN
     -------------------------------------------------*/
     RegisterMap *mPeriph;
     size_t mResourceIndex;
+
+    /*-------------------------------------------------
+    Transmit/Receive Buffers
+    -------------------------------------------------*/
+    Aurora::Container::CircularBuffer<Chimera::CAN::BasicFrame> mTXBuffer;
+    Aurora::Container::CircularBuffer<Chimera::CAN::BasicFrame> mRXBuffer;
 
     /*-------------------------------------------------
     ISR signaling and context buffers

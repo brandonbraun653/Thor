@@ -59,7 +59,7 @@ namespace Thor::LLD::CAN
   namespace ConfigMap
   {
     extern LLD_CONST Reg32_t DebugMode[ static_cast<size_t>( Chimera::CAN::DebugMode::NUM_OPTIONS ) ];
-    extern LLD_CONST Reg32_t IdentifierMode[ static_cast<size_t>( Chimera::CAN::IdentifierMode::NUM_OPTIONS ) ];
+    extern LLD_CONST Reg32_t IdentifierMode[ static_cast<size_t>( Chimera::CAN::IdType::NUM_OPTIONS ) ];
     extern LLD_CONST Reg32_t FrameType[ static_cast<size_t>( Chimera::CAN::FrameType::NUM_OPTIONS ) ];
   }
 

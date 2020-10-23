@@ -112,7 +112,7 @@ namespace Thor::LLD::CAN
 
   Mailbox prv_get_filter_bank_fifo( RegisterMap *const periph, const size_t bank_idx );
 
-  Chimera::CAN::FilterMode prv_get_filter_bank_mode( RegisterMap *const periph, const size_t bank_idx );
+  Chimera::CAN::FilterType prv_get_filter_bank_mode( RegisterMap *const periph, const size_t bank_idx );
 
 }    // namespace Thor::LLD::CAN
 

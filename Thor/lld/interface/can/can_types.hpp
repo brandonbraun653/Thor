@@ -140,6 +140,11 @@ namespace Thor::LLD::CAN
       -------------------------------------------------*/
       struct _Receive
       {
+        bool hwFull;          /**< Hardware FIFO is full */
+        bool hwOverrun;       /**< Hardware FIFO overrun */
+        bool frameLostBuffer; /**< A frame was lost because the software buffer was full */
+        uint8_t hwMsgPending; /**< Number of hardware messages that were available */
+        uint8_t swMsgPending; /**< Number of hardware messages pushed to the software buffer */
       } rx[ NUM_CAN_RX_MAILBOX ];
 
       /*-------------------------------------------------
@@ -174,13 +179,15 @@ namespace Thor::LLD::CAN
    */
   struct MessageFilter
   {
-    bool valid;                    /**< Should this filter configuration even be trusted as valid? */
-    bool active;                   /**< Should this filter be active? */
-    uint32_t identifier;           /**< Determines dominant/recessive bit level for the matching identifier */
-    uint32_t mask;                 /**< Optional: If mask mode, determines bits used for id comparison */
-    Mailbox fifoBank;              /**< Which filter bank this message should be placed in */
-    Chimera::CAN::FilterMode mode; /**< Hardware filtering mode */
-    uint8_t assignedFMI;           /**< Read only. Contains the filter's match index once assigned to a hw filter bank */
+    bool valid;                          /**< Should this filter configuration even be trusted as valid? */
+    bool active;                         /**< Should this filter be active? */
+    uint32_t identifier;                 /**< Determines dominant/recessive bit level for the matching identifier */
+    uint32_t mask;                       /**< Optional: If mask mode, determines bits used for id comparison */
+    Mailbox fifoBank;                    /**< Which filter bank this message should be placed in */
+    Chimera::CAN::FilterType filterType; /**< Hardware filtering mode */
+    Chimera::CAN::FrameType frameType;   /**< What kind of framing should the filter use? */
+    Chimera::CAN::IdType idType;         /**< Standard or extended filter ID? */
+    uint8_t hwFMI;                       /**< Read only. Contains the filter's match index once assigned to a hw filter bank */
   };
 
 

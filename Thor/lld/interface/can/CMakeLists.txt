@@ -2,6 +2,7 @@
 # Common
 # ====================================================
 set(LINK_LIBS
+  aurora_inc
   thor_inc          # Thor public headers
   chimera_inc       # Chimera public headers
   Boost::boost      # Boost headers

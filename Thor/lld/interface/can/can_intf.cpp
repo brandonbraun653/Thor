@@ -176,20 +176,20 @@ namespace Thor::LLD::CAN
 
     Taken from RM0394 (Rev 4) Fig. 484
     -------------------------------------------------*/
-    if ( filter->mode == FilterMode::MODE_32BIT_MASK  )
+    if ( filter->filterType == FilterType::MODE_32BIT_MASK  )
     {
       return 8;
     }
-    else if( filter->mode == FilterMode::MODE_32BIT_LIST )
+    else if( filter->filterType == FilterType::MODE_32BIT_LIST )
     {
       // 32-bit filters have priority over 16-bit, so make its "size" just a little larger
       return 5;
     }
-    else if( filter->mode == FilterMode::MODE_16BIT_MASK )
+    else if( filter->filterType == FilterType::MODE_16BIT_MASK )
     {
       return 4;
     }
-    else if( filter->mode == FilterMode::MODE_16BIT_LIST )
+    else if( filter->filterType == FilterType::MODE_16BIT_LIST )
     {
       return 2;
     }

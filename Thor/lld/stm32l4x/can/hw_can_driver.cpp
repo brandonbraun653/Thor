@@ -180,6 +180,15 @@ namespace Thor::LLD::CAN
     }
 
     /*-------------------------------------------------
+    Initialize the TX/RX circular buffers
+    -------------------------------------------------*/
+    if ( !mTXBuffer.init( cfg.HWInit.txBuffer, cfg.HWInit.txElements ) ||
+         !mRXBuffer.init( cfg.HWInit.rxBuffer, cfg.HWInit.rxElements ) )
+    {
+      return Chimera::Status::FAILED_INIT;
+    }
+
+    /*-------------------------------------------------
     Reset the driver registers to default values then
     configure hardware for initialization.
     -------------------------------------------------*/
@@ -298,7 +307,7 @@ namespace Thor::LLD::CAN
       filter bank? Can't mix filter modes willy nilly. A
       new mode requires a new filter bank.
       -------------------------------------------------*/
-      if( bankConfigured && ( filter->mode != prv_get_filter_bank_mode( mPeriph, bankIdx ) ) )
+      if( bankConfigured && ( filter->filterType != prv_get_filter_bank_mode( mPeriph, bankIdx ) ) )
       {
         /*-------------------------------------------------
         FMI is linear, so if the bank is partially assigned
@@ -337,18 +346,18 @@ namespace Thor::LLD::CAN
           fmi = &fifo1FMI_toAssign;
         }
 
-        switch( filter->mode)
+        switch( filter->filterType)
         {
-          case FilterMode::MODE_16BIT_LIST:
+          case FilterType::MODE_16BIT_LIST:
             *fmi = 4;
             break;
 
-          case FilterMode::MODE_16BIT_MASK:
-          case FilterMode::MODE_32BIT_LIST:
+          case FilterType::MODE_16BIT_MASK:
+          case FilterType::MODE_32BIT_LIST:
             *fmi = 2;
             break;
 
-          case FilterMode::MODE_32BIT_MASK:
+          case FilterType::MODE_32BIT_MASK:
             *fmi = 1;
             break;
 
@@ -387,24 +396,24 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Configure Mask/List Mode & Scale
       -------------------------------------------------*/
-      switch ( filter->mode )
+      switch ( filter->filterType )
       {
-        case Chimera::CAN::FilterMode::MODE_16BIT_LIST:
+        case Chimera::CAN::FilterType::MODE_16BIT_LIST:
           mPeriph->FM1R |= ( 1u << bankIdx );     // Mask
           mPeriph->FS1R &= ~( 1u << bankIdx );    // Scale
           break;
 
-        case Chimera::CAN::FilterMode::MODE_16BIT_MASK:
+        case Chimera::CAN::FilterType::MODE_16BIT_MASK:
           mPeriph->FM1R &= ~( 1u << bankIdx );    // Mask
           mPeriph->FS1R &= ~( 1u << bankIdx );    // Scale
           break;
 
-        case Chimera::CAN::FilterMode::MODE_32BIT_LIST:
+        case Chimera::CAN::FilterType::MODE_32BIT_LIST:
           mPeriph->FM1R |= ( 1u << bankIdx );     // Mask
           mPeriph->FS1R |= ( 1u << bankIdx );     // Scale
           break;
 
-        case Chimera::CAN::FilterMode::MODE_32BIT_MASK:
+        case Chimera::CAN::FilterType::MODE_32BIT_MASK:
           mPeriph->FM1R &= ~( 1u << bankIdx );    // Mask
           mPeriph->FS1R |= ( 1u << bankIdx );     // Scale
           break;
@@ -421,14 +430,14 @@ namespace Thor::LLD::CAN
       {
         case Mailbox::RX_MAILBOX_1:
           mPeriph->FFA1R &= ~( 1u << bankIdx );
-          filter->assignedFMI = fifo0FMI_current;
+          filter->hwFMI = fifo0FMI_current;
           fifo0FMI_current++;
           fifo0FMI_toAssign--;
           break;
 
         case Mailbox::RX_MAILBOX_2:
           mPeriph->FFA1R |= ( 1u << bankIdx );
-          filter->assignedFMI = fifo1FMI_current;
+          filter->hwFMI = fifo1FMI_current;
           fifo1FMI_current++;
           fifo1FMI_toAssign--;
           break;
@@ -843,7 +852,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Assign the STD/EXT ID
     -------------------------------------------------*/
-    if ( frame.idMode == IdentifierMode::STANDARD )
+    if ( frame.idMode == IdType::STANDARD )
     {
       box->TIR |= ( frame.id & ID_MASK_11_BIT ) << TIxR_STID_Pos;
       box->TIR &= ~TIxR_IDE;
@@ -1264,7 +1273,104 @@ namespace Thor::LLD::CAN
    */
   void Driver::CAN1_FIFO0_IRQHandler()
   {
-    // give to the fifo new message signal
+    /*-------------------------------------------------
+    Read the FIFO0 status register
+    -------------------------------------------------*/
+    const Reg32_t RF0R = RF0R_ALL::get( mPeriph );
+
+    /*-------------------------------------------------
+    Ensure the ISR type is set correctly
+    -------------------------------------------------*/
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].isrPending |=
+        ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::RECEIVE_FIFO_NEW_MESSAGE ) );
+
+    /*-------------------------------------------------
+    Parse the event
+    -------------------------------------------------*/
+    uint8_t pendingMessages = ( RF0R & RF0R_FMP0 ) >> RF0R_FMP0_Pos;
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ 0 ].hwFull          = static_cast<bool>( RF0R & RF0R_FULL0 );
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ 0 ].hwOverrun       = static_cast<bool>( RF0R & RF0R_FOVR0 );
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ 0 ].hwMsgPending    = pendingMessages;
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ 0 ].frameLostBuffer = false;
+
+    /*-------------------------------------------------
+    Pull out any data
+    -------------------------------------------------*/
+    volatile RxMailbox *box = &mPeriph->sFIFOMailBox[ 0 ];
+
+    for( uint8_t msgNum = 0; msgNum < pendingMessages; msgNum++ )
+    {
+      Chimera::CAN::BasicFrame frame;
+      frame.clear();
+
+      /*-------------------------------------------------
+      Read the data mode
+      -------------------------------------------------*/
+      if( box->RIR & RI0R_RTR )
+      {
+        frame.frameType = Chimera::CAN::FrameType::REMOTE;
+      }
+      else
+      {
+        frame.frameType = Chimera::CAN::FrameType::DATA;
+      }
+
+      /*-------------------------------------------------
+      Read the standard/extended ID mode and pull the ID
+      -------------------------------------------------*/
+      if( box->RIR & RI0R_IDE )
+      {
+        frame.idMode = Chimera::CAN::IdType::EXTENDED;
+        frame.id     = ( ( box->RIR & RI0R_EXID_Msk ) >> RI0R_EXID_Pos );
+      }
+      else
+      {
+        frame.idMode = Chimera::CAN::IdType::STANDARD;
+        frame.id     = ( ( box->RIR & RI0R_STID_Msk ) >> RI0R_STID_Pos );
+      }
+
+      /*-------------------------------------------------
+      Pull the data length and filter match index
+      -------------------------------------------------*/
+      frame.dataLength  = ( ( box->RDTR & RDT0R_DLC_Msk ) >> RDT0R_DLC_Pos );
+      frame.filterIndex = ( ( box->RDTR & RDT0R_FMI_Msk ) >> RDT0R_FMI_Pos );
+
+      /*-------------------------------------------------
+      Grab the entire data block regardless of how much
+      data is actually in the frame.
+      -------------------------------------------------*/
+      frame.data[ 0 ] = ( ( box->RDLR & RDL0R_DATA0_Msk ) >> RDL0R_DATA0_Pos );
+      frame.data[ 1 ] = ( ( box->RDLR & RDL0R_DATA1_Msk ) >> RDL0R_DATA1_Pos );
+      frame.data[ 2 ] = ( ( box->RDLR & RDL0R_DATA2_Msk ) >> RDL0R_DATA2_Pos );
+      frame.data[ 3 ] = ( ( box->RDLR & RDL0R_DATA3_Msk ) >> RDL0R_DATA3_Pos );
+      frame.data[ 4 ] = ( ( box->RDHR & RDH0R_DATA4_Msk ) >> RDH0R_DATA4_Pos );
+      frame.data[ 5 ] = ( ( box->RDHR & RDH0R_DATA5_Msk ) >> RDH0R_DATA5_Pos );
+      frame.data[ 6 ] = ( ( box->RDHR & RDH0R_DATA6_Msk ) >> RDH0R_DATA6_Pos );
+      frame.data[ 7 ] = ( ( box->RDHR & RDH0R_DATA7_Msk ) >> RDH0R_DATA7_Pos );
+
+      /*-------------------------------------------------
+      Push the data into the frame buffer
+      -------------------------------------------------*/
+      if( !mRXBuffer.pushFromISR( frame ) )
+      {
+        mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ 0 ].frameLostBuffer = true;
+      }
+
+      /*-------------------------------------------------
+      Instruct the hardware to release the FIFO message.
+      This bit will also be cleared  by hardware.
+      -------------------------------------------------*/
+      RFOM0::set( mPeriph, RF0R_RFOM0 );
+      while( RFOM0::get( mPeriph ) )
+      {
+        continue;
+      }
+    }
+
+    /*-------------------------------------------------
+    Awaken high priority thread for processing this ISR
+    -------------------------------------------------*/
+    mISREventSignal[ CAN_RX_ISR_SIGNAL_INDEX ].releaseFromISR();
   }
 
   /**
@@ -1275,7 +1381,18 @@ namespace Thor::LLD::CAN
    */
   void Driver::CAN1_FIFO1_IRQHandler()
   {
-    // give to the fifo new message signal
+    /*-------------------------------------------------
+    Ensure the ISR type is set correctly
+    -------------------------------------------------*/
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].isrPending |=
+        ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::RECEIVE_FIFO_NEW_MESSAGE ) );
+
+
+
+    /*-------------------------------------------------
+    Awaken high priority thread for processing this ISR
+    -------------------------------------------------*/
+    mISREventSignal[ CAN_RX_ISR_SIGNAL_INDEX ].releaseFromISR();
   }
 
   /**

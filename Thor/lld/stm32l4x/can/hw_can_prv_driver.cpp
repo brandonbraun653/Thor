@@ -37,6 +37,17 @@
 namespace Thor::LLD::CAN
 {
   /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
+  static constexpr size_t STD_ID_SHIFT = 21;
+  static constexpr size_t STD_ID_MASK  = 0xFFE00000;
+  static constexpr size_t EXT_ID_SHIFT = 3;
+  static constexpr size_t EXT_ID_MASK  = 0XFFFFFFF8;
+
+  static constexpr size_t IDE_BIT = ( 1u<< 3 );   // Identifier extension
+  static constexpr size_t RTR_BIT = ( 1u << 2 );  // Remote transmit request
+
+  /*-------------------------------------------------------------------------------
   Static Function Declaration
   -------------------------------------------------------------------------------*/
   static bool assign16BitListFilter( const MessageFilter *const filter, volatile FilterReg *const bank, const FilterSlot slot );
@@ -207,7 +218,7 @@ namespace Thor::LLD::CAN
 
     /* clang-format off */
     if ( ( frame.dataLength == 0 ) ||
-         ( frame.idMode >= IdentifierMode::NUM_OPTIONS ) ||
+         ( frame.idMode >= IdType::NUM_OPTIONS ) ||
          ( frame.frameType >= FrameType::NUM_OPTIONS ) )
     /* clang-format on */
     {
@@ -242,7 +253,7 @@ namespace Thor::LLD::CAN
     knows. I know this is gross. That's why it's hidden
     in this function.
     -------------------------------------------------*/
-    if ( filter->mode == FilterMode::MODE_16BIT_LIST )
+    if ( filter->filterType == FilterType::MODE_16BIT_LIST )
     {
       constexpr Reg32_t FMSK_EVEN = 0x0000FFFF;
       constexpr Reg32_t FMSK_ODD  = 0xFFFF0000;
@@ -269,8 +280,8 @@ namespace Thor::LLD::CAN
       // else this filter bank is full
 
     }
-    else if( ( filter->mode == FilterMode::MODE_16BIT_MASK ) ||
-             ( filter->mode == FilterMode::MODE_32BIT_LIST ) )
+    else if( ( filter->filterType == FilterType::MODE_16BIT_MASK ) ||
+             ( filter->filterType == FilterType::MODE_32BIT_LIST ) )
     {
       /*-------------------------------------------------
       Only two possible filter types, each 32bit wide.
@@ -287,7 +298,7 @@ namespace Thor::LLD::CAN
       }
       // else this filter bank is full
     }
-    else if ( filter->mode == FilterMode::MODE_32BIT_MASK )
+    else if ( filter->filterType == FilterType::MODE_32BIT_MASK )
     {
       /*-------------------------------------------------
       Single possible filter type here
@@ -310,21 +321,21 @@ namespace Thor::LLD::CAN
   {
     using namespace Chimera::CAN;
 
-    switch ( filter->mode )
+    switch ( filter->filterType )
     {
-      case FilterMode::MODE_16BIT_LIST:
+      case FilterType::MODE_16BIT_LIST:
         return assign16BitListFilter( filter, bank, slot );
         break;
 
-      case FilterMode::MODE_16BIT_MASK:
+      case FilterType::MODE_16BIT_MASK:
         return assign16BitMaskFilter( filter, bank, slot );
         break;
 
-      case FilterMode::MODE_32BIT_LIST:
+      case FilterType::MODE_32BIT_LIST:
         return assign32BitListFilter( filter, bank, slot );
         break;
 
-      case FilterMode::MODE_32BIT_MASK:
+      case FilterType::MODE_32BIT_MASK:
         return assign32BitMaskFilter( filter, bank, slot );
         break;
 
@@ -341,14 +352,14 @@ namespace Thor::LLD::CAN
   }
 
 
-  Chimera::CAN::FilterMode prv_get_filter_bank_mode( RegisterMap *const periph, const size_t bank_idx )
+  Chimera::CAN::FilterType prv_get_filter_bank_mode( RegisterMap *const periph, const size_t bank_idx )
   {
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
     if( !periph || !( bank_idx < NUM_CAN_FILTER_BANKS ) )
     {
-      return Chimera::CAN::FilterMode::UNKNOWN;
+      return Chimera::CAN::FilterType::UNKNOWN;
     }
 
     /*-------------------------------------------------
@@ -356,23 +367,23 @@ namespace Thor::LLD::CAN
     -------------------------------------------------*/
     if( !( periph->FM1R & ( 1u << bank_idx ) ) && !( periph->FS1R & ( 1u << bank_idx ) ) )
     {
-      return Chimera::CAN::FilterMode::MODE_16BIT_MASK;
+      return Chimera::CAN::FilterType::MODE_16BIT_MASK;
     }
     else if( ( periph->FM1R & ( 1u << bank_idx ) ) && !( periph->FS1R & ( 1u << bank_idx ) ) )
     {
-      return Chimera::CAN::FilterMode::MODE_16BIT_LIST;
+      return Chimera::CAN::FilterType::MODE_16BIT_LIST;
     }
     else if( !( periph->FM1R & ( 1u << bank_idx ) ) && ( periph->FS1R & ( 1u << bank_idx ) ) )
     {
-      return Chimera::CAN::FilterMode::MODE_32BIT_MASK;
+      return Chimera::CAN::FilterType::MODE_32BIT_MASK;
     }
     else if( ( periph->FM1R & ( 1u << bank_idx ) ) && ( periph->FS1R & ( 1u << bank_idx ) ) )
     {
-      return Chimera::CAN::FilterMode::MODE_32BIT_LIST;
+      return Chimera::CAN::FilterType::MODE_32BIT_LIST;
     }
     else
     {
-      return Chimera::CAN::FilterMode::UNKNOWN;
+      return Chimera::CAN::FilterType::UNKNOWN;
     }
   }
 
@@ -460,14 +471,44 @@ namespace Thor::LLD::CAN
 
   static bool assign32BitListFilter( const MessageFilter *const filter, volatile FilterReg *const bank, const FilterSlot slot )
   {
+    using namespace Chimera::CAN;
+
+    Reg32_t id = 0;
+
+    /*-------------------------------------------------
+    Build the register values
+    -------------------------------------------------*/
+    switch( filter->idType )
+    {
+      case IdType::STANDARD:
+        id = ( filter->identifier << STD_ID_SHIFT ) & STD_ID_MASK;
+        break;
+
+      case IdType::EXTENDED:
+        id = IDE_BIT | ( filter->identifier << EXT_ID_SHIFT ) & EXT_ID_MASK;
+
+        if ( filter->frameType == FrameType::REMOTE )
+        {
+          id |= RTR_BIT;
+        }
+        break;
+
+      default:
+        return false;
+        break;
+    };
+
+    /*-------------------------------------------------
+    Assign the filter
+    -------------------------------------------------*/
     switch ( slot )
     {
       case FilterSlot::SLOT_0:
-        bank->FR1 = filter->identifier;
+        bank->FR1 = id;
         break;
 
       case FilterSlot::SLOT_1:
-        bank->FR2 = filter->identifier;
+        bank->FR2 = id;
         break;
 
       default:
@@ -481,11 +522,45 @@ namespace Thor::LLD::CAN
 
   static bool assign32BitMaskFilter( const MessageFilter *const filter, volatile FilterReg *const bank, const FilterSlot slot )
   {
+    using namespace Chimera::CAN;
+
+    Reg32_t id = 0;
+    Reg32_t mask = 0;
+
+    /*-------------------------------------------------
+    Build the register values
+    -------------------------------------------------*/
+    switch( filter->idType )
+    {
+      case IdType::STANDARD:
+        id   = ( filter->identifier << STD_ID_SHIFT ) & STD_ID_MASK;
+        mask = ( filter->mask << STD_ID_SHIFT ) & STD_ID_MASK;
+        break;
+
+      case IdType::EXTENDED:
+        id   = IDE_BIT | ( filter->identifier << EXT_ID_SHIFT ) & EXT_ID_MASK;
+        mask = IDE_BIT | ( filter->mask << EXT_ID_SHIFT ) & EXT_ID_MASK;
+
+        if ( filter->frameType == FrameType::REMOTE )
+        {
+          id |= RTR_BIT;
+          mask |= RTR_BIT;
+        }
+        break;
+
+      default:
+        return false;
+        break;
+    };
+
+    /*-------------------------------------------------
+    Assign the filter
+    -------------------------------------------------*/
     switch ( slot )
     {
       case FilterSlot::SLOT_0:
-        bank->FR1 = filter->identifier;
-        bank->FR2 = filter->mask;
+        bank->FR1 = id;
+        bank->FR2 = mask;
         break;
 
       default:

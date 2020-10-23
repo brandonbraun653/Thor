@@ -44,7 +44,7 @@ namespace Thor::LLD::CAN
     };
 
     // Definitions correspond with the CAN_TIxR & CAN_RIxR registers
-    LLD_CONST Reg32_t IdentifierMode[ static_cast<size_t>( Chimera::CAN::IdentifierMode::NUM_OPTIONS ) ] = {
+    LLD_CONST Reg32_t IdentifierMode[ static_cast<size_t>( Chimera::CAN::IdType::NUM_OPTIONS ) ] = {
       0,        // Standard
       TIxR_IDE  // Extended
     };
