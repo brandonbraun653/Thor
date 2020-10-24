@@ -45,8 +45,6 @@ namespace Thor::LLD::CAN
   static constexpr size_t STD_ID16_MASK  = 0xFFE0;
   static constexpr size_t EXT_ID32_SHIFT = 3;
   static constexpr size_t EXT_ID32_MASK  = 0XFFFFFFF8;
-  static constexpr size_t EXT_ID16_SHIFT = 0;
-  static constexpr size_t EXT_ID16_MASK  = 0x0007;
 
   static constexpr size_t EXT_ID32_IDE_BIT = ( 1u << 3 );    // Identifier extension
   static constexpr size_t EXT_ID32_RTR_BIT = ( 1u << 2 );    // Remote transmit request
@@ -492,38 +490,66 @@ namespace Thor::LLD::CAN
   -------------------------------------------------------------------------------*/
   static bool assign16BitListFilter( const MessageFilter *const filter, volatile FilterReg *const bank, const FilterSlot slot )
   {
+    using namespace Chimera::CAN;
     constexpr Reg32_t FMSK_EVEN = 0x0000FFFF;
     constexpr Reg32_t FMSK_ODD  = 0xFFFF0000;
 
     Reg32_t tmp = 0;
+    Reg32_t id = 0;
 
+    /*-------------------------------------------------
+    Assign the IdType tag and fill in the ID data
+    -------------------------------------------------*/
+    if ( filter->idType == IdType::EXTENDED )
+    {
+      /*-------------------------------------------------
+      Extended IDs don't fit into 16 bit wide filters
+      -------------------------------------------------*/
+      return false;
+    }
+    else
+    {
+      id |= ( filter->identifier << STD_ID16_SHIFT ) & STD_ID16_MASK;
+    }
+
+    /*-------------------------------------------------
+    Assign the Remote request tag
+    -------------------------------------------------*/
+    if ( filter->frameType == FrameType::REMOTE )
+    {
+      id |= ID16_RTR_BIT;
+    }
+
+    /*-------------------------------------------------
+    Modify the current slot with the new filter ID
+    -------------------------------------------------*/
     switch ( slot )
     {
       case FilterSlot::SLOT_0:
         tmp = bank->FR1;
         tmp &= ~( FMSK_EVEN );
-        tmp |= ( filter->identifier & FMSK_EVEN ) << 0;
+        tmp |= ( id & FMSK_EVEN ) << 0;
         bank->FR1 = tmp;
         break;
 
       case FilterSlot::SLOT_1:
         tmp = bank->FR1;
         tmp &= ~( FMSK_ODD );
-        tmp |= ( filter->identifier & FMSK_ODD ) << 16;
+        tmp |= ( id & FMSK_ODD ) << 16;
         bank->FR1 = tmp;
         break;
 
       case FilterSlot::SLOT_2:
         tmp = bank->FR2;
         tmp &= ~( FMSK_EVEN );
-        tmp |= ( filter->identifier & FMSK_EVEN ) << 0;
+        tmp |= ( id & FMSK_EVEN ) << 0;
         bank->FR2 = tmp;
         break;
 
       case FilterSlot::SLOT_3:
         tmp = bank->FR2;
         tmp &= ~( FMSK_ODD );
-        tmp |= ( filter->identifier & FMSK_ODD ) << 16;
+        tmp |= ( id & FMSK_ODD ) << 16;
         bank->FR2 = tmp;
         break;
 
@@ -548,11 +574,11 @@ namespace Thor::LLD::CAN
     Reg32_t msk = 0;
 
     /*-------------------------------------------------
-    Assign the FrameType and DataType bits
+    Extended IDs don't fit into 16bit wide filters
     -------------------------------------------------*/
     if ( filter->idType == IdType::EXTENDED )
     {
-      tmp |= ID16_IDE_BIT;
+      return false;
     }
 
     if ( filter->frameType == FrameType::REMOTE )
@@ -560,34 +586,31 @@ namespace Thor::LLD::CAN
       tmp |= ID16_RTR_BIT;
     }
 
+    /*-------------------------------------------------
+    Assemble the ID and Mask based on what identifier
+    type is being used.
+    -------------------------------------------------*/
+    id  = ( ( filter->identifier << STD_ID16_SHIFT ) & STD_ID16_MASK );
+    msk = ( ( filter->mask << STD_ID16_SHIFT ) & STD_ID16_MASK );
+
+    /*-------------------------------------------------
+    Shift the built ID and Mask values to the correct
+    position within the register. This consumes a single
+    32-bit slot, but contains two parts.
+    -------------------------------------------------*/
+    tmp |= ( id & FMSK_LO );
+    tmp |= ( msk << 16 ) & FMSK_HI;
+
+    /*-------------------------------------------------
+    Assign the correct slot with the configured data
+    -------------------------------------------------*/
     switch ( slot )
     {
       case FilterSlot::SLOT_0:
-        if( filter->idType == IdType::EXTENDED)
-        {
-          id = ( ( filter->identifier << EXT_ID16_SHIFT ) & EXT_ID16_MASK );
-        }
-        else
-        {
-          id = ( ( filter->identifier << STD_ID16_SHIFT ) & STD_ID16_MASK );
-        }
-
-        /*-------------------------------------------------
-        Shift the built ID and Mask values to the correct
-        position within the register.
-        -------------------------------------------------*/
-        tmp |= ( id & FMSK_LO );
-        tmp |= ( msk << 16 ) & FMSK_HI;
-
-
-
         bank->FR1 = tmp;
         break;
 
       case FilterSlot::SLOT_1:
-        tmp |= ( filter->identifier & FMSK_LO );
-        tmp |= ( filter->mask << 16 ) & FMSK_HI;
-
         bank->FR2 = tmp;
         break;
 
