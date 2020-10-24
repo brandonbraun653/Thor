@@ -39,13 +39,20 @@ namespace Thor::LLD::CAN
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
-  static constexpr size_t STD_ID_SHIFT = 21;
-  static constexpr size_t STD_ID_MASK  = 0xFFE00000;
-  static constexpr size_t EXT_ID_SHIFT = 3;
-  static constexpr size_t EXT_ID_MASK  = 0XFFFFFFF8;
+  static constexpr size_t STD_ID32_SHIFT = 21;
+  static constexpr size_t STD_ID32_MASK  = 0xFFE00000;
+  static constexpr size_t STD_ID16_SHIFT = 5;
+  static constexpr size_t STD_ID16_MASK  = 0xFFE0;
+  static constexpr size_t EXT_ID32_SHIFT = 3;
+  static constexpr size_t EXT_ID32_MASK  = 0XFFFFFFF8;
+  static constexpr size_t EXT_ID16_SHIFT = 0;
+  static constexpr size_t EXT_ID16_MASK  = 0x0007;
 
-  static constexpr size_t IDE_BIT = ( 1u<< 3 );   // Identifier extension
-  static constexpr size_t RTR_BIT = ( 1u << 2 );  // Remote transmit request
+  static constexpr size_t EXT_ID32_IDE_BIT = ( 1u << 3 );    // Identifier extension
+  static constexpr size_t EXT_ID32_RTR_BIT = ( 1u << 2 );    // Remote transmit request
+
+  static constexpr size_t ID16_IDE_BIT = ( 1u << 4 );
+  static constexpr size_t ID16_RTR_BIT = ( 1u << 5 );
 
   /*-------------------------------------------------------------------------------
   Static Function Declaration
@@ -217,8 +224,7 @@ namespace Thor::LLD::CAN
     using namespace Chimera::CAN;
 
     /* clang-format off */
-    if ( ( frame.dataLength == 0 ) ||
-         ( frame.idMode >= IdType::NUM_OPTIONS ) ||
+    if ( ( frame.idMode >= IdType::NUM_OPTIONS ) ||
          ( frame.frameType >= FrameType::NUM_OPTIONS ) )
     /* clang-format on */
     {
@@ -278,10 +284,8 @@ namespace Thor::LLD::CAN
         slot = FilterSlot::SLOT_3;
       }
       // else this filter bank is full
-
     }
-    else if( ( filter->filterType == FilterType::MODE_16BIT_MASK ) ||
-             ( filter->filterType == FilterType::MODE_32BIT_LIST ) )
+    else if ( ( filter->filterType == FilterType::MODE_16BIT_MASK ) || ( filter->filterType == FilterType::MODE_32BIT_LIST ) )
     {
       /*-------------------------------------------------
       Only two possible filter types, each 32bit wide.
@@ -357,7 +361,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
-    if( !periph || !( bank_idx < NUM_CAN_FILTER_BANKS ) )
+    if ( !periph || !( bank_idx < NUM_CAN_FILTER_BANKS ) )
     {
       return Chimera::CAN::FilterType::UNKNOWN;
     }
@@ -365,25 +369,120 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Categorize the current filter mode/scale config
     -------------------------------------------------*/
-    if( !( periph->FM1R & ( 1u << bank_idx ) ) && !( periph->FS1R & ( 1u << bank_idx ) ) )
+    if ( !( periph->FM1R & ( 1u << bank_idx ) ) && !( periph->FS1R & ( 1u << bank_idx ) ) )
     {
       return Chimera::CAN::FilterType::MODE_16BIT_MASK;
     }
-    else if( ( periph->FM1R & ( 1u << bank_idx ) ) && !( periph->FS1R & ( 1u << bank_idx ) ) )
+    else if ( ( periph->FM1R & ( 1u << bank_idx ) ) && !( periph->FS1R & ( 1u << bank_idx ) ) )
     {
       return Chimera::CAN::FilterType::MODE_16BIT_LIST;
     }
-    else if( !( periph->FM1R & ( 1u << bank_idx ) ) && ( periph->FS1R & ( 1u << bank_idx ) ) )
+    else if ( !( periph->FM1R & ( 1u << bank_idx ) ) && ( periph->FS1R & ( 1u << bank_idx ) ) )
     {
       return Chimera::CAN::FilterType::MODE_32BIT_MASK;
     }
-    else if( ( periph->FM1R & ( 1u << bank_idx ) ) && ( periph->FS1R & ( 1u << bank_idx ) ) )
+    else if ( ( periph->FM1R & ( 1u << bank_idx ) ) && ( periph->FS1R & ( 1u << bank_idx ) ) )
     {
       return Chimera::CAN::FilterType::MODE_32BIT_LIST;
     }
     else
     {
       return Chimera::CAN::FilterType::UNKNOWN;
+    }
+  }
+
+
+  void prv_assign_frame_to_mailbox( volatile TxMailbox *const box, const Chimera::CAN::BasicFrame &frame )
+  {
+    using namespace Chimera::CAN;
+
+    /*-------------------------------------------------
+      Reset the mailbox
+      -------------------------------------------------*/
+    box->TIR  = 0;
+    box->TDHR = 0;
+    box->TDLR = 0;
+    box->TDTR = 0;
+
+    /*-------------------------------------------------
+    Assign the STD/EXT ID
+    -------------------------------------------------*/
+    if ( frame.idMode == IdType::STANDARD )
+    {
+      box->TIR |= ( frame.id & ID_MASK_11_BIT ) << TIxR_STID_Pos;
+      box->TIR &= ~TIxR_IDE;
+    }
+    else    // Extended
+    {
+      box->TIR |= ( ( frame.id & ID_MASK_29_BIT ) << TIxR_EXID_Pos );
+      box->TIR |= TIxR_IDE;
+    }
+
+    /*-------------------------------------------------
+    Assign the remote transmition type
+    -------------------------------------------------*/
+    if ( frame.frameType == FrameType::DATA )
+    {
+      box->TIR &= ~TIxR_RTR;
+    }
+    else    // Remote frame
+    {
+      box->TIR |= TIxR_RTR;
+    }
+
+    /*-------------------------------------------------
+    Assign byte length of the transfer
+    -------------------------------------------------*/
+    box->TDTR |= ( ( frame.dataLength & TDT0R_DLC_Msk ) << TDT0R_DLC_Pos );
+
+    /*-------------------------------------------------
+    Assign the data payload
+    -------------------------------------------------*/
+    box->TDLR |= ( ( frame.data[ 0 ] & 0xFF ) << TDL0R_DATA0_Pos );
+    box->TDLR |= ( ( frame.data[ 1 ] & 0xFF ) << TDL0R_DATA1_Pos );
+    box->TDLR |= ( ( frame.data[ 2 ] & 0xFF ) << TDL0R_DATA2_Pos );
+    box->TDLR |= ( ( frame.data[ 3 ] & 0xFF ) << TDL0R_DATA3_Pos );
+    box->TDHR |= ( ( frame.data[ 4 ] & 0xFF ) << TDH0R_DATA4_Pos );
+    box->TDHR |= ( ( frame.data[ 5 ] & 0xFF ) << TDH0R_DATA5_Pos );
+    box->TDHR |= ( ( frame.data[ 6 ] & 0xFF ) << TDH0R_DATA6_Pos );
+    box->TDHR |= ( ( frame.data[ 7 ] & 0xFF ) << TDH0R_DATA7_Pos );
+
+    /*-------------------------------------------------
+    Finally, move the mailbox to a "ready for tx" state
+    -------------------------------------------------*/
+    box->TIR |= TIxR_TXRQ;
+  }
+
+
+  volatile TxMailbox *prv_get_free_tx_mailbox( RegisterMap *const periph )
+  {
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    if( !periph )
+    {
+      return nullptr;
+    }
+
+    /*-------------------------------------------------
+    Look at all the mailboxes and return the first one
+    which is free.
+    -------------------------------------------------*/
+    if ( TME0::get( periph ) )
+    {
+      return &periph->sTxMailBox[ RIDX_TX_MAILBOX_1 ];
+    }
+    else if ( TME1::get( periph ) )
+    {
+      return &periph->sTxMailBox[ RIDX_TX_MAILBOX_2 ];
+    }
+    else if ( TME2::get( periph ) )
+    {
+      return &periph->sTxMailBox[ RIDX_TX_MAILBOX_3 ];
+    }
+    else
+    {
+      return nullptr;
     }
   }
 
@@ -439,16 +538,48 @@ namespace Thor::LLD::CAN
 
   static bool assign16BitMaskFilter( const MessageFilter *const filter, volatile FilterReg *const bank, const FilterSlot slot )
   {
+    using namespace Chimera::CAN;
+
     constexpr Reg32_t FMSK_LO = 0x0000FFFF;
     constexpr Reg32_t FMSK_HI = 0xFFFF0000;
 
     Reg32_t tmp = 0;
+    Reg32_t id = 0;
+    Reg32_t msk = 0;
+
+    /*-------------------------------------------------
+    Assign the FrameType and DataType bits
+    -------------------------------------------------*/
+    if ( filter->idType == IdType::EXTENDED )
+    {
+      tmp |= ID16_IDE_BIT;
+    }
+
+    if ( filter->frameType == FrameType::REMOTE )
+    {
+      tmp |= ID16_RTR_BIT;
+    }
 
     switch ( slot )
     {
       case FilterSlot::SLOT_0:
-        tmp |= ( filter->identifier & FMSK_LO );
-        tmp |= ( filter->mask << 16 ) & FMSK_HI;
+        if( filter->idType == IdType::EXTENDED)
+        {
+          id = ( ( filter->identifier << EXT_ID16_SHIFT ) & EXT_ID16_MASK );
+        }
+        else
+        {
+          id = ( ( filter->identifier << STD_ID16_SHIFT ) & STD_ID16_MASK );
+        }
+
+        /*-------------------------------------------------
+        Shift the built ID and Mask values to the correct
+        position within the register.
+        -------------------------------------------------*/
+        tmp |= ( id & FMSK_LO );
+        tmp |= ( msk << 16 ) & FMSK_HI;
+
+
 
         bank->FR1 = tmp;
         break;
@@ -478,18 +609,18 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Build the register values
     -------------------------------------------------*/
-    switch( filter->idType )
+    switch ( filter->idType )
     {
       case IdType::STANDARD:
-        id = ( filter->identifier << STD_ID_SHIFT ) & STD_ID_MASK;
+        id = ( filter->identifier << STD_ID32_SHIFT ) & STD_ID32_MASK;
         break;
 
       case IdType::EXTENDED:
-        id = IDE_BIT | ( filter->identifier << EXT_ID_SHIFT ) & EXT_ID_MASK;
+        id = EXT_ID32_IDE_BIT | ( filter->identifier << EXT_ID32_SHIFT ) & EXT_ID32_MASK;
 
         if ( filter->frameType == FrameType::REMOTE )
         {
-          id |= RTR_BIT;
+          id |= EXT_ID32_RTR_BIT;
         }
         break;
 
@@ -524,27 +655,27 @@ namespace Thor::LLD::CAN
   {
     using namespace Chimera::CAN;
 
-    Reg32_t id = 0;
+    Reg32_t id   = 0;
     Reg32_t mask = 0;
 
     /*-------------------------------------------------
     Build the register values
     -------------------------------------------------*/
-    switch( filter->idType )
+    switch ( filter->idType )
     {
       case IdType::STANDARD:
-        id   = ( filter->identifier << STD_ID_SHIFT ) & STD_ID_MASK;
-        mask = ( filter->mask << STD_ID_SHIFT ) & STD_ID_MASK;
+        id   = ( filter->identifier << STD_ID32_SHIFT ) & STD_ID32_MASK;
+        mask = ( filter->mask << STD_ID32_SHIFT ) & STD_ID32_MASK;
         break;
 
       case IdType::EXTENDED:
-        id   = IDE_BIT | ( filter->identifier << EXT_ID_SHIFT ) & EXT_ID_MASK;
-        mask = IDE_BIT | ( filter->mask << EXT_ID_SHIFT ) & EXT_ID_MASK;
+        id   = EXT_ID32_IDE_BIT | ( filter->identifier << EXT_ID32_SHIFT ) & EXT_ID32_MASK;
+        mask = EXT_ID32_IDE_BIT | ( filter->mask << EXT_ID32_SHIFT ) & EXT_ID32_MASK;
 
         if ( filter->frameType == FrameType::REMOTE )
         {
-          id |= RTR_BIT;
-          mask |= RTR_BIT;
+          id |= EXT_ID32_RTR_BIT;
+          mask |= EXT_ID32_RTR_BIT;
         }
         break;
 

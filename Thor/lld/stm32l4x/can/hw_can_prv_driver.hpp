@@ -110,9 +110,40 @@ namespace Thor::LLD::CAN
    */
   bool prv_assign_filter( const MessageFilter *const filter, volatile FilterReg *const bank, const FilterSlot slot );
 
+  /**
+   *  Gets the FIFO identifier that has been assigned to a given filter bank
+   *
+   *  @param[in]  periph      Memory mapped struct to the peripheral
+   *  @param[in]  bank_idx    Which filter bank to look at
+   *  @return Mailbox
+   */
   Mailbox prv_get_filter_bank_fifo( RegisterMap *const periph, const size_t bank_idx );
 
+  /**
+   *  Gets the filtering mode that has been assigned to a given filter bank
+   *
+   *  @param[in]  periph      Memory mapped struct to the peripheral
+   *  @param[in]  bank_idx    Which filter bank to look at
+   *  @return Chimera::CAN::FilterType
+   */
   Chimera::CAN::FilterType prv_get_filter_bank_mode( RegisterMap *const periph, const size_t bank_idx );
+
+  /**
+   *  Writes packed frame data into the appropriate TX mailbox registes
+   *
+   *  @param[in]  box         Hardware mailbox to write into
+   *  @param[in]  frame       The packed frame data
+   *  @return void
+   */
+  void prv_assign_frame_to_mailbox( volatile TxMailbox *const box, const Chimera::CAN::BasicFrame &frame );
+
+  /**
+   *  Gets the next available TX mailbox that can hold a message
+   *
+   *  @param[in]  periph      Memory mapped struct to the peripheral
+   *  @return volatile TxMailbox *
+   */
+  volatile TxMailbox *prv_get_free_tx_mailbox( RegisterMap *const periph );
 
 }    // namespace Thor::LLD::CAN
 

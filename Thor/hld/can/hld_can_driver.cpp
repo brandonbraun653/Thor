@@ -348,19 +348,19 @@ namespace Thor::CAN
     Post directly to hardware mailbox if possible but
     enqueue the message if not.
     -------------------------------------------------*/
-    if( lld->txMailboxAvailable( box ) )
-    {
-      return lld->send( box, frame );
-    }
-    else
-    {
-      mTxQueue.lock();
-      if( !mTxQueue.push( &frame, TIMEOUT_DONT_WAIT ) )
-      {
-        enq = Chimera::Status::FULL;
-      }
-      mTxQueue.unlock();
-    }
+    // if( lld->txMailboxAvailable( box ) )
+    // {
+    //   return lld->send( box, frame );
+    // }
+    // else
+    // {
+    //   mTxQueue.lock();
+    //   if( !mTxQueue.push( &frame, TIMEOUT_DONT_WAIT ) )
+    //   {
+    //     enq = Chimera::Status::FULL;
+    //   }
+    //   mTxQueue.unlock();
+    // }
 
     return enq;
   }
@@ -481,38 +481,38 @@ namespace Thor::CAN
     BasicFrame tmpFrame;
     tmpFrame.clear();
 
-    while( lld->txMailboxAvailable( box ) )
-    {
-      mTxQueue.lock();
+    // while( lld->txMailboxAvailable( box ) )
+    // {
+    //   mTxQueue.lock();
 
-      if( mTxQueue.available() )
-      {
-        /*-------------------------------------------------
-        Pull out the next message
-        -------------------------------------------------*/
-        dequeueResult = mTxQueue.pop( &tmpFrame, TIMEOUT_DONT_WAIT );
-        mTxQueue.unlock();
+    //   if( mTxQueue.available() )
+    //   {
+    //     /*-------------------------------------------------
+    //     Pull out the next message
+    //     -------------------------------------------------*/
+    //     dequeueResult = mTxQueue.pop( &tmpFrame, TIMEOUT_DONT_WAIT );
+    //     mTxQueue.unlock();
 
-        /*-------------------------------------------------
-        Write the message to the hw mailbox
-        -------------------------------------------------*/
-        transmitResult = lld->send( box, tmpFrame );
+    //     /*-------------------------------------------------
+    //     Write the message to the hw mailbox
+    //     -------------------------------------------------*/
+    //     transmitResult = lld->send( box, tmpFrame );
 
-        /*-------------------------------------------------
-        Handle any errors
-        -------------------------------------------------*/
-        if( !dequeueResult || ( transmitResult != Chimera::Status::OK ) )
-        {
-          Chimera::insert_debug_breakpoint();
-          break;
-        }
-      }
-      else
-      {
-        mTxQueue.unlock();
-        break;
-      }
-    }
+    //     /*-------------------------------------------------
+    //     Handle any errors
+    //     -------------------------------------------------*/
+    //     if( !dequeueResult || ( transmitResult != Chimera::Status::OK ) )
+    //     {
+    //       Chimera::insert_debug_breakpoint();
+    //       break;
+    //     }
+    //   }
+    //   else
+    //   {
+    //     mTxQueue.unlock();
+    //     break;
+    //   }
+    // }
 
     /*-------------------------------------------------
     Invoke any user callback
@@ -549,27 +549,27 @@ namespace Thor::CAN
     BasicFrame tmpFrame;
     tmpFrame.clear();
 
-    while( lld->rxMailboxAvailable( box ) )
-    {
-      receiveResult = lld->receive( box, tmpFrame );
+    // while( lld->rxMailboxAvailable( box ) )
+    // {
+    //   receiveResult = lld->receive( box, tmpFrame );
 
-      /*-------------------------------------------------
-      Update the queue with the new frame
-      -------------------------------------------------*/
-      mRxQueue.lock();
-      enqueueResult = mRxQueue.push( &tmpFrame, TIMEOUT_DONT_WAIT );
-      mRxQueue.unlock();
+    //   /*-------------------------------------------------
+    //   Update the queue with the new frame
+    //   -------------------------------------------------*/
+    //   mRxQueue.lock();
+    //   enqueueResult = mRxQueue.push( &tmpFrame, TIMEOUT_DONT_WAIT );
+    //   mRxQueue.unlock();
 
-      /*-------------------------------------------------
-      If we can't enqueue or the RX failed somehow, the
-      frame was just lost.
-      -------------------------------------------------*/
-      if( !enqueueResult || ( receiveResult != Chimera::Status::OK ) )
-      {
-        Chimera::insert_debug_breakpoint();
-        break;
-      }
-    }
+    //   /*-------------------------------------------------
+    //   If we can't enqueue or the RX failed somehow, the
+    //   frame was just lost.
+    //   -------------------------------------------------*/
+    //   if( !enqueueResult || ( receiveResult != Chimera::Status::OK ) )
+    //   {
+    //     Chimera::insert_debug_breakpoint();
+    //     break;
+    //   }
+    // }
 
     /*-------------------------------------------------
     Invoke user call back on the RX event

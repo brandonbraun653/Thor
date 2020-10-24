@@ -3,7 +3,12 @@
  *    hw_can_driver.cpp
  *
  *  Description:
- *    Implements the LLD interface to the STM32L4 series CAN hardware.
+ *    Implements the LLD interface to the STM32L4 series CAN hardware. The CAN
+ *    bus driver is a bit unique compared to other communication peripherals in
+ *    the STM32L4 drivers because it handles the communication buffers. Typically
+ *    this is done by the HLD, but due to the networked nature of CAN, a high
+ *    volume of traffic could be present. Responsiveness is important, so data
+ *    transfers are handled in the ISRs.
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -718,63 +723,10 @@ namespace Thor::LLD::CAN
   /*-------------------------------------------------------------------------------
   Transmit & Receive Operations
   -------------------------------------------------------------------------------*/
-  bool Driver::txMailboxAvailable( Mailbox &which )
-  {
-    /*-------------------------------------------------
-    Return the first mailbox that is not empty
-    -------------------------------------------------*/
-    if ( TME0::get( mPeriph ) )
-    {
-      which = Mailbox::TX_MAILBOX_1;
-      return true;
-    }
-    else if ( TME1::get( mPeriph ) )
-    {
-      which = Mailbox::TX_MAILBOX_2;
-      return true;
-    }
-    else if ( TME2::get( mPeriph ) )
-    {
-      which = Mailbox::TX_MAILBOX_3;
-      return true;
-    }
-    else
-    {
-      which = Mailbox::UNKNOWN;
-      return false;
-    }
-  }
-
-
-  bool Driver::rxMailboxAvailable( Mailbox &which )
-  {
-    /*-------------------------------------------------
-    Return the first FIFO that has a pending message
-    -------------------------------------------------*/
-    size_t fifo0PendingMessages = FMP0::get( mPeriph ) >> RF0R_FMP0_Pos;
-    size_t fifo1PendingMessages = FMP1::get( mPeriph ) >> RF1R_FMP1_Pos;
-
-    if ( fifo0PendingMessages )
-    {
-      which = Mailbox::RX_MAILBOX_1;
-      return true;
-    }
-    else if ( fifo1PendingMessages )
-    {
-      which = Mailbox::RX_MAILBOX_2;
-      return true;
-    }
-    else
-    {
-      which = Mailbox::UNKNOWN;
-      return false;
-    }
-  }
-
-
-  Chimera::Status_t Driver::send( const Mailbox which, const Chimera::CAN::BasicFrame &frame )
+  Chimera::Status_t Driver::send( const Chimera::CAN::BasicFrame &frame )
   {
     using namespace Chimera::CAN;
+    auto result = Chimera::Status::OK;
 
     /*-------------------------------------------------
     Can we even send this type of frame?
@@ -799,239 +751,127 @@ namespace Thor::LLD::CAN
     enterCriticalSection();
 
     /*-------------------------------------------------
-    Validate that the mailbox is actually free
+    None free? Queue it up. CAN ISRs are disabled in
+    this section and threading protection should be
+    performed by the HLD layer. Use the non-mutex call
+    to help speed things up just a bit.
     -------------------------------------------------*/
-    volatile TxMailbox *box = nullptr;
+    volatile TxMailbox *box = prv_get_free_tx_mailbox( mPeriph );
 
-    switch ( which )
+    if( !box && !mTXBuffer.pushFromISR( frame ) )
     {
-      case Mailbox::TX_MAILBOX_1:
-        if ( !TME0::get( mPeriph ) )
-        {
-          exitCriticalSection();
-          return Chimera::Status::NOT_READY;
-        }
-
-        box = &mPeriph->sTxMailBox[ RIDX_TX_MAILBOX_1 ];
-        break;
-
-      case Mailbox::TX_MAILBOX_2:
-        if ( !TME1::get( mPeriph ) )
-        {
-          exitCriticalSection();
-          return Chimera::Status::NOT_READY;
-        }
-
-        box = &mPeriph->sTxMailBox[ RIDX_TX_MAILBOX_2 ];
-        break;
-
-      case Mailbox::TX_MAILBOX_3:
-        if ( !TME2::get( mPeriph ) )
-        {
-          exitCriticalSection();
-          return Chimera::Status::NOT_READY;
-        }
-
-        box = &mPeriph->sTxMailBox[ RIDX_TX_MAILBOX_3 ];
-        break;
-
-      default:
-        exitCriticalSection();
-        return Chimera::Status::INVAL_FUNC_PARAM;
-        break;
-    };
-
-    /*-------------------------------------------------
-    Reset the mailbox
-    -------------------------------------------------*/
-    box->TIR  = 0;
-    box->TDHR = 0;
-    box->TDLR = 0;
-    box->TDTR = 0;
-
-    /*-------------------------------------------------
-    Assign the STD/EXT ID
-    -------------------------------------------------*/
-    if ( frame.idMode == IdType::STANDARD )
-    {
-      box->TIR |= ( frame.id & ID_MASK_11_BIT ) << TIxR_STID_Pos;
-      box->TIR &= ~TIxR_IDE;
+      result = Chimera::Status::FULL;
     }
-    else    // Extended
+    else if( box )
     {
-      box->TIR |= ( ( frame.id & ID_MASK_29_BIT ) << TIxR_EXID_Pos );
-      box->TIR |= TIxR_IDE;
+      prv_assign_frame_to_mailbox( box, frame );
     }
-
-    /*-------------------------------------------------
-    Assign the remote transmition type
-    -------------------------------------------------*/
-    if ( frame.frameType == FrameType::DATA )
-    {
-      box->TIR &= ~TIxR_RTR;
-    }
-    else    // Remote frame
-    {
-      box->TIR |= TIxR_RTR;
-    }
-
-    /*-------------------------------------------------
-    Assign byte length of the transfer
-    -------------------------------------------------*/
-    box->TDTR |= ( ( frame.dataLength & TDT0R_DLC_Msk ) << TDT0R_DLC_Pos );
-
-    /*-------------------------------------------------
-    Assign the data payload
-    -------------------------------------------------*/
-    box->TDLR |= ( ( frame.data[ 0 ] & 0xFF ) << TDL0R_DATA0_Pos );
-    box->TDLR |= ( ( frame.data[ 1 ] & 0xFF ) << TDL0R_DATA1_Pos );
-    box->TDLR |= ( ( frame.data[ 2 ] & 0xFF ) << TDL0R_DATA2_Pos );
-    box->TDLR |= ( ( frame.data[ 3 ] & 0xFF ) << TDL0R_DATA3_Pos );
-    box->TDHR |= ( ( frame.data[ 4 ] & 0xFF ) << TDH0R_DATA4_Pos );
-    box->TDHR |= ( ( frame.data[ 5 ] & 0xFF ) << TDH0R_DATA5_Pos );
-    box->TDHR |= ( ( frame.data[ 6 ] & 0xFF ) << TDH0R_DATA6_Pos );
-    box->TDHR |= ( ( frame.data[ 7 ] & 0xFF ) << TDH0R_DATA7_Pos );
-
-    /*-------------------------------------------------
-    Finally, move the mailbox to a "ready for tx" state
-    -------------------------------------------------*/
-    box->TIR |= TIxR_TXRQ;
 
     /*-------------------------------------------------
     Exit the critical section and return success.
     -------------------------------------------------*/
     exitCriticalSection();
+    return result;
+  }
+
+
+  Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame )
+  {
+    /*-------------------------------------------------
+    Pull out the latest from the RX buffer. Will be an
+    default constructed frame if the buffer is empty.
+    -------------------------------------------------*/
+    frame = mRXBuffer.pop();
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t Driver::receive( const Mailbox which, Chimera::CAN::BasicFrame &frame )
+  /*-------------------------------------------------------------------------------
+  Control
+  -------------------------------------------------------------------------------*/
+  void Driver::flushTX()
   {
-    using namespace Chimera::CAN;
+    /*-------------------------------------------------
+    Reset the circular buffer
+    -------------------------------------------------*/
+    mTXBuffer.reset();
 
     /*-------------------------------------------------
-    Enter a critical section to guarantee the mailbox
-    will only be modified by this function.
+    Reset the hardware mailboxes
     -------------------------------------------------*/
     enterCriticalSection();
-
-    /*-------------------------------------------------
-    Ensure the FIFO actually has data for us
-    -------------------------------------------------*/
-    volatile RxMailbox *box = nullptr;
-
-    switch ( which )
     {
-      case Mailbox::RX_MAILBOX_1:
-        if ( !FMP0::get( mPeriph ) )
-        {
-          exitCriticalSection();
-          return Chimera::Status::NOT_READY;
-        }
+      /*-------------------------------------------------
+      Clear mailbox 0
+      -------------------------------------------------*/
+      ABRQ0::set( mPeriph, TSR_ABRQ0 );
+      while ( ABRQ0::get( mPeriph ) && !TME0::get( mPeriph ) )
+      {
+        continue;
+      }
 
-        box = &mPeriph->sFIFOMailBox[ RIDX_RX_MAILBOX_1 ];
-        break;
+      /*-------------------------------------------------
+      Clear mailbox 1
+      -------------------------------------------------*/
+      ABRQ1::set( mPeriph, TSR_ABRQ1 );
+      while ( ABRQ1::get( mPeriph ) && !TME1::get( mPeriph ) )
+      {
+        continue;
+      }
 
-      case Mailbox::RX_MAILBOX_2:
-        if ( !FMP1::get( mPeriph ) )
-        {
-          exitCriticalSection();
-          return Chimera::Status::NOT_READY;
-        }
-
-        box = &mPeriph->sFIFOMailBox[ RIDX_RX_MAILBOX_2 ];
-        break;
-
-      default:
-        exitCriticalSection();
-        frame.clear();
-        return Chimera::Status::NOT_AVAILABLE;
-        break;
+      /*-------------------------------------------------
+      Clear mailbox 2
+      -------------------------------------------------*/
+      ABRQ2::set( mPeriph, TSR_ABRQ2 );
+      while ( ABRQ2::get( mPeriph ) && !TME2::get( mPeriph ) )
+      {
+        continue;
+      }
     }
+    exitCriticalSection();
+  }
+
+
+  void Driver::flushRX()
+  {
+    /*-------------------------------------------------
+    Reset the circular buffer
+    -------------------------------------------------*/
+    mRXBuffer.reset();
 
     /*-------------------------------------------------
-    Makes sure there isn't strange data in the frame
+    Reset the hardware FIFOs
     -------------------------------------------------*/
-    frame.clear();
-
-    /*-------------------------------------------------
-    Read out the STD/EXT ID
-    -------------------------------------------------*/
-    if ( !( box->RIR & RI0R_IDE ) )
+    enterCriticalSection();
     {
-      frame.id = ( ( box->RIR & RI0R_STID_Msk ) >> RI0R_STID_Pos );
-    }
-    else    // Extended
-    {
-      frame.id = ( ( box->RIR & RI0R_EXID_Msk ) >> RI0R_EXID_Pos );
-    }
-
-    /*-------------------------------------------------
-    Read out the frame type
-    -------------------------------------------------*/
-    if ( !( box->RIR & RI0R_RTR ) )
-    {
-      frame.frameType = FrameType::DATA;
-    }
-    else    // Remote
-    {
-      frame.frameType = FrameType::REMOTE;
-    }
-
-    /*-------------------------------------------------
-    Read out the filter match idx and payload length
-    -------------------------------------------------*/
-    frame.filterIndex = ( ( box->RDTR & RDT0R_FMI_Msk ) >> RDT0R_FMI_Pos );
-    frame.dataLength  = ( ( box->RDTR & RDT0R_DLC_Msk ) >> RDT0R_DLC_Pos );
-
-    /*-------------------------------------------------
-    Read out the payload
-    -------------------------------------------------*/
-    const Reg32_t dataLo = box->RDLR;
-    const Reg32_t dataHi = box->RDHR;
-
-    frame.data[ 0 ] = ( ( dataLo & RDL0R_DATA0_Msk ) >> RDL0R_DATA0_Pos );
-    frame.data[ 1 ] = ( ( dataLo & RDL0R_DATA1_Msk ) >> RDL0R_DATA1_Pos );
-    frame.data[ 2 ] = ( ( dataLo & RDL0R_DATA2_Msk ) >> RDL0R_DATA2_Pos );
-    frame.data[ 3 ] = ( ( dataLo & RDL0R_DATA3_Msk ) >> RDL0R_DATA3_Pos );
-    frame.data[ 4 ] = ( ( dataHi & RDH0R_DATA4_Msk ) >> RDH0R_DATA4_Pos );
-    frame.data[ 5 ] = ( ( dataHi & RDH0R_DATA5_Msk ) >> RDH0R_DATA5_Pos );
-    frame.data[ 6 ] = ( ( dataHi & RDH0R_DATA6_Msk ) >> RDH0R_DATA6_Pos );
-    frame.data[ 7 ] = ( ( dataHi & RDH0R_DATA7_Msk ) >> RDH0R_DATA7_Pos );
-
-    /*-------------------------------------------------
-    Let the FIFO know we've read the message so it can
-    load in the next one if it exists. Don't leave
-    until HW acks the release by clearing the bit.
-    -------------------------------------------------*/
-    switch ( which )
-    {
-      case Mailbox::RX_MAILBOX_1:
+      /*-------------------------------------------------
+      Flush FIFO0 of any pending messages
+      -------------------------------------------------*/
+      while ( FMP0::get( mPeriph ) )
+      {
+        // Release the current message
         RFOM0::set( mPeriph, RF0R_RFOM0 );
+
+        // Wait for hardware to clear the flag. This is usually a single cycle.
         while ( RFOM0::get( mPeriph ) )
         {
-          continue;
+          asm( "nop" );
         }
-        break;
+      }
 
-      case Mailbox::RX_MAILBOX_2:
+      /*-------------------------------------------------
+      Flush FIFO1 of any pending messages
+      -------------------------------------------------*/
+      while ( FMP1::get( mPeriph ) )
+      {
         RFOM1::set( mPeriph, RF1R_RFOM1 );
         while ( RFOM1::get( mPeriph ) )
         {
-          continue;
+          asm( "nop" );
         }
-        break;
-
-      default:
-        // Do nothing. This cannot get hit.
-        break;
+      }
     }
-
-    /*-------------------------------------------------
-    Exit the critical section and return success
-    -------------------------------------------------*/
     exitCriticalSection();
-    return Chimera::Status::OK;
   }
 
 
@@ -1203,6 +1043,9 @@ namespace Thor::LLD::CAN
   /**
    *  This ISR handles events generated by:
    *    - Transmit mailbox 0/1/2 is empty
+   *
+   *  If any messages are pending in the software transmit queue, it will also
+   *  attempt to fill the hardware tx mailboxes.
    */
   void Driver::CAN1_TX_IRQHandler()
   {
@@ -1260,19 +1103,44 @@ namespace Thor::LLD::CAN
     }
 
     /*-------------------------------------------------
+    Pull data from the transmit buffer and assign it
+    to any free mailboxes.
+    -------------------------------------------------*/
+    while( !mTXBuffer.emptyFromISR() )
+    {
+      volatile TxMailbox *box = prv_get_free_tx_mailbox( mPeriph );
+
+      if( box )
+      {
+        prv_assign_frame_to_mailbox( box, mTXBuffer.popFromISR() );
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    /*-------------------------------------------------
     Awaken high priority thread for processing this ISR
     -------------------------------------------------*/
     mISREventSignal[ CAN_TX_ISR_SIGNAL_INDEX ].releaseFromISR();
   }
+
 
   /**
    *  This ISR handles events generated by:
    *    - Reception of a new message
    *    - FIFO0 is full
    *    - FIFO0 has overrun
+   *
+   *  If any new messages have arrived, will try to place them in the software
+   *  receive queue. Otherwise, it will notify that a packet has been lost.
    */
   void Driver::CAN1_FIFO0_IRQHandler()
   {
+    using namespace Chimera::CAN;
+    constexpr size_t mailboxIdx = 0;
+
     /*-------------------------------------------------
     Read the FIFO0 status register
     -------------------------------------------------*/
@@ -1282,31 +1150,55 @@ namespace Thor::LLD::CAN
     Ensure the ISR type is set correctly
     -------------------------------------------------*/
     mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].isrPending |=
-        ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::RECEIVE_FIFO_NEW_MESSAGE ) );
+        ( 1u << static_cast<size_t>( InterruptType::RECEIVE_FIFO_NEW_MESSAGE ) );
 
     /*-------------------------------------------------
-    Parse the event
+    Parse the FIFO full flag
     -------------------------------------------------*/
-    uint8_t pendingMessages = ( RF0R & RF0R_FMP0 ) >> RF0R_FMP0_Pos;
-    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ 0 ].hwFull          = static_cast<bool>( RF0R & RF0R_FULL0 );
-    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ 0 ].hwOverrun       = static_cast<bool>( RF0R & RF0R_FOVR0 );
-    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ 0 ].hwMsgPending    = pendingMessages;
-    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ 0 ].frameLostBuffer = false;
-
-    /*-------------------------------------------------
-    Pull out any data
-    -------------------------------------------------*/
-    volatile RxMailbox *box = &mPeriph->sFIFOMailBox[ 0 ];
-
-    for( uint8_t msgNum = 0; msgNum < pendingMessages; msgNum++ )
+    if ( RF0R & RF0R_FULL0 )
     {
-      Chimera::CAN::BasicFrame frame;
+      mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].hwFull = true;
+      FULL0::clear( mPeriph, RF0R_FULL0 );
+    }
+
+    /*-------------------------------------------------
+    Parse the FIFO overrun flag
+    -------------------------------------------------*/
+    if ( RF0R & RF0R_FOVR0 )
+    {
+      mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].hwOverrun = true;
+      FOVR0::clear( mPeriph, RF0R_FOVR0 );
+    }
+
+    /*-------------------------------------------------
+    Parse how many messages hardware says is pending
+    -------------------------------------------------*/
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].hwMsgPending    = ( RF0R & RF0R_FMP0 ) >> RF0R_FMP0_Pos;
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].swMsgPending    = 0;
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].frameLostBuffer = false;
+
+    /*-------------------------------------------------
+    Try to pull all pending data out of the FIFO
+    -------------------------------------------------*/
+    do
+    {
+      /*-------------------------------------------------
+      Initialize the loop vars
+      -------------------------------------------------*/
+      BasicFrame frame;
       frame.clear();
+
+      // Cache the frequently accessed variables that won't change
+      // but are still marked as volatile. Should speed things up.
+      const auto RIR  = mPeriph->sFIFOMailBox[ mailboxIdx ].RIR;
+      const auto RDTR = mPeriph->sFIFOMailBox[ mailboxIdx ].RDTR;
+      const auto RDLR = mPeriph->sFIFOMailBox[ mailboxIdx ].RDLR;
+      const auto RDHR = mPeriph->sFIFOMailBox[ mailboxIdx ].RDHR;
 
       /*-------------------------------------------------
       Read the data mode
       -------------------------------------------------*/
-      if( box->RIR & RI0R_RTR )
+      if( RIR & RI0R_RTR )
       {
         frame.frameType = Chimera::CAN::FrameType::REMOTE;
       }
@@ -1318,76 +1210,199 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Read the standard/extended ID mode and pull the ID
       -------------------------------------------------*/
-      if( box->RIR & RI0R_IDE )
+      if( RIR & RI0R_IDE )
       {
         frame.idMode = Chimera::CAN::IdType::EXTENDED;
-        frame.id     = ( ( box->RIR & RI0R_EXID_Msk ) >> RI0R_EXID_Pos );
+        frame.id     = ( ( RIR & RI0R_EXID_Msk ) >> RI0R_EXID_Pos );
       }
       else
       {
         frame.idMode = Chimera::CAN::IdType::STANDARD;
-        frame.id     = ( ( box->RIR & RI0R_STID_Msk ) >> RI0R_STID_Pos );
+        frame.id     = ( ( RIR & RI0R_STID_Msk ) >> RI0R_STID_Pos );
       }
 
       /*-------------------------------------------------
       Pull the data length and filter match index
       -------------------------------------------------*/
-      frame.dataLength  = ( ( box->RDTR & RDT0R_DLC_Msk ) >> RDT0R_DLC_Pos );
-      frame.filterIndex = ( ( box->RDTR & RDT0R_FMI_Msk ) >> RDT0R_FMI_Pos );
+      frame.dataLength  = ( ( RDTR & RDT0R_DLC_Msk ) >> RDT0R_DLC_Pos );
+      frame.filterIndex = ( ( RDTR & RDT0R_FMI_Msk ) >> RDT0R_FMI_Pos );
 
       /*-------------------------------------------------
       Grab the entire data block regardless of how much
       data is actually in the frame.
       -------------------------------------------------*/
-      frame.data[ 0 ] = ( ( box->RDLR & RDL0R_DATA0_Msk ) >> RDL0R_DATA0_Pos );
-      frame.data[ 1 ] = ( ( box->RDLR & RDL0R_DATA1_Msk ) >> RDL0R_DATA1_Pos );
-      frame.data[ 2 ] = ( ( box->RDLR & RDL0R_DATA2_Msk ) >> RDL0R_DATA2_Pos );
-      frame.data[ 3 ] = ( ( box->RDLR & RDL0R_DATA3_Msk ) >> RDL0R_DATA3_Pos );
-      frame.data[ 4 ] = ( ( box->RDHR & RDH0R_DATA4_Msk ) >> RDH0R_DATA4_Pos );
-      frame.data[ 5 ] = ( ( box->RDHR & RDH0R_DATA5_Msk ) >> RDH0R_DATA5_Pos );
-      frame.data[ 6 ] = ( ( box->RDHR & RDH0R_DATA6_Msk ) >> RDH0R_DATA6_Pos );
-      frame.data[ 7 ] = ( ( box->RDHR & RDH0R_DATA7_Msk ) >> RDH0R_DATA7_Pos );
+      frame.data[ 0 ] = ( ( RDLR & RDL0R_DATA0_Msk ) >> RDL0R_DATA0_Pos );
+      frame.data[ 1 ] = ( ( RDLR & RDL0R_DATA1_Msk ) >> RDL0R_DATA1_Pos );
+      frame.data[ 2 ] = ( ( RDLR & RDL0R_DATA2_Msk ) >> RDL0R_DATA2_Pos );
+      frame.data[ 3 ] = ( ( RDLR & RDL0R_DATA3_Msk ) >> RDL0R_DATA3_Pos );
+      frame.data[ 4 ] = ( ( RDHR & RDH0R_DATA4_Msk ) >> RDH0R_DATA4_Pos );
+      frame.data[ 5 ] = ( ( RDHR & RDH0R_DATA5_Msk ) >> RDH0R_DATA5_Pos );
+      frame.data[ 6 ] = ( ( RDHR & RDH0R_DATA6_Msk ) >> RDH0R_DATA6_Pos );
+      frame.data[ 7 ] = ( ( RDHR & RDH0R_DATA7_Msk ) >> RDH0R_DATA7_Pos );
 
       /*-------------------------------------------------
       Push the data into the frame buffer
       -------------------------------------------------*/
       if( !mRXBuffer.pushFromISR( frame ) )
       {
-        mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ 0 ].frameLostBuffer = true;
+        mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].frameLostBuffer = true;
       }
 
       /*-------------------------------------------------
       Instruct the hardware to release the FIFO message.
-      This bit will also be cleared  by hardware.
+      This bit will also be cleared by hardware.
       -------------------------------------------------*/
       RFOM0::set( mPeriph, RF0R_RFOM0 );
-      while( RFOM0::get( mPeriph ) )
+      while ( RFOM0::get( mPeriph ) )
       {
-        continue;
+        asm( "nop" );
       }
-    }
+
+      mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].swMsgPending += 1;
+
+    } while( FMP0::get( mPeriph ) ); // Messages still pending
 
     /*-------------------------------------------------
     Awaken high priority thread for processing this ISR
     -------------------------------------------------*/
     mISREventSignal[ CAN_RX_ISR_SIGNAL_INDEX ].releaseFromISR();
   }
+
 
   /**
    *  This ISR handles events generated by:
    *    - Reception of a new message
    *    - FIFO1 is full
    *    - FIFO1 has overrun
+   *
+   *  If any new messages have arrived, will try to place them in the software
+   *  receive queue. Otherwise, it will notify that a packet has been lost.
    */
   void Driver::CAN1_FIFO1_IRQHandler()
   {
+    using namespace Chimera::CAN;
+    constexpr size_t mailboxIdx = 1;
+
+    /*-------------------------------------------------
+    Read the FIFO1 status register
+    -------------------------------------------------*/
+    const Reg32_t RF1R = RF1R_ALL::get( mPeriph );
+
     /*-------------------------------------------------
     Ensure the ISR type is set correctly
     -------------------------------------------------*/
     mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].isrPending |=
-        ( 1u << static_cast<size_t>( Chimera::CAN::InterruptType::RECEIVE_FIFO_NEW_MESSAGE ) );
+        ( 1u << static_cast<size_t>( InterruptType::RECEIVE_FIFO_NEW_MESSAGE ) );
 
+    /*-------------------------------------------------
+    Parse the FIFO full flag
+    -------------------------------------------------*/
+    if ( RF1R & RF1R_FULL1 )
+    {
+      mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].hwFull = true;
+      FULL1::clear( mPeriph, RF1R_FULL1 );
+    }
 
+    /*-------------------------------------------------
+    Parse the FIFO overrun flag
+    -------------------------------------------------*/
+    if ( RF1R & RF1R_FOVR1 )
+    {
+      mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].hwOverrun = true;
+      FOVR1::clear( mPeriph, RF1R_FOVR1 );
+    }
+
+    /*-------------------------------------------------
+    Parse how many messages hardware says is pending
+    -------------------------------------------------*/
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].hwMsgPending    = ( RF1R & RF1R_FMP1 ) >> RF1R_FMP1_Pos;
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].swMsgPending    = 0;
+    mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].frameLostBuffer = false;
+
+    /*-------------------------------------------------
+    Try to pull all pending data out of the FIFO
+    -------------------------------------------------*/
+    do
+    {
+      /*-------------------------------------------------
+      Initialize the loop vars
+      -------------------------------------------------*/
+      BasicFrame frame;
+      frame.clear();
+
+      // Cache the frequently accessed variables that won't change
+      // but are still marked as volatile. Should speed things up.
+      const auto RIR  = mPeriph->sFIFOMailBox[ mailboxIdx ].RIR;
+      const auto RDTR = mPeriph->sFIFOMailBox[ mailboxIdx ].RDTR;
+      const auto RDLR = mPeriph->sFIFOMailBox[ mailboxIdx ].RDLR;
+      const auto RDHR = mPeriph->sFIFOMailBox[ mailboxIdx ].RDHR;
+
+      /*-------------------------------------------------
+      Read the data mode
+      -------------------------------------------------*/
+      if( RIR & RI1R_RTR )
+      {
+        frame.frameType = FrameType::REMOTE;
+      }
+      else
+      {
+        frame.frameType = FrameType::DATA;
+      }
+
+      /*-------------------------------------------------
+      Read the standard/extended ID mode and pull the ID
+      -------------------------------------------------*/
+      if( RIR & RI1R_IDE )
+      {
+        frame.idMode = IdType::EXTENDED;
+        frame.id     = ( ( RIR & RI1R_EXID_Msk ) >> RI1R_EXID_Pos );
+      }
+      else
+      {
+        frame.idMode = IdType::STANDARD;
+        frame.id     = ( ( RIR & RI1R_STID_Msk ) >> RI1R_STID_Pos );
+      }
+
+      /*-------------------------------------------------
+      Pull the data length and filter match index
+      -------------------------------------------------*/
+      frame.dataLength  = ( ( RDTR & RDT1R_DLC_Msk ) >> RDT1R_DLC_Pos );
+      frame.filterIndex = ( ( RDTR & RDT1R_FMI_Msk ) >> RDT1R_FMI_Pos );
+
+      /*-------------------------------------------------
+      Grab the entire data block regardless of how much
+      data is actually in the frame.
+      -------------------------------------------------*/
+      frame.data[ 0 ] = ( ( RDLR & RDL1R_DATA0_Msk ) >> RDL1R_DATA0_Pos );
+      frame.data[ 1 ] = ( ( RDLR & RDL1R_DATA1_Msk ) >> RDL1R_DATA1_Pos );
+      frame.data[ 2 ] = ( ( RDLR & RDL1R_DATA2_Msk ) >> RDL1R_DATA2_Pos );
+      frame.data[ 3 ] = ( ( RDLR & RDL1R_DATA3_Msk ) >> RDL1R_DATA3_Pos );
+      frame.data[ 4 ] = ( ( RDHR & RDH1R_DATA4_Msk ) >> RDH1R_DATA4_Pos );
+      frame.data[ 5 ] = ( ( RDHR & RDH1R_DATA5_Msk ) >> RDH1R_DATA5_Pos );
+      frame.data[ 6 ] = ( ( RDHR & RDH1R_DATA6_Msk ) >> RDH1R_DATA6_Pos );
+      frame.data[ 7 ] = ( ( RDHR & RDH1R_DATA7_Msk ) >> RDH1R_DATA7_Pos );
+
+      /*-------------------------------------------------
+      Push the data into the frame buffer
+      -------------------------------------------------*/
+      if( !mRXBuffer.pushFromISR( frame ) )
+      {
+        mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].frameLostBuffer = true;
+      }
+
+      /*-------------------------------------------------
+      Instruct the hardware to release the FIFO message.
+      This bit will also be cleared by hardware.
+      -------------------------------------------------*/
+      RFOM1::set( mPeriph, RF1R_RFOM1 );
+      while ( RFOM1::get( mPeriph ) )
+      {
+        asm( "nop" );
+      }
+
+      mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].swMsgPending += 1;
+
+    } while( FMP1::get( mPeriph ) ); // Messages still pending
 
     /*-------------------------------------------------
     Awaken high priority thread for processing this ISR
@@ -1395,11 +1410,16 @@ namespace Thor::LLD::CAN
     mISREventSignal[ CAN_RX_ISR_SIGNAL_INDEX ].releaseFromISR();
   }
 
+
   /**
    *  This ISR handles events generated by:
    *    - Error conditions (multiple kinds)
    *    - Wakeup from SOF monitored on RX pin
    *    - Entry into sleep mode
+   *
+   *  This handler doesn't really do much except gather data about what happened
+   *  and cache it for the high level driver to handle. Don't want to assume too
+   *  much about how to handle the event.
    */
   void Driver::CAN1_ERR_STS_CHG_IRQHandler()
   {

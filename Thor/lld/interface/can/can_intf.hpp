@@ -205,44 +205,40 @@ namespace Thor::LLD::CAN
 
     virtual void exitDebugMode() = 0;
 
+    /*-------------------------------------------------------------------------------
+    Control
+    -------------------------------------------------------------------------------*/
+    /**
+     *  Flushes the TX buffer
+     *  @return void
+     */
+    virtual void flushTX() = 0;
+
+    /**
+     *  Flushes the RX buffer
+     *  @return void
+     */
+    virtual void flushRX() = 0;
 
     /*-------------------------------------------------------------------------------
     Transmit & Receive Operations
     -------------------------------------------------------------------------------*/
     /**
-     *  Looks through the hardware TX FIFOs to see if a mailbox is available to
-     *  transmit on.
+     *  Places the given frame into the TX circular buffer for transmission.
      *
-     *  @param[out] which         If a mailbox is available, will return its ID
-     *  @return bool
-     */
-    virtual bool txMailboxAvailable( Mailbox &which ) = 0;
-
-    /**
-     *  Looks through the hardware RX FIFOs to see if any mailbox contains a message.
-     *
-     *  @param[out] which         If a mailbox is available, will return its ID
-     *  @return bool
-     */
-    virtual bool rxMailboxAvailable( Mailbox &which ) = 0;
-
-    /**
-     *  Places the given frame into the TX FIFOs for transmission.
-     *
-     *  @param[in]  which       Mailbox to place the frame into
      *  @param[in]  frame       The frame to be transmitted
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t send( const Mailbox which, const Chimera::CAN::BasicFrame &frame ) = 0;
+    virtual Chimera::Status_t send( const Chimera::CAN::BasicFrame &frame ) = 0;
 
     /**
-     *  Attempts to read a frame off the RX FIFO
+     *  Reads a frame off the internal RX circular buffer. This buffer is populated
+     *  by the ISR when new data arrives.
      *
-     *  @param[in]  which       Mailbox to read out of
      *  @param[out] frame       The frame to place the received message into
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t receive( const Mailbox which, Chimera::CAN::BasicFrame &frame ) = 0;
+    virtual Chimera::Status_t receive( Chimera::CAN::BasicFrame &frame ) = 0;
 
     /*-------------------------------------------------------------------------------
     Asynchronous Operation
@@ -282,6 +278,30 @@ namespace Thor::LLD::CAN
      *  @return void
      */
     virtual void setISRHandled( const Chimera::CAN::InterruptType isr ) = 0;
+
+    /*-------------------------------------------------------------------------------
+    ISR Protection Mechanisms
+    -------------------------------------------------------------------------------*/
+    /**
+     *  Disables peripheral specific CAN interrupts. This prevents
+     *  the hardware from generating events when those events would
+     *  interfere with a complex operation.
+     *
+     *  These events will be pending in the NVIC hardware and fire
+     *  as soon as exitCriticalSection() is called.
+     *
+     *  @return void
+     */
+    virtual void enterCriticalSection() = 0;
+
+    /**
+     *  Re-enables peripheral specific CAN interrupts. If an event
+     *  was generated while inside a critical context, it will fire
+     *  immediately upon calling this function.
+     *
+     *  @return void
+     */
+    virtual void exitCriticalSection() = 0;
   };
 
 
@@ -310,12 +330,16 @@ namespace Thor::LLD::CAN
     void exitDebugMode();
 
     /*-------------------------------------------------------------------------------
+    Control
+    -------------------------------------------------------------------------------*/
+    void flushTX();
+    void flushRX();
+
+    /*-------------------------------------------------------------------------------
     Transmit & Receive Operations
     -------------------------------------------------------------------------------*/
-    bool txMailboxAvailable( Mailbox &which );
-    bool rxMailboxAvailable( Mailbox &which );
-    Chimera::Status_t send( const Mailbox which, const Chimera::CAN::BasicFrame &frame );
-    Chimera::Status_t receive( const Mailbox which, Chimera::CAN::BasicFrame &frame );
+    Chimera::Status_t send( const Chimera::CAN::BasicFrame &frame );
+    Chimera::Status_t receive( Chimera::CAN::BasicFrame &frame );
 
     /*-------------------------------------------------------------------------------
     Asynchronous Operation
