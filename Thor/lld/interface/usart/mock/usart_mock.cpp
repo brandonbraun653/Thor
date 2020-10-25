@@ -23,13 +23,13 @@ namespace Thor::LLD::USART
   /*-------------------------------------------------------------------------------
   Static Data
   -------------------------------------------------------------------------------*/
-  static std::array<Mock::DriverMock, NUM_SPI_PERIPHS> s_usart_drivers;
+  static std::array<Mock::DriverMock, NUM_USART_PERIPHS> s_usart_drivers;
 
   static const std::array<size_t, static_cast<size_t>( Chimera::Serial::Channel::NUM_OPTIONS )> s_resource_index = {
-    SPI1_RESOURCE_INDEX,
-    SPI2_RESOURCE_INDEX,
-    SPI3_RESOURCE_INDEX,
-    SPI4_RESOURCE_INDEX,
+    USART1_RESOURCE_INDEX,
+    USART2_RESOURCE_INDEX,
+    USART3_RESOURCE_INDEX,
+    USART4_RESOURCE_INDEX,
     INVALID_RESOURCE_INDEX,
     INVALID_RESOURCE_INDEX
   };
@@ -84,11 +84,11 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------
     Driver behavior
     -------------------------------------------------*/
-    return ( static_cast<size_t>( channel ) < NUM_SPI_PERIPHS );
+    return ( static_cast<size_t>( channel ) < NUM_USART_PERIPHS );
   }
 
 
-  IDriver_rPtr getDriver( const Chimera::Serial::Channel channel )
+  Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
   {
     /*-------------------------------------------------
     Mock behavior

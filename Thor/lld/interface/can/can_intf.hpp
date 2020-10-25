@@ -116,14 +116,11 @@ namespace Thor::LLD::CAN
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  /*-------------------------------------------------
-  Virtual class that defines the expected interface.
-  Useful for mocking purposes.
-  -------------------------------------------------*/
-  class IDriver
+  class Driver
   {
   public:
-    virtual ~IDriver() = default;
+    Driver();
+    ~Driver();
 
     /*-------------------------------------------------------------------------------
     Configuration
@@ -134,19 +131,19 @@ namespace Thor::LLD::CAN
      *  @param[in]  peripheral    Memory mapped struct of the desired CAN peripheral
      *  @return void
      */
-    virtual void attach( RegisterMap *const peripheral ) = 0;
+    void attach( RegisterMap *const peripheral );
 
     /**
      *  Enables the peripheral clock for the configured instance
      *  @return void
      */
-    virtual void enableClock() = 0;
+    void enableClock();
 
     /**
      *  Disables the peripheral clock for the configured instance
      *  @return void
      */
-    virtual void disableClock() = 0;
+    void disableClock();
 
     /**
      *  Configure the CAN bus driver with the appropriate settings. These are
@@ -155,7 +152,7 @@ namespace Thor::LLD::CAN
      *  @param[in]  cfg           The configuration info
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t configure( const Chimera::CAN::DriverConfig &cfg ) = 0;
+    Chimera::Status_t configure( const Chimera::CAN::DriverConfig &cfg );
 
     /**
      *  Applies the given filter list onto the hardware filter banks. The list
@@ -169,7 +166,7 @@ namespace Thor::LLD::CAN
      *  @param[in]  filterSize    How many filters are in the list
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t applyFilters( MessageFilter *const filterList, const size_t filterSize ) = 0;
+    Chimera::Status_t applyFilters( MessageFilter *const filterList, const size_t filterSize );
 
     /**
      *  Turns on interrupts for the given signal type, if supported.
@@ -177,7 +174,7 @@ namespace Thor::LLD::CAN
      *  @param[in]  signal        The ISR event to enable
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t enableISRSignal( const Chimera::CAN::InterruptType signal ) = 0;
+    Chimera::Status_t enableISRSignal( const Chimera::CAN::InterruptType signal );
 
     /**
      *  Turns off interrupts for the given signal type, if supported.
@@ -185,25 +182,21 @@ namespace Thor::LLD::CAN
      *  @param[in]  signal        The ISR event to enable
      *  @return void
      */
-    virtual void disableISRSignal( const Chimera::CAN::InterruptType signal ) = 0;
+    void disableISRSignal( const Chimera::CAN::InterruptType signal );
 
-    virtual void freezeOnDebug( const bool doFreeze ) = 0;
+    /**
+     *  Places the hardware into a debug mode for testing purposes
+     *
+     *  @param[in]  mode          Which mode to be placed into
+     *  @return void
+     */
+    void enterDebugMode( const Chimera::CAN::DebugMode mode );
 
-    virtual void invokeMasterResetRequest() = 0;
-
-    virtual void useAutoRetransmit( const bool doAutoRTX ) = 0;
-
-    virtual void lockRXOnOverrun( const bool doLock ) = 0;
-
-    virtual void useTXPriorityScheme( const TXPriority scheme ) = 0;
-
-    virtual void enterSleepMode() = 0;
-
-    virtual void exitSleepMode() = 0;
-
-    virtual void enterDebugMode( const Chimera::CAN::DebugMode mode ) = 0;
-
-    virtual void exitDebugMode() = 0;
+    /**
+     *  Leaves any debug mode and returns to normal mode
+     *  @return void
+     */
+    void exitDebugMode();
 
     /*-------------------------------------------------------------------------------
     Control
@@ -212,13 +205,13 @@ namespace Thor::LLD::CAN
      *  Flushes the TX buffer
      *  @return void
      */
-    virtual void flushTX() = 0;
+    void flushTX();
 
     /**
      *  Flushes the RX buffer
      *  @return void
      */
-    virtual void flushRX() = 0;
+    void flushRX();
 
     /*-------------------------------------------------------------------------------
     Transmit & Receive Operations
@@ -229,7 +222,7 @@ namespace Thor::LLD::CAN
      *  @param[in]  frame       The frame to be transmitted
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t send( const Chimera::CAN::BasicFrame &frame ) = 0;
+    Chimera::Status_t send( const Chimera::CAN::BasicFrame &frame );
 
     /**
      *  Reads a frame off the internal RX circular buffer. This buffer is populated
@@ -238,7 +231,7 @@ namespace Thor::LLD::CAN
      *  @param[out] frame       The frame to place the received message into
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t receive( Chimera::CAN::BasicFrame &frame ) = 0;
+    Chimera::Status_t receive( Chimera::CAN::BasicFrame &frame );
 
     /*-------------------------------------------------------------------------------
     Asynchronous Operation
@@ -254,7 +247,7 @@ namespace Thor::LLD::CAN
      *  @param[in]  signal        Which ISR signal to get the semaphore for
      *  @return Chimera::Threading::BinarySemaphore *
      */
-    virtual Chimera::Threading::BinarySemaphore *getISRSignal( Chimera::CAN::InterruptType signal ) = 0;
+    Chimera::Threading::BinarySemaphore *getISRSignal( Chimera::CAN::InterruptType signal );
 
     /**
      *  Gets any information that was posted in relation to the last
@@ -268,7 +261,7 @@ namespace Thor::LLD::CAN
      *  @param[in]  isr           The ISR event type to get the context for
      *  @return const ISREventContext *const
      */
-    virtual const ISREventContext *const getISRContext( const Chimera::CAN::InterruptType isr ) = 0;
+    const ISREventContext *const getISRContext( const Chimera::CAN::InterruptType isr );
 
     /**
      *  Callback for the HLD to inform the LLD that the associated ISR event
@@ -277,7 +270,7 @@ namespace Thor::LLD::CAN
      *  @param[in]  isr           The ISR signal to indicate was handled
      *  @return void
      */
-    virtual void setISRHandled( const Chimera::CAN::InterruptType isr ) = 0;
+    void setISRHandled( const Chimera::CAN::InterruptType isr );
 
     /*-------------------------------------------------------------------------------
     ISR Protection Mechanisms
@@ -292,7 +285,7 @@ namespace Thor::LLD::CAN
      *
      *  @return void
      */
-    virtual void enterCriticalSection() = 0;
+    void enterCriticalSection();
 
     /**
      *  Re-enables peripheral specific CAN interrupts. If an event
@@ -301,57 +294,6 @@ namespace Thor::LLD::CAN
      *
      *  @return void
      */
-    virtual void exitCriticalSection() = 0;
-  };
-
-
-  /*-------------------------------------------------
-  Concrete driver declaration. Implements the interface
-  of the virtual class, but doesn't inherit due to the
-  memory penalties. Definition is done project side.
-  -------------------------------------------------*/
-  class Driver
-  {
-  public:
-    Driver();
-    ~Driver();
-
-    /*-------------------------------------------------------------------------------
-    Configuration
-    -------------------------------------------------------------------------------*/
-    void attach( RegisterMap *const peripheral );
-    void enableClock();
-    void disableClock();
-    Chimera::Status_t configure( const Chimera::CAN::DriverConfig &cfg );
-    Chimera::Status_t applyFilters( MessageFilter *const filterList, const size_t filterSize );
-    Chimera::Status_t enableISRSignal( const Chimera::CAN::InterruptType signal );
-    void disableISRSignal( const Chimera::CAN::InterruptType signal );
-    void enterDebugMode( const Chimera::CAN::DebugMode mode );
-    void exitDebugMode();
-
-    /*-------------------------------------------------------------------------------
-    Control
-    -------------------------------------------------------------------------------*/
-    void flushTX();
-    void flushRX();
-
-    /*-------------------------------------------------------------------------------
-    Transmit & Receive Operations
-    -------------------------------------------------------------------------------*/
-    Chimera::Status_t send( const Chimera::CAN::BasicFrame &frame );
-    Chimera::Status_t receive( Chimera::CAN::BasicFrame &frame );
-
-    /*-------------------------------------------------------------------------------
-    Asynchronous Operation
-    -------------------------------------------------------------------------------*/
-    Chimera::Threading::BinarySemaphore *getISRSignal( Chimera::CAN::InterruptType signal );
-    const ISREventContext *const getISRContext( const Chimera::CAN::InterruptType isr );
-    void setISRHandled( const Chimera::CAN::InterruptType isr );
-
-    /*-------------------------------------------------------------------------------
-    ISR Protection Mechanisms
-    -------------------------------------------------------------------------------*/
-    void enterCriticalSection();
     void exitCriticalSection();
 
   protected:

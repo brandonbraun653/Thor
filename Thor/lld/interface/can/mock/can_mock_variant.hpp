@@ -16,15 +16,27 @@
 #include <cstddef>
 
 /* Thor Includes */
-#include <Thor/lld/interface/can/can_intf.hpp>
-#include <Thor/lld/interface/can/can_types.hpp>
+#include <Thor/lld/common/types.hpp>
 
 namespace Thor::LLD::CAN
 {
   /*-------------------------------------------------------------------------------
   Literals
   -------------------------------------------------------------------------------*/
-  static constexpr size_t NUM_CAN_PERIPHS = 2;
+  static constexpr size_t NUM_CAN_PERIPHS      = 1;
+  static constexpr size_t NUM_CAN_IRQ_HANDLERS = 4; /**< Number of unique interrupts on each peripheral */
+  static constexpr size_t NUM_CAN_TX_MAILBOX   = 3;
+  static constexpr size_t NUM_CAN_RX_MAILBOX   = 2;
+  static constexpr size_t NUM_CAN_FILTER_BANKS = 14; /**< Technically 28, but other 14 is for CAN2, which isn't on L4 */
+  static constexpr size_t NUM_CAN_MAX_FILTERS  = NUM_CAN_FILTER_BANKS * 4;    // Each bank can hold a max of four 16-bit filters
+  static constexpr size_t CAN_RX_FIFO_DEPTH    = 3;
+
+  static constexpr RIndex_t CAN1_RESOURCE_INDEX = 0u;
+
+  static constexpr RIndex_t CAN_TX_ISR_SIGNAL_INDEX  = 0u;
+  static constexpr RIndex_t CAN_RX_ISR_SIGNAL_INDEX  = 1u;
+  static constexpr RIndex_t CAN_STS_ISR_SIGNAL_INDEX = 2u;
+  static constexpr RIndex_t CAN_ERR_ISR_SIGNAL_INDEX = 3u;
 
 
   /*-------------------------------------------------------------------------------
@@ -35,12 +47,10 @@ namespace Thor::LLD::CAN
     uint32_t mockRegister;
   };
 
-
-  /*-------------------------------------------------------------------------------
-  External Variables
-  -------------------------------------------------------------------------------*/
-  extern std::array<RegisterMap*, NUM_CAN_PERIPHS> PeripheralRegisterMaps;
-
+  struct ISREventContext
+  {
+    uint32_t mock;
+  };
 
   /*-------------------------------------------------------------------------------
   Public Functions

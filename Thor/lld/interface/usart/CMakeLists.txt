@@ -21,6 +21,18 @@ add_library(${SIM_LLD} STATIC
 target_link_libraries(${SIM_LLD} PRIVATE ${LINK_LIBS})
 export(TARGETS ${SIM_LLD} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${SIM_LLD}.cmake")
 
+
+# ====================================================
+# Mocked Low Level Driver
+# ====================================================
+set(MOCK_LLD thor_lld_mock_usart)
+add_library(${MOCK_LLD} STATIC
+  mock/usart_mock.cpp
+  mock/usart_mock_variant.cpp
+)
+target_link_libraries(${MOCK_LLD} PRIVATE ${LINK_LIBS} gmock_inc)
+export(TARGETS ${MOCK_LLD} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${MOCK_LLD}.cmake")
+
 # ====================================================
 # Interface Library
 # ====================================================

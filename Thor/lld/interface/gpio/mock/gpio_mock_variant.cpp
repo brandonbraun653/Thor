@@ -20,24 +20,10 @@
 namespace Thor::LLD::GPIO
 {
   /*-------------------------------------------------------------------------------
-  External Variables
-  -------------------------------------------------------------------------------*/
-  std::array<RegisterMap*, NUM_GPIO_PERIPHS> PeripheralRegisterMaps;
-
-  /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
   void initializeRegisters()
   {
-    for( size_t x=0; x<PeripheralRegisterMaps.size(); x++)
-    {
-      if( PeripheralRegisterMaps[x])
-      {
-        delete PeripheralRegisterMaps[ x ];
-      }
-
-      PeripheralRegisterMaps[x] = new RegisterMap();
-    }
   }
 
 

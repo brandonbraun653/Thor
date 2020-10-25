@@ -97,22 +97,6 @@ namespace Thor::LLD::USART
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  /*-------------------------------------------------
-  Virtual class that defines the expected interface.
-  Useful for mocking purposes.
-  -------------------------------------------------*/
-  class IDriver : virtual public Thor::LLD::Serial::Basic, virtual public Thor::LLD::Serial::Extended
-  {
-  public:
-    virtual ~IDriver() = default;
-  };
-
-
-  /*-------------------------------------------------
-  Concrete driver declaration. Implements the interface
-  of the virtual class, but doesn't inherit due to the
-  memory penalties. Definition is done project side.
-  -------------------------------------------------*/
   class Driver
   {
   public:

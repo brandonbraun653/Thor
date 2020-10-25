@@ -153,14 +153,14 @@ namespace Thor::LLD::USART
   /*-------------------------------------------------------------------------------
   External Variables
   -------------------------------------------------------------------------------*/
-  extern std::array<RegisterMap*, NUM_USART_PERIPHS> PeripheralRegisterMaps;
-  extern Thor::LLD::RIndexMap InstanceToResourceIndex;
-  extern Chimera::Container::LightFlatMap<Chimera::Serial::Channel, RegisterMap*> ChannelToInstance;
+  // extern std::array<RegisterMap*, NUM_USART_PERIPHS> PeripheralRegisterMaps;
+  // extern Thor::LLD::RIndexMap InstanceToResourceIndex;
+  // extern Chimera::Container::LightFlatMap<Chimera::Serial::Channel, RegisterMap*> ChannelToInstance;
 
 
-  extern std::array<uint32_t, static_cast<size_t>( Chimera::Serial::CharWid::NUM_OPTIONS )> CharWidToRegConfig;
-  extern std::array<uint32_t, static_cast<size_t>( Chimera::Serial::Parity::NUM_OPTIONS )> ParityToRegConfig;
-  extern std::array<uint32_t, static_cast<size_t>( Chimera::Serial::StopBits::NUM_OPTIONS )> StopBitsToRegConfig;
+  // extern std::array<uint32_t, static_cast<size_t>( Chimera::Serial::CharWid::NUM_OPTIONS )> CharWidToRegConfig;
+  // extern std::array<uint32_t, static_cast<size_t>( Chimera::Serial::Parity::NUM_OPTIONS )> ParityToRegConfig;
+  // extern std::array<uint32_t, static_cast<size_t>( Chimera::Serial::StopBits::NUM_OPTIONS )> StopBitsToRegConfig;
 
 
   /*-------------------------------------------------------------------------------

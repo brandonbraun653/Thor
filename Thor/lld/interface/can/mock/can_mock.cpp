@@ -52,51 +52,41 @@ namespace Thor::LLD::CAN
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    /*-------------------------------------------------
-    Mock behavior
-    -------------------------------------------------*/
-    Mock::getModuleMockObject().initialize();
+    // /*-------------------------------------------------
+    // Mock behavior
+    // -------------------------------------------------*/
+    // Mock::getModuleMockObject().initialize();
 
-    /*-------------------------------------------------
-    Driver behavior
-    -------------------------------------------------*/
-    initializeRegisters();
-    initializeMapping();
+    // /*-------------------------------------------------
+    // Driver behavior
+    // -------------------------------------------------*/
+    // initializeRegisters();
+    // initializeMapping();
 
     return Chimera::Status::OK;
   }
 
-  Driver_rPtr getDriver( const size_t channel )
+  Driver_rPtr getDriver( const Chimera::CAN::Channel channel )
   {
-    /*-------------------------------------------------
-    Mock behavior
-    -------------------------------------------------*/
-    Mock::getModuleMockObject().getDriver( static_cast<Chimera::CAN::Channel>( channel ) );
+    // /*-------------------------------------------------
+    // Mock behavior
+    // -------------------------------------------------*/
+    // Mock::getModuleMockObject().getDriver( static_cast<Chimera::CAN::Channel>( channel ) );
 
-    /*-------------------------------------------------
-    Driver behavior
-    -------------------------------------------------*/
-    if ( !( channel < NUM_CAN_PERIPHS ) )
-    {
-      return nullptr;
-    }
+    // /*-------------------------------------------------
+    // Driver behavior
+    // -------------------------------------------------*/
+    // if ( !( channel < NUM_CAN_PERIPHS ) )
+    // {
+    //   return nullptr;
+    // }
 
-    s_can_drivers[ channel ].attach( PeripheralRegisterMaps[ channel ] );
-    return &s_can_drivers[ channel ];
+    // s_can_drivers[ channel ].attach( PeripheralRegisterMaps[ channel ] );
+    // return &s_can_drivers[ channel ];
+    return nullptr;
   }
 
-  size_t availableChannels()
-  {
-    /*-------------------------------------------------
-    Mock behavior
-    -------------------------------------------------*/
-    Mock::getModuleMockObject().availableChannels();
 
-    /*-------------------------------------------------
-    Driver behavior
-    -------------------------------------------------*/
-    return NUM_CAN_PERIPHS;
-  }
 }    // namespace Thor::LLD::CAN
 
 #endif /* THOR_LLD_CAN_MOCK */
