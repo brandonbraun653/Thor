@@ -99,23 +99,23 @@ namespace Thor::CAN
     /*-------------------------------------------------
     User needs to validate the pin configs too
     -------------------------------------------------*/
-    result |= cfg.RXInit.validity;
-    result |= cfg.TXInit.validity;
+    result = result && cfg.RXInit.validity;
+    result = result && cfg.TXInit.validity;
 
     /*-------------------------------------------------
     The buffers must be pre-allocated as these drivers
     do not use dynamic memory. If dynamic memory is
     desired, it must be allocated externally.
     -------------------------------------------------*/
-    result |= ( cfg.HWInit.rxBuffer != nullptr );
-    result |= ( cfg.HWInit.txBuffer != nullptr );
-    result |= ( cfg.HWInit.rxElements != 0 );
-    result |= ( cfg.HWInit.txElements != 0 );
+    result = result && ( cfg.HWInit.rxBuffer != nullptr );
+    result = result && ( cfg.HWInit.txBuffer != nullptr );
+    result = result && ( cfg.HWInit.rxElements != 0 );
+    result = result && ( cfg.HWInit.txElements != 0 );
 
     /*-------------------------------------------------
     Last but not least, does the channel even exist?
     -------------------------------------------------*/
-    result |= ( cfg.HWInit.channel < Chimera::CAN::Channel::NUM_OPTIONS );
+    result = result && ( cfg.HWInit.channel < Chimera::CAN::Channel::NUM_OPTIONS );
 
     return result;
   }
@@ -136,16 +136,16 @@ namespace Thor::CAN
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    ::LLD::initialize();
+    auto result = ::LLD::initialize();
 
     /*------------------------------------------------
     Initialize ISR post-processing routines
     ------------------------------------------------*/
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][ ::LLD::CAN_TX_ISR_SIGNAL_INDEX ] = CAN1ISR_TXHandler;
-    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][ ::LLD::CAN_RX_ISR_SIGNAL_INDEX ] = CAN1ISR_RXHandler;
-    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][ ::LLD::CAN_STS_ISR_SIGNAL_INDEX ] = CAN1ISR_StatusChangeHandler;
-    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][ ::LLD::CAN_ERR_ISR_SIGNAL_INDEX ] = CAN1ISR_ErrHandler;
+    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][::LLD::CAN_TX_ISR_SIGNAL_INDEX ]  = CAN1ISR_TXHandler;
+    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][::LLD::CAN_RX_ISR_SIGNAL_INDEX ]  = CAN1ISR_RXHandler;
+    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][::LLD::CAN_STS_ISR_SIGNAL_INDEX ] = CAN1ISR_StatusChangeHandler;
+    s_user_isr_thread_func[::LLD::CAN1_RESOURCE_INDEX ][::LLD::CAN_ERR_ISR_SIGNAL_INDEX ] = CAN1ISR_ErrHandler;
 #endif
 
     /*-------------------------------------------------
@@ -164,7 +164,7 @@ namespace Thor::CAN
     Lock the init sequence and exit
     -------------------------------------------------*/
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
-    return Chimera::Status::OK;
+    return result;
   }
 
 
@@ -188,7 +188,8 @@ namespace Thor::CAN
 
   Driver_rPtr getDriver( const Chimera::CAN::Channel channel )
   {
-    if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    auto idx = ::LLD::getResourceIndex( channel );
+    if ( ( idx != ::Thor::LLD::INVALID_RESOURCE_INDEX ) && ( idx < NUM_DRIVERS ) )
     {
       return &hld_driver[ idx ];
     }
@@ -201,7 +202,8 @@ namespace Thor::CAN
 
   Driver_sPtr getDriverShared( const Chimera::CAN::Channel channel )
   {
-    if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    auto idx = ::LLD::getResourceIndex( channel );
+    if ( ( idx != ::Thor::LLD::INVALID_RESOURCE_INDEX ) && ( idx < NUM_DRIVERS ) )
     {
       return hld_shared[ idx ];
     }
@@ -242,32 +244,14 @@ namespace Thor::CAN
     Initialize the Low Level Driver
     -------------------------------------------------*/
     auto lld = ::LLD::getDriver( cfg.HWInit.channel );
+    if( !lld )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
     if ( auto sts = lld->configure( cfg ); sts != Chimera::Status::OK )
     {
       return sts;
-    }
-
-    /*-------------------------------------------------
-    Initialize the Queues
-    -------------------------------------------------*/
-    bool queuesCreated = true;
-
-    mTxQueue.lock();
-    queuesCreated |= mTxQueue.create( cfg.HWInit.txElements, sizeof( Chimera::CAN::BasicFrame ), cfg.HWInit.txBuffer );
-    mTxQueue.unlock();
-
-    mRxQueue.lock();
-    queuesCreated |= mRxQueue.create( cfg.HWInit.rxElements, sizeof( Chimera::CAN::BasicFrame ), cfg.HWInit.rxBuffer );
-    mRxQueue.unlock();
-
-    if( queuesCreated )
-    {
-      mTxQueue.clear( Chimera::Threading::TIMEOUT_DONT_WAIT );
-      mRxQueue.clear( Chimera::Threading::TIMEOUT_DONT_WAIT );
-    }
-    else
-    {
-      return Chimera::Status::FAILED_INIT;
     }
 
     /*-------------------------------------------------
@@ -302,12 +286,6 @@ namespace Thor::CAN
     using namespace Chimera::CAN;
 
     /*-------------------------------------------------
-    Clear out the queues
-    -------------------------------------------------*/
-    mTxQueue.clear( Chimera::Threading::TIMEOUT_DONT_WAIT );
-    mRxQueue.clear( Chimera::Threading::TIMEOUT_DONT_WAIT );
-
-    /*-------------------------------------------------
     Disable all ISR signals
     -------------------------------------------------*/
     auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
@@ -315,6 +293,9 @@ namespace Thor::CAN
     {
       lld->disableISRSignal( static_cast<InterruptType>( isr ) );
     }
+
+    lld->flushTX();
+    lld->flushRX();
 
 
     // De-init the lld
@@ -348,19 +329,6 @@ namespace Thor::CAN
     Post directly to hardware mailbox if possible but
     enqueue the message if not.
     -------------------------------------------------*/
-    // if( lld->txMailboxAvailable( box ) )
-    // {
-    //   return lld->send( box, frame );
-    // }
-    // else
-    // {
-    //   mTxQueue.lock();
-    //   if( !mTxQueue.push( &frame, TIMEOUT_DONT_WAIT ) )
-    //   {
-    //     enq = Chimera::Status::FULL;
-    //   }
-    //   mTxQueue.unlock();
-    // }
 
     return enq;
   }
@@ -368,27 +336,7 @@ namespace Thor::CAN
 
   Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame, const size_t timeout )
   {
-    /*-------------------------------------------------
-    Data is pushed into this queue via an interrupt
-    based message pump. The ISR awakens a high priority
-    thread that assembles the raw data from hardware
-    into the rx queue, until it can be read here.
-    -------------------------------------------------*/
-    if( mRxQueue.try_lock_for( timeout ) )
-    {
-      auto result = Chimera::Status::OK;
-      if( mRxQueue.available() && !mRxQueue.pop( &frame, TIMEOUT_DONT_WAIT ))
-      {
-        result = Chimera::Status::FAILED_READ;
-      }
-      mRxQueue.unlock();
 
-      return result;
-    }
-    else
-    {
-      return Chimera::Status::LOCKED;
-    }
   }
 
 

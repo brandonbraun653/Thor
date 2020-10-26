@@ -85,12 +85,6 @@ namespace Thor::CAN
     Chimera::CAN::DriverConfig mConfig;
 
     /*-------------------------------------------------
-    Queues for transmitting and receiving frames
-    -------------------------------------------------*/
-    Chimera::Threading::Queue mTxQueue;
-    Chimera::Threading::Queue mRxQueue;
-
-    /*-------------------------------------------------
     Callbacks that can be executed upon an event
     -------------------------------------------------*/
     Chimera::Event::ActionableList eventListeners;

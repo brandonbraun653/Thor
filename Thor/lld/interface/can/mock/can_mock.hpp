@@ -24,6 +24,9 @@
 /* Mock Includes */
 #include "gmock/gmock.h"
 
+using ::testing::NiceMock;
+static constexpr auto TestChannel = Chimera::CAN::Channel::CAN0;
+
 namespace Thor::LLD::CAN::Mock
 {
   /*-------------------------------------------------------------------------------
@@ -128,12 +131,17 @@ namespace Thor::LLD::CAN::Mock
     MOCK_METHOD( void, disableClock, (), ( override ) );
   };
 
+  /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
+  using NiceModuleMock = NiceMock<ModuleMock>;
+  using NiceDriverMock = NiceMock<DriverMock>;
 
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
-  ModuleMock &getModuleMockObject();
-  DriverMock &getDriverMockObject( const Chimera::CAN::Channel channel );
+  NiceModuleMock &getModuleMockObject();
+  NiceDriverMock &getDriverMockObject( const Chimera::CAN::Channel channel );
 
 }    // namespace Thor::LLD::CAN::Mock
 

@@ -29,7 +29,6 @@ namespace LLD = ::Thor::LLD::CAN;
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
-  // Each Chimera driver is associated with a pin, not the peripheral instance
 static constexpr size_t NUM_DRIVERS = ::LLD::NUM_CAN_PERIPHS;
 
 /*-------------------------------------------------------------------------------
@@ -48,7 +47,11 @@ namespace Chimera::CAN::Backend
   {
     for ( size_t x = 0; x < NUM_DRIVERS; x++ )
     {
+#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_CAN )
+      s_shared_driver[ x ] = Chimera::CAN::Driver_sPtr( new Chimera::CAN::Driver() );
+#else
       s_shared_driver[ x ] = Chimera::CAN::Driver_sPtr( &s_raw_driver[ x ] );
+#endif
     }
 
     return Thor::CAN::initialize();

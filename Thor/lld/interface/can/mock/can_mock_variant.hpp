@@ -18,6 +18,10 @@
 /* Thor Includes */
 #include <Thor/lld/common/types.hpp>
 
+#ifndef STM32_CAN1_PERIPH_AVAILABLE
+#define STM32_CAN1_PERIPH_AVAILABLE
+#endif
+
 namespace Thor::LLD::CAN
 {
   /*-------------------------------------------------------------------------------
