@@ -294,13 +294,12 @@ namespace Thor::CAN
       lld->disableISRSignal( static_cast<InterruptType>( isr ) );
     }
 
+    /*-------------------------------------------------
+    Ensure the software and hardware buffers are empty
+    -------------------------------------------------*/
     lld->flushTX();
     lld->flushRX();
 
-
-    // De-init the lld
-    // De-register threads??
-    // Clear the GPIO configs to be inputs
     return Chimera::Status::OK;
   }
 
@@ -313,41 +312,70 @@ namespace Thor::CAN
 
   Chimera::Status_t Driver::send( const Chimera::CAN::BasicFrame &frame )
   {
-    using namespace Chimera::CAN;
-    using namespace Chimera::Threading;
-
+    /*-------------------------------------------------
+    Grab the low level driver
+    -------------------------------------------------*/
     auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
-    auto box = ::LLD::Mailbox::UNKNOWN;
-    auto enq = Chimera::Status::OK;
 
     /*-------------------------------------------------
     Ensure transmit ISR is enabled
     -------------------------------------------------*/
     lld->enableISRSignal( Chimera::CAN::InterruptType::TX_ISR );
+    lld->enableISRSignal( Chimera::CAN::InterruptType::RX_ISR );
+    lld->enableISRSignal( Chimera::CAN::InterruptType::ERR_ISR );
 
     /*-------------------------------------------------
-    Post directly to hardware mailbox if possible but
-    enqueue the message if not.
+    Send off the message
     -------------------------------------------------*/
-
-    return enq;
+    return lld->send( frame );
   }
 
 
-  Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame, const size_t timeout )
+  Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame )
   {
+    /*-------------------------------------------------
+    Grab the low level driver
+    -------------------------------------------------*/
+    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
 
+    /*-------------------------------------------------
+    Receive any new messages
+    -------------------------------------------------*/
+    return lld->receive( frame );
   }
 
 
   Chimera::Status_t Driver::filter( const Chimera::CAN::Filter *const list, const size_t size )
   {
+
+    // Am going to need to create a secondary list? Hmm...That sounds like dynamic allocation...
+    // Why don't I just have a single filter type?
+    // Well...I COULD allocate on the stack.
+
     return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::flush( Chimera::CAN::BufferType buffer )
   {
+    using namespace Chimera::CAN;
+    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
+
+    switch( buffer )
+    {
+      case BufferType::RX:
+        lld->flushRX();
+        break;
+
+      case BufferType::TX:
+        lld->flushTX();
+        break;
+
+      default:
+        return Chimera::Status::INVAL_FUNC_PARAM;
+        break;
+    }
+
     return Chimera::Status::OK;
   }
 
@@ -358,33 +386,13 @@ namespace Thor::CAN
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
     return Chimera::Status::NOT_SUPPORTED;
-
-    // if ( event != Chimera::Event::TRIGGER_TRANSFER_COMPLETE )
-    // {
-    //   return Chimera::Status::NOT_SUPPORTED;
-    // }
-    // else if ( !awaitTransferComplete.try_acquire_for( timeout ) )
-    // {
-    //   return Chimera::Status::TIMEOUT;
-    // }
-    // else
-    // {
-    //   return Chimera::Status::OK;
-    // }
   }
 
 
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
                                    const size_t timeout )
   {
-    auto result = await( event, timeout );
-
-    if ( result == Chimera::Status::OK )
-    {
-      notifier.release();
-    }
-
-    return result;
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
@@ -403,6 +411,7 @@ namespace Thor::CAN
     return Chimera::Status::NOT_SUPPORTED;
   }
 
+
   /*-------------------------------------------------
   ISR Event Handlers
   -------------------------------------------------*/
@@ -418,49 +427,6 @@ namespace Thor::CAN
     Get the context of the last ISR
     -------------------------------------------------*/
     auto context = lld->getISRContext( InterruptType::RX_ISR );
-
-    /*-------------------------------------------------
-    Dequeue the next frames and push them to the hw
-    mailboxes for transmission.
-    -------------------------------------------------*/
-    bool dequeueResult = false;
-    auto transmitResult = Chimera::Status::OK;
-
-    BasicFrame tmpFrame;
-    tmpFrame.clear();
-
-    // while( lld->txMailboxAvailable( box ) )
-    // {
-    //   mTxQueue.lock();
-
-    //   if( mTxQueue.available() )
-    //   {
-    //     /*-------------------------------------------------
-    //     Pull out the next message
-    //     -------------------------------------------------*/
-    //     dequeueResult = mTxQueue.pop( &tmpFrame, TIMEOUT_DONT_WAIT );
-    //     mTxQueue.unlock();
-
-    //     /*-------------------------------------------------
-    //     Write the message to the hw mailbox
-    //     -------------------------------------------------*/
-    //     transmitResult = lld->send( box, tmpFrame );
-
-    //     /*-------------------------------------------------
-    //     Handle any errors
-    //     -------------------------------------------------*/
-    //     if( !dequeueResult || ( transmitResult != Chimera::Status::OK ) )
-    //     {
-    //       Chimera::insert_debug_breakpoint();
-    //       break;
-    //     }
-    //   }
-    //   else
-    //   {
-    //     mTxQueue.unlock();
-    //     break;
-    //   }
-    // }
 
     /*-------------------------------------------------
     Invoke any user callback
@@ -481,43 +447,11 @@ namespace Thor::CAN
     using namespace Chimera::Threading;
 
     auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
-    auto box = ::LLD::Mailbox::UNKNOWN;
 
     /*-------------------------------------------------
     Get the context of the last ISR
     -------------------------------------------------*/
     auto context = lld->getISRContext( InterruptType::RX_ISR );
-
-    /*-------------------------------------------------
-    Enqueue all available messages
-    -------------------------------------------------*/
-    bool enqueueResult = false;
-    auto receiveResult = Chimera::Status::OK;
-
-    BasicFrame tmpFrame;
-    tmpFrame.clear();
-
-    // while( lld->rxMailboxAvailable( box ) )
-    // {
-    //   receiveResult = lld->receive( box, tmpFrame );
-
-    //   /*-------------------------------------------------
-    //   Update the queue with the new frame
-    //   -------------------------------------------------*/
-    //   mRxQueue.lock();
-    //   enqueueResult = mRxQueue.push( &tmpFrame, TIMEOUT_DONT_WAIT );
-    //   mRxQueue.unlock();
-
-    //   /*-------------------------------------------------
-    //   If we can't enqueue or the RX failed somehow, the
-    //   frame was just lost.
-    //   -------------------------------------------------*/
-    //   if( !enqueueResult || ( receiveResult != Chimera::Status::OK ) )
-    //   {
-    //     Chimera::insert_debug_breakpoint();
-    //     break;
-    //   }
-    // }
 
     /*-------------------------------------------------
     Invoke user call back on the RX event
@@ -528,15 +462,39 @@ namespace Thor::CAN
 
   void Driver::ProcessISREvent_Error()
   {
-    // Maybe reset the driver?
-    // Execute user callback
+    using namespace Chimera::CAN;
+    using namespace Chimera::Threading;
+
+    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
+
+    /*-------------------------------------------------
+    Get the context of the last ISR
+    -------------------------------------------------*/
+    auto context = lld->getISRContext( InterruptType::ERR_ISR );
+
+    /*-------------------------------------------------
+    Invoke user call back on the RX event
+    -------------------------------------------------*/
+    // todo
   }
 
 
   void Driver::ProcessISREvent_StatusChange()
   {
-    // Not sure if there will be much to do here
-    // Execute user callback
+    using namespace Chimera::CAN;
+    using namespace Chimera::Threading;
+
+    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
+
+    /*-------------------------------------------------
+    Get the context of the last ISR
+    -------------------------------------------------*/
+    auto context = lld->getISRContext( InterruptType::STS_ISR );
+
+    /*-------------------------------------------------
+    Invoke user call back on the RX event
+    -------------------------------------------------*/
+    // todo
   }
 
 }    // namespace Thor::CAN
