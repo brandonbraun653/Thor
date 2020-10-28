@@ -139,9 +139,9 @@ namespace Chimera::CAN
   }
 
 
-  Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame, const size_t timeout )
+  Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame )
   {
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->receive( frame, timeout );
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->receive( frame );
   }
 
 
