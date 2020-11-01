@@ -233,6 +233,13 @@ namespace Thor::LLD::CAN
      */
     Chimera::Status_t receive( Chimera::CAN::BasicFrame &frame );
 
+    /**
+     *  Checks how many frames are available for reception
+     *
+     *  @return size_t
+     */
+    size_t available();
+
     /*-------------------------------------------------------------------------------
     Asynchronous Operation
     -------------------------------------------------------------------------------*/

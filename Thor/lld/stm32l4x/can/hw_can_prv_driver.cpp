@@ -257,7 +257,7 @@ namespace Thor::LLD::CAN
     knows. I know this is gross. That's why it's hidden
     in this function.
     -------------------------------------------------*/
-    if ( filter->filterType == FilterType::MODE_16BIT_LIST )
+    if ( filter->filterType == Thor::CAN::FilterType::MODE_16BIT_LIST )
     {
       constexpr Reg32_t FMSK_EVEN = 0x0000FFFF;
       constexpr Reg32_t FMSK_ODD  = 0xFFFF0000;
@@ -283,7 +283,7 @@ namespace Thor::LLD::CAN
       }
       // else this filter bank is full
     }
-    else if ( ( filter->filterType == FilterType::MODE_16BIT_MASK ) || ( filter->filterType == FilterType::MODE_32BIT_LIST ) )
+    else if ( ( filter->filterType == Thor::CAN::FilterType::MODE_16BIT_MASK ) || ( filter->filterType == Thor::CAN::FilterType::MODE_32BIT_LIST ) )
     {
       /*-------------------------------------------------
       Only two possible filter types, each 32bit wide.
@@ -300,7 +300,7 @@ namespace Thor::LLD::CAN
       }
       // else this filter bank is full
     }
-    else if ( filter->filterType == FilterType::MODE_32BIT_MASK )
+    else if ( filter->filterType == Thor::CAN::FilterType::MODE_32BIT_MASK )
     {
       /*-------------------------------------------------
       Single possible filter type here
@@ -325,19 +325,19 @@ namespace Thor::LLD::CAN
 
     switch ( filter->filterType )
     {
-      case FilterType::MODE_16BIT_LIST:
+      case Thor::CAN::FilterType::MODE_16BIT_LIST:
         return assign16BitListFilter( filter, bank, slot );
         break;
 
-      case FilterType::MODE_16BIT_MASK:
+      case Thor::CAN::FilterType::MODE_16BIT_MASK:
         return assign16BitMaskFilter( filter, bank, slot );
         break;
 
-      case FilterType::MODE_32BIT_LIST:
+      case Thor::CAN::FilterType::MODE_32BIT_LIST:
         return assign32BitListFilter( filter, bank, slot );
         break;
 
-      case FilterType::MODE_32BIT_MASK:
+      case Thor::CAN::FilterType::MODE_32BIT_MASK:
         return assign32BitMaskFilter( filter, bank, slot );
         break;
 
@@ -354,14 +354,14 @@ namespace Thor::LLD::CAN
   }
 
 
-  Chimera::CAN::FilterType prv_get_filter_bank_mode( RegisterMap *const periph, const size_t bank_idx )
+  Thor::CAN::FilterType prv_get_filter_bank_mode( RegisterMap *const periph, const size_t bank_idx )
   {
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
     if ( !periph || !( bank_idx < NUM_CAN_FILTER_BANKS ) )
     {
-      return Chimera::CAN::FilterType::UNKNOWN;
+      return Thor::CAN::FilterType::UNKNOWN;
     }
 
     /*-------------------------------------------------
@@ -369,23 +369,23 @@ namespace Thor::LLD::CAN
     -------------------------------------------------*/
     if ( !( periph->FM1R & ( 1u << bank_idx ) ) && !( periph->FS1R & ( 1u << bank_idx ) ) )
     {
-      return Chimera::CAN::FilterType::MODE_16BIT_MASK;
+      return Thor::CAN::FilterType::MODE_16BIT_MASK;
     }
     else if ( ( periph->FM1R & ( 1u << bank_idx ) ) && !( periph->FS1R & ( 1u << bank_idx ) ) )
     {
-      return Chimera::CAN::FilterType::MODE_16BIT_LIST;
+      return Thor::CAN::FilterType::MODE_16BIT_LIST;
     }
     else if ( !( periph->FM1R & ( 1u << bank_idx ) ) && ( periph->FS1R & ( 1u << bank_idx ) ) )
     {
-      return Chimera::CAN::FilterType::MODE_32BIT_MASK;
+      return Thor::CAN::FilterType::MODE_32BIT_MASK;
     }
     else if ( ( periph->FM1R & ( 1u << bank_idx ) ) && ( periph->FS1R & ( 1u << bank_idx ) ) )
     {
-      return Chimera::CAN::FilterType::MODE_32BIT_LIST;
+      return Thor::CAN::FilterType::MODE_32BIT_LIST;
     }
     else
     {
-      return Chimera::CAN::FilterType::UNKNOWN;
+      return Thor::CAN::FilterType::UNKNOWN;
     }
   }
 

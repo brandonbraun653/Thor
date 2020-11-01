@@ -28,6 +28,22 @@ namespace Thor::CAN
   -------------------------------------------------------------------------------*/
   using Driver_rPtr = Driver *;
   using Driver_sPtr = std::shared_ptr<Driver>;
+
+
+  /*-------------------------------------------------------------------------------
+  Enumerations
+  -------------------------------------------------------------------------------*/
+  enum class FilterType : uint8_t
+  {
+    MODE_16BIT_LIST,
+    MODE_16BIT_MASK,
+    MODE_32BIT_LIST,
+    MODE_32BIT_MASK,
+
+    NUM_OPTIONS,
+    UNKNOWN
+  };
+
 }
 
 #endif /* !THOR_HLD_CAN_TYPES_HPP */

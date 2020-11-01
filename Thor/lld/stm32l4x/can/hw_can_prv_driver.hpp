@@ -124,9 +124,9 @@ namespace Thor::LLD::CAN
    *
    *  @param[in]  periph      Memory mapped struct to the peripheral
    *  @param[in]  bank_idx    Which filter bank to look at
-   *  @return Chimera::CAN::FilterType
+   *  @return Thor::CAN::FilterType
    */
-  Chimera::CAN::FilterType prv_get_filter_bank_mode( RegisterMap *const periph, const size_t bank_idx );
+  Thor::CAN::FilterType prv_get_filter_bank_mode( RegisterMap *const periph, const size_t bank_idx );
 
   /**
    *  Writes packed frame data into the appropriate TX mailbox registes

@@ -14,9 +14,13 @@
 
 /* STL Includes */
 #include <cstdint>
+#include <type_traits>
 
 /* Chimera Includes */
 #include <Chimera/can>
+
+/* Thor Includes */
+#include <Thor/hld/can/hld_can_types.hpp>
 
 
 namespace Thor::LLD::CAN
@@ -114,15 +118,28 @@ namespace Thor::LLD::CAN
    */
   struct MessageFilter
   {
-    bool valid;                          /**< Should this filter configuration even be trusted as valid? */
-    bool active;                         /**< Should this filter be active? */
-    uint32_t identifier;                 /**< Determines dominant/recessive bit level for the matching identifier */
-    uint32_t mask;                       /**< Optional: If mask mode, determines bits used for id comparison */
-    Mailbox fifoBank;                    /**< Which filter bank this message should be placed in */
-    Chimera::CAN::FilterType filterType; /**< Hardware filtering mode */
-    Chimera::CAN::FrameType frameType;   /**< What kind of framing should the filter use? */
-    Chimera::CAN::IdType idType;         /**< Standard or extended filter ID? */
-    uint8_t hwFMI;                       /**< Read only. Contains the filter's match index once assigned to a hw filter bank */
+    bool valid;                        /**< Should this filter configuration even be trusted as valid? */
+    bool active;                       /**< Should this filter be active? */
+    uint32_t identifier;               /**< Determines dominant/recessive bit level for the matching identifier */
+    uint32_t mask;                     /**< Optional: If mask mode, determines bits used for id comparison */
+    Mailbox fifoBank;                  /**< Which filter bank this message should be placed in */
+    Thor::CAN::FilterType filterType;  /**< Hardware filtering mode */
+    Chimera::CAN::FrameType frameType; /**< What kind of framing should the filter use? */
+    Chimera::CAN::IdType idType;       /**< Standard or extended filter ID? */
+    uint8_t hwFMI;                     /**< Read only. Contains the filter's match index once assigned to a hw filter bank */
+
+    void clear()
+    {
+      valid      = false;
+      active     = false;
+      identifier = std::numeric_limits<decltype( MessageFilter::identifier )>::max();
+      mask       = std::numeric_limits<decltype( MessageFilter::mask )>::max();
+      fifoBank   = Mailbox::UNKNOWN;
+      filterType = Thor::CAN::FilterType::UNKNOWN;
+      frameType  = Chimera::CAN::FrameType::UNKNOWN;
+      idType     = Chimera::CAN::IdType::UNKNOWN;
+      hwFMI      = std::numeric_limits<decltype( MessageFilter::hwFMI )>::max();
+    }
   };
 
 

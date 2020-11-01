@@ -56,6 +56,7 @@ namespace Thor::CAN
     Chimera::Status_t receive( Chimera::CAN::BasicFrame &frame );
     Chimera::Status_t filter( const Chimera::CAN::Filter *const list, const size_t size );
     Chimera::Status_t flush( Chimera::CAN::BufferType buffer );
+    size_t available();
 
     /*-------------------------------------------------
     Interface: Listener

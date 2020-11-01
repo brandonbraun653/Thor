@@ -85,7 +85,7 @@ namespace Chimera::CAN::Backend
     return Chimera::Status::NOT_SUPPORTED;
 #endif    // THOR_HLD_CAN
   }
-}  // namespace Chimera::CAN
+}    // namespace Chimera::CAN::Backend
 
 
 namespace Chimera::CAN
@@ -110,7 +110,7 @@ namespace Chimera::CAN
   {
     mDriver = reinterpret_cast<void *>( ::LLD::getDriver( cfg.HWInit.channel ) );
 
-    if( mDriver )
+    if ( mDriver )
     {
       return static_cast<::HLD::Driver_rPtr>( mDriver )->open( cfg );
     }
@@ -157,10 +157,17 @@ namespace Chimera::CAN
   }
 
 
+  size_t Driver::available()
+  {
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->available();
+  }
+
+
   /*-------------------------------------------------
   Interface: Listener
   -------------------------------------------------*/
-  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID )
+  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
+                                              size_t &registrationID )
   {
     return static_cast<::HLD::Driver_rPtr>( mDriver )->registerListener( listener, timeout, registrationID );
   }
@@ -180,7 +187,8 @@ namespace Chimera::CAN
   }
 
 
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier, const size_t timeout )
+  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+                                   const size_t timeout )
   {
     return static_cast<::HLD::Driver_rPtr>( mDriver )->await( event, notifier, timeout );
   }

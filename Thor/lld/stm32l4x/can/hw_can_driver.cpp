@@ -353,16 +353,16 @@ namespace Thor::LLD::CAN
 
         switch( filter->filterType)
         {
-          case FilterType::MODE_16BIT_LIST:
+          case Thor::CAN::FilterType::MODE_16BIT_LIST:
             *fmi = 4;
             break;
 
-          case FilterType::MODE_16BIT_MASK:
-          case FilterType::MODE_32BIT_LIST:
+          case Thor::CAN::FilterType::MODE_16BIT_MASK:
+          case Thor::CAN::FilterType::MODE_32BIT_LIST:
             *fmi = 2;
             break;
 
-          case FilterType::MODE_32BIT_MASK:
+          case Thor::CAN::FilterType::MODE_32BIT_MASK:
             *fmi = 1;
             break;
 
@@ -403,22 +403,22 @@ namespace Thor::LLD::CAN
       -------------------------------------------------*/
       switch ( filter->filterType )
       {
-        case Chimera::CAN::FilterType::MODE_16BIT_LIST:
+        case Thor::CAN::FilterType::MODE_16BIT_LIST:
           mPeriph->FM1R |= ( 1u << bankIdx );     // Mask
           mPeriph->FS1R &= ~( 1u << bankIdx );    // Scale
           break;
 
-        case Chimera::CAN::FilterType::MODE_16BIT_MASK:
+        case Thor::CAN::FilterType::MODE_16BIT_MASK:
           mPeriph->FM1R &= ~( 1u << bankIdx );    // Mask
           mPeriph->FS1R &= ~( 1u << bankIdx );    // Scale
           break;
 
-        case Chimera::CAN::FilterType::MODE_32BIT_LIST:
+        case Thor::CAN::FilterType::MODE_32BIT_LIST:
           mPeriph->FM1R |= ( 1u << bankIdx );     // Mask
           mPeriph->FS1R |= ( 1u << bankIdx );     // Scale
           break;
 
-        case Chimera::CAN::FilterType::MODE_32BIT_MASK:
+        case Thor::CAN::FilterType::MODE_32BIT_MASK:
           mPeriph->FM1R &= ~( 1u << bankIdx );    // Mask
           mPeriph->FS1R |= ( 1u << bankIdx );     // Scale
           break;
@@ -783,6 +783,12 @@ namespace Thor::LLD::CAN
     -------------------------------------------------*/
     frame = mRXBuffer.pop();
     return Chimera::Status::OK;
+  }
+
+
+  size_t Driver::available()
+  {
+    return mRXBuffer.size();
   }
 
 

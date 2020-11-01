@@ -227,6 +227,7 @@ namespace Thor::CAN
   {
   }
 
+
   /*------------------------------------------------
   HW Interface
   ------------------------------------------------*/
@@ -240,15 +241,17 @@ namespace Thor::CAN
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*-------------------------------------------------
-    Initialize the Low Level Driver
-    -------------------------------------------------*/
+    // Only bother grabbing the driver if config is valid
     auto lld = ::LLD::getDriver( cfg.HWInit.channel );
-    if( !lld )
+    if ( !lld )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
+    /*-------------------------------------------------
+    Initialize the Low Level Driver
+    -------------------------------------------------*/
+    lld->enableClock();
     if ( auto sts = lld->configure( cfg ); sts != Chimera::Status::OK )
     {
       return sts;
@@ -259,13 +262,13 @@ namespace Thor::CAN
     -------------------------------------------------*/
     size_t lldResourceIndex = ::LLD::getResourceIndex( cfg.HWInit.channel );
 
-    for(auto isr_idx=0; isr_idx<::LLD::NUM_CAN_IRQ_HANDLERS; isr_idx++)
+    for ( auto isr_idx = 0; isr_idx < ::LLD::NUM_CAN_IRQ_HANDLERS; isr_idx++ )
     {
       if ( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ] )
       {
         Chimera::Threading::Thread thread;
-        thread.initialize( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ], nullptr, Chimera::Threading::Priority::LEVEL_5,
-                           STACK_BYTES( 250 ), nullptr );
+        thread.initialize( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ], nullptr,
+                           Chimera::Threading::Priority::LEVEL_5, STACK_BYTES( 250 ), nullptr );
         thread.start();
         s_user_isr_handle[ lldResourceIndex ][ isr_idx ] = thread.native_handle();
       }
@@ -289,7 +292,7 @@ namespace Thor::CAN
     Disable all ISR signals
     -------------------------------------------------*/
     auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
-    for( auto isr=0; isr < static_cast<size_t>( InterruptType::NUM_OPTIONS ); isr++)
+    for ( auto isr = 0; isr < static_cast<size_t>( InterruptType::NUM_OPTIONS ); isr++ )
     {
       lld->disableISRSignal( static_cast<InterruptType>( isr ) );
     }
@@ -299,6 +302,11 @@ namespace Thor::CAN
     -------------------------------------------------*/
     lld->flushTX();
     lld->flushRX();
+
+    /*-------------------------------------------------
+    Finally, power off the hardware
+    -------------------------------------------------*/
+    lld->disableClock();
 
     return Chimera::Status::OK;
   }
@@ -333,26 +341,80 @@ namespace Thor::CAN
 
   Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame )
   {
-    /*-------------------------------------------------
-    Grab the low level driver
-    -------------------------------------------------*/
-    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
-
-    /*-------------------------------------------------
-    Receive any new messages
-    -------------------------------------------------*/
-    return lld->receive( frame );
+    return ::LLD::getDriver( mConfig.HWInit.channel )->receive( frame );
   }
 
 
   Chimera::Status_t Driver::filter( const Chimera::CAN::Filter *const list, const size_t size )
   {
+    /*-------------------------------------------------
+    Limit the filters to 32-bit mask mode for now and
+    expand to more when needed. This still gives around
+    14 filters, which is a lot.
+    -------------------------------------------------*/
+    constexpr size_t hwFilterLength = ::LLD::NUM_CAN_MAX_32BIT_MASK_FILTERS;
 
-    // Am going to need to create a secondary list? Hmm...That sounds like dynamic allocation...
-    // Why don't I just have a single filter type?
-    // Well...I COULD allocate on the stack.
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    if ( !list || !size || ( size > hwFilterLength ) )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
 
-    return Chimera::Status::OK;
+    /*-------------------------------------------------
+    Allocate the appropriate amount of memory on the
+    stack and initialize it.
+    ------------------------------------------------*/
+    ::LLD::MessageFilter hwFilters[ hwFilterLength ];
+    for ( auto x = 0; x < hwFilterLength; x++ )
+    {
+      hwFilters[ x ].clear();
+    }
+
+    /*-------------------------------------------------
+    Convert the high level filter into the internal
+    representation of a hardware filter.
+    ------------------------------------------------*/
+    ::LLD::Mailbox lastBox = ::LLD::Mailbox::RX_MAILBOX_1;
+
+    for ( auto x = 0; x < size; x++ )
+    {
+      /*-------------------------------------------------
+      Assign basic metrics directly
+      -------------------------------------------------*/
+      hwFilters[ x ].active     = true;
+      hwFilters[ x ].valid      = true;
+      hwFilters[ x ].fifoBank   = lastBox;
+      hwFilters[ x ].filterType = Thor::CAN::FilterType::MODE_32BIT_MASK;
+      hwFilters[ x ].frameType  = Chimera::CAN::FrameType::DATA;
+      hwFilters[ x ].identifier = list[ x ].id;
+      hwFilters[ x ].mask       = list[ x ].mask;
+
+      /*-------------------------------------------------
+      Assign the identifier type
+      -------------------------------------------------*/
+      hwFilters[ x ].idType = Chimera::CAN::IdType::STANDARD;
+      if ( list[ x ].extended )
+      {
+        hwFilters[ x ].idType = Chimera::CAN::IdType::EXTENDED;
+      }
+
+      /*-------------------------------------------------
+      Swap which mailbox will be assigned next. Helps to
+      load balance the hardware FIFOs.
+      -------------------------------------------------*/
+      if ( lastBox == ::LLD::Mailbox::RX_MAILBOX_1 )
+      {
+        lastBox = ::LLD::Mailbox::RX_MAILBOX_2;
+      }
+      else
+      {
+        lastBox = ::LLD::Mailbox::RX_MAILBOX_1;
+      }
+    }
+
+    return ::LLD::getDriver( mConfig.HWInit.channel )->applyFilters( hwFilters, hwFilterLength );
   }
 
 
@@ -361,7 +423,7 @@ namespace Thor::CAN
     using namespace Chimera::CAN;
     auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
 
-    switch( buffer )
+    switch ( buffer )
     {
       case BufferType::RX:
         lld->flushRX();
@@ -377,6 +439,12 @@ namespace Thor::CAN
     }
 
     return Chimera::Status::OK;
+  }
+
+
+  size_t Driver::available()
+  {
+    return ::LLD::getDriver( mConfig.HWInit.channel )->available();
   }
 
 
@@ -521,7 +589,7 @@ static void CAN1ISR_TXHandler( void *argument )
   while ( 1 )
   {
     sig->acquire();
-    hld_driver[ ::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_TX();
+    hld_driver[::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_TX();
   }
 }
 
@@ -543,7 +611,7 @@ static void CAN1ISR_RXHandler( void *argument )
   while ( 1 )
   {
     sig->acquire();
-    hld_driver[ ::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_RX();
+    hld_driver[::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_RX();
   }
 }
 
@@ -565,7 +633,7 @@ static void CAN1ISR_StatusChangeHandler( void *argument )
   while ( 1 )
   {
     sig->acquire();
-    hld_driver[ ::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_StatusChange();
+    hld_driver[::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_StatusChange();
   }
 }
 
@@ -587,11 +655,11 @@ static void CAN1ISR_ErrHandler( void *argument )
   while ( 1 )
   {
     sig->acquire();
-    hld_driver[ ::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_StatusChange();
+    hld_driver[::LLD::CAN1_RESOURCE_INDEX ].ProcessISREvent_StatusChange();
   }
 }
 
-#endif  /* STM32_CAN1_PERIPH_AVAILABLE */
+#endif /* STM32_CAN1_PERIPH_AVAILABLE */
 
 
 #endif /* THOR_HLD_CAN */

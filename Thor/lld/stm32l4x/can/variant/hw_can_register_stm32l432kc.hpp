@@ -33,8 +33,13 @@ namespace Thor::LLD::CAN
   static constexpr size_t NUM_CAN_TX_MAILBOX   = 3;
   static constexpr size_t NUM_CAN_RX_MAILBOX   = 2;
   static constexpr size_t NUM_CAN_FILTER_BANKS = 14; /**< Technically 28, but other 14 is for CAN2, which isn't on L4 */
-  static constexpr size_t NUM_CAN_MAX_FILTERS  = NUM_CAN_FILTER_BANKS * 4;    // Each bank can hold a max of four 16-bit filters
-  static constexpr size_t CAN_RX_FIFO_DEPTH    = 3;
+
+  static constexpr size_t NUM_CAN_MAX_32BIT_MASK_FILTERS = NUM_CAN_FILTER_BANKS;
+  static constexpr size_t NUM_CAN_MAX_32BIT_LIST_FILTERS = NUM_CAN_FILTER_BANKS * 2;
+  static constexpr size_t NUM_CAN_MAX_16BIT_MASK_FILTERS = NUM_CAN_FILTER_BANKS * 2;
+  static constexpr size_t NUM_CAN_MAX_16BIT_LIST_FILTERS = NUM_CAN_FILTER_BANKS * 4;
+  static constexpr size_t NUM_CAN_MAX_FILTERS            = NUM_CAN_MAX_16BIT_LIST_FILTERS;
+  static constexpr size_t CAN_RX_FIFO_DEPTH              = 3;
 
   static constexpr RIndex_t CAN1_RESOURCE_INDEX = 0u;
 
