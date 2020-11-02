@@ -28,6 +28,7 @@ add_library(${LLD_INTF} INTERFACE)
 target_link_libraries(${LLD_INTF} INTERFACE
   thor_lld_intf_can
   thor_lld_intf_common
+  thor_lld_intf_exti
   thor_lld_intf_gpio
   thor_lld_intf_spi
   thor_lld_intf_usart

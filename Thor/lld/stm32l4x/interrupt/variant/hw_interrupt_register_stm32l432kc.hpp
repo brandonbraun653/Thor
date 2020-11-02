@@ -21,7 +21,7 @@
 /*-------------------------------------------------
 ISR vector numbers as described in PM0214 Section 2.3.4 and RM0394 Section 12.3.
 -------------------------------------------------*/
-enum IRQn_Type
+enum IRQn_Type : int
 {
   /****** Cortex-M4 Processor Exceptions Numbers ******/
   NonMaskableInt_IRQn   = -14,

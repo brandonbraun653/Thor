@@ -92,6 +92,9 @@ namespace Thor::System::MemoryMap
   static constexpr uint32_t USART1_PERIPH_START_ADDRESS = APB2_RGN_START_ADDRESS + 0x3800;
   static constexpr uint32_t USART1_PERIPH_END_ADDRESS = APB2_RGN_START_ADDRESS + 0x3BFF;
 
+  static constexpr uint32_t EXTI_PERIPH_START_ADDRESS = APB2_RGN_START_ADDRESS + 0x0400;
+  static constexpr uint32_t EXTI_PERIPH_END_ADDRESS = APB2_RGN_END_ADDRESS + 0x07FF;
+
   /*-------------------------------------------------
   AHB1
   -------------------------------------------------*/

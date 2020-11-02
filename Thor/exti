@@ -1,0 +1,18 @@
+/********************************************************************************
+ *  File Name:
+ *    exti
+ *
+ *  Description:
+ *    Thor EXTI Includes
+ *
+ *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_EXTI_INCLUDES
+#define THOR_EXTI_INCLUDES
+
+#include <Thor/hld/exti/hld_exti_driver.hpp>
+#include <Thor/hld/exti/hld_exti_types.hpp>
+
+#endif /* !THOR_EXTI_INCLUDES */

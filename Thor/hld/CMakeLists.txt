@@ -29,6 +29,7 @@ target_link_libraries(${HLD} INTERFACE
   thor_hld_can
   thor_hld_clock
   thor_hld_dma
+  thor_hld_exti
   thor_hld_gpio
   thor_hld_pwm
   thor_hld_spi

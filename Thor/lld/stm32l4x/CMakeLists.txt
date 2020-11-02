@@ -3,6 +3,7 @@
 # ====================================================
 add_subdirectory("can")
 add_subdirectory("des")
+add_subdirectory("exti")
 add_subdirectory("flash")
 add_subdirectory("gpio")
 add_subdirectory("interrupt")
@@ -22,6 +23,7 @@ add_library(${LLD} INTERFACE)
 target_link_libraries(${LLD} INTERFACE
   thor_lld_stm32l4_can
   thor_lld_stm32l4_des
+  thor_lld_stm32l4_exti
   thor_lld_stm32l4_flash
   thor_lld_stm32l4_gpio
   thor_lld_stm32l4_interrupt
