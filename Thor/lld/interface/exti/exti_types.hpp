@@ -42,21 +42,9 @@ namespace Thor::LLD::EXTI
   -------------------------------------------------------------------------------*/
   struct LineConfig
   {
-    LineConfig() : supported( false ), NVIC_IRQNumber( -100 ), lineType( LineType::UNKNOWN )
-    {
-    }
-
-    LineConfig( bool s, int n, LineType l )
-    {
-      supported      = s;
-      NVIC_IRQNumber = n;
-      lineType       = l;
-    }
-
     bool supported;
     int NVIC_IRQNumber;
     LineType lineType;
-
   };
 
 }    // namespace Thor::LLD::EXTI
