@@ -10,7 +10,7 @@
 /* STL Includes */
 
 /* Aurora Includes */
-#include <Aurora/constants/common.hpp>
+#include <Aurora/constants>
 
 /* Chimera Includes */
 #include <Chimera/common>
