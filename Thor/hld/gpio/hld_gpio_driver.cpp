@@ -261,6 +261,18 @@ namespace Thor::GPIO
     state      = ( state == State::HIGH ) ? State::LOW : State::HIGH;
     return setState( state );
   }
+
+
+  Chimera::Status_t Driver::attachInterrupt( Chimera::Function::vGeneric &func, const Chimera::EXTI::EdgeTrigger trigger )
+  {
+    return LLD::getDriver( mPort, mPin )->attachInterrupt( mPin, func, trigger );
+  }
+
+
+  void Driver::detachInterrupt()
+  {
+    return LLD::getDriver( mPort, mPin )->detachInterrupt( mPin );
+  }
 }    // namespace Thor::GPIO
 
 #endif /* THOR_HLD_GPIO */

@@ -17,6 +17,7 @@
 
 /* Chimera Includes */
 #include <Chimera/gpio>
+#include <Chimera/exti>
 
 /* Thor Includes */
 #include <Thor/lld/common/types.hpp>
@@ -123,7 +124,7 @@ namespace Thor::LLD::GPIO
    *  @param[in]  port    Port to get the attributes for
    *  @return PortAttributes*
    */
-  const PortAttributes* getPortAttributes( const Chimera::GPIO::Port port );
+  const PortAttributes *getPortAttributes( const Chimera::GPIO::Port port );
 
   /**
    *  Initializes the GPIO drivers by attaching the appropriate peripheral
@@ -146,6 +147,16 @@ namespace Thor::LLD::GPIO
    */
   Reg32_t findAlternateFunction( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin,
                                  const Chimera::GPIO::Alternate alt );
+
+  /**
+   *  Searches through the configuration data to find the EXTI event
+   *  line associated with the port/pin configuration.
+   *
+   *  @param[in]  port        The port to look at
+   *  @param[in]  pin         The pin to look at
+   *  @return Chimera::EXTI::EventLine_t
+   */
+  Chimera::EXTI::EventLine_t findEventLine( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 
 
   /*-------------------------------------------------------------------------------
@@ -304,6 +315,26 @@ namespace Thor::LLD::GPIO
      *  @return Chimera::GPIO::Alternate
      */
     virtual Chimera::GPIO::Alternate alternateFunctionGet( const uint8_t pin ) = 0;
+
+    /**
+     *  Attaches an interrupt callback for a GPIO pin that has been configured
+     *  to use external interrupts.
+     *
+     *  @param[in]  pin       The pin to act on
+     *  @param[in]  func      The function to be called
+     *  @param[in]  trigger   What edge to trigger on
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t attachInterrupt( const uint8_t pin, Chimera::Function::vGeneric &func,
+                                               const Chimera::EXTI::EdgeTrigger trigger ) = 0;
+
+    /**
+     *  Detaches a previously configured interrupt
+     *
+     *  @param[in]  pin       The pin to act on
+     *  @return void
+     */
+    virtual void detachInterrupt( const uint8_t pin ) = 0;
   };
 
 
@@ -331,6 +362,9 @@ namespace Thor::LLD::GPIO
     Thor::LLD::GPIO::Speed speedGet( const uint8_t pin );
     Chimera::GPIO::Pull pullGet( const uint8_t pin );
     Chimera::GPIO::Alternate alternateFunctionGet( const uint8_t pin );
+    Chimera::Status_t attachInterrupt( const uint8_t pin, Chimera::Function::vGeneric &func,
+                                       const Chimera::EXTI::EdgeTrigger trigger );
+    void detachInterrupt( const uint8_t pin );
 
   private:
     RegisterMap *mPeriph;

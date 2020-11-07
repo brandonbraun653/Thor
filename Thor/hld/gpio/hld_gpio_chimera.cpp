@@ -29,7 +29,7 @@ namespace LLD = ::Thor::LLD::GPIO;
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
-  // Each Chimera driver is associated with a pin, not the peripheral instance
+// Each Chimera driver is associated with a pin, not the peripheral instance
 static constexpr size_t NUM_DRIVERS = ::LLD::NUM_GPIO_PINS;
 
 /*-------------------------------------------------------------------------------
@@ -138,6 +138,18 @@ namespace Chimera::GPIO
   Chimera::Status_t Driver::toggle()
   {
     return static_cast<::HLD::Driver_rPtr>( mDriver )->toggle();
+  }
+
+
+  Chimera::Status_t Driver::attachInterrupt( Chimera::Function::vGeneric &func, const Chimera::EXTI::EdgeTrigger trigger )
+  {
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->attachInterrupt( func, trigger );
+  }
+
+
+  void Driver::detachInterrupt()
+  {
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->detachInterrupt();
   }
 
 

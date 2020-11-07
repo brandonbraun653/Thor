@@ -11,11 +11,26 @@ set(LINK_LIBS
 )
 
 # ====================================================
+# Variant Library
+# ====================================================
+set(VARIANT thor_lld_stm32l4_sys_variant)
+if(${THOR_CHIP} MATCHES "^L432$")
+  add_library(${VARIANT} STATIC variant/hw_sys_register_stm32l432kc.cpp)
+  target_link_libraries(${VARIANT} PRIVATE ${LINK_LIBS})
+  export(TARGETS ${VARIANT} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${VARIANT}.cmake")
+else()
+  message(FATAL_ERROR "Unsupported STM32L4 driver variant for: sys")
+endif()
+
+
+# ====================================================
 # Driver Library (+ Variant)
 # ====================================================
 set(CORE thor_lld_stm32l4_system)
 add_library(${CORE} STATIC
-  sys_common_init.cpp
+  hw_sys_startup.cpp
+  hw_sys_driver.cpp
+  hw_sys_data.cpp
 )
-target_link_libraries(${CORE} PRIVATE ${LINK_LIBS})
+target_link_libraries(${CORE} PRIVATE ${LINK_LIBS} ${VARIANT})
 export(TARGETS ${CORE} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${CORE}.cmake")

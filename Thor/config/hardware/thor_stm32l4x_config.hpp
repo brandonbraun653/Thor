@@ -376,6 +376,10 @@ Low Level Driver Support
 #define THOR_LLD_SPI
 #endif
 
+#ifndef THOR_LLD_SYSCFG
+#define THOR_LLD_SYSCFG
+#endif
+
 // Not supported, pending rewrite in Chimera-23
 // #ifndef THOR_LLD_TIMER
 // #define THOR_LLD_TIMER

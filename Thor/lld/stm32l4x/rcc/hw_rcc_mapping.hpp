@@ -26,6 +26,7 @@
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_prj.hpp>
+#include <Thor/lld/stm32l4x/system/hw_sys_prj.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_prj.hpp>
 #include <Thor/lld/stm32l4x/usart/hw_usart_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
@@ -120,6 +121,18 @@ namespace Thor::LLD::RCC
     extern RegisterConfig SPI_ResetConfig[ Thor::LLD::SPI::NUM_SPI_PERIPHS ];
     extern Chimera::Clock::Bus SPI_SourceClock[ Thor::LLD::SPI::NUM_SPI_PERIPHS ];
 #endif /* THOR_LLD_SPI */
+
+#if defined( THOR_LLD_SYSCFG )
+    /**
+     *  SYSCFG Peripheral Config Lookup Tables
+     */
+    extern void SYSCFGInit();
+
+    extern PCC SYSCFGLookup;
+    extern RegisterConfig SYSCFG_ClockConfig[ Thor::LLD::SYS::NUM_SYSCFG_PERIPHS ];
+    extern RegisterConfig SYSCFG_ResetConfig[ Thor::LLD::SYS::NUM_SYSCFG_PERIPHS ];
+    extern Chimera::Clock::Bus SYSCFG_SourceClock[ Thor::LLD::SYS::NUM_SYSCFG_PERIPHS ];
+#endif /* THOR_LLD_SYSCFG */
 
 #if defined( THOR_LLD_TIMER )
     /**

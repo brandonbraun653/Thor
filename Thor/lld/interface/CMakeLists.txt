@@ -31,6 +31,7 @@ target_link_libraries(${LLD_INTF} INTERFACE
   thor_lld_intf_exti
   thor_lld_intf_gpio
   thor_lld_intf_spi
+  thor_lld_intf_sys
   thor_lld_intf_usart
 )
 export(TARGETS ${LLD_INTF} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${LLD_INTF}.cmake")

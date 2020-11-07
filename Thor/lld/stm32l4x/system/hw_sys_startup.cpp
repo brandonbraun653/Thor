@@ -11,6 +11,7 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/rcc/rcc_detail.hpp>
+#include <Thor/lld/interface/system/sys_intf.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
@@ -67,6 +68,11 @@ void SystemInit()
   SCB->VTOR = Thor::System::MemoryMap::FLASH_BASE_ADDR |
               Thor::System::MemoryMap::VECT_TAB_OFFSET; /* Vector Table Relocation in Internal FLASH */
 #endif
+
+  /*-------------------------------------------------
+  Enable the system config register clock
+  -------------------------------------------------*/
+  Thor::LLD::SYS::clockEnable();
 }
 
 #elif defined( _SIM )

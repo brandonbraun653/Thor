@@ -8,6 +8,9 @@
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
+/* STL Includes */
+#include <type_traits>
+
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/utility>
@@ -653,6 +656,22 @@ namespace Thor::LLD::GPIO
     }
 
     return Chimera::GPIO::Port::UNKNOWN_PORT;
+  }
+
+
+  Chimera::EXTI::EventLine_t findEventLine( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
+  {
+    static_assert( sizeof( Chimera::EXTI::EventLine_t ) == sizeof( Chimera::GPIO::Pin ) );
+
+    /*-------------------------------------------------
+    Luckily ST seems to have made this simple. Each pin
+    is directly mapped to a line of the same value.
+    -------------------------------------------------*/
+#if defined( STM32L432xx )
+    return static_cast<Chimera::EXTI::EventLine_t>( pin );
+#else
+#pragma error( "Evaluate your processor for EXTI configuration" )
+#endif
   }
 
 }    // namespace Thor::LLD::GPIO

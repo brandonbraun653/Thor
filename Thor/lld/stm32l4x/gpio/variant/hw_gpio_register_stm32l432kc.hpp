@@ -16,6 +16,9 @@
 #include <cstdint>
 #include <cstddef>
 
+/* Chimera Includes */
+#include <Chimera/gpio>
+
 /* Thor Includes */
 #include <Thor/lld/common/types.hpp>
 
@@ -60,8 +63,11 @@ namespace Thor::LLD::GPIO
   static constexpr uint8_t GPIOK_NUM_PINS = 0;
   static constexpr uint8_t GPIOL_NUM_PINS = 0;
 
-  static constexpr uint8_t PRJ_MAX_PORTS = NUM_GPIO_PERIPHS;
-  static constexpr uint8_t PRJ_MAX_PINS  = NUM_GPIO_PINS;
+  static constexpr uint8_t PRJ_MAX_PORTS         = NUM_GPIO_PERIPHS;
+  static constexpr uint8_t PRJ_MAX_PINS          = NUM_GPIO_PINS;
+  static constexpr uint8_t PRJ_MAX_PINS_PER_PORT = 16;
+
+  static constexpr Chimera::GPIO::Port PRJ_LAST_PORT = Chimera::GPIO::Port::PORTC;
 
 }    // namespace Thor::LLD::GPIO
 

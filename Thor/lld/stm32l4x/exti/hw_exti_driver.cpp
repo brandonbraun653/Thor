@@ -216,7 +216,7 @@ namespace Thor::LLD::EXTI
     /*-------------------------------------------------
     Remove the callback from the cache
     -------------------------------------------------*/
-    s_Callbacks[ listener ] = nullptr;
+    s_Callbacks[ listener ] = Chimera::Function::vGeneric();
 
     s_mtx.unlock();
     return Chimera::Status::OK;
@@ -225,11 +225,34 @@ namespace Thor::LLD::EXTI
 
   Chimera::Status_t trigger( const Chimera::EXTI::EventLine_t listener )
   {
+    /*-------------------------------------------------
+    Input Protection
+    -------------------------------------------------*/
     if( !( listener < NUM_EXTI_LINES ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
+    /*-------------------------------------------------
+    If the SWIER register has already been set but the
+    PR indicates no event, the hardware has gotten into
+    a weird state. Setting the appropriate bit in PR
+    (to auto-clear SWIER) should allow SWIER to become
+    effective again.
+    -------------------------------------------------*/
+    const auto listener_bit = LISTENER_BIT_SET( listener );
+    const auto swier_set = ( *SWIER_PTR( listener ) & listener_bit );
+    const auto pr_set = ( *PR_PTR( listener ) & listener_bit );
+
+    if( swier_set && !pr_set )
+    {
+      *PR_PTR( listener ) |= listener_bit;
+    }
+
+    /*-------------------------------------------------
+    Now hardware should be in a good state to handle
+    the software interrupt request.
+    -------------------------------------------------*/
     *SWIER_PTR( listener ) |= LISTENER_BIT_SET( listener );
     return Chimera::Status::OK;
   }

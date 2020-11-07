@@ -14,11 +14,13 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
+#include <Thor/lld/interface/exti/exti_intf.hpp>
 #include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
+#include <Thor/lld/stm32l4x/system/hw_sys_driver.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_GPIO )
 
@@ -28,6 +30,7 @@ namespace Thor::LLD::GPIO
   Variables
   -------------------------------------------------------------------------------*/
   static Driver s_gpio_drivers[ NUM_GPIO_PERIPHS ];
+
 
   /*-------------------------------------------------------------------------------
   Public Functions
@@ -49,6 +52,7 @@ namespace Thor::LLD::GPIO
     }
   }
 
+
   Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
   {
     if ( auto idx = getResourceIndex( port ); idx != INVALID_RESOURCE_INDEX )
@@ -69,15 +73,18 @@ namespace Thor::LLD::GPIO
   {
   }
 
+
   Driver::~Driver()
   {
   }
+
 
   void Driver::attach( RegisterMap *const peripheral )
   {
     mPeriph = peripheral;
     clockEnable();
   }
+
 
   void Driver::clockEnable()
   {
@@ -87,6 +94,7 @@ namespace Thor::LLD::GPIO
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
   }
 
+
   void Driver::clockDisable()
   {
     auto rcc   = Thor::LLD::RCC::getPeripheralClock();
@@ -94,6 +102,7 @@ namespace Thor::LLD::GPIO
 
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
   }
+
 
   Chimera::Status_t Driver::driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive )
   {
@@ -114,6 +123,7 @@ namespace Thor::LLD::GPIO
     return Chimera::Status::OK;
   }
 
+
   Chimera::Status_t Driver::speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed )
   {
     /* Determine how far to shift into the register based on the config bit width */
@@ -132,6 +142,7 @@ namespace Thor::LLD::GPIO
 
     return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t Driver::pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull )
   {
@@ -152,6 +163,7 @@ namespace Thor::LLD::GPIO
     return Chimera::Status::OK;
   }
 
+
   Chimera::Status_t Driver::write( const uint8_t pin, const Chimera::GPIO::State state )
   {
     /*------------------------------------------------
@@ -171,6 +183,7 @@ namespace Thor::LLD::GPIO
 
     return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t Driver::alternateFunctionSet( const uint8_t pin, const Chimera::GPIO::Alternate val )
   {
@@ -194,6 +207,7 @@ namespace Thor::LLD::GPIO
     return Chimera::Status::OK;
   }
 
+
   Chimera::GPIO::State Driver::read( const uint8_t pin )
   {
     /* Read the input data register and mask off the desired bit */
@@ -208,6 +222,7 @@ namespace Thor::LLD::GPIO
       return Chimera::GPIO::State::LOW;
     }
   }
+
 
   Chimera::GPIO::Drive Driver::driveGet( const uint8_t pin )
   {
@@ -233,6 +248,7 @@ namespace Thor::LLD::GPIO
     return Chimera::GPIO::Drive::UNKNOWN_DRIVE;
   }
 
+
   Thor::LLD::GPIO::Speed Driver::speedGet( const uint8_t pin )
   {
     /* Determine how far to shift into the register based on the config bit width */
@@ -256,6 +272,7 @@ namespace Thor::LLD::GPIO
 
     return Thor::LLD::GPIO::Speed::UNKNOWN_SPEED;
   }
+
 
   Chimera::GPIO::Pull Driver::pullGet( const uint8_t pin )
   {
@@ -281,12 +298,39 @@ namespace Thor::LLD::GPIO
     return Chimera::GPIO::Pull::UNKNOWN_PULL;
   }
 
+
   Chimera::GPIO::Alternate Driver::alternateFunctionGet( const uint8_t pin )
   {
     // Currently not supported
     return Chimera::GPIO::Alternate::NONE;
   }
 
+
+  Chimera::Status_t Driver::attachInterrupt( const uint8_t pin, Chimera::Function::vGeneric &func,
+                                             const Chimera::EXTI::EdgeTrigger trigger )
+  {
+    /*-------------------------------------------------
+    Derive the GPIO port and EXTI line being used
+    -------------------------------------------------*/
+    auto port = getPort( reinterpret_cast<std::uintptr_t>( mPeriph ) );
+    auto line = findEventLine( port, pin );
+
+    /*-------------------------------------------------
+    Select the proper source for the interrupt line
+    -------------------------------------------------*/
+    SYS::configureExtiSource( port, pin );
+
+    /*-------------------------------------------------
+    Configure the EXTI hardware to enable the interrupt
+    -------------------------------------------------*/
+    return EXTI::attach( line, trigger, func );
+  }
+
+
+  void Driver::detachInterrupt( const uint8_t pin )
+  {
+    alkjsdflkjs
+  }
 }    // namespace Thor::LLD::GPIO
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_GPIO */
