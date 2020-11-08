@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    utilities.hpp
  *
- *   Description:
+ *  Description:
  *    Cortex-M4 specific device utilities
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -18,6 +18,9 @@
 
 namespace CortexM4
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   /**
    *  Calculates the Peripheral bit band address of a given bit inside of a
    *  register. All of this is done at compile time so there is no additional
@@ -41,23 +44,12 @@ namespace CortexM4
     return _alias_address;
   };
 
-
   /**
-   *  Globally disables interrupts 
+   *  Globally disables interrupts
    *
    *  @return uint32_t
    */
-  uint32_t disableInterrupts()
-  {
-    /*------------------------------------------------
-    Read the PRIMASK core register so we can know what state 
-    interrupts are currently in.
-    ------------------------------------------------*/
-    uint32_t primask = 0;
-    __asm volatile( "MRS %0, primask" : "=r"( primask )::"memory" );  // Stores the mask
-    __asm volatile( "CPSID I" );                                      // Disables interrupts
-    return primask;
-  }
+  uint32_t disableInterrupts();
 
   /**
    *  Globally enables interrupts
@@ -65,13 +57,14 @@ namespace CortexM4
    *  @param[in]  mask     Mask returned from disableInterrupts()
    *  @return void
    */
-  void enableInterrupts( const uint32_t mask )
-  {
-    if ( !mask )
-    {
-      __asm volatile( "CPSIE I" );
-    }
-  }
+  void enableInterrupts( const uint32_t mask );
+
+  /**
+   *  Checks if the CPU is currently servicing an ISR
+   *  @return bool
+   */
+  bool inISR();
+
 }    // namespace CortexM4
 
 #endif /* !CORTEX_M4_UTILITIES_HPP */

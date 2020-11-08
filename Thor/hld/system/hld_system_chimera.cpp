@@ -3,7 +3,7 @@
  *    hld_system_chimera.cpp
  *
  *  Description:
- *    Thor SYSTEM registration hooks for Chimera
+ *    Thor system registration hooks for Chimera
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
@@ -18,9 +18,15 @@
 
 namespace Chimera::System::Backend
 {
+  /*-------------------------------------------------------------------------------
+  Static Data
+  -------------------------------------------------------------------------------*/
   static bool s_system_initialized        = false;
   static ResetEvent s_system_reset_reason = ResetEvent::UNKNOWN;
 
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     if ( !s_system_initialized )
@@ -34,6 +40,7 @@ namespace Chimera::System::Backend
     return Chimera::Status::OK;
   }
 
+
   Chimera::Status_t reset()
   {
     auto lld_reset_result = Thor::System::reset();
@@ -46,25 +53,30 @@ namespace Chimera::System::Backend
     return lld_reset_result;
   }
 
+
   Chimera::Status_t systemStartup()
   {
     return Thor::System::systemStartup();
   }
+
 
   Chimera::System::InterruptMask disableInterrupts()
   {
     return Thor::System::disableInterrupts();
   }
 
+
   void enableInterrupts( Chimera::System::InterruptMask &interruptMask )
   {
     return Thor::System::enableInterrupts( interruptMask );
   }
 
+
   int maxConcurrentThreads()
   {
     return Thor::System::maxConcurrentThreads();
   }
+
 
   Chimera::System::ResetEvent getResetReason()
   {
@@ -85,10 +97,18 @@ namespace Chimera::System::Backend
     return reason;
   }
 
+
   void getSystemInformation( Chimera::System::Information *&info )
   {
     Thor::System::getSystemInformation( info );
   }
+
+
+  bool inISR()
+  {
+    return Thor::System::inISR();
+  }
+
 
   namespace Version
   {
@@ -114,7 +134,8 @@ namespace Chimera::System::Backend
     {
       return Thor::HLD::VersionPatch;
     }
-  }
+  }    // namespace Version
+
 
   namespace Description
   {
@@ -134,7 +155,8 @@ namespace Chimera::System::Backend
     {
       return "N/A";
     }
-  }
+  }    // namespace Description
+
 
   Chimera::Status_t registerDriver( DriverConfig &registry )
   {
@@ -148,6 +170,7 @@ namespace Chimera::System::Backend
     registry.maxConcurrentThreads   = maxConcurrentThreads;
     registry.reset                  = reset;
     registry.systemStartup          = systemStartup;
+    registry.inISR                  = inISR;
     registry.desc_About             = Description::about;
     registry.desc_BackendDriverName = Description::backendDriverName;
     registry.desc_DocumentationLink = Description::documentationLink;
@@ -163,4 +186,3 @@ namespace Chimera::System::Backend
 #endif
   }
 }    // namespace Chimera::System::Backend
-     // namespace Chimera::System::Backend

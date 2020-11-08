@@ -30,6 +30,7 @@ namespace Thor::System
   int maxConcurrentThreads();
   Chimera::System::ResetEvent getResetReason();
   void getSystemInformation( Chimera::System::Information *&info );
+  bool inISR();
 
   namespace Version
   {
@@ -56,7 +57,7 @@ namespace Thor::System
      *  @return size_t
      */
     size_t patch();
-  }
+  }    // namespace Version
 
   namespace Description
   {
@@ -77,7 +78,7 @@ namespace Thor::System
      *  @return std::string_view
      */
     std::string_view documentationLink();
-  }
-}
+  }    // namespace Description
+}    // namespace Thor::System
 
 #endif

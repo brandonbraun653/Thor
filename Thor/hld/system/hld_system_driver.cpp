@@ -30,21 +30,30 @@
 #include <Thor/lld/interface/nvic/nvic_detail.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/interface/startup/startup_detail.hpp>
+#include <Thor/lld/interface/system/sys_intf.hpp>
 
 namespace Thor::System
 {
+  /*-------------------------------------------------------------------------------
+  Static Data
+  -------------------------------------------------------------------------------*/
   static Chimera::System::Information s_system_info;
 
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     s_system_info = {};
     return Chimera::Status::OK;
   }
 
+
   Chimera::Status_t reset()
   {
     return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t systemStartup()
   {
@@ -109,25 +118,30 @@ namespace Thor::System
     return Chimera::Status::OK;
   }
 
+
   Chimera::System::InterruptMask disableInterrupts()
   {
     return Thor::LLD::IT::disableInterrupts();
   }
+
 
   void enableInterrupts( Chimera::System::InterruptMask &interruptMask )
   {
     Thor::LLD::IT::enableInterrupts( interruptMask );
   }
 
+
   int maxConcurrentThreads()
   {
     return 1;
   }
 
+
   Chimera::System::ResetEvent getResetReason()
   {
     return Thor::LLD::RCC::getResetReason();
   }
+
 
   void getSystemInformation( Chimera::System::Information *&info )
   {
@@ -142,5 +156,11 @@ namespace Thor::System
     Assign the data to the caller
     ------------------------------------------------*/
     info = &s_system_info;
+  }
+
+
+  bool inISR()
+  {
+    return Thor::LLD::SYS::inISR();
   }
 }    // namespace Thor::System

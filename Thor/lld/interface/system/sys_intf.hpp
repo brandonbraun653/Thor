@@ -19,6 +19,17 @@
 namespace Thor::LLD::SYS
 {
   /*-------------------------------------------------------------------------------
+  Public Functions (Implemented by the driver layer)
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Architecturally dependent check on whether or not the CPU is servicing
+   *  an ISR at the time of this function call.
+   *
+   *  @return bool
+   */
+  bool inISR();
+
+  /*-------------------------------------------------------------------------------
   Public Functions (Implemented at the interface layer)
   -------------------------------------------------------------------------------*/
   /**
@@ -49,6 +60,6 @@ namespace Thor::LLD::SYS
    */
   void clockDisable();
 
-}  // namespace Thor::LLD::SYS
+}    // namespace Thor::LLD::SYS
 
-#endif  /* !THOR_LLD_SYS_DRIVER_INTERFACE_HPP */
+#endif /* !THOR_LLD_SYS_DRIVER_INTERFACE_HPP */

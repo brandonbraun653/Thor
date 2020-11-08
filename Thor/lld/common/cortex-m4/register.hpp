@@ -17,9 +17,9 @@
 
 #if defined( CORTEX_M4 )
 
-/*------------------------------------------------
-Definitions taken from section 4.3 System Control Block in the Cortex-M4 Devices Generic User Guide
-------------------------------------------------*/
+/*-------------------------------------------------------------------------------
+Definitions from section 4.3 System Control Block in the Cortex-M4 Devices Generic User Guide
+-------------------------------------------------------------------------------*/
 #define SCB_REG_ACTLR ( ( volatile uint32_t * )0xE000E008 ) /**< Auxiliary Control Register */
 #define SCB_REG_CPUID ( ( volatile uint32_t * )0xE000ED00 ) /**< CPUID Base Register */
 #define SCB_REG_ICSR ( ( volatile uint32_t * )0xE000ED04 )  /**< Interrupt Control and State Register */
@@ -33,19 +33,27 @@ Definitions taken from section 4.3 System Control Block in the Cortex-M4 Devices
 #define SCB_REG_MMAR ( ( volatile uint32_t * )0xE000ED34 )  /**< MemManage Fault Address Register */
 #define SCB_REG_BFAR ( ( volatile uint32_t * )0xE000ED38 )  /**< Bus Fault Address Register */
 
-/*------------------------------------------------
+/*-------------------------------------------------------------------------------
 Auxiliary Control Register Definitions
-------------------------------------------------*/
-#define ACTLR_DISOOFP_Pos 9U
+-------------------------------------------------------------------------------*/
+#define ACTLR_DISOOFP_Pos ( 9U )
 #define ACTLR_DISOOFP_Msk ( 1UL << ACTLR_DISOOFP_Pos )
-#define ACTLR_DISFPCA_Pos 8U
+#define ACTLR_DISFPCA_Pos ( 8U )
 #define ACTLR_DISFPCA_Msk ( 1UL << ACTLR_DISFPCA_Pos )
-#define ACTLR_DISFOLD_Pos 2U
+#define ACTLR_DISFOLD_Pos ( 2U )
 #define ACTLR_DISFOLD_Msk ( 1UL << ACTLR_DISFOLD_Pos )
-#define ACTLR_DISDEFWBUF_Pos 1U
+#define ACTLR_DISDEFWBUF_Pos ( 1U )
 #define ACTLR_DISDEFWBUF_Msk ( 1UL << ACTLR_DISDEFWBUF_Pos )
-#define ACTLR_DISMCYCINT_Pos 0U
+#define ACTLR_DISMCYCINT_Pos ( 0U )
 #define ACTLR_DISMCYCINT_Msk ( 1UL << ACTLR_DISMCYCINT_Pos )
+
+/*-------------------------------------------------------------------------------
+Interrupt Control and State Register (ICSR)
+-------------------------------------------------------------------------------*/
+static constexpr uint32_t ICSR_VECTACTIVE_Pos = 0u;
+static constexpr uint32_t ICSR_VECTACTIVE_Msk = 0x1FF;
+static constexpr uint32_t ICSR_VECTACTIVE     = ( ICSR_VECTACTIVE_Msk << ICSR_VECTACTIVE_Pos );
+
 
 #endif /* !CORTEX_M4 */
 #endif /* !CORTEX_M4_REGISTERS_HPP */
