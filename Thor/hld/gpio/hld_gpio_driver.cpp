@@ -273,6 +273,12 @@ namespace Thor::GPIO
   {
     return LLD::getDriver( mPort, mPin )->detachInterrupt( mPin );
   }
+
+
+  Chimera::EXTI::EventLine_t Driver::getInterruptLine()
+  {
+    return LLD::findEventLine( mPort, mPin );
+  }
 }    // namespace Thor::GPIO
 
 #endif /* THOR_HLD_GPIO */

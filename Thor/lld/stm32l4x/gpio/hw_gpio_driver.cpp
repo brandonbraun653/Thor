@@ -329,7 +329,10 @@ namespace Thor::LLD::GPIO
 
   void Driver::detachInterrupt( const uint8_t pin )
   {
-    alkjsdflkjs
+    auto port = getPort( reinterpret_cast<std::uintptr_t>( mPeriph ) );
+    auto line = findEventLine( port, pin );
+
+    EXTI::detach( line );
   }
 }    // namespace Thor::LLD::GPIO
 

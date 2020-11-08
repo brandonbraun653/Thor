@@ -153,6 +153,11 @@ namespace Chimera::GPIO
   }
 
 
+  Chimera::EXTI::EventLine_t Driver::getInterruptLine()
+  {
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->getInterruptLine();
+  }
+
   /*-------------------------------------------------
   Interface: Lockable
   -------------------------------------------------*/

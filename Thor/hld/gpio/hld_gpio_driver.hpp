@@ -52,6 +52,7 @@ namespace Thor::GPIO
     Chimera::Status_t toggle();
     Chimera::Status_t attachInterrupt( Chimera::Function::vGeneric &func, const Chimera::EXTI::EdgeTrigger trigger );
     void detachInterrupt();
+    Chimera::EXTI::EventLine_t getInterruptLine();
 
   private:
     Chimera::GPIO::Alternate mAlternate;
