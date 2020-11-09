@@ -114,9 +114,6 @@ namespace Thor::LLD::EXTI
 
   Chimera::Status_t attach( const Chimera::EXTI::EventLine_t listener, const Chimera::EXTI::EdgeTrigger edge, Chimera::Function::vGeneric callback )
   {
-    // configure mask bit in exti_imr
-    // configure trigger selection in exti_rtsr and exti_ftsr
-    // configure NVIC to be able to acknowledge the ISR
     using namespace Chimera::EXTI;
 
     /*-------------------------------------------------
