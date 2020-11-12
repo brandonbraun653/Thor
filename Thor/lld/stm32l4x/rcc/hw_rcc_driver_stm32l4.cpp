@@ -963,7 +963,7 @@ namespace Thor::LLD::RCC
   size_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address )
   {
     auto clockLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->clockSource;
-    auto indexLookupFunc = periphLookupTables[ static_cast<uint8_t>( periph ) ]->getResourceIndex;
+    auto indexLookupFunc  = periphLookupTables[ static_cast<uint8_t>( periph ) ]->getResourceIndex;
 
     if ( clockLookupTable && indexLookupFunc )
     {

@@ -304,7 +304,11 @@ namespace Thor::LLD::EXTI
     if( *PR_PTR( listener ) & LISTENER_BIT_SET( listener ) )
     {
       *PR_PTR( listener ) |= LISTENER_BIT_SET( listener );
-      s_Callbacks[ listener ]( reinterpret_cast<void*>( &listener ) );
+
+      if( s_Callbacks[ listener ])
+      {
+        s_Callbacks[ listener ]( reinterpret_cast<void*>( &listener ) );
+      }
     }
   }
 }  // namespace Thor::LLD::EXTI

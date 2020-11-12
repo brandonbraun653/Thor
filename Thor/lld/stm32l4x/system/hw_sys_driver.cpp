@@ -17,6 +17,7 @@
 #include <Thor/lld/interface/gpio/gpio_detail.hpp>
 #include <Thor/lld/interface/system/sys_detail.hpp>
 #include <Thor/lld/interface/system/sys_prv_data.hpp>
+#include <Thor/lld/interface/system/sys_intf.hpp>
 
 namespace Thor::LLD::SYS
 {
@@ -40,6 +41,11 @@ namespace Thor::LLD::SYS
     }
 
     /*-------------------------------------------------
+    Enable the system config register clock
+    -------------------------------------------------*/
+    Thor::LLD::SYS::clockEnable();
+
+    /*-------------------------------------------------
     Select the register to operate on. Convenietly,
     there are four pins per register, so use that to
     create an index.
@@ -52,8 +58,6 @@ namespace Thor::LLD::SYS
       Chimera::insert_debug_breakpoint();
       return;
     }
-
-    volatile uint32_t *cfgReg = &SYSCFG1_PERIPH->EXTICR[ cfgRegIdx ];
 
     /*-------------------------------------------------
     Select the value to write in the register. This
@@ -72,9 +76,10 @@ namespace Thor::LLD::SYS
     /*-------------------------------------------------
     Assign the GPIO source
     -------------------------------------------------*/
-    Reg32_t tmp = *cfgReg;
+    Reg32_t tmp = SYSCFG1_PERIPH->EXTICR[ cfgRegIdx ];
     tmp &= ~ShiftedMask;
     tmp |= ( ( BaseRegVal << BitShift ) & ShiftedMask );
-    *cfgReg = tmp;
+    SYSCFG1_PERIPH->EXTICR[ cfgRegIdx ] |= tmp;
   }
+
 }    // namespace Thor::LLD::SYS

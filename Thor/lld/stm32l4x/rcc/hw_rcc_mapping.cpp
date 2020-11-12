@@ -51,6 +51,10 @@ namespace Thor::LLD::RCC
     LookupTables::SPIInit();
 #endif
 
+#if defined( THOR_LLD_SYSCFG )
+    LookupTables::SYSCFGInit();
+#endif
+
 #if defined( THOR_LLD_TIMER )
     LookupTables::TIMERInit();
 #endif
