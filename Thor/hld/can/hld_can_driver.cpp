@@ -280,6 +280,11 @@ namespace Thor::CAN
     lld->enableISRSignal( Chimera::CAN::InterruptType::TX_ISR );
     lld->enableISRSignal( Chimera::CAN::InterruptType::RX_ISR );
 
+    /*-------------------------------------------------
+    Update the HLD configuration settings
+    -------------------------------------------------*/
+    mConfig = cfg;
+
     return Chimera::Status::OK;
   }
 

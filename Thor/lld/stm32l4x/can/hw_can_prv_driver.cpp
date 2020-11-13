@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* STL Includes */
+#include <cmath>
 #include <cstdint>
 #include <cstddef>
 #include <cstring>
@@ -152,16 +153,16 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Calculate configuration settings for BTR register
     -------------------------------------------------*/
-    Reg32_t brp = static_cast<Reg32_t>( tq / clkPeriod ) - 1;
-    Reg32_t ts1 = static_cast<Reg32_t>( est_tbs1 / tq ) - 1;
-    Reg32_t ts2 = static_cast<Reg32_t>( est_tbs2 / tq ) - 1;
+    float fp_brp = round( ( tq / clkPeriod ) - 1.0f );
+    float fp_ts1 = round( ( est_tbs1 / tq ) - 1.0f );
+    float fp_ts2 = round( ( est_tbs2 / tq ) - 1.0f );
 
     /*-------------------------------------------------
     Apply the configuration values
     -------------------------------------------------*/
-    BRP::set( periph, ( brp << BTR_BRP_Pos ) );
-    TS1::set( periph, ( ts1 << BTR_TS1_Pos ) );
-    TS2::set( periph, ( ts2 << BTR_TS2_Pos ) );
+    BRP::set( periph, ( static_cast<Reg32_t>( fp_brp ) << BTR_BRP_Pos ) );
+    TS1::set( periph, ( static_cast<Reg32_t>( fp_ts1 ) << BTR_TS1_Pos ) );
+    TS2::set( periph, ( static_cast<Reg32_t>( fp_ts2 ) << BTR_TS2_Pos ) );
 
     /*-------------------------------------------------
     Calculate the actual configured baud rate
@@ -283,7 +284,8 @@ namespace Thor::LLD::CAN
       }
       // else this filter bank is full
     }
-    else if ( ( filter->filterType == Thor::CAN::FilterType::MODE_16BIT_MASK ) || ( filter->filterType == Thor::CAN::FilterType::MODE_32BIT_LIST ) )
+    else if ( ( filter->filterType == Thor::CAN::FilterType::MODE_16BIT_MASK ) ||
+              ( filter->filterType == Thor::CAN::FilterType::MODE_32BIT_LIST ) )
     {
       /*-------------------------------------------------
       Only two possible filter types, each 32bit wide.
@@ -457,7 +459,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
-    if( !periph )
+    if ( !periph )
     {
       return nullptr;
     }
@@ -495,7 +497,7 @@ namespace Thor::LLD::CAN
     constexpr Reg32_t FMSK_ODD  = 0xFFFF0000;
 
     Reg32_t tmp = 0;
-    Reg32_t id = 0;
+    Reg32_t id  = 0;
 
     /*-------------------------------------------------
     Assign the IdType tag and fill in the ID data
@@ -570,7 +572,7 @@ namespace Thor::LLD::CAN
     constexpr Reg32_t FMSK_HI = 0xFFFF0000;
 
     Reg32_t tmp = 0;
-    Reg32_t id = 0;
+    Reg32_t id  = 0;
     Reg32_t msk = 0;
 
     /*-------------------------------------------------

@@ -54,6 +54,26 @@ static constexpr uint32_t ICSR_VECTACTIVE_Pos = 0u;
 static constexpr uint32_t ICSR_VECTACTIVE_Msk = 0x1FF;
 static constexpr uint32_t ICSR_VECTACTIVE     = ( ICSR_VECTACTIVE_Msk << ICSR_VECTACTIVE_Pos );
 
+/*-------------------------------------------------------------------------------
+Bus Fault Status Register (BFSR)
+-------------------------------------------------------------------------------*/
+static constexpr uint32_t BFSR_BFARVALID   = ( 1u << 7 );
+static constexpr uint32_t BFSR_LSPERR      = ( 1u << 5 );
+static constexpr uint32_t BFSR_STKERR      = ( 1u << 4 );
+static constexpr uint32_t BFSR_UNSTKERR    = ( 1u << 3 );
+static constexpr uint32_t BFSR_IMPRECISERR = ( 1u << 2 );
+static constexpr uint32_t BFSR_PRECISERR   = ( 1u << 1 );
+static constexpr uint32_t BFSR_IBUSERR     = ( 1u << 0 );
+
+/*-------------------------------------------------------------------------------
+Usage Fault Status Register (UFSR)
+-------------------------------------------------------------------------------*/
+static constexpr uint32_t UFSR_DIVBYZERO  = ( 1u << 9 );
+static constexpr uint32_t UFSR_UNALIGNED  = ( 1u << 8 );
+static constexpr uint32_t UFSR_NOCP       = ( 1u << 3 );
+static constexpr uint32_t UFSR_INVPC      = ( 1u << 2 );
+static constexpr uint32_t UFSR_INVSTATE   = ( 1u << 1 );
+static constexpr uint32_t UFSR_UNDEFINSTR = ( 1u << 0 );
 
 #endif /* !CORTEX_M4 */
 #endif /* !CORTEX_M4_REGISTERS_HPP */

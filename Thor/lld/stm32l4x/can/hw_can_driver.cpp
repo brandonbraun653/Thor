@@ -206,7 +206,7 @@ namespace Thor::LLD::CAN
     float actualBaud  = static_cast<float>( prv_set_baud_rate( mPeriph, cfg ) );
     float desiredBaud = static_cast<float>( cfg.HWInit.baudRate );
 
-    if ( cfg.HWInit.maxBaudError > std::abs( Aurora::Math::percentError( actualBaud, desiredBaud ) ) )
+    if ( cfg.HWInit.maxBaudError < std::abs( Aurora::Math::percentError( actualBaud, desiredBaud ) ) )
     {
       return Chimera::Status::FAILED_INIT;
     }
@@ -301,7 +301,7 @@ namespace Thor::LLD::CAN
       Is the filter even marked as valid? No point trying
       to place it unless it is.
       -------------------------------------------------*/
-      if( !filter->valid )
+      if ( !filter->valid )
       {
         fltrIdx++;
         continue;
@@ -312,14 +312,14 @@ namespace Thor::LLD::CAN
       filter bank? Can't mix filter modes willy nilly. A
       new mode requires a new filter bank.
       -------------------------------------------------*/
-      if( bankConfigured && ( filter->filterType != prv_get_filter_bank_mode( mPeriph, bankIdx ) ) )
+      if ( bankConfigured && ( filter->filterType != prv_get_filter_bank_mode( mPeriph, bankIdx ) ) )
       {
         /*-------------------------------------------------
         FMI is linear, so if the bank is partially assigned
         then the remaining unassigned filters are skipped.
         The skipping needs to be tracked.
         -------------------------------------------------*/
-        if( prv_get_filter_bank_fifo( mPeriph, bankIdx ) == Mailbox::RX_MAILBOX_1 )
+        if ( prv_get_filter_bank_fifo( mPeriph, bankIdx ) == Mailbox::RX_MAILBOX_1 )
         {
           fifo0FMI_current += fifo0FMI_toAssign;
           fifo0FMI_toAssign = 0;
@@ -346,12 +346,12 @@ namespace Thor::LLD::CAN
         Reset the FMI counters based on the new mode.
         -------------------------------------------------*/
         uint8_t *fmi = &fifo0FMI_toAssign;
-        if( filter->fifoBank == Mailbox::RX_MAILBOX_2 )
+        if ( filter->fifoBank == Mailbox::RX_MAILBOX_2 )
         {
           fmi = &fifo1FMI_toAssign;
         }
 
-        switch( filter->filterType)
+        switch ( filter->filterType )
         {
           case Thor::CAN::FilterType::MODE_16BIT_LIST:
             *fmi = 4;
@@ -414,8 +414,8 @@ namespace Thor::LLD::CAN
           break;
 
         case Thor::CAN::FilterType::MODE_32BIT_LIST:
-          mPeriph->FM1R |= ( 1u << bankIdx );     // Mask
-          mPeriph->FS1R |= ( 1u << bankIdx );     // Scale
+          mPeriph->FM1R |= ( 1u << bankIdx );    // Mask
+          mPeriph->FS1R |= ( 1u << bankIdx );    // Scale
           break;
 
         case Thor::CAN::FilterType::MODE_32BIT_MASK:
@@ -467,9 +467,9 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Update tracking data
       -------------------------------------------------*/
-      fltrIdx++;              // Just completed parsing one of the user's filters
-      numPlacedFilters++;     // Just completed parsing a valid filter
-      bankConfigured = true;  // The current filter bank has been configured at least once now
+      fltrIdx++;                // Just completed parsing one of the user's filters
+      numPlacedFilters++;       // Just completed parsing a valid filter
+      bankConfigured = true;    // The current filter bank has been configured at least once now
 
     } while ( ( bankIdx < NUM_CAN_FILTER_BANKS ) && ( fltrIdx < filterSize ) );
 
@@ -758,11 +758,11 @@ namespace Thor::LLD::CAN
     -------------------------------------------------*/
     volatile TxMailbox *box = prv_get_free_tx_mailbox( mPeriph );
 
-    if( !box && !mTXBuffer.pushFromISR( frame ) )
+    if ( !box && !mTXBuffer.pushFromISR( frame ) )
     {
       result = Chimera::Status::FULL;
     }
-    else if( box )
+    else if ( box )
     {
       prv_assign_frame_to_mailbox( box, frame );
     }
@@ -1112,11 +1112,11 @@ namespace Thor::LLD::CAN
     Pull data from the transmit buffer and assign it
     to any free mailboxes.
     -------------------------------------------------*/
-    while( !mTXBuffer.emptyFromISR() )
+    while ( !mTXBuffer.emptyFromISR() )
     {
       volatile TxMailbox *box = prv_get_free_tx_mailbox( mPeriph );
 
-      if( box )
+      if ( box )
       {
         prv_assign_frame_to_mailbox( box, mTXBuffer.popFromISR() );
       }
@@ -1204,7 +1204,7 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Read the data mode
       -------------------------------------------------*/
-      if( RIR & RI0R_RTR )
+      if ( RIR & RI0R_RTR )
       {
         frame.frameType = Chimera::CAN::FrameType::REMOTE;
       }
@@ -1216,7 +1216,7 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Read the standard/extended ID mode and pull the ID
       -------------------------------------------------*/
-      if( RIR & RI0R_IDE )
+      if ( RIR & RI0R_IDE )
       {
         frame.idMode = Chimera::CAN::IdType::EXTENDED;
         frame.id     = ( ( RIR & RI0R_EXID_Msk ) >> RI0R_EXID_Pos );
@@ -1249,7 +1249,7 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Push the data into the frame buffer
       -------------------------------------------------*/
-      if( !mRXBuffer.pushFromISR( frame ) )
+      if ( !mRXBuffer.pushFromISR( frame ) )
       {
         mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].frameLostBuffer = true;
       }
@@ -1266,7 +1266,7 @@ namespace Thor::LLD::CAN
 
       mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].swMsgPending += 1;
 
-    } while( FMP0::get( mPeriph ) ); // Messages still pending
+    } while ( FMP0::get( mPeriph ) );    // Messages still pending
 
     /*-------------------------------------------------
     Awaken high priority thread for processing this ISR
@@ -1346,7 +1346,7 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Read the data mode
       -------------------------------------------------*/
-      if( RIR & RI1R_RTR )
+      if ( RIR & RI1R_RTR )
       {
         frame.frameType = FrameType::REMOTE;
       }
@@ -1358,7 +1358,7 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Read the standard/extended ID mode and pull the ID
       -------------------------------------------------*/
-      if( RIR & RI1R_IDE )
+      if ( RIR & RI1R_IDE )
       {
         frame.idMode = IdType::EXTENDED;
         frame.id     = ( ( RIR & RI1R_EXID_Msk ) >> RI1R_EXID_Pos );
@@ -1391,7 +1391,7 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Push the data into the frame buffer
       -------------------------------------------------*/
-      if( !mRXBuffer.pushFromISR( frame ) )
+      if ( !mRXBuffer.pushFromISR( frame ) )
       {
         mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].frameLostBuffer = true;
       }
@@ -1408,7 +1408,7 @@ namespace Thor::LLD::CAN
 
       mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].swMsgPending += 1;
 
-    } while( FMP1::get( mPeriph ) ); // Messages still pending
+    } while ( FMP1::get( mPeriph ) );    // Messages still pending
 
     /*-------------------------------------------------
     Awaken high priority thread for processing this ISR
@@ -1448,7 +1448,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Handle Status Change Events
     -------------------------------------------------*/
-    if ( ( IER & IER_EN_STS ) && ( MSR & EVENT_STS ) )
+    if ( ( IER & IER_EN_STS ) || ( MSR & EVENT_STS ) )
     {
       constexpr size_t sigIdx = CAN_STS_ISR_SIGNAL_INDEX;
       bool hpThreadShouldWake = false;
@@ -1499,7 +1499,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Handle Error Events
     -------------------------------------------------*/
-    if ( ( IER & IER_EN_ERR_ALL ) && ( IER & IER_EN_ERR ) && ( ESR & EVENT_ERR ) )
+    if ( ( IER & IER_EN_ERR_ALL ) || ( IER & IER_EN_ERR ) || ( ESR & EVENT_ERR ) )
     {
       constexpr size_t sigIdx = CAN_ERR_ISR_SIGNAL_INDEX;
       bool hpThreadShouldWake = false;

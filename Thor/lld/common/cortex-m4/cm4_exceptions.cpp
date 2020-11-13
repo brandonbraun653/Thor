@@ -82,11 +82,14 @@ extern "C"
     volatile unsigned long stacked_pc;            /* Program Counter: Stores the current program address */
     volatile unsigned long stacked_psr;           /* Program Status Register:	A set of flags describing the program state */
     volatile unsigned long _CFSR = *SCB_REG_CFSR; /* Configurable Fault Status Register */
+    volatile unsigned long _BFSR = *SCB_REG_BFSR; /* Bus fault status register (subset of CFSR) */
+    volatile unsigned long _UFSR = *SCB_REG_UFSR; /* Usage fault status register (subset of CFSR) */
+    volatile unsigned long _MMSR = *SCB_REG_MMSR; /* MemManage fault status register (subset of CFSR) */
     volatile unsigned long _HFSR = *SCB_REG_HFSR; /* Hard Fault Status Register */
     volatile unsigned long _AFSR = *SCB_REG_AFSR; /* Auxiliary Fault Status Register */
     volatile unsigned long _BFAR = *SCB_REG_BFAR; /* Bus Fault Address Register */
     volatile unsigned long _MMAR = *SCB_REG_MMAR; /* MemManage Fault Address Register */
-    volatile unsigned long _DFSR = *SCB_REG_DFSR;    // Debug Fault Status Register
+    volatile unsigned long _DFSR = *SCB_REG_DFSR; /* Debug Fault Status Register */
 
     stacked_r0  = ( ( unsigned long )hardfault_args[ 0 ] );
     stacked_r1  = ( ( unsigned long )hardfault_args[ 1 ] );
@@ -96,6 +99,35 @@ extern "C"
     stacked_lr  = ( ( unsigned long )hardfault_args[ 5 ] );
     stacked_pc  = ( ( unsigned long )hardfault_args[ 6 ] );
     stacked_psr = ( ( unsigned long )hardfault_args[ 7 ] );
+
+    /*-------------------------------------------------------------------------------
+    Configurable Fault Status Register
+    -------------------------------------------------------------------------------*/
+    /*-------------------------------------------------
+    Bus Fault Status Register
+    -------------------------------------------------*/
+    /* Bus Fault Address Register has valid contents */
+    volatile bool BFAR_VALID = static_cast<bool>( _BFSR & BFSR_BFARVALID );
+
+    /* Imprecise data access has occurred */
+    volatile bool BFSR_IMPRECISE = static_cast<bool>( _BFSR & BFSR_IMPRECISERR );
+
+    /* Precise data access has occurred */
+    volatile bool BFSR_PRECISE = static_cast<bool>( _BFSR & BFSR_PRECISERR );
+
+
+    /*-------------------------------------------------
+    Usage Fault Status Register
+    -------------------------------------------------*/
+    /* A divide by zero has occurred */
+    volatile bool DIV_ZERO = static_cast<bool>( _UFSR & UFSR_DIVBYZERO );
+
+    /* Unaligned access has occurred */
+    volatile bool UNALIGNED_ACCESS = static_cast<bool>( _UFSR & UFSR_UNALIGNED );
+
+    /* Undefined instruction attempted to be executed */
+    volatile bool UNDEF_INSTRUCTION = static_cast<bool>( _UFSR & UFSR_UNDEFINSTR );
+
 
 // TODO Switch behavior based on debug or release
 #if defined( __GNUC__ )

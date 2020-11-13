@@ -108,7 +108,7 @@ namespace Chimera::CAN
   -------------------------------------------------*/
   Chimera::Status_t Driver::open( const DriverConfig &cfg )
   {
-    mDriver = reinterpret_cast<void *>( ::LLD::getDriver( cfg.HWInit.channel ) );
+    mDriver = reinterpret_cast<void *>( ::HLD::getDriver( cfg.HWInit.channel ) );
 
     if ( mDriver )
     {
