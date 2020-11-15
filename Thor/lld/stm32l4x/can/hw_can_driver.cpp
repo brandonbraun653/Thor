@@ -218,6 +218,11 @@ namespace Thor::LLD::CAN
     SJW::set( mPeriph, shiftedJumpWidth );
 
     /*-------------------------------------------------
+    Turn on Non-Auto Retransmit Mode
+    -------------------------------------------------*/
+    NART::set( mPeriph, MCR_NART );
+
+    /*-------------------------------------------------
     Request to leave init mode
     -------------------------------------------------*/
     prv_enter_normal_mode( mPeriph );
