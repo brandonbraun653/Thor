@@ -30,6 +30,12 @@ namespace Thor::LLD::SYS
   }
 
 
+  void softwareReset()
+  {
+    CortexM4::hardwareReset();
+  }
+
+
   void configureExtiSource( const Chimera::GPIO::Port port, const uint8_t pin )
   {
     /*-------------------------------------------------

@@ -18,9 +18,11 @@
 #if defined( CORTEX_M4 )
 
 /*-------------------------------------------------------------------------------
-Definitions from section 4.3 System Control Block in the Cortex-M4 Devices Generic User Guide
+Definitions from section 4.1 System Control Registers in the Cortex-M4 TRM
 -------------------------------------------------------------------------------*/
 #define SCB_REG_ACTLR ( ( volatile uint32_t * )0xE000E008 ) /**< Auxiliary Control Register */
+#define SCB_REG_STCSR ( ( volatile uint32_t * )0xE000E010 ) /**< SysTick Control and Status Register */
+#define SCB_REG_AIRCR ( ( volatile uint32_t * )0xE000ED0C ) /**< Application Interrupt and Reset Control Register */
 #define SCB_REG_CPUID ( ( volatile uint32_t * )0xE000ED00 ) /**< CPUID Base Register */
 #define SCB_REG_ICSR ( ( volatile uint32_t * )0xE000ED04 )  /**< Interrupt Control and State Register */
 #define SCB_REG_CFSR ( ( volatile uint32_t * )0xE000ED28 )  /**< Configurable Fault Status Register */
@@ -32,6 +34,7 @@ Definitions from section 4.3 System Control Block in the Cortex-M4 Devices Gener
 #define SCB_REG_DFSR ( ( volatile uint32_t * )0xE000ED30 )  /**< Debug Fault Status Register */
 #define SCB_REG_MMAR ( ( volatile uint32_t * )0xE000ED34 )  /**< MemManage Fault Address Register */
 #define SCB_REG_BFAR ( ( volatile uint32_t * )0xE000ED38 )  /**< Bus Fault Address Register */
+
 
 /*-------------------------------------------------------------------------------
 Auxiliary Control Register Definitions
@@ -74,6 +77,13 @@ static constexpr uint32_t UFSR_NOCP       = ( 1u << 3 );
 static constexpr uint32_t UFSR_INVPC      = ( 1u << 2 );
 static constexpr uint32_t UFSR_INVSTATE   = ( 1u << 1 );
 static constexpr uint32_t UFSR_UNDEFINSTR = ( 1u << 0 );
+
+/*-------------------------------------------------------------------------------
+Application Interrupt and Reset Control Register (AIRCR)
+-------------------------------------------------------------------------------*/
+static constexpr uint32_t AIRCR_VECTKEY     = ( 0x05FA << 16 );
+static constexpr uint32_t AIRCR_VECTKEY_Msk = ( 0xFFFF0000 );
+static constexpr uint32_t AIRCR_SYSRESETREQ = ( 1u << 2 );
 
 #endif /* !CORTEX_M4 */
 #endif /* !CORTEX_M4_REGISTERS_HPP */

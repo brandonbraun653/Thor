@@ -3,7 +3,9 @@
  *    cm4_utilities.cpp
  *
  *  Description:
- *    Utilities implementation for the Cortex-M4 devices
+ *    Utilities implementation for the Cortex-M4 devices. For any references that
+ *    are tagged in the documentation, it is refering to the ARMv7-M Architecture
+ *    Reference Manual.
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
@@ -50,6 +52,28 @@ namespace CortexM4
     executed.
     -------------------------------------------------*/
     return static_cast<bool>( ( *SCB_REG_ICSR ) & ICSR_VECTACTIVE );
+  }
+
+
+  void hardwareReset()
+  {
+    uint32_t tmp = *SCB_REG_AIRCR;
+
+    /*-------------------------------------------------
+    Use the key to ensure the write will stick (B3.2.6)
+    -------------------------------------------------*/
+    tmp &= ~( AIRCR_VECTKEY_Msk );
+    tmp |= ( AIRCR_VECTKEY | AIRCR_SYSRESETREQ );
+
+    /*-------------------------------------------------
+    Reset doesn't take place immediately (B1.5.16) so
+    idle away until the hardware can handle it.
+    -------------------------------------------------*/
+    *SCB_REG_AIRCR = tmp;
+    while ( 1 )
+    {
+      continue;
+    }
   }
 
 }    // namespace CortexM4

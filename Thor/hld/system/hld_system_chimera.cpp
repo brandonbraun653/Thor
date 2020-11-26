@@ -104,6 +104,12 @@ namespace Chimera::System::Backend
   }
 
 
+  void softwareReset()
+  {
+    Thor::System::softwareReset();
+  }
+
+
   bool inISR()
   {
     return Thor::System::inISR();
@@ -171,6 +177,7 @@ namespace Chimera::System::Backend
     registry.reset                  = reset;
     registry.systemStartup          = systemStartup;
     registry.inISR                  = inISR;
+    registry.softwareReset          = softwareReset;
     registry.desc_About             = Description::about;
     registry.desc_BackendDriverName = Description::backendDriverName;
     registry.desc_DocumentationLink = Description::documentationLink;

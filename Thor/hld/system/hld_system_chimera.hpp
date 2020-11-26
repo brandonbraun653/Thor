@@ -26,6 +26,7 @@ namespace Chimera::System::Backend
   int maxConcurrentThreads();
   Chimera::System::ResetEvent getResetReason();
   void getSystemInformation( Chimera::System::Information *&info );
+  void softwareReset();
   bool inISR();
 }    // namespace Chimera::System::Backend
 
