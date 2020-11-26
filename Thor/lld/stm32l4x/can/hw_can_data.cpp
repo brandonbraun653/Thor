@@ -68,6 +68,6 @@ namespace Thor::LLD::CAN
 #endif
     };
   } /* clang-format on */
-}
+}    // namespace Thor::LLD::CAN
 
 #endif /* TARGET_STM32L4 & THOR_LLD_CAN */

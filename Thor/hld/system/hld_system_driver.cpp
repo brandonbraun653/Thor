@@ -163,4 +163,11 @@ namespace Thor::System
   {
     return Thor::LLD::SYS::inISR();
   }
+
+
+  void softwareReset()
+  {
+    return Thor::LLD::SYS::softwareReset();
+  }
+
 }    // namespace Thor::System

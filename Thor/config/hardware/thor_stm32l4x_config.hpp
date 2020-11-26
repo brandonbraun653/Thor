@@ -337,11 +337,19 @@ High Level Driver Support
 #define THOR_HLD_USART
 #endif
 
+#ifndef THOR_HLD_USB
+#define THOR_HLD_USB
+#endif
+
 /*----------------------------------------------
 Low Level Driver Support
 ----------------------------------------------*/
 #ifndef THOR_LLD_CAN
 #define THOR_LLD_CAN
+#endif
+
+#ifndef THOR_LLD_CRS
+#define THOR_LLD_CRS
 #endif
 
 #ifndef THOR_LLD_EXTI
@@ -391,6 +399,10 @@ Low Level Driver Support
 
 #ifndef THOR_LLD_USART
 #define THOR_LLD_USART
+#endif
+
+#ifndef THOR_LLD_USB
+#define THOR_LLD_USB
 #endif
 
 #endif /* THOR_ENABLE_ALL_DRIVERS */

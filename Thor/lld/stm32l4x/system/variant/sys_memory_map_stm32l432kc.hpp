@@ -39,7 +39,10 @@ namespace Thor::System::MemoryMap
   APB1
   -------------------------------------------------*/
   static constexpr uint32_t CAN1_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x6400;
-  static constexpr uint32_t CAN1_PERIPH_END_ADDRESS = APB1_RGN_START_ADDRESS + 0x67FF;
+  static constexpr uint32_t CAN1_PERIPH_END_ADDRESS   = APB1_RGN_START_ADDRESS + 0x67FF;
+
+  static constexpr uint32_t CRS1_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x6000;
+  static constexpr uint32_t CRS1_PERIPH_END_ADDRESS   = APB1_RGN_END_ADDRESS + 0X63FF;
 
   static constexpr uint32_t PWR_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x7000;
   static constexpr uint32_t PWR_PERIPH_END_ADDRESS   = APB1_RGN_START_ADDRESS + 0x73FF;
@@ -69,10 +72,15 @@ namespace Thor::System::MemoryMap
   static constexpr uint32_t TIMER2_PERIPH_END_ADDRESS   = APB1_RGN_END_ADDRESS + 0x03FF;
 
   static constexpr uint32_t USART2_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x4400;
-  static constexpr uint32_t USART2_PERIPH_END_ADDRESS = APB1_RGN_START_ADDRESS + 0x47FF;
+  static constexpr uint32_t USART2_PERIPH_END_ADDRESS   = APB1_RGN_START_ADDRESS + 0x47FF;
 
   static constexpr uint32_t USART3_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x4800;
-  static constexpr uint32_t USART3_PERIPH_END_ADDRESS = APB1_RGN_START_ADDRESS + 0x4BFF;
+  static constexpr uint32_t USART3_PERIPH_END_ADDRESS   = APB1_RGN_START_ADDRESS + 0x4BFF;
+
+  static constexpr uint32_t USB1_FS_SRAM_START_ADDRESS   = APB1_RGN_START_ADDRESS + 0x6C00;
+  static constexpr uint32_t USB1_FS_SRAM_END_ADDRESS     = APB1_RGN_START_ADDRESS + 0x6FFF;
+  static constexpr uint32_t USB1_FS_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x6800;
+  static constexpr uint32_t USB1_FS_PERIPH_END_ADDRESS   = APB1_RGN_START_ADDRESS + 0x6BFF;
 
   /*-------------------------------------------------
   APB2
@@ -90,13 +98,13 @@ namespace Thor::System::MemoryMap
   static constexpr uint32_t TIMER1_PERIPH_END_ADDRESS   = APB2_RGN_END_ADDRESS + 0x2FFF;
 
   static constexpr uint32_t USART1_PERIPH_START_ADDRESS = APB2_RGN_START_ADDRESS + 0x3800;
-  static constexpr uint32_t USART1_PERIPH_END_ADDRESS = APB2_RGN_START_ADDRESS + 0x3BFF;
+  static constexpr uint32_t USART1_PERIPH_END_ADDRESS   = APB2_RGN_START_ADDRESS + 0x3BFF;
 
   static constexpr uint32_t EXTI_PERIPH_START_ADDRESS = APB2_RGN_START_ADDRESS + 0x0400;
-  static constexpr uint32_t EXTI_PERIPH_END_ADDRESS = APB2_RGN_END_ADDRESS + 0x07FF;
+  static constexpr uint32_t EXTI_PERIPH_END_ADDRESS   = APB2_RGN_END_ADDRESS + 0x07FF;
 
   static constexpr uint32_t SYSCFG_PERIPH_START_ADDRESS = APB2_RGN_START_ADDRESS + 0x0000;
-  static constexpr uint32_t SYSCFG_PERIPH_END_ADDRESS = APB2_RGN_END_ADDRESS + 0x002F;
+  static constexpr uint32_t SYSCFG_PERIPH_END_ADDRESS   = APB2_RGN_END_ADDRESS + 0x002F;
 
   /*-------------------------------------------------
   AHB1
@@ -137,4 +145,4 @@ namespace Thor::System::MemoryMap
 
 }    // namespace Thor::System::MemoryMap
 
-#endif  /* !THOR_SYSTEM_MEMORY_MAP_HPP */
+#endif /* !THOR_SYSTEM_MEMORY_MAP_HPP */

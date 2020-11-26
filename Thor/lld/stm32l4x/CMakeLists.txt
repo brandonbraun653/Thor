@@ -2,6 +2,7 @@
 # Add the projects for all the supported drivers
 # ====================================================
 add_subdirectory("can")
+add_subdirectory("crs")
 add_subdirectory("des")
 add_subdirectory("exti")
 add_subdirectory("flash")
@@ -14,6 +15,7 @@ add_subdirectory("startup")
 add_subdirectory("system")
 add_subdirectory("timer")
 add_subdirectory("usart")
+add_subdirectory("usb")
 
 # ====================================================
 # All LLD Drivers
@@ -22,6 +24,7 @@ set(LLD thor_lld_stm32l4)
 add_library(${LLD} INTERFACE)
 target_link_libraries(${LLD} INTERFACE
   thor_lld_stm32l4_can
+  thor_lld_stm32l4_crs
   thor_lld_stm32l4_des
   thor_lld_stm32l4_exti
   thor_lld_stm32l4_flash
@@ -34,6 +37,7 @@ target_link_libraries(${LLD} INTERFACE
   thor_lld_stm32l4_system
   thor_lld_stm32l4_timer
   thor_lld_stm32l4_usart
+  thor_lld_stm32l4_usb
 )
 export(TARGETS ${LLD} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${LLD}.cmake")
 

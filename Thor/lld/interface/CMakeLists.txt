@@ -18,6 +18,7 @@ add_subdirectory("system")
 add_subdirectory("timer")
 add_subdirectory("uart")
 add_subdirectory("usart")
+add_subdirectory("usb")
 add_subdirectory("watchdog")
 
 # ====================================================
@@ -33,6 +34,7 @@ target_link_libraries(${LLD_INTF} INTERFACE
   thor_lld_intf_spi
   thor_lld_intf_sys
   thor_lld_intf_usart
+  thor_lld_intf_usb
 )
 export(TARGETS ${LLD_INTF} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${LLD_INTF}.cmake")
 

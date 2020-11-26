@@ -44,7 +44,7 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   Local Variables and Constants
   ------------------------------------------------*/
-  static constexpr uint8_t numPeriphs = static_cast<uint8_t>( Chimera::Peripheral::Type::NUM_SUPPORTED_TYPES );
+  static constexpr uint8_t numPeriphs = static_cast<uint8_t>( Chimera::Peripheral::Type::NUM_OPTIONS );
 
   /* Default bad clock value. Is positive so that there aren't accidental div/0 errors at runtime. */
   static constexpr size_t BAD_CLOCK = static_cast<size_t>( 0xCCCCCCCC );
@@ -87,6 +87,10 @@ namespace Thor::LLD::RCC
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_CAN ) ] = &LookupTables::CANLookup;
 #endif
 
+#if defined( THOR_LLD_CRS )
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_CRS ) ] = &LookupTables::CRSLookup;
+#endif
+
 #if defined( THOR_LLD_DMA )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ] = &LookupTables::DMALookup;
 #endif
@@ -121,6 +125,10 @@ namespace Thor::LLD::RCC
 
 #if defined( THOR_LLD_USART )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USART ) ] = &LookupTables::USARTLookup;
+#endif
+
+#if defined( THOR_LLD_USB )
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USB ) ] = &LookupTables::USBLookup;
 #endif
 
 #if defined( THOR_LLD_WWDG )
@@ -686,6 +694,14 @@ namespace Thor::LLD::RCC
         }
         break;
 
+      case Chimera::Clock::Bus::RC48:
+        HSI48ON::set( RCC1_PERIPH, CRRCR_HSI48ON );
+        while ( !HSI48RDY::get( RCC1_PERIPH ) )
+        {
+          ;
+        }
+        break;
+
       default:
         break;
     }
@@ -726,6 +742,14 @@ namespace Thor::LLD::RCC
       case Chimera::Clock::Bus::PLLCLK:
         PLLON::clear( RCC1_PERIPH, CR_PLLON );
         while ( PLLRDY::get( RCC1_PERIPH ) )
+        {
+          ;
+        }
+        break;
+
+      case Chimera::Clock::Bus::RC48:
+        HSI48ON::clear( RCC1_PERIPH, CRRCR_HSI48ON );
+        while ( HSI48RDY::get( RCC1_PERIPH ) )
         {
           ;
         }

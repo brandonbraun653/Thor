@@ -30,6 +30,10 @@ namespace Thor::LLD::RCC
     LookupTables::CANInit();
 #endif
 
+#if defined( THOR_LLD_CRS )
+    LookupTables::CRSInit();
+#endif
+
 #if defined( THOR_LLD_DMA )
 #pragma message( "Need to initialize the driver" )
     LookupTables::DMAInit();
@@ -68,11 +72,16 @@ namespace Thor::LLD::RCC
     LookupTables::USARTInit();
 #endif
 
+#if defined( THOR_LLD_USB )
+    LookupTables::USBInit();
+#endif
+
 #if defined( THOR_LLD_WWDG )
 #pragma message( "Need to initialize the driver" )
     LookupTables::WWDGInit();
 #endif
   }
+
 
   bool isRCC( const std::uintptr_t address )
   {

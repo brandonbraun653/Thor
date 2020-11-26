@@ -65,6 +65,12 @@ namespace CortexM4
    */
   bool inISR();
 
+  /**
+   *  Issue a hardware reset instruction
+   *  @return void
+   */
+  void hardwareReset();
+
 }    // namespace CortexM4
 
 #endif /* !CORTEX_M4_UTILITIES_HPP */

@@ -29,6 +29,12 @@ namespace Thor::LLD::SYS
    */
   bool inISR();
 
+  /**
+   *  Instruct the processor to issue a reset command
+   *  @return void
+   */
+  void softwareReset();
+
   /*-------------------------------------------------------------------------------
   Public Functions (Implemented at the interface layer)
   -------------------------------------------------------------------------------*/

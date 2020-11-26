@@ -22,6 +22,7 @@
 
 /* Driver Includes */
 #include <Thor/lld/stm32l4x/can/hw_can_prj.hpp>
+#include <Thor/lld/stm32l4x/crs/hw_crs_prj.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
@@ -29,6 +30,7 @@
 #include <Thor/lld/stm32l4x/system/hw_sys_prj.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_prj.hpp>
 #include <Thor/lld/stm32l4x/usart/hw_usart_prj.hpp>
+#include <Thor/lld/stm32l4x/usb/hw_usb_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32l4x/system/sys_memory_map_prj.hpp>
@@ -73,6 +75,18 @@ namespace Thor::LLD::RCC
     extern RegisterConfig CAN_ResetConfig[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
     extern Chimera::Clock::Bus CAN_SourceClock[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
 #endif /* THOR_LLD_CAN */
+
+#if defined( THOR_LLD_CRS )
+    /**
+     *  Power Peripheral Config Lookup Tables
+     */
+    extern void CRSInit();
+
+    extern PCC CRSLookup;
+    extern RegisterConfig CRS_ClockConfig[ Thor::LLD::CRS::NUM_CRS_PERIPHS ];
+    extern RegisterConfig CRS_ResetConfig[ Thor::LLD::CRS::NUM_CRS_PERIPHS ];
+    extern Chimera::Clock::Bus CRS_SourceClock[ Thor::LLD::CRS::NUM_CRS_PERIPHS ];
+#endif /* THOR_LLD_CRS */
 
 #if defined( THOR_LLD_FLASH )
     /**
@@ -157,7 +171,19 @@ namespace Thor::LLD::RCC
     extern RegisterConfig USART_ResetConfig[ Thor::LLD::USART::NUM_USART_PERIPHS ];
     extern Chimera::Clock::Bus USART_SourceClock[ Thor::LLD::USART::NUM_USART_PERIPHS ];
 #endif /* THOR_LLD_USART */
-  }
-}
 
-#endif  /* !THOR_LLD_RCC_MAPPING_HPP */
+#if defined( THOR_LLD_USB )
+    /**
+     *  USB Peripheral Config Lookup Tables
+     */
+    extern void USBInit();
+
+    extern PCC USBLookup;
+    extern RegisterConfig USB_ClockConfig[ Thor::LLD::USB::NUM_USB_PERIPHS ];
+    extern RegisterConfig USB_ResetConfig[ Thor::LLD::USB::NUM_USB_PERIPHS ];
+    extern Chimera::Clock::Bus USB_SourceClock[ Thor::LLD::USB::NUM_USB_PERIPHS ];
+#endif /* THOR_LLD_USB */
+  }    // namespace LookupTables
+}    // namespace Thor::LLD::RCC
+
+#endif /* !THOR_LLD_RCC_MAPPING_HPP */
