@@ -68,11 +68,16 @@ namespace Thor::LLD::RCC
     LookupTables::USARTInit();
 #endif
 
+#if defined( THOR_LLD_USB )
+    LookupTables::USBInit();
+#endif
+
 #if defined( THOR_LLD_WWDG )
 #pragma message( "Need to initialize the driver" )
     LookupTables::WWDGInit();
 #endif
   }
+
 
   bool isRCC( const std::uintptr_t address )
   {

@@ -44,7 +44,7 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   Local Variables and Constants
   ------------------------------------------------*/
-  static constexpr uint8_t numPeriphs = static_cast<uint8_t>( Chimera::Peripheral::Type::NUM_SUPPORTED_TYPES );
+  static constexpr uint8_t numPeriphs = static_cast<uint8_t>( Chimera::Peripheral::Type::NUM_OPTIONS );
 
   /* Default bad clock value. Is positive so that there aren't accidental div/0 errors at runtime. */
   static constexpr size_t BAD_CLOCK = static_cast<size_t>( 0xCCCCCCCC );
@@ -121,6 +121,10 @@ namespace Thor::LLD::RCC
 
 #if defined( THOR_LLD_USART )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USART ) ] = &LookupTables::USARTLookup;
+#endif
+
+#if defined( THOR_LLD_USB )
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USB ) ] = &LookupTables::USBLookup;
 #endif
 
 #if defined( THOR_LLD_WWDG )

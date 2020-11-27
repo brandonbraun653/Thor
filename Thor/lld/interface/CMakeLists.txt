@@ -18,6 +18,7 @@ add_subdirectory("system")
 add_subdirectory("timer")
 add_subdirectory("uart")
 add_subdirectory("usart")
+add_subdirectory("usb")
 add_subdirectory("watchdog")
 
 # ====================================================
@@ -33,6 +34,7 @@ target_link_libraries(${LLD_INTF} INTERFACE
   thor_lld_intf_spi
   thor_lld_intf_sys
   thor_lld_intf_usart
+  thor_lld_intf_usb
 )
 export(TARGETS ${LLD_INTF} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${LLD_INTF}.cmake")
 
@@ -45,6 +47,7 @@ target_link_libraries(${LLD_INTF_SIM} INTERFACE
   thor_lld_sim_spi
   thor_lld_sim_gpio
   thor_lld_sim_usart
+  thor_lld_sim_usb
 )
 export(TARGETS ${LLD_INTF_SIM} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${LLD_INTF_SIM}.cmake")
 
@@ -56,6 +59,7 @@ add_library(${LLD_INTF_MOCK} INTERFACE)
 target_link_libraries(${LLD_INTF_MOCK} INTERFACE
   thor_lld_mock_can
   thor_lld_mock_interrupt
+  thor_lld_mock_usb
 )
 export(TARGETS ${LLD_INTF_MOCK} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${LLD_INTF_MOCK}.cmake")
 

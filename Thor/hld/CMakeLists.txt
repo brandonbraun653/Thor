@@ -18,6 +18,7 @@ add_subdirectory("system")
 add_subdirectory("timer")
 add_subdirectory("uart")
 add_subdirectory("usart")
+add_subdirectory("usb")
 add_subdirectory("watchdog")
 
 # ====================================================
@@ -37,6 +38,7 @@ target_link_libraries(${HLD} INTERFACE
   thor_hld_timer
   thor_hld_uart
   thor_hld_usart
+  thor_hld_usb
   thor_hld_watchdog
 )
 export(TARGETS ${HLD} FILE "${PROJECT_BINARY_DIR}/Thor/hld/${HLD}.cmake")
