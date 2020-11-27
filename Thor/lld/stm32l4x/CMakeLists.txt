@@ -14,6 +14,7 @@ add_subdirectory("startup")
 add_subdirectory("system")
 add_subdirectory("timer")
 add_subdirectory("usart")
+add_subdirectory("usb")
 
 # ====================================================
 # All LLD Drivers
@@ -34,6 +35,7 @@ target_link_libraries(${LLD} INTERFACE
   thor_lld_stm32l4_system
   thor_lld_stm32l4_timer
   thor_lld_stm32l4_usart
+  thor_lld_stm32l4_usb
 )
 export(TARGETS ${LLD} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${LLD}.cmake")
 
