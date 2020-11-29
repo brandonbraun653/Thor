@@ -124,6 +124,14 @@ namespace Thor::LLD::USB
     virtual Chimera::Status_t reset() = 0;
 
     /**
+     *  Reset the peripheral using the RCC driver. Despite the name, this
+     *  only affects the USB peripheral, not the RCC clock configuration.
+     *
+     *  @return void
+     */
+    virtual void clockReset() = 0;
+
+    /**
      *  Enables the peripheral clock
      *
      *  @return void
@@ -153,6 +161,7 @@ namespace Thor::LLD::USB
     Chimera::Status_t attach( RegisterMap *const peripheral );
     Chimera::Status_t initialize( const Chimera::USB::PeriphConfig &cfg );
     Chimera::Status_t reset();
+    void clockReset();
     void clockEnable();
     void clockDisable();
 
@@ -175,6 +184,7 @@ namespace Thor::LLD::USB
 
     RegisterMap *mPeriph;
     size_t mResourceIndex;
+    Chimera::USB::PeriphConfig mCfg;
   };
 
 }    // namespace Thor::LLD::USB

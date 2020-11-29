@@ -119,6 +119,7 @@ namespace Chimera::USB
 
   void Driver::close()
   {
+    static_cast<::HLD::Driver_rPtr>( mDriver )->close();
   }
 
 

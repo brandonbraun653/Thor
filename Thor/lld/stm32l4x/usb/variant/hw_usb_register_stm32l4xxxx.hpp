@@ -37,113 +37,118 @@ namespace Thor::LLD::USB
   /*-------------------------------------------------
   Endpoint Registers
   -------------------------------------------------*/
-  static constexpr uint32_t EP_CTR_RX    = ( ( uint16_t )0x8000U );
-  static constexpr uint32_t EP_DTOG_RX   = ( ( uint16_t )0x4000U );
-  static constexpr uint32_t EPRX_STAT    = ( ( uint16_t )0x3000U );
-  static constexpr uint32_t EP_SETUP     = ( ( uint16_t )0x0800U );
-  static constexpr uint32_t EP_T_FIELD   = ( ( uint16_t )0x0600U );
-  static constexpr uint32_t EP_KIND      = ( ( uint16_t )0x0100U );
-  static constexpr uint32_t EP_CTR_TX    = ( ( uint16_t )0x0080U );
-  static constexpr uint32_t EP_DTOG_TX   = ( ( uint16_t )0x0040U );
-  static constexpr uint32_t EPTX_STAT    = ( ( uint16_t )0x0030U );
-  static constexpr uint32_t EPADDR_FIELD = ( ( uint16_t )0x000FU );
+  static constexpr uint16_t EP_CTR_RX    = ( ( uint16_t )0x8000U );
+  static constexpr uint16_t EP_DTOG_RX   = ( ( uint16_t )0x4000U );
+  static constexpr uint16_t EPRX_STAT    = ( ( uint16_t )0x3000U );
+  static constexpr uint16_t EP_SETUP     = ( ( uint16_t )0x0800U );
+  static constexpr uint16_t EP_T_FIELD   = ( ( uint16_t )0x0600U );
+  static constexpr uint16_t EP_KIND      = ( ( uint16_t )0x0100U );
+  static constexpr uint16_t EP_CTR_TX    = ( ( uint16_t )0x0080U );
+  static constexpr uint16_t EP_DTOG_TX   = ( ( uint16_t )0x0040U );
+  static constexpr uint16_t EPTX_STAT    = ( ( uint16_t )0x0030U );
+  static constexpr uint16_t EPADDR_FIELD = ( ( uint16_t )0x000FU );
 
   /* EndPoint REGister MASK (no toggle fields) */
-  static constexpr uint32_t EPREG_MASK     = ( EP_CTR_RX | EP_SETUP | EP_T_FIELD | EP_KIND | EP_CTR_TX | EPADDR_FIELD );
-  static constexpr uint32_t EP_TYPE_MASK   = ( ( uint16_t )0x0600U );
-  static constexpr uint32_t EP_BULK        = ( ( uint16_t )0x0000U );
-  static constexpr uint32_t EP_CONTROL     = ( ( uint16_t )0x0200U );
-  static constexpr uint32_t EP_ISOCHRONOUS = ( ( uint16_t )0x0400U );
-  static constexpr uint32_t EP_INTERRUPT   = ( ( uint16_t )0x0600U );
-  static constexpr uint32_t EP_T_MASK      = ( ( uint16_t )~EP_T_FIELD & EPREG_MASK );
-  static constexpr uint32_t EPKIND_MASK    = ( ( uint16_t )~EP_KIND & EPREG_MASK );
-  static constexpr uint32_t EP_TX_DIS      = ( ( uint16_t )0x0000U );
-  static constexpr uint32_t EP_TX_STALL    = ( ( uint16_t )0x0010U );
-  static constexpr uint32_t EP_TX_NAK      = ( ( uint16_t )0x0020U );
-  static constexpr uint32_t EP_TX_VALID    = ( ( uint16_t )0x0030U );
-  static constexpr uint32_t EPTX_DTOG1     = ( ( uint16_t )0x0010U );
-  static constexpr uint32_t EPTX_DTOG2     = ( ( uint16_t )0x0020U );
-  static constexpr uint32_t EPTX_DTOGMASK  = ( EPTX_STAT | EPREG_MASK );
-  static constexpr uint32_t EP_RX_DIS      = ( ( uint16_t )0x0000U );
-  static constexpr uint32_t EP_RX_STALL    = ( ( uint16_t )0x1000U );
-  static constexpr uint32_t EP_RX_NAK      = ( ( uint16_t )0x2000U );
-  static constexpr uint32_t EP_RX_VALID    = ( ( uint16_t )0x3000U );
-  static constexpr uint32_t EPRX_DTOG1     = ( ( uint16_t )0x1000U );
-  static constexpr uint32_t EPRX_DTOG2     = ( ( uint16_t )0x2000U );
-  static constexpr uint32_t EPRX_DTOGMASK  = ( EPRX_STAT | EPREG_MASK );
+  static constexpr uint16_t EPREG_MASK     = ( EP_CTR_RX | EP_SETUP | EP_T_FIELD | EP_KIND | EP_CTR_TX | EPADDR_FIELD );
+  static constexpr uint16_t EP_TYPE_MASK   = ( ( uint16_t )0x0600U );
+  static constexpr uint16_t EP_BULK        = ( ( uint16_t )0x0000U );
+  static constexpr uint16_t EP_CONTROL     = ( ( uint16_t )0x0200U );
+  static constexpr uint16_t EP_ISOCHRONOUS = ( ( uint16_t )0x0400U );
+  static constexpr uint16_t EP_INTERRUPT   = ( ( uint16_t )0x0600U );
+  static constexpr uint16_t EP_T_MASK      = ( ( uint16_t )~EP_T_FIELD & EPREG_MASK );
+  static constexpr uint16_t EPKIND_MASK    = ( ( uint16_t )~EP_KIND & EPREG_MASK );
+  static constexpr uint16_t EP_TX_DIS      = ( ( uint16_t )0x0000U );
+  static constexpr uint16_t EP_TX_STALL    = ( ( uint16_t )0x0010U );
+  static constexpr uint16_t EP_TX_NAK      = ( ( uint16_t )0x0020U );
+  static constexpr uint16_t EP_TX_VALID    = ( ( uint16_t )0x0030U );
+  static constexpr uint16_t EPTX_DTOG1     = ( ( uint16_t )0x0010U );
+  static constexpr uint16_t EPTX_DTOG2     = ( ( uint16_t )0x0020U );
+  static constexpr uint16_t EPTX_DTOGMASK  = ( EPTX_STAT | EPREG_MASK );
+  static constexpr uint16_t EP_RX_DIS      = ( ( uint16_t )0x0000U );
+  static constexpr uint16_t EP_RX_STALL    = ( ( uint16_t )0x1000U );
+  static constexpr uint16_t EP_RX_NAK      = ( ( uint16_t )0x2000U );
+  static constexpr uint16_t EP_RX_VALID    = ( ( uint16_t )0x3000U );
+  static constexpr uint16_t EPRX_DTOG1     = ( ( uint16_t )0x1000U );
+  static constexpr uint16_t EPRX_DTOG2     = ( ( uint16_t )0x2000U );
+  static constexpr uint16_t EPRX_DTOGMASK  = ( EPRX_STAT | EPREG_MASK );
 
   /*-------------------------------------------------
   General Registers
   -------------------------------------------------*/
-
   /******************  Bits definition for CNTR register  *******************/
-  static constexpr uint32_t CNTR_CTRM     = ( ( uint16_t )0x8000U );
-  static constexpr uint32_t CNTR_PMAOVRM  = ( ( uint16_t )0x4000U );
-  static constexpr uint32_t CNTR_ERRM     = ( ( uint16_t )0x2000U );
-  static constexpr uint32_t CNTR_WKUPM    = ( ( uint16_t )0x1000U );
-  static constexpr uint32_t CNTR_SUSPM    = ( ( uint16_t )0x0800U );
-  static constexpr uint32_t CNTR_RESETM   = ( ( uint16_t )0x0400U );
-  static constexpr uint32_t CNTR_SOFM     = ( ( uint16_t )0x0200U );
-  static constexpr uint32_t CNTR_ESOFM    = ( ( uint16_t )0x0100U );
-  static constexpr uint32_t CNTR_L1REQM   = ( ( uint16_t )0x0080U );
-  static constexpr uint32_t CNTR_L1RESUME = ( ( uint16_t )0x0020U );
-  static constexpr uint32_t CNTR_RESUME   = ( ( uint16_t )0x0010U );
-  static constexpr uint32_t CNTR_FSUSP    = ( ( uint16_t )0x0008U );
-  static constexpr uint32_t CNTR_LPMODE   = ( ( uint16_t )0x0004U );
-  static constexpr uint32_t CNTR_PDWN     = ( ( uint16_t )0x0002U );
-  static constexpr uint32_t CNTR_FRES     = ( ( uint16_t )0x0001U );
+  static constexpr uint16_t CNTR_ALL_Msk = ( 0xFFBF );
+  static constexpr uint16_t CNTR_ALL_Rst = ( 0x0003 );
+
+  static constexpr uint16_t CNTR_ALL_ISR  = ( ( uint16_t )0xFF80U );
+  static constexpr uint16_t CNTR_CTRM     = ( ( uint16_t )0x8000U );
+  static constexpr uint16_t CNTR_PMAOVRM  = ( ( uint16_t )0x4000U );
+  static constexpr uint16_t CNTR_ERRM     = ( ( uint16_t )0x2000U );
+  static constexpr uint16_t CNTR_WKUPM    = ( ( uint16_t )0x1000U );
+  static constexpr uint16_t CNTR_SUSPM    = ( ( uint16_t )0x0800U );
+  static constexpr uint16_t CNTR_RESETM   = ( ( uint16_t )0x0400U );
+  static constexpr uint16_t CNTR_SOFM     = ( ( uint16_t )0x0200U );
+  static constexpr uint16_t CNTR_ESOFM    = ( ( uint16_t )0x0100U );
+  static constexpr uint16_t CNTR_L1REQM   = ( ( uint16_t )0x0080U );
+  static constexpr uint16_t CNTR_L1RESUME = ( ( uint16_t )0x0020U );
+  static constexpr uint16_t CNTR_RESUME   = ( ( uint16_t )0x0010U );
+  static constexpr uint16_t CNTR_FSUSP    = ( ( uint16_t )0x0008U );
+  static constexpr uint16_t CNTR_LPMODE   = ( ( uint16_t )0x0004U );
+  static constexpr uint16_t CNTR_PDWN     = ( ( uint16_t )0x0002U );
+  static constexpr uint16_t CNTR_FRES     = ( ( uint16_t )0x0001U );
 
   /******************  Bits definition for ISTR register  *******************/
-  static constexpr uint32_t ISTR_EP_ID  = ( ( uint16_t )0x000FU );
-  static constexpr uint32_t ISTR_DIR    = ( ( uint16_t )0x0010U );
-  static constexpr uint32_t ISTR_L1REQ  = ( ( uint16_t )0x0080U );
-  static constexpr uint32_t ISTR_ESOF   = ( ( uint16_t )0x0100U );
-  static constexpr uint32_t ISTR_SOF    = ( ( uint16_t )0x0200U );
-  static constexpr uint32_t ISTR_RESET  = ( ( uint16_t )0x0400U );
-  static constexpr uint32_t ISTR_SUSP   = ( ( uint16_t )0x0800U );
-  static constexpr uint32_t ISTR_WKUP   = ( ( uint16_t )0x1000U );
-  static constexpr uint32_t ISTR_ERR    = ( ( uint16_t )0x2000U );
-  static constexpr uint32_t ISTR_PMAOVR = ( ( uint16_t )0x4000U );
-  static constexpr uint32_t ISTR_CTR    = ( ( uint16_t )0x8000U );
+
+  static constexpr uint16_t ISTR_ALL_ISR = ( ( uint16_t )0x7F80U );
+  static constexpr uint16_t ISTR_EP_ID   = ( ( uint16_t )0x000FU );
+  static constexpr uint16_t ISTR_DIR     = ( ( uint16_t )0x0010U );
+  static constexpr uint16_t ISTR_L1REQ   = ( ( uint16_t )0x0080U );
+  static constexpr uint16_t ISTR_ESOF    = ( ( uint16_t )0x0100U );
+  static constexpr uint16_t ISTR_SOF     = ( ( uint16_t )0x0200U );
+  static constexpr uint16_t ISTR_RESET   = ( ( uint16_t )0x0400U );
+  static constexpr uint16_t ISTR_SUSP    = ( ( uint16_t )0x0800U );
+  static constexpr uint16_t ISTR_WKUP    = ( ( uint16_t )0x1000U );
+  static constexpr uint16_t ISTR_ERR     = ( ( uint16_t )0x2000U );
+  static constexpr uint16_t ISTR_PMAOVR  = ( ( uint16_t )0x4000U );
+  static constexpr uint16_t ISTR_CTR     = ( ( uint16_t )0x8000U );
 
 
   /******************  Bits definition for FNR register  ********************/
-  static constexpr uint32_t FNR_FN   = ( ( uint16_t )0x07FFU );
-  static constexpr uint32_t FNR_LSOF = ( ( uint16_t )0x1800U );
-  static constexpr uint32_t FNR_LCK  = ( ( uint16_t )0x2000U );
-  static constexpr uint32_t FNR_RXDM = ( ( uint16_t )0x4000U );
-  static constexpr uint32_t FNR_RXDP = ( ( uint16_t )0x8000U );
+  static constexpr uint16_t FNR_FN   = ( ( uint16_t )0x07FFU );
+  static constexpr uint16_t FNR_LSOF = ( ( uint16_t )0x1800U );
+  static constexpr uint16_t FNR_LCK  = ( ( uint16_t )0x2000U );
+  static constexpr uint16_t FNR_RXDM = ( ( uint16_t )0x4000U );
+  static constexpr uint16_t FNR_RXDP = ( ( uint16_t )0x8000U );
 
   /******************  Bits definition for DADDR register    ****************/
-  static constexpr uint32_t DADDR_ADD  = ( ( uint8_t )0x7FU );
-  static constexpr uint32_t DADDR_ADD0 = ( ( uint8_t )0x01U );
-  static constexpr uint32_t DADDR_ADD1 = ( ( uint8_t )0x02U );
-  static constexpr uint32_t DADDR_ADD2 = ( ( uint8_t )0x04U );
-  static constexpr uint32_t DADDR_ADD3 = ( ( uint8_t )0x08U );
-  static constexpr uint32_t DADDR_ADD4 = ( ( uint8_t )0x10U );
-  static constexpr uint32_t DADDR_ADD5 = ( ( uint8_t )0x20U );
-  static constexpr uint32_t DADDR_ADD6 = ( ( uint8_t )0x40U );
-  static constexpr uint32_t DADDR_EF   = ( ( uint8_t )0x80U );
+  static constexpr uint16_t DADDR_ADD  = ( ( uint8_t )0x7FU );
+  static constexpr uint16_t DADDR_ADD0 = ( ( uint8_t )0x01U );
+  static constexpr uint16_t DADDR_ADD1 = ( ( uint8_t )0x02U );
+  static constexpr uint16_t DADDR_ADD2 = ( ( uint8_t )0x04U );
+  static constexpr uint16_t DADDR_ADD3 = ( ( uint8_t )0x08U );
+  static constexpr uint16_t DADDR_ADD4 = ( ( uint8_t )0x10U );
+  static constexpr uint16_t DADDR_ADD5 = ( ( uint8_t )0x20U );
+  static constexpr uint16_t DADDR_ADD6 = ( ( uint8_t )0x40U );
+  static constexpr uint16_t DADDR_EF   = ( ( uint8_t )0x80U );
 
   /******************  Bit definition for BTABLE register  ******************/
-  static constexpr uint32_t BTABLE_BTABLE = ( ( uint16_t )0xFFF8U );
+  static constexpr uint16_t BTABLE_BTABLE = ( ( uint16_t )0xFFF8U );
 
   /******************  Bits definition for BCDR register  *******************/
-  static constexpr uint32_t BCDR_BCDEN  = ( ( uint16_t )0x0001U );
-  static constexpr uint32_t BCDR_DCDEN  = ( ( uint16_t )0x0002U );
-  static constexpr uint32_t BCDR_PDEN   = ( ( uint16_t )0x0004U );
-  static constexpr uint32_t BCDR_SDEN   = ( ( uint16_t )0x0008U );
-  static constexpr uint32_t BCDR_DCDET  = ( ( uint16_t )0x0010U );
-  static constexpr uint32_t BCDR_PDET   = ( ( uint16_t )0x0020U );
-  static constexpr uint32_t BCDR_SDET   = ( ( uint16_t )0x0040U );
-  static constexpr uint32_t BCDR_PS2DET = ( ( uint16_t )0x0080U );
-  static constexpr uint32_t BCDR_DPPU   = ( ( uint16_t )0x8000U );
+  static constexpr uint16_t BCDR_BCDEN  = ( ( uint16_t )0x0001U );
+  static constexpr uint16_t BCDR_DCDEN  = ( ( uint16_t )0x0002U );
+  static constexpr uint16_t BCDR_PDEN   = ( ( uint16_t )0x0004U );
+  static constexpr uint16_t BCDR_SDEN   = ( ( uint16_t )0x0008U );
+  static constexpr uint16_t BCDR_DCDET  = ( ( uint16_t )0x0010U );
+  static constexpr uint16_t BCDR_PDET   = ( ( uint16_t )0x0020U );
+  static constexpr uint16_t BCDR_SDET   = ( ( uint16_t )0x0040U );
+  static constexpr uint16_t BCDR_PS2DET = ( ( uint16_t )0x0080U );
+  static constexpr uint16_t BCDR_DPPU   = ( ( uint16_t )0x8000U );
 
   /*******************  Bit definition for LPMCSR register  *********************/
-  static constexpr uint32_t LPMCSR_LMPEN   = ( ( uint16_t )0x0001U );
-  static constexpr uint32_t LPMCSR_LPMACK  = ( ( uint16_t )0x0002U );
-  static constexpr uint32_t LPMCSR_REMWAKE = ( ( uint16_t )0x0008U );
-  static constexpr uint32_t LPMCSR_BESL    = ( ( uint16_t )0x00F0U );
+  static constexpr uint16_t LPMCSR_LMPEN   = ( ( uint16_t )0x0001U );
+  static constexpr uint16_t LPMCSR_LPMACK  = ( ( uint16_t )0x0002U );
+  static constexpr uint16_t LPMCSR_REMWAKE = ( ( uint16_t )0x0008U );
+  static constexpr uint16_t LPMCSR_BESL    = ( ( uint16_t )0x00F0U );
 
 
   static constexpr uint32_t ADDR0_TX_Pos = ( 1U );

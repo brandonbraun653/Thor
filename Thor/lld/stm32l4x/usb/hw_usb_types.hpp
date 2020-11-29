@@ -15,6 +15,10 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Driver Includes */
+#include <Thor/lld/common/registers/field_accessor.hpp>
+#include <Thor/lld/stm32l4x/usb/hw_usb_prj.hpp>
+
 namespace Thor::LLD::USB
 {
   /*-------------------------------------------------------------------------------
@@ -53,6 +57,46 @@ namespace Thor::LLD::USB
     volatile uint16_t BCDR; /**< Battery Charging detector register,     Address offset: 0x58 */
     volatile uint16_t _RESERVEDE;
   };
+
+
+  /*-------------------------------------------------------------------------------
+  Classes
+  -------------------------------------------------------------------------------*/
+  /*-------------------------------------------------
+  Control Register (CNTR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_ALL_Msk, CNTR_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_CTRM, CTRM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_PMAOVRM, PMAOVRM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_ERRM, ERRM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_WKUPM, WKUPM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_SUSPM, SUSPM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_RESETM, RESETM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_SOFM, SOFM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_ESOFM, ESOFM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_L1REQM, L1REQM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_L1RESUME, L1RESUME, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_RESUME, RESUME, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_FSUSP, FSUSP, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_LPMODE, LPMODE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_PDWN, PDWN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNTR, CNTR_FRES, FRES, BIT_ACCESS_RW );
+
+
+  /*-------------------------------------------------
+  Battery Charging Detector Register (BCDR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, BCDR, BCDR_DPPU, DPPU, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, BCDR, BCDR_PS2DET, PS2DET, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, BCDR, BCDR_SDET, SDET, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, BCDR, BCDR_PDET, PDET, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, BCDR, BCDR_DCDET, DCDET, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, BCDR, BCDR_SDEN, SDEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, BCDR, BCDR_PDEN, PDEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, BCDR, BCDR_DCDEN, DCDEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, BCDR, BCDR_BCDEN, BCDEN, BIT_ACCESS_RW );
+
+
 }    // namespace Thor::LLD::USB
 
 #endif /* !THOR_HW_USB_TYPES_HPP */

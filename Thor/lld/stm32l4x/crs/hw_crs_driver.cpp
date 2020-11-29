@@ -154,7 +154,7 @@ namespace Thor::LLD::CRS
     float sF          = static_cast<float>( syncFreq );
     float rawFELIM    = ( ( tF / sF ) * ( percentStep / 100.0f ) ) / 2.0f;
 
-    // Highest accuracy achieve by rounding up to nearest integer
+    // Highest accuracy achieved by rounding up to nearest integer
     Reg32_t felimVal = static_cast<Reg32_t>( ceil( rawFELIM ) );
 
     if ( felimVal <= MAX_FELIM_VAL )
@@ -182,6 +182,7 @@ namespace Thor::LLD::CRS
       AUTOTRIMEN::clear( CRS1_PERIPH, CR_AUTOTRIMEN );
     }
   }
+
 
   void toggleFEQ( const bool state )
   {

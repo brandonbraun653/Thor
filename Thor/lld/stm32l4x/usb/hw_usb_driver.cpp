@@ -15,6 +15,7 @@
 /* Chimera Includes */
 #include <Chimera/algorithm>
 #include <Chimera/common>
+#include <Chimera/gpio>
 #include <Chimera/utility>
 
 /* Driver Includes */
@@ -106,17 +107,20 @@ namespace Thor::LLD::USB
   Chimera::Status_t Driver::initialize( const Chimera::USB::PeriphConfig &cfg )
   {
     /*-------------------------------------------------
-    Local constants
+    Local constants/vars
     -------------------------------------------------*/
     constexpr size_t USB_CLOCK_FREQ = 48000000;    // Standard 48MHz
     constexpr size_t USB_SYNC_FREQ  = 1000;        // Periodic 1ms SOF from host
     constexpr size_t USB_TRIM_STEP  = 14;          // Default for the CRS periph
+
+    auto result = Chimera::Status::OK;
 
     /*-------------------------------------------------
     Enable the peripheral clock
     -------------------------------------------------*/
     RCC::getCoreClock()->enableClock( Chimera::Clock::Bus::RC48 );
     clockEnable();
+    clockReset();
 
     /*-------------------------------------------------
     Configure the CRS driver to sync the RC48 bus on
@@ -140,44 +144,149 @@ namespace Thor::LLD::USB
     /*-------------------------------------------------
     Mask all interrupts and clear pending
     -------------------------------------------------*/
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
 
     /*-------------------------------------------------
-    Reset the USB peripheral
+    Configure the GPIO
     -------------------------------------------------*/
+    if ( !cfg.pinDM.validity || !cfg.pinDP.validity )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
+    // DM Configuration
+    auto gpioDM   = Chimera::GPIO::getDriver( cfg.pinDM.port, cfg.pinDM.pin );
+    auto dmResult = Chimera::Status::OK;
+
+    if ( gpioDM )
+    {
+      dmResult |= gpioDM->init( cfg.pinDM );
+    }
+    else
+    {
+      dmResult = Chimera::Status::NOT_FOUND;
+    }
+
+    // DP Configuration
+    auto gpioDP   = Chimera::GPIO::getDriver( cfg.pinDP.port, cfg.pinDP.pin );
+    auto dpResult = Chimera::Status::OK;
+
+    if ( gpioDP )
+    {
+      dpResult |= gpioDP->init( cfg.pinDP );
+    }
+    else
+    {
+      dpResult = Chimera::Status::NOT_FOUND;
+    }
+
+    if ( ( dpResult | dmResult ) != Chimera::Status::OK )
+    {
+      return Chimera::Status::FAILED_INIT;
+    }
+
+    /*-------------------------------------------------
+    Enable the transciever (RM 45.5.2)
+    -------------------------------------------------*/
+    // Enable the PDWN bit to initiate the startup sequence
+    PDWN::clear( mPeriph, CNTR_PDWN );
+
+    // Datasheet requires a delay on power up sequence, but doesn't specify a value...
+    Chimera::delayMilliseconds( 10 );
+
+    // Clear FRES to enable the peripheral
+    FRES::clear( mPeriph, CNTR_FRES );
 
     /*-------------------------------------------------
     Configure Interrupts
     -------------------------------------------------*/
+    // Disable all ISR signals
+    CNTR_ALL::clear( mPeriph, CNTR_ALL_ISR );
+
+    // Clear pending bits with a direct write. RM 45.6.1: USB_ISTR
+    mPeriph->ISTR = ~( ISTR_ALL_ISR );
+
+    // Re-enable all ISR signals
+    CNTR_ALL::set( mPeriph, CNTR_ALL_ISR );
 
     /*-------------------------------------------------
     Enable/disable LPM support
     -------------------------------------------------*/
+    if ( cfg.useLPM )
+    {
+      asm( "nop" );    // Eventually this might get supported if a project needs it
+    }
+    else
+    {
+      LPMODE::clear( mPeriph, CNTR_LPMODE );
+    }
 
     /*-------------------------------------------------
     Enable/disable Battery Charging Support
     -------------------------------------------------*/
+    if ( cfg.useBattCharge )
+    {
+      asm( "nop" );    // Eventually this might get supported if a project needs it
+    }
+    else
+    {
+      DPPU::clear( mPeriph, BCDR_DPPU );
+      SDEN::clear( mPeriph, BCDR_SDEN );
+      PDEN::clear( mPeriph, BCDR_PDEN );
+      DCDEN::clear( mPeriph, BCDR_DCDEN );
+      BCDEN::clear( mPeriph, BCDR_BCDEN );
+    }
+
+    /*-------------------------------------------------
+    Last step, store the configuration for later use
+    -------------------------------------------------*/
+    mCfg = cfg;
+
+    return result;
   }
 
 
   Chimera::Status_t Driver::reset()
   {
     /*-------------------------------------------------
+    Disable interrupts
+    -------------------------------------------------*/
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+
+    /*-------------------------------------------------
     Power down the peripheral
     -------------------------------------------------*/
-    // TODO: implement the power down sequence
+    PDWN::set( mPeriph, CNTR_PDWN );
+    FRES::set( mPeriph, CNTR_FRES );
 
     /*-------------------------------------------------
     Disable the peripheral clock. Don't touch the RC48
     clock as it might be in use by the RNG driver.
     -------------------------------------------------*/
+    clockReset();
     clockDisable();
 
     /*-------------------------------------------------
-    Disable interrupts
+    Disable GPIO
     -------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    auto gpioDM = Chimera::GPIO::getDriver( mCfg.pinDM.port, mCfg.pinDM.pin );
+    auto gpioDP = Chimera::GPIO::getDriver( mCfg.pinDP.port, mCfg.pinDP.pin );
+
+    if ( gpioDM && gpioDP && mCfg.pinDM.validity && mCfg.pinDP.validity )
+    {
+      gpioDM->setMode( Chimera::GPIO::Drive::HIZ, Chimera::GPIO::Pull::NO_PULL );
+      gpioDP->setMode( Chimera::GPIO::Drive::HIZ, Chimera::GPIO::Pull::NO_PULL );
+    }
 
     return Chimera::Status::OK;
+  }
+
+
+  void Driver::clockReset()
+  {
+    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    rcc->reset( Chimera::Peripheral::Type::PERIPH_USB, mResourceIndex );
   }
 
 
