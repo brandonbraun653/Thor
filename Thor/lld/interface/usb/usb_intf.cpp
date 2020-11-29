@@ -45,7 +45,7 @@ namespace Thor::LLD::USB
     switch ( channel )
     {
 #if defined( STM32_USB1_PERIPH_AVAILABLE )
-      case Chimera::USB::Channel::USB1:
+      case Chimera::USB::Channel::USB0:
         return USB1_RESOURCE_INDEX;
         break;
 #endif

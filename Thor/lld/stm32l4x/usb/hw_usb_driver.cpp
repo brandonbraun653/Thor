@@ -24,6 +24,8 @@
 #include <Thor/lld/interface/usb/usb_prv_data.hpp>
 #include <Thor/lld/interface/usb/usb_intf.hpp>
 #include <Thor/lld/interface/usb/usb_types.hpp>
+#include <Thor/lld/stm32l4x/crs/hw_crs_driver.hpp>
+#include <Thor/lld/stm32l4x/crs/hw_crs_types.hpp>
 #include <Thor/lld/stm32l4x/usb/hw_usb_prj.hpp>
 #include <Thor/lld/stm32l4x/usb/hw_usb_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
@@ -73,7 +75,7 @@ namespace Thor::LLD::USB
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mPeriph( nullptr ), resourceIndex( std::numeric_limits<size_t>::max() )
+  Driver::Driver() : mPeriph( nullptr ), mResourceIndex( std::numeric_limits<size_t>::max() )
   {
   }
 
@@ -87,22 +89,94 @@ namespace Thor::LLD::USB
     /*------------------------------------------------
     Get peripheral descriptor settings
     ------------------------------------------------*/
-    mPeriph       = peripheral;
-    resourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
+    mPeriph        = peripheral;
+    mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
 
     /*------------------------------------------------
     Handle the ISR configuration
     ------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
-    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
-    Thor::LLD::IT::setPriority( Resource::IRQSignals[ resourceIndex ], Thor::Interrupt::USB_IT_PREEMPT_PRIORITY, 0u );
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::IT::setPriority( Resource::IRQSignals[ mResourceIndex ], Thor::Interrupt::USB_IT_PREEMPT_PRIORITY, 0u );
 
     return Chimera::Status::OK;
   }
 
 
+  Chimera::Status_t Driver::initialize( const Chimera::USB::PeriphConfig &cfg )
+  {
+    /*-------------------------------------------------
+    Local constants
+    -------------------------------------------------*/
+    constexpr size_t USB_CLOCK_FREQ = 48000000;    // Standard 48MHz
+    constexpr size_t USB_SYNC_FREQ  = 1000;        // Periodic 1ms SOF from host
+    constexpr size_t USB_TRIM_STEP  = 14;          // Default for the CRS periph
+
+    /*-------------------------------------------------
+    Enable the peripheral clock
+    -------------------------------------------------*/
+    RCC::getCoreClock()->enableClock( Chimera::Clock::Bus::RC48 );
+    clockEnable();
+
+    /*-------------------------------------------------
+    Configure the CRS driver to sync the RC48 bus on
+    the USB SOF signal. This helps tighten the clock.
+    -------------------------------------------------*/
+    auto crsResult = Chimera::Status::OK;
+
+    crsResult |= CRS::initialize();
+    crsResult |= CRS::selectSyncSource( CRS::SyncSource::USB_SOF );
+    crsResult |= CRS::configureDiv( CRS::SyncDiv::SYNC_DIV1 );
+    crsResult |= CRS::configureHWAlgo( USB_CLOCK_FREQ, USB_SYNC_FREQ, USB_TRIM_STEP );
+
+    CRS::toggleAutoTrim( true );
+    CRS::toggleFEQ( true );
+
+    if ( crsResult != Chimera::Status::OK )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+    /*-------------------------------------------------
+    Mask all interrupts and clear pending
+    -------------------------------------------------*/
+
+    /*-------------------------------------------------
+    Reset the USB peripheral
+    -------------------------------------------------*/
+
+    /*-------------------------------------------------
+    Configure Interrupts
+    -------------------------------------------------*/
+
+    /*-------------------------------------------------
+    Enable/disable LPM support
+    -------------------------------------------------*/
+
+    /*-------------------------------------------------
+    Enable/disable Battery Charging Support
+    -------------------------------------------------*/
+  }
+
+
   Chimera::Status_t Driver::reset()
   {
+    /*-------------------------------------------------
+    Power down the peripheral
+    -------------------------------------------------*/
+    // TODO: implement the power down sequence
+
+    /*-------------------------------------------------
+    Disable the peripheral clock. Don't touch the RC48
+    clock as it might be in use by the RNG driver.
+    -------------------------------------------------*/
+    clockDisable();
+
+    /*-------------------------------------------------
+    Disable interrupts
+    -------------------------------------------------*/
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+
     return Chimera::Status::OK;
   }
 
@@ -110,26 +184,26 @@ namespace Thor::LLD::USB
   void Driver::clockEnable()
   {
     auto rcc = Thor::LLD::RCC::getPeripheralClock();
-    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_USB, resourceIndex );
+    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_USB, mResourceIndex );
   }
 
 
   void Driver::clockDisable()
   {
     auto rcc = Thor::LLD::RCC::getPeripheralClock();
-    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_USB, resourceIndex );
+    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_USB, mResourceIndex );
   }
 
 
   inline void Driver::enterCriticalSection()
   {
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 
   inline void Driver::exitCriticalSection()
   {
-    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 

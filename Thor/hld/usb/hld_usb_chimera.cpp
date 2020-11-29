@@ -60,9 +60,9 @@ namespace Chimera::USB::Backend
   }
 
 
-  Chimera::USB::Driver_sPtr getDriver( const Port port, const Pin pin )
+  Chimera::USB::Driver_sPtr getDriver( const Channel ch )
   {
-    auto idx = ::LLD::getPinResourceIndex( port, pin );
+    auto idx = ::LLD::getResourceIndex( ch );
     return s_shared_driver[ idx ];
   }
 
@@ -102,6 +102,25 @@ namespace Chimera::USB
   /*-------------------------------------------------
   Interface: Hardware
   -------------------------------------------------*/
+  Chimera::Status_t Driver::open( const PeriphConfig &cfg )
+  {
+    mDriver = reinterpret_cast<void *>( ::HLD::getDriver( cfg.channel ) );
+
+    if ( mDriver )
+    {
+      return static_cast<::HLD::Driver_rPtr>( mDriver )->open( cfg );
+    }
+    else
+    {
+      return Chimera::Status::NOT_SUPPORTED;
+    }
+  }
+
+
+  void Driver::close()
+  {
+  }
+
 
   /*-------------------------------------------------
   Interface: Lockable

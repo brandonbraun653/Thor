@@ -22,6 +22,7 @@
 
 /* Driver Includes */
 #include <Thor/lld/stm32l4x/can/hw_can_prj.hpp>
+#include <Thor/lld/stm32l4x/crs/hw_crs_prj.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
@@ -74,6 +75,18 @@ namespace Thor::LLD::RCC
     extern RegisterConfig CAN_ResetConfig[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
     extern Chimera::Clock::Bus CAN_SourceClock[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
 #endif /* THOR_LLD_CAN */
+
+#if defined( THOR_LLD_CRS )
+    /**
+     *  Power Peripheral Config Lookup Tables
+     */
+    extern void CRSInit();
+
+    extern PCC CRSLookup;
+    extern RegisterConfig CRS_ClockConfig[ Thor::LLD::CRS::NUM_CRS_PERIPHS ];
+    extern RegisterConfig CRS_ResetConfig[ Thor::LLD::CRS::NUM_CRS_PERIPHS ];
+    extern Chimera::Clock::Bus CRS_SourceClock[ Thor::LLD::CRS::NUM_CRS_PERIPHS ];
+#endif /* THOR_LLD_CRS */
 
 #if defined( THOR_LLD_FLASH )
     /**

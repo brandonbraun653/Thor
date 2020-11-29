@@ -28,7 +28,6 @@
 
 namespace Thor::LLD::RCC
 {
-
   /*-------------------------------------------------------------------------------
   Structures
   -------------------------------------------------------------------------------*/
@@ -383,7 +382,7 @@ namespace Thor::LLD::RCC
     static constexpr Reg32_t APB2_AHB_DIV_4  = ( 0x05 << CFGR_PPRE2_Pos ) & CFGR_PPRE2_Msk;
     static constexpr Reg32_t APB2_AHB_DIV_8  = ( 0x06 << CFGR_PPRE2_Pos ) & CFGR_PPRE2_Msk;
     static constexpr Reg32_t APB2_AHB_DIV_16 = ( 0x07 << CFGR_PPRE2_Pos ) & CFGR_PPRE2_Msk;
-  }
+  }    // namespace Config::CFGR
 
   /*------------------------------------------------
   PLL Configuration Register
@@ -419,7 +418,7 @@ namespace Thor::LLD::RCC
     static constexpr Reg32_t R_DIV_4 = PLLCFGR_PLLR_0;
     static constexpr Reg32_t R_DIV_6 = PLLCFGR_PLLR_1;
     static constexpr Reg32_t R_DIV_8 = PLLCFGR_PLLR_1 | PLLCFGR_PLLR_0;
-  }
+  }    // namespace Config::PLLCFGR
 
   /*------------------------------------------------
   Peripheral Clock Enable Register (APB1ENR1)
@@ -460,7 +459,12 @@ namespace Thor::LLD::RCC
   REG_ACCESSOR( RegisterMap, CSR, CSR_LSIRDY, LSIRDY, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, CSR, CSR_LSION, LSION, BIT_ACCESS_RW );
 
-
+  /*-------------------------------------------------
+  Clock Recovery RC Register (CRRCR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CRRCR, CRRCR_HSI48CAL_Msk, HSI48CAL, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CRRCR, CRRCR_HSI48RDY_Msk, HSI48RDY, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CRRCR, CRRCR_HSI48ON_Msk, HSI48ON, BIT_ACCESS_RW );
 }    // namespace Thor::LLD::RCC
 
 #endif /* !THOR_LLD_RCC_TYPES_HPP */

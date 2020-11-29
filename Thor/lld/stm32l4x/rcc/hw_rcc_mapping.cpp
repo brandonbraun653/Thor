@@ -30,6 +30,10 @@ namespace Thor::LLD::RCC
     LookupTables::CANInit();
 #endif
 
+#if defined( THOR_LLD_CRS )
+    LookupTables::CRSInit();
+#endif
+
 #if defined( THOR_LLD_DMA )
 #pragma message( "Need to initialize the driver" )
     LookupTables::DMAInit();

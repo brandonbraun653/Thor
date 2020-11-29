@@ -348,6 +348,10 @@ Low Level Driver Support
 #define THOR_LLD_CAN
 #endif
 
+#ifndef THOR_LLD_CRS
+#define THOR_LLD_CRS
+#endif
+
 #ifndef THOR_LLD_EXTI
 #define THOR_LLD_EXTI
 #endif

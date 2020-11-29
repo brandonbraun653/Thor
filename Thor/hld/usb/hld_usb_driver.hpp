@@ -38,13 +38,25 @@ namespace Thor::USB
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
+  /**
+   *  USB Peripheral Driver
+   *  Methods here at a minimum implement the interface specified in Chimera.
+   *  Inheritance is avoided to minimize cost of virtual function lookup table.
+   */
   class Driver : public Chimera::Threading::Lockable
   {
   public:
     Driver();
     ~Driver();
 
+    /*-------------------------------------------------
+    Interface: Hardware
+    -------------------------------------------------*/
+    Chimera::Status_t open( const Chimera::USB::PeriphConfig &cfg );
+    void close();
+
   private:
+    Chimera::USB::Channel mChannel;
   };
 }    // namespace Thor::USB
 

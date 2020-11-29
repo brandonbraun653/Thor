@@ -105,7 +105,7 @@ namespace Thor::USB
 
   Driver_rPtr getDriver( const Chimera::USB::Channel ch )
   {
-    if ( auto idx = LLD::getPinResourceIndex( ch ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    if ( auto idx = LLD::getResourceIndex( ch ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return &hld_driver[ idx ];
     }
@@ -118,7 +118,7 @@ namespace Thor::USB
 
   Driver_sPtr getDriverShared( const Chimera::USB::Channel ch )
   {
-    if ( auto idx = LLD::getPinResourceIndex( ch ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    if ( auto idx = LLD::getResourceIndex( ch ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return hld_shared[ idx ];
     }
@@ -131,13 +131,31 @@ namespace Thor::USB
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver()
+  Driver::Driver() : mChannel( Chimera::USB::Channel::UNKNOWN )
   {
   }
 
 
   Driver::~Driver()
   {
+  }
+
+
+  Chimera::Status_t Driver::open( const Chimera::USB::PeriphConfig &cfg )
+  {
+    if ( !( cfg.channel < Chimera::USB::Channel::NUM_OPTIONS ) )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
+    mChannel = cfg.channel;
+    return LLD::getDriver( mChannel )->initialize( cfg );
+  }
+
+
+  void Driver::close()
+  {
+    LLD::getDriver( mChannel )->reset();
   }
 
 

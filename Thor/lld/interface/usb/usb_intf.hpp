@@ -109,6 +109,14 @@ namespace Thor::LLD::USB
     virtual Chimera::Status_t attach( RegisterMap *const peripheral ) = 0;
 
     /**
+     *  Initializes the peripheral with the desired settings
+     *
+     *  @param[in]  cfg           Configuration info
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t initialize( const Chimera::USB::PeriphConfig &cfg ) = 0;
+
+    /**
      *  Resets the hardware registers back to boot-up values
      *
      *  @return Chimera::Status_t
@@ -142,8 +150,8 @@ namespace Thor::LLD::USB
     Driver();
     ~Driver();
 
-
     Chimera::Status_t attach( RegisterMap *const peripheral );
+    Chimera::Status_t initialize( const Chimera::USB::PeriphConfig &cfg );
     Chimera::Status_t reset();
     void clockEnable();
     void clockDisable();
@@ -166,7 +174,7 @@ namespace Thor::LLD::USB
     friend void( ::OTG_FS_IRQHandler )();
 
     RegisterMap *mPeriph;
-    size_t resourceIndex;
+    size_t mResourceIndex;
   };
 
 }    // namespace Thor::LLD::USB
