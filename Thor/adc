@@ -1,18 +1,18 @@
 /********************************************************************************
  *  File Name:
- *    gpio
+ *    adc
  *
  *  Description:
- *    Thor GPIO Includes
+ *    Thor ADC Includes
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_GPIO_INCLUDES
-#define THOR_GPIO_INCLUDES
+#ifndef THOR_ADC_INCLUDES
+#define THOR_ADC_INCLUDES
 
-#include <Thor/hld/gpio/hld_gpio_driver.hpp>
-#include <Thor/hld/gpio/hld_gpio_types.hpp>
+#include <Thor/hld/adc/hld_adc_driver.hpp>
+#include <Thor/hld/adc/hld_adc_types.hpp>
 
-#endif /* !THOR_GPIO_INCLUDES */
+#endif /* !THOR_ADC_INCLUDES */
