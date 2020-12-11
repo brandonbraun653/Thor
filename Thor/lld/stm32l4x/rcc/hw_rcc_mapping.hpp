@@ -21,6 +21,7 @@
 #include <Chimera/container>
 
 /* Driver Includes */
+#include <Thor/lld/stm32l4x/adc/hw_adc_prj.hpp>
 #include <Thor/lld/stm32l4x/can/hw_can_prj.hpp>
 #include <Thor/lld/stm32l4x/crs/hw_crs_prj.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
@@ -64,12 +65,16 @@ namespace Thor::LLD::RCC
 
   namespace LookupTables
   {
-#if defined( THOR_LLD_CAN )
-    /**
-     *  Power Peripheral Config Lookup Tables
-     */
-    extern void CANInit();
+#if defined( THOR_LLD_ADC )
+    extern void ADCInit();
+    extern PCC ADCLookup;
+    extern RegisterConfig ADC_ClockConfig[ Thor::LLD::ADC::NUM_ADC_PERIPHS ];
+    extern RegisterConfig ADC_ResetConfig[ Thor::LLD::ADC::NUM_ADC_PERIPHS ];
+    extern Chimera::Clock::Bus ADC_SourceClock[ Thor::LLD::ADC::NUM_ADC_PERIPHS ];
+#endif /* THOR_LLD_ADC */
 
+#if defined( THOR_LLD_CAN )
+    extern void CANInit();
     extern PCC CANLookup;
     extern RegisterConfig CAN_ClockConfig[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
     extern RegisterConfig CAN_ResetConfig[ Thor::LLD::CAN::NUM_CAN_PERIPHS ];
@@ -89,11 +94,7 @@ namespace Thor::LLD::RCC
 #endif /* THOR_LLD_CRS */
 
 #if defined( THOR_LLD_FLASH )
-    /**
-     *  Power Peripheral Config Lookup Tables
-     */
     extern void FLASHInit();
-
     extern PCC FLASHLookup;
     extern RegisterConfig FLASH_ClockConfig[ Thor::LLD::FLASH::NUM_FLASH_PERIPHS ];
     extern RegisterConfig FLASH_ResetConfig[ Thor::LLD::FLASH::NUM_FLASH_PERIPHS ];
@@ -101,11 +102,7 @@ namespace Thor::LLD::RCC
 #endif /* THOR_LLD_FLASH */
 
 #if defined( THOR_LLD_GPIO )
-    /**
-     *  GPIO Peripheral Config Lookup Tables
-     */
     extern void GPIOInit();
-
     extern PCC GPIOLookup;
     extern RegisterConfig GPIO_ClockConfig[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
     extern RegisterConfig GPIO_ResetConfig[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
@@ -113,11 +110,7 @@ namespace Thor::LLD::RCC
 #endif /* THOR_LLD_GPIO */
 
 #if defined( THOR_LLD_PWR )
-    /**
-     *  Power Peripheral Config Lookup Tables
-     */
     extern void PWRInit();
-
     extern PCC PWRLookup;
     extern RegisterConfig PWR_ClockConfig[ Thor::LLD::PWR::NUM_POWER_PERIPHS ];
     extern RegisterConfig PWR_ResetConfig[ Thor::LLD::PWR::NUM_POWER_PERIPHS ];
@@ -125,11 +118,7 @@ namespace Thor::LLD::RCC
 #endif /* THOR_LLD_PWR */
 
 #if defined( THOR_LLD_SPI )
-    /**
-     *  SPI Peripheral Config Lookup Tables
-     */
     extern void SPIInit();
-
     extern PCC SPILookup;
     extern RegisterConfig SPI_ClockConfig[ Thor::LLD::SPI::NUM_SPI_PERIPHS ];
     extern RegisterConfig SPI_ResetConfig[ Thor::LLD::SPI::NUM_SPI_PERIPHS ];
@@ -137,11 +126,7 @@ namespace Thor::LLD::RCC
 #endif /* THOR_LLD_SPI */
 
 #if defined( THOR_LLD_SYSCFG )
-    /**
-     *  SYSCFG Peripheral Config Lookup Tables
-     */
     extern void SYSCFGInit();
-
     extern PCC SYSCFGLookup;
     extern RegisterConfig SYSCFG_ClockConfig[ Thor::LLD::SYS::NUM_SYSCFG_PERIPHS ];
     extern RegisterConfig SYSCFG_ResetConfig[ Thor::LLD::SYS::NUM_SYSCFG_PERIPHS ];
@@ -149,11 +134,7 @@ namespace Thor::LLD::RCC
 #endif /* THOR_LLD_SYSCFG */
 
 #if defined( THOR_LLD_TIMER )
-    /**
-     *  TIMER Peripheral Config Lookup Tables
-     */
     extern void TIMERInit();
-
     extern PCC TIMERLookup;
     extern RegisterConfig TIMER_ClockConfig[ Thor::LLD::TIMER::NUM_TIMER_PERIPHS ];
     extern RegisterConfig TIMER_ResetConfig[ Thor::LLD::TIMER::NUM_TIMER_PERIPHS ];
@@ -161,11 +142,7 @@ namespace Thor::LLD::RCC
 #endif /* THOR_LLD_TIMER */
 
 #if defined( THOR_LLD_USART )
-    /**
-     *  USART Peripheral Config Lookup Tables
-     */
     extern void USARTInit();
-
     extern PCC USARTLookup;
     extern RegisterConfig USART_ClockConfig[ Thor::LLD::USART::NUM_USART_PERIPHS ];
     extern RegisterConfig USART_ResetConfig[ Thor::LLD::USART::NUM_USART_PERIPHS ];
@@ -173,11 +150,7 @@ namespace Thor::LLD::RCC
 #endif /* THOR_LLD_USART */
 
 #if defined( THOR_LLD_USB )
-    /**
-     *  USB Peripheral Config Lookup Tables
-     */
     extern void USBInit();
-
     extern PCC USBLookup;
     extern RegisterConfig USB_ClockConfig[ Thor::LLD::USB::NUM_USB_PERIPHS ];
     extern RegisterConfig USB_ResetConfig[ Thor::LLD::USB::NUM_USB_PERIPHS ];

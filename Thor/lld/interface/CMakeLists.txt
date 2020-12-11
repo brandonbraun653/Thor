@@ -1,6 +1,7 @@
 # ====================================================
 # Add the projects for all the supported drivers
 # ====================================================
+add_subdirectory("adc")
 add_subdirectory("can")
 add_subdirectory("common")
 add_subdirectory("crc")
@@ -27,6 +28,7 @@ add_subdirectory("watchdog")
 set(LLD_INTF thor_lld_intf)
 add_library(${LLD_INTF} INTERFACE)
 target_link_libraries(${LLD_INTF} INTERFACE
+  thor_lld_intf_adc
   thor_lld_intf_can
   thor_lld_intf_common
   thor_lld_intf_exti

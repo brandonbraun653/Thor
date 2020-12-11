@@ -465,6 +465,20 @@ namespace Thor::LLD::RCC
   REG_ACCESSOR( RegisterMap, CRRCR, CRRCR_HSI48CAL_Msk, HSI48CAL, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, CRRCR, CRRCR_HSI48RDY_Msk, HSI48RDY, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, CRRCR, CRRCR_HSI48ON_Msk, HSI48ON, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Peripheral Independent Clock Config Register (CCIPR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CCIPR, CCIPR_ADCSEL_Msk, ADCSEL, BIT_ACCESS_RW );
+
+  namespace Config::CCIPR
+  {
+    static constexpr uint32_t ADCSEL_NO_CLOCK  = 0;
+    static constexpr uint32_t ADCSEL_PLL_CLOCK = 1 << CCIPR_ADCSEL_Pos;
+    static constexpr uint32_t ADCSEL_SYS_CLOCK = 3 << CCIPR_ADCSEL_Pos;
+
+  }    // namespace Config::CCIPR
+
 }    // namespace Thor::LLD::RCC
 
 #endif /* !THOR_LLD_RCC_TYPES_HPP */

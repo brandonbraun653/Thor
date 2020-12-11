@@ -1,6 +1,7 @@
 # ====================================================
 # Add the projects for all the supported drivers
 # ====================================================
+add_subdirectory("adc")
 add_subdirectory("can")
 add_subdirectory("crs")
 add_subdirectory("des")
@@ -23,6 +24,7 @@ add_subdirectory("usb")
 set(LLD thor_lld_stm32l4)
 add_library(${LLD} INTERFACE)
 target_link_libraries(${LLD} INTERFACE
+  thor_lld_stm32l4_adc
   thor_lld_stm32l4_can
   thor_lld_stm32l4_crs
   thor_lld_stm32l4_des

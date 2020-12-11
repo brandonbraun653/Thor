@@ -136,6 +136,15 @@ namespace Thor::System::MemoryMap
   static constexpr uint32_t GPIOH_PERIPH_START_ADDRESS = AHB2_RGN_START_ADDRESS + 0x1C00U;
   static constexpr uint32_t GPIOH_PERIPH_END_ADDRESS   = AHB2_RGN_START_ADDRESS + 0x1FFFU;
 
+  static constexpr uint32_t ADC1_PERIPH_START_ADDRESS = 0x50040000;
+  static constexpr uint32_t ADC1_PERIPH_END_ADDRESS   = 0x500403FF;
+
+  static constexpr uint32_t AES1_PERIPH_START_ADDRESS = 0x50060000;
+  static constexpr uint32_t AES1_PERIPH_END_ADDRESS   = 0x500603FF;
+
+  static constexpr uint32_t RNG1_PERIPH_START_ADDRESS = 0x50060800;
+  static constexpr uint32_t RNG1_PERIPH_END_ADDRESS   = 0x50060BFF;
+
   /*------------------------------------------------
   Vector Table Offset Configuration
   ------------------------------------------------*/

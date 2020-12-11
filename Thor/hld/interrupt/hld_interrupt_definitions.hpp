@@ -27,6 +27,7 @@ namespace Thor::Interrupt
   EXCEPT for peripherals that us the FreeRTOS ISR API calls. Their
   priority cannot be higher than configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY.
   ------------------------------------------------*/
+  static constexpr uint32_t ADC_IT_PREEMPT_PRIORITY     = 5;
   static constexpr uint32_t CAN_IT_PREEMPT_PRIORITY     = 5;
   static constexpr uint32_t DMA_STREAM_PREEMPT_PRIORITY = 5;
   static constexpr uint32_t EXTI0_MAX_IRQn_PRIORITY     = 5;

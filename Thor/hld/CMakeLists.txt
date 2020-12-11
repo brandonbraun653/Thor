@@ -1,6 +1,7 @@
 # ====================================================
 # Add the projects for all the supported drivers
 # ====================================================
+add_subdirectory("adc")
 add_subdirectory("can")
 add_subdirectory("clock")
 add_subdirectory("common")
@@ -27,6 +28,7 @@ add_subdirectory("watchdog")
 set(HLD thor_hld)
 add_library(${HLD} INTERFACE)
 target_link_libraries(${HLD} INTERFACE
+  thor_hld_adc
   thor_hld_can
   thor_hld_clock
   thor_hld_dma
