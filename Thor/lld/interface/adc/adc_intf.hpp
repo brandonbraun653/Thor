@@ -34,33 +34,42 @@ namespace Thor::LLD::ADC
   Chimera::Status_t initialize();
 
   /**
-   *  Gets a shared pointer to the ADC driver for a particular channel
+   *  Gets a shared pointer to the ADC driver for a particular periph
    *
-   *  @param[in] channel        The ADC channel to grab (1 indexed)
-   *  @return IDriver_sPtr      Instance of the ADC driver for the requested channel
+   *  @param[in] periph         The ADC periph to grab (1 indexed)
+   *  @return IDriver_sPtr      Instance of the ADC driver for the requested periph
    */
-  Driver_rPtr getDriver( const Chimera::ADC::Channel channel );
+  Driver_rPtr getDriver( const Chimera::ADC::Converter periph );
+
+  /**
+   *  Checks if the hardware ADC feature is supported
+   *
+   *  @param[in]  periph        Which peripheral to check
+   *  @param[in]  feature       The feature to check
+   *  @return bool
+   */
+  bool featureSupported( const Chimera::ADC::Converter periph, const Chimera::ADC::Feature feature );
 
 
   /*-------------------------------------------------------------------------------
   Public Functions (Implemented at the interface layer)
   -------------------------------------------------------------------------------*/
   /**
-   *  Checks if the given hardware channel is supported on this device.
+   *  Checks if the given hardware periph is supported on this device.
    *
-   *  @param[in]  channel       The channel number to be checked
+   *  @param[in]  periph        The periph number to be checked
    *  @return bool
    */
-  bool isSupported( const Chimera::ADC::Channel channel );
+  bool isSupported( const Chimera::ADC::Converter periph );
 
   /**
-   *  Get's the resource index associated with a particular channel. If not
+   *  Get's the resource index associated with a particular periph. If not
    *  supported, will return INVALID_RESOURCE_INDEX
    *
-   *  @param[in]  channel       The channel number to be checked
+   *  @param[in]  periph        The periph number to be checked
    *  @return RIndex_t
    */
-  RIndex_t getResourceIndex( const Chimera::ADC::Channel channel );
+  RIndex_t getResourceIndex( const Chimera::ADC::Converter periph );
 
   /**
    *  Looks up a resource index based on a raw peripheral instance
@@ -71,12 +80,12 @@ namespace Thor::LLD::ADC
   RIndex_t getResourceIndex( const std::uintptr_t address );
 
   /**
-   *  Gets the ADC channel associated with a peripheral address
+   *  Gets the ADC periph associated with a peripheral address
    *
    *  @param[in]  address       Memory address the peripheral is mapped to
-   *  @return Chimera::ADC::Channel
+   *  @return Chimera::ADC::Converter
    */
-  Chimera::ADC::Channel getChannel( const std::uintptr_t address );
+  Chimera::ADC::Converter getChannel( const std::uintptr_t address );
 
   /**
    *  Initializes the ADC drivers by attaching the appropriate peripheral
@@ -114,7 +123,7 @@ namespace Thor::LLD::ADC
      *  @param[in]  cfg           Configuration info
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t initialize( const Chimera::ADC::PeriphConfig &cfg ) = 0;
+    virtual Chimera::Status_t initialize( const Chimera::ADC::DriverConfig &cfg ) = 0;
 
     /**
      *  Resets the hardware registers back to boot-up values
@@ -144,6 +153,18 @@ namespace Thor::LLD::ADC
      *  @return void
      */
     virtual void clockDisable() = 0;
+
+    /**
+     *  Disables interrupts only on the ADC driver
+     *  @return void
+     */
+    virtual void enterCriticalSection() = 0;
+
+    /**
+     *  Re-enables interrupts only on the ADC driver
+     *  @return void
+     */
+    virtual void exitCriticalSection() = 0;
   };
 
 
@@ -159,21 +180,23 @@ namespace Thor::LLD::ADC
     ~Driver();
 
     Chimera::Status_t attach( RegisterMap *const peripheral );
-    Chimera::Status_t initialize( const Chimera::ADC::PeriphConfig &cfg );
+    Chimera::Status_t initialize( const Chimera::ADC::DriverConfig &cfg );
     Chimera::Status_t reset();
     void clockReset();
     void clockEnable();
     void clockDisable();
-
-  protected:
     void enterCriticalSection();
     void exitCriticalSection();
+
+  protected:
     void IRQHandler();
 
   private:
+    friend void( ::ADC_IRQHandler )();
+
     RegisterMap *mPeriph;
     size_t mResourceIndex;
-    Chimera::ADC::PeriphConfig mCfg;
+    Chimera::ADC::DriverConfig mCfg;
   };
 
 }    // namespace Thor::LLD::ADC

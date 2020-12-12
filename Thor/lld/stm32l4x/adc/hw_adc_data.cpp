@@ -25,6 +25,8 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------------------------------------
   Peripheral Memory Maps
   -------------------------------------------------------------------------------*/
+  CommonRegisterMap *ADC_COMMON = reinterpret_cast<CommonRegisterMap *>( ADC_CMN_BASE_ADDR );
+
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
   RegisterMap *ADC1_PERIPH = reinterpret_cast<RegisterMap *>( ADC1_BASE_ADDR );
 #endif
@@ -44,10 +46,10 @@ namespace Thor::LLD::ADC
   { /* clang-format off */
     LLD_CONST IRQn_Type IRQSignals[ NUM_ADC_PERIPHS ] = {
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
-      ADC1_IRQn,
+      ADC_IRQn,
 #endif
     };
   } /* clang-format on */
-}  // namespace Thor::LLD::ADC
+}    // namespace Thor::LLD::ADC
 
 #endif /* TARGET_STM32L4 && THOR_LLD_ADC */

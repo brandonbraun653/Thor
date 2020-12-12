@@ -58,9 +58,9 @@ namespace Thor::LLD::ADC
   }
 
 
-  Driver_rPtr getDriver( const Chimera::ADC::Channel channel )
+  Driver_rPtr getDriver( const Chimera::ADC::Converter periph )
   {
-    if ( auto idx = getResourceIndex( channel ); idx != INVALID_RESOURCE_INDEX )
+    if ( auto idx = getResourceIndex( periph ); idx != INVALID_RESOURCE_INDEX )
     {
       return &s_adc_drivers[ idx ];
     }
@@ -68,6 +68,11 @@ namespace Thor::LLD::ADC
     {
       return nullptr;
     }
+  }
+
+  bool featureSupported( const Chimera::ADC::Converter periph, const Chimera::ADC::Feature feature )
+  {
+    return true;
   }
 
 
@@ -88,15 +93,15 @@ namespace Thor::LLD::ADC
     /*------------------------------------------------
     Get peripheral descriptor settings
     ------------------------------------------------*/
-    mPeriph       = peripheral;
-    resourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
+    mPeriph        = peripheral;
+    mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
 
     /*------------------------------------------------
     Handle the ISR configuration
     ------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
-    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
-    Thor::LLD::IT::setPriority( Resource::IRQSignals[ resourceIndex ], Thor::Interrupt::ADC_IT_PREEMPT_PRIORITY, 0u );
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::IT::setPriority( Resource::IRQSignals[ mResourceIndex ], Thor::Interrupt::ADC_IT_PREEMPT_PRIORITY, 0u );
 
     return Chimera::Status::OK;
   }
@@ -111,38 +116,37 @@ namespace Thor::LLD::ADC
   void Driver::clockEnable()
   {
     auto rcc = Thor::LLD::RCC::getPeripheralClock();
-    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_ADC, resourceIndex );
+    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_ADC, mResourceIndex );
   }
 
 
   void Driver::clockDisable()
   {
     auto rcc = Thor::LLD::RCC::getPeripheralClock();
-    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_ADC, resourceIndex );
+    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_ADC, mResourceIndex );
   }
 
 
   inline void Driver::enterCriticalSection()
   {
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 
   inline void Driver::exitCriticalSection()
   {
-    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 
   void Driver::IRQHandler()
   {
-
   }
 }    // namespace Thor::LLD::ADC
 
 
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
-void ADC1_IRQHandler()
+void ADC_IRQHandler()
 {
   using namespace Thor::LLD::ADC;
   s_adc_drivers[ ADC1_RESOURCE_INDEX ].IRQHandler();

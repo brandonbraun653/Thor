@@ -15,9 +15,9 @@
 #include <Thor/cfg>
 #include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/interface/adc/adc_intf.hpp>
-#include <Thor/lld/l4x/rcc/hw_rcc_mapping.hpp>
-#include <Thor/lld/l4x/adc/hw_adc_types.hpp>
-#include <Thor/lld/l4x/adc/variant/hw_adc_register_l4xxxx.hpp>
+#include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
+#include <Thor/lld/stm32l4x/adc/hw_adc_types.hpp>
+#include <Thor/lld/stm32l4x/adc/variant/hw_adc_register_stm32l4xxxx.hpp>
 
 #if defined( STM32L432xx ) && defined( THOR_LLD_ADC )
 
@@ -50,23 +50,23 @@ namespace Thor::LLD::RCC::LookupTables
 ADC clock enable register access lookup table
 ------------------------------------------------*/
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
-    ADC_ClockConfig[ ADC1_RESOURCE_INDEX ].mask = //APB2ENR_ADC1EN;
-    ADC_ClockConfig[ ADC1_RESOURCE_INDEX ].reg  = //&RCC1_PERIPH->APB2ENR;
+    ADC_ClockConfig[ ADC1_RESOURCE_INDEX ].mask = AHB2ENR_ADCEN;
+    ADC_ClockConfig[ ADC1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2ENR;
 #endif
 
 /*------------------------------------------------
 ADC reset register access lookup table
 ------------------------------------------------*/
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
-    ADC_ResetConfig[ ADC1_RESOURCE_INDEX ].mask = //APB2RSTR_ADC1RST;
-    ADC_ResetConfig[ ADC1_RESOURCE_INDEX ].reg  = //&RCC1_PERIPH->APB2RSTR;
+    ADC_ResetConfig[ ADC1_RESOURCE_INDEX ].mask = AHB2RSTR_ADCRST;
+    ADC_ResetConfig[ ADC1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB2RSTR;
 #endif
 
 /*------------------------------------------------
 ADC clocking bus source identifier
 ------------------------------------------------*/
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
-    ADC_SourceClock[ ADC1_RESOURCE_INDEX ] = //Chimera::Clock::Bus::APB2;
+    ADC_SourceClock[ ADC1_RESOURCE_INDEX ] = Chimera::Clock::Bus::PCLK2;
 #endif
   };
 

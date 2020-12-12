@@ -4,7 +4,7 @@
  *
  *  Description:
  *    Declaration of data that must be defined by the LLD implementation or is
-*    shared among all possible drivers.
+ *    shared among all possible drivers.
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -41,6 +41,8 @@ namespace Thor::LLD::ADC
   Peripheral Instances:
     Memory mapped structures that allow direct access to peripheral registers
   -------------------------------------------------------------------------------*/
+  extern CommonRegisterMap *ADC_COMMON;
+
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
   extern RegisterMap *ADC1_PERIPH;
 #endif
@@ -63,7 +65,7 @@ namespace Thor::LLD::ADC
   namespace Resource
   {
     extern LLD_CONST IRQn_Type IRQSignals[ NUM_ADC_PERIPHS ];
-  }    // namespace ResourceMap
+  }    // namespace Resource
 }    // namespace Thor::LLD::ADC
 
 #endif /* !THOR_LLD_ADC_DATA */

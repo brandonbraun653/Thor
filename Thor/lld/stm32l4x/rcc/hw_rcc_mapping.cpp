@@ -26,6 +26,10 @@ namespace Thor::LLD::RCC
   ------------------------------------------------*/
   void initializeMapping()
   {
+#if defined( THOR_LLD_ADC )
+    LookupTables::ADCInit();
+#endif
+
 #if defined( THOR_LLD_CAN )
     LookupTables::CANInit();
 #endif

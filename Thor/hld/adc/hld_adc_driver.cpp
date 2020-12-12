@@ -47,6 +47,10 @@ namespace Thor::ADC
   static HLD::Driver hld_driver[ NUM_DRIVERS ];      /**< Driver objects */
   static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ]; /**< Shared references to driver objects */
 
+  /**
+   *  Cache for holding the last set of samples performed on each channel
+   */
+  static Chimera::ADC::Sample_t last_samples[ NUM_DRIVERS ][ LLD::NUM_ADC_CHANNELS_PER_PERIPH ];
 
   /*-------------------------------------------------------------------------------
   Public Functions
@@ -61,11 +65,12 @@ namespace Thor::ADC
     {
       return result;
     }
+    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
 
     /*------------------------------------------------
     Initialize local memory
     ------------------------------------------------*/
-    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+    // Driver pointers
     for ( size_t x = 0; x < NUM_DRIVERS; x++ )
     {
 #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_ADC )
@@ -74,6 +79,10 @@ namespace Thor::ADC
       hld_shared[ x ] = HLD::Driver_sPtr( &hld_driver[ x ] );
 #endif
     }
+
+    // Sample Cache
+    auto const arr_len = NUM_DRIVERS * LLD::NUM_ADC_CHANNELS_PER_PERIPH * sizeof( Chimera::ADC::Sample_t );
+    memset( last_samples, 0, arr_len );
 
     /*------------------------------------------------
     Initialize the low level driver
@@ -103,9 +112,9 @@ namespace Thor::ADC
   }
 
 
-  Driver_rPtr getDriver( const Chimera::ADC::Channel ch )
+  Driver_rPtr getDriver( const Chimera::ADC::Converter periph )
   {
-    if ( auto idx = LLD::getResourceIndex( ch ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    if ( auto idx = LLD::getResourceIndex( periph ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return &hld_driver[ idx ];
     }
@@ -116,9 +125,9 @@ namespace Thor::ADC
   }
 
 
-  Driver_sPtr getDriverShared( const Chimera::ADC::Channel ch )
+  Driver_sPtr getDriverShared( const Chimera::ADC::Converter periph )
   {
-    if ( auto idx = LLD::getResourceIndex( ch ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    if ( auto idx = LLD::getResourceIndex( periph ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return hld_shared[ idx ];
     }
@@ -128,15 +137,131 @@ namespace Thor::ADC
     }
   }
 
+
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mChannel( Chimera::ADC::Channel::UNKNOWN )
+  Driver::Driver() : mPeriph( Chimera::ADC::Converter::UNKNOWN )
   {
+    mConfig.clear();
   }
 
 
   Driver::~Driver()
+  {
+  }
+
+
+  Chimera::Status_t Driver::open( const Chimera::ADC::DriverConfig &cfg )
+  {
+    /*-------------------------------------------------
+    Validate inputs. Currently all basic configuration
+    options are supported by this driver.
+    -------------------------------------------------*/
+    auto lld = LLD::getDriver( mConfig.periph );
+    auto idx = LLD::getResourceIndex( mConfig.periph );
+
+    if ( lld )
+    {
+      mConfig = cfg;
+    }
+    else
+    {
+      return Chimera::Status::NOT_SUPPORTED;
+    }
+
+    /*-------------------------------------------------
+    Reset hld resources
+    -------------------------------------------------*/
+    memset( last_samples[ idx ], 0, LLD::NUM_ADC_CHANNELS_PER_PERIPH );
+
+    /*-------------------------------------------------
+    Initialize the low level driver
+    -------------------------------------------------*/
+    return lld->initialize( mConfig );
+  }
+
+
+  void Driver::close()
+  {
+    /*-------------------------------------------------
+    Reset the hardware resources
+    -------------------------------------------------*/
+    auto lld = LLD::getDriver( mConfig.periph );
+    lld->reset();
+    lld->clockReset();
+    lld->clockDisable();
+  }
+
+
+  void Driver::setPowerState( const bool state )
+  {
+  }
+
+
+  Chimera::ADC::Sample_t Driver::sampleChannel( const Chimera::ADC::Channel ch )
+  {
+  }
+
+
+  Chimera::ADC::Sample_t Driver::sampleSensor( const Chimera::ADC::Sensor sensor )
+  {
+  }
+
+
+  Chimera::Status_t Driver::groupConfig( const Chimera::ADC::GroupInit &cfg )
+  {
+  }
+
+
+  Chimera::Status_t Driver::groupStartSample( const Chimera::ADC::SampleGroup grp )
+  {
+  }
+
+
+  Chimera::Status_t Driver::groupGetSample( const Chimera::ADC::SampleGroup grp, Chimera::ADC::Sample_t *const out,
+                                            const size_t len )
+  {
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+
+
+    auto lld = LLD::getDriver( mConfig.periph );
+
+    /*-------------------------------------------------
+    Safely copy out the current data
+    -------------------------------------------------*/
+    Chimera::ADC::Sample_t tmp[ LLD::NUM_ADC_CHANNELS_PER_PERIPH ];
+
+    lld->enterCriticalSection();
+    memcpy( tmp, last_samples[ 0 ], ARRAY_BYTES( tmp ) );
+    lld->exitCriticalSection();
+
+    /*-------------------------------------------------
+    Store the data into the user's buffer
+    -------------------------------------------------*/
+  }
+
+
+  Chimera::Status_t Driver::groupSetDMABuffer( const Chimera::ADC::SampleGroup grp, Chimera::ADC::Sample_t *const out,
+                                               const size_t len )
+  {
+  }
+
+
+  Chimera::Status_t Driver::setSampleTime( const Chimera::ADC::Channel ch, const size_t cycles )
+  {
+  }
+
+
+  void Driver::setWatchdogThreshold( const Chimera::ADC::Watchdog wd, const Chimera::ADC::Sample_t low,
+                                     const Chimera::ADC::Sample_t high )
+  {
+  }
+
+
+  void Driver::onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb )
   {
   }
 

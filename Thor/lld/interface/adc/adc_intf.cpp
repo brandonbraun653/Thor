@@ -23,12 +23,12 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
-  bool isSupported( const Chimera::ADC::Channel channel )
+  bool isSupported( const Chimera::ADC::Converter periph )
   {
-    switch ( channel )
+    switch ( periph )
     {
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
-      case Chimera::ADC::Channel::ADC0:
+      case Chimera::ADC::Converter::ADC_0:
         return true;
         break;
 #endif
@@ -40,12 +40,12 @@ namespace Thor::LLD::ADC
   }
 
 
-  RIndex_t getResourceIndex( const Chimera::ADC::Channel channel )
+  RIndex_t getResourceIndex( const Chimera::ADC::Converter periph )
   {
-    switch ( channel )
+    switch ( periph )
     {
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
-      case Chimera::ADC::Channel::ADC0:
+      case Chimera::ADC::Converter::ADC_0:
         return ADC1_RESOURCE_INDEX;
         break;
 #endif
@@ -70,16 +70,16 @@ namespace Thor::LLD::ADC
   }
 
 
-  Chimera::ADC::Channel getChannel( const std::uintptr_t address )
+  Chimera::ADC::Converter getChannel( const std::uintptr_t address )
   {
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( ADC1_PERIPH ) )
     {
-      return Chimera::ADC::Channel::ADC0;
+      return Chimera::ADC::Converter::ADC_0;
     }
 #endif
 
-    return Chimera::ADC::Channel::UNKNOWN;
+    return Chimera::ADC::Converter::UNKNOWN;
   }
 
 

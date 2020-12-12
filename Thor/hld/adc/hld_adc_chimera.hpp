@@ -14,7 +14,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/usb>
+#include <Chimera/adc>
 
 namespace Chimera::ADC::Backend
 {
@@ -23,7 +23,8 @@ namespace Chimera::ADC::Backend
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
-  Driver_sPtr getDriver( const Channel channel );
+  Driver_sPtr getDriver( const Converter periph );
+  bool featureSupported( const Converter periph, const Feature feature );
 }    // namespace Chimera::ADC::Backend
 
 #endif /* !THOR_ADC_CHIMERA_HOOKS_HPP */
