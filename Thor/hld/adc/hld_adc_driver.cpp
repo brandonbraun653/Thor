@@ -158,8 +158,8 @@ namespace Thor::ADC
     Validate inputs. Currently all basic configuration
     options are supported by this driver.
     -------------------------------------------------*/
-    auto lld = LLD::getDriver( mConfig.periph );
-    auto idx = LLD::getResourceIndex( mConfig.periph );
+    auto lld = LLD::getDriver( cfg.periph );
+    auto idx = LLD::getResourceIndex( cfg.periph );
 
     if ( lld )
     {

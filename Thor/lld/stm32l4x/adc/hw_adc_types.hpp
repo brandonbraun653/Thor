@@ -83,7 +83,7 @@ namespace Thor::LLD::ADC
   Classes
   -------------------------------------------------------------------------------*/
   /*-------------------------------------------------
-  Common Control Register
+  Common Control Register (CCR)
   -------------------------------------------------*/
   REG_ACCESSOR( CommonRegisterMap, CCR, CCR_VBATEN_Msk, VBATEN, BIT_ACCESS_RW );
   REG_ACCESSOR( CommonRegisterMap, CCR, CCR_TSEN_Msk, TSEN, BIT_ACCESS_RW );
@@ -92,7 +92,37 @@ namespace Thor::LLD::ADC
   REG_ACCESSOR( CommonRegisterMap, CCR, CCR_CKMODE_Msk, CKMODE, BIT_ACCESS_RW );
 
   /*-------------------------------------------------
-  Control Register
+  Interrupt Status Register (ISR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, ISR, ISR_JQOVF_Msk, JQOVF, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_AWD3_Msk, AWD3, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_AWD2_Msk, AWD2, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_AWD1_Msk, AWD1, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_JEOS_Msk, JEOS, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_JEOC_Msk, JEOC, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_OVR_Msk, OVR, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_EOS_Msk, EOS, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_EOC_Msk, EOC, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_EOSMP_Msk, EOSMP, BIT_ACCESS_RCW1 );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_ADRDY_Msk, ADRDY, BIT_ACCESS_RCW1 );
+
+  /*-------------------------------------------------
+  Interrupt Enable Register (IER)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, IER, IER_JQOVFIE_Msk, JQOVFIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, IER, IER_AWD3IE_Msk, AWD3IE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, IER, IER_AWD2IE_Msk, AWD2IE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, IER, IER_AWD1IE_Msk, AWD1IE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, IER, IER_JEOSIE_Msk, JEOSIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, IER, IER_JEOCIE_Msk, JEOCIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, IER, IER_OVRIE_Msk, OVRIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, IER, IER_EOSIE_Msk, EOSIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, IER, IER_EOCIE_Msk, EOCIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, IER, IER_EOSMPIE_Msk, EOSMPIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, IER, IER_ADRDYIE_Msk, ADRDYIE, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Control Register (CR)
   -------------------------------------------------*/
   REG_ACCESSOR( RegisterMap, CR, CR_ADCAL_Msk, ADCAL, BIT_ACCESS_RS );
   REG_ACCESSOR( RegisterMap, CR, CR_ADCALDIF_Msk, ADCALDIF, BIT_ACCESS_RW );
@@ -104,6 +134,45 @@ namespace Thor::LLD::ADC
   REG_ACCESSOR( RegisterMap, CR, CR_ADSTART_Msk, ADSTART, BIT_ACCESS_RS );
   REG_ACCESSOR( RegisterMap, CR, CR_ADDIS_Msk, ADDIS, BIT_ACCESS_RS );
   REG_ACCESSOR( RegisterMap, CR, CR_ADEN_Msk, ADEN, BIT_ACCESS_RS );
+
+  /*-------------------------------------------------
+  Configuration Register (CFGR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_JQDIS_Msk, JQDIS, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_AWD1CH_Msk, AWD1CH, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_JAUTO_Msk, JAUTO, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_JAWD1EN_Msk, JAWD1EN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_AWD1EN_Msk, AWD1EN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_AWD1SGL_Msk, AWD1SGL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_JQM_Msk, JQM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_JDISCEN_Msk, JDISCEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_DISCNUM_Msk, DISCNUM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_DISCEN_Msk, DISCEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_AUTDLY_Msk, AUTDLY, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_CONT_Msk, CONT, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_OVRMOD_Msk, OVRMOD, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_EXTEN_Msk, EXTEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_EXTSEL_Msk, EXTSEL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_ALIGN_Msk, ALIGN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_RES_Msk, RES, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_DMACFG_Msk, DMACFG, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR, CFGR_DMAEN_Msk, DMAEN, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Configuration Register 2 (CFGR2)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CFGR2, CFGR2_ROVSM_Msk, ROVSM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR2, CFGR2_TROVS_Msk, TROVS, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR2, CFGR2_OVSS_Msk, OVSS, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR2, CFGR2_OVSR_Msk, OVSR, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR2, CFGR2_JOVSE_Msk, JOVSE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CFGR2, CFGR2_ROVSE_Msk, ROVSE, BIT_ACCESS_RW );
+
+
+  /*-------------------------------------------------
+  Differential Mode Selection Register (DIFSEL)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, DIFSEL, DIFSEL_DIFSEL_Msk, DIFSEL, BIT_ACCESS_RW );
 
 
 }    // namespace Thor::LLD::ADC

@@ -26,6 +26,8 @@
 #include <Thor/lld/stm32l4x/adc/hw_adc_prj.hpp>
 #include <Thor/lld/stm32l4x/adc/hw_adc_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
+#include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
+#include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_ADC )
 
@@ -111,6 +113,8 @@ namespace Thor::LLD::ADC
 
   Chimera::Status_t Driver::initialize( const Chimera::ADC::DriverConfig &cfg )
   {
+    using namespace Thor::LLD::RCC;
+
     /*-------------------------------------------------
     Configure the clock
     -------------------------------------------------*/
@@ -118,6 +122,9 @@ namespace Thor::LLD::ADC
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
+
+    // Select the clock source
+    ADCSEL::set( RCC1_PERIPH, Config::CCIPR::ADCSEL_SYS_CLOCK );
 
     // Turn on the core peripheral clock
     this->clockEnable();
@@ -130,51 +137,51 @@ namespace Thor::LLD::ADC
     switch ( cfg.clockPrescale )
     {
       case Chimera::ADC::Prescaler::DIV_1:
-        PRESC::set( ADC_COMMON, 0 );
+        PRESC::set( ADC_COMMON, 0 << CCR_PRESC_Pos );
         break;
 
       case Chimera::ADC::Prescaler::DIV_2:
-        PRESC::set( ADC_COMMON, 1 );
+        PRESC::set( ADC_COMMON, 1 << CCR_PRESC_Pos );
         break;
 
       case Chimera::ADC::Prescaler::DIV_4:
-        PRESC::set( ADC_COMMON, 2 );
+        PRESC::set( ADC_COMMON, 2 << CCR_PRESC_Pos );
         break;
 
       case Chimera::ADC::Prescaler::DIV_6:
-        PRESC::set( ADC_COMMON, 3 );
+        PRESC::set( ADC_COMMON, 3 << CCR_PRESC_Pos );
         break;
 
       case Chimera::ADC::Prescaler::DIV_8:
-        PRESC::set( ADC_COMMON, 4 );
+        PRESC::set( ADC_COMMON, 4 << CCR_PRESC_Pos );
         break;
 
       case Chimera::ADC::Prescaler::DIV_10:
-        PRESC::set( ADC_COMMON, 5 );
+        PRESC::set( ADC_COMMON, 5 << CCR_PRESC_Pos );
         break;
 
       case Chimera::ADC::Prescaler::DIV_12:
-        PRESC::set( ADC_COMMON, 6 );
+        PRESC::set( ADC_COMMON, 6 << CCR_PRESC_Pos );
         break;
 
       case Chimera::ADC::Prescaler::DIV_16:
-        PRESC::set( ADC_COMMON, 7 );
+        PRESC::set( ADC_COMMON, 7 << CCR_PRESC_Pos );
         break;
 
       case Chimera::ADC::Prescaler::DIV_32:
-        PRESC::set( ADC_COMMON, 8 );
+        PRESC::set( ADC_COMMON, 8 << CCR_PRESC_Pos );
         break;
 
       case Chimera::ADC::Prescaler::DIV_64:
-        PRESC::set( ADC_COMMON, 9 );
+        PRESC::set( ADC_COMMON, 9 << CCR_PRESC_Pos );
         break;
 
       case Chimera::ADC::Prescaler::DIV_128:
-        PRESC::set( ADC_COMMON, 10 );
+        PRESC::set( ADC_COMMON, 10 << CCR_PRESC_Pos );
         break;
 
       case Chimera::ADC::Prescaler::DIV_256:
-        PRESC::set( ADC_COMMON, 11 );
+        PRESC::set( ADC_COMMON, 11 << CCR_PRESC_Pos );
         break;
 
       default:
@@ -196,19 +203,66 @@ namespace Thor::LLD::ADC
     ADVREGEN::set( mPeriph, CR_ADVREGEN );    // Enable the voltage regulator
 
     // Allow the analog voltage regulator time to boot
-    Thor::LLD::TIMER::blockDelayMillis( 250 );
+    Chimera::delayMilliseconds( 250 );
+
+    /*-------------------------------------------------
+    Assign the ADC resolution
+    -------------------------------------------------*/
+    switch ( cfg.resolution )
+    {
+      case Chimera::ADC::Resolution::BIT_12:
+        RES::set( mPeriph, 0 << CFGR_RES_Pos );
+        break;
+
+      case Chimera::ADC::Resolution::BIT_10:
+        RES::set( mPeriph, 1 << CFGR_RES_Pos );
+        break;
+
+      case Chimera::ADC::Resolution::BIT_8:
+        RES::set( mPeriph, 2 << CFGR_RES_Pos );
+        break;
+
+      case Chimera::ADC::Resolution::BIT_6:
+      default:
+        RES::set( mPeriph, 3 << CFGR_RES_Pos );
+        break;
+    };
 
     /*-------------------------------------------------
     Calibrate the ADC
     -------------------------------------------------*/
-    // Default to single ended sampliing mode
+    // Default to single ended inputs for all channels
+    DIFSEL::clear( mPeriph, DIFSEL_DIFSEL );
 
-    // Calibrate
+    // Start calibration for single ended inputs
+    ADCALDIF::clear( mPeriph, CR_ADCALDIF );
+    ADCAL::set( mPeriph, CR_ADCAL );
 
+    // Calibration complete when bit is cleared
+    while ( ADCAL::get( mPeriph ) )
+    {
+      continue;
+    }
 
     /*-------------------------------------------------
     Enable ISRs
     -------------------------------------------------*/
+    EOCIE::set( mPeriph, IER_EOCIE );
+    JEOCIE::set( mPeriph, IER_JEOCIE );
+
+    /*-------------------------------------------------
+    Enable the ADC
+    -------------------------------------------------*/
+    ADEN::set( mPeriph, CR_ADEN );
+
+    // Wait for ADC to signal it's ready, then ACK it via write 1.
+    while ( !ADRDY::get( mPeriph ) )
+    {
+      continue;
+    }
+    ADRDY::set( mPeriph, ISR_ADRDY );
+
+    return Chimera::Status::OK;
   }
 
 
