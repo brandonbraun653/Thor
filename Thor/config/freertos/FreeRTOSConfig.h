@@ -104,7 +104,6 @@ Figure out how much RAM we want to allocate
 #endif
 
 
-
 #define configUSE_PREEMPTION 1
 #define configUSE_IDLE_HOOK 0
 #define configUSE_TICK_HOOK 1
@@ -148,6 +147,7 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelayUntil 1
 #define INCLUDE_vTaskDelay 1
 #define INCLUDE_xTaskGetSchedulerState 1
+#define INCLUDE_xTaskGetHandle 1
 
 /* Cortex-M specific definitions. */
 #ifdef __NVIC_PRIO_BITS

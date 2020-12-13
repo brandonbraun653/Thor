@@ -15,8 +15,9 @@
 #include <Aurora/constants>
 
 /* Chimera Includes */
-#include <Chimera/common>
 #include <Chimera/adc>
+#include <Chimera/common>
+#include <Chimera/thread>
 #include <Chimera/utility>
 
 /* Thor Includes */
@@ -35,17 +36,33 @@ namespace Thor::ADC
   namespace HLD = ::Thor::ADC;
   namespace LLD = ::Thor::LLD::ADC;
 
+  using ThreadHandle = Chimera::Threading::detail::native_thread_handle_type;
+  using BinarySemphr = Chimera::Threading::BinarySemaphore;
+  using ThreadFunctn = Chimera::Function::void_func_void_ptr;
+
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
   static constexpr size_t NUM_DRIVERS = LLD::NUM_ADC_PERIPHS;
+  static constexpr size_t NUM_ISR_SIG = LLD::NUM_ADC_IRQ_HANDLERS;
 
   /*-------------------------------------------------------------------------------
   Variables
   -------------------------------------------------------------------------------*/
-  static size_t s_driver_initialized;                /**< Tracks the module level initialization state */
+  static size_t s_driver_initialized; /**< Tracks the module level initialization state */
+
+  /*-------------------------------------------------
+  Instances of the ADC driver in object and ptr form
+  -------------------------------------------------*/
   static HLD::Driver hld_driver[ NUM_DRIVERS ];      /**< Driver objects */
   static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ]; /**< Shared references to driver objects */
+
+  /*-------------------------------------------------
+  High priority threads & handles that process more
+  complex ISR functionality.
+  -------------------------------------------------*/
+  static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ][ NUM_ISR_SIG ];
+  static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ][ NUM_ISR_SIG ];
 
   /**
    *  Cache for holding the last set of samples performed on each channel

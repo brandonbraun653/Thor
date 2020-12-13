@@ -30,6 +30,7 @@ namespace Thor::LLD::ADC
   Constants
   -------------------------------------------------------------------------------*/
   static constexpr size_t NUM_ADC_PERIPHS             = 1;
+  static constexpr size_t NUM_ADC_IRQ_HANDLERS        = 1;
   static constexpr RIndex_t ADC1_RESOURCE_INDEX       = 0u;
   static constexpr size_t NUM_ADC_CHANNELS_PER_PERIPH = 19;
 
