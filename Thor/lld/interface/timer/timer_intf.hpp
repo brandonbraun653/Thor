@@ -35,6 +35,9 @@ namespace Thor::LLD::TIMER
   void delayMilliseconds( const size_t ms );
   void delayMicroseconds( const size_t us );
 
+  void blockDelayMillis( const size_t ms );
+  void blockDelayMicros( const size_t ms );
+
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/

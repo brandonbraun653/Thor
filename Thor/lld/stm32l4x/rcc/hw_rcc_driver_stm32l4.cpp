@@ -1168,6 +1168,14 @@ namespace Thor::LLD::RCC
     tmp |= config.mask;
     *config.reg = tmp;
 
+    /*-------------------------------------------------
+    Burn a few cycles to avoid accessing HW too early
+    -------------------------------------------------*/
+    for ( auto x = 0; x < 5; x++ )
+    {
+      asm( "nop" );
+    }
+
     /*------------------------------------------------
     Remove the reset flag as it is not cleared automatically by hardware
     ------------------------------------------------*/

@@ -16,6 +16,7 @@
 #include <cstdint>
 
 /* Driver Includes */
+#include <Thor/lld/common/registers/field_accessor.hpp>
 #include <Thor/lld/stm32l4x/adc/hw_adc_prj.hpp>
 
 namespace Thor::LLD::ADC
@@ -77,6 +78,33 @@ namespace Thor::LLD::ADC
     volatile uint32_t CCR;       /**< ADC common configuration register, Address offset: ADC1 base address + 0x308 */
     volatile uint32_t RESERVED3; /**< Reserved,                          Address offset: ADC1 base address + 0x30C */
   };
+
+  /*-------------------------------------------------------------------------------
+  Classes
+  -------------------------------------------------------------------------------*/
+  /*-------------------------------------------------
+  Common Control Register
+  -------------------------------------------------*/
+  REG_ACCESSOR( CommonRegisterMap, CCR, CCR_VBATEN_Msk, VBATEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( CommonRegisterMap, CCR, CCR_TSEN_Msk, TSEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( CommonRegisterMap, CCR, CCR_VREFEN_Msk, VREFEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( CommonRegisterMap, CCR, CCR_PRESC_Msk, PRESC, BIT_ACCESS_RW );
+  REG_ACCESSOR( CommonRegisterMap, CCR, CCR_CKMODE_Msk, CKMODE, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Control Register
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CR, CR_ADCAL_Msk, ADCAL, BIT_ACCESS_RS );
+  REG_ACCESSOR( RegisterMap, CR, CR_ADCALDIF_Msk, ADCALDIF, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR, CR_DEEPPWD_Msk, DEEPPWD, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR, CR_ADVREGEN_Msk, ADVREGEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR, CR_JADSTP_Msk, JADSTP, BIT_ACCESS_RS );
+  REG_ACCESSOR( RegisterMap, CR, CR_ADSTP_Msk, ADSTP, BIT_ACCESS_RS );
+  REG_ACCESSOR( RegisterMap, CR, CR_JADSTART_Msk, JADSTART, BIT_ACCESS_RS );
+  REG_ACCESSOR( RegisterMap, CR, CR_ADSTART_Msk, ADSTART, BIT_ACCESS_RS );
+  REG_ACCESSOR( RegisterMap, CR, CR_ADDIS_Msk, ADDIS, BIT_ACCESS_RS );
+  REG_ACCESSOR( RegisterMap, CR, CR_ADEN_Msk, ADEN, BIT_ACCESS_RS );
+
 
 }    // namespace Thor::LLD::ADC
 

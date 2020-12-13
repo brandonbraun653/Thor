@@ -43,20 +43,67 @@ namespace Thor::LLD::TIMER
 
   void delayMilliseconds( const size_t ms )
   {
-    #if defined( USING_FREERTOS ) || defined( USING_FREERTOS_THREADS )
+#if defined( USING_FREERTOS ) || defined( USING_FREERTOS_THREADS )
     vTaskDelay( pdMS_TO_TICKS( ms ) );
-    #else
-    #pragma message("delayMilliseconds() has no implementation")
-    #endif
+#else
+#pragma message( "delayMilliseconds() has no implementation" )
+#endif
   }
 
   void delayMicroseconds( const size_t us )
   {
-    #if defined( USING_FREERTOS ) || defined( USING_FREERTOS_THREADS )
+#if defined( USING_FREERTOS ) || defined( USING_FREERTOS_THREADS )
     vTaskDelay( pdMS_TO_TICKS( us * 1000 ) );
-    #else
-    #pragma message("delayMicroseconds() has no implementation")
-    #endif
+#else
+#pragma message( "delayMicroseconds() has no implementation" )
+#endif
+  }
+
+  void blockDelayMillis( const size_t ms )
+  {
+    /*-------------------------------------------------
+    Don't go over a tick value that will cause max_cnt
+    to underflow.
+    -------------------------------------------------*/
+    constexpr size_t tick_offset = 500;
+
+    auto rcc      = RCC::getCoreClock();
+    auto coreFreq = rcc->getClockFrequency( Chimera::Clock::Bus::SYSCLK );
+
+    /*-------------------------------------------------
+    Figure out how much time will pass for each tick
+    -------------------------------------------------*/
+    float clock_ns = ( 1.0f / static_cast<float>( coreFreq ) ) * 1000000000.0f;
+    float delay_ns = static_cast<float>( ms ) * 1000000.0f;
+
+    /*-------------------------------------------------
+    Divide by 3 to account for while loop below, which
+    should compile down into three instructions:
+      1. Comparison between counter values
+      2. Increment operator
+      3. Branch to beginning of loop
+    -------------------------------------------------*/
+    size_t max_cnt = static_cast<size_t>( ( delay_ns / clock_ns ) / 3.0f ) - tick_offset;
+
+    /*-------------------------------------------------
+    Perform the actual blocking delay
+    -------------------------------------------------*/
+    volatile size_t cntr = 0;
+    while ( cntr < max_cnt )
+    {
+      cntr++;
+    }
+  }
+
+
+  void blockDelayMicros( const size_t ms )
+  {
+    while ( 1 )
+    {
+      // Intentionally break cause this is alot harder to do in practice
+      // and I don't want to implement it yet, but when I need it, I want
+      // to make some noise.
+    }
   }
 
   /*-------------------------------------------------------------------------------
