@@ -94,6 +94,7 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------
   Interrupt Status Register (ISR)
   -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, ISR, ISR_ALL_Msk, ISR_ALL, BIT_ACCESS_RCW1 );
   REG_ACCESSOR( RegisterMap, ISR, ISR_JQOVF_Msk, JQOVF, BIT_ACCESS_RCW1 );
   REG_ACCESSOR( RegisterMap, ISR, ISR_AWD3_Msk, AWD3, BIT_ACCESS_RCW1 );
   REG_ACCESSOR( RegisterMap, ISR, ISR_AWD2_Msk, AWD2, BIT_ACCESS_RCW1 );
@@ -168,12 +169,27 @@ namespace Thor::LLD::ADC
   REG_ACCESSOR( RegisterMap, CFGR2, CFGR2_JOVSE_Msk, JOVSE, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CFGR2, CFGR2_ROVSE_Msk, ROVSE, BIT_ACCESS_RW );
 
+  /*-------------------------------------------------
+  Sample Time Register 1/2 (SMPRx)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, SMPR1, SMPR1_ALL_Msk, SMPR1_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, SMPR2, SMPR2_ALL_Msk, SMPR2_ALL, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Regular Sequence Register (SQR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, SQR1, SQR1_L_Msk, L, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, SQR1, SQR1_SQ1_Msk, SQ1, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Regular Data Register
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, DR, DR_RDATA_Msk, DATA, BIT_ACCESS_R );
 
   /*-------------------------------------------------
   Differential Mode Selection Register (DIFSEL)
   -------------------------------------------------*/
   REG_ACCESSOR( RegisterMap, DIFSEL, DIFSEL_DIFSEL_Msk, DIFSEL, BIT_ACCESS_RW );
-
 
 }    // namespace Thor::LLD::ADC
 

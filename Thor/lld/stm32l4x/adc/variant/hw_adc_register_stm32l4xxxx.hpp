@@ -36,6 +36,8 @@ namespace Thor::LLD::ADC
   Peripheral Register Definitions
   -------------------------------------------------*/
   /********************  Bit definition for ISR register  *******************/
+  static constexpr Reg32_t ISR_ALL_Msk = 0x000007FF;
+
   static constexpr Reg32_t ISR_ADRDY_Pos = ( 0U );
   static constexpr Reg32_t ISR_ADRDY_Msk = ( 0x1UL << ISR_ADRDY_Pos );
   static constexpr Reg32_t ISR_ADRDY     = ISR_ADRDY_Msk;
@@ -253,6 +255,9 @@ namespace Thor::LLD::ADC
   static constexpr Reg32_t CFGR2_ROVSM     = CFGR2_ROVSM_Msk;
 
   /********************  Bit definition for SMPR1 register  *****************/
+  static constexpr Reg32_t SMPRx_BIT_Wid = 3;
+  static constexpr Reg32_t SMPR1_ALL_Msk = 0x3FFFFFFF;
+
   static constexpr Reg32_t SMPR1_SMP0_Pos = ( 0U );
   static constexpr Reg32_t SMPR1_SMP0_Msk = ( 0x7UL << SMPR1_SMP0_Pos );
   static constexpr Reg32_t SMPR1_SMP0     = SMPR1_SMP0_Msk;
@@ -324,6 +329,8 @@ namespace Thor::LLD::ADC
   static constexpr Reg32_t SMPR1_SMP9_2   = ( 0x4UL << SMPR1_SMP9_Pos );
 
   /********************  Bit definition for SMPR2 register  *****************/
+  static constexpr Reg32_t SMPR2_ALL_Msk = 0x07FFFFFF;
+
   static constexpr Reg32_t SMPR2_SMP10_Pos = ( 0U );
   static constexpr Reg32_t SMPR2_SMP10_Msk = ( 0x7UL << SMPR2_SMP10_Pos );
   static constexpr Reg32_t SMPR2_SMP10     = SMPR2_SMP10_Msk;

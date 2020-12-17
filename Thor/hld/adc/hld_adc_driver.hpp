@@ -47,8 +47,17 @@ namespace Thor::ADC
   class Driver : public Chimera::Threading::Lockable
   {
   public:
+    /*-------------------------------------------------
+    Class Methods
+    -------------------------------------------------*/
     Driver();
     ~Driver();
+
+    /**
+     *  User-space handler for processing ISR events
+     *  @return void
+     */
+    void postISRProcessing();
 
     /*-------------------------------------------------
     Interface: Hardware
@@ -68,6 +77,8 @@ namespace Thor::ADC
     void setWatchdogThreshold( const Chimera::ADC::Watchdog wd, const Chimera::ADC::Sample_t low,
                                const Chimera::ADC::Sample_t high );
     void onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb );
+    float sampleToVoltage( const Chimera::ADC::Sample_t sample );
+    float sampleToJunctionTemperature( const Chimera::ADC::Sample_t sample );
 
   private:
     Chimera::ADC::Converter mPeriph;

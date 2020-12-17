@@ -192,6 +192,17 @@ namespace Chimera::ADC
   }
 
 
+  float Driver::sampleToVoltage( const Chimera::ADC::Sample_t sample )
+  {
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleToVoltage( sample );
+  }
+
+  float Driver::sampleToJunctionTemperature( const Sample_t sample )
+  {
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleToJunctionTemperature( sample );
+  }
+
+
   /*-------------------------------------------------
   Interface: Lockable
   -------------------------------------------------*/

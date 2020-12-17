@@ -36,6 +36,14 @@ namespace Thor::LLD::ADC
   -------------------------------------------------------------------------------*/
   namespace ConfigMap
   { /* clang-format off */
+    /*-------------------------------------------------
+    This must match exactly with Chimera::ADC::Sensor
+    -------------------------------------------------*/
+    LLD_CONST Chimera::ADC::Channel SensorToChannel[ static_cast<size_t>( Chimera::ADC::Sensor::NUM_OPTIONS ) ] = {
+      Chimera::ADC::Channel::ADC_CH_18, // VBAT,
+      Chimera::ADC::Channel::ADC_CH_17, // TEMP
+      Chimera::ADC::Channel::ADC_CH_0,  // VREF_INT (RM 16.4.34)
+    };
   } /* clang-format on */
 
 

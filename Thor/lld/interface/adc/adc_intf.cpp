@@ -10,6 +10,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/lld/common/types.hpp>
@@ -20,6 +21,11 @@
 
 namespace Thor::LLD::ADC
 {
+  /*-------------------------------------------------------------------------------
+  Shared Data
+  -------------------------------------------------------------------------------*/
+  Chimera::Threading::ThreadId ISRThreadId[ NUM_ADC_PERIPHS ];
+
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
