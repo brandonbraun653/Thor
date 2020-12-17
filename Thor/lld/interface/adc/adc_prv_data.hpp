@@ -49,6 +49,12 @@ namespace Thor::LLD::ADC
 
 
   /*-------------------------------------------------------------------------------
+  Shared Data
+  -------------------------------------------------------------------------------*/
+  extern Chimera::Threading::ThreadId ISRThreadId[ NUM_ADC_PERIPHS ];
+
+
+  /*-------------------------------------------------------------------------------
   Configuration Maps:
     These convert high level configuration options into low level register config
     options. The idea is to allow the user to specify some general options, then
@@ -56,6 +62,7 @@ namespace Thor::LLD::ADC
   -------------------------------------------------------------------------------*/
   namespace ConfigMap
   {
+    extern LLD_CONST Chimera::ADC::Channel SensorToChannel[ static_cast<size_t>( Chimera::ADC::Sensor::NUM_OPTIONS ) ];
   }    // namespace ConfigMap
 
 

@@ -20,6 +20,7 @@
 /* Thor Includes */
 #include <Thor/lld/common/interrupts/adc_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
+#include <Thor/lld/interface/adc/adc_detail.hpp>
 #include <Thor/lld/interface/adc/adc_types.hpp>
 #include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
 
@@ -165,6 +166,41 @@ namespace Thor::LLD::ADC
      *  @return void
      */
     virtual void exitCriticalSection() = 0;
+
+    /**
+     *  Reads a single ADC channel and returns the result
+     *
+     *  @param[in]  channel     The channel to read
+     *  @return Chimera::ADC::Sample_t
+     */
+    virtual Chimera::ADC::Sample_t sampleChannel( const Chimera::ADC::Channel channel );
+
+    /**
+     *  Converts a raw sample to the equivalent voltage
+     *
+     *  @param[in]  sample        The raw sample value to convert
+     *  @return float
+     */
+    virtual float sampleToVoltage( const Chimera::ADC::Sample_t sample ) = 0;
+
+    /**
+     *  Sets the sample time for a given channel. The value is applied
+     *  just before the next conversion to prevent accidental overwrites.
+     *
+     *  @param[in]  ch            Which channel to modify
+     *  @param[in]  time          ADC clock cycles to sample for
+     *  @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time ) = 0;
+
+    /**
+     *  Converts a sample to a calibrated junction temperature, assuming the
+     *  sample is from the on-chip temperature sensor.
+     *
+     *  @param[in]  sample        The temperature ADC sample
+     *  @return float
+     */
+    virtual float sampleToTemp( const Chimera::ADC::Sample_t sample ) = 0;
   };
 
 
@@ -188,6 +224,11 @@ namespace Thor::LLD::ADC
     void enterCriticalSection();
     void exitCriticalSection();
 
+    Chimera::ADC::Sample_t sampleChannel( const Chimera::ADC::Channel channel );
+    float sampleToVoltage( const Chimera::ADC::Sample_t sample );
+    Chimera::Status_t setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time );
+    float sampleToTemp( const Chimera::ADC::Sample_t sample );
+
   protected:
     void IRQHandler();
 
@@ -195,7 +236,10 @@ namespace Thor::LLD::ADC
     friend void( ::ADC_IRQHandler )();
 
     RegisterMap *mPeriph;
+    CommonRegisterMap *mCommon;
     size_t mResourceIndex;
+    bool mConversionInProgress;
+    SampleTime mChannelSampleTime[ NUM_ADC_CHANNELS_PER_PERIPH ];
     Chimera::ADC::DriverConfig mCfg;
   };
 

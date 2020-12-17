@@ -34,6 +34,73 @@
 namespace Thor::LLD::ADC
 {
   /*-------------------------------------------------------------------------------
+  Macros
+  -------------------------------------------------------------------------------*/
+  /**
+   *  A conversion is in progress if:
+   *    ADSTART is set    OR
+   *    JADSTART is set   OR
+   *    EOC flag is set
+   */
+#define CNVRT_IN_PROGRESS( periph_ptr ) ( ADSTART::get( periph_ptr ) || JADSTART::get( periph_ptr ) || EOC::get( periph_ptr ) )
+
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Internal voltage reference, address of parameter VREFINT_CAL: VrefInt ADC raw
+   *  data acquired at temperature 30 DegC (tolerance: +-5 DegC), Vref+ = 3.0 V
+   *  (tolerance: +-10 mV)
+   */
+  static uint16_t *VREFINT_CAL_ADDR = ( ( uint16_t * )( 0x1FFF75AAUL ) );
+
+  /**
+   *  Analog voltage reference (Vref+) value with which temperature sensor has been
+   *  calibrated in production (tolerance: +-10 mV) (unit: mV).
+   */
+  static constexpr float VREFINT_CAL_VREF = 3000.0f;
+
+  /**
+   *  Internal temperature sensor, address of parameter TS_CAL1: On STM32L4,
+   *  temperature sensor ADC raw data acquired at temperature  30 DegC
+   *  (tolerance: +-5 DegC), Vref+ = 3.0 V (tolerance: +-10 mV)
+   */
+  static uint16_t *TEMPSENSOR_CAL1_ADDR = ( ( uint16_t * )( 0x1FFF75A8UL ) );
+
+  /**
+   *  Internal temperature sensor, address of parameter TS_CAL2: On STM32L4,
+   *  temperature sensor ADC raw data acquired at temperature defined by
+   *  TEMPSENSOR_CAL2_TEMP (tolerance: +-5 DegC), Vref+ = 3.0 V (tolerance: +-10 mV)
+   */
+  static uint16_t *TEMPSENSOR_CAL2_ADDR = ( ( uint16_t * )( 0x1FFF75CAUL ) );
+
+  /**
+   *  Internal temperature sensor, temperature at which temperature sensor has been
+   *  calibrated in production for data into TEMPSENSOR_CAL1_ADDR (tolerance: +-5 DegC)
+   *  (unit: DegC)
+   */
+  static constexpr int32_t TEMPSENSOR_CAL1_TEMP = 30;
+
+  /**
+   *  Internal temperature sensor, temperature at which temperature sensor has
+   *  been calibrated in production for data into TEMPSENSOR_CAL2_ADDR
+   *  (tolerance: +-5 DegC) (unit: DegC)
+   */
+#if defined( STM32L471xx ) || defined( STM32L475xx ) || defined( STM32L476xx ) || defined( STM32L485xx ) || \
+    defined( STM32L486xx )
+  static constexpr int32_t TEMPSENSOR_CAL2_TEMP = 110;
+#else
+  static constexpr int32_t TEMPSENSOR_CAL2_TEMP = 130;
+#endif
+
+  /**
+   *  Analog voltage reference (Vref+) voltage with which temperature sensor
+   *  has been calibrated in production (+-10 mV) (unit: mV)
+   */
+  static constexpr float TEMPSENSOR_CAL_VREFANALOG = 3000.0f;
+
+
+  /*-------------------------------------------------------------------------------
   Variables
   -------------------------------------------------------------------------------*/
   static Driver s_adc_drivers[ NUM_ADC_PERIPHS ];
@@ -83,7 +150,7 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver()
+  Driver::Driver() : mPeriph( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX ), mConversionInProgress( false )
   {
   }
 
@@ -92,12 +159,16 @@ namespace Thor::LLD::ADC
   }
 
 
+  /*-------------------------------------------------
+  Driver Public Methods
+  -------------------------------------------------*/
   Chimera::Status_t Driver::attach( RegisterMap *const peripheral )
   {
     /*------------------------------------------------
     Get peripheral descriptor settings
     ------------------------------------------------*/
     mPeriph        = peripheral;
+    mCommon        = ADC_COMMON;
     mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
 
     /*------------------------------------------------
@@ -106,6 +177,14 @@ namespace Thor::LLD::ADC
     Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
     Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
     Thor::LLD::IT::setPriority( Resource::IRQSignals[ mResourceIndex ], Thor::Interrupt::ADC_IT_PREEMPT_PRIORITY, 0u );
+
+    /*-------------------------------------------------
+    Reset the channel sample times to defaults
+    -------------------------------------------------*/
+    for ( auto idx = 0; idx < ARRAY_COUNT( mChannelSampleTime ); idx++ )
+    {
+      mChannelSampleTime[ idx ] = SampleTime::SMP_24P5;
+    }
 
     return Chimera::Status::OK;
   }
@@ -303,6 +382,163 @@ namespace Thor::LLD::ADC
   }
 
 
+  Chimera::ADC::Sample_t Driver::sampleChannel( const Chimera::ADC::Channel channel )
+  {
+    using namespace Chimera::ADC;
+
+    /*-------------------------------------------------
+    Wait for the hardware to indicate it's free for a
+    new transfer.
+
+    This may have issues if a continuous transfer is
+    running in the background. Access to these bits are
+    not atomic, so stopping an existing conversion may
+    be necessary in the future.
+    -------------------------------------------------*/
+    while ( !mConversionInProgress && CNVRT_IN_PROGRESS( mPeriph ) )
+    {
+      continue;
+    }
+
+    // Internally lock out other measurements
+    mConversionInProgress = true;
+
+    /*-------------------------------------------------
+    Apply the currently configured sample time for this channel
+    -------------------------------------------------*/
+    size_t chNum = static_cast<size_t>( channel );
+
+    if ( channel < Channel::ADC_CH_10 )
+    {
+      auto chPos     = static_cast<size_t>( chNum ) * SMPRx_BIT_Wid;
+      Reg32_t regVal = static_cast<size_t>( mChannelSampleTime[ chNum ] ) << chPos;
+
+      SMPR1_ALL::set( mPeriph, regVal );
+    }
+    else
+    {
+      auto chOffset  = static_cast<size_t>( Channel::ADC_CH_10 );
+      auto chPos     = static_cast<size_t>( chNum ) - chOffset;
+      Reg32_t regVal = static_cast<size_t>( mChannelSampleTime[ chNum ] ) << chPos;
+
+      SMPR2_ALL::set( mPeriph, regVal );
+    }
+
+    /*-------------------------------------------------
+    Set single conversion mode
+    -------------------------------------------------*/
+    CONT::clear( mPeriph, CFGR_CONT );
+
+    /*-------------------------------------------------
+    Configure the channel to be measured
+    -------------------------------------------------*/
+    L::set( mPeriph, 1 );
+    SQ1::set( mPeriph, chNum << SQR1_SQ1_Pos );
+
+    /*-------------------------------------------------
+    Clear the EOC flag (by set)
+    -------------------------------------------------*/
+    EOC::set( mPeriph, ISR_EOC );
+
+    /*-------------------------------------------------
+    Cache the ISR flags set before conversion. This
+    allows clearing any new interrupts generated later.
+    -------------------------------------------------*/
+    Reg32_t isrFlags = ISR_ALL::get( mPeriph );
+
+    /*-------------------------------------------------
+    Prevent peripheral interrupts as this conversion is
+    fast enough that it doesn't make sense to use ISRs.
+    -------------------------------------------------*/
+    enterCriticalSection();
+
+    /*-------------------------------------------------
+    Perform the conversion, applying the fix for
+    Errata 2.5.2.
+    -------------------------------------------------*/
+    // Start conversion, then acknowledge completion
+    ADSTART::set( mPeriph, CR_ADSTART );
+    while ( !EOC::get( mPeriph ) )
+    {
+      continue;
+    }
+    EOC::set( mPeriph, ISR_EOC );
+
+    // Convert one more time. This is the Errata fix.
+    ADSTART::set( mPeriph, CR_ADSTART );
+    while ( !EOC::get( mPeriph ) )
+    {
+      continue;
+    }
+    EOC::set( mPeriph, ISR_EOC );
+
+    // Read out the result of the conversion
+    Sample_t measurement = DATA::get( mPeriph );
+
+    // Clear any other new ISR flags before interrupts are re-enabled
+    Reg32_t newFlags = ISR_ALL::get( mPeriph ) & ~isrFlags;
+    ISR_ALL::set( mPeriph, newFlags );
+
+    // Let this object know transfers are done
+    mConversionInProgress = false;
+
+    /*-------------------------------------------------
+    Re-enable ISRs and return the valid measurement
+    -------------------------------------------------*/
+    exitCriticalSection();
+    return measurement;
+  }
+
+
+  float Driver::sampleToVoltage( const Chimera::ADC::Sample_t sample )
+  {
+    return 0.0f;
+  }
+
+
+  float Driver::sampleToTemp( const Chimera::ADC::Sample_t sample )
+  {
+    constexpr float VDDA = 3300.0f;    // mV
+
+    float ts_cal_lo = static_cast<float>( *TEMPSENSOR_CAL1_ADDR ) * ( VDDA / TEMPSENSOR_CAL_VREFANALOG );
+    float ts_cal_hi = static_cast<float>( *TEMPSENSOR_CAL2_ADDR ) * ( VDDA / TEMPSENSOR_CAL_VREFANALOG );
+    float ts_data   = static_cast<float>( sample );
+
+    /*-------------------------------------------------
+    Calculate the temperature (RM 16.4.32)
+    -------------------------------------------------*/
+    float r = ( ts_data - ts_cal_lo );
+    float x = static_cast<float>( TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP ) / ( ts_cal_hi - ts_cal_lo );
+    float y = r * x + 30.0f;
+
+    float scaler =
+        static_cast<float>( TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP ) / static_cast<float>( ts_cal_hi - ts_cal_lo );
+    float result = ( scaler * static_cast<float>( ts_data - ts_cal_lo ) ) + 30;
+
+    return result;
+  }
+
+
+  Chimera::Status_t Driver::setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time )
+  {
+    /*-------------------------------------------------
+    Input Protection
+    -------------------------------------------------*/
+    if ( !( static_cast<size_t>( ch ) < ARRAY_COUNT( mChannelSampleTime ) ) )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
+    /*-------------------------------------------------
+    Write access protection is provided by the HLD
+    -------------------------------------------------*/
+    mChannelSampleTime[ static_cast<size_t>( ch ) ] = time;
+    return Chimera::Status::OK;
+  }
+
+  /*-------------------------------------------------
+  Driver Protected Methods
+  -------------------------------------------------*/
   void Driver::IRQHandler()
   {
   }
