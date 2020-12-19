@@ -17,7 +17,12 @@
 
 namespace Thor::LLD
 {
-  static const std::string_view VersionSTM32L4 = "1.0#";
-}
+  /**
+   *  CHANGELOG:
+   *
+   *  v1.1: Upgraded the build system. Added many new drivers.
+   */
+  static const std::string_view VersionSTM32L4 = "1.1";
+}    // namespace Thor::LLD
 
-#endif  /* !THOR_LLD_STM32L4_VERSION_HPP */
+#endif /* !THOR_LLD_STM32L4_VERSION_HPP */
