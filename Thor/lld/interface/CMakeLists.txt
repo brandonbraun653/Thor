@@ -1,3 +1,5 @@
+include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
+
 # ====================================================
 # Add the projects for all the supported drivers
 # ====================================================
@@ -25,9 +27,7 @@ add_subdirectory("watchdog")
 # ====================================================
 # All Interface Low Level Drivers (Hardware Target)
 # ====================================================
-set(LLD_INTF thor_lld_intf)
-add_library(${LLD_INTF} INTERFACE)
-target_link_libraries(${LLD_INTF} INTERFACE
+set(all_libraries
   thor_lld_intf_adc
   thor_lld_intf_can
   thor_lld_intf_common
@@ -38,7 +38,34 @@ target_link_libraries(${LLD_INTF} INTERFACE
   thor_lld_intf_usart
   thor_lld_intf_usb
 )
-export(TARGETS ${LLD_INTF} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${LLD_INTF}.cmake")
+
+# ====================================================
+# This function generates the following targets:
+#   thor_lld_intf
+#   thor_lld_intf_rel
+#   thor_lld_intf_rel_dbg
+#   thor_lld_intf_dbg
+#
+# Each target builds the appropriate variant of the
+# libraries listed above in "all_libraries".
+# ====================================================
+function(build_thor_lld_intf_core variant)
+
+  # Add the variant flag to each library target
+  set(all_libraries_tmp${variant} "")
+  foreach(lib ${all_libraries})
+    list(APPEND all_libraries_tmp${variant} ${lib}${variant})
+  endforeach()
+
+  # Create interface library for the appropriate variant
+  set(LLD_INTF${variant} thor_lld_intf${variant})
+  add_library("${LLD_INTF${variant}}" INTERFACE)
+  target_link_libraries("${LLD_INTF${variant}}" INTERFACE "${all_libraries_tmp${variant}}")
+  export(TARGETS "${LLD_INTF${variant}}" FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${LLD_INTF${variant}}.cmake")
+
+endfunction()
+add_target_variants(build_thor_lld_intf_core)
+
 
 # ====================================================
 # All Simulated Low Level Drivers
@@ -62,17 +89,3 @@ target_link_libraries(${LLD_INTF_MOCK} INTERFACE
   thor_lld_mock_interrupt
 )
 export(TARGETS ${LLD_INTF_MOCK} FILE "${PROJECT_BINARY_DIR}/Thor/lld_intf/${LLD_INTF_MOCK}.cmake")
-
-# ====================================================
-# Custom Compiler Options:
-# By default always build release variant
-# ====================================================
-set(BUILD_OPTIONS thor_lld_intf_build_options)
-add_library(${BUILD_OPTIONS} INTERFACE)
-target_link_libraries(${BUILD_OPTIONS} INTERFACE
-  prj_build_target
-  #prj_build_target_rel
-  #prj_build_target_dbg
-  prj_device_target
-)
-export(TARGETS ${BUILD_OPTIONS} FILE "${PROJECT_BINARY_DIR}/Thor/${BUILD_OPTIONS}.cmake")

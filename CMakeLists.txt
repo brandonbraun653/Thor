@@ -17,13 +17,13 @@ if(Toolchain::REQUIRES_FREERTOS_THREADS)
 
   # Heap Selection
   add_library(freertos_heap INTERFACE)
-  target_link_libraries(freertos_heap INTERFACE freertos_heap4)
+  target_link_libraries(freertos_heap INTERFACE freertos_heap_4_rel)
   export(TARGETS freertos_heap FILE "${PROJECT_BINARY_DIR}/ProjectConfig/freertos-heap.cmake")
 
   # Port Selection
   if(${THOR_FAMILY} MATCHES "^[LF]4$")
     add_library(freertos_port INTERFACE)
-    target_link_libraries(freertos_port INTERFACE freertos_cm4f)
+    target_link_libraries(freertos_port INTERFACE freertos_cm4f_rel)
     export(TARGETS freertos_port FILE "${PROJECT_BINARY_DIR}/ProjectConfig/freertos-port-cm4f.cmake")
   else()
     message(FATAL_ERROR "Need to select the proper freertos port lib to link against")

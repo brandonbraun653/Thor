@@ -1,4 +1,6 @@
-# ====================================================
+include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
+
+# # ====================================================
 # Common
 # ====================================================
 set(LINK_LIBS
@@ -6,17 +8,20 @@ set(LINK_LIBS
   Boost::boost      # Boost public headers
   thor_inc          # Thor public headers
   chimera_inc       # Chimera public headers
-  lld_common_inc   # 3rd Party headers
-  thor_hld_build_options
+  lld_common_inc    # 3rd Party headers
 )
 
 # ====================================================
 # Interface Library
 # ====================================================
-set(HLD thor_hld_uart)
-add_library(${HLD} STATIC
-  hld_uart_chimera.cpp
-  hld_uart_driver.cpp
-)
-target_link_libraries(${HLD} PRIVATE ${LINK_LIBS})
-export(TARGETS ${HLD} FILE "${PROJECT_BINARY_DIR}/Thor/hld/${HLD}.cmake")
+function(build_library variant)
+  set(HLD thor_hld_uart${variant})
+  add_library(${HLD} STATIC
+    hld_uart_chimera.cpp
+    hld_uart_driver.cpp
+  )
+  target_link_libraries(${HLD} PRIVATE ${LINK_LIBS} prj_device_target prj_build_target${variant})
+  export(TARGETS ${HLD} FILE "${PROJECT_BINARY_DIR}/Thor/hld/${HLD}.cmake")
+endfunction()
+
+add_target_variants(build_library)
