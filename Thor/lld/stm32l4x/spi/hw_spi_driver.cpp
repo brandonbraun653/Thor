@@ -133,7 +133,8 @@ namespace Thor::LLD::SPI
 
   Chimera::Status_t Driver::reset()
   {
-    return Chimera::Status::OK;
+    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    return rcc->reset( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
 
@@ -211,11 +212,7 @@ namespace Thor::LLD::SPI
     }
 
     /* Destroy all previous settings */
-    CR1_ALL::set( mPeriph, CR1_Rst );
-    CR2_ALL::set( mPeriph, CR2_Rst );
-    CRCPOLY::set( mPeriph, CRCPR_Rst );
-    RXCRC::set( mPeriph, RXCRCR_Rst );
-    TXCRC::set( mPeriph, TXCRCR_Rst );
+    this->reset();
 
     /* Bit Transfer Order */
     LSBFIRST::set( mPeriph, ConfigMap::BitOrderToRegConfig[ static_cast<size_t>( setup.HWInit.bitOrder ) ] );
