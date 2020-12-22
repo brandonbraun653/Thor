@@ -32,6 +32,39 @@ namespace Thor::LLD::IWDG
   /*-------------------------------------------------
   Peripheral Register Definitions
   -------------------------------------------------*/
+  /*******************  Bit definition for KR register  ********************/
+  static constexpr uint32_t KR_KEY_Pos = ( 0U );
+  static constexpr uint32_t KR_KEY_Msk = ( 0xFFFFUL << KR_KEY_Pos );
+  static constexpr uint32_t KR_KEY     = KR_KEY_Msk;
+
+  /*******************  Bit definition for PR register  ********************/
+  static constexpr uint32_t PR_PR_Pos = ( 0U );
+  static constexpr uint32_t PR_PR_Msk = ( 0x7UL << PR_PR_Pos );
+  static constexpr uint32_t PR_PR     = PR_PR_Msk;
+  static constexpr uint32_t PR_PR_0   = ( 0x1UL << PR_PR_Pos );
+  static constexpr uint32_t PR_PR_1   = ( 0x2UL << PR_PR_Pos );
+  static constexpr uint32_t PR_PR_2   = ( 0x4UL << PR_PR_Pos );
+
+  /*******************  Bit definition for RLR register  *******************/
+  static constexpr uint32_t RLR_RL_Pos = ( 0U );
+  static constexpr uint32_t RLR_RL_Msk = ( 0xFFFUL << RLR_RL_Pos );
+  static constexpr uint32_t RLR_RL     = RLR_RL_Msk;
+
+  /*******************  Bit definition for SR register  ********************/
+  static constexpr uint32_t SR_PVU_Pos = ( 0U );
+  static constexpr uint32_t SR_PVU_Msk = ( 0x1UL << SR_PVU_Pos );
+  static constexpr uint32_t SR_PVU     = SR_PVU_Msk;
+  static constexpr uint32_t SR_RVU_Pos = ( 1U );
+  static constexpr uint32_t SR_RVU_Msk = ( 0x1UL << SR_RVU_Pos );
+  static constexpr uint32_t SR_RVU     = SR_RVU_Msk;
+  static constexpr uint32_t SR_WVU_Pos = ( 2U );
+  static constexpr uint32_t SR_WVU_Msk = ( 0x1UL << SR_WVU_Pos );
+  static constexpr uint32_t SR_WVU     = SR_WVU_Msk;
+
+  /*******************  Bit definition for KR register  ********************/
+  static constexpr uint32_t WINR_WIN_Pos = ( 0U );
+  static constexpr uint32_t WINR_WIN_Msk = ( 0xFFFUL << WINR_WIN_Pos );
+  static constexpr uint32_t WINR_WIN     = WINR_WIN_Msk;
 
 }    // namespace Thor::LLD::IWDG
 

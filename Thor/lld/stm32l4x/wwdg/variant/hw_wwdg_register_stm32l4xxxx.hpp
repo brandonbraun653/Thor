@@ -32,6 +32,48 @@ namespace Thor::LLD::WWDG
   /*-------------------------------------------------
   Peripheral Register Definitions
   -------------------------------------------------*/
+  /*******************  Bit definition for CR register  ********************/
+  static constexpr uint32_t CR_T_Pos = ( 0U );
+  static constexpr uint32_t CR_T_Msk = ( 0x7FUL << CR_T_Pos );
+  static constexpr uint32_t CR_T     = CR_T_Msk;
+  static constexpr uint32_t CR_T_0   = ( 0x01UL << CR_T_Pos );
+  static constexpr uint32_t CR_T_1   = ( 0x02UL << CR_T_Pos );
+  static constexpr uint32_t CR_T_2   = ( 0x04UL << CR_T_Pos );
+  static constexpr uint32_t CR_T_3   = ( 0x08UL << CR_T_Pos );
+  static constexpr uint32_t CR_T_4   = ( 0x10UL << CR_T_Pos );
+  static constexpr uint32_t CR_T_5   = ( 0x20UL << CR_T_Pos );
+  static constexpr uint32_t CR_T_6   = ( 0x40UL << CR_T_Pos );
+
+  static constexpr uint32_t CR_WDGA_Pos = ( 7U );
+  static constexpr uint32_t CR_WDGA_Msk = ( 0x1UL << CR_WDGA_Pos );
+  static constexpr uint32_t CR_WDGA     = CR_WDGA_Msk;
+
+  /*******************  Bit definition for CFR register  *******************/
+  static constexpr uint32_t CFR_W_Pos = ( 0U );
+  static constexpr uint32_t CFR_W_Msk = ( 0x7FUL << CFR_W_Pos );
+  static constexpr uint32_t CFR_W     = CFR_W_Msk;
+  static constexpr uint32_t CFR_W_0   = ( 0x01UL << CFR_W_Pos );
+  static constexpr uint32_t CFR_W_1   = ( 0x02UL << CFR_W_Pos );
+  static constexpr uint32_t CFR_W_2   = ( 0x04UL << CFR_W_Pos );
+  static constexpr uint32_t CFR_W_3   = ( 0x08UL << CFR_W_Pos );
+  static constexpr uint32_t CFR_W_4   = ( 0x10UL << CFR_W_Pos );
+  static constexpr uint32_t CFR_W_5   = ( 0x20UL << CFR_W_Pos );
+  static constexpr uint32_t CFR_W_6   = ( 0x40UL << CFR_W_Pos );
+
+  static constexpr uint32_t CFR_WDGTB_Pos = ( 7U );
+  static constexpr uint32_t CFR_WDGTB_Msk = ( 0x3UL << CFR_WDGTB_Pos );
+  static constexpr uint32_t CFR_WDGTB     = CFR_WDGTB_Msk;
+  static constexpr uint32_t CFR_WDGTB_0   = ( 0x1UL << CFR_WDGTB_Pos );
+  static constexpr uint32_t CFR_WDGTB_1   = ( 0x2UL << CFR_WDGTB_Pos );
+
+  static constexpr uint32_t CFR_EWI_Pos = ( 9U );
+  static constexpr uint32_t CFR_EWI_Msk = ( 0x1UL << CFR_EWI_Pos );
+  static constexpr uint32_t CFR_EWI     = CFR_EWI_Msk;
+
+  /*******************  Bit definition for SR register  ********************/
+  static constexpr uint32_t SR_EWIF_Pos = ( 0U );
+  static constexpr uint32_t SR_EWIF_Msk = ( 0x1UL << SR_EWIF_Pos );
+  static constexpr uint32_t SR_EWIF     = SR_EWIF_Msk;
 
 }    // namespace Thor::LLD::WWDG
 
