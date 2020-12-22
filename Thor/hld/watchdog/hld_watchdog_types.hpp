@@ -20,16 +20,19 @@ namespace Thor::Watchdog
   /*-------------------------------------------------------------------------------
   Forward Declarations
   -------------------------------------------------------------------------------*/
-  class Window;
-  class Independent;
+  class WindowDriver;
+  class IndependentDriver;
 
 
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
-  using WindowDriver_sPtr = std::shared_ptr<Window>;
-  using IndependentDriver_sPtr = std::shared_ptr<Independent>;
+  using WindowDriver_rPtr = WindowDriver *;
+  using WindowDriver_sPtr = std::shared_ptr<WindowDriver>;
 
-}  // namespace Thor::Watchdog
+  using IndependentDriver_rPtr = IndependentDriver *;
+  using IndependentDriver_sPtr = std::shared_ptr<IndependentDriver>;
 
-#endif  /* !THOR_HLD_WATCHDOG_TYPES_HPP */
+}    // namespace Thor::Watchdog
+
+#endif /* !THOR_HLD_WATCHDOG_TYPES_HPP */

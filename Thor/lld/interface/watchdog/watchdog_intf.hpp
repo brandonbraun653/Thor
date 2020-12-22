@@ -20,15 +20,85 @@
 #include <Chimera/common>
 #include <Chimera/watchdog>
 
+/* Thor Includes */
+#include <Thor/lld/interface/watchdog/watchdog_types.hpp>
+
 namespace Thor::LLD::Watchdog
 {
   /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Initializes the low level driver
+   */
+  Chimera::Status_t initialize();
+
+  /**
+   *  Gets a shared pointer to the USB driver for a particular channel
+   *
+   *  @param[in] channel        The USB channel to grab (1 indexed)
+   *  @return IDriver_sPtr      Instance of the USB driver for the requested channel
+   */
+  IndependentDriver_rPtr getDriver( const Chimera::Watchdog::IChannel channel );
+  WindowDriver_rPtr getDriver( const Chimera::Watchdog::WChannel channel );
+
+
+  /*-------------------------------------------------------------------------------
+  Public Functions (Implemented at the interface layer)
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Checks if the given hardware channel is supported on this device.
+   *
+   *  @param[in]  channel       The channel number to be checked
+   *  @return bool
+   */
+  bool isSupported( const Chimera::Watchdog::IChannel channel );
+  bool isSupported( const Chimera::Watchdog::WChannel channel );
+
+  /**
+   *  Get's the resource index associated with a particular channel. If not
+   *  supported, will return INVALID_RESOURCE_INDEX
+   *
+   *  @param[in]  channel       The channel number to be checked
+   *  @return RIndex_t
+   */
+  RIndex_t getResourceIndex( const Chimera::Watchdog::IChannel channel );
+  RIndex_t getResourceIndex( const Chimera::Watchdog::WChannel channel );
+
+  /**
+   *  Looks up a resource index based on a raw peripheral instance
+   *
+   *  @param[in]  address       The peripheral address
+   *  @return RIndex_t
+   */
+  RIndex_t getResourceIndex( const std::uintptr_t address );
+
+  /**
+   *  Gets the channel associated with a peripheral address
+   *
+   *  @param[in]  address       Memory address the peripheral is mapped to
+   *  @return Chimera::USB::Channel
+   */
+  Chimera::Watchdog::IChannel getIChannel( const std::uintptr_t address );
+  Chimera::Watchdog::WChannel getWChannel( const std::uintptr_t address );
+
+  /**
+   *  Initializes the drivers by attaching the appropriate peripheral
+   *
+   *  @param[in]  driverList    List of driver objects to be initialized
+   *  @param[in]  numDrivers    How many drivers are in driverList
+   *  @return bool
+   */
+  bool attachDriverInstances( IndependentDriver *const driverList, const size_t numDrivers );
+  bool attachDriverInstances( WindowDriver *const driverList, const size_t numDrivers );
+
+  /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Basic
+  class ICommon
   {
   public:
-    virtual ~Basic() = default;
+    virtual ~ICommon() = default;
 
     /**
      *  Enables the clock that drives the hardware
@@ -119,10 +189,33 @@ namespace Thor::LLD::Watchdog
   };
 
 
-  class Advanced
+  class IIndependent : public virtual ICommon
   {
   public:
-    virtual ~Advanced() = default;
+    virtual ~IIndependent() = default;
+
+    /**
+     *  Attaches a peripheral instance to the interaction model
+     *
+     *  @param[in]  peripheral    Memory mapped struct of the desired USB peripheral
+     *  @return void
+     */
+    virtual Chimera::Status_t attach( IRegisterMap *const peripheral ) = 0;
+  };
+
+
+  class IWindow : public virtual ICommon
+  {
+  public:
+    virtual ~IWindow() = default;
+
+    /**
+     *  Attaches a peripheral instance to the interaction model
+     *
+     *  @param[in]  peripheral    Memory mapped struct of the desired USB peripheral
+     *  @return void
+     */
+    virtual Chimera::Status_t attach( WRegisterMap *const peripheral ) = 0;
 
     /**
      *  Calculates the register value needed to properly configure the window in

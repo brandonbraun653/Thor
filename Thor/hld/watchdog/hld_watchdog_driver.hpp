@@ -16,13 +16,19 @@
 #include <Chimera/thread>
 #include <Chimera/watchdog>
 
+/* Thor Includes */
+#include <Thor/hld/watchdog/hld_watchdog_types.hpp>
+
 namespace Thor::Watchdog
 {
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
   Chimera::Status_t reset();
-  Chimera::Watchdog::Driver_sPtr getDriver( const Chimera::Watchdog::Channel channel );
+  WindowDriver_rPtr getDriver( const Chimera::Watchdog::WChannel channel );
+  WindowDriver_sPtr getDriverShared( const Chimera::Watchdog::WChannel channel );
+  IndependentDriver_rPtr getDriver( const Chimera::Watchdog::IChannel channel );
+  IndependentDriver_sPtr getDriverShared( const Chimera::Watchdog::IChannel channel );
 
   /**
    *  Initialize the WWDG driver
@@ -47,30 +53,23 @@ namespace Thor::Watchdog
    *   watchdog is intended to protect against software faults and has more advanced
    *   capabilities than the Independent Watchdog.
    */
-  class Window : virtual public Chimera::Watchdog::HWInterface, public Chimera::Threading::Lockable
+  class Window : public Chimera::Threading::Lockable
   {
   public:
     Window();
     ~Window();
 
-    Chimera::Status_t initialize( const uint32_t timeout_mS, const uint8_t windowPercent = 100 ) final override;
-
-    Chimera::Status_t start() final override;
-
-    Chimera::Status_t stop() final override;
-
-    Chimera::Status_t kick() final override;
-
-    Chimera::Status_t pauseOnDebugHalt( const bool enable ) final override;
-
-    size_t getTimeout() final override;
-
-    size_t maxTimeout() final override;
-
-    size_t minTimeout() final override;
+    Chimera::Status_t initialize( const Chimera::Watchdog::WChannel ch, const uint32_t timeout_mS, const uint8_t windowPercent );
+    Chimera::Status_t start();
+    Chimera::Status_t stop();
+    Chimera::Status_t kick();
+    Chimera::Status_t pauseOnDebugHalt( const bool enable );
+    size_t getTimeout();
+    size_t maxTimeout();
+    size_t minTimeout();
 
   private:
-    uint32_t currentPrescaler;
+    Chimera::Watchdog::WChannel mChannel;
   };
 
   /**
@@ -79,30 +78,23 @@ namespace Thor::Watchdog
    *   to protect against issues deriving from a faulty system clock that would not
    *   trip the window watchdog.
    */
-  class Independent : virtual public Chimera::Watchdog::HWInterface, public Chimera::Threading::Lockable
+  class Independent : public Chimera::Threading::Lockable
   {
   public:
     Independent();
     ~Independent();
 
-    Chimera::Status_t initialize( const uint32_t timeout_mS, const uint8_t windowPercent = 0 ) final override;
-
-    Chimera::Status_t start() final override;
-
-    Chimera::Status_t stop() final override;
-
-    Chimera::Status_t kick() final override;
-
-    Chimera::Status_t pauseOnDebugHalt( const bool enable ) final override;
-
-    size_t getTimeout() final override;
-
-    size_t maxTimeout() final override;
-
-    size_t minTimeout() final override;
+    Chimera::Status_t initialize( Chimera::Watchdog::IChannel ch, const uint32_t timeout_mS );
+    Chimera::Status_t start();
+    Chimera::Status_t stop();
+    Chimera::Status_t kick();
+    Chimera::Status_t pauseOnDebugHalt( const bool enable );
+    size_t getTimeout();
+    size_t maxTimeout();
+    size_t minTimeout();
 
   private:
-    uint32_t currentPrescaler;
+    Chimera::Watchdog::IChannel mChannel;
   };
 
 }    // namespace Thor::Watchdog

@@ -37,6 +37,7 @@ set(all_libraries
   thor_lld_intf_sys
   thor_lld_intf_usart
   thor_lld_intf_usb
+  thor_lld_intf_watchdog
 )
 
 # ====================================================
