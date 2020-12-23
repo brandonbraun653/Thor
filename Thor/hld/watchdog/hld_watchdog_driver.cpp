@@ -32,13 +32,14 @@
 Aliases
 -------------------------------------------------------------------------------*/
 namespace HLD = Thor::Watchdog;
-namespace LLD = Thor::LLD::Watchdog;
+namespace ILLD = Thor::LLD::IWDG;
+namespace WLLD = Thor::LLD::WWDG;
 
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
-static constexpr size_t NUM_IDRIVERS = LLD::NUM_IWDG_PERIPHS;
-static constexpr size_t NUM_WDRIVERS = LLD::NUM_WWDG_PERIPHS;
+static constexpr size_t NUM_IDRIVERS = ILLD::NUM_IWDG_PERIPHS;
+static constexpr size_t NUM_WDRIVERS = WLLD::NUM_WWDG_PERIPHS;
 
 
 namespace Thor::Watchdog
@@ -172,8 +173,8 @@ namespace Thor::Watchdog
 
   #if defined( THOR_HLD_IWDG )
   static size_t s_iwdg_driver_initialized;                   /**< Tracks the module level initialization state */
-  static HLD::Independent hld_idriver[ NUM_IDRIVERS ];            /**< Driver objects */
-  static HLD::IndependentDriver_sPtr hld_ishared[ NUM_IDRIVERS ]; /**< Shared references to driver objects */
+  static ::HLD::Independent hld_idriver[ NUM_IDRIVERS ];            /**< Driver objects */
+  static ::HLD::IndependentDriver_sPtr hld_ishared[ NUM_IDRIVERS ]; /**< Shared references to driver objects */
 
 
   Chimera::Status_t initializeIWDG()
@@ -189,20 +190,20 @@ namespace Thor::Watchdog
     /*------------------------------------------------
     Initialize local memory
     ------------------------------------------------*/
-    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+    s_iwdg_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
     for ( size_t x = 0; x < NUM_IDRIVERS; x++ )
     {
 #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_IWDG )
-      hld_ishared[ x ] = HLD::IndependentDriver_sPtr( new HLD::Independent() );
+      hld_ishared[ x ] = ::HLD::IndependentDriver_sPtr( new HLD::Independent() );
 #else
-      hld_ishared[ x ] = HLD::IndependentDriver_sPtr( &hld_idriver[ x ] );
+      hld_ishared[ x ] = ::HLD::IndependentDriver_sPtr( &hld_idriver[ x ] );
 #endif
     }
 
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    Thor::LLD::Watchdog::initialize();
+    Thor::LLD::Watchdog::initializeIWDG();
     s_iwdg_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::Status::OK;
   }
@@ -226,7 +227,7 @@ namespace Thor::Watchdog
     /*-------------------------------------------------
     Input Protection
     -------------------------------------------------*/
-    auto hwDriver = LLD::getDriver( ch );
+    auto hwDriver = Thor::LLD::Watchdog::getDriver( ch );
     if( !hwDriver )
     {
       return Chimera::Status::NOT_SUPPORTED;
@@ -239,8 +240,15 @@ namespace Thor::Watchdog
     /*-------------------------------------------------
     Calculate the operating parameters
     -------------------------------------------------*/
-    uint32_t prescalerRegVal = hwDriver->calculatePrescaler( timeout_mS );
-    uint32_t reloadRegVal    = hwDriver->calculateReload( timeout_mS, prescalerRegVal );
+    auto idx =
+        Thor::LLD::Watchdog::calculatePrescaler( timeout_mS, ILLD::PERIPH_CLOCK_FREQ_HZ, ILLD::PERIPH_MAX_COUNT,
+                                                 ILLD::DecimalPrescalers, ILLD::RegisterPrescalers, ILLD::NumPrescalers );
+
+
+    uint32_t prescalerRegVal = ILLD::RegisterPrescalers[ idx ];
+    uint32_t reloadRegVal =
+        Thor::LLD::Watchdog::calculateReload( timeout_mS, ILLD::PERIPH_CLOCK_FREQ_HZ, ILLD::PERIPH_MIN_COUNT,
+                                              ILLD::PERIPH_MAX_COUNT, ILLD::DecimalPrescalers[ idx ] );
 
     /*-------------------------------------------------
     Configure the watchdog
@@ -259,7 +267,7 @@ namespace Thor::Watchdog
 
   Chimera::Status_t Independent::start()
   {
-    LLD::getDriver( ch )->start();
+    Thor::LLD::Watchdog::getDriver( mChannel )->start();
     return Chimera::Status::OK;
   }
 
@@ -275,26 +283,26 @@ namespace Thor::Watchdog
 
   Chimera::Status_t Independent::kick()
   {
-    LLD::getDriver( ch )->reload();
+    Thor::LLD::Watchdog::getDriver( mChannel )->reload();
     return Chimera::Status::OK;
   }
 
 
   size_t Independent::getTimeout()
   {
-    return LLD::getDriver( ch )->getTimeout();
+    return Thor::LLD::Watchdog::getDriver( mChannel )->getTimeout();
   }
 
 
   size_t Independent::maxTimeout()
   {
-    return LLD::getDriver( ch )->getMaxTimeout( Thor::LLD::IWDG::PR::PRESCALE_MAX );
+    return Thor::LLD::Watchdog::getDriver( mChannel )->getMaxTimeout( Thor::LLD::IWDG::PR::PRESCALE_MAX );
   }
 
 
   size_t Independent::minTimeout()
   {
-    return LLD::getDriver( ch )->getMinTimeout( Thor::LLD::IWDG::PR::PRESCALE_MIN );
+    return Thor::LLD::Watchdog::getDriver( mChannel )->getMinTimeout( Thor::LLD::IWDG::PR::PRESCALE_MIN );
   }
 
 

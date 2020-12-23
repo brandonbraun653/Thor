@@ -27,7 +27,10 @@ namespace Thor::LLD::IWDG
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base
   -------------------------------------------------*/
-  static constexpr uint32_t IWDG1_BASE_ADDR = Thor::System::MemoryMap::IWDG1_PERIPH_START_ADDRESS;
+  static constexpr uint32_t IWDG1_BASE_ADDR      = Thor::System::MemoryMap::IWDG1_PERIPH_START_ADDRESS;
+  static constexpr uint32_t PERIPH_CLOCK_FREQ_HZ = 32000u;
+  static constexpr uint32_t PERIPH_MIN_COUNT     = 0;
+  static constexpr uint32_t PERIPH_MAX_COUNT     = 0xFFF;
 
   /*-------------------------------------------------
   Peripheral Register Definitions
@@ -37,6 +40,11 @@ namespace Thor::LLD::IWDG
   static constexpr uint32_t KR_KEY_Msk = ( 0xFFFFUL << KR_KEY_Pos );
   static constexpr uint32_t KR_KEY     = KR_KEY_Msk;
 
+  static constexpr Reg32_t KR_REFRESH = 0xAAAA;
+  static constexpr Reg32_t KR_START   = 0xCCCC;
+  static constexpr Reg32_t KR_UNLOCK  = 0x5555;
+  static constexpr Reg32_t KR_LOCK    = 0x0000;
+
   /*******************  Bit definition for PR register  ********************/
   static constexpr uint32_t PR_PR_Pos = ( 0U );
   static constexpr uint32_t PR_PR_Msk = ( 0x7UL << PR_PR_Pos );
@@ -45,10 +53,27 @@ namespace Thor::LLD::IWDG
   static constexpr uint32_t PR_PR_1   = ( 0x2UL << PR_PR_Pos );
   static constexpr uint32_t PR_PR_2   = ( 0x4UL << PR_PR_Pos );
 
+  static constexpr Reg32_t PR_PRESCALE_4   = ( 0 << PR_PR_Pos ) & PR_PR_Msk;
+  static constexpr Reg32_t PR_PRESCALE_8   = ( 1 << PR_PR_Pos ) & PR_PR_Msk;
+  static constexpr Reg32_t PR_PRESCALE_16  = ( 2 << PR_PR_Pos ) & PR_PR_Msk;
+  static constexpr Reg32_t PR_PRESCALE_32  = ( 3 << PR_PR_Pos ) & PR_PR_Msk;
+  static constexpr Reg32_t PR_PRESCALE_64  = ( 4 << PR_PR_Pos ) & PR_PR_Msk;
+  static constexpr Reg32_t PR_PRESCALE_128 = ( 5 << PR_PR_Pos ) & PR_PR_Msk;
+  static constexpr Reg32_t PR_PRESCALE_256 = ( 6 << PR_PR_Pos ) & PR_PR_Msk;
+  static constexpr Reg32_t PR_MIN_PRESCALE = PR_PRESCALE_4;
+  static constexpr Reg32_t PR_MAX_PRESCALE = PR_PRESCALE_256;
+
+  static const uint8_t NumPrescalers                       = 7;
+  static const uint8_t DecimalPrescalers[ NumPrescalers ]  = { 4, 8, 16, 32, 64, 128, 256 };
+  static const Reg32_t RegisterPrescalers[ NumPrescalers ] = { PR_PRESCALE_4,  PR_PRESCALE_8,   PR_PRESCALE_16, PR_PRESCALE_32,
+                                                               PR_PRESCALE_64, PR_PRESCALE_128, PR_PRESCALE_256 };
+
   /*******************  Bit definition for RLR register  *******************/
   static constexpr uint32_t RLR_RL_Pos = ( 0U );
   static constexpr uint32_t RLR_RL_Msk = ( 0xFFFUL << RLR_RL_Pos );
   static constexpr uint32_t RLR_RL     = RLR_RL_Msk;
+  static constexpr Reg32_t RLR_MAX     = 0x0FFF;
+  static constexpr Reg32_t RLR_MIN     = 0x0000;
 
   /*******************  Bit definition for SR register  ********************/
   static constexpr uint32_t SR_PVU_Pos = ( 0U );

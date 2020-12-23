@@ -31,7 +31,8 @@ namespace Thor::LLD::Watchdog
   /**
    *  Initializes the low level driver
    */
-  Chimera::Status_t initialize();
+  Chimera::Status_t initializeIWDG();
+  Chimera::Status_t initializeWWDG();
 
   /**
    *  Gets a shared pointer to the USB driver for a particular channel
@@ -92,6 +93,33 @@ namespace Thor::LLD::Watchdog
   bool attachDriverInstances( IndependentDriver *const driverList, const size_t numDrivers );
   bool attachDriverInstances( WindowDriver *const driverList, const size_t numDrivers );
 
+  /**
+   *  Calculates the best prescale register setting given a desired timeout
+   *
+   *  @param[in]  ms            Desired watchdog timeout in milliseconds
+   *  @param[in]  clock         Frequency of the clock driving the watchdog in Hz
+   *  @param[in]  maxCount      Max value the watchdog can count to
+   *  @param[in]  actVal        Array of decimal values that are available prescale options
+   *  @param[in]  regVal        Array of register settings corresponding to values in "actVal"
+   *  @param[in]  len           Number of elements in actVal & regVal
+   *  @return uint8_t           Index corresponding to the best prescaler selection in regVal
+   */
+  uint8_t calculatePrescaler( const size_t ms, const size_t clock, const size_t maxCount, const uint8_t *const actVal,
+                              const Reg32_t *const regVal, const size_t len );
+
+  /**
+   *  Calculates the best reload register setting given the desired timeout
+   *  and the current watchdog peripheral clock prescaler.
+   *
+   *  @param[in]  ms            Desired watchdog timeout in milliseconds
+   *  @param[in]  clock         Frequency of the clock driving the watchdog in Hz
+   *  @param[in]  minCount      Min value the watchdog will count to (usually the value when a reset is issued)
+   *  @param[in]  maxCount      Max value the watchdog can count to
+   *  @param[in]  prescaler     Current prescaler setting (decimal)
+   *  @return Reg32_t           Value to be applied to the reload register
+   */
+  Reg32_t calculateReload( const size_t ms, const size_t clock, const size_t minCount, const size_t maxCount, const size_t prescaler );
+
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
@@ -106,25 +134,6 @@ namespace Thor::LLD::Watchdog
      *  @return void
      */
     virtual void enableClock() = 0;
-
-    /**
-     *  Calculates the appropriate hardware prescaler given a desired
-     *  timeout in milliseconds
-     *
-     *  @param[in]  ms            The number of milliseconds to set the timeout to
-     *  @return Reg32_t           The hardware register prescaler value
-     */
-    virtual Reg32_t calculatePrescaler( const size_t ms ) = 0;
-
-    /**
-     *  Calculates the appropriate hardware reload value when the counter
-     *  is refreshed.
-     *
-     *  @param[in]  ms            The number of milliseconds to set the timeout to
-     *  @param[in]  prescaler     The hardware register prescaler value
-     *  @return Reg32_t           The hardware register reload value
-     */
-    virtual Reg32_t calculateReload( const size_t ms, const Reg32_t prescaler ) = 0;
 
     /**
      *  Directly assigns a prescaler value to the hardware register
@@ -238,6 +247,50 @@ namespace Thor::LLD::Watchdog
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t setWindow( const Reg32_t val ) = 0;
+  };
+
+
+  class IndependentDriver // ICommon & IIndependent
+  {
+  public:
+    IndependentDriver();
+    ~IndependentDriver();
+
+    Chimera::Status_t attach( IRegisterMap *const peripheral );
+    void enableClock();
+    Chimera::Status_t setPrescaler( const Reg32_t val );
+    Chimera::Status_t setReload( const Reg32_t val );
+    void start();
+    void reload();
+    size_t getMaxTimeout( const Reg32_t prescaler );
+    size_t getMinTimeout( const Reg32_t prescaler );
+    size_t getTimeout();
+
+  private:
+    IRegisterMap *mPeriph;
+    size_t mResourceIndex;
+  };
+
+
+  class WindowDriver // ICommon & IWindow
+  {
+  public:
+    WindowDriver();
+    ~WindowDriver();
+
+    Chimera::Status_t attach( WRegisterMap *const peripheral );
+    void enableClock();
+    Chimera::Status_t setPrescaler( const Reg32_t val );
+    Chimera::Status_t setReload( const Reg32_t val );
+    void start();
+    void reload();
+    size_t getMaxTimeout( const Reg32_t prescaler );
+    size_t getMinTimeout( const Reg32_t prescaler );
+    size_t getTimeout();
+
+  private:
+    IRegisterMap *mPeriph;
+    size_t mResourceIndex;
   };
 
 }    // namespace Thor::LLD::Watchdog

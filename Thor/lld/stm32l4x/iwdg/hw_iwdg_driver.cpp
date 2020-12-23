@@ -20,32 +20,30 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
-#include <Thor/lld/interface/iwdg/iwdg_prv_data.hpp>
-#include <Thor/lld/interface/iwdg/iwdg_intf.hpp>
+#include <Thor/lld/interface/watchdog/watchdog_prv_data.hpp>
+#include <Thor/lld/interface/watchdog/watchdog_intf.hpp>
+#include <Thor/lld/interface/watchdog/watchdog_types.hpp>
 #include <Thor/lld/stm32l4x/iwdg/hw_iwdg_prj.hpp>
 #include <Thor/lld/stm32l4x/iwdg/hw_iwdg_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_IWDG )
 
-namespace Thor::LLD::IWDG
+namespace Thor::LLD::Watchdog
 {
   /*-------------------------------------------------------------------------------
   Variables
   -------------------------------------------------------------------------------*/
-  static Driver s_iwdg_drivers[ NUM_IWDG_PERIPHS ];
+  static IndependentDriver s_iwdg_drivers[ IWDG::NUM_IWDG_PERIPHS ];
 
-  /*-------------------------------------------------------------------------------
-  Private Functions
-  -------------------------------------------------------------------------------*/
 
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
-  Chimera::Status_t initialize()
+  Chimera::Status_t initializeIWDG()
   {
     /*-------------------------------------------------
-    Attach all the expected peripherals to the drivers
+    Attach all the expected mPeripherals to the drivers
     -------------------------------------------------*/
     if ( attachDriverInstances( s_iwdg_drivers, ARRAY_COUNT( s_iwdg_drivers ) ) )
     {
@@ -58,7 +56,7 @@ namespace Thor::LLD::IWDG
   }
 
 
-  Driver_rPtr getDriver( const Chimera::IWDG::Channel channel )
+  IndependentDriver_rPtr getDriver( const Chimera::Watchdog::IChannel channel )
   {
     if ( auto idx = getResourceIndex( channel ); idx != INVALID_RESOURCE_INDEX )
     {
@@ -74,79 +72,137 @@ namespace Thor::LLD::IWDG
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver()
-  {
-  }
-
-  Driver::~Driver()
+  IndependentDriver::IndependentDriver()
   {
   }
 
 
-  Chimera::Status_t Driver::attach( RegisterMap *const peripheral )
+  IndependentDriver::~IndependentDriver()
+  {
+  }
+
+
+  Chimera::Status_t IndependentDriver::attach( IRegisterMap *const mPeripheral )
   {
     /*------------------------------------------------
-    Get peripheral descriptor settings
+    Get mPeripheral descriptor settings
     ------------------------------------------------*/
-    mPeriph       = peripheral;
-    mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
-
-    /*------------------------------------------------
-    Handle the ISR configuration
-    ------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
-    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
-    Thor::LLD::IT::setPriority( Resource::IRQSignals[ mResourceIndex ], Thor::Interrupt::IWDG_IT_PREEMPT_PRIORITY, 0u );
+    mPeriph        = mPeripheral;
+    mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( mPeripheral ) );
 
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t Driver::reset()
+  void IndependentDriver::enableClock()
   {
+    auto rcc = Thor::LLD::RCC::getCoreClock();
+    rcc->enableClock( Chimera::Clock::Bus::LSI );
+  }
+
+
+  Chimera::Status_t IndependentDriver::setPrescaler( const Reg32_t val )
+  {
+    /*------------------------------------------------
+    Wait for SR to indicate no ongoing HW updates.
+    This can take at most 5 LSI clocks.
+    ------------------------------------------------*/
+    while ( IWDG::PVU::get( mPeriph ) )
+    {
+      continue;
+    }
+
+    /*------------------------------------------------
+    Assign the register value with unlock-assign-lock
+    ------------------------------------------------*/
+    IWDG::KEY::set( mPeriph, IWDG::KR_UNLOCK );
+    IWDG::PR::set( mPeriph, val );
+    IWDG::KEY::set( mPeriph, IWDG::KR_LOCK );
+
+    /*------------------------------------------------
+    Wait again...
+    ------------------------------------------------*/
+    while ( IWDG::PVU::get( mPeriph ) )
+    {
+      continue;
+    }
+
     return Chimera::Status::OK;
   }
 
 
-  void Driver::clockEnable()
+  Chimera::Status_t IndependentDriver::setReload( const Reg32_t val )
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
-    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_IWDG, mResourceIndex );
+    /*------------------------------------------------
+    Wait for SR to indicate no ongoing HW updates.
+    This can take at most 125uS (5 clocks @ 40kHz LSI).
+    ------------------------------------------------*/
+    while ( IWDG::RVU::get( mPeriph ) )
+    {
+      continue;
+    }
+
+    /*------------------------------------------------
+    Assign the register value with unlock-assign-lock
+    ------------------------------------------------*/
+    IWDG::KEY::set( mPeriph, IWDG::KR_UNLOCK );
+    IWDG::RL::set( mPeriph, val );
+    IWDG::KEY::set( mPeriph, IWDG::KR_LOCK );
+
+    /*------------------------------------------------
+    Wait again...
+    ------------------------------------------------*/
+    while ( IWDG::RVU::get( mPeriph ) )
+    {
+      continue;
+    }
+
+    return Chimera::Status::OK;
   }
 
 
-  void Driver::clockDisable()
+  void IndependentDriver::start()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
-    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_IWDG, mResourceIndex );
+    IWDG::KEY::set( mPeriph, IWDG::KR_START );
   }
 
 
-  inline void Driver::enterCriticalSection()
+  void IndependentDriver::reload()
   {
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    IWDG::KEY::set( mPeriph, IWDG::KR_REFRESH );
   }
 
 
-  inline void Driver::exitCriticalSection()
+  size_t IndependentDriver::getMaxTimeout( const Reg32_t prescaler )
   {
-    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    size_t base_period_ms = static_cast<size_t>( 1000.0f / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
+    size_t actual_period_ms = base_period_ms * prescaler;
+
+    return actual_period_ms * ( IWDG::PERIPH_MAX_COUNT - IWDG::PERIPH_MIN_COUNT );
   }
 
 
-  void Driver::IRQHandler()
+  size_t IndependentDriver::getMinTimeout( const Reg32_t prescaler )
   {
+    size_t base_period_ms = static_cast<size_t>( 1000.0f / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
+    size_t actual_period_ms = base_period_ms * prescaler;
 
+    return actual_period_ms * ( IWDG::PERIPH_MIN_COUNT + 1 );
   }
-}    // namespace Thor::LLD::IWDG
 
 
-#if defined( STM32_IWDG1_PERIPH_AVAILABLE )
-void IWDG1_IRQHandler()
-{
-  using namespace Thor::LLD::IWDG;
-  s_iwdg_drivers[ IWDG1_RESOURCE_INDEX ].IRQHandler();
-}
-#endif
+  size_t IndependentDriver::getTimeout()
+  {
+    size_t prescaler = IWDG::PR::get( mPeriph ) >> IWDG::PR_PR_Pos;
+    size_t reloadVal = IWDG::RL::get( mPeriph ) >> IWDG::RLR_RL_Pos;
+
+    size_t base_period_ms = static_cast<size_t>( 1000.0f / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
+    size_t actual_period_ms = base_period_ms * prescaler;
+
+    return actual_period_ms * ( reloadVal - IWDG::PERIPH_MIN_COUNT );
+  }
+
+}    // namespace Thor::LLD::Watchdog
+
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_IWDG */
