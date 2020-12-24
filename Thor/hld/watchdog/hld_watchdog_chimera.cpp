@@ -28,13 +28,14 @@
 Aliases
 -------------------------------------------------------------------------------*/
 namespace HLD = Thor::Watchdog;
-namespace LLD = Thor::LLD::Watchdog;
+namespace ILLD = Thor::LLD::IWDG;
+namespace WLLD = Thor::LLD::WWDG;
 
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
-static constexpr size_t NUM_IDRIVERS = LLD::NUM_IWDG_PERIPHS;
-static constexpr size_t NUM_WDRIVERS = LLD::NUM_WWDG_PERIPHS;
+static constexpr size_t NUM_IDRIVERS = ILLD::NUM_IWDG_PERIPHS;
+static constexpr size_t NUM_WDRIVERS = WLLD::NUM_WWDG_PERIPHS;
 
 /*-------------------------------------------------------------------------------
 Variables
@@ -86,7 +87,7 @@ namespace Chimera::Watchdog::Backend
   Chimera::Watchdog::Independent_sPtr getDriver( const IChannel channel )
   {
 #if defined( THOR_HLD_IWDG )
-    auto idx = ::LLD::getResourceIndex( channel );
+    auto idx = ::Thor::LLD::Watchdog::getResourceIndex( channel );
 
     if( idx < NUM_IDRIVERS )
     {
@@ -105,7 +106,7 @@ namespace Chimera::Watchdog::Backend
   Chimera::Watchdog::Window_sPtr getDriver( const WChannel channel )
   {
 #if defined( THOR_HLD_WWDG )
-    auto idx = ::LLD::getResourceIndex( channel );
+    auto idx = ::Thor::LLD::Watchdog::getResourceIndex( channel );
 
     if ( idx < NUM_WDRIVERS )
     {

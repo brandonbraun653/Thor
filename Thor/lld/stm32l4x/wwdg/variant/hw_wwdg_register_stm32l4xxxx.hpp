@@ -29,6 +29,9 @@ namespace Thor::LLD::WWDG
   -------------------------------------------------*/
   static constexpr uint32_t WWDG1_BASE_ADDR = Thor::System::MemoryMap::WWDG1_PERIPH_START_ADDRESS;
 
+  static constexpr uint32_t COUNTER_MAX = 0x7F;
+  static constexpr uint32_t COUNTER_MIN = 0x40;
+
   /*-------------------------------------------------
   Peripheral Register Definitions
   -------------------------------------------------*/
@@ -65,6 +68,18 @@ namespace Thor::LLD::WWDG
   static constexpr uint32_t CFR_WDGTB     = CFR_WDGTB_Msk;
   static constexpr uint32_t CFR_WDGTB_0   = ( 0x1UL << CFR_WDGTB_Pos );
   static constexpr uint32_t CFR_WDGTB_1   = ( 0x2UL << CFR_WDGTB_Pos );
+
+  static constexpr Reg32_t WDGTB_PRESCALE_1  = ( 0 << CFR_WDGTB_Pos ) & CFR_WDGTB_Msk;
+  static constexpr Reg32_t WDGTB_PRESCALE_2  = ( 1 << CFR_WDGTB_Pos ) & CFR_WDGTB_Msk;
+  static constexpr Reg32_t WDGTB_PRESCALE_4  = ( 2 << CFR_WDGTB_Pos ) & CFR_WDGTB_Msk;
+  static constexpr Reg32_t WDGTB_PRESCALE_8  = ( 3 << CFR_WDGTB_Pos ) & CFR_WDGTB_Msk;
+  static constexpr Reg32_t MIN_PRESCALE = WDGTB_PRESCALE_1;
+  static constexpr Reg32_t MAX_PRESCALE = WDGTB_PRESCALE_8;
+
+  static const uint32_t NumPrescalers                       = 4;
+  static const uint32_t DecimalPrescalers[ NumPrescalers ]  = { 1, 2, 4, 8 };
+  static const Reg32_t RegisterPrescalers[ NumPrescalers ] = { WDGTB_PRESCALE_1,  WDGTB_PRESCALE_2,   WDGTB_PRESCALE_4, WDGTB_PRESCALE_8 };
+
 
   static constexpr uint32_t CFR_EWI_Pos = ( 9U );
   static constexpr uint32_t CFR_EWI_Msk = ( 0x1UL << CFR_EWI_Pos );

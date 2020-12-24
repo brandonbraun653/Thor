@@ -107,6 +107,10 @@ namespace Thor::LLD::RCC
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ] = &LookupTables::GPIOLookup;
 #endif
 
+#if defined( THOR_LLD_IWDG )
+      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_IWDG ) ] = &LookupTables::IWDGLookup;
+#endif
+
 #if defined( THOR_LLD_PWR )
       periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_PWR ) ] = &LookupTables::PWRLookup;
 #endif
@@ -1184,27 +1188,35 @@ namespace Thor::LLD::RCC
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->reset;
     auto config      = lookupTable[ index ];
-    uint32_t tmp     = *config.reg;
 
-    /*------------------------------------------------
-    Begin the reset operation
-    ------------------------------------------------*/
-    tmp |= config.mask;
-    *config.reg = tmp;
-
-    /*-------------------------------------------------
-    Burn a few cycles to avoid accessing HW too early
-    -------------------------------------------------*/
-    for ( auto x = 0; x < 5; x++ )
+    if ( config.reg )
     {
-      asm( "nop" );
-    }
+      uint32_t tmp = *config.reg;
 
-    /*------------------------------------------------
-    Remove the reset flag as it is not cleared automatically by hardware
-    ------------------------------------------------*/
-    tmp &= ~config.mask;
-    *config.reg = tmp;
+      /*------------------------------------------------
+      Begin the reset operation
+      ------------------------------------------------*/
+      tmp |= config.mask;
+      *config.reg = tmp;
+
+      /*-------------------------------------------------
+      Burn a few cycles to avoid accessing HW too early
+      -------------------------------------------------*/
+      for ( auto x = 0; x < 5; x++ )
+      {
+        asm( "nop" );
+      }
+
+      /*------------------------------------------------
+      Remove the reset flag as it is not cleared automatically by hardware
+      ------------------------------------------------*/
+      tmp &= ~config.mask;
+      *config.reg = tmp;
+    }
+    else
+    {
+      result = Chimera::Status::NOT_SUPPORTED;
+    }
 
     return result;
   }
@@ -1215,7 +1227,15 @@ namespace Thor::LLD::RCC
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
     auto config      = lookupTable[ index ];
-    *config.reg |= config.mask;
+
+    if( config.reg )
+    {
+      *config.reg |= config.mask;
+    }
+    else
+    {
+      result = Chimera::Status::NOT_SUPPORTED;
+    }
 
     return result;
   }
@@ -1226,7 +1246,15 @@ namespace Thor::LLD::RCC
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
     auto config      = lookupTable[ index ];
-    *config.reg &= ~config.mask;
+
+    if( config.reg )
+    {
+      *config.reg &= ~config.mask;
+    }
+    else
+    {
+      result = Chimera::Status::NOT_SUPPORTED;
+    }
 
     return result;
   }
@@ -1237,7 +1265,15 @@ namespace Thor::LLD::RCC
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
     auto config      = lookupTable[ index ];
-    *config.reg |= config.mask;
+
+    if( config.reg )
+    {
+      *config.reg |= config.mask;
+    }
+    else
+    {
+      result = Chimera::Status::NOT_SUPPORTED;
+    }
 
     return result;
   }
@@ -1248,7 +1284,15 @@ namespace Thor::LLD::RCC
 
     auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
     auto config      = lookupTable[ index ];
-    *config.reg &= ~config.mask;
+
+    if( config.reg )
+    {
+      *config.reg &= ~config.mask;
+    }
+    else
+    {
+      result = Chimera::Status::NOT_SUPPORTED;
+    }
 
     return result;
   }

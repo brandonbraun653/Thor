@@ -43,6 +43,14 @@ namespace Thor::LLD::Watchdog
   IndependentDriver_rPtr getDriver( const Chimera::Watchdog::IChannel channel );
   WindowDriver_rPtr getDriver( const Chimera::Watchdog::WChannel channel );
 
+  /**
+   *  Gets the clock frequency (Hz) that is driving the window watchdog.
+   *  Accounts for any internal hardwired dividers.
+   *
+   *  @return size_t
+   */
+  size_t getWWDGClockFrequency();
+
 
   /*-------------------------------------------------------------------------------
   Public Functions (Implemented at the interface layer)
@@ -104,7 +112,7 @@ namespace Thor::LLD::Watchdog
    *  @param[in]  len           Number of elements in actVal & regVal
    *  @return uint8_t           Index corresponding to the best prescaler selection in regVal
    */
-  uint8_t calculatePrescaler( const size_t ms, const size_t clock, const size_t maxCount, const uint8_t *const actVal,
+  uint8_t calculatePrescaler( const size_t ms, const size_t clock, const size_t maxCount, const uint32_t *const actVal,
                               const Reg32_t *const regVal, const size_t len );
 
   /**
@@ -119,6 +127,7 @@ namespace Thor::LLD::Watchdog
    *  @return Reg32_t           Value to be applied to the reload register
    */
   Reg32_t calculateReload( const size_t ms, const size_t clock, const size_t minCount, const size_t maxCount, const size_t prescaler );
+
 
   /*-------------------------------------------------------------------------------
   Classes
@@ -227,26 +236,13 @@ namespace Thor::LLD::Watchdog
     virtual Chimera::Status_t attach( WRegisterMap *const peripheral ) = 0;
 
     /**
-     *  Calculates the register value needed to properly configure the window in
-     *  which a watchdog can be kicked.
+     *  Sets the hardware register watchdog window value to a percentage of
+     *  the currently set reload value.
      *
-     *  @param[in]  ms            The watchdog's timeout in milliseconds
-     *  @param[in]  percent       Percentage of the timeout (ms) which defines the window
-     *                            that the watchdog can be updated in.
-     *  @param[in]  prescaler     The hardware register prescaler value
-     *  @return Reg32_t           Register value
-     */
-    virtual Reg32_t calculateWindow( const size_t ms, const uint8_t percent, const Reg32_t prescaler ) = 0;
-
-    /**
-     *  Sets the hardware register watchdog window value
-     *
-     *  @see calculateWindow()
-     *
-     *  @param[in]  val           The register value to be set
+     *  @param[in]  percent       The percentage to set [1, 100]
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t setWindow( const Reg32_t val ) = 0;
+    virtual Chimera::Status_t setWindow( const uint8_t percent ) = 0;
   };
 
 
@@ -282,6 +278,7 @@ namespace Thor::LLD::Watchdog
     void enableClock();
     Chimera::Status_t setPrescaler( const Reg32_t val );
     Chimera::Status_t setReload( const Reg32_t val );
+    Chimera::Status_t setWindow( const uint8_t percent );
     void start();
     void reload();
     size_t getMaxTimeout( const Reg32_t prescaler );
@@ -289,8 +286,9 @@ namespace Thor::LLD::Watchdog
     size_t getTimeout();
 
   private:
-    IRegisterMap *mPeriph;
+    WRegisterMap *mPeriph;
     size_t mResourceIndex;
+    Reg32_t mReload;
   };
 
 }    // namespace Thor::LLD::Watchdog

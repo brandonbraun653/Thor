@@ -25,7 +25,10 @@
 #include <Thor/lld/stm32f4x/iwdg/hw_iwdg_mapping.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/wwdg/hw_wwdg_prj.hpp>
+#include <Thor/lld/stm32l4x/wwdg/hw_wwdg_types.hpp>
+
 #include <Thor/lld/stm32l4x/iwdg/hw_iwdg_prj.hpp>
+#include <Thor/lld/stm32l4x/iwdg/hw_iwdg_types.hpp>
 #else
 #pragma message( "watchdog_detail.hpp: Unknown target for LLD" )
 #endif

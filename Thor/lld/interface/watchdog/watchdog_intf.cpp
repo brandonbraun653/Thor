@@ -188,7 +188,7 @@ namespace Thor::LLD::Watchdog
   }
 
 
-  uint8_t calculatePrescaler( const size_t ms, const size_t clock, const size_t maxCount, const uint8_t *const actVal,
+  uint8_t calculatePrescaler( const size_t ms, const size_t clock, const size_t maxCount, const uint32_t *const actVal,
                               const Reg32_t *const regVal, const size_t len )
   {
     /*-------------------------------------------------

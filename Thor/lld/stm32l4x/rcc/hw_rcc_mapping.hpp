@@ -26,12 +26,14 @@
 #include <Thor/lld/stm32l4x/crs/hw_crs_prj.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
+#include <Thor/lld/stm32l4x/iwdg/hw_iwdg_prj.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_prj.hpp>
 #include <Thor/lld/stm32l4x/system/hw_sys_prj.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_prj.hpp>
 #include <Thor/lld/stm32l4x/usart/hw_usart_prj.hpp>
 #include <Thor/lld/stm32l4x/usb/hw_usb_prj.hpp>
+#include <Thor/lld/stm32l4x/wwdg/hw_wwdg_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32l4x/system/sys_memory_map_prj.hpp>
@@ -82,9 +84,6 @@ namespace Thor::LLD::RCC
 #endif /* THOR_LLD_CAN */
 
 #if defined( THOR_LLD_CRS )
-    /**
-     *  Power Peripheral Config Lookup Tables
-     */
     extern void CRSInit();
 
     extern PCC CRSLookup;
@@ -108,6 +107,14 @@ namespace Thor::LLD::RCC
     extern RegisterConfig GPIO_ResetConfig[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
     extern Chimera::Clock::Bus GPIO_SourceClock[ Thor::LLD::GPIO::NUM_GPIO_PERIPHS ];
 #endif /* THOR_LLD_GPIO */
+
+#if defined( THOR_LLD_IWDG )
+    extern void IWDGInit();
+    extern PCC IWDGLookup;
+    extern RegisterConfig IWDG_ClockConfig[ Thor::LLD::IWDG::NUM_IWDG_PERIPHS ];
+    extern RegisterConfig IWDG_ResetConfig[ Thor::LLD::IWDG::NUM_IWDG_PERIPHS ];
+    extern Chimera::Clock::Bus IWDG_SourceClock[ Thor::LLD::IWDG::NUM_IWDG_PERIPHS ];
+#endif /* THOR_LLD_IWDG */
 
 #if defined( THOR_LLD_PWR )
     extern void PWRInit();
@@ -156,6 +163,15 @@ namespace Thor::LLD::RCC
     extern RegisterConfig USB_ResetConfig[ Thor::LLD::USB::NUM_USB_PERIPHS ];
     extern Chimera::Clock::Bus USB_SourceClock[ Thor::LLD::USB::NUM_USB_PERIPHS ];
 #endif /* THOR_LLD_USB */
+
+#if defined( THOR_LLD_WWDG )
+    extern void WWDGInit();
+    extern PCC WWDGLookup;
+    extern RegisterConfig WWDG_ClockConfig[ Thor::LLD::WWDG::NUM_WWDG_PERIPHS ];
+    extern RegisterConfig WWDG_ResetConfig[ Thor::LLD::WWDG::NUM_WWDG_PERIPHS ];
+    extern Chimera::Clock::Bus WWDG_SourceClock[ Thor::LLD::WWDG::NUM_WWDG_PERIPHS ];
+#endif /* THOR_LLD_WWDG */
+
   }    // namespace LookupTables
 }    // namespace Thor::LLD::RCC
 

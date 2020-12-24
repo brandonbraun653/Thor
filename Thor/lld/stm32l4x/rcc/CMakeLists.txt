@@ -26,7 +26,7 @@ endif()
 function(build_library variant)
   set(CORE thor_lld_stm32l4_rcc${variant})
   add_library(${CORE} STATIC
-    hw_rcc_driver_stm32l4.cpp
+    hw_rcc_driver.cpp
     hw_rcc_mapping.cpp
     hw_rcc_pll.cpp
     ${VARIANT_SRC}

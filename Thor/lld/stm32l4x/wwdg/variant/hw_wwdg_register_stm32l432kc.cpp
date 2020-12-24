@@ -9,12 +9,12 @@
  ********************************************************************************/
 
 /* Chimera Includes */
-#include <Chimera/wwdg>
+#include <Chimera/watchdog>
 
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/hld/dma/hld_dma_intf.hpp>
-#include <Thor/lld/interface/wwdg/wwdg_intf.hpp>
+#include <Thor/lld/interface/watchdog/watchdog_intf.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
 #include <Thor/lld/stm32l4x/wwdg/hw_wwdg_types.hpp>
 #include <Thor/lld/stm32l4x/wwdg/variant/hw_wwdg_register_stm32l4xxxx.hpp>
@@ -40,7 +40,7 @@ namespace Thor::LLD::RCC::LookupTables
                     WWDG_ResetConfig,
                     WWDG_SourceClock,
                     Thor::LLD::WWDG::NUM_WWDG_PERIPHS,
-                    Thor::LLD::WWDG::getResourceIndex };
+                    Thor::LLD::Watchdog::getResourceIndex };
 
   void WWDGInit()
   {
@@ -50,23 +50,23 @@ namespace Thor::LLD::RCC::LookupTables
 WWDG clock enable register access lookup table
 ------------------------------------------------*/
 #if defined( STM32_WWDG1_PERIPH_AVAILABLE )
-    WWDG_ClockConfig[ WWDG1_RESOURCE_INDEX ].mask = //APB2ENR_WWDG1EN;
-    WWDG_ClockConfig[ WWDG1_RESOURCE_INDEX ].reg  = //&RCC1_PERIPH->APB2ENR;
+    WWDG_ClockConfig[ WWDG1_RESOURCE_INDEX ].mask = APB1ENR1_WWDGEN;
+    WWDG_ClockConfig[ WWDG1_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->APB1ENR1;
 #endif
 
 /*------------------------------------------------
 WWDG reset register access lookup table
 ------------------------------------------------*/
 #if defined( STM32_WWDG1_PERIPH_AVAILABLE )
-    WWDG_ResetConfig[ WWDG1_RESOURCE_INDEX ].mask = //APB2RSTR_WWDG1RST;
-    WWDG_ResetConfig[ WWDG1_RESOURCE_INDEX ].reg  = //&RCC1_PERIPH->APB2RSTR;
+    WWDG_ResetConfig[ WWDG1_RESOURCE_INDEX ].mask = 0;
+    WWDG_ResetConfig[ WWDG1_RESOURCE_INDEX ].reg  = nullptr;
 #endif
 
 /*------------------------------------------------
 WWDG clocking bus source identifier
 ------------------------------------------------*/
 #if defined( STM32_WWDG1_PERIPH_AVAILABLE )
-    WWDG_SourceClock[ WWDG1_RESOURCE_INDEX ] = //Chimera::Clock::Bus::APB2;
+    WWDG_SourceClock[ WWDG1_RESOURCE_INDEX ] = Chimera::Clock::Bus::APB1;
 #endif
   };
 

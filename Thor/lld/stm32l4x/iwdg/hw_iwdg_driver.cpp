@@ -178,7 +178,7 @@ namespace Thor::LLD::Watchdog
     size_t base_period_ms = static_cast<size_t>( 1000.0f / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
     size_t actual_period_ms = base_period_ms * prescaler;
 
-    return actual_period_ms * ( IWDG::PERIPH_MAX_COUNT - IWDG::PERIPH_MIN_COUNT );
+    return actual_period_ms * ( IWDG::COUNTER_MAX - IWDG::COUNTER_MIN );
   }
 
 
@@ -187,7 +187,7 @@ namespace Thor::LLD::Watchdog
     size_t base_period_ms = static_cast<size_t>( 1000.0f / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
     size_t actual_period_ms = base_period_ms * prescaler;
 
-    return actual_period_ms * ( IWDG::PERIPH_MIN_COUNT + 1 );
+    return actual_period_ms * ( IWDG::COUNTER_MIN + 1 );
   }
 
 
@@ -199,7 +199,7 @@ namespace Thor::LLD::Watchdog
     size_t base_period_ms = static_cast<size_t>( 1000.0f / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
     size_t actual_period_ms = base_period_ms * prescaler;
 
-    return actual_period_ms * ( reloadVal - IWDG::PERIPH_MIN_COUNT );
+    return actual_period_ms * ( reloadVal - IWDG::COUNTER_MIN );
   }
 
 }    // namespace Thor::LLD::Watchdog

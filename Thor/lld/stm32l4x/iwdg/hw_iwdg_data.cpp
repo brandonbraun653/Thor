@@ -12,23 +12,27 @@
 #include <limits>
 
 /* Chimera Includes */
-#include <Chimera/iwdg>
+#include <Chimera/watchdog>
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/interface/iwdg/iwdg_prv_data.hpp>
+#include <Thor/lld/interface/watchdog/watchdog_prv_data.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_IWDG )
 
-namespace Thor::LLD::IWDG
+namespace Thor::LLD::Watchdog
 {
   /*-------------------------------------------------------------------------------
   Peripheral Memory Maps
   -------------------------------------------------------------------------------*/
 #if defined( STM32_IWDG1_PERIPH_AVAILABLE )
-  RegisterMap *IWDG1_PERIPH = reinterpret_cast<RegisterMap *>( IWDG1_BASE_ADDR );
+  IRegisterMap *IWDG1_PERIPH = reinterpret_cast<IRegisterMap *>( IWDG1_BASE_ADDR );
 #endif
+}    // namespace Thor::LLD::Watchdog
 
+
+namespace Thor::LLD::IWDG
+{
   /*-------------------------------------------------------------------------------
   Configuration Maps
   -------------------------------------------------------------------------------*/
@@ -42,12 +46,7 @@ namespace Thor::LLD::IWDG
   -------------------------------------------------------------------------------*/
   namespace Resource
   { /* clang-format off */
-    LLD_CONST IRQn_Type IRQSignals[ NUM_IWDG_PERIPHS ] = {
-#if defined( STM32_IWDG1_PERIPH_AVAILABLE )
-      IWDG1_IRQn,
-#endif
-    };
   } /* clang-format on */
-}  // namespace Thor::LLD::IWDG
+}    // namespace Thor::LLD::IWDG
 
 #endif /* TARGET_STM32L4 && THOR_LLD_IWDG */
