@@ -293,11 +293,13 @@ namespace Thor::ADC
 
   Chimera::Status_t Driver::groupConfig( const Chimera::ADC::GroupInit &cfg )
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::groupStartSample( const Chimera::ADC::SampleGroup grp )
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
@@ -323,12 +325,15 @@ namespace Thor::ADC
     /*-------------------------------------------------
     Store the data into the user's buffer
     -------------------------------------------------*/
+
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::groupSetDMABuffer( const Chimera::ADC::SampleGroup grp, Chimera::ADC::Sample_t *const out,
                                                const size_t len )
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 

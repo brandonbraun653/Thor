@@ -16,6 +16,8 @@
 #include <Thor/lld/interface/startup/mock/startup_mock.hpp>
 #elif defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/startup/startup_stm32f4xxxx.hpp>
+#elif defined( TARGET_STM32L4 )
+#include <Thor/lld/stm32l4x/startup/hw_startup_stm32l4xxxx.hpp>
 #else
 #pragma message( "startup_detail.hpp: Unknown target for LLD" )
 #endif

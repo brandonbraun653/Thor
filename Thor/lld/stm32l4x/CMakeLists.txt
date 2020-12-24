@@ -11,6 +11,7 @@ add_subdirectory("exti")
 add_subdirectory("flash")
 add_subdirectory("gpio")
 add_subdirectory("interrupt")
+add_subdirectory("iwdg")
 add_subdirectory("power")
 add_subdirectory("rcc")
 add_subdirectory("spi")
@@ -19,6 +20,7 @@ add_subdirectory("system")
 add_subdirectory("timer")
 add_subdirectory("usart")
 add_subdirectory("usb")
+add_subdirectory("wwdg")
 
 # ====================================================
 # All LLD Drivers
@@ -32,6 +34,7 @@ set(all_libraries
   thor_lld_stm32l4_flash
   thor_lld_stm32l4_gpio
   thor_lld_stm32l4_interrupt
+  thor_lld_stm32l4_iwdg
   thor_lld_stm32l4_power
   thor_lld_stm32l4_rcc
   thor_lld_stm32l4_spi
@@ -40,6 +43,7 @@ set(all_libraries
   thor_lld_stm32l4_timer
   thor_lld_stm32l4_usart
   thor_lld_stm32l4_usb
+  thor_lld_stm32l4_wwdg
 )
 
 # ====================================================

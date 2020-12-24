@@ -21,6 +21,7 @@
 #include <Chimera/watchdog>
 
 /* Thor Includes */
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/watchdog/watchdog_types.hpp>
 
 namespace Thor::LLD::Watchdog
@@ -106,14 +107,15 @@ namespace Thor::LLD::Watchdog
    *
    *  @param[in]  ms            Desired watchdog timeout in milliseconds
    *  @param[in]  clock         Frequency of the clock driving the watchdog in Hz
+   *  @param[in]  minCount      Min value the watchdog will count to (usually the value when a reset is issued)
    *  @param[in]  maxCount      Max value the watchdog can count to
    *  @param[in]  actVal        Array of decimal values that are available prescale options
    *  @param[in]  regVal        Array of register settings corresponding to values in "actVal"
    *  @param[in]  len           Number of elements in actVal & regVal
    *  @return uint8_t           Index corresponding to the best prescaler selection in regVal
    */
-  uint8_t calculatePrescaler( const size_t ms, const size_t clock, const size_t maxCount, const uint32_t *const actVal,
-                              const Reg32_t *const regVal, const size_t len );
+  uint8_t calculatePrescaler( const size_t ms, const size_t clock, const size_t minCount, const size_t maxCount,
+                              const uint32_t *const actVal, const Reg32_t *const regVal, const size_t len );
 
   /**
    *  Calculates the best reload register setting given the desired timeout
@@ -181,7 +183,7 @@ namespace Thor::LLD::Watchdog
     virtual void reload() = 0;
 
     /**
-     *  Calculates the maximum timeout (mS) that can be achieved with the
+     *  Calculates the maximum timeout (us) that can be achieved with the
      *  given prescaler value.
      *
      *  @param[in]  prescaler     The watchdog clock prescaler (register value)
@@ -190,7 +192,7 @@ namespace Thor::LLD::Watchdog
     virtual size_t getMaxTimeout( const Reg32_t prescaler ) = 0;
 
     /**
-     *  Calculates the minimum timeout (mS) that can be achieved with the
+     *  Calculates the minimum timeout (us) that can be achieved with the
      *  given prescaler value.
      *
      *  @param[in]  prescaler     The watchdog clock prescaler (register value)
@@ -199,7 +201,7 @@ namespace Thor::LLD::Watchdog
     virtual size_t getMinTimeout( const Reg32_t prescaler ) = 0;
 
     /**
-     *  Gets the currently configured timeout (mS)
+     *  Gets the currently configured timeout (us)
      *
      *  @return size_t
      */

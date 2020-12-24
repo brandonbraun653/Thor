@@ -44,6 +44,18 @@ static constexpr size_t NUM_WDRIVERS = WLLD::NUM_WWDG_PERIPHS;
 
 namespace Thor::Watchdog
 {
+#if defined( THOR_HLD_IWDG ) || defined( THOR_HLD_WWDG )
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
+  Chimera::Status_t reset()
+  {
+    return Chimera::Status::NOT_SUPPORTED;
+  }
+
+#endif /* THOR_HLD_IWDG || THOR_HLD_WWDG */
+
+
 #if defined( THOR_HLD_WWDG )
   static size_t s_wwdg_driver_initialized;                     /**< Tracks the module level initialization state */
   static ::HLD::WindowDriver hld_wdriver[ NUM_WDRIVERS ];      /**< Driver objects */
@@ -150,6 +162,7 @@ namespace Thor::Watchdog
     auto idx = Thor::LLD::Watchdog::calculatePrescaler(
       timeout_mS,
       wwdgClockFreq,
+      WLLD::COUNTER_MIN,
       WLLD::COUNTER_MAX,
       WLLD::DecimalPrescalers,
       WLLD::RegisterPrescalers,
@@ -330,9 +343,10 @@ namespace Thor::Watchdog
     Calculate the operating parameters
     -------------------------------------------------*/
     /* clang-format off */
-    auto idx = Thor::LLD::Watchdog::calculatePrescaler(
+    uint32_t idx = Thor::LLD::Watchdog::calculatePrescaler(
       timeout_mS,
       ILLD::PERIPH_CLOCK_FREQ_HZ,
+      ILLD::COUNTER_MIN,
       ILLD::COUNTER_MAX,
       ILLD::DecimalPrescalers,
       ILLD::RegisterPrescalers,
@@ -340,6 +354,7 @@ namespace Thor::Watchdog
     );
 
     uint32_t prescalerRegVal = ILLD::RegisterPrescalers[ idx ];
+
     uint32_t reloadRegVal = Thor::LLD::Watchdog::calculateReload(
       timeout_mS,
       ILLD::PERIPH_CLOCK_FREQ_HZ,
@@ -352,8 +367,8 @@ namespace Thor::Watchdog
     /*-------------------------------------------------
     Ensure the requested timeout can be achieved
     -------------------------------------------------*/
-    if ( !( timeout_mS >= hwDriver->getMinTimeout( prescalerRegVal ) ) ||
-         !( timeout_mS <= hwDriver->getMaxTimeout( prescalerRegVal ) ) )
+    if ( !( ( 1000 * timeout_mS ) >= hwDriver->getMinTimeout( ILLD::DecimalPrescalers[ idx ] ) ) ||
+         !( ( 1000 * timeout_mS ) <= hwDriver->getMaxTimeout( ILLD::DecimalPrescalers[ idx ] ) ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }

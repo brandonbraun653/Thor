@@ -45,4 +45,10 @@ add_subdirectory("Thor/lld")
 add_library(thor_inc INTERFACE)
 target_include_directories(thor_inc INTERFACE ".")
 target_compile_definitions(thor_inc INTERFACE BOOST_NO_EXCEPTIONS)
+target_link_libraries(thor_inc INTERFACE thor_project_config)
 export(TARGETS thor_inc FILE "${PROJECT_BINARY_DIR}/Thor/thor-inc.cmake")
+
+# User hook for injecting project specific definitions/include paths/etc
+add_library(thor_project_config INTERFACE)
+export(TARGETS thor_project_config FILE "${PROJECT_BINARY_DIR}/Thor/thor_project_config.cmake")
+

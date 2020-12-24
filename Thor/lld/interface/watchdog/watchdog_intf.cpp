@@ -188,13 +188,13 @@ namespace Thor::LLD::Watchdog
   }
 
 
-  uint8_t calculatePrescaler( const size_t ms, const size_t clock, const size_t maxCount, const uint32_t *const actVal,
-                              const Reg32_t *const regVal, const size_t len )
+  uint8_t calculatePrescaler( const size_t ms, const size_t clock, const size_t minCount, const size_t maxCount,
+                              const uint32_t *const actVal, const Reg32_t *const regVal, const size_t len )
   {
     /*-------------------------------------------------
     Input Protection
     -------------------------------------------------*/
-    if( !ms || !clock || !maxCount || !actVal || !regVal || !len )
+    if ( !ms || !clock || !maxCount || !actVal || !regVal || !len )
     {
       return 0;
     }
@@ -202,10 +202,8 @@ namespace Thor::LLD::Watchdog
     /*------------------------------------------------
     Initialize algorithm variables
     ------------------------------------------------*/
-    size_t clockPeriod_mS = 0;
-    size_t maxTimeout_mS  = 0;
-    size_t minTimeout_mS  = 0;
-    uint8_t bestIdx       = 0;
+    float rawClockPeriod_ms = ( 1000.0f / static_cast<float>( clock ) );
+    uint8_t bestIdx         = 0;
 
     /*------------------------------------------------
     The desired prescaler is found when the max watchdog
@@ -213,11 +211,11 @@ namespace Thor::LLD::Watchdog
     ------------------------------------------------*/
     for ( uint8_t i = 0; i < len; i++ )
     {
-      clockPeriod_mS = static_cast<size_t>( ( 1000.0f / static_cast<float>( clock ) ) * static_cast<float>( actVal[ i ] ) );
-      maxTimeout_mS  = clockPeriod_mS * maxCount;
-      minTimeout_mS  = ( clockPeriod_mS * maxCount ) + 1;
+      float prescaledClkPeriod_ms = rawClockPeriod_ms * static_cast<float>( actVal[ i ] );
+      float maxTimeout_mS         = prescaledClkPeriod_ms * static_cast<float>( maxCount );
+      float minTimeout_mS         = ( prescaledClkPeriod_ms * static_cast<float>( minCount + 1 ) );
 
-      if ( ( minTimeout_mS < ms ) || ( ms < maxTimeout_mS ) )
+      if ( ( minTimeout_mS < static_cast<float>( ms )  ) && ( static_cast<float>( ms ) < maxTimeout_mS ) )
       {
         bestIdx = i;
         break;
@@ -234,7 +232,7 @@ namespace Thor::LLD::Watchdog
     /*-------------------------------------------------
     Input Protection
     -------------------------------------------------*/
-    if( !ms || !clock || !prescaler || ( minCount >= maxCount ) )
+    if ( !ms || !clock || !prescaler || ( minCount >= maxCount ) )
     {
       return 0;
     }

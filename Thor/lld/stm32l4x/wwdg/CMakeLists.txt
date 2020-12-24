@@ -7,7 +7,6 @@ set(LINK_LIBS
   aurora_inc        # Aurora public headers
   Boost::boost      # Boost headers
   lld_common_inc    # 3rd Party headers
-  thor_lld_stm32l4x_build_options
 )
 
 # ====================================================
@@ -32,3 +31,5 @@ function(build_library variant)
   target_link_libraries(${CORE} PRIVATE ${LINK_LIBS} prj_device_target prj_build_target${variant})
   export(TARGETS ${CORE} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${CORE}.cmake")
 endfunction()
+
+add_target_variants(build_library)

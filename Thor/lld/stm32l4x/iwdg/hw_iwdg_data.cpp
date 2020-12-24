@@ -26,7 +26,7 @@ namespace Thor::LLD::Watchdog
   Peripheral Memory Maps
   -------------------------------------------------------------------------------*/
 #if defined( STM32_IWDG1_PERIPH_AVAILABLE )
-  IRegisterMap *IWDG1_PERIPH = reinterpret_cast<IRegisterMap *>( IWDG1_BASE_ADDR );
+  IRegisterMap *IWDG1_PERIPH = reinterpret_cast<IRegisterMap *>( IWDG::IWDG1_BASE_ADDR );
 #endif
 }    // namespace Thor::LLD::Watchdog
 

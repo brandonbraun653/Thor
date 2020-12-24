@@ -98,6 +98,12 @@ namespace Thor::LLD::Watchdog
   {
     auto rcc = Thor::LLD::RCC::getCoreClock();
     rcc->enableClock( Chimera::Clock::Bus::LSI );
+
+    /*-------------------------------------------------
+    The watchdog timer has to be started before any
+    register access works.
+    -------------------------------------------------*/
+    this->start();
   }
 
 
@@ -175,19 +181,21 @@ namespace Thor::LLD::Watchdog
 
   size_t IndependentDriver::getMaxTimeout( const Reg32_t prescaler )
   {
-    size_t base_period_ms = static_cast<size_t>( 1000.0f / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
-    size_t actual_period_ms = base_period_ms * prescaler;
+    size_t base_period_us = static_cast<size_t>( ( 1000.0f * 1000.0f ) / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
+    size_t actual_period_us = base_period_us * prescaler;
+    size_t timeout = actual_period_us * ( IWDG::COUNTER_MAX - IWDG::COUNTER_MIN );
 
-    return actual_period_ms * ( IWDG::COUNTER_MAX - IWDG::COUNTER_MIN );
+    return timeout;
   }
 
 
   size_t IndependentDriver::getMinTimeout( const Reg32_t prescaler )
   {
-    size_t base_period_ms = static_cast<size_t>( 1000.0f / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
-    size_t actual_period_ms = base_period_ms * prescaler;
+    size_t base_period_us = static_cast<size_t>( ( 1000.0f * 1000.0f ) / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
+    size_t actual_period_us = base_period_us * prescaler;
+    size_t timeout = actual_period_us * ( IWDG::COUNTER_MIN + 1 );
 
-    return actual_period_ms * ( IWDG::COUNTER_MIN + 1 );
+    return timeout;
   }
 
 
@@ -196,10 +204,11 @@ namespace Thor::LLD::Watchdog
     size_t prescaler = IWDG::PR::get( mPeriph ) >> IWDG::PR_PR_Pos;
     size_t reloadVal = IWDG::RL::get( mPeriph ) >> IWDG::RLR_RL_Pos;
 
-    size_t base_period_ms = static_cast<size_t>( 1000.0f / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
-    size_t actual_period_ms = base_period_ms * prescaler;
+    size_t base_period_us = static_cast<size_t>( ( 1000.0f * 1000.0f ) / static_cast<float>( IWDG::PERIPH_CLOCK_FREQ_HZ ) );
+    size_t actual_period_us = base_period_us * prescaler;
+    size_t timeout = actual_period_us * ( reloadVal - IWDG::COUNTER_MIN );
 
-    return actual_period_ms * ( reloadVal - IWDG::COUNTER_MIN );
+    return timeout;
   }
 
 }    // namespace Thor::LLD::Watchdog

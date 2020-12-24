@@ -36,7 +36,7 @@ namespace Thor::LLD::Watchdog
   /*-------------------------------------------------------------------------------
   Variables
   -------------------------------------------------------------------------------*/
-  static WindowDriver s_wwdg_drivers[ NUM_WWDG_PERIPHS ];
+  static WindowDriver s_wwdg_drivers[ WWDG::NUM_WWDG_PERIPHS ];
 
   /*-------------------------------------------------------------------------------
   Private Functions
@@ -156,6 +156,12 @@ namespace Thor::LLD::Watchdog
     auto rcc = Thor::LLD::RCC::getPeripheralClock();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_WWDG, mResourceIndex );
     rcc->reset( Chimera::Peripheral::Type::PERIPH_WWDG, mResourceIndex );
+
+    /*-------------------------------------------------
+    The watchdog timer has to be started before any
+    register access works.
+    -------------------------------------------------*/
+    this->start();
   }
 
 
