@@ -259,7 +259,27 @@ namespace Thor::LLD::SPI
     /* Configure CR2 */
     SSOE::set( mPeriph, CR2_SSOE );
 
-    /* Finally enable the peripheral */
+    /*-------------------------------------------------
+    Adjust the FIFO RX threshold based on sizing. If
+    SZ == 8Bit, allow RXNE event on 1/4 FIFO lvl, else
+    allow RXNE event on 1/2 FIFO lvl. FIFO has 4 lvls.
+
+    See RM 40.4.9
+    -------------------------------------------------*/
+    if( periphConfig->HWInit.dataSize == Chimera::SPI::DataSize::SZ_8BIT )
+    {
+      /* FIFO must hit 1/4 level before RXNE event */
+      FRXTH::set( mPeriph, CR2_FRXTH );
+    }
+    else
+    {
+      /* FIFO must hit 1/2 level before RXNE event */
+      FRXTH::clear( mPeriph, CR2_FRXTH );
+    }
+
+    /*-------------------------------------------------
+    Enable the SPI peripheral
+    -------------------------------------------------*/
     SPE::set( mPeriph, CR1_SPE );
 
     return Chimera::Status::OK;
@@ -338,7 +358,9 @@ namespace Thor::LLD::SPI
       ------------------------------------------------*/
 #if defined( EMBEDDED )
       while ( !TXE::get( mPeriph ) && BSY::get( mPeriph ) )
+      {
         continue;
+      }
 #endif
 
       txData = 0u;
@@ -378,7 +400,14 @@ namespace Thor::LLD::SPI
       {
 #if defined( EMBEDDED )
         while ( !RXNE::get( mPeriph ) )
+        {
+          /*-------------------------------------------------
+          You can get stuck here in the debugger if single
+          stepping and register auto-refresh is occurring.
+          That will read the DR and clear RXNE.
+          -------------------------------------------------*/
           continue;
+        }
 #endif
         rxData = mPeriph->DR;
 

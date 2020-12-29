@@ -381,12 +381,21 @@ namespace Thor::SPI
     switch ( config.HWInit.txfrMode )
     {
       case Chimera::SPI::TransferMode::BLOCKING:
+        /*-------------------------------------------------
+        Perform the transfer and optionaly disengage CS pin
+        -------------------------------------------------*/
         result = driver->transfer( txBuffer, rxBuffer, length );
 
         if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
         {
           setChipSelect( Chimera::GPIO::State::HIGH );
         }
+
+        /*-------------------------------------------------
+        Transfer is complete at this point. Awaken any
+        threads that are blocking on this signal.
+        -------------------------------------------------*/
+        awaitTransferComplete.release();
 
         return result;
         break;
