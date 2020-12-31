@@ -70,12 +70,12 @@ namespace Thor::ADC
     using namespace Chimera::Threading;
 
     constexpr auto index = LLD::ADC1_RESOURCE_INDEX;
-    ThreadMsg tskMsg     = ITC_NOP;
+    ThreadMsg tskMsg     = TSK_MSG_NOP;
 
     while ( 1 )
     {
       auto rcvd = this_thread::receiveTaskMsg( tskMsg, TIMEOUT_BLOCK );
-      if ( rcvd && ( tskMsg == ITC_ISR_HANDLER ) )
+      if ( rcvd && ( tskMsg == TSK_MSG_ISR_HANDLER ) )
       {
         hld_driver[ index ].postISRProcessing();
       }
