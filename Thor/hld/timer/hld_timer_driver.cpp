@@ -22,10 +22,9 @@
 #include <Thor/timer>
 #include <Thor/hld/common/types.hpp>
 #include <Thor/hld/timer/hld_timer_prv_driver.hpp>
+#include <Thor/lld/common/cortex-m4/system_time.hpp>
 #include <Thor/lld/interface/timer/timer_intf.hpp>
 #include <Thor/lld/interface/timer/timer_detail.hpp>
-
-
 
 
 namespace Thor::TIMER
@@ -69,11 +68,6 @@ namespace Thor::TIMER
     return Chimera::Status::OK;
   }
 
-  void incrementSystemTick()
-  {
-    Thor::LLD::TIMER::incrementSystemTick();
-  }
-
   size_t millis()
   {
     return Thor::LLD::TIMER::millis();
@@ -81,7 +75,7 @@ namespace Thor::TIMER
 
   size_t micros()
   {
-    return millis() * 1000;
+    return Thor::LLD::TIMER::micros();
   }
 
   void delayMilliseconds( const size_t ms )
@@ -93,6 +87,17 @@ namespace Thor::TIMER
   {
     Thor::LLD::TIMER::delayMicroseconds( us );
   }
+
+  void blockDelayMillis( const size_t ms )
+  {
+    Thor::LLD::TIMER::blockDelayMillis( ms );
+  }
+
+  void blockDelayMicros( const size_t us )
+  {
+    Thor::LLD::TIMER::blockDelayMicros( us );
+  }
+
 
   /*-------------------------------------------------------------------------------
   Driver Free Functions

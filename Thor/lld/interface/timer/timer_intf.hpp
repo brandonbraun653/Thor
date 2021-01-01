@@ -30,11 +30,10 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------------------------------------
   HLD->LLD Required Free Functions
   -------------------------------------------------------------------------------*/
-  void incrementSystemTick();
   size_t millis();
+  size_t micros();
   void delayMilliseconds( const size_t ms );
   void delayMicroseconds( const size_t us );
-
   void blockDelayMillis( const size_t ms );
   void blockDelayMicros( const size_t ms );
 
@@ -54,25 +53,25 @@ namespace Thor::LLD::TIMER
    */
   bool isChannelSupported( const size_t channel );
 
-  IAdvancedDriver_sPtr getAdvancedDriver( const Thor::HLD::RIndex channel );
+  // IAdvancedDriver_sPtr getAdvancedDriver( const Thor::HLD::RIndex channel );
 
-  IBasicDriver_sPtr getBasicDriver( const Thor::HLD::RIndex channel );
+  // IBasicDriver_sPtr getBasicDriver( const Thor::HLD::RIndex channel );
 
-  GeneralDriver_rPtr getGeneralDriver( const Thor::HLD::RIndex channel );
+  // GeneralDriver_rPtr getGeneralDriver( const Thor::HLD::RIndex channel );
 
-  ILowPowerDriver_sPtr getLowPowerDriver( const Thor::HLD::RIndex channel );
+  // ILowPowerDriver_sPtr getLowPowerDriver( const Thor::HLD::RIndex channel );
 
-  /**
-   *  Gets the peripheral description data associated with the
-   *  resource index.
-   *
-   *  @note This data is mapped to a resource index provided by the LLD implementation.
-   *        Do not use a HLD resource index to
-   *
-   *  @param[in]  lldIndex    The look up index (must be from LLD's perspective)
-   *  @return const DeviceDescription *
-   */
-  const DeviceDescription *getPeripheralDescriptor( const Thor::LLD::RIndex lldIndex );
+  // /**
+  //  *  Gets the peripheral description data associated with the
+  //  *  resource index.
+  //  *
+  //  *  @note This data is mapped to a resource index provided by the LLD implementation.
+  //  *        Do not use a HLD resource index to
+  //  *
+  //  *  @param[in]  lldIndex    The look up index (must be from LLD's perspective)
+  //  *  @return const DeviceDescription *
+  //  */
+  // const DeviceDescription *getPeripheralDescriptor( const Thor::LLD::RIndex lldIndex );
 
   /**
    *  Looks up a resource index based on a raw peripheral instance

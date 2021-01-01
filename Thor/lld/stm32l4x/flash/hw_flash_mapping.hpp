@@ -36,12 +36,6 @@ namespace Thor::LLD::FLASH
   Hardware Memory Mappings
   ------------------------------------------------*/
   extern PeriphRegisterList PeripheralList;
-  extern Thor::LLD::RIndexMap InstanceToResourceIndex;
-
-  /*------------------------------------------------
-  Mappings from Chimera Config Options->Register Values
-  ------------------------------------------------*/
-
   /*-------------------------------------------------
   Module Functions
   -------------------------------------------------*/

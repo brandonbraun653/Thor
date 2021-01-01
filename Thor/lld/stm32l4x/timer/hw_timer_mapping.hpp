@@ -46,13 +46,6 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------------------------------------
   Hardware Memory Mappings
   -------------------------------------------------------------------------------*/
-  extern RIndexMap InstanceToResourceIndex;
-  extern PTRIMapLLD PeripheralToLLDResourceIndex;
-  extern PTRIMapHLD PeripheralToHLDResourceIndex;
-
-  /**
-   *
-   */
   extern std::array<void *, NUM_TIMER_PERIPHS> LUT_PeripheralList;
 
   /*-------------------------------------------------------------------------------

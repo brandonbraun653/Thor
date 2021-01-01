@@ -22,6 +22,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/mapping/peripheral_mapping.hpp>
+#include <Thor/lld/common/cortex-m4/system_time.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_mapping.hpp>
@@ -829,7 +830,7 @@ namespace Thor::LLD::RCC
     if ( configureOscillators( sOscillatorSettings ) && configureClocks( sDerivedClockSettings ) )
     {
       setCoreClockSource( Chimera::Clock::Bus::PLLCLK );
-      SystemCoreClock = getSysClockFreq();
+      CortexM4::Clock::updateCoreClockCache( getSysClockFreq() );
 
       return Chimera::Status::OK;
     }
@@ -861,28 +862,28 @@ namespace Thor::LLD::RCC
         cfgOption = Config::SystemClockSelect::SYSCLK_HSE;
         expStatus = Config::SystemClockStatus::SYSCLK_HSE;
 
-        SystemCoreClock = getHSEFreq();
+        CortexM4::Clock::updateCoreClockCache( getHSEFreq() );
         break;
 
       case Chimera::Clock::Bus::MSI:
         cfgOption = Config::SystemClockSelect::SYSCLK_MSI;
         expStatus = Config::SystemClockStatus::SYSCLK_MSI;
 
-        SystemCoreClock = getMSIFreq();
+        CortexM4::Clock::updateCoreClockCache( getMSIFreq() );
         break;
 
       case Chimera::Clock::Bus::HSI16:
         cfgOption = Config::SystemClockSelect::SYSCLK_HSI16;
         expStatus = Config::SystemClockStatus::SYSCLK_HSI16;
 
-        SystemCoreClock = getHSIFreq();
+        CortexM4::Clock::updateCoreClockCache( getHSIFreq() );
         break;
 
       case Chimera::Clock::Bus::PLLCLK:
         cfgOption = Config::SystemClockSelect::SYSCLK_PLL;
         expStatus = Config::SystemClockStatus::SYSCLK_PLL;
 
-        SystemCoreClock = getPLLCLKFreq( PLLCFGR_PLLR );
+        CortexM4::Clock::updateCoreClockCache( getPLLCLKFreq( PLLCFGR_PLLR ) );
         break;
 
       default:

@@ -30,13 +30,6 @@ namespace Thor::LLD::FLASH
   -------------------------------------------------*/
   RegisterMap *FLASH_PERIPH = reinterpret_cast<RegisterMap *>( FLASH_BASE_ADDR );
 
-  /*-------------------------------------------------
-  Lookup Tables Defintions
-  -------------------------------------------------*/
-   Thor::LLD::RIndexMap InstanceToResourceIndex{
-     { reinterpret_cast<std::uintptr_t>( FLASH_PERIPH ), FLASH_RESOURCE_INDEX },
-   };
-
 #elif defined( _SIM )
   /*-------------------------------------------------
   Memory Mapped Structs to Virtual Peripherals

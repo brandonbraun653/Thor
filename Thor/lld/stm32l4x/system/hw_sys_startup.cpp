@@ -18,6 +18,7 @@
 
 /* ARM Includes: Must come last so the Thor Includes can configure various macros */
 #include <Thor/lld/common/cmsis/core/include/core_cm4.h>
+#include <Thor/lld/common/cortex-m4/system_time.hpp>
 
 
 #if defined( EMBEDDED ) && defined( THOR_LLD_RCC )
@@ -25,6 +26,21 @@
 void SystemInit()
 {
   using namespace Thor::LLD::RCC;
+
+  /*------------------------------------------------
+  Default initialize the System Control Block
+  ------------------------------------------------*/
+#if ( __FPU_PRESENT == 1 ) && ( __FPU_USED == 1 )
+  SCB->CPACR |= ( ( 3UL << 10 * 2 ) | ( 3UL << 11 * 2 ) ); /* set CP10 and CP11 Full Access */
+#endif
+
+  /* Configure the Vector Table location add offset address */
+#ifdef VECT_TAB_SRAM
+  SCB->VTOR = SRAM_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal SRAM */
+#else
+  SCB->VTOR = Thor::System::MemoryMap::FLASH_BASE_ADDR |
+              Thor::System::MemoryMap::VECT_TAB_OFFSET; /* Vector Table Relocation in Internal FLASH */
+#endif
 
   /*------------------------------------------------
   Clear any other clock configuration data
@@ -52,22 +68,7 @@ void SystemInit()
   Update the external clock variable so FreeRTOS (if used)
   can know the startup frequency.
   ------------------------------------------------*/
-  SystemCoreClock = rcc->getClockFrequency( Chimera::Clock::Bus::SYSCLK );
-
-  /*------------------------------------------------
-  Default initialize the System Control Block
-  ------------------------------------------------*/
-#if ( __FPU_PRESENT == 1 ) && ( __FPU_USED == 1 )
-  SCB->CPACR |= ( ( 3UL << 10 * 2 ) | ( 3UL << 11 * 2 ) ); /* set CP10 and CP11 Full Access */
-#endif
-
-  /* Configure the Vector Table location add offset address */
-#ifdef VECT_TAB_SRAM
-  SCB->VTOR = SRAM_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal SRAM */
-#else
-  SCB->VTOR = Thor::System::MemoryMap::FLASH_BASE_ADDR |
-              Thor::System::MemoryMap::VECT_TAB_OFFSET; /* Vector Table Relocation in Internal FLASH */
-#endif
+  CortexM4::Clock::updateCoreClockCache( rcc->getClockFrequency( Chimera::Clock::Bus::SYSCLK ) );
 
   /*-------------------------------------------------
   Enable the system config register clock

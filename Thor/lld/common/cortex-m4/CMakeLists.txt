@@ -16,6 +16,7 @@ function(build_library variant)
   add_library(${CMN} STATIC
     cm4_interrupts.cpp
     cm4_exceptions.cpp
+    cm4_system_time.cpp
     cm4_utilities.cpp
   )
   target_link_libraries(${CMN} PRIVATE ${LINK_LIBS} ${VARIANT} prj_device_target prj_build_target${variant})

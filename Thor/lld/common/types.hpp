@@ -19,7 +19,7 @@
 #include <Chimera/container>
 
 /* Type Safe Includes */
-#include <type_safe/strong_typedef.hpp>
+//#include <type_safe/strong_typedef.hpp>
 
 namespace Thor::LLD
 {
@@ -27,45 +27,12 @@ namespace Thor::LLD
   Aliases
   -------------------------------------------------------------------------------*/
   using RIndex_t = uint8_t;
-  using RIndexMap  = Chimera::Container::LightFlatMap<std::uintptr_t, RIndex_t>;
 
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
   static constexpr uint8_t INVALID_RESOURCE_INDEX = std::numeric_limits<uint8_t>::max();
 
-  /*-------------------------------------------------------------------------------
-  Structures
-  -------------------------------------------------------------------------------*/
-  /**
-   *  Index type used to access various low level driver resources.
-   */
-  struct RIndex : type_safe::strong_typedef<RIndex, RIndex_t>,
-                  type_safe::strong_typedef_op::equality_comparison<RIndex>,
-                  type_safe::strong_typedef_op::relational_comparison<RIndex>
-  {
-    using strong_typedef::strong_typedef;
-
-    /**
-     *  Gets the underlying value back in the orginal type
-     *
-     *  @return size_t
-     */
-    constexpr RIndex_t value() const
-    {
-      return type_safe::get( *this );
-    }
-
-    /**
-     *  Implicit conversion when assinging to a variable of the underlying type
-     *
-     *  @return size_t
-     */
-    constexpr operator RIndex_t() const
-    {
-      return value();
-    }
-  };
 }    // namespace Thor::LLD
 
 #endif /* !THOR_LLD_COMMON_TYPES_HPP */

@@ -16,6 +16,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/timer/timer_intf.hpp>
+#include <Thor/lld/common/cortex-m4/system_time.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_driver.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_mapping.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_prj.hpp>
@@ -29,17 +30,17 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------------------------------------
   Chimera Required Free Functions
   -------------------------------------------------------------------------------*/
-  static size_t systemTick = 0u;
-
-  void incrementSystemTick()
-  {
-    systemTick++;
-  }
-
   size_t millis()
   {
-    return systemTick;
+    return CortexM4::SYSTick::getMilliseconds();
   }
+
+
+  size_t micros()
+  {
+    return CortexM4::SYSTick::getMicroseconds();
+  }
+
 
   void delayMilliseconds( const size_t ms )
   {
@@ -53,7 +54,7 @@ namespace Thor::LLD::TIMER
   void delayMicroseconds( const size_t us )
   {
 #if defined( USING_FREERTOS ) || defined( USING_FREERTOS_THREADS )
-    vTaskDelay( pdMS_TO_TICKS( us * 1000 ) );
+    vTaskDelay( pdMS_TO_TICKS( us / 1000 ) );
 #else
 #pragma message( "delayMicroseconds() has no implementation" )
 #endif
@@ -61,49 +62,26 @@ namespace Thor::LLD::TIMER
 
   void blockDelayMillis( const size_t ms )
   {
-    /*-------------------------------------------------
-    Don't go over a tick value that will cause max_cnt
-    to underflow.
-    -------------------------------------------------*/
-    constexpr size_t tick_offset = 500;
-
-    auto rcc      = RCC::getCoreClock();
-    auto coreFreq = rcc->getClockFrequency( Chimera::Clock::Bus::SYSCLK );
-
-    /*-------------------------------------------------
-    Figure out how much time will pass for each tick
-    -------------------------------------------------*/
-    float clock_ns = ( 1.0f / static_cast<float>( coreFreq ) ) * 1000000000.0f;
-    float delay_ns = static_cast<float>( ms ) * 1000000.0f;
-
-    /*-------------------------------------------------
-    Divide by 3 to account for while loop below, which
-    should compile down into three instructions:
-      1. Comparison between counter values
-      2. Increment operator
-      3. Branch to beginning of loop
-    -------------------------------------------------*/
-    size_t max_cnt = static_cast<size_t>( ( delay_ns / clock_ns ) / 3.0f ) - tick_offset;
-
-    /*-------------------------------------------------
-    Perform the actual blocking delay
-    -------------------------------------------------*/
-    volatile size_t cntr = 0;
-    while ( cntr < max_cnt )
+    size_t startTick = millis();
+    while( ( millis() - startTick ) < ms )
     {
-      cntr++;
+      asm volatile("nop");
     }
   }
 
 
-  void blockDelayMicros( const size_t ms )
+  void blockDelayMicros( const size_t us )
   {
-    while ( 1 )
+    size_t startTick = micros();
+    while( ( micros() - startTick ) < us )
     {
-      // Intentionally break cause this is alot harder to do in practice
-      // and I don't want to implement it yet, but when I need it, I want
-      // to make some noise.
+      asm volatile("nop");
     }
+
+#if defined( DEBUG )
+    volatile size_t actualDiff = micros() - startTick;
+    volatile int error         = static_cast<int>( us ) - static_cast<int>( actualDiff );
+#endif
   }
 
   /*-------------------------------------------------------------------------------

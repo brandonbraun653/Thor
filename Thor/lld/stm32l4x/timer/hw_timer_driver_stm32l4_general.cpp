@@ -21,6 +21,8 @@
 #include <Thor/lld/stm32l4x/timer/hw_timer_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
+#if defined( THOR_LLD_TIMER )
+
 namespace Thor::LLD::TIMER
 {
   static std::array<GeneralDriver_rPtr, NUM_GENERAL_PERIPHS> s_general_drivers;
@@ -324,3 +326,5 @@ namespace Thor::LLD::TIMER
   }
 
 }    // namespace Thor::LLD::TIMER
+
+#endif

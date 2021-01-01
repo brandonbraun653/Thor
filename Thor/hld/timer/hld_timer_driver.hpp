@@ -41,6 +41,8 @@ namespace Thor::TIMER
   size_t micros();
   void delayMilliseconds( const size_t val );
   void delayMicroseconds( const size_t val );
+  void blockDelayMillis( const size_t ms );
+  void blockDelayMicros( const size_t ms );
 
   /*-------------------------------------------------------------------------------
   High Level Driver Declaration

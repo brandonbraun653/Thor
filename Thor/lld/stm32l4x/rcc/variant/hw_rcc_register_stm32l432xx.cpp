@@ -21,11 +21,6 @@ namespace Thor::LLD::RCC
 {
 #if defined( EMBEDDED )
   RegisterMap * RCC1_PERIPH = reinterpret_cast<RegisterMap *>( RCC1_BASE_ADDR );
-
-  Thor::LLD::RIndexMap InstanceToResourceIndex{
-    { reinterpret_cast<std::uintptr_t>( RCC1_PERIPH ), RCC1_RESOURCE_INDEX }
-  };
-
 #elif defined( _SIM )
   RegisterMap * RCC1_PERIPH = nullptr;
 

@@ -48,7 +48,6 @@ namespace Thor::LLD::RCC
   Peripheral Memory Mapping
   ------------------------------------------------*/
   extern PeriphRegisterList PeripheralList;
-  extern Thor::LLD::RIndexMap InstanceToResourceIndex;
 
   /**
    *  Initializes memory associated with mapping

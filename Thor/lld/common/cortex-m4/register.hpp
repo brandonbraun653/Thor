@@ -35,6 +35,13 @@ Definitions from section 4.1 System Control Registers in the Cortex-M4 TRM
 #define SCB_REG_MMAR ( ( volatile uint32_t * )0xE000ED34 )  /**< MemManage Fault Address Register */
 #define SCB_REG_BFAR ( ( volatile uint32_t * )0xE000ED38 )  /**< Bus Fault Address Register */
 
+/*-------------------------------------------------------------------------------
+NVIC SYSTICK Register
+-------------------------------------------------------------------------------*/
+#define NVIC_REG_SYSTICK_CTRL ( ( volatile uint32_t * )( 0xE000E010 ) )
+#define NVIC_REG_SYSTICK_LOAD ( ( volatile uint32_t * )( 0xE000E014 ) )
+#define NVIC_REG_SYSTICK_VAL  ( ( volatile uint32_t * )( 0xE000E018 ) )
+
 
 /*-------------------------------------------------------------------------------
 Auxiliary Control Register Definitions

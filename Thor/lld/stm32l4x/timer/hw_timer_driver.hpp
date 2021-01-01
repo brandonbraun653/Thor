@@ -92,13 +92,13 @@ namespace Thor::LLD::TIMER
     void setCaptureComparePolarity( const Chimera::Timer::Channel channel, const Reg32_t val );
     void setCaptureCompareMatch( const Chimera::Timer::Channel channel, const Reg32_t val );
     void setCaptureCompareDirection( const Chimera::Timer::Channel channel, const Reg32_t val );
-    
+
     void setOutputCompareMode( const Chimera::Timer::Channel channel, const Reg32_t val );
     void setOutputComparePreload( const Chimera::Timer::Channel channel, const Reg32_t val );
 
   private:
     RegisterMap *mpPeriph;
-    RIndex mRIndex;
+    //RIndex mRIndex;
   };
 
 

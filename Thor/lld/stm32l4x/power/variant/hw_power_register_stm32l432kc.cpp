@@ -27,13 +27,6 @@ namespace Thor::LLD::PWR
   -------------------------------------------------*/
   RegisterMap *POWER1_PERIPH = reinterpret_cast<RegisterMap *>( POWER1_BASE_ADDR );
 
-  /*-------------------------------------------------
-  Lookup Tables Defintions
-  -------------------------------------------------*/
-  Thor::LLD::RIndexMap InstanceToResourceIndex{
-    { reinterpret_cast<std::uintptr_t>( POWER1_PERIPH ), POWER1_RESOURCE_INDEX }
-  };
-
 #elif defined( _SIM )
   /*-------------------------------------------------
   Memory Mapped Structs to Virtual Peripherals

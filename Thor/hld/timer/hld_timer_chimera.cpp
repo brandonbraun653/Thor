@@ -56,18 +56,30 @@ namespace Chimera::Timer
       Thor::TIMER::delayMicroseconds( val );
     }
 
+    void blockDelayMilliseconds( const size_t val )
+    {
+      Thor::TIMER::blockDelayMillis( val );
+    }
+
+    void blockDelayMicroseconds( const size_t val )
+    {
+      Thor::TIMER::blockDelayMicros( val );
+    }
+
     Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverConfig &registry )
     {
       /*-------------------------------------------------
       Some functionality will always be enabled
       -------------------------------------------------*/
-      registry.isSupported       = true;
-      registry.initialize        = initialize;
-      registry.reset             = reset;
-      registry.delayMicroseconds = delayMicroseconds;
-      registry.delayMilliseconds = delayMilliseconds;
-      registry.millis            = millis;
-      registry.micros            = micros;
+      registry.isSupported            = true;
+      registry.initialize             = initialize;
+      registry.reset                  = reset;
+      registry.delayMicroseconds      = delayMicroseconds;
+      registry.delayMilliseconds      = delayMilliseconds;
+      registry.millis                 = millis;
+      registry.micros                 = micros;
+      registry.blockDelayMicroseconds = blockDelayMicroseconds;
+      registry.blockDelayMilliseconds = blockDelayMilliseconds;
 
       return Chimera::Status::OK;
     }

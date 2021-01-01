@@ -25,13 +25,6 @@ extern "C"
 {
 #endif
 
-  /**
-   *  Variable that holds the current value of the SYSCLK configuration. This value
-   *  is updated anytime the clock configuration is updated. C-linkage is required
-   *  for integration with FreeRTOS and some CMSIS functionality.
-   */
-  extern uint32_t SystemCoreClock;
-
   extern const uint8_t AHBPrescTable[ 16 ];
   extern const uint8_t APBPrescTable[ 8 ];
   extern const uint32_t MSIRangeTable[ 12 ];

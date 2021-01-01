@@ -52,8 +52,8 @@ namespace Thor::LLD::TIMER
   using ITRIMap = Chimera::Container::LightFlatMap<std::uintptr_t, size_t>;
 
   // Peripheral To Resource Index Map
-  using PTRIMapLLD = Chimera::Container::LightFlatMap<Chimera::Timer::Peripheral, Thor::LLD::RIndex>;
-  using PTRIMapHLD = Chimera::Container::LightFlatMap<Chimera::Timer::Peripheral, Thor::HLD::RIndex>;
+  // using PTRIMapLLD = Chimera::Container::LightFlatMap<Chimera::Timer::Peripheral, Thor::LLD::RIndex>;
+  // using PTRIMapHLD = Chimera::Container::LightFlatMap<Chimera::Timer::Peripheral, Thor::HLD::RIndex>;
 
   using DirectionConverter = std::array<Reg32_t, static_cast<size_t>( Chimera::Timer::Direction::NUM_OPTIONS )>;
 

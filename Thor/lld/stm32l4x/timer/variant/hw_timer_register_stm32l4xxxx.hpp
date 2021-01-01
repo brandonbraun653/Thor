@@ -89,28 +89,28 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------
   Peripheral Resource Lookup Indices
   -------------------------------------------------*/
-  static constexpr Thor::HLD::RIndex ADVANCED_TIMER1_RESOURCE_INDEX = Thor::HLD::RIndex( 0u );;
+  // static constexpr Thor::HLD::RIndex ADVANCED_TIMER1_RESOURCE_INDEX = Thor::HLD::RIndex( 0u );;
 
-  static constexpr Thor::HLD::RIndex BASIC_TIMER1_RESOURCE_INDEX = Thor::HLD::RIndex( 0u );
-  static constexpr Thor::HLD::RIndex BASIC_TIMER2_RESOURCE_INDEX = Thor::HLD::RIndex( 1u );
+  // static constexpr Thor::HLD::RIndex BASIC_TIMER1_RESOURCE_INDEX = Thor::HLD::RIndex( 0u );
+  // static constexpr Thor::HLD::RIndex BASIC_TIMER2_RESOURCE_INDEX = Thor::HLD::RIndex( 1u );
 
-  static constexpr Thor::HLD::RIndex GENERAL_TIMER1_RESOURCE_INDEX = Thor::HLD::RIndex( 0u );
-  static constexpr Thor::HLD::RIndex GENERAL_TIMER2_RESOURCE_INDEX = Thor::HLD::RIndex( 1u );
-  static constexpr Thor::HLD::RIndex GENERAL_TIMER3_RESOURCE_INDEX = Thor::HLD::RIndex( 2u );
-  static constexpr Thor::HLD::RIndex GENERAL_TIMER4_RESOURCE_INDEX = Thor::HLD::RIndex( 3u );
+  // static constexpr Thor::HLD::RIndex GENERAL_TIMER1_RESOURCE_INDEX = Thor::HLD::RIndex( 0u );
+  // static constexpr Thor::HLD::RIndex GENERAL_TIMER2_RESOURCE_INDEX = Thor::HLD::RIndex( 1u );
+  // static constexpr Thor::HLD::RIndex GENERAL_TIMER3_RESOURCE_INDEX = Thor::HLD::RIndex( 2u );
+  // static constexpr Thor::HLD::RIndex GENERAL_TIMER4_RESOURCE_INDEX = Thor::HLD::RIndex( 3u );
 
-  static constexpr Thor::HLD::RIndex LOW_POWER_TIMER1_RESOURCE_INDEX = Thor::HLD::RIndex( 0u );
-  static constexpr Thor::HLD::RIndex LOW_POWER_TIMER2_RESOURCE_INDEX = Thor::HLD::RIndex( 1u );
+  // static constexpr Thor::HLD::RIndex LOW_POWER_TIMER1_RESOURCE_INDEX = Thor::HLD::RIndex( 0u );
+  // static constexpr Thor::HLD::RIndex LOW_POWER_TIMER2_RESOURCE_INDEX = Thor::HLD::RIndex( 1u );
 
-  static constexpr Thor::LLD::RIndex TIMER1_RESOURCE_INDEX   = Thor::LLD::RIndex( 0u );
-  static constexpr Thor::LLD::RIndex TIMER2_RESOURCE_INDEX   = Thor::LLD::RIndex( 1u );
-  static constexpr Thor::LLD::RIndex TIMER3_RESOURCE_INDEX   = Thor::LLD::RIndex( 2u );
-  static constexpr Thor::LLD::RIndex TIMER6_RESOURCE_INDEX   = Thor::LLD::RIndex( 3u );
-  static constexpr Thor::LLD::RIndex TIMER7_RESOURCE_INDEX   = Thor::LLD::RIndex( 4u );
-  static constexpr Thor::LLD::RIndex TIMER15_RESOURCE_INDEX  = Thor::LLD::RIndex( 5u );
-  static constexpr Thor::LLD::RIndex TIMER16_RESOURCE_INDEX  = Thor::LLD::RIndex( 6u );
-  static constexpr Thor::LLD::RIndex LPTIMER1_RESOURCE_INDEX = Thor::LLD::RIndex( 7u );
-  static constexpr Thor::LLD::RIndex LPTIMER2_RESOURCE_INDEX = Thor::LLD::RIndex( 8u );
+  // static constexpr Thor::LLD::RIndex TIMER1_RESOURCE_INDEX   = Thor::LLD::RIndex( 0u );
+  // static constexpr Thor::LLD::RIndex TIMER2_RESOURCE_INDEX   = Thor::LLD::RIndex( 1u );
+  // static constexpr Thor::LLD::RIndex TIMER3_RESOURCE_INDEX   = Thor::LLD::RIndex( 2u );
+  // static constexpr Thor::LLD::RIndex TIMER6_RESOURCE_INDEX   = Thor::LLD::RIndex( 3u );
+  // static constexpr Thor::LLD::RIndex TIMER7_RESOURCE_INDEX   = Thor::LLD::RIndex( 4u );
+  // static constexpr Thor::LLD::RIndex TIMER15_RESOURCE_INDEX  = Thor::LLD::RIndex( 5u );
+  // static constexpr Thor::LLD::RIndex TIMER16_RESOURCE_INDEX  = Thor::LLD::RIndex( 6u );
+  // static constexpr Thor::LLD::RIndex LPTIMER1_RESOURCE_INDEX = Thor::LLD::RIndex( 7u );
+  // static constexpr Thor::LLD::RIndex LPTIMER2_RESOURCE_INDEX = Thor::LLD::RIndex( 8u );
 
   /*-------------------------------------------------
   Lookup addresses
