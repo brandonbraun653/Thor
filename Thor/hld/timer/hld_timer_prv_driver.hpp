@@ -26,9 +26,9 @@ namespace Thor::TIMER
   // /*-------------------------------------------------
   // External memory used to hold instances of the HLDs
   // -------------------------------------------------*/
-  // extern std::array<AdvancedDriver_sPtr, Thor::LLD::TIMER::NUM_ADVANCED_PERIPHS> hld_advanced_drivers;
-  // extern std::array<BasicDriver_sPtr, Thor::LLD::TIMER::NUM_BASIC_PERIPHS> hld_basic_drivers;
-  // extern std::array<LowPowerDriver_sPtr, Thor::LLD::TIMER::NUM_LOW_POWER_PERIPHS> hld_low_power_drivers;
+  // extern std::array<AdvancedDriver_rPtr, Thor::LLD::TIMER::NUM_ADVANCED_PERIPHS> hld_advanced_drivers;
+  // extern std::array<BasicDriver_rPtr, Thor::LLD::TIMER::NUM_BASIC_PERIPHS> hld_basic_drivers;
+  // extern std::array<LowPowerDriver_rPtr, Thor::LLD::TIMER::NUM_LOW_POWER_PERIPHS> hld_low_power_drivers;
 
   // /*-------------------------------------------------
   // Private Free Functions
@@ -42,7 +42,7 @@ namespace Thor::TIMER
 
   // Chimera::Status_t initGeneralDriverModule();
   // Chimera::Status_t initGeneralDriverObject( const Thor::HLD::RIndex hld_index );
-  // GeneralDriver_sPtr getGeneralDriverObject( const Thor::HLD::RIndex hld_index );
+  // GeneralDriver_rPtr getGeneralDriverObject( const Thor::HLD::RIndex hld_index );
 
   // Chimera::Status_t initLowPowerDriverModule();
   // Chimera::Status_t initLowPowerDriverObject( const Thor::HLD::RIndex hld_index );
@@ -50,7 +50,7 @@ namespace Thor::TIMER
   // /*-------------------------------------------------
   // Helper functions for Chimera hooks
   // -------------------------------------------------*/
-  // Chimera::Timer::Driver_sPtr lookUpSharedPointer( const Chimera::Timer::Peripheral peripheral );
+  // Chimera::Timer::Driver_rPtr lookUpSharedPointer( const Chimera::Timer::Peripheral peripheral );
 
 }    // namespace Thor::TIMER
 

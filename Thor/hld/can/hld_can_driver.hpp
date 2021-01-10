@@ -32,7 +32,6 @@ namespace Thor::CAN
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
   Driver_rPtr getDriver( const Chimera::CAN::Channel channel );
-  Driver_sPtr getDriverShared( const Chimera::CAN::Channel channel );
 
   /*-------------------------------------------------------------------------------
   Classes

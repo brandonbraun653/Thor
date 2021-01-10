@@ -50,7 +50,7 @@ namespace Thor::LLD::GPIO
    *
    *  @param[in]  port        The GPIO port to grab
    *  @param[in]  pin         Which pin on the given port
-   *  @return IDriver_sPtr    Instance of the GPIO driver for the requested channel
+   *  @return IDriver_rPtr    Instance of the GPIO driver for the requested channel
    */
   Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 

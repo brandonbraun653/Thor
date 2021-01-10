@@ -27,7 +27,6 @@ namespace Thor::USB
   Aliases
   -------------------------------------------------------------------------------*/
   using Driver_rPtr = Driver *;
-  using Driver_sPtr = std::shared_ptr<Driver>;
 }    // namespace Thor::USB
 
 #endif /* !THOR_HLD_USB_TYPES_HPP */

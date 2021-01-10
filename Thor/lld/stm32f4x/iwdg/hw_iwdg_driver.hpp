@@ -63,7 +63,7 @@ namespace Thor::LLD::IWDG
     size_t resourceIndex;
   };
 
-  using Driver_sPtr = std::shared_ptr<Driver>;
+  using Driver_rPtr = Driver *;
   using Driver_uPtr = std::unique_ptr<Driver>;
 
 }    // namespace Thor::LLD::IWDG

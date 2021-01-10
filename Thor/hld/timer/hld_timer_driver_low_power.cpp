@@ -36,8 +36,8 @@ namespace Thor::TIMER
   /*-------------------------------------------------------------------------------
   Driver Memory
   -------------------------------------------------------------------------------*/
-  std::array<LowPowerDriver_sPtr, NUM_PERIPHS> hld_low_power_drivers;
-  static std::array<LLD::ILowPowerDriver_sPtr, NUM_PERIPHS> s_lld_low_power_drivers;
+  std::array<LowPowerDriver_rPtr, NUM_PERIPHS> hld_low_power_drivers;
+  static std::array<LLD::ILowPowerDriver_rPtr, NUM_PERIPHS> s_lld_low_power_drivers;
 
   /*-------------------------------------------------------------------------------
   Free Functions
@@ -69,7 +69,7 @@ namespace Thor::TIMER
     return Chimera::Status::OK;
   }
 
-  LowPowerDriver_sPtr getLowPowerDriver_sPtr( const Chimera::Timer::Peripheral periph, const bool create )
+  LowPowerDriver_rPtr getLowPowerDriver_rPtr( const Chimera::Timer::Peripheral periph, const bool create )
   {
     /*-------------------------------------------------
     Ensure the driver is initialized. This saves the cost

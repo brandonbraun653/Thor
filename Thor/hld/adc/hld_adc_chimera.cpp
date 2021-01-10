@@ -56,12 +56,12 @@ namespace Chimera::ADC::Backend
   }
 
 
-  Chimera::ADC::Driver_sPtr getDriver( const Converter periph )
+  Chimera::ADC::Driver_rPtr getDriver( const Converter periph )
   {
     auto idx = ::LLD::getResourceIndex( periph );
     if( idx < NUM_DRIVERS )
     {
-      return Chimera::ADC::Driver_sPtr( &s_raw_driver[ idx ] );
+      return &s_raw_driver[ idx ];
     }
     else
     {

@@ -23,7 +23,7 @@ namespace Chimera::SPI::Backend
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
-  Driver_sPtr getDriver( const Channel channel );
+  Driver_rPtr getDriver( const Channel channel );
 }    // namespace Chimera::SPI::Backend
 
 #endif /* !THOR_SPI_CHIMERA_HOOKS_HPP */

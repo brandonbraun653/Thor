@@ -39,7 +39,7 @@ namespace Thor::LLD::Watchdog
    *  Gets a shared pointer to the USB driver for a particular channel
    *
    *  @param[in] channel        The USB channel to grab (1 indexed)
-   *  @return IDriver_sPtr      Instance of the USB driver for the requested channel
+   *  @return IDriver_rPtr      Instance of the USB driver for the requested channel
    */
   IndependentDriver_rPtr getDriver( const Chimera::Watchdog::IChannel channel );
   WindowDriver_rPtr getDriver( const Chimera::Watchdog::WChannel channel );

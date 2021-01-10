@@ -23,7 +23,7 @@ namespace Chimera::CAN::Backend
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
-  Driver_sPtr getDriver( const Channel channel );
+  Driver_rPtr getDriver( const Channel channel );
 }    // namespace Chimera::CAN::Backend
 
 #endif /* !THOR_CAN_CHIMERA_HOOKS_HPP */

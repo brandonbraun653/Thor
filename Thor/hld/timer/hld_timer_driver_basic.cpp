@@ -38,8 +38,8 @@ namespace Thor::TIMER
   /*-------------------------------------------------------------------------------
   Driver Memory
   -------------------------------------------------------------------------------*/
-  std::array<BasicDriver_sPtr, NUM_PERIPHS> hld_basic_drivers;
-  static std::array<LLD::IBasicDriver_sPtr, NUM_PERIPHS> s_lld_basic_drivers;
+  std::array<BasicDriver_rPtr, NUM_PERIPHS> hld_basic_drivers;
+  static std::array<LLD::IBasicDriver_rPtr, NUM_PERIPHS> s_lld_basic_drivers;
 
   /*-------------------------------------------------------------------------------
   Free Functions
@@ -72,7 +72,7 @@ namespace Thor::TIMER
   }
 
 
-  BasicDriver_sPtr getBasicDriver_sPtr( const Chimera::Timer::Peripheral periph, const bool create )
+  BasicDriver_rPtr getBasicDriver_rPtr( const Chimera::Timer::Peripheral periph, const bool create )
   {
     /*-------------------------------------------------
     Ensure the driver is initialized. This saves the cost

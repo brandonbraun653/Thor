@@ -107,20 +107,6 @@ namespace Thor::GPIO
     }
   }
 
-
-  Driver_sPtr getDriverShared( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
-  {
-    if ( auto idx = LLD::getPinResourceIndex( port, pin ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
-    {
-      return HLD::Driver_sPtr( &hld_driver[ idx ] );
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
-
-
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/

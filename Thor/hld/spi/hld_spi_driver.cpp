@@ -51,7 +51,6 @@ Variables
 -------------------------------------------------------------------------------*/
 static size_t s_driver_initialized;                        /**< Tracks the module level initialization state */
 static HLD::Driver hld_driver[ NUM_DRIVERS ];              /**< Driver objects */
-static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ];         /**< Shared references to driver objects */
 static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ];      /**< Handle to the ISR post processing thread */
 static BinarySemphr s_user_isr_signal[ NUM_DRIVERS ];      /**< Lock for each ISR post processing thread */
 static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ]; /**< RTOS aware function to execute at end of ISR */
@@ -111,18 +110,6 @@ namespace Thor::SPI
 #endif
 
     /*-------------------------------------------------
-    Initialize shared references to drivers
-    -------------------------------------------------*/
-    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
-    {
-#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_SPI )
-      hld_shared[ x ] = ::HLD::Driver_sPtr( new ::HLD::Driver() );
-#else
-      hld_shared[ x ] = ::HLD::Driver_sPtr( &hld_driver[ x ] );
-#endif
-    }
-
-    /*-------------------------------------------------
     Lock the init sequence and exit
     -------------------------------------------------*/
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
@@ -132,18 +119,6 @@ namespace Thor::SPI
 
   Chimera::Status_t reset()
   {
-    /*------------------------------------------------
-    Only allow clearing of local data during testing
-    ------------------------------------------------*/
-#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_GPIO )
-    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
-
-    for ( auto x = 0; x < NUM_DRIVERS; x++ )
-    {
-      hld_shared[ x ].reset();
-    }
-#endif
-
     return Chimera::Status::OK;
   }
 
@@ -153,19 +128,6 @@ namespace Thor::SPI
     if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return &hld_driver[ idx ];
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
-
-
-  Driver_sPtr getDriverShared( const Chimera::SPI::Channel channel )
-  {
-    if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
-    {
-      return hld_shared[ idx ];
     }
     else
     {

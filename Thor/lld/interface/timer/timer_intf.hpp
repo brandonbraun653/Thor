@@ -53,13 +53,13 @@ namespace Thor::LLD::TIMER
    */
   bool isChannelSupported( const size_t channel );
 
-  // IAdvancedDriver_sPtr getAdvancedDriver( const Thor::HLD::RIndex channel );
+  // IAdvancedDriver_rPtr getAdvancedDriver( const Thor::HLD::RIndex channel );
 
-  // IBasicDriver_sPtr getBasicDriver( const Thor::HLD::RIndex channel );
+  // IBasicDriver_rPtr getBasicDriver( const Thor::HLD::RIndex channel );
 
   // GeneralDriver_rPtr getGeneralDriver( const Thor::HLD::RIndex channel );
 
-  // ILowPowerDriver_sPtr getLowPowerDriver( const Thor::HLD::RIndex channel );
+  // ILowPowerDriver_rPtr getLowPowerDriver( const Thor::HLD::RIndex channel );
 
   // /**
   //  *  Gets the peripheral description data associated with the

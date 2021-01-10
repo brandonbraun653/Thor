@@ -32,7 +32,6 @@ namespace Thor::USB
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
   Driver_rPtr getDriver( const Chimera::USB::Channel ch );
-  Driver_sPtr getDriverShared( const Chimera::USB::Channel ch );
 
 
   /*-------------------------------------------------------------------------------

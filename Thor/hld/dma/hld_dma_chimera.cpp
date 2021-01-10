@@ -31,7 +31,7 @@ namespace Chimera::DMA::Backend
     return Chimera::Status::OK;
   }
 
-  Driver_sPtr getDriver( const Controller channel )
+  Driver_rPtr getDriver( const Controller channel )
   {
     return nullptr;
   }

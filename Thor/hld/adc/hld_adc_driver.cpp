@@ -52,7 +52,7 @@ namespace Thor::ADC
   -------------------------------------------------------------------------------*/
   static size_t s_driver_initialized;                        /**< Tracks the module level initialization state */
   static HLD::Driver hld_driver[ NUM_DRIVERS ];              /**< Driver objects */
-  static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ];         /**< Shared references to driver objects */
+  static HLD::Driver_rPtr hld_shared[ NUM_DRIVERS ];         /**< Shared references to driver objects */
   static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ];      /**< Handle to the ISR post processing thread */
   static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ]; /**< RTOS aware function to execute at end of ISR */
 
@@ -117,9 +117,9 @@ namespace Thor::ADC
     for ( size_t x = 0; x < NUM_DRIVERS; x++ )
     {
 #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_ADC )
-      hld_shared[ x ] = HLD::Driver_sPtr( new HLD::Driver() );
+      hld_shared[ x ] = HLD::Driver_rPtr( new HLD::Driver() );
 #else
-      hld_shared[ x ] = HLD::Driver_sPtr( &hld_driver[ x ] );
+      hld_shared[ x ] = HLD::Driver_rPtr( &hld_driver[ x ] );
 #endif
     }
 
@@ -156,19 +156,6 @@ namespace Thor::ADC
     if ( auto idx = LLD::getResourceIndex( periph ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return &hld_driver[ idx ];
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
-
-
-  Driver_sPtr getDriverShared( const Chimera::ADC::Converter periph )
-  {
-    if ( auto idx = LLD::getResourceIndex( periph ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
-    {
-      return hld_shared[ idx ];
     }
     else
     {

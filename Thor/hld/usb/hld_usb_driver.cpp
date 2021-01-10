@@ -68,9 +68,9 @@ namespace Thor::USB
     for ( size_t x = 0; x < NUM_DRIVERS; x++ )
     {
 #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_USB )
-      hld_shared[ x ] = HLD::Driver_sPtr( new HLD::Driver() );
+      hld_shared[ x ] = HLD::Driver_rPtr( new HLD::Driver() );
 #else
-      hld_shared[ x ] = HLD::Driver_sPtr( &hld_driver[ x ] );
+      hld_shared[ x ] = HLD::Driver_rPtr( &hld_driver[ x ] );
 #endif
     }
 
@@ -114,18 +114,6 @@ namespace Thor::USB
     }
   }
 
-
-  Driver_sPtr getDriverShared( const Chimera::USB::Channel ch )
-  {
-    if ( auto idx = LLD::getResourceIndex( ch ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
-    {
-      return hld_shared[ idx ];
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
 
   /*-------------------------------------------------------------------------------
   Driver Implementation

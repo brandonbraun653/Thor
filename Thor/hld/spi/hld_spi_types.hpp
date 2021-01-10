@@ -27,7 +27,6 @@ namespace Thor::SPI
   Aliases
   -------------------------------------------------------------------------------*/
   using Driver_rPtr = Driver *;
-  using Driver_sPtr = std::shared_ptr<Driver>;
 }
 
 #endif /* !THOR_HLD_SPI_TYPES_HPP */

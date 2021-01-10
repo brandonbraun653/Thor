@@ -44,7 +44,7 @@ namespace Thor::TIMER
 
   struct GeneralTimerData
   {
-    GeneralDriver_sPtr hld_driver;
+    GeneralDriver_rPtr hld_driver;
     LLD::GeneralDriver_rPtr lld_driver;
 
     Chimera::Timer::DriverConfig baseTimerConfig;
@@ -93,7 +93,7 @@ namespace Thor::TIMER
     return Chimera::Status::OK;
   }
 
-  GeneralDriver_sPtr getGeneralDriverObject( const Thor::HLD::RIndex index )
+  GeneralDriver_rPtr getGeneralDriverObject( const Thor::HLD::RIndex index )
   {
     if ( index.value() < NUM_PERIPHS )
     {
@@ -103,7 +103,7 @@ namespace Thor::TIMER
     return nullptr;
   }
 
-  GeneralDriver_sPtr getGeneralDriver_sPtr( const Chimera::Timer::Peripheral periph, const bool create )
+  GeneralDriver_rPtr getGeneralDriver_rPtr( const Chimera::Timer::Peripheral periph, const bool create )
   {
     /*-------------------------------------------------
     Ensure the driver is initialized. This saves the cost

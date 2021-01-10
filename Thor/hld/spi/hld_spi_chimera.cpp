@@ -34,22 +34,18 @@ static constexpr size_t NUM_DRIVERS = ::LLD::NUM_SPI_PERIPHS;
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
+#if defined( THOR_HLD_SPI )
 static Chimera::SPI::Driver s_raw_driver[ NUM_DRIVERS ];
-static Chimera::SPI::Driver_sPtr s_shared_driver[ NUM_DRIVERS ];
-
+#endif
 
 namespace Chimera::SPI::Backend
 {
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
+  #if defined( THOR_HLD_SPI )
   Chimera::Status_t initialize()
   {
-    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
-    {
-      s_shared_driver[ x ] = Chimera::SPI::Driver_sPtr( &s_raw_driver[ x ] );
-    }
-
     return Thor::SPI::initialize();
   }
 
@@ -60,12 +56,19 @@ namespace Chimera::SPI::Backend
   }
 
 
-  Driver_sPtr getDriver( const Channel channel )
+  Driver_rPtr getDriver( const Channel channel )
   {
     auto idx = ::LLD::getResourceIndex( channel );
-    return s_shared_driver[ idx ];
+    if ( idx < NUM_DRIVERS )
+    {
+      return &s_raw_driver[ idx ];
+    }
+    else
+    {
+      return nullptr;
+    }
   }
-
+#endif  // THOR_HLD_SPI
 
   Chimera::Status_t registerDriver( Chimera::SPI::Backend::DriverConfig &registry )
   {

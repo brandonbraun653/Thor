@@ -40,11 +40,11 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
-  using IAdvancedDriver_sPtr = IAdvancedDriver *;
+  using IAdvancedDriver_rPtr = IAdvancedDriver *;
   using IAdvancedDriver_uPtr = IAdvancedDriver *;
-  using IBasicDriver_sPtr    = IBasicDriver *;
+  using IBasicDriver_rPtr    = IBasicDriver *;
   using IBasicDriver_uPtr    = IBasicDriver *;
-  using ILowPowerDriver_sPtr = ILowPowerDriver *;
+  using ILowPowerDriver_rPtr = ILowPowerDriver *;
   using ILowPowerDriver_uPtr = ILowPowerDriver *;
   using GeneralDriver_rPtr   = GeneralDriverImpl *;
 

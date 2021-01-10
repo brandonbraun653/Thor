@@ -27,7 +27,6 @@ namespace Thor::GPIO
   Aliases
   -------------------------------------------------------------------------------*/
   using Driver_rPtr = Driver *;
-  using Driver_sPtr = std::shared_ptr<Driver>;
 }    // namespace Thor::GPIO
 
 #endif /* !THOR_HLD_GPIO_TYPES_HPP */

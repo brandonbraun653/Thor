@@ -36,8 +36,8 @@ namespace Thor::TIMER
   /*-------------------------------------------------------------------------------
   Driver Memory
   -------------------------------------------------------------------------------*/
-  std::array<AdvancedDriver_sPtr, NUM_PERIPHS> hld_advanced_drivers;
-  static std::array<LLD::IAdvancedDriver_sPtr, NUM_PERIPHS> s_lld_advanced_drivers;
+  std::array<AdvancedDriver_rPtr, NUM_PERIPHS> hld_advanced_drivers;
+  static std::array<LLD::IAdvancedDriver_rPtr, NUM_PERIPHS> s_lld_advanced_drivers;
 
   /*-------------------------------------------------------------------------------
   Free Functions
@@ -69,7 +69,7 @@ namespace Thor::TIMER
     return Chimera::Status::OK;
   }
 
-  AdvancedDriver_sPtr getAdvancedDriver_sPtr( const Chimera::Timer::Peripheral periph, const bool create )
+  AdvancedDriver_rPtr getAdvancedDriver_rPtr( const Chimera::Timer::Peripheral periph, const bool create )
   {
     /*-------------------------------------------------
     Ensure the driver is initialized. This saves the cost

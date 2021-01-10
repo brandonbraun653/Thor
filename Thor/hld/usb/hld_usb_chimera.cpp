@@ -57,12 +57,12 @@ namespace Chimera::USB::Backend
   }
 
 
-  Chimera::USB::Driver_sPtr getDriver( const Channel ch )
+  Chimera::USB::Driver_rPtr getDriver( const Channel ch )
   {
     auto idx = ::LLD::getResourceIndex( ch );
     if( idx < NUM_DRIVERS )
     {
-      return Chimera::USB::Driver_sPtr( &s_raw_driver[ idx ] );
+      return &s_raw_driver[ idx ];
     }
     else
     {

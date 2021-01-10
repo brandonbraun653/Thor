@@ -41,7 +41,6 @@ namespace Thor::USART
   Chimera::Status_t reset();
   bool isChannelUSART( const Chimera::Serial::Channel channel );
   Driver_rPtr getDriver( const Chimera::Serial::Channel channel );
-  Driver_sPtr getDriverShared( const Chimera::Serial::Channel channel );
 
 
   /*-------------------------------------------------------------------------------
@@ -82,8 +81,8 @@ namespace Thor::USART
     friend Chimera::Threading::LockableCRTP<Driver>;
     Chimera::Threading::RecursiveTimedMutex mClsMutex;
 
-    Chimera::GPIO::Driver_sPtr rxPin;
-    Chimera::GPIO::Driver_sPtr txPin;
+    Chimera::GPIO::Driver_rPtr rxPin;
+    Chimera::GPIO::Driver_rPtr txPin;
 
     Chimera::Serial::Channel channel; /**< Hardware channel associated with this driver */
     size_t resourceIndex;             /**< Lookup table index for USART resources */

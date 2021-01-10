@@ -27,7 +27,6 @@ namespace Thor::ADC
   Aliases
   -------------------------------------------------------------------------------*/
   using Driver_rPtr = Driver *;
-  using Driver_sPtr = std::shared_ptr<Driver>;
 }    // namespace Thor::ADC
 
 #endif /* !THOR_HLD_ADC_TYPES_HPP */

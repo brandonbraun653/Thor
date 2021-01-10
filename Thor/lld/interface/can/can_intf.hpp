@@ -45,7 +45,7 @@ namespace Thor::LLD::CAN
    *  Gets a raw pointer to the CAN driver for a particular channel
    *
    *  @param[in]  channel     The CAN channel to get
-   *  @return IDriver_sPtr    Instance of the CAN driver for the requested channel
+   *  @return IDriver_rPtr    Instance of the CAN driver for the requested channel
    */
   Driver_rPtr getDriver( const Chimera::CAN::Channel channel );
 

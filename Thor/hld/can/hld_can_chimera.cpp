@@ -56,12 +56,12 @@ namespace Chimera::CAN::Backend
   }
 
 
-  Chimera::CAN::Driver_sPtr getDriver( const Channel channel )
+  Chimera::CAN::Driver_rPtr getDriver( const Channel channel )
   {
     auto idx = ::LLD::getResourceIndex( channel );
     if ( idx < NUM_DRIVERS )
     {
-      return Chimera::CAN::Driver_sPtr( &s_raw_driver[ idx ] );
+      return &s_raw_driver[ idx ];
     }
     else
     {

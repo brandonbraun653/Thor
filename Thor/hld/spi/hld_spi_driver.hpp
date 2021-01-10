@@ -32,8 +32,6 @@ namespace Thor::SPI
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
   Driver_rPtr getDriver( const Chimera::SPI::Channel channel );
-  Driver_sPtr getDriverShared( const Chimera::SPI::Channel channel );
-
 
   class Driver : public Chimera::Threading::LockableCRTP<Driver>
   {
@@ -79,10 +77,10 @@ namespace Thor::SPI
     Chimera::Threading::RecursiveTimedMutex mClsMutex;
 
     Chimera::SPI::DriverConfig config; /**< Configuration used to set up the class */
-    Chimera::GPIO::Driver_sPtr SCK;    /**< SPI clock gpio pin */
-    Chimera::GPIO::Driver_sPtr MOSI;   /**< SPI MOSI gpio pin */
-    Chimera::GPIO::Driver_sPtr MISO;   /**< SPI MISO gpio pin */
-    Chimera::GPIO::Driver_sPtr CS;     /**< SPI Chip Select gpio pin */
+    Chimera::GPIO::Driver_rPtr SCK;    /**< SPI clock gpio pin */
+    Chimera::GPIO::Driver_rPtr MOSI;   /**< SPI MOSI gpio pin */
+    Chimera::GPIO::Driver_rPtr MISO;   /**< SPI MISO gpio pin */
+    Chimera::GPIO::Driver_rPtr CS;     /**< SPI Chip Select gpio pin */
 
     Chimera::Event::ActionableList eventListeners;
     Chimera::Threading::BinarySemaphore awaitTransferComplete; /**< Internal signal for current transfer completed */

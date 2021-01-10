@@ -140,19 +140,6 @@ namespace Thor::USART
   }
 
 
-  Driver_sPtr getDriverShared( const Chimera::Serial::Channel channel )
-  {
-    if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
-    {
-      return ::HLD::Driver_sPtr( &hld_driver[ idx ] );
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
-
-
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/

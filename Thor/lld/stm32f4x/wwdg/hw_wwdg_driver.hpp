@@ -70,7 +70,7 @@ namespace Thor::LLD::WWDG
     uint32_t reloadValue;
   };
 
-  using Driver_sPtr = std::shared_ptr<Driver>;
+  using Driver_rPtr = Driver *;
   using Driver_uPtr = std::shared_ptr<Driver>;
 }    // namespace Thor::LLD::WWDG
 

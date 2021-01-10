@@ -153,9 +153,9 @@ namespace Thor::CAN
     for ( size_t x = 0; x < NUM_DRIVERS; x++ )
     {
 #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_CAN )
-      hld_shared[ x ] = ::HLD::Driver_sPtr( new ::HLD::Driver() );
+      hld_shared[ x ] = ::HLD::Driver_rPtr( new ::HLD::Driver() );
 #else
-      hld_shared[ x ] = ::HLD::Driver_sPtr( &hld_driver[ x ] );
+      hld_shared[ x ] = ::HLD::Driver_rPtr( &hld_driver[ x ] );
 #endif
     }
 
@@ -191,20 +191,6 @@ namespace Thor::CAN
     if ( ( idx != ::Thor::LLD::INVALID_RESOURCE_INDEX ) && ( idx < NUM_DRIVERS ) )
     {
       return &hld_driver[ idx ];
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
-
-
-  Driver_sPtr getDriverShared( const Chimera::CAN::Channel channel )
-  {
-    auto idx = ::LLD::getResourceIndex( channel );
-    if ( ( idx != ::Thor::LLD::INVALID_RESOURCE_INDEX ) && ( idx < NUM_DRIVERS ) )
-    {
-      return hld_shared[ idx ];
     }
     else
     {

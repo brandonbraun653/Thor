@@ -26,9 +26,7 @@ namespace Thor::Watchdog
   -------------------------------------------------------------------------------*/
   Chimera::Status_t reset();
   WindowDriver_rPtr getDriver( const Chimera::Watchdog::WChannel channel );
-  WindowDriver_sPtr getDriverShared( const Chimera::Watchdog::WChannel channel );
   IndependentDriver_rPtr getDriver( const Chimera::Watchdog::IChannel channel );
-  IndependentDriver_sPtr getDriverShared( const Chimera::Watchdog::IChannel channel );
 
   /**
    *  Initialize the WWDG driver

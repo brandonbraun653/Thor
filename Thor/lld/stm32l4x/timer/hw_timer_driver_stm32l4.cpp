@@ -97,17 +97,17 @@ namespace Thor::LLD::TIMER
     return Chimera::Status::OK;
   }
 
-  IAdvancedDriver_sPtr getAdvancedDriver( const Thor::HLD::RIndex channel )
+  IAdvancedDriver_rPtr getAdvancedDriver( const Thor::HLD::RIndex channel )
   {
     return nullptr;
   }
 
-  IBasicDriver_sPtr getBasicDriver( const Thor::HLD::RIndex channel )
+  IBasicDriver_rPtr getBasicDriver( const Thor::HLD::RIndex channel )
   {
     return nullptr;
   }
 
-  ILowPowerDriver_sPtr getLowPowerDriver( const Thor::HLD::RIndex channel )
+  ILowPowerDriver_rPtr getLowPowerDriver( const Thor::HLD::RIndex channel )
   {
     return nullptr;
   }

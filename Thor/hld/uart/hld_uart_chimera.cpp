@@ -62,7 +62,7 @@ namespace Chimera::UART::Backend
   }
 
 
-  Driver_sPtr getDriver( const Chimera::Serial::Channel channel )
+  Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
   {
     // auto resourceIndex = ::LLD::getResourceIndex( channel );
     // if ( resourceIndex != ::Thor::LLD::INVALID_RESOURCE_INDEX )

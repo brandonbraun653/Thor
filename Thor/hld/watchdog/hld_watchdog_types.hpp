@@ -28,10 +28,7 @@ namespace Thor::Watchdog
   Aliases
   -------------------------------------------------------------------------------*/
   using WindowDriver_rPtr = WindowDriver *;
-  using WindowDriver_sPtr = std::shared_ptr<WindowDriver>;
-
   using IndependentDriver_rPtr = IndependentDriver *;
-  using IndependentDriver_sPtr = std::shared_ptr<IndependentDriver>;
 
 }    // namespace Thor::Watchdog
 

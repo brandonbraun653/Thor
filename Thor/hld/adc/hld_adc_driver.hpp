@@ -32,7 +32,6 @@ namespace Thor::ADC
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
   Driver_rPtr getDriver( const Chimera::ADC::Converter periph );
-  Driver_sPtr getDriverShared( const Chimera::ADC::Converter periph );
   bool featureSupported( const Chimera::ADC::Converter periph, const Chimera::ADC::Feature feature );
 
 

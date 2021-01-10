@@ -59,7 +59,7 @@ namespace Thor::Watchdog
 #if defined( THOR_HLD_WWDG )
   static size_t s_wwdg_driver_initialized;                     /**< Tracks the module level initialization state */
   static ::HLD::WindowDriver hld_wdriver[ NUM_WDRIVERS ];      /**< Driver objects */
-  static ::HLD::WindowDriver_sPtr hld_wshared[ NUM_WDRIVERS ]; /**< Shared references to driver objects */
+  static ::HLD::WindowDriver_rPtr hld_wshared[ NUM_WDRIVERS ]; /**< Shared references to driver objects */
 
   /*-------------------------------------------------------------------------------
   Public Functions
@@ -81,9 +81,9 @@ namespace Thor::Watchdog
     for ( size_t x = 0; x < NUM_WDRIVERS; x++ )
     {
 #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_WWDG )
-      hld_wshared[ x ] = ::HLD::WindowDriver_sPtr( new HLD::Window() );
+      hld_wshared[ x ] = ::HLD::WindowDriver_rPtr( new HLD::Window() );
 #else
-      hld_wshared[ x ] = ::HLD::WindowDriver_sPtr( &hld_wdriver[ x ] );
+      hld_wshared[ x ] = ::HLD::WindowDriver_rPtr( &hld_wdriver[ x ] );
 #endif
     }
 
@@ -101,19 +101,6 @@ namespace Thor::Watchdog
     if ( auto idx = LLD::Watchdog::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return &hld_wdriver[ idx ];
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
-
-
-  WindowDriver_sPtr getDriverShared( const Chimera::Watchdog::WChannel channel )
-  {
-    if ( auto idx = LLD::Watchdog::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
-    {
-      return hld_wshared[ idx ];
     }
     else
     {
@@ -249,7 +236,7 @@ namespace Thor::Watchdog
 #if defined( THOR_HLD_IWDG )
   static size_t s_iwdg_driver_initialized;                          /**< Tracks the module level initialization state */
   static ::HLD::IndependentDriver hld_idriver[ NUM_IDRIVERS ];      /**< Driver objects */
-  static ::HLD::IndependentDriver_sPtr hld_ishared[ NUM_IDRIVERS ]; /**< Shared references to driver objects */
+  static ::HLD::IndependentDriver_rPtr hld_ishared[ NUM_IDRIVERS ]; /**< Shared references to driver objects */
 
   /*-------------------------------------------------------------------------------
   Public Functions
@@ -271,9 +258,9 @@ namespace Thor::Watchdog
     for ( size_t x = 0; x < NUM_IDRIVERS; x++ )
     {
 #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_IWDG )
-      hld_ishared[ x ] = ::HLD::IndependentDriver_sPtr( new HLD::Independent() );
+      hld_ishared[ x ] = ::HLD::IndependentDriver_rPtr( new HLD::Independent() );
 #else
-      hld_ishared[ x ] = ::HLD::IndependentDriver_sPtr( &hld_idriver[ x ] );
+      hld_ishared[ x ] = ::HLD::IndependentDriver_rPtr( &hld_idriver[ x ] );
 #endif
     }
 
@@ -298,18 +285,6 @@ namespace Thor::Watchdog
     }
   }
 
-
-  IndependentDriver_sPtr getDriverShared( const Chimera::Watchdog::IChannel channel )
-  {
-    if ( auto idx = LLD::Watchdog::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
-    {
-      return hld_ishared[ idx ];
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
 
   /*-------------------------------------------------------------------------------
   Independent Watchdog Implementation

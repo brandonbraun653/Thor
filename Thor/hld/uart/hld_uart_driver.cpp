@@ -76,7 +76,7 @@ namespace Thor::UART
   }
 
 
-  Chimera::UART::Driver_sPtr getDriver( const Chimera::Serial::Channel channel )
+  Chimera::UART::Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
   {
     return nullptr;
   }

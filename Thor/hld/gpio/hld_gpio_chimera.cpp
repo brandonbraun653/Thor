@@ -57,12 +57,12 @@ Public Functions
   }
 
 
-  Chimera::GPIO::Driver_sPtr getDriver( const Port port, const Pin pin )
+  Chimera::GPIO::Driver_rPtr getDriver( const Port port, const Pin pin )
   {
     auto idx = ::LLD::getPinResourceIndex( port, pin );
     if ( idx < NUM_DRIVERS )
     {
-      return Chimera::GPIO::Driver_sPtr( &s_raw_driver[ idx ] );
+      return &s_raw_driver[ idx ];
     }
     else
     {

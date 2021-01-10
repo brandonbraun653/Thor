@@ -38,7 +38,7 @@ namespace Thor::LLD::ADC
    *  Gets a shared pointer to the ADC driver for a particular periph
    *
    *  @param[in] periph         The ADC periph to grab (1 indexed)
-   *  @return IDriver_sPtr      Instance of the ADC driver for the requested periph
+   *  @return IDriver_rPtr      Instance of the ADC driver for the requested periph
    */
   Driver_rPtr getDriver( const Chimera::ADC::Converter periph );
 

@@ -26,7 +26,7 @@ namespace Thor::UART
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
-  using Driver_sPtr = std::shared_ptr<Driver>;
+  using Driver_rPtr = Driver *;
 }    // namespace Thor::UART
 
 #endif /* !THOR_UART_TYPES_HPP */

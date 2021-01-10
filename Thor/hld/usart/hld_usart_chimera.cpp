@@ -63,12 +63,12 @@ namespace Chimera::USART::Backend
   }
 
 
-  Driver_sPtr getDriver( const Chimera::Serial::Channel channel )
+  Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
   {
     auto resourceIndex = ::LLD::getResourceIndex( channel );
     if ( resourceIndex != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
-      return Driver_sPtr( &s_raw_driver[ resourceIndex ] );
+      return Driver_rPtr( &s_raw_driver[ resourceIndex ] );
     }
     else
     {

@@ -32,8 +32,6 @@ namespace Thor::GPIO
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
   Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
-  Driver_sPtr getDriverShared( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
-
 
   /*-------------------------------------------------------------------------------
   Classes
