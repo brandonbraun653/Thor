@@ -42,11 +42,11 @@ add_subdirectory("Thor/lld")
 # ====================================================
 
 # Public include location
-add_library(thor_inc INTERFACE)
-target_include_directories(thor_inc INTERFACE ".")
-target_compile_definitions(thor_inc INTERFACE BOOST_NO_EXCEPTIONS)
-target_link_libraries(thor_inc INTERFACE thor_project_config)
-export(TARGETS thor_inc FILE "${PROJECT_BINARY_DIR}/Thor/thor-inc.cmake")
+add_library(thor_intf_inc INTERFACE)
+target_include_directories(thor_intf_inc INTERFACE ".")
+target_compile_definitions(thor_intf_inc INTERFACE BOOST_NO_EXCEPTIONS)
+target_link_libraries(thor_intf_inc INTERFACE thor_project_config)
+export(TARGETS thor_intf_inc FILE "${PROJECT_BINARY_DIR}/Thor/thor-inc.cmake")
 
 # User hook for injecting project specific definitions/include paths/etc
 add_library(thor_project_config INTERFACE)

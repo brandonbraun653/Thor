@@ -4,7 +4,7 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 # Common
 # ====================================================
 set(LINK_LIBS
-  thor_inc          # Thor public headers
+  thor_intf_inc          # Thor public headers
   chimera_intf_inc       # Chimera public headers
 )
 
