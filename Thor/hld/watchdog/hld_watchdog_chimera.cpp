@@ -40,11 +40,13 @@ static constexpr size_t NUM_WDRIVERS = WLLD::NUM_WWDG_PERIPHS;
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
+#if defined( THOR_HLD_IWDG )
 static Chimera::Watchdog::IndependentDriver s_raw_Idriver[ NUM_IDRIVERS ];
-static Chimera::Watchdog::Independent_sPtr s_shared_Idriver[ NUM_IDRIVERS ];
+#endif
 
+#if defined( THOR_HLD_WWDG )
 static Chimera::Watchdog::WindowDriver s_raw_Wdriver[ NUM_WDRIVERS ];
-static Chimera::Watchdog::Window_sPtr s_shared_Wdriver[ NUM_WDRIVERS ];
+#endif
 
 
 namespace Chimera::Watchdog::Backend
@@ -55,25 +57,6 @@ namespace Chimera::Watchdog::Backend
   Chimera::Status_t initialize()
   {
     auto result = Chimera::Status::OK;
-
-#if defined( THOR_HLD_IWDG )
-    for ( size_t x = 0; x < NUM_IDRIVERS; x++ )
-    {
-      s_shared_Idriver[ x ] = Chimera::Watchdog::Independent_sPtr( &s_raw_Idriver[ x ] );
-    }
-
-    result |= Thor::Watchdog::initializeIWDG();
-#endif
-
-#if defined( THOR_HLD_WWDG )
-    for ( size_t x = 0; x < NUM_WDRIVERS; x++ )
-    {
-      s_shared_Wdriver[ x ] = Chimera::Watchdog::Window_sPtr( &s_raw_Wdriver[ x ] );
-    }
-
-    result |= Thor::Watchdog::initializeWWDG();
-#endif
-
     return result;
   }
 
@@ -91,7 +74,7 @@ namespace Chimera::Watchdog::Backend
 
     if( idx < NUM_IDRIVERS )
     {
-      return s_shared_Idriver[ idx ];
+      return Chimera::Watchdog::Independent_sPtr( &s_raw_Idriver[ idx ] );
     }
     else
     {
@@ -110,7 +93,7 @@ namespace Chimera::Watchdog::Backend
 
     if ( idx < NUM_WDRIVERS )
     {
-      return s_shared_Wdriver[ idx ];
+      return Chimera::Watchdog::Window_sPtr( &s_raw_Wdriver[ idx ] );
     }
     else
     {

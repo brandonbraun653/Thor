@@ -5,7 +5,7 @@
  *	 Description:
  *    Implementation of Chimera GPIO driver hooks
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
@@ -35,22 +35,18 @@ static constexpr size_t NUM_DRIVERS = ::LLD::NUM_GPIO_PINS;
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
+#if defined( THOR_HLD_GPIO )
 static Chimera::GPIO::Driver s_raw_driver[ NUM_DRIVERS ];
-static Chimera::GPIO::Driver_sPtr s_shared_driver[ NUM_DRIVERS ];
-
+#endif
 
 namespace Chimera::GPIO::Backend
 {
-  /*-------------------------------------------------------------------------------
-  Public Functions
-  -------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------
+Public Functions
+-------------------------------------------------------------------------------*/
+#if defined( THOR_HLD_GPIO )
   Chimera::Status_t initialize()
   {
-    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
-    {
-      s_shared_driver[ x ] = Chimera::GPIO::Driver_sPtr( &s_raw_driver[ x ] );
-    }
-
     return Thor::GPIO::initialize();
   }
 
@@ -64,9 +60,17 @@ namespace Chimera::GPIO::Backend
   Chimera::GPIO::Driver_sPtr getDriver( const Port port, const Pin pin )
   {
     auto idx = ::LLD::getPinResourceIndex( port, pin );
-    return s_shared_driver[ idx ];
+    if ( idx < NUM_DRIVERS )
+    {
+      return Chimera::GPIO::Driver_sPtr( &s_raw_driver[ idx ] );
+    }
+    else
+    {
+      return nullptr;
+    }
   }
 
+#endif
 
   Chimera::Status_t registerDriver( Chimera::GPIO::Backend::DriverConfig &registry )
   {

@@ -46,7 +46,6 @@ namespace Thor::GPIO
   -------------------------------------------------------------------------------*/
   static size_t s_driver_initialized;                /**< Tracks the module level initialization state */
   static HLD::Driver hld_driver[ NUM_DRIVERS ];      /**< Driver objects */
-  static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ]; /**< Shared references to driver objects */
 
 
   /*-------------------------------------------------------------------------------
@@ -67,14 +66,6 @@ namespace Thor::GPIO
     Initialize local memory
     ------------------------------------------------*/
     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
-    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
-    {
-#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_GPIO )
-      hld_shared[ x ] = HLD::Driver_sPtr( new HLD::Driver() );
-#else
-      hld_shared[ x ] = HLD::Driver_sPtr( &hld_driver[ x ] );
-#endif
-    }
 
     /*------------------------------------------------
     Initialize the low level driver
@@ -121,13 +112,14 @@ namespace Thor::GPIO
   {
     if ( auto idx = LLD::getPinResourceIndex( port, pin ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
-      return hld_shared[ idx ];
+      return HLD::Driver_sPtr( &hld_driver[ idx ] );
     }
     else
     {
       return nullptr;
     }
   }
+
 
   /*-------------------------------------------------------------------------------
   Driver Implementation

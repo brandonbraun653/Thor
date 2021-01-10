@@ -38,24 +38,15 @@ static constexpr size_t NUM_DRIVERS = ::LLD::NUM_USART_PERIPHS;
 Variables
 -------------------------------------------------------------------------------*/
 static Chimera::USART::Driver s_raw_driver[ NUM_DRIVERS ];
-static Chimera::USART::Driver_sPtr s_shared_driver[ NUM_DRIVERS ];
-
 
 namespace Chimera::USART::Backend
 {
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
+#if defined( THOR_HLD_USART )
   Chimera::Status_t initialize()
   {
-    for ( auto x = 0; x < NUM_DRIVERS; x++ )
-    {
-      if ( !s_shared_driver[ x ] )
-      {
-        s_shared_driver[ x ] = Driver_sPtr( &s_raw_driver[ x ] );
-      }
-    }
-
     return Thor::USART::initialize();
   }
 
@@ -77,14 +68,14 @@ namespace Chimera::USART::Backend
     auto resourceIndex = ::LLD::getResourceIndex( channel );
     if ( resourceIndex != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
-      return s_shared_driver[ resourceIndex ];
+      return Driver_sPtr( &s_raw_driver[ resourceIndex ] );
     }
     else
     {
       return nullptr;
     }
   }
-
+#endif  // THOR-HLD_USART
 
   Chimera::Status_t registerDriver( Chimera::USART::Backend::DriverConfig &registry )
   {

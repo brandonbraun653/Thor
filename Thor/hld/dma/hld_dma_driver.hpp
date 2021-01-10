@@ -24,7 +24,8 @@ namespace Thor::DMA
 {
   Chimera::Status_t initialize();
 
-  class DMAClass : virtual public Chimera::DMA::IDMA, public Chimera::Threading::Lockable
+#if 0
+  class DMAClass : public Chimera::Threading::LockableCRTP<DMAClass>
   {
   public:
     ~DMAClass();
@@ -69,11 +70,17 @@ namespace Thor::DMA
     Chimera::Status_t removeListener( const size_t stream, const size_t registrationID, const size_t timeout );
 
   private:
+    friend Chimera::Threading::LockableCRTP<DMAClass>;
+    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+
     DMAClass();
 
     size_t listenerIDCount;
     std::vector<Chimera::Event::Actionable> eventListeners;
   };
+
+#endif
+
 }    // namespace Thor::DMA
 
 #endif /* !THOR_DMA_HPP */

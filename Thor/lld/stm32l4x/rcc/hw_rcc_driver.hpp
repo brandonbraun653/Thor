@@ -28,21 +28,21 @@
 namespace Thor::LLD::RCC
 {
 
-  class SystemClock : virtual public ICoreClock
+  class SystemClock
   {
   public:
     ~SystemClock();
-    void enableClock( const Chimera::Clock::Bus clock ) final override;
-    void disableClock( const Chimera::Clock::Bus clock ) final override;
-    Chimera::Status_t configureProjectClocks() final override;
-    Chimera::Status_t setCoreClockSource( const Chimera::Clock::Bus src ) final override;
-    Chimera::Clock::Bus getCoreClockSource() final override;
-    Chimera::Status_t setClockFrequency( const Chimera::Clock::Bus clock, const size_t freq, const bool enable ) final override;
-    size_t getClockFrequency( const Chimera::Clock::Bus clock ) final override;
-    size_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address ) final override;
+    void enableClock( const Chimera::Clock::Bus clock );
+    void disableClock( const Chimera::Clock::Bus clock );
+    Chimera::Status_t configureProjectClocks();
+    Chimera::Status_t setCoreClockSource( const Chimera::Clock::Bus src );
+    Chimera::Clock::Bus getCoreClockSource();
+    Chimera::Status_t setClockFrequency( const Chimera::Clock::Bus clock, const size_t freq, const bool enable );
+    size_t getClockFrequency( const Chimera::Clock::Bus clock );
+    size_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address );
 
   private:
-    friend ICoreClock *getCoreClock();
+    friend SystemClock *getCoreClock();
     SystemClock();
 
     bool configureOscillators( OscillatorSettings &cfg );
@@ -50,19 +50,19 @@ namespace Thor::LLD::RCC
   };
 
 
-  class PeripheralController : virtual public IPeripheralClock
+  class PeripheralController
   {
   public:
     ~PeripheralController();
 
-    Chimera::Status_t reset( const Chimera::Peripheral::Type type, const size_t index ) final override;
-    Chimera::Status_t enableClock( const Chimera::Peripheral::Type type, const size_t index ) final override;
-    Chimera::Status_t disableClock( const Chimera::Peripheral::Type type, const size_t index ) final override;
-    Chimera::Status_t enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index ) final override;
-    Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index ) final override;
+    Chimera::Status_t reset( const Chimera::Peripheral::Type type, const size_t index );
+    Chimera::Status_t enableClock( const Chimera::Peripheral::Type type, const size_t index );
+    Chimera::Status_t disableClock( const Chimera::Peripheral::Type type, const size_t index );
+    Chimera::Status_t enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index );
+    Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index );
 
   private:
-    friend IPeripheralClock *getPeripheralClock();
+    friend PeripheralController *getPeripheralClock();
     PeripheralController();
   };
 }

@@ -5,7 +5,7 @@
  *  Description:
  *    Thor GPIO high level driver
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -38,7 +38,7 @@ namespace Thor::GPIO
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Driver : public Chimera::Threading::Lockable
+  class Driver : public Chimera::Threading::LockableCRTP<Driver>
   {
   public:
     Driver();
@@ -55,9 +55,12 @@ namespace Thor::GPIO
     Chimera::EXTI::EventLine_t getInterruptLine();
 
   private:
+    friend Chimera::Threading::LockableCRTP<Driver>;
+
     Chimera::GPIO::Alternate mAlternate;
     Chimera::GPIO::Pin mPin;
     Chimera::GPIO::Port mPort;
+    Chimera::Threading::RecursiveTimedMutex mClsMutex;
   };
 }    // namespace Thor::GPIO
 

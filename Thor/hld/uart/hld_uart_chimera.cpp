@@ -37,7 +37,6 @@ static constexpr size_t NUM_DRIVERS = 1; //::LLD::NUM_UART_PERIPHS;
 Variables
 -------------------------------------------------------------------------------*/
 static Chimera::UART::Driver s_raw_driver[ NUM_DRIVERS ];
-static Chimera::UART::Driver_sPtr s_shared_driver[ NUM_DRIVERS ];
 
 namespace Chimera::UART::Backend
 {
@@ -46,14 +45,6 @@ namespace Chimera::UART::Backend
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    for ( auto x = 0; x < NUM_DRIVERS; x++ )
-    {
-      if ( !s_shared_driver[ x ] )
-      {
-        s_shared_driver[ x ] = Driver_sPtr( &s_raw_driver[ x ] );
-      }
-    }
-
     return Thor::UART::initialize();
   }
 
@@ -89,21 +80,21 @@ namespace Chimera::UART::Backend
 
   Chimera::Status_t registerDriver( Chimera::UART::Backend::DriverConfig &registry )
   {
-#if defined( THOR_HLD_UART )
-    registry.isSupported   = true;
-    registry.getDriver     = getDriver;
-    registry.initialize    = initialize;
-    registry.reset         = reset;
-    registry.isChannelUART = isChannelUART;
-    return Chimera::Status::OK;
-#else
+// #if defined( THOR_HLD_UART )
+//     registry.isSupported   = true;
+//     registry.getDriver     = getDriver;
+//     registry.initialize    = initialize;
+//     registry.reset         = reset;
+//     registry.isChannelUART = isChannelUART;
+//     return Chimera::Status::OK;
+// #else
     registry.isSupported   = false;
     registry.getDriver     = nullptr;
     registry.initialize    = nullptr;
     registry.reset         = nullptr;
     registry.isChannelUART = nullptr;
     return Chimera::Status::NOT_SUPPORTED;
-#endif /* THOR_HLD_UART */
+//#endif /* THOR_HLD_UART */
   }
 }    // namespace Chimera::UART::Backend
 

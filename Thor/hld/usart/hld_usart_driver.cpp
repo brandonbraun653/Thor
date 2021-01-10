@@ -55,7 +55,6 @@ Variables
 -------------------------------------------------------------------------------*/
 static size_t s_driver_initialized;                        /**< Tracks the module level initialization state */
 static HLD::Driver hld_driver[ NUM_DRIVERS ];              /**< Driver objects */
-static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ];         /**< Shared references to driver objects */
 static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ];      /**< Handle to the ISR post processing thread */
 static BinarySemphr s_user_isr_signal[ NUM_DRIVERS ];      /**< Lock for each ISR post processing thread */
 static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ]; /**< RTOS aware function to execute at end of ISR */
@@ -108,17 +107,6 @@ namespace Thor::USART
 #endif
 
     /*-------------------------------------------------
-    Initialize shared references to driver instances
-    -------------------------------------------------*/
-    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
-    {
-      if ( !hld_shared[ x ] )
-      {
-        hld_shared[ x ] = ::HLD::Driver_sPtr( &hld_driver[ x ] );
-      }
-    }
-
-    /*-------------------------------------------------
     Lock the init sequence and exit
     -------------------------------------------------*/
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
@@ -156,7 +144,7 @@ namespace Thor::USART
   {
     if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
-      return hld_shared[ idx ];
+      return ::HLD::Driver_sPtr( &hld_driver[ idx ] );
     }
     else
     {

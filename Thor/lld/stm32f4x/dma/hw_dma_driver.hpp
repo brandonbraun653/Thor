@@ -39,7 +39,7 @@ namespace Thor::LLD::DMA
 
   /**
    *  Gets the current stream controller instance via lookup
-   * 
+   *
    *  @param[in]  resourceIndex   LLD defined resource lookup index for a stream
    *  @return StreamController *  The instance of the controller
    */
@@ -48,7 +48,7 @@ namespace Thor::LLD::DMA
   /**
    *  Models a stream within a DMA controller peripheral (channel)
    */
-  class StreamController : virtual public IStream, public Chimera::Threading::Lockable
+  class StreamController : virtual public IStream, public Chimera::Threading::LockableCRTP<StreamController>
   {
   public:
     StreamController();
@@ -106,6 +106,9 @@ namespace Thor::LLD::DMA
     void IRQHandler( const uint8_t channel );
 
   private:
+    friend Chimera::Threading::LockableCRTP<StreamController>;
+    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+
     StreamX *stream;
     RegisterMap *parent;
     TCB controlBlock;

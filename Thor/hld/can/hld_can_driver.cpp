@@ -55,7 +55,6 @@ static size_t s_driver_initialized;
 Instances of the CAN driver in object and ptr form
 -------------------------------------------------*/
 static HLD::Driver hld_driver[ NUM_DRIVERS ];
-static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ];
 
 /*-------------------------------------------------
 High priority threads & handles that process more

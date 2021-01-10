@@ -16,6 +16,7 @@
 #include <Chimera/utility>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_detail.hpp>
 #include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
@@ -27,6 +28,7 @@ namespace Thor::LLD::GPIO
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
+#if defined( THOR_LLD_GPIO )
   /* clang-format off */
   static const uint8_t portIndex[ DRIVER_MAX_PORTS ] = {
     GPIOA_RESOURCE_INDEX,
@@ -58,6 +60,8 @@ namespace Thor::LLD::GPIO
     GPIOL_PIN_RINDEX_OFFSET
   };
   /* clang-format on */
+#endif  // THOR_LLD_GPIO
+
 
   /*-------------------------------------------------------------------------------
   Public Functions

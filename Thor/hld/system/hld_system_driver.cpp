@@ -28,6 +28,7 @@
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
+#include <Thor/lld/interface/rcc/rcc_detail.hpp>
 #include <Thor/lld/interface/startup/startup_detail.hpp>
 #include <Thor/lld/interface/system/sys_intf.hpp>
 

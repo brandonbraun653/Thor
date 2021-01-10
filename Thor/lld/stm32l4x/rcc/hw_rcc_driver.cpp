@@ -645,7 +645,7 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   SystemClock Class Implementation
   ------------------------------------------------*/
-  ICoreClock *getCoreClock()
+  SystemClock *getCoreClock()
   {
     static SystemClock *ref = nullptr;
     if ( ref == nullptr )
@@ -1162,7 +1162,7 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   PeripheralController Class Implementation
   ------------------------------------------------*/
-  IPeripheralClock *getPeripheralClock()
+  PeripheralController *getPeripheralClock()
   {
     static PeripheralController *ref = nullptr;
 

@@ -29,8 +29,8 @@ namespace Thor::LLD::RCC
   /*-------------------------------------------------------------------------------
   Forward Declarations
   -------------------------------------------------------------------------------*/
-  class ICoreClock;
-  class IPeripheralClock;
+  class SystemClock;
+  class PeripheralController;
 
   /*-------------------------------------------------------------------------------
   External Functions
@@ -59,16 +59,16 @@ namespace Thor::LLD::RCC
   /**
    *  Gets a reference to the core clock controller instance
    *
-   *  @return ICoreClock *
+   *  @return SystemClock *
    */
-  ICoreClock *getCoreClock();
+  SystemClock *getCoreClock();
 
   /**
    *  Gets a reference to the peripheral clock controller instance
    *
-   *  @return IPeripheralClock *
+   *  @return PeripheralController *
    */
-  IPeripheralClock *getPeripheralClock();
+  PeripheralController *getPeripheralClock();
 
   /*-------------------------------------------------------------------------------
   Interface Classes

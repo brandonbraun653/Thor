@@ -32,7 +32,7 @@ namespace Thor::LLD::DMA
 
   /**
    *  Gets the current stream controller instance via lookup
-   * 
+   *
    *  @param[in]  resourceIndex   LLD defined resource lookup index for a stream
    *  @return StreamController *  The instance of the controller
    */
@@ -41,7 +41,7 @@ namespace Thor::LLD::DMA
   /**
    *  Models a stream within a DMA controller peripheral (channel)
    */
-  class StreamController : public IStream, public Chimera::Threading::Lockable
+  class StreamController : public IStream
   {
   public:
     MOCK_METHOD2( attach, Chimera::Status_t( StreamX *const, RegisterMap *const ) );

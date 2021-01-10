@@ -53,7 +53,7 @@ namespace Thor::Watchdog
    *   watchdog is intended to protect against software faults and has more advanced
    *   capabilities than the Independent Watchdog.
    */
-  class WindowDriver : public Chimera::Threading::Lockable
+  class WindowDriver : public Chimera::Threading::LockableCRTP<WindowDriver>
   {
   public:
     WindowDriver();
@@ -69,6 +69,9 @@ namespace Thor::Watchdog
     size_t minTimeout();
 
   private:
+    friend Chimera::Threading::LockableCRTP<WindowDriver>;
+    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+
     Chimera::Watchdog::WChannel mChannel;
   };
 
@@ -78,7 +81,7 @@ namespace Thor::Watchdog
    *   to protect against issues deriving from a faulty system clock that would not
    *   trip the window watchdog.
    */
-  class IndependentDriver : public Chimera::Threading::Lockable
+  class IndependentDriver : public Chimera::Threading::LockableCRTP<IndependentDriver>
   {
   public:
     IndependentDriver();
@@ -94,6 +97,9 @@ namespace Thor::Watchdog
     size_t minTimeout();
 
   private:
+    friend Chimera::Threading::LockableCRTP<IndependentDriver>;
+    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+
     Chimera::Watchdog::IChannel mChannel;
   };
 

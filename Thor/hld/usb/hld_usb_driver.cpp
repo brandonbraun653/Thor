@@ -45,7 +45,6 @@ namespace Thor::USB
   -------------------------------------------------------------------------------*/
   static size_t s_driver_initialized;                /**< Tracks the module level initialization state */
   static HLD::Driver hld_driver[ NUM_DRIVERS ];      /**< Driver objects */
-  static HLD::Driver_sPtr hld_shared[ NUM_DRIVERS ]; /**< Shared references to driver objects */
 
 
   /*-------------------------------------------------------------------------------

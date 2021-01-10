@@ -35,7 +35,7 @@ namespace Thor::SPI
   Driver_sPtr getDriverShared( const Chimera::SPI::Channel channel );
 
 
-  class Driver : public Chimera::Threading::Lockable
+  class Driver : public Chimera::Threading::LockableCRTP<Driver>
   {
   public:
     /*------------------------------------------------
@@ -75,6 +75,9 @@ namespace Thor::SPI
     Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout );
 
   private:
+    friend Chimera::Threading::LockableCRTP<Driver>;
+    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+
     Chimera::SPI::DriverConfig config; /**< Configuration used to set up the class */
     Chimera::GPIO::Driver_sPtr SCK;    /**< SPI clock gpio pin */
     Chimera::GPIO::Driver_sPtr MOSI;   /**< SPI MOSI gpio pin */

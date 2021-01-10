@@ -34,8 +34,9 @@ static constexpr size_t NUM_DRIVERS = ::LLD::NUM_USB_PERIPHS;
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
+#if defined( THOR_HLD_USB )
 static Chimera::USB::Driver s_raw_driver[ NUM_DRIVERS ];
-static Chimera::USB::Driver_sPtr s_shared_driver[ NUM_DRIVERS ];
+#endif
 
 
 namespace Chimera::USB::Backend
@@ -43,13 +44,9 @@ namespace Chimera::USB::Backend
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
+#if defined( THOR_HLD_USB )
   Chimera::Status_t initialize()
   {
-    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
-    {
-      s_shared_driver[ x ] = Chimera::USB::Driver_sPtr( &s_raw_driver[ x ] );
-    }
-
     return Thor::USB::initialize();
   }
 
@@ -63,9 +60,16 @@ namespace Chimera::USB::Backend
   Chimera::USB::Driver_sPtr getDriver( const Channel ch )
   {
     auto idx = ::LLD::getResourceIndex( ch );
-    return s_shared_driver[ idx ];
+    if( idx < NUM_DRIVERS )
+    {
+      return Chimera::USB::Driver_sPtr( &s_raw_driver[ idx ] );
+    }
+    else
+    {
+      return nullptr;
+    }
   }
-
+#endif  // THOR_HLD_USB
 
   Chimera::Status_t registerDriver( Chimera::USB::Backend::DriverConfig &registry )
   {

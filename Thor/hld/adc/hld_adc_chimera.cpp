@@ -5,7 +5,7 @@
  *  Description:
  *    Implementation of Chimera ADC driver hooks
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
@@ -34,22 +34,18 @@ static constexpr size_t NUM_DRIVERS = ::LLD::NUM_ADC_PERIPHS;
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
+#if defined( THOR_HLD_ADC )
 static Chimera::ADC::Driver s_raw_driver[ NUM_DRIVERS ];
-static Chimera::ADC::Driver_sPtr s_shared_driver[ NUM_DRIVERS ];
-
+#endif  /* THOR_HLD_ADC */
 
 namespace Chimera::ADC::Backend
 {
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
+#if defined( THOR_HLD_ADC )
   Chimera::Status_t initialize()
   {
-    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
-    {
-      s_shared_driver[ x ] = Chimera::ADC::Driver_sPtr( &s_raw_driver[ x ] );
-    }
-
     return Thor::ADC::initialize();
   }
 
@@ -63,7 +59,14 @@ namespace Chimera::ADC::Backend
   Chimera::ADC::Driver_sPtr getDriver( const Converter periph )
   {
     auto idx = ::LLD::getResourceIndex( periph );
-    return s_shared_driver[ idx ];
+    if( idx < NUM_DRIVERS )
+    {
+      return Chimera::ADC::Driver_sPtr( &s_raw_driver[ idx ] );
+    }
+    else
+    {
+      return nullptr;
+    }
   }
 
 
@@ -72,6 +75,7 @@ namespace Chimera::ADC::Backend
     return ::LLD::featureSupported( periph, feature );
   }
 
+#endif  /* THOR_HLD_ADC */
 
   Chimera::Status_t registerDriver( Chimera::ADC::Backend::DriverConfig &registry )
   {
@@ -122,6 +126,7 @@ namespace Chimera::ADC
       return Chimera::Status::NOT_SUPPORTED;
     }
   }
+
 
   void Driver::close()
   {
@@ -196,6 +201,7 @@ namespace Chimera::ADC
   {
     return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleToVoltage( sample );
   }
+
 
   float Driver::sampleToJunctionTemperature( const Sample_t sample )
   {

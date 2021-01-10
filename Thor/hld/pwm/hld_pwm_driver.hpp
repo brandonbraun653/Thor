@@ -39,7 +39,8 @@ namespace Thor::PWM
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Driver : virtual public Chimera::PWM::IPWM, public Chimera::Threading::Lockable
+  #if 0
+  class Driver : public Chimera::Threading::LockableCRTP<Driver>
   {
   public:
     /*------------------------------------------------
@@ -58,6 +59,9 @@ namespace Thor::PWM
     Chimera::Status_t setPolarity( const Chimera::Timer::PWM::Polarity polarity ) final override;
 
   private:
+    friend Chimera::Threading::LockableCRTP<Driver>;
+    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+
     bool mInitialized;
     Chimera::Timer::Peripheral mPeripheral;
     Chimera::Timer::PWM::Config mPWMConfig;
@@ -67,7 +71,7 @@ namespace Thor::PWM
 
     Chimera::Status_t applyConfig( const size_t freq, const size_t dutyCycle, const Chimera::Timer::PWM::Polarity polarity );
   };
-
+  #endif
 }    // namespace Thor::PWM
 
 #endif /* !THOR_PWM_HPP*/
