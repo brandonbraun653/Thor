@@ -5,7 +5,7 @@
  *   Description:
  *    Explicit hardware register definitions for the STM32F446xx DMA peripheral
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *   2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -46,7 +46,7 @@ namespace Thor::LLD::DMA
 {
   void initializeRegisters();
 
-  static constexpr Reg32_t DMA1_BASE_ADDR         = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x6000U;
+  static constexpr Reg32_t DMA1_BASE_ADDR         = Thor::System::MemoryMap::DMA1_PERIPH_START_ADDRESS;
   static constexpr Reg32_t DMA1_STREAM0_BASE_ADDR = DMA1_BASE_ADDR + 0x010u;
   static constexpr Reg32_t DMA1_STREAM1_BASE_ADDR = DMA1_BASE_ADDR + 0x028u;
   static constexpr Reg32_t DMA1_STREAM2_BASE_ADDR = DMA1_BASE_ADDR + 0x040u;
@@ -56,7 +56,7 @@ namespace Thor::LLD::DMA
   static constexpr Reg32_t DMA1_STREAM6_BASE_ADDR = DMA1_BASE_ADDR + 0x0A0u;
   static constexpr Reg32_t DMA1_STREAM7_BASE_ADDR = DMA1_BASE_ADDR + 0x0B8u;
 
-  static constexpr Reg32_t DMA2_BASE_ADDR         = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x6400U;
+  static constexpr Reg32_t DMA2_BASE_ADDR         = Thor::System::MemoryMap::DMA2_PERIPH_START_ADDRESS;
   static constexpr Reg32_t DMA2_STREAM0_BASE_ADDR = DMA2_BASE_ADDR + 0x010u;
   static constexpr Reg32_t DMA2_STREAM1_BASE_ADDR = DMA2_BASE_ADDR + 0x028u;
   static constexpr Reg32_t DMA2_STREAM2_BASE_ADDR = DMA2_BASE_ADDR + 0x040u;
@@ -70,7 +70,6 @@ namespace Thor::LLD::DMA
   static constexpr Reg32_t NUM_DMA_STREAMS_PER_PERIPH = 8u;
   static constexpr Reg32_t NUM_DMA_STREAMS            = NUM_DMA_PERIPHS * NUM_DMA_STREAMS_PER_PERIPH;
 
-  static constexpr std::array<Reg32_t, NUM_DMA_PERIPHS> periphAddressList = { DMA1_BASE_ADDR, DMA2_BASE_ADDR };
   static constexpr std::array<Reg32_t, NUM_DMA_STREAMS> streamAddressList = {
     DMA1_STREAM0_BASE_ADDR, DMA1_STREAM1_BASE_ADDR, DMA1_STREAM2_BASE_ADDR, DMA1_STREAM3_BASE_ADDR,
     DMA1_STREAM4_BASE_ADDR, DMA1_STREAM5_BASE_ADDR, DMA1_STREAM6_BASE_ADDR, DMA1_STREAM7_BASE_ADDR,

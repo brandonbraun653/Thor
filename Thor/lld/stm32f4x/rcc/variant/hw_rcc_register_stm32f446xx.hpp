@@ -30,7 +30,7 @@ namespace Thor::LLD::RCC
 
   static constexpr Reg32_t NUM_RCC_PERIPHS = 1;
   static constexpr uint8_t RCC1_RESOURCE_INDEX = 0u;
-  static constexpr Reg32_t RCC1_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x3800U;
+  static constexpr Reg32_t RCC1_BASE_ADDR = Thor::System::MemoryMap::RCC_PERIPH_START_ADDRESS;
 
   static constexpr std::array<Reg32_t, NUM_RCC_PERIPHS> periphAddressList = { RCC1_BASE_ADDR };
 

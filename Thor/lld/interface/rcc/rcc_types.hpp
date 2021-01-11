@@ -14,6 +14,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/clock>
 
 namespace Thor::LLD::RCC
 {

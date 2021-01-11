@@ -6,10 +6,10 @@
  *    Provides structures for conversion and mapping between data types for fast
  *    runtime performance of driver code.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-#pragma once 
+#pragma once
 #ifndef THOR_HW_POWER_MAPPING_HPP
 #define THOR_HW_POWER_MAPPING_HPP
 

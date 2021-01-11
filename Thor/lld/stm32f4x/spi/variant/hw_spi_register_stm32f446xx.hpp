@@ -5,7 +5,7 @@
  *  Description:
  *    Explicit hardware register definitions for the STM32F446xx SPI peripherals
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -31,15 +31,12 @@ namespace Thor::LLD::SPI
 {
   void initializeRegisters();
 
-  static constexpr Reg32_t SPI1_BASE_ADDR = Thor::System::MemoryMap::APB2PERIPH_BASE_ADDR + 0x3000U;
-  static constexpr Reg32_t SPI2_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x3800U;
-  static constexpr Reg32_t SPI3_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x3C00U;
-  static constexpr Reg32_t SPI4_BASE_ADDR = Thor::System::MemoryMap::APB2PERIPH_BASE_ADDR + 0x3400U;
+  static constexpr Reg32_t SPI1_BASE_ADDR = Thor::System::MemoryMap::SPI1_PERIPH_START_ADDRESS;
+  static constexpr Reg32_t SPI2_BASE_ADDR = Thor::System::MemoryMap::SPI2_I2S2_PERIPH_START_ADDRESS;
+  static constexpr Reg32_t SPI3_BASE_ADDR = Thor::System::MemoryMap::SPI3_I2S3_PERIPH_START_ADDRESS;
+  static constexpr Reg32_t SPI4_BASE_ADDR = Thor::System::MemoryMap::SPI4_PERIPH_START_ADDRESS;
 
   static constexpr Reg32_t NUM_SPI_PERIPHS = 4;
-
-  static constexpr std::array<Reg32_t, NUM_SPI_PERIPHS> periphAddressList = { SPI1_BASE_ADDR, SPI2_BASE_ADDR, SPI3_BASE_ADDR,
-                                                                              SPI4_BASE_ADDR };
 
   /*------------------------------------------------
   Resource Lookup Indexes

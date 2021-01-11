@@ -5,7 +5,7 @@
  *  Description:
  *    Watchdog includes
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -16,13 +16,11 @@
 #include <Thor/lld/interface/watchdog/mock/watchdog_mock.hpp>
 #include <Thor/lld/interface/watchdog/mock/watchdog_mock_variant.hpp>
 #elif defined( TARGET_STM32F4 )
-#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_driver.hpp>
 #include <Thor/lld/stm32f4x/wwdg/hw_wwdg_prj.hpp>
-#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_mapping.hpp>
+#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_types.hpp>
 
-#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_driver.hpp>
 #include <Thor/lld/stm32f4x/iwdg/hw_iwdg_prj.hpp>
-#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_mapping.hpp>
+#include <Thor/lld/stm32f4x/iwdg/hw_iwdg_types.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/wwdg/hw_wwdg_prj.hpp>
 #include <Thor/lld/stm32l4x/wwdg/hw_wwdg_types.hpp>

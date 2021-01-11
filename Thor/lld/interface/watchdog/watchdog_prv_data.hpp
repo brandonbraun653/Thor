@@ -6,7 +6,7 @@
  *    Declaration of data that must be defined by the LLD implementation or is
  *    shared among all possible drivers.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -20,6 +20,7 @@
 #include <Chimera/watchdog>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
@@ -40,11 +41,11 @@ namespace Thor::LLD::Watchdog
   Peripheral Instances:
     Memory mapped structures that allow direct access to peripheral registers
   -------------------------------------------------------------------------------*/
-#if defined( STM32_IWDG1_PERIPH_AVAILABLE )
+#if defined( STM32_IWDG1_PERIPH_AVAILABLE ) && defined( THOR_LLD_IWDG )
   extern IRegisterMap *IWDG1_PERIPH;
 #endif
 
-#if defined( STM32_WWDG1_PERIPH_AVAILABLE )
+#if defined( STM32_WWDG1_PERIPH_AVAILABLE ) && defined( THOR_LLD_WWDG )
   extern WRegisterMap *WWDG1_PERIPH;
 #endif
 

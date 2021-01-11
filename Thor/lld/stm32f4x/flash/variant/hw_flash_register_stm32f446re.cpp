@@ -3,7 +3,7 @@
  *    hw_flash_register_stm32f446kc.cpp
  *
  *  Description:
- *    FLASH register definitions for the STM32L446KC series chips.
+ *    FLASH register definitions for the STM32F446KC series chips.
  *
  *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -57,19 +57,19 @@ namespace Thor::LLD::RCC::LookupTables
     /*------------------------------------------------
     FLASH clock enable register access lookup table
     ------------------------------------------------*/
-    FLASH_ClockConfig[ FLASH_RESOURCE_INDEX ].mask = AHB1ENR_FLASHEN;
-    FLASH_ClockConfig[ FLASH_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB1ENR;
+    FLASH_ClockConfig[ FLASH_RESOURCE_INDEX ].mask = CKGATENR_FLITF_CKEN;
+    FLASH_ClockConfig[ FLASH_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->CKGATENR;
 
     /*------------------------------------------------
     FLASH reset register access lookup table
     ------------------------------------------------*/
-    FLASH_ResetConfig[ FLASH_RESOURCE_INDEX ].mask = AHB1RSTR_FLASHRST;
-    FLASH_ResetConfig[ FLASH_RESOURCE_INDEX ].reg  = &RCC1_PERIPH->AHB1RSTR;
+    FLASH_ResetConfig[ FLASH_RESOURCE_INDEX ].mask = 0;
+    FLASH_ResetConfig[ FLASH_RESOURCE_INDEX ].reg  = nullptr;
 
     /*------------------------------------------------
     FLASH clocking bus source identifier
     ------------------------------------------------*/
-    FLASH_SourceClock[ FLASH_RESOURCE_INDEX ] = Chimera::Clock::Bus::HCLK;
+    FLASH_SourceClock[ FLASH_RESOURCE_INDEX ] = Chimera::Clock::Bus::AHB;
   };
 
 }    // namespace Thor::LLD::RCC::LookupTables

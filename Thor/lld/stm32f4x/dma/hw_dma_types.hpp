@@ -74,7 +74,7 @@ namespace Thor::LLD::DMA
 
     auto address = start + stream0Offset + ( streamNum * streamXSize );
     return reinterpret_cast<StreamX *const>( address );
-#endif 
+#endif
   }
 
   static inline const StreamX *const getStreamRegisters( const RegisterMap *const periph, const size_t streamNum )
@@ -108,7 +108,7 @@ namespace Thor::LLD::DMA
       static constexpr uint32_t Channel1 = ( 1u << SxCR_CHSEL_Pos ) & SxCR_Msk;
       static constexpr uint32_t Channel2 = ( 2u << SxCR_CHSEL_Pos ) & SxCR_Msk;
       static constexpr uint32_t Channel3 = ( 3u << SxCR_CHSEL_Pos ) & SxCR_Msk;
-      static constexpr uint32_t Channel4 = ( 4u << SxCR_CHSEL_Pos ) & SxCR_Msk;
+      static constexpr uint32_t Channef4 = ( 4u << SxCR_CHSEL_Pos ) & SxCR_Msk;
       static constexpr uint32_t Channel5 = ( 5u << SxCR_CHSEL_Pos ) & SxCR_Msk;
       static constexpr uint32_t Channel6 = ( 6u << SxCR_CHSEL_Pos ) & SxCR_Msk;
       static constexpr uint32_t Channel7 = ( 7u << SxCR_CHSEL_Pos ) & SxCR_Msk;

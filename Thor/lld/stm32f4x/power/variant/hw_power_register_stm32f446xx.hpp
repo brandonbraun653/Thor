@@ -5,7 +5,7 @@
  *  Description:
  *    RCC register definitions for the STM32F446xx series chips.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -22,7 +22,8 @@
 
 namespace Thor::LLD::PWR
 {
-  static constexpr uint32_t PWR_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x7000U;
+  static constexpr uint32_t PWR_BASE_ADDR = Thor::System::MemoryMap::PWR_PERIPH_START_ADDRESS;
+  static constexpr size_t NUM_POWER_PERIPHS = 1;
 
   /*------------------------------------------------
   CR Register

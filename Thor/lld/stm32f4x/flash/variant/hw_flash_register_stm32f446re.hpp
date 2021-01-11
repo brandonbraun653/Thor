@@ -22,8 +22,9 @@
 
 namespace Thor::LLD::FLASH
 {
-  static constexpr uint32_t FLASH_BASE_ADDR   = Thor::System::MemoryMap::FLASH_PERIPH_START_ADDRESS;
-  static constexpr uint32_t NUM_FLASH_PERIPHS = 1;
+  static constexpr uint32_t FLASH_BASE_ADDR      = Thor::System::MemoryMap::FLASH_PERIPH_START_ADDRESS;
+  static constexpr uint32_t NUM_FLASH_PERIPHS    = 1;
+  static constexpr uint32_t FLASH_RESOURCE_INDEX = 0;
 
   /*------------------------------------------------
   Access Control Register (ACR)

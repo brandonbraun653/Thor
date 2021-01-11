@@ -6,7 +6,7 @@
  *    Helper macros/functions/classes for generating register level field access
  *    data structures in processor specific definition files.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -15,6 +15,9 @@
 
 /* STL Includes */
 #include <cstddef>
+
+/* Chimera Includes */
+#include <Chimera/common>
 
 namespace Thor::LLD
 {

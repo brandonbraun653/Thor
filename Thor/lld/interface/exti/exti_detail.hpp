@@ -19,8 +19,6 @@
 #include <Thor/lld/interface/exti/sim/exti_sim_variant.hpp>
 #include <Thor/lld/interface/exti/sim/exti_sim_types.hpp>
 #elif defined( TARGET_STM32F4 )
-#include <Thor/lld/stm32f4x/exti/hw_exti_driver.hpp>
-#include <Thor/lld/stm32f4x/exti/hw_exti_mapping.hpp>
 #include <Thor/lld/stm32f4x/exti/hw_exti_prj.hpp>
 #include <Thor/lld/stm32f4x/exti/hw_exti_types.hpp>
 #elif defined( TARGET_STM32L4 )

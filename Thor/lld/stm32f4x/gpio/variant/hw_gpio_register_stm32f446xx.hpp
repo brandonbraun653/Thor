@@ -5,7 +5,7 @@
  *  Description:
  *    GPIO register definitions for the STM32F446xx series chips.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -32,15 +32,15 @@
 namespace Thor::LLD::GPIO
 {
   void initializeRegisters();
-  
-  static constexpr uint32_t GPIOA_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0000U;
-  static constexpr uint32_t GPIOB_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0400U;
-  static constexpr uint32_t GPIOC_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0800U;
-  static constexpr uint32_t GPIOD_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x0C00U;
-  static constexpr uint32_t GPIOE_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x1000U;
-  static constexpr uint32_t GPIOF_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x1400U;
-  static constexpr uint32_t GPIOG_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x1800U;
-  static constexpr uint32_t GPIOH_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x1C00U;
+
+  static constexpr uint32_t GPIOA_BASE_ADDR = Thor::System::MemoryMap::GPIOA_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOB_BASE_ADDR = Thor::System::MemoryMap::GPIOB_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOC_BASE_ADDR = Thor::System::MemoryMap::GPIOC_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOD_BASE_ADDR = Thor::System::MemoryMap::GPIOD_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOE_BASE_ADDR = Thor::System::MemoryMap::GPIOE_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOF_BASE_ADDR = Thor::System::MemoryMap::GPIOF_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOG_BASE_ADDR = Thor::System::MemoryMap::GPIOG_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOH_BASE_ADDR = Thor::System::MemoryMap::GPIOH_PERIPH_START_ADDRESS;
 
   static constexpr size_t NUM_GPIO_PERIPHS = 8;
 
@@ -52,12 +52,6 @@ namespace Thor::LLD::GPIO
   static constexpr uint32_t GPIOF_RESOURCE_INDEX = 5u;
   static constexpr uint32_t GPIOG_RESOURCE_INDEX = 6u;
   static constexpr uint32_t GPIOH_RESOURCE_INDEX = 7u;
-
-  static constexpr std::array<uint32_t, NUM_GPIO_PERIPHS> periphAddressList = { GPIOA_BASE_ADDR, GPIOB_BASE_ADDR,
-                                                                                GPIOC_BASE_ADDR, GPIOD_BASE_ADDR,
-                                                                                GPIOE_BASE_ADDR, GPIOF_BASE_ADDR,
-                                                                                GPIOG_BASE_ADDR, GPIOH_BASE_ADDR };
-
 
   /*------------------------------------------------
   Alternate Functions
@@ -727,13 +721,13 @@ namespace Thor::LLD::GPIO
   static constexpr uint32_t AFRL_AFSEL3_1   = ( 0x2U << AFRL_AFSEL3_Pos );
   static constexpr uint32_t AFRL_AFSEL3_2   = ( 0x4U << AFRL_AFSEL3_Pos );
   static constexpr uint32_t AFRL_AFSEL3_3   = ( 0x8U << AFRL_AFSEL3_Pos );
-  static constexpr uint32_t AFRL_AFSEL4_Pos = ( 16U );
-  static constexpr uint32_t AFRL_AFSEL4_Msk = ( 0xFU << AFRL_AFSEL4_Pos );
-  static constexpr uint32_t AFRL_AFSEL4     = AFRL_AFSEL4_Msk;
-  static constexpr uint32_t AFRL_AFSEL4_0   = ( 0x1U << AFRL_AFSEL4_Pos );
-  static constexpr uint32_t AFRL_AFSEL4_1   = ( 0x2U << AFRL_AFSEL4_Pos );
-  static constexpr uint32_t AFRL_AFSEL4_2   = ( 0x4U << AFRL_AFSEL4_Pos );
-  static constexpr uint32_t AFRL_AFSEL4_3   = ( 0x8U << AFRL_AFSEL4_Pos );
+  static constexpr uint32_t AFRL_AFSEF4_Pos = ( 16U );
+  static constexpr uint32_t AFRL_AFSEF4_Msk = ( 0xFU << AFRL_AFSEF4_Pos );
+  static constexpr uint32_t AFRL_AFSEF4     = AFRL_AFSEF4_Msk;
+  static constexpr uint32_t AFRL_AFSEF4_0   = ( 0x1U << AFRL_AFSEF4_Pos );
+  static constexpr uint32_t AFRL_AFSEF4_1   = ( 0x2U << AFRL_AFSEF4_Pos );
+  static constexpr uint32_t AFRL_AFSEF4_2   = ( 0x4U << AFRL_AFSEF4_Pos );
+  static constexpr uint32_t AFRL_AFSEF4_3   = ( 0x8U << AFRL_AFSEF4_Pos );
   static constexpr uint32_t AFRL_AFSEL5_Pos = ( 20U );
   static constexpr uint32_t AFRL_AFSEL5_Msk = ( 0xFU << AFRL_AFSEL5_Pos );
   static constexpr uint32_t AFRL_AFSEL5     = AFRL_AFSEL5_Msk;

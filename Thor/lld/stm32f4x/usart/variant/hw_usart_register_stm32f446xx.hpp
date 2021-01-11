@@ -33,10 +33,10 @@ namespace Thor::LLD::USART
 {
   void initializeRegisters();
 
-  static constexpr Reg32_t USART1_BASE_ADDR = Thor::System::MemoryMap::APB2PERIPH_BASE_ADDR + 0x1000U;
-  static constexpr Reg32_t USART2_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x4400U;
-  static constexpr Reg32_t USART3_BASE_ADDR = Thor::System::MemoryMap::APB1PERIPH_BASE_ADDR + 0x4800U;
-  static constexpr Reg32_t USART6_BASE_ADDR = Thor::System::MemoryMap::APB2PERIPH_BASE_ADDR + 0x1400U;
+  static constexpr Reg32_t USART1_BASE_ADDR = Thor::System::MemoryMap::USART1_PERIPH_START_ADDRESS;
+  static constexpr Reg32_t USART2_BASE_ADDR = Thor::System::MemoryMap::USART2_PERIPH_START_ADDRESS;
+  static constexpr Reg32_t USART3_BASE_ADDR = Thor::System::MemoryMap::USART3_PERIPH_START_ADDRESS;
+  static constexpr Reg32_t USART6_BASE_ADDR = Thor::System::MemoryMap::USART6_PERIPH_START_ADDRESS;
 
   static constexpr Reg32_t NUM_USART_PERIPHS = 4u;
 

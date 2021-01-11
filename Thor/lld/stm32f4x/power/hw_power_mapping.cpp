@@ -1,12 +1,12 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_power_mapping.hpp
  *
- *   Description:
+ *  Description:
  *    Provides structures for conversion and mapping between data types for fast
  *    runtime performance of driver code.
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Driver Includes */
@@ -19,12 +19,8 @@ namespace Thor::LLD::PWR
 {
 #if defined( EMBEDDED )
   RegisterMap *const PWR_PERIPH = reinterpret_cast<RegisterMap *const>( PWR_BASE_ADDR );
-
-#elif defined( _SIM )
-  RegisterMap *const PWR_PERIPH = new RegisterMap;
-
 #endif
 
-}
+}    // namespace Thor::LLD::PWR
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_PWR */

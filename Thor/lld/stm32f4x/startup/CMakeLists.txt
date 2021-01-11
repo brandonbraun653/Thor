@@ -10,7 +10,7 @@ endif()
 
 gen_static_lib_variants(
   TARGET
-    thor_lld_stm32l4_startup
+    thor_lld_stm32f4_startup
   SOURCES
     ${VARIANT_SRC}
   PRV_LIBRARIES
