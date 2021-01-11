@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    startup.hpp
+ *    startup_detail.hpp
  *
  *  Description:
  *    Includes chip level startup functions
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -14,10 +14,8 @@
 
 #if defined( TARGET_LLD_MOCK )
 #include <Thor/lld/interface/startup/mock/startup_mock.hpp>
-#elif defined( TARGET_STM32F4 )
-#include <Thor/lld/stm32f4x/startup/startup_stm32f4xxxx.hpp>
-#elif defined( TARGET_STM32L4 )
-#include <Thor/lld/stm32l4x/startup/hw_startup_stm32l4xxxx.hpp>
+#elif defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 )
+#include <Thor/lld/common/cortex-m4/cm4_startup_reset.hpp>
 #else
 #pragma message( "startup_detail.hpp: Unknown target for LLD" )
 #endif

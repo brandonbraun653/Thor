@@ -10,6 +10,8 @@ add_subdirectory("interface")
 if(Toolchain::HAS_GCC_ARM_NONE_EABI)
   if(${THOR_FAMILY} MATCHES "^L4$")
     add_subdirectory("stm32l4x")
+  elseif(${THOR_FAMILY} MATCHES "^F4$")
+    add_subdirectory("stm32f4x")
   else()
     message(FATAL_ERROR "No low level driver was found for Thor Family: ${THOR_FAMILY}!")
   endif()
@@ -23,8 +25,6 @@ endif()
 # ====================================================
 set(EXT_INCLUDES lld_common_inc)
 add_library(${EXT_INCLUDES} INTERFACE)
-
-target_link_libraries(${EXT_INCLUDES} INTERFACE type_safe_inc)
 
 if(Toolchain::REQUIRES_FREERTOS_THREADS)
   target_link_libraries(${EXT_INCLUDES} INTERFACE

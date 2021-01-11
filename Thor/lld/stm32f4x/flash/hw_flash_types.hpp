@@ -5,7 +5,7 @@
  *  Description:
  *    Implements Flash peripheral types
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -16,11 +16,14 @@
 #include <cstdint>
 
 /* Driver Includes */
-#include <Thor/cfg>
+#include <Thor/lld/common/registers/field_accessor.hpp>
 #include <Thor/lld/stm32f4x/flash/hw_flash_prj.hpp>
 
 namespace Thor::LLD::FLASH
 {
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
   struct RegisterMap
   {
     volatile uint32_t ACR;     /**< FLASH access control register,   Address offset: 0x00 */
@@ -32,153 +35,10 @@ namespace Thor::LLD::FLASH
     volatile uint32_t OPTCR1;  /**< FLASH option control register 1, Address offset: 0x18 */
   };
 
-  #if defined( THOR_LLD_FLASH )
-  
-  /*------------------------------------------------
-  Access Control Register (ACR)
-  ------------------------------------------------*/
-  namespace ACR
-  {
-    struct DCRST
-    {
-      static inline uint32_t get( const RegisterMap *const periph )
-      {
-        return periph->ACR & ACR_DCRST;
-      }
-
-      static inline void set( RegisterMap *const periph, const uint32_t val )
-      {
-        uint32_t tmp = periph->ACR;
-        tmp &= ~( ACR_DCRST );
-        tmp |= val;
-        periph->ACR = tmp;
-      }
-    };
-
-    struct ICRST
-    {
-      static inline uint32_t get( const RegisterMap *const periph )
-      {
-        return periph->ACR & ACR_ICRST;
-      }
-
-      static inline void set( RegisterMap *const periph, const uint32_t val )
-      {
-        uint32_t tmp = periph->ACR;
-        tmp &= ~( ACR_ICRST );
-        tmp |= val & ACR_ICRST;
-        periph->ACR = tmp;
-      }
-    };
-
-    struct DCEN
-    {
-      static inline uint32_t get( const RegisterMap *const periph )
-      {
-        return periph->ACR & ACR_DCEN;
-      }
-
-      static inline void set( RegisterMap *const periph, const uint32_t val )
-      {
-        uint32_t tmp = periph->ACR;
-        tmp &= ~( ACR_DCEN );
-        tmp |= val & ACR_DCEN;
-        periph->ACR = tmp;
-      }
-    };
-
-    struct ICEN
-    {
-      static inline uint32_t get( const RegisterMap *const periph )
-      {
-        return periph->ACR & ACR_ICEN;
-      }
-
-      static inline void set( RegisterMap *const periph, const uint32_t val )
-      {
-        uint32_t tmp = periph->ACR;
-        tmp &= ~( ACR_ICEN );
-        tmp |= val & ACR_ICEN;
-        periph->ACR = tmp;
-      }
-    };
-
-    struct PRFTEN
-    {
-      static inline uint32_t get( const RegisterMap *const periph )
-      {
-        return periph->ACR & ACR_PRFTEN;
-      }
-
-      static inline void set( RegisterMap *const periph, const uint32_t val )
-      {
-        uint32_t tmp = periph->ACR;
-        tmp &= ~( ACR_PRFTEN );
-        tmp |= val & ACR_PRFTEN;
-        periph->ACR = tmp;
-      }
-    };
-
-    struct LATENCY
-    {
-      static inline uint32_t get( const RegisterMap *const periph )
-      {
-        return periph->ACR & ACR_LATENCY;
-      }
-
-      static inline void set( RegisterMap *const periph, const uint32_t val )
-      {
-        uint32_t tmp = periph->ACR;
-        tmp &= ~( ACR_LATENCY );
-        tmp |= val & ACR_LATENCY;
-        periph->ACR = tmp;
-      }
-    };
-  }    // namespace ACR
-
-  /*------------------------------------------------
-  Key Register (KEYR)
-  ------------------------------------------------*/
-  namespace KEYR
-  {
-  }
-
-  /*------------------------------------------------
-  Option Key Register (OPTKEYR)
-  ------------------------------------------------*/
-  namespace OPTKEYR
-  {
-  }
-
-  /*------------------------------------------------
-  Status Register (SR)
-  ------------------------------------------------*/
-  namespace SR
-  {
-  }
-
-  /*------------------------------------------------
-  Control Register (CR)
-  ------------------------------------------------*/
-  namespace CR
-  {
-  }
-
-  /*------------------------------------------------
-  Option Control Register (OPTCR)
-  ------------------------------------------------*/
-  namespace OPTCR
-  {
-  }
-
-  /*------------------------------------------------
-  Option Control Register 1 (OPTCR1)
-  ------------------------------------------------*/
-  namespace OPTCR1
-  {
-  }
-
-  #endif /* THOR_LLD_FLASH */
+  /*-------------------------------------------------------------------------------
+  Classes
+  -------------------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, ACR, ACR_LATENCY_Msk, LATENCY, BIT_ACCESS_RW );
 
 }    // namespace Thor::LLD::FLASH
 

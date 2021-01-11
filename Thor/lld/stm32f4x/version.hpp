@@ -5,7 +5,7 @@
  *  Description:
  *    Low level driver versioning information for STM32F4 chips
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -13,11 +13,11 @@
 #define THOR_LLD_STM32F4_VERSION_HPP
 
 /* STL Includes */
-#include <string>
+#include <string_view>
 
 namespace Thor::LLD
 {
-  static const std::string_view VersionSTM32F4 = "2.2#";
+  static const std::string_view VersionSTM32F4 = "2.3";
 }
 
 #endif  /* !THOR_LLD_STM32F4_VERSION_HPP */

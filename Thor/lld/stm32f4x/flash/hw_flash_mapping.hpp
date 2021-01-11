@@ -6,10 +6,10 @@
  *    Provides structures for conversion and mapping between data types for fast
  *    runtime performance of driver code.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-#pragma once 
+#pragma once
 #ifndef THOR_HW_FLASH_MAPPING_HPP
 #define THOR_HW_FLASH_MAPPING_HPP
 
@@ -18,7 +18,12 @@
 
 namespace Thor::LLD::FLASH
 {
-  extern RegisterMap *const FLASH_PERIPH;
+  /*-------------------------------------------------
+  Define Memory Mapped Structs for Peripheral
+  -------------------------------------------------*/
+#if defined( STM32_FLASH_PERIPH_AVAILABLE )
+  extern RegisterMap *FLASH_PERIPH;
+#endif
 }
 
 #endif /* !THOR_HW_FLASH_MAPPING_HPP */

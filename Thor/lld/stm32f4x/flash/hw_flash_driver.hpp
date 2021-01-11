@@ -12,12 +12,9 @@
 #ifndef THOR_HW_DRIVER_FLASH_HPP
 #define THOR_HW_DRIVER_FLASH_HPP
 
-/* C++ Includes */
-#include <cstdint>
-
 namespace Thor::LLD::FLASH
 {
-  void initialize();
+
 }
 
 #endif /* !THOR_HW_DRIVER_FLASH_HPP */

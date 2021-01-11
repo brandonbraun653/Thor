@@ -12,7 +12,6 @@ gen_static_lib_variants(
   TARGET
     thor_lld_stm32l4_startup
   SOURCES
-    hw_startup_reset.cpp
     ${VARIANT_SRC}
   PRV_LIBRARIES
     aurora_intf_inc

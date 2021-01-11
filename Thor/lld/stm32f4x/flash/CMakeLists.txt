@@ -14,18 +14,20 @@ set(LINK_LIBS
 # ====================================================
 # Variant Library
 # ====================================================
-if(${THOR_CHIP} MATCHES "^L432$")
-  set(VARIANT_SRC hw_startup_stm32l432xx.c)
+if(${THOR_CHIP} MATCHES "^F446")
+  set(VARIANT_SRC variant/hw_flash_register_stm32f446re.cpp)
 else()
-  message(FATAL_ERROR "Unsupported STM32L4 driver variant for: startup")
+  message(FATAL_ERROR "Unsupported STM32F4 driver variant for: flash")
 endif()
 
 # ====================================================
 # Driver Library (+ Variant)
 # ====================================================
 function(build_library variant)
-  set(CORE thor_lld_stm32l4_startup${variant})
+  set(CORE thor_lld_stm32l4_flash${variant})
   add_library(${CORE} STATIC
+    hw_flash_driver_stm32l4.cpp
+    hw_flash_mapping.cpp
     ${VARIANT_SRC}
   )
   target_link_libraries(${CORE} PRIVATE ${LINK_LIBS} prj_device_target prj_build_target${variant})

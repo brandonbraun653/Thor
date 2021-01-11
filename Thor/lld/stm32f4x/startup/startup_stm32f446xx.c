@@ -4,10 +4,10 @@
  *
  *  Description:
  *    This file contains the entry point (Reset_Handler) of your firmware project.
- *    The reset handled initializes the RAM and calls system library initializers 
+ *    The reset handled initializes the RAM and calls system library initializers
  *    as well as the platform-specific initializer and the main() function.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #if defined( EMBEDDED )
@@ -889,23 +889,31 @@ void __attribute__( ( noreturn ) ) Default_Handler()
     ;
 }
 
-void *g_pfnVectors[ 0x71 ] __attribute__( ( section( ".isr_vector" ), used ) ) = {
-  &_estack,
-  &Reset_Handler,
-  &NMI_Handler,
-  &HardFault_Handler,
-  &MemManage_Handler,
-  &BusFault_Handler,
-  &UsageFault_Handler,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  &SVC_Handler,
-  &DebugMon_Handler,
-  NULL,
-  &PendSV_Handler,
-  &SysTick_Handler,
+/*-------------------------------------------------
+The full vector table, placed at the linker script defined location ".isr_vector".
+***MUST*** match the enumeration order of IRQn_Type. For full definition, see
+RM0394 Section 12.3 "Interrupt and Exception Vectors"
+-------------------------------------------------*/
+/* clang-format off */
+void *StartupVectorTable[] __attribute__( ( section( ".isr_vector" ), used ) ) = {
+  /****** Cortex-M4 Processor Exception Handlers *******************************/
+  &_estack,               // xxx: Initial stack pointer value
+  &Reset_Handler,         // xxx: Default function to invoke on any reset
+  &NMI_Handler,           // -14: Non-Maskable Interrupt
+  &HardFault_Handler,     // -13: Hard Fault
+  &MemManage_Handler,     // -12: Memory Management Fault
+  &BusFault_Handler,      // -11: Bus Fault
+  &UsageFault_Handler,    // -10: Usage Fault
+  NULL,                   //  -9: Reserved
+  NULL,                   //  -8: Reserved
+  NULL,                   //  -7: Reserved
+  NULL,                   //  -6: Reserved
+  &SVC_Handler,           //  -5: Supervisor Call
+  &DebugMon_Handler,      //  -4: Debug Monitor
+  NULL,                   //  -3: Reserved
+  &PendSV_Handler,        //  -2: Pending Supervisor Call
+  &SysTick_Handler,       //  -1: System Tick
+  /****** STM32 specific Interrupt Handlers ************************************/
   &WWDG_IRQHandler,
   &PVD_IRQHandler,
   &TAMP_STAMP_IRQHandler,
@@ -1004,5 +1012,6 @@ void *g_pfnVectors[ 0x71 ] __attribute__( ( section( ".isr_vector" ), used ) ) =
   &FMPI2C1_Event_IRQHandler,
   &FMPI2C1_Error_IRQHandler,
 };
+/* clang-format on */
 
 #endif /* _EMBEDDED */

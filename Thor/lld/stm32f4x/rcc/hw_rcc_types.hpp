@@ -5,7 +5,7 @@
  *  Description:
  *    Declares types specific to the RCC peripehral
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -919,35 +919,6 @@ namespace Thor::LLD::RCC
     CFGR::PPRE2::APB2Prescale_t APB2CLKDivider; /**< The APB2 clock (PCLK2) divider */
     Reg32_t FlashLatency;                       /**< The new number of flash wait states given the updated system clock */
   };
-
-  /**
-   *  Configuration struct for the clock enable register
-   */
-  struct RegisterConfig
-  {
-    volatile Reg32_t *reg; /**< Clock enable register */
-    Reg32_t mask;          /**< Bit mask that will enable/disable the peripheral's clock */
-  };
-
-  /**
-   *  Peripheral Control & Config (PCC)
-   *  Describes a generic set of registers and configurations for a
-   *  peripheral type that allows the RCC driver to generically configure
-   *  a large number of peripherals by referencing these lookup tables.
-   *
-   *  @note All pointers here reference a lookup table
-   */
-  struct PCC
-  {
-    const RegisterConfig *clock;                   /**< Standard clock configuration registers */
-    const RegisterConfig *clockLP;                 /**< Low power clock configuration registers */
-    const RegisterConfig *reset;                   /**< Peripheral reset registers */
-    const ClockType_t *clockSource; /**< Which system clock is used on the peripheral */
-    const Chimera::Container::LightFlatMap<std::uintptr_t, size_t>
-        *resourceIndexMap; /**< Converts a peripheral address into a resource index */
-    size_t elements;       /**< Number of elements in the tables */
-  };
-
 
 }    // namespace Thor::LLD::RCC
 

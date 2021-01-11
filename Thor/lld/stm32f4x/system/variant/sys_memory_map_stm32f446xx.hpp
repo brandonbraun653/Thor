@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    sys_memory_map_stm32f446xx.hpp
  *
- *   Description:
+ *  Description:
  *    System level memory map definitions for the STM32F446xx series chips
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -15,31 +15,90 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* Thor Includes */
+#include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f4xxxx.hpp>
+
 namespace Thor::System::MemoryMap
 {
-  // When simulating this space, I probably could allocate volatile arrays and grab their address at compile time.
+  /*-------------------------------------------------------------------------------
+  AHB3
+  -------------------------------------------------------------------------------*/
+  static constexpr uint32_t FMC_PERIPH_START_ADDRESS     = AHB3_RGN_START_ADDR;
+  static constexpr uint32_t QUADSPI_PERIPH_START_ADDRESS = AHB3_RGN_START_ADDR + 0x1000;
 
-  static constexpr uint32_t FLASH_BASE_ADDR      = 0x08000000U; /**< FLASH(up to 1 MB) BASE address in the alias region  */
-  static constexpr uint32_t SRAM1_BASE_ADDR      = 0x20000000U; /**< SRAM1(112 KB) BASE address in the alias region  */
-  static constexpr uint32_t SRAM2_BASE_ADDR      = 0x2001C000U; /**< SRAM2(16 KB) BASE address in the alias region  */
-  static constexpr uint32_t PERIPH_BASE_ADDR     = 0x40000000U; /**< Peripheral BASE address in the alias region  */
-  static constexpr uint32_t BKPSRAM_BASE_ADDR    = 0x40024000U; /**< Backup SRAM(4 KB) BASE address in the alias region  */
-  static constexpr uint32_t FMC_R_BASE_ADDR      = 0xA0000000U; /**< FMC registers BASE address  */
-  static constexpr uint32_t QSPI_R_BASE_ADDR     = 0xA0001000U; /**< QuadSPI registers BASE address */
-  static constexpr uint32_t SRAM1_BB_BASE_ADDR   = 0x22000000U; /**< SRAM1(112 KB) BASE address in the bit-band region */
-  static constexpr uint32_t SRAM2_BB_BASE_ADDR   = 0x22380000U; /**< SRAM2(16 KB) BASE address in the bit-band region */
-  static constexpr uint32_t PERIPH_BB_BASE_ADDR  = 0x42000000U; /**< Peripheral BASE address in the bit-band region */
-  static constexpr uint32_t BKPSRAM_BB_BASE_ADDR = 0x42480000U; /**< Backup SRAM(4 KB) BASE in the bit-band region */
-  static constexpr uint32_t FLASH_END_ADDR       = 0x0807FFFFU; /**< FLASH end address */
-  static constexpr uint32_t FLASH_OTP_BASE_ADDR  = 0x1FFF7800U; /**< BASE_ADDR address of embedded FLASH OTP Area  */
-  static constexpr uint32_t FLASH_OTP_END_ADDR   = 0x1FFF7A0FU; /**< End address of embedded FLASH OTP Area  */
+  /*-------------------------------------------------------------------------------
+  AHB2
+  -------------------------------------------------------------------------------*/
+  static constexpr uint32_t DCMI_PERIPH_START_ADDRESS = AHB2_RGN_START_ADDR + 0x00050000;
+  static constexpr uint32_t USB_OTG_FS_START_ADDRESS  = AHB2_RGN_START_ADDR;
 
-  static constexpr uint32_t APB1PERIPH_BASE_ADDR = PERIPH_BASE_ADDR;
-  static constexpr uint32_t APB2PERIPH_BASE_ADDR = ( PERIPH_BASE_ADDR + 0x00010000U );
-  static constexpr uint32_t AHB1PERIPH_BASE_ADDR = ( PERIPH_BASE_ADDR + 0x00020000U );
-  static constexpr uint32_t AHB2PERIPH_BASE_ADDR = ( PERIPH_BASE_ADDR + 0x10000000U );
+  /*-------------------------------------------------------------------------------
+  AHB1
+  -------------------------------------------------------------------------------*/
+  static constexpr uint32_t USB_OTG_HS_START_ADDRESS   = 0x40040000;
+  static constexpr uint32_t DMA2_PERIPH_START_ADDRESS  = AHB1_RGN_START_ADDR + 0x6400;
+  static constexpr uint32_t DMA1_PERIPH_START_ADDRESS  = AHB1_RGN_START_ADDR + 0x6000;
+  static constexpr uint32_t FLASH_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDR + 0x3C00;
+  static constexpr uint32_t RCC_PERIPH_START_ADDRESS   = AHB1_RGN_START_ADDR + 0x3800;
+  static constexpr uint32_t CRC_PERIPH_START_ADDRESS   = AHB1_RGN_START_ADDR + 0x3000;
+  static constexpr uint32_t GPIOH_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDR + 0x1800;
+  static constexpr uint32_t GPIOG_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDR + 0x1400;
+  static constexpr uint32_t GPIOF_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDR + 0x1000;
+  static constexpr uint32_t GPIOE_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDR + 0x0C00;
+  static constexpr uint32_t GPIOD_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDR + 0x0800;
+  static constexpr uint32_t GPIOC_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDR + 0x0800;
+  static constexpr uint32_t GPIOB_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDR + 0x0400;
+  static constexpr uint32_t GPIOA_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDR + 0x0000;
 
-  static constexpr uint32_t VECT_TAB_OFFSET = 0x00; /*!< Vector Table base offset field. This value must be a multiple of 0x200. */
+  /*-------------------------------------------------------------------------------
+  APB2
+  -------------------------------------------------------------------------------*/
+  static constexpr uint32_t SAI2_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x5C00;
+  static constexpr uint32_t SAI1_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x5800;
+  static constexpr uint32_t TIM11_PERIPH_START_ADDRESS  = APB2_RGN_START_ADDR + 0x4800;
+  static constexpr uint32_t TIM10_PERIPH_START_ADDRESS  = APB2_RGN_START_ADDR + 0x4400;
+  static constexpr uint32_t TIM9_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x4000;
+  static constexpr uint32_t EXTI_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x3C00;
+  static constexpr uint32_t SYSCFG_PERIPH_START_ADDRESS = APB2_RGN_START_ADDR + 0x3800;
+  static constexpr uint32_t SPI4_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x3400;
+  static constexpr uint32_t SPI1_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x3000;
+  static constexpr uint32_t SDMMC_PERIPH_START_ADDRESS  = APB2_RGN_START_ADDR + 0x2C00;
+  static constexpr uint32_t ADCx_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x2000;
+  static constexpr uint32_t USART6_PERIPH_START_ADDRESS = APB2_RGN_START_ADDR + 0x1400;
+  static constexpr uint32_t USART1_PERIPH_START_ADDRESS = APB2_RGN_START_ADDR + 0x1000;
+  static constexpr uint32_t TIM8_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x0400;
+  static constexpr uint32_t TIM1_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x0000;
+
+  /*-------------------------------------------------------------------------------
+  APB1
+  -------------------------------------------------------------------------------*/
+  static constexpr uint32_t DAC_PERIPH_START_ADDRESS       = APB1_RGN_START_ADDR + 0x7400;
+  static constexpr uint32_t PWR_PERIPH_START_ADDRESS       = APB1_RGN_START_ADDR + 0x7000;
+  static constexpr uint32_t HDMI_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x6C00;
+  static constexpr uint32_t CAN2_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x6800;
+  static constexpr uint32_t CAN1_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x6400;
+  static constexpr uint32_t I2C3_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x5C00;
+  static constexpr uint32_t I2C2_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x5800;
+  static constexpr uint32_t I2C1_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x5400;
+  static constexpr uint32_t UART5_PERIPH_START_ADDRESS     = APB1_RGN_START_ADDR + 0x5000;
+  static constexpr uint32_t UART4_PERIPH_START_ADDRESS     = APB1_RGN_START_ADDR + 0x4C00;
+  static constexpr uint32_t USART3_PERIPH_START_ADDRESS    = APB1_RGN_START_ADDR + 0x4800;
+  static constexpr uint32_t USART2_PERIPH_START_ADDRESS    = APB1_RGN_START_ADDR + 0x4400;
+  static constexpr uint32_t SPDIF_PERIPH_START_ADDRESS     = APB1_RGN_START_ADDR + 0x4000;
+  static constexpr uint32_t SPI3_I2S3_PERIPH_START_ADDRESS = APB1_RGN_START_ADDR + 0x3C00;
+  static constexpr uint32_t SPI2_I2S2_PERIPH_START_ADDRESS = APB1_RGN_START_ADDR + 0x3800;
+  static constexpr uint32_t IWDG_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x3000;
+  static constexpr uint32_t WWDG_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x2C00;
+  static constexpr uint32_t RTC_BKP_PERIPH_START_ADDRESS   = APB1_RGN_START_ADDR + 0x2800;
+  static constexpr uint32_t TIM14_PERIPH_START_ADDRESS     = APB1_RGN_START_ADDR + 0x2000;
+  static constexpr uint32_t TIM13_PERIPH_START_ADDRESS     = APB1_RGN_START_ADDR + 0x1C00;
+  static constexpr uint32_t TIM12_PERIPH_START_ADDRESS     = APB1_RGN_START_ADDR + 0x1800;
+  static constexpr uint32_t TIM7_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x1400;
+  static constexpr uint32_t TIM6_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x1000;
+  static constexpr uint32_t TIM5_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x0C00;
+  static constexpr uint32_t TIM4_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x0800;
+  static constexpr uint32_t TIM3_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x0400;
+  static constexpr uint32_t TIM2_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x0000;
 
 }    // namespace Thor::System::MemoryMap
 

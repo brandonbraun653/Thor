@@ -5,7 +5,7 @@
  *  Description:
  *    Implements Flash register definitions for the STM32F446xx chips
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -22,7 +22,8 @@
 
 namespace Thor::LLD::FLASH
 {
-  static constexpr uint32_t FLASH_BASE_ADDR = Thor::System::MemoryMap::AHB1PERIPH_BASE_ADDR + 0x3C00U;
+  static constexpr uint32_t FLASH_BASE_ADDR   = Thor::System::MemoryMap::FLASH_PERIPH_START_ADDRESS;
+  static constexpr uint32_t NUM_FLASH_PERIPHS = 1;
 
   /*------------------------------------------------
   Access Control Register (ACR)

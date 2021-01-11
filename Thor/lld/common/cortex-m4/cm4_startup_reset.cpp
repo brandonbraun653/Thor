@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    hw_startup_reset.cpp
+ *    cm4_startup_reset.cpp
  *
  *  Description:
- *    Reset Handler for the STM32L4xxxx Chips
+ *    Startup and reset entry point for Cortex-M4 based projects
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #if defined( EMBEDDED )
@@ -15,7 +15,6 @@
 
 extern void SystemInit();
 extern int main();
-extern void _exit( const int code );
 
 #if defined( __cplusplus )
 extern "C"
@@ -41,13 +40,17 @@ extern "C"
     ------------------------------------------------*/
     void **pSource, **pDest;
     for ( pSource = &_sidata, pDest = &_sdata; pDest != &_edata; pSource++, pDest++ )
+    {
       *pDest = *pSource;
+    }
 
     /*------------------------------------------------
     Zero initialize the bss segment
     ------------------------------------------------*/
     for ( pDest = &_sbss; pDest != &_ebss; pDest++ )
+    {
       *pDest = 0;
+    }
 
     /*------------------------------------------------
     Takes care of array/ctor/dtor data
@@ -63,20 +66,15 @@ extern "C"
     /*------------------------------------------------
     System Execution Entry Point
     ------------------------------------------------*/
-    volatile int retCode = main();
+    int retCode = main();
 
     /*------------------------------------------------
-    Should we ever exit main for some reason, make sure we
-    gracefully reset the chip.
-    ------------------------------------------------*/
-    // TODO: Put me back once you figure out how to add sys-no-specs to the linker in VS
-    //_exit( retCode );
-
-    /*------------------------------------------------
-    Should never get here as _exit() has already reset the chip
+    Should never get here
     ------------------------------------------------*/
     while ( 1 )
-      ;
+    {
+      continue;
+    }
   }
 
 #if defined( __cplusplus )
