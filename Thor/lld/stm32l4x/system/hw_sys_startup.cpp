@@ -10,9 +10,10 @@
 
 /* Thor Includes */
 #include <Thor/cfg>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/interface/rcc/rcc_detail.hpp>
+#include <Thor/lld/interface/rcc/rcc_prv_data.hpp>
 #include <Thor/lld/interface/system/sys_intf.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
 

@@ -15,11 +15,11 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/exti/exti_intf.hpp>
-#include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
+#include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
 #include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 #include <Thor/lld/stm32l4x/system/hw_sys_driver.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_GPIO )
@@ -37,7 +37,7 @@ namespace Thor::LLD::GPIO
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    initializeRegisters();
+
 
     /*-------------------------------------------------
     Attach all the expected peripherals to the drivers

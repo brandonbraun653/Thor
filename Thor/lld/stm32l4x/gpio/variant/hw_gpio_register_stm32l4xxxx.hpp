@@ -28,7 +28,7 @@ namespace Thor::LLD::GPIO
    *
    *  @return void
    */
-  void initializeRegisters();
+
 
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base

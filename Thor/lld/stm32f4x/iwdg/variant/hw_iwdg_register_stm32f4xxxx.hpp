@@ -25,7 +25,7 @@
 
 namespace Thor::LLD::IWDG
 {
-  void initializeRegisters();
+
 
   static constexpr Reg32_t IWDG1_BASE_ADDR      = Thor::System::MemoryMap::IWDG_PERIPH_START_ADDRESS;
   static constexpr Reg32_t PERIPH_CLOCK_FREQ_HZ = 32000u;

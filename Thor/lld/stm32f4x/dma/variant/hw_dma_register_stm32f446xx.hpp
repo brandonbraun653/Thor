@@ -44,7 +44,7 @@
 
 namespace Thor::LLD::DMA
 {
-  void initializeRegisters();
+
 
   static constexpr Reg32_t DMA1_BASE_ADDR         = Thor::System::MemoryMap::DMA1_PERIPH_START_ADDRESS;
   static constexpr Reg32_t DMA1_STREAM0_BASE_ADDR = DMA1_BASE_ADDR + 0x010u;

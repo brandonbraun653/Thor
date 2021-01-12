@@ -21,7 +21,7 @@
 
 namespace Thor::LLD::DES
 {
-  void initializeRegisters();
+
 
   static constexpr Reg32_t UDIDR_BASE_ADDRESS = 0x1FFF7590;
   static constexpr Reg32_t FSDR_BASE_ADDRESS  = 0x1FFF75E0;

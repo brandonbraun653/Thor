@@ -46,7 +46,7 @@ namespace Thor::LLD::USART
   Chimera::Container::LightFlatMap<size_t, RegisterMap *> ChanneltoInstance;
 #endif
 
-  void initializeRegisters()
+
   {
     /*------------------------------------------------
     Initialize RX DMA Signals
@@ -102,7 +102,7 @@ namespace Thor::LLD::RCC::LookupTables
   RegisterConfig USART_ClockConfig[ usartTableSize ];
   RegisterConfig USART_ClockConfigLP[ usartTableSize ];
   RegisterConfig USART_ResetConfig[ usartTableSize ];
-  
+
   ClockType_t USART_SourceClock[ usartTableSize ];
 
   const PCC USARTLookup = {

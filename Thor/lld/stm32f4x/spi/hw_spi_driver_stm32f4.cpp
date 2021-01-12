@@ -57,7 +57,7 @@ namespace Thor::LLD::SPI
   void initialize()
   {
     initializeMapping();
-    initializeRegisters();
+
   }
 
   bool isChannelSupported( const size_t channel )

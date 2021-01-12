@@ -46,7 +46,7 @@ namespace Thor::LLD::UART
   Public Functions
   -------------------------------------------------------------------------------*/
   void initializeMapping();
-  void initializeRegisters();
+
 
 }  // namespace Thor::LLD::UART
 

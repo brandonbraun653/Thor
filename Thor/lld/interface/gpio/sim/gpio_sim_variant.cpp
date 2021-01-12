@@ -365,7 +365,7 @@ namespace Thor::LLD::GPIO
     reinterpret_cast<std::uintptr_t>( GPIOC_PERIPH )
   };
 
-  void initializeRegisters()
+
   {
   }
 }    // namespace Thor::LLD::GPIO

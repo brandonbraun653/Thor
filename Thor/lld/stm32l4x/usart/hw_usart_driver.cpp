@@ -20,10 +20,10 @@
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/lld/common/cortex-m4/interrupts.hpp>
 #include <Thor/lld/common/types.hpp>
-#include <Thor/lld/interface/usart/usart_prv_data.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/interface/usart/usart_detail.hpp>
 #include <Thor/lld/interface/usart/usart_intf.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
+#include <Thor/lld/interface/usart/usart_prv_data.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_USART )
 
@@ -49,7 +49,7 @@ namespace Thor::LLD::USART
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    initializeRegisters();
+
 
     /*-------------------------------------------------
     Attach all the expected peripherals to the drivers

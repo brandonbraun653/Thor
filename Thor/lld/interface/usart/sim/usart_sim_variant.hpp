@@ -38,7 +38,7 @@ namespace Thor::LLD::USART
    *
    *  @return void
    */
-  void initializeRegisters();
+
 
   /*-------------------------------------------------------------------------------
   Constants

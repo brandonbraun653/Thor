@@ -5,14 +5,14 @@
  *  Description:
  *    Implementation of PLL utilities for STM32L4 chips
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 /* Chimera Includes */
 #include <Chimera/algorithm>
 
 /* Thor Includes */
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
+#include <Thor/lld/interface/rcc/rcc_prv_data.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_pll.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>

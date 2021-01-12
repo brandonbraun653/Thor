@@ -30,7 +30,7 @@ namespace Thor::LLD::FLASH
    *
    *  @return void
    */
-  void initializeRegisters();
+
 
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base

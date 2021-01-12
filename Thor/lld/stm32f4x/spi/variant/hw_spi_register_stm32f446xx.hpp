@@ -29,7 +29,7 @@
 
 namespace Thor::LLD::SPI
 {
-  void initializeRegisters();
+
 
   static constexpr Reg32_t SPI1_BASE_ADDR = Thor::System::MemoryMap::SPI1_PERIPH_START_ADDRESS;
   static constexpr Reg32_t SPI2_BASE_ADDR = Thor::System::MemoryMap::SPI2_I2S2_PERIPH_START_ADDRESS;

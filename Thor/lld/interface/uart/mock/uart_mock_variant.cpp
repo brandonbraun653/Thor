@@ -27,7 +27,7 @@ namespace Thor::LLD::UART
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
-  void initializeRegisters()
+
   {
     for( size_t x=0; x<PeripheralRegisterMaps.size(); x++)
     {

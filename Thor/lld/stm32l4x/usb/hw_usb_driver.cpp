@@ -21,15 +21,14 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
-
-#include <Thor/lld/interface/usb/usb_prv_data.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/interface/usb/usb_intf.hpp>
+#include <Thor/lld/interface/usb/usb_prv_data.hpp>
 #include <Thor/lld/interface/usb/usb_types.hpp>
 #include <Thor/lld/stm32l4x/crs/hw_crs_driver.hpp>
 #include <Thor/lld/stm32l4x/crs/hw_crs_types.hpp>
 #include <Thor/lld/stm32l4x/usb/hw_usb_prj.hpp>
 #include <Thor/lld/stm32l4x/usb/hw_usb_types.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_USB )
 

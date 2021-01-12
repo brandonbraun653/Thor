@@ -12,7 +12,7 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/system/sys_detail.hpp>
 #include <Thor/lld/interface/system/sys_prv_data.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 
 
 namespace Thor::LLD::SYS

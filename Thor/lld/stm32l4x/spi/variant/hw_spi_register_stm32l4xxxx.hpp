@@ -29,7 +29,7 @@ namespace Thor::LLD::SPI
    *
    *  @return void
    */
-  void initializeRegisters();
+
 
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base

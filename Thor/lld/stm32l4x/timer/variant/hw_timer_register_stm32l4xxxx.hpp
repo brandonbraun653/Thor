@@ -52,7 +52,7 @@ namespace Thor::LLD::TIMER
    *
    *  @return void
    */
-  void initializeRegisters();
+
 
   /*------------------------------------------------
   Configuration Data

@@ -15,11 +15,11 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/cortex-m4/utilities.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/stm32l4x/interrupt/hw_interrupt_driver.hpp>
 #include <Thor/lld/stm32l4x/interrupt/hw_interrupt_mapping.hpp>
 #include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
 #include <Thor/lld/stm32l4x/interrupt/hw_interrupt_types.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_IT )
 

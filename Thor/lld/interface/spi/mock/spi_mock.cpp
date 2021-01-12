@@ -68,7 +68,7 @@ namespace Thor::LLD::SPI
     /*-------------------------------------------------
     Driver behavior
     -------------------------------------------------*/
-    initializeRegisters();
+
     initializeMapping();
 
     return Chimera::Status::OK;

@@ -29,7 +29,7 @@ namespace Thor::LLD::DES
 {
   void initialize()
   {
-    initializeRegisters();
+
   }
 
   void getUniqueId( UniqueID &id )

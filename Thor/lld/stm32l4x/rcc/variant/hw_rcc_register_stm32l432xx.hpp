@@ -25,7 +25,7 @@
 
 namespace Thor::LLD::RCC
 {
-  void initializeRegisters();
+
 
   static constexpr Reg32_t NUM_RCC_PERIPHS     = 1;
   static constexpr uint8_t RCC1_RESOURCE_INDEX = 0u;

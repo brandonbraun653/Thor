@@ -31,7 +31,7 @@ namespace Thor::LLD::GPIO
   -------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    initializeRegisters();
+
     initializeMapping();
 
     return Chimera::Status::OK;

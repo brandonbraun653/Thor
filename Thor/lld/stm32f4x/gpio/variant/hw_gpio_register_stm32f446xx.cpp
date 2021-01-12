@@ -74,7 +74,7 @@ namespace Thor::LLD::GPIO
   Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
 #endif
 
-  void initializeRegisters()
+
   {
 #if defined( _SIM )
     /*------------------------------------------------

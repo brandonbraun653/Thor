@@ -303,7 +303,7 @@ namespace Thor::LLD::RCC
 
     if ( !initialized )
     {
-      initializeRegisters();
+
       initializeMapping();
 
       /*------------------------------------------------

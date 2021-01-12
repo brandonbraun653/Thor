@@ -23,16 +23,16 @@
 #include <Thor/cfg>
 #include <Thor/lld/common/mapping/peripheral_mapping.hpp>
 #include <Thor/lld/common/cortex-m4/system_time.hpp>
+#include <Thor/lld/interface/flash/flash_prv_data.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
-#include <Thor/lld/stm32l4x/flash/hw_flash_mapping.hpp>
+#include <Thor/lld/interface/rcc/rcc_types.hpp>
+#include <Thor/lld/interface/rcc/rcc_prv_data.hpp>
+#include <Thor/lld/interface/power/power_prv_data.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_types.hpp>
-#include <Thor/lld/stm32l4x/power/hw_power_mapping.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_types.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_pll.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
@@ -42,28 +42,240 @@
 
 namespace Thor::LLD::RCC
 {
-  /*------------------------------------------------
-  Local Variables and Constants
-  ------------------------------------------------*/
-  static constexpr uint8_t numPeriphs = static_cast<uint8_t>( Chimera::Peripheral::Type::NUM_OPTIONS );
-
-  /* Default bad clock value. Is positive so that there aren't accidental div/0 errors at runtime. */
-  static constexpr size_t BAD_CLOCK = static_cast<size_t>( 0xCCCCCCCC );
-
-  /**
-   *  Lookup table for all RCC peripheral control registers.
-   */
-  static std::array<PCC *, numPeriphs> periphLookupTables;
-
+  /*-------------------------------------------------------------------------------
+  Static Variables
+  -------------------------------------------------------------------------------*/
   /**
    *  Cached clock settings
    */
   static OscillatorSettings sOscillatorSettings;
   static DerivedClockSettings sDerivedClockSettings;
 
-  /*------------------------------------------------
-  Standalone Functions
-  ------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Static Functions
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Sets the PLLCLK oscillator frequency in Hz
+   *
+   *  @param[in]  mask    The desired PLL output clock to set
+   *  @return bool
+   */
+  static bool updatePLL( const uint32_t mask, OscillatorSettings &config )
+  {
+    auto rcc    = getCoreClock();
+    auto result = false;
+
+    /*------------------------------------------------
+    Disable ISR handling so that other systems won't be
+    totally corrupted by the clock switching.
+    ------------------------------------------------*/
+    auto isrMask = Thor::LLD::IT::disableInterrupts();
+
+    /*------------------------------------------------
+    If the current system clock is derived from the PLL, switch
+    to the HSI16 clock so that something is driving the ARM core.
+    ------------------------------------------------*/
+    bool PLLIsSysClockSource = ( rcc->getCoreClockSource() == Chimera::Clock::Bus::PLLCLK );
+    if ( PLLIsSysClockSource )
+    {
+      rcc->enableClock( Chimera::Clock::Bus::HSI16 );
+      rcc->setCoreClockSource( Chimera::Clock::Bus::HSI16 );
+    }
+
+    /*------------------------------------------------
+    Handle the configuration of each PLL output
+    ------------------------------------------------*/
+    switch ( mask )
+    {
+      case PLLCFGR_PLLP:
+        result = PLLConfigureP( config );
+        break;
+
+      case PLLCFGR_PLLQ:
+        result = PLLConfigureQ( config );
+        break;
+
+      case PLLCFGR_PLLR:
+        result = PLLConfigureR( config );
+        break;
+
+      default:
+        // Do nothing. The clocks will go back to their original settings.
+        break;
+    };
+
+    /*------------------------------------------------
+    Switch back to the PLL source if necessary. Turn off
+    the HSI16 clock to save a bit of power.
+    ------------------------------------------------*/
+    if ( PLLIsSysClockSource )
+    {
+      rcc->enableClock( Chimera::Clock::Bus::PLLCLK );
+      rcc->setCoreClockSource( Chimera::Clock::Bus::PLLCLK );
+      rcc->disableClock( Chimera::Clock::Bus::HSI16 );
+    }
+
+    /*------------------------------------------------
+    Re-enable the ISRs, allowing the system to update itself
+    in response to the new clock configurations.
+    ------------------------------------------------*/
+    Thor::LLD::IT::enableInterrupts( isrMask );
+
+    return result;
+  }
+
+
+  static bool configureOscillators( OscillatorSettings &cfg )
+  {
+    /*------------------------------------------------
+    Make sure we are supposed to allow configuration of these settings
+    ------------------------------------------------*/
+    if ( !cfg.valid )
+    {
+      return false;
+    }
+
+    auto isrMask = Thor::LLD::IT::disableInterrupts();
+
+    /*------------------------------------------------
+    Configure the HSE oscillator
+    ------------------------------------------------*/
+    if ( cfg.HSEConfig.configure )
+    {
+      // TODO once needed
+    }
+
+    /*------------------------------------------------
+    Configure the HSI oscillator
+    ------------------------------------------------*/
+    if ( cfg.HSIConfig.configure )
+    {
+      // TODO once needed
+    }
+
+    /*------------------------------------------------
+    Configure the LSE oscillator
+    ------------------------------------------------*/
+    if ( cfg.LSEConfig.configure )
+    {
+      // TODO once needed
+    }
+
+    /*------------------------------------------------
+    Configure the LSI oscillator
+    ------------------------------------------------*/
+    if ( cfg.LSIConfig.configure )
+    {
+      // TODO once needed
+    }
+
+    /*------------------------------------------------
+    Configure the MSI oscillator
+    ------------------------------------------------*/
+    if ( cfg.MSIConfig.configure )
+    {
+      // TODO once needed
+    }
+
+    /*------------------------------------------------
+    Configure the PLL oscillator
+    ------------------------------------------------*/
+    if ( cfg.PLLConfig.configure )
+    {
+      if ( cfg.PLLConfig.P.configure )
+      {
+        updatePLL( PLLCFGR_PLLP, cfg );
+        cfg.PLLConfig.P.configure = false;
+      }
+
+      if ( cfg.PLLConfig.Q.configure )
+      {
+        updatePLL( PLLCFGR_PLLQ, cfg );
+        cfg.PLLConfig.Q.configure = false;
+      }
+
+      if ( cfg.PLLConfig.R.configure )
+      {
+        updatePLL( PLLCFGR_PLLR, cfg );
+        cfg.PLLConfig.R.configure = false;
+      }
+    }
+
+    Thor::LLD::IT::enableInterrupts( isrMask );
+    return true;
+  }
+
+
+  static bool configureClocks( DerivedClockSettings &cfg )
+  {
+    /*------------------------------------------------
+    Make sure we are supposed to allow configuration of these settings
+    ------------------------------------------------*/
+    if ( !cfg.valid )
+    {
+      return false;
+    }
+
+    auto isrMask = Thor::LLD::IT::disableInterrupts();
+
+    /*------------------------------------------------
+    Update the HCLK divisor
+    ------------------------------------------------*/
+    if ( cfg.HCLKConfig.configure )
+    {
+      HPRE::set( RCC1_PERIPH, cfg.HCLKConfig.AHBPrescaler );
+
+      /* Wait until the value is set appropriately before continuing */
+      while ( HPRE::get( RCC1_PERIPH ) != cfg.HCLKConfig.AHBPrescaler )
+      {
+        ;
+      }
+
+      cfg.HCLKConfig.applied   = true;
+      cfg.HCLKConfig.configure = false;
+    }
+
+    /*------------------------------------------------
+    Update the PCLK1 divisor
+    ------------------------------------------------*/
+    if ( cfg.PCLK1Config.configure )
+    {
+      PPRE1::set( RCC1_PERIPH, cfg.PCLK1Config.APB1Prescaler );
+
+      /* Wait until the value is set appropriately before continuing */
+      while ( PPRE1::get( RCC1_PERIPH ) != cfg.PCLK1Config.APB1Prescaler )
+      {
+        ;
+      }
+
+      cfg.PCLK1Config.applied   = true;
+      cfg.PCLK1Config.configure = false;
+    }
+
+    /*------------------------------------------------
+    Update the PCLK2 divisor
+    ------------------------------------------------*/
+    if ( cfg.PCLK2Config.configure )
+    {
+      PPRE2::set( RCC1_PERIPH, cfg.PCLK2Config.APB2Prescaler );
+
+      /* Wait until the value is set appropriately before continuing */
+      while ( PPRE2::get( RCC1_PERIPH ) != cfg.PCLK2Config.APB2Prescaler )
+      {
+        ;
+      }
+
+      cfg.PCLK2Config.applied   = true;
+      cfg.PCLK2Config.configure = false;
+    }
+
+    Thor::LLD::IT::enableInterrupts( isrMask );
+    return true;
+  }
+
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   void initialize()
   {
     using namespace Chimera::Peripheral;
@@ -75,83 +287,18 @@ namespace Thor::LLD::RCC
     {
       sOscillatorSettings.HSEConfig.frequency = std::numeric_limits<size_t>::max();
       sOscillatorSettings.LSEConfig.frequency = std::numeric_limits<size_t>::max();
-
-      initializeRegisters();
-      initializeMapping();
-
-      /*------------------------------------------------
-      Register the lookup tables with the system
-      ------------------------------------------------*/
-      periphLookupTables.fill( nullptr );
-
-#if defined( THOR_LLD_ADC )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_ADC ) ] = &LookupTables::ADCLookup;
-#endif
-
-#if defined( THOR_LLD_CAN )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_CAN ) ] = &LookupTables::CANLookup;
-#endif
-
-#if defined( THOR_LLD_CRS )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_CRS ) ] = &LookupTables::CRSLookup;
-#endif
-
-#if defined( THOR_LLD_DMA )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ] = &LookupTables::DMALookup;
-#endif
-
-#if defined( THOR_LLD_FLASH )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_FLASH ) ] = &LookupTables::FLASHLookup;
-#endif
-
-#if defined( THOR_LLD_GPIO )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ] = &LookupTables::GPIOLookup;
-#endif
-
-#if defined( THOR_LLD_IWDG )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_IWDG ) ] = &LookupTables::IWDGLookup;
-#endif
-
-#if defined( THOR_LLD_PWR )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_PWR ) ] = &LookupTables::PWRLookup;
-#endif
-
-#if defined( THOR_LLD_SPI )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_SPI ) ] = &LookupTables::SPILookup;
-#endif
-
-#if defined( THOR_LLD_SYSCFG )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_SYSCFG ) ] = &LookupTables::SYSCFGLookup;
-#endif
-
-#if defined( THOR_LLD_TIMER )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_TIM ) ] = &LookupTables::TIMERLookup;
-#endif
-
-#if defined( THOR_LLD_UART )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ] = &LookupTables::UARTLookup;
-#endif
-
-#if defined( THOR_LLD_USART )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USART ) ] = &LookupTables::USARTLookup;
-#endif
-
-#if defined( THOR_LLD_USB )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USB ) ] = &LookupTables::USBLookup;
-#endif
-
-#if defined( THOR_LLD_WWDG )
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_WWDG ) ] = &LookupTables::WWDGLookup;
-#endif
+      initializeRegistry();
 
       initialized = true;
     }
   }
 
+
   void clearResetReason()
   {
     RMVFRSTF::set( RCC1_PERIPH, CSR_RMVF );
   }
+
 
   Chimera::System::ResetEvent getResetReason()
   {
@@ -211,6 +358,7 @@ namespace Thor::LLD::RCC
     }
   }
 
+
   size_t getHSIFreq()
   {
     /* This value is constant across all L4 chips */
@@ -218,10 +366,12 @@ namespace Thor::LLD::RCC
     return sOscillatorSettings.HSIConfig.frequency;
   }
 
+
   size_t getHSEFreq()
   {
     return sOscillatorSettings.HSEConfig.frequency;
   }
+
 
   void setHSEFreq( const size_t freq )
   {
@@ -229,10 +379,12 @@ namespace Thor::LLD::RCC
     sOscillatorSettings.HSEConfig.applied   = true;
   }
 
+
   size_t getLSEFreq()
   {
     return sOscillatorSettings.LSEConfig.frequency;
   }
+
 
   void setLSEFreq( const size_t freq )
   {
@@ -240,12 +392,14 @@ namespace Thor::LLD::RCC
     sOscillatorSettings.LSEConfig.applied   = true;
   }
 
+
   size_t getLSIFreq()
   {
     /* A 32kHz clock is common across all L4 variants */
     sOscillatorSettings.LSIConfig.frequency = 32000;
     return sOscillatorSettings.LSIConfig.frequency;
   }
+
 
   size_t getMSIFreq()
   {
@@ -322,14 +476,15 @@ namespace Thor::LLD::RCC
         return 48000000;
         break;
       default:
-        return BAD_CLOCK;
+        return INVALID_CLOCK;
         break;
     };
   }
 
+
   size_t getPLLCLKFreq( const uint32_t mask )
   {
-    size_t outputClock = BAD_CLOCK;
+    size_t outputClock = INVALID_CLOCK;
 
     /*------------------------------------------------
     The system PLL clock is driven by PLL R. Make sure
@@ -408,76 +563,13 @@ namespace Thor::LLD::RCC
         break;
 
       default:
-        outputClock = BAD_CLOCK;
+        outputClock = INVALID_CLOCK;
         break;
     };
 
     return outputClock;
   }
 
-  bool updatePLL( const uint32_t mask, OscillatorSettings &config )
-  {
-    auto rcc    = getCoreClock();
-    auto result = false;
-
-    /*------------------------------------------------
-    Disable ISR handling so that other systems won't be
-    totally corrupted by the clock switching.
-    ------------------------------------------------*/
-    auto isrMask = Thor::LLD::IT::disableInterrupts();
-
-    /*------------------------------------------------
-    If the current system clock is derived from the PLL, switch
-    to the HSI16 clock so that something is driving the ARM core.
-    ------------------------------------------------*/
-    bool PLLIsSysClockSource = ( rcc->getCoreClockSource() == Chimera::Clock::Bus::PLLCLK );
-    if ( PLLIsSysClockSource )
-    {
-      rcc->enableClock( Chimera::Clock::Bus::HSI16 );
-      rcc->setCoreClockSource( Chimera::Clock::Bus::HSI16 );
-    }
-
-    /*------------------------------------------------
-    Handle the configuration of each PLL output
-    ------------------------------------------------*/
-    switch ( mask )
-    {
-      case PLLCFGR_PLLP:
-        result = PLLConfigureP( config );
-        break;
-
-      case PLLCFGR_PLLQ:
-        result = PLLConfigureQ( config );
-        break;
-
-      case PLLCFGR_PLLR:
-        result = PLLConfigureR( config );
-        break;
-
-      default:
-        // Do nothing. The clocks will go back to their original settings.
-        break;
-    };
-
-    /*------------------------------------------------
-    Switch back to the PLL source if necessary. Turn off
-    the HSI16 clock to save a bit of power.
-    ------------------------------------------------*/
-    if ( PLLIsSysClockSource )
-    {
-      rcc->enableClock( Chimera::Clock::Bus::PLLCLK );
-      rcc->setCoreClockSource( Chimera::Clock::Bus::PLLCLK );
-      rcc->disableClock( Chimera::Clock::Bus::HSI16 );
-    }
-
-    /*------------------------------------------------
-    Re-enable the ISRs, allowing the system to update itself
-    in response to the new clock configurations.
-    ------------------------------------------------*/
-    Thor::LLD::IT::enableInterrupts( isrMask );
-
-    return result;
-  }
 
   size_t getSysClockFreq()
   {
@@ -508,6 +600,7 @@ namespace Thor::LLD::RCC
         break;
     };
   }
+
 
   size_t getHCLKFreq()
   {
@@ -561,6 +654,7 @@ namespace Thor::LLD::RCC
     return systemClock / hclkDiv;
   }
 
+
   size_t getPCLK1Freq()
   {
     /*------------------------------------------------
@@ -600,6 +694,7 @@ namespace Thor::LLD::RCC
 
     return hclkFreq / pclk1Div;
   }
+
 
   size_t getPCLK2Freq()
   {
@@ -642,9 +737,9 @@ namespace Thor::LLD::RCC
   }
 
 
-  /*------------------------------------------------
+  /*-------------------------------------------------------------------------------
   SystemClock Class Implementation
-  ------------------------------------------------*/
+  -------------------------------------------------------------------------------*/
   SystemClock *getCoreClock()
   {
     static SystemClock *ref = nullptr;
@@ -656,14 +751,17 @@ namespace Thor::LLD::RCC
     return ref;
   }
 
+
   SystemClock::SystemClock()
   {
     initialize();
   }
 
+
   SystemClock::~SystemClock()
   {
   }
+
 
   void SystemClock::enableClock( const Chimera::Clock::Bus clock )
   {
@@ -718,6 +816,7 @@ namespace Thor::LLD::RCC
     Thor::LLD::IT::enableInterrupts( isrMask );
   }
 
+
   void SystemClock::disableClock( const Chimera::Clock::Bus clock )
   {
     auto isrMask = Thor::LLD::IT::disableInterrupts();
@@ -771,6 +870,7 @@ namespace Thor::LLD::RCC
     Thor::LLD::IT::enableInterrupts( isrMask );
   }
 
+
   Chimera::Status_t SystemClock::configureProjectClocks()
   {
     using namespace Thor::LLD::PWR;
@@ -780,7 +880,7 @@ namespace Thor::LLD::RCC
     set the voltage scaling to allow us to achieve max clock
     ------------------------------------------------*/
     PWREN::set( RCC1_PERIPH, APB1ENR1_PWREN );
-    VOS::set( POWER1_PERIPH, CR1::VOS_SCALE_1 );
+    VOS::set( PWR_PERIPH, CR1::VOS_SCALE_1 );
 
     /*------------------------------------------------
     Configure the source clocks (oscillators)
@@ -839,6 +939,7 @@ namespace Thor::LLD::RCC
       return Chimera::Status::FAIL;
     }
   }
+
 
   Chimera::Status_t SystemClock::setCoreClockSource( const Chimera::Clock::Bus src )
   {
@@ -919,6 +1020,7 @@ namespace Thor::LLD::RCC
     return Chimera::Status::OK;
   }
 
+
   Chimera::Clock::Bus SystemClock::getCoreClockSource()
   {
     switch ( SWS::get( RCC1_PERIPH ) )
@@ -945,6 +1047,7 @@ namespace Thor::LLD::RCC
     }
   }
 
+
   Chimera::Status_t SystemClock::setClockFrequency( const Chimera::Clock::Bus clock, const size_t freq, const bool enable )
   {
     switch ( clock )
@@ -967,6 +1070,7 @@ namespace Thor::LLD::RCC
     };
   }
 
+
   size_t SystemClock::getClockFrequency( const Chimera::Clock::Bus clock )
   {
     switch ( clock )
@@ -988,180 +1092,39 @@ namespace Thor::LLD::RCC
         break;
 
       default:
-        return BAD_CLOCK;
+        return INVALID_CLOCK;
         break;
     }
   }
 
+
   size_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address )
   {
-    auto clockLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->clockSource;
-    auto indexLookupFunc  = periphLookupTables[ static_cast<uint8_t>( periph ) ]->getResourceIndex;
-
-    if ( clockLookupTable && indexLookupFunc )
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    auto registry = getPCCRegistry( periph );
+    if ( !registry || !registry->clockSource || !registry->getResourceIndex )
     {
-      auto index       = indexLookupFunc( address );
-      auto sourceClock = clockLookupTable[ index ];
-
-      return getClockFrequency( sourceClock );
-    }
-    else
-    {
-      return BAD_CLOCK;
-    }
-  }
-
-  bool SystemClock::configureOscillators( OscillatorSettings &cfg )
-  {
-    /*------------------------------------------------
-    Make sure we are supposed to allow configuration of these settings
-    ------------------------------------------------*/
-    if ( !cfg.valid )
-    {
-      return false;
+      return INVALID_CLOCK;
     }
 
-    auto isrMask = Thor::LLD::IT::disableInterrupts();
-
-    /*------------------------------------------------
-    Configure the HSE oscillator
-    ------------------------------------------------*/
-    if ( cfg.HSEConfig.configure )
+    /*-------------------------------------------------
+    Perform the lookup
+    -------------------------------------------------*/
+    size_t idx = registry->getResourceIndex( address );
+    if( idx == INVALID_RESOURCE_INDEX )
     {
-      // TODO once needed
+      return INVALID_CLOCK;
     }
 
-    /*------------------------------------------------
-    Configure the HSI oscillator
-    ------------------------------------------------*/
-    if ( cfg.HSIConfig.configure )
-    {
-      // TODO once needed
-    }
-
-    /*------------------------------------------------
-    Configure the LSE oscillator
-    ------------------------------------------------*/
-    if ( cfg.LSEConfig.configure )
-    {
-      // TODO once needed
-    }
-
-    /*------------------------------------------------
-    Configure the LSI oscillator
-    ------------------------------------------------*/
-    if ( cfg.LSIConfig.configure )
-    {
-      // TODO once needed
-    }
-
-    /*------------------------------------------------
-    Configure the MSI oscillator
-    ------------------------------------------------*/
-    if ( cfg.MSIConfig.configure )
-    {
-      // TODO once needed
-    }
-
-    /*------------------------------------------------
-    Configure the PLL oscillator
-    ------------------------------------------------*/
-    if ( cfg.PLLConfig.configure )
-    {
-      if ( cfg.PLLConfig.P.configure )
-      {
-        updatePLL( PLLCFGR_PLLP, cfg );
-        cfg.PLLConfig.P.configure = false;
-      }
-
-      if ( cfg.PLLConfig.Q.configure )
-      {
-        updatePLL( PLLCFGR_PLLQ, cfg );
-        cfg.PLLConfig.Q.configure = false;
-      }
-
-      if ( cfg.PLLConfig.R.configure )
-      {
-        updatePLL( PLLCFGR_PLLR, cfg );
-        cfg.PLLConfig.R.configure = false;
-      }
-    }
-
-    Thor::LLD::IT::enableInterrupts( isrMask );
-    return true;
-  }
-
-  bool SystemClock::configureClocks( DerivedClockSettings &cfg )
-  {
-    /*------------------------------------------------
-    Make sure we are supposed to allow configuration of these settings
-    ------------------------------------------------*/
-    if ( !cfg.valid )
-    {
-      return false;
-    }
-
-    auto isrMask = Thor::LLD::IT::disableInterrupts();
-
-    /*------------------------------------------------
-    Update the HCLK divisor
-    ------------------------------------------------*/
-    if ( cfg.HCLKConfig.configure )
-    {
-      HPRE::set( RCC1_PERIPH, cfg.HCLKConfig.AHBPrescaler );
-
-      /* Wait until the value is set appropriately before continuing */
-      while ( HPRE::get( RCC1_PERIPH ) != cfg.HCLKConfig.AHBPrescaler )
-      {
-        ;
-      }
-
-      cfg.HCLKConfig.applied   = true;
-      cfg.HCLKConfig.configure = false;
-    }
-
-    /*------------------------------------------------
-    Update the PCLK1 divisor
-    ------------------------------------------------*/
-    if ( cfg.PCLK1Config.configure )
-    {
-      PPRE1::set( RCC1_PERIPH, cfg.PCLK1Config.APB1Prescaler );
-
-      /* Wait until the value is set appropriately before continuing */
-      while ( PPRE1::get( RCC1_PERIPH ) != cfg.PCLK1Config.APB1Prescaler )
-      {
-        ;
-      }
-
-      cfg.PCLK1Config.applied   = true;
-      cfg.PCLK1Config.configure = false;
-    }
-
-    /*------------------------------------------------
-    Update the PCLK2 divisor
-    ------------------------------------------------*/
-    if ( cfg.PCLK2Config.configure )
-    {
-      PPRE2::set( RCC1_PERIPH, cfg.PCLK2Config.APB2Prescaler );
-
-      /* Wait until the value is set appropriately before continuing */
-      while ( PPRE2::get( RCC1_PERIPH ) != cfg.PCLK2Config.APB2Prescaler )
-      {
-        ;
-      }
-
-      cfg.PCLK2Config.applied   = true;
-      cfg.PCLK2Config.configure = false;
-    }
-
-    Thor::LLD::IT::enableInterrupts( isrMask );
-    return true;
+    return getClockFrequency( registry->clockSource[ idx ] );
   }
 
 
-  /*------------------------------------------------
+  /*-------------------------------------------------------------------------------
   PeripheralController Class Implementation
-  ------------------------------------------------*/
+  -------------------------------------------------------------------------------*/
   PeripheralController *getPeripheralClock()
   {
     static PeripheralController *ref = nullptr;
@@ -1174,129 +1137,129 @@ namespace Thor::LLD::RCC
     return ref;
   }
 
+
   PeripheralController::PeripheralController()
   {
     initialize();
   }
 
+
   PeripheralController::~PeripheralController()
   {
   }
 
+
   Chimera::Status_t PeripheralController::reset( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::Status::OK;
-
-    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->reset;
-    auto config      = lookupTable[ index ];
-
-    if ( config.reg )
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    auto registry = getPCCRegistry( type );
+    if ( !registry || !registry->reset || ( index >= registry->elements ) || !registry->reset[ index ].reg )
     {
-      uint32_t tmp = *config.reg;
-
-      /*------------------------------------------------
-      Begin the reset operation
-      ------------------------------------------------*/
-      tmp |= config.mask;
-      *config.reg = tmp;
-
-      /*-------------------------------------------------
-      Burn a few cycles to avoid accessing HW too early
-      -------------------------------------------------*/
-      for ( auto x = 0; x < 5; x++ )
-      {
-        asm( "nop" );
-      }
-
-      /*------------------------------------------------
-      Remove the reset flag as it is not cleared automatically by hardware
-      ------------------------------------------------*/
-      tmp &= ~config.mask;
-      *config.reg = tmp;
-    }
-    else
-    {
-      result = Chimera::Status::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
-    return result;
+    /*------------------------------------------------
+    Begin the reset operation
+    ------------------------------------------------*/
+    uint32_t tmp = *( registry->reset[ index ].reg );
+    tmp |= registry->reset[ index ].mask;
+    *registry->reset[ index ].reg = tmp;
+
+    /*-------------------------------------------------
+    Burn a few cycles to avoid accessing HW too early
+    -------------------------------------------------*/
+    for ( auto x = 0; x < 5; x++ )
+    {
+      asm( "nop" );
+    }
+
+    /*------------------------------------------------
+    Remove the reset flag as it is not cleared automatically by hardware
+    ------------------------------------------------*/
+    tmp &= ~registry->reset[ index ].mask;
+    *( registry->reset[ index ].reg ) = tmp;
+
+    return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t PeripheralController::enableClock( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::Status::OK;
-
-    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
-    auto config      = lookupTable[ index ];
-
-    if( config.reg )
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    auto registry = getPCCRegistry( type );
+    if ( !registry || !registry->clock || ( index >= registry->elements ) || !registry->clock[ index ].reg )
     {
-      *config.reg |= config.mask;
-    }
-    else
-    {
-      result = Chimera::Status::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
-    return result;
+    /*-------------------------------------------------
+    Enable the clock
+    -------------------------------------------------*/
+    *( registry->clock[ index ].reg ) |= registry->clock[ index ].mask;
+    return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t PeripheralController::disableClock( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::Status::OK;
-
-    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
-    auto config      = lookupTable[ index ];
-
-    if( config.reg )
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    auto registry = getPCCRegistry( type );
+    if ( !registry || !registry->clock || ( index >= registry->elements ) || !registry->clock[ index ].reg )
     {
-      *config.reg &= ~config.mask;
-    }
-    else
-    {
-      result = Chimera::Status::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
-    return result;
+    /*-------------------------------------------------
+    Enable the clock
+    -------------------------------------------------*/
+    *( registry->clock[ index ].reg ) &= ~registry->clock[ index ].mask;
+    return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t PeripheralController::enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::Status::OK;
-
-    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
-    auto config      = lookupTable[ index ];
-
-    if( config.reg )
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    auto registry = getPCCRegistry( type );
+    if ( !registry || !registry->clockLP || ( index >= registry->elements ) || !registry->clockLP[ index ].reg )
     {
-      *config.reg |= config.mask;
-    }
-    else
-    {
-      result = Chimera::Status::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
-    return result;
+    /*-------------------------------------------------
+    Enable the clock
+    -------------------------------------------------*/
+    *( registry->clockLP[ index ].reg ) |= registry->clockLP[ index ].mask;
+    return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t PeripheralController::disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
   {
-    Chimera::Status_t result = Chimera::Status::OK;
-
-    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
-    auto config      = lookupTable[ index ];
-
-    if( config.reg )
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    auto registry = getPCCRegistry( type );
+    if ( !registry || !registry->clockLP || ( index >= registry->elements ) || !registry->clockLP[ index ].reg )
     {
-      *config.reg &= ~config.mask;
-    }
-    else
-    {
-      result = Chimera::Status::NOT_SUPPORTED;
+      return Chimera::Status::NOT_SUPPORTED;
     }
 
-    return result;
+    /*-------------------------------------------------
+    Enable the clock
+    -------------------------------------------------*/
+    *( registry->clockLP[ index ].reg ) &= ~registry->clockLP[ index ].mask;
+    return Chimera::Status::OK;
   }
+
 }    // namespace Thor::LLD::RCC
 
 #endif /* TARGET_STM32L4 && THOR_LLD_RCC */

@@ -14,7 +14,6 @@
 
 #if defined( STM32L432xx )
 #include <Thor/lld/stm32l4x/rcc/variant/hw_rcc_register_stm32l432xx.hpp>
-#include <Thor/lld/stm32l4x/rcc/config/hw_rcc_config_stm32l432xx.hpp>
 #endif
 
 #endif /* !THOR_HW_RCC_PROJECT_HPP */

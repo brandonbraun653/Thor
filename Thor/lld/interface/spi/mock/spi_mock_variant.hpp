@@ -60,7 +60,7 @@ namespace Thor::LLD::SPI
   Public Functions
   -------------------------------------------------------------------------------*/
   void initializeMapping();
-  void initializeRegisters();
+
 
 }  // namespace Thor::LLD::SPI
 

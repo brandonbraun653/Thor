@@ -31,7 +31,7 @@
 
 namespace Thor::LLD::GPIO
 {
-  void initializeRegisters();
+
 
   static constexpr uint32_t GPIOA_BASE_ADDR = Thor::System::MemoryMap::GPIOA_PERIPH_START_ADDRESS;
   static constexpr uint32_t GPIOB_BASE_ADDR = Thor::System::MemoryMap::GPIOB_PERIPH_START_ADDRESS;

@@ -64,7 +64,7 @@ namespace Thor::LLD::DMA
     /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
-    initializeRegisters();
+
     initializeMapping();
 
     return Chimera::Status::OK;

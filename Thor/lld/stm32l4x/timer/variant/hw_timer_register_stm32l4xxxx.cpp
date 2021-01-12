@@ -21,7 +21,6 @@
 #include <Thor/lld/stm32l4x/timer/hw_timer_mapping.hpp>
 #include <Thor/lld/stm32l4x/timer/variant/hw_timer_register_stm32l4xxxx.hpp>
 #include <Thor/lld/stm32l4x/timer/hw_timer_types.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_mapping.hpp>
 
 #if defined( STM32L432xx ) && defined( THOR_LLD_TIMER )
 
@@ -102,7 +101,7 @@ namespace Thor::LLD::TIMER
 
   /* clang-format on */
 
-  void initializeRegisters()
+
   {
 #if defined( _SIM )
     /*------------------------------------------------

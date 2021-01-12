@@ -55,7 +55,7 @@ namespace Thor::LLD::GPIO
   Public Functions
   -------------------------------------------------------------------------------*/
   void initializeMapping();
-  void initializeRegisters();
+
 
 }  // namespace Thor::LLD::GPIO
 

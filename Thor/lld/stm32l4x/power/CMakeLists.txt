@@ -12,23 +12,13 @@ set(LINK_LIBS
 )
 
 # ====================================================
-# Variant Library
-# ====================================================
-if(${THOR_CHIP} MATCHES "^L432$")
-  set(VARIANT_SRC variant/hw_power_register_stm32l432kc.cpp)
-else()
-  message(FATAL_ERROR "Unsupported STM32L4 driver variant for: power")
-endif()
-
-# ====================================================
-# Driver Library (+ Variant)
+# Driver Library
 # ====================================================
 function(build_library variant)
   set(CORE thor_lld_stm32l4_power${variant})
   add_library(${CORE} STATIC
     hw_power_driver_stm32l4.cpp
-    hw_power_mapping.cpp
-    ${VARIANT_SRC}
+    hw_power_data.cpp
   )
   target_link_libraries(${CORE} PRIVATE ${LINK_LIBS} prj_device_target prj_build_target${variant})
   export(TARGETS ${CORE} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${CORE}.cmake")

@@ -60,7 +60,7 @@ namespace Thor::LLD::CAN
   Public Functions
   -------------------------------------------------------------------------------*/
   void initializeMapping();
-  void initializeRegisters();
+
 
 }  // namespace Thor::LLD::CAN
 

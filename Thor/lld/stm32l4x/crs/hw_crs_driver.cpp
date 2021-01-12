@@ -15,11 +15,11 @@
 #include <Thor/cfg>
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/stm32l4x/crs/hw_crs_driver.hpp>
 #include <Thor/lld/stm32l4x/crs/hw_crs_prj.hpp>
-#include <Thor/lld/stm32l4x/crs/hw_crs_types.hpp>
 #include <Thor/lld/stm32l4x/crs/hw_crs_prv_data.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
+#include <Thor/lld/stm32l4x/crs/hw_crs_types.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_CRS )
 

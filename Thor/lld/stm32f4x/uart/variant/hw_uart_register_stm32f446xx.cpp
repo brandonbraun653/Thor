@@ -36,7 +36,7 @@ namespace Thor::LLD::UART
   Chimera::Container::LightFlatMap<size_t, RegisterMap *> ChanneltoInstance;
 #endif
 
-  void initializeRegisters()
+
   {
     /*------------------------------------------------
     Initialize RX DMA Signals
@@ -82,7 +82,7 @@ namespace Thor::LLD::RCC::LookupTables
   RegisterConfig UART_ClockConfig[ uartTableSize ];
   RegisterConfig UART_ClockConfigLP[ uartTableSize ];
   RegisterConfig UART_ResetConfig[ uartTableSize ];
-  
+
   ClockType_t UART_SourceClock[ uartTableSize ];
 
   const PCC UARTLookup = {

@@ -32,7 +32,7 @@ namespace Thor::LLD::USART
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    initializeRegisters();
+
 
     /*-------------------------------------------------
     Attach all the expected peripherals to the drivers

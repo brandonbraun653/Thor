@@ -13,11 +13,10 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/stm32l4x/flash/hw_flash_driver.hpp>
-#include <Thor/lld/stm32l4x/flash/hw_flash_mapping.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
+#include <Thor/lld/interface/flash/flash_prv_data.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_types.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_FLASH )
 
@@ -28,9 +27,6 @@ namespace Thor::LLD::FLASH
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    initializeRegisters();
-    initializeMapping();
-
     return Chimera::Status::OK;
   }
 

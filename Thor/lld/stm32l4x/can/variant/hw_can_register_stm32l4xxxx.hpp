@@ -29,7 +29,7 @@ namespace Thor::LLD::CAN
    *
    *  @return void
    */
-  void initializeRegisters();
+
 
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base

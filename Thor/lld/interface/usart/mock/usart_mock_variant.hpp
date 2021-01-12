@@ -167,7 +167,7 @@ namespace Thor::LLD::USART
   Public Functions
   -------------------------------------------------------------------------------*/
   void initializeMapping();
-  void initializeRegisters();
+
 
 }  // namespace Thor::LLD::USART
 

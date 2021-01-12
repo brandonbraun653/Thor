@@ -73,7 +73,7 @@ namespace Thor::LLD::GPIO
    *
    *  @return void
    */
-  void initializeRegisters();
+
 
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base
@@ -152,5 +152,5 @@ namespace Thor::LLD::GPIO
 
 }    // namespace Thor::LLD::GPIO
 
-#endif 
+#endif
 #endif /* !THOR_HW_GPIO_REGISTER_STM32L432KC_HPP */

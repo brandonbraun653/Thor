@@ -19,7 +19,7 @@
 namespace Thor::LLD::USART
 {
 
-  void initializeRegisters()
+
   {
   }
 }    // namespace Thor::LLD::USART

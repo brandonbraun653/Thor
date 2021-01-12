@@ -69,7 +69,7 @@ namespace Thor::LLD::SPI
 
   const IRQSignalList IRQSignals = { SPI1_IRQn, SPI2_IRQn, SPI3_IRQn, SPI4_IRQn };
 
-  void initializeRegisters()
+
   {
 #if defined( _SIM )
     /*------------------------------------------------

@@ -6,7 +6,7 @@
  *    Common header for Thor Power that configures the driver based on which
  *    chip family is being compiled against.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -16,7 +16,11 @@
 #if defined( TARGET_LLD_MOCK )
 #include <Thor/lld/interface/power/mock/power_mock.hpp>
 #elif defined( TARGET_STM32F4 )
-#include <Thor/lld/stm32f4x/power/hw_power_driver.hpp>
+#include <Thor/lld/stm32f4x/power/hw_power_prj.hpp>
+#include <Thor/lld/stm32f4x/power/hw_power_types.hpp>
+#elif defined( TARGET_STM32L4 )
+#include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
+#include <Thor/lld/stm32l4x/power/hw_power_types.hpp>
 #else
 #pragma message( "power_detail.hpp: Unknown target for LLD" )
 #endif

@@ -60,7 +60,7 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------
     Driver behavior
     -------------------------------------------------*/
-    initializeRegisters();
+
     initializeMapping();
 
     return Chimera::Status::OK;

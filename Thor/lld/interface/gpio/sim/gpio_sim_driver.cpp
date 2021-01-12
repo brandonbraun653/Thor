@@ -36,7 +36,7 @@ namespace Thor::LLD::GPIO
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    initializeRegisters();
+
 
     /*-------------------------------------------------
     Attach all the expected peripherals to the drivers

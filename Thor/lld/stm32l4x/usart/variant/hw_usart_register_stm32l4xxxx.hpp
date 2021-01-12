@@ -31,7 +31,7 @@ namespace Thor::LLD::USART
    *
    *  @return void
    */
-  void initializeRegisters();
+
 
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base

@@ -17,6 +17,7 @@
 #include <cstddef>
 
 /* Chimera Includes */
+#include <Chimera/clock>
 #include <Chimera/watchdog>
 
 /* Thor Includes */
@@ -49,25 +50,6 @@ namespace Thor::LLD::Watchdog
   extern WRegisterMap *WWDG1_PERIPH;
 #endif
 
-
-  /*-------------------------------------------------------------------------------
-  Configuration Maps:
-    These convert high level configuration options into low level register config
-    options. The idea is to allow the user to specify some general options, then
-    convert that over to what the peripheral understands during config/init steps.
-  -------------------------------------------------------------------------------*/
-  namespace ConfigMap
-  {
-    // extern LLD_CONST <some_map>
-  }    // namespace ConfigMap
-
-
-  /*-------------------------------------------------------------------------------
-  Peripheral Resources
-  -------------------------------------------------------------------------------*/
-  namespace Resource
-  {
-  }    // namespace Resource
 }    // namespace Thor::LLD::Watchdog
 
 #endif /* !THOR_LLD_WATCHDOG_DATA */

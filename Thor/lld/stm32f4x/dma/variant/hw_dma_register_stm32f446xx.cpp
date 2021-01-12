@@ -74,7 +74,7 @@ namespace Thor::LLD::DMA
   Chimera::Container::LightFlatMap<std::uintptr_t, size_t> StreamToResourceIndex;
   Chimera::Container::LightFlatMap<std::uintptr_t, size_t> StreamToRegisterIndex;
 
-  void initializeRegisters()
+
   {
 #if defined( _SIM )
     /*------------------------------------------------

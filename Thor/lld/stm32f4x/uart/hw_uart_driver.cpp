@@ -24,7 +24,7 @@ namespace Thor::LLD::UART
 {
   void initialize()
   {
-    initializeRegisters();
+
     initializeMapping();
   }
 

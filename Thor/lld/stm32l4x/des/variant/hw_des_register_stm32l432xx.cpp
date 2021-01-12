@@ -22,23 +22,7 @@ namespace Thor::LLD::DES
   UDIDRegisterMap *UDIDR = reinterpret_cast<UDIDRegisterMap *>( UDIDR_BASE_ADDRESS );
   FSRegisterMap *FSDR    = reinterpret_cast<FSRegisterMap *>( FSDR_BASE_ADDRESS );
   PDRegisterMap *PDR     = reinterpret_cast<PDRegisterMap *>( PDR_BASE_ADDRESS );
-#elif defined( _SIM )
-  UDIDRegisterMap *UDIDR = nullptr;
-  FSRegisterMap *FSDR    = nullptr;
-  PDRegisterMap *PDR     = nullptr;
 #endif
-
-  void initializeRegisters()
-  {
-#if defined( _SIM )
-    /*------------------------------------------------
-    Allocate some memory to simulate the register blocks
-    ------------------------------------------------*/
-    UDIDR = new UDIDRegisterMap;
-    FSDR  = new FSRegisterMap;
-    PDR   = new PDRegisterMap;
-#endif
-  }
 }    // namespace Thor::LLD::DES
 
 #endif /* TARGET_STM32L4 && THOR_LLD_DES && STM32L432xx */

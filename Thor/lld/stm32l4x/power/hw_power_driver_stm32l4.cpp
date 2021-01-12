@@ -5,7 +5,7 @@
  *  Description:
  *    Implements the LLD interface to the STM32L4 series POWER hardware.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
@@ -13,11 +13,9 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/stm32l4x/power/hw_power_driver.hpp>
-#include <Thor/lld/stm32l4x/power/hw_power_mapping.hpp>
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_types.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_PWR )
 
@@ -28,18 +26,15 @@ namespace Thor::LLD::PWR
   -------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    initializeRegisters();
-    initializeMapping();
-
     return Chimera::Status::OK;
   }
 
 
   RIndex_t getResourceIndex( const std::uintptr_t address )
   {
-    if ( address == POWER1_BASE_ADDR )
+    if ( address == PWR_BASE_ADDR )
     {
-      return POWER1_RESOURCE_INDEX;
+      return PWR_RESOURCE_INDEX;
     }
     else
     {

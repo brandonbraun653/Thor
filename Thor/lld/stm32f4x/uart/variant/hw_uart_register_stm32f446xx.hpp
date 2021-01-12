@@ -28,7 +28,7 @@
 
 namespace Thor::LLD::UART
 {
-  void initializeRegisters();
+
 
   static constexpr Reg32_t UART4_BASE_ADDR  = Thor::System::MemoryMap::UART4_PERIPH_START_ADDRESS;
   static constexpr Reg32_t UART5_BASE_ADDR  = Thor::System::MemoryMap::UART5_PERIPH_START_ADDRESS;

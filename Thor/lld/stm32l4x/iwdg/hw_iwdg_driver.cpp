@@ -20,12 +20,12 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
-#include <Thor/lld/interface/watchdog/watchdog_prv_data.hpp>
+#include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/interface/watchdog/watchdog_intf.hpp>
+#include <Thor/lld/interface/watchdog/watchdog_prv_data.hpp>
 #include <Thor/lld/interface/watchdog/watchdog_types.hpp>
 #include <Thor/lld/stm32l4x/iwdg/hw_iwdg_prj.hpp>
 #include <Thor/lld/stm32l4x/iwdg/hw_iwdg_types.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_driver.hpp>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_IWDG )
 

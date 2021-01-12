@@ -21,37 +21,29 @@
 /*-------------------------------------------------
 Peripheral Availability
 -------------------------------------------------*/
-#define STM32_POWER1_PERIPH_AVAILABLE
+#define STM32_PWR_PERIPH_AVAILABLE
 
 namespace Thor::LLD::PWR
 {
-  /**
-   *  Initializes the LLD register resources and memory
-   *
-   *  @return void
-   */
-  void initializeRegisters();
-
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base
   -------------------------------------------------*/
-  static constexpr Reg32_t POWER1_BASE_ADDR = Thor::System::MemoryMap::PWR_PERIPH_START_ADDRESS;
+  static constexpr Reg32_t PWR_BASE_ADDR = Thor::System::MemoryMap::PWR_PERIPH_START_ADDRESS;
 
   /*-------------------------------------------------
   Peripheral Resource Lookup Indices
   -------------------------------------------------*/
-  static constexpr uint32_t POWER1_RESOURCE_INDEX = 0u;
+  static constexpr uint32_t PWR_RESOURCE_INDEX = 0u;
 
   /*-------------------------------------------------
   Lookup addresses
   -------------------------------------------------*/
-  static constexpr size_t NUM_POWER_PERIPHS                                 = 1;
-  static constexpr std::array<Reg32_t, NUM_POWER_PERIPHS> periphAddressList = { POWER1_BASE_ADDR };
+  static constexpr size_t NUM_PWR_PERIPHS = 1;
 
   /*-------------------------------------------------
   Peripheral Register Definitions
   -------------------------------------------------*/
-  
+
   /********************  Bit definition for CR1 register  ********************/
   static constexpr Reg32_t CR1_LPR_Pos           = ( 14U );
   static constexpr Reg32_t CR1_LPR_Msk           = ( 0x1UL << CR1_LPR_Pos );

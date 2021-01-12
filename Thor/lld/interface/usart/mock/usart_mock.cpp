@@ -67,7 +67,7 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------
     Driver behavior
     -------------------------------------------------*/
-    initializeRegisters();
+
     initializeMapping();
 
     return Chimera::Status::OK;

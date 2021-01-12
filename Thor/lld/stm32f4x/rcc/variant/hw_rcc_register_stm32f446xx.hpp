@@ -5,7 +5,7 @@
  *  Description:
  *    RCC register definitions for the STM32F446xx series chips.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -25,14 +25,9 @@
 
 namespace Thor::LLD::RCC
 {
-  void initializeRegisters();
-
-
-  static constexpr Reg32_t NUM_RCC_PERIPHS = 1;
+  static constexpr Reg32_t NUM_RCC_PERIPHS     = 1;
   static constexpr uint8_t RCC1_RESOURCE_INDEX = 0u;
-  static constexpr Reg32_t RCC1_BASE_ADDR = Thor::System::MemoryMap::RCC_PERIPH_START_ADDRESS;
-
-  static constexpr std::array<Reg32_t, NUM_RCC_PERIPHS> periphAddressList = { RCC1_BASE_ADDR };
+  static constexpr Reg32_t RCC1_BASE_ADDR      = Thor::System::MemoryMap::RCC_PERIPH_START_ADDRESS;
 
   /*------------------------------------------------
   CR Register
@@ -1154,7 +1149,7 @@ namespace Thor::LLD::RCC
   static constexpr Reg32_t PLLSAICFGR_RST_VALUE = 0x04003010U;
   static constexpr Reg32_t MAX_FREQUENCY        = 180000000U; /*!< Max frequency of family in Hz*/
   static constexpr Reg32_t MAX_FREQUENCY_SCALE1 =
-      MAX_FREQUENCY;                                           /*!< Maximum frequency for system clock at power scale1, in Hz */
+      MAX_FREQUENCY;                                          /*!< Maximum frequency for system clock at power scale1, in Hz */
   static constexpr Reg32_t MAX_FREQUENCY_SCALE2 = 168000000U; /*!< Maximum frequency for system clock at power scale2, in Hz */
   static constexpr Reg32_t MAX_FREQUENCY_SCALE3 = 120000000U; /*!< Maximum frequency for system clock at power scale3, in Hz */
   static constexpr Reg32_t PLLVCO_OUTPUT_MIN    = 100000000U; /*!< Frequency min for PLLVCO output, in Hz */

@@ -23,7 +23,7 @@
 
 namespace Thor::LLD::SPI
 {
-  void initializeRegisters()
+
   {
   }
 }  // namespace Thor::LLD::SPI

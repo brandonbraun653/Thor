@@ -37,7 +37,7 @@ namespace Thor::LLD::USART
 {
   void initialize()
   {
-    initializeRegisters();
+
     initializeMapping();
   }
 
