@@ -33,9 +33,9 @@ endif()
 # ====================================================
 # Import the Config, HLD, and LLD projects
 # ====================================================
-add_subdirectory("Thor/config")
-add_subdirectory("Thor/hld")
-add_subdirectory("Thor/lld")
+add_subdirectory("config")
+add_subdirectory("hld")
+add_subdirectory("lld")
 
 # ====================================================
 # Various exports
@@ -43,7 +43,7 @@ add_subdirectory("Thor/lld")
 
 # Public include location
 add_library(thor_intf_inc INTERFACE)
-target_include_directories(thor_intf_inc INTERFACE ".")
+target_include_directories(thor_intf_inc INTERFACE "./../" "include")
 target_compile_definitions(thor_intf_inc INTERFACE BOOST_NO_EXCEPTIONS)
 target_link_libraries(thor_intf_inc INTERFACE thor_project_config)
 export(TARGETS thor_intf_inc FILE "${PROJECT_BINARY_DIR}/Thor/thor-inc.cmake")

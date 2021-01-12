@@ -1,6 +1,6 @@
 # Thor
 
-Thor is my personal attempt at learning how to architect writing a Hardware Abstraction layer for STM32 series MCUs. It is broken up 
+Thor is my personal attempt at learning how to architect writing a Hardware Abstraction layer for STM32 series MCUs. It is broken up
 into a High Level Driver (HLD) and a Low Level Driver (LLD). The high level driver handles common functionality that you would expect
 from modern hardware peripheral drivers, like thread awareness and asynchronous operation. The low level driver is a chip specific,
 bare metal driver that controls the peripheral register level. Using a predetermined interface, the HLD and LLD work together to allow
@@ -18,6 +18,4 @@ Provides the HLD interface specification and common defintions.
 Slightly modified FreeRTOS 10.0.0 to integrate better with my build system. Functionally the same as the released FreeRTOS.
 
 ## Build System ##
-- Boost
-- MSBuild
-- VisualGDB
+- CMake
