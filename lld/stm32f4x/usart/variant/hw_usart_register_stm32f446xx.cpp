@@ -11,9 +11,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/hld/dma/hld_dma_intf.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 #include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_USART ) && defined( STM32F446xx )
 
@@ -36,16 +34,6 @@ namespace Thor::LLD::USART
     { 1, USART1_PERIPH }, { 2, USART2_PERIPH }, { 3, USART3_PERIPH }, { 6, USART6_PERIPH }
   };
 
-#elif defined( _SIM )
-  RegisterMap *USART1_PERIPH = nullptr;
-  RegisterMap *USART2_PERIPH = nullptr;
-  RegisterMap *USART3_PERIPH = nullptr;
-  RegisterMap *USART6_PERIPH = nullptr;
-
-  Chimera::Container::LightFlatMap<std::uintptr_t, size_t> InstanceToResourceIndex;
-  Chimera::Container::LightFlatMap<size_t, RegisterMap *> ChanneltoInstance;
-#endif
-
 
   {
     /*------------------------------------------------
@@ -63,111 +51,8 @@ namespace Thor::LLD::USART
     TXDMASignals[ USART2_RESOURCE_INDEX ] = Thor::DMA::Source::S_USART2_TX;
     TXDMASignals[ USART3_RESOURCE_INDEX ] = Thor::DMA::Source::S_USART3_TX;
     TXDMASignals[ USART6_RESOURCE_INDEX ] = Thor::DMA::Source::S_USART6_TX;
-
-#if defined( _SIM )
-    /*------------------------------------------------
-    Allocate some memory to simulate the register blocks
-    ------------------------------------------------*/
-    USART1_PERIPH = new RegisterMap;
-    USART2_PERIPH = new RegisterMap;
-    USART3_PERIPH = new RegisterMap;
-    USART6_PERIPH = new RegisterMap;
-
-    /*------------------------------------------------
-    Update the memory listing
-    ------------------------------------------------*/
-    PeripheralList[ USART1_RESOURCE_INDEX ] = USART1_PERIPH;
-    PeripheralList[ USART2_RESOURCE_INDEX ] = USART2_PERIPH;
-    PeripheralList[ USART3_RESOURCE_INDEX ] = USART3_PERIPH;
-    PeripheralList[ USART6_RESOURCE_INDEX ] = USART6_PERIPH;
-
-    /*------------------------------------------------
-    Update the resource indexer now that the registers actually exist
-    ------------------------------------------------*/
-    InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( USART1_PERIPH ), USART1_RESOURCE_INDEX );
-    InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( USART2_PERIPH ), USART2_RESOURCE_INDEX );
-    InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( USART3_PERIPH ), USART3_RESOURCE_INDEX );
-    InstanceToResourceIndex.append( reinterpret_cast<std::uintptr_t>( USART6_PERIPH ), USART6_RESOURCE_INDEX );
-#endif
   }
 }    // namespace Thor::LLD::USART
 
-
-namespace Thor::LLD::RCC::LookupTables
-{
-  /*------------------------------------------------
-  Lookup tables for register access on a peripheral by peripheral basis.
-  Indexing must match the lookup table hw_usart_mapping.hpp
-  ------------------------------------------------*/
-  RegisterConfig USART_ClockConfig[ usartTableSize ];
-  RegisterConfig USART_ClockConfigLP[ usartTableSize ];
-  RegisterConfig USART_ResetConfig[ usartTableSize ];
-
-  ClockType_t USART_SourceClock[ usartTableSize ];
-
-  const PCC USARTLookup = {
-    USART_ClockConfig, USART_ClockConfigLP, USART_ResetConfig, USART_SourceClock, &Thor::LLD::USART::InstanceToResourceIndex,
-    gpioTableSize
-  };
-
-  void USARTInit()
-  {
-    using namespace Thor::LLD::USART;
-
-    /*------------------------------------------------
-    USART clock enable register access lookup table
-    ------------------------------------------------*/
-    USART_ClockConfig[ USART1_RESOURCE_INDEX ].mask = APB2ENR_USART1EN;
-    USART_ClockConfig[ USART1_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB2ENR;
-
-    USART_ClockConfig[ USART2_RESOURCE_INDEX ].mask = APB1ENR_USART2EN;
-    USART_ClockConfig[ USART2_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB1ENR;
-
-    USART_ClockConfig[ USART3_RESOURCE_INDEX ].mask = APB1ENR_USART3EN;
-    USART_ClockConfig[ USART3_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB1ENR;
-
-    USART_ClockConfig[ USART6_RESOURCE_INDEX ].mask = APB2ENR_USART6EN;
-    USART_ClockConfig[ USART6_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB2ENR;
-
-    /*------------------------------------------------
-    USART low power clock enable register access lookup table
-    ------------------------------------------------*/
-    USART_ClockConfigLP[ USART1_RESOURCE_INDEX ].mask = APB2LPENR_USART1LPEN;
-    USART_ClockConfigLP[ USART1_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB2LPENR;
-
-    USART_ClockConfigLP[ USART2_RESOURCE_INDEX ].mask = APB1LPENR_USART2LPEN;
-    USART_ClockConfigLP[ USART2_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB1LPENR;
-
-    USART_ClockConfigLP[ USART3_RESOURCE_INDEX ].mask = APB1LPENR_USART3LPEN;
-    USART_ClockConfigLP[ USART3_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB1LPENR;
-
-    USART_ClockConfigLP[ USART6_RESOURCE_INDEX ].mask = APB2LPENR_USART6LPEN;
-    USART_ClockConfigLP[ USART6_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB2LPENR;
-
-    /*------------------------------------------------
-    USART reset register access lookup table
-    ------------------------------------------------*/
-    USART_ResetConfig[ USART1_RESOURCE_INDEX ].mask = APB2RSTR_USART1RST;
-    USART_ResetConfig[ USART1_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB2RSTR;
-
-    USART_ResetConfig[ USART2_RESOURCE_INDEX ].mask = APB1RSTR_USART2RST;
-    USART_ResetConfig[ USART2_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB1RSTR;
-
-    USART_ResetConfig[ USART3_RESOURCE_INDEX ].mask = APB1RSTR_USART3RST;
-    USART_ResetConfig[ USART3_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB1RSTR;
-
-    USART_ResetConfig[ USART6_RESOURCE_INDEX ].mask = APB2RSTR_USART6RST;
-    USART_ResetConfig[ USART6_RESOURCE_INDEX ].reg = &RCC1_PERIPH->APB2RSTR;
-
-    /*------------------------------------------------
-    USART clocking bus source identifier
-    ------------------------------------------------*/
-    USART_SourceClock[ USART1_RESOURCE_INDEX ] = Configuration::ClockType::PCLK2;
-    USART_SourceClock[ USART2_RESOURCE_INDEX ] = Configuration::ClockType::PCLK1;
-    USART_SourceClock[ USART3_RESOURCE_INDEX ] = Configuration::ClockType::PCLK1;
-    USART_SourceClock[ USART6_RESOURCE_INDEX ] = Configuration::ClockType::PCLK2;
-  }
-
-}
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_USART */

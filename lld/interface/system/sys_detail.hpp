@@ -19,7 +19,8 @@
 #include <Thor/lld/interface/system/sim/sys_sim_variant.hpp>
 #include <Thor/lld/interface/system/sim/sys_sim_types.hpp>
 #elif defined( TARGET_STM32F4 )
-#pragma message( "sys_detail.hpp not implemented for this processor")
+#include <Thor/lld/stm32f4x/system/hw_sys_prj.hpp>
+#include <Thor/lld/stm32f4x/system/hw_sys_types.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/system/hw_sys_prj.hpp>
 #include <Thor/lld/stm32l4x/system/hw_sys_types.hpp>
