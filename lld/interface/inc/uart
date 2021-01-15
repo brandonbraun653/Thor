@@ -1,0 +1,20 @@
+/********************************************************************************
+ *  File Name:
+ *    uart
+ *
+ *  Description:
+ *    Low level driver interface includes
+ *
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_UART_INTF_INCLUDES
+#define THOR_UART_INTF_INCLUDES
+
+#include <Thor/lld/interface/uart/uart_detail.hpp>
+#include <Thor/lld/interface/uart/uart_intf.hpp>
+#include <Thor/lld/interface/uart/uart_prv_data.hpp>
+#include <Thor/lld/interface/uart/uart_types.hpp>
+
+#endif /* !THOR_UART_INTF_INCLUDES */

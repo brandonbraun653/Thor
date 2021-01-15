@@ -5,7 +5,7 @@
  *  Description:
  *    STM32 Driver UART Interface
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -141,7 +141,6 @@ namespace Thor::LLD::USART
     void clearFlags( const uint32_t flagBits );
     void killTransmit();
     void killReceive();
-    void attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup );
     Thor::LLD::Serial::CDTCB getTCB_TX();
     Thor::LLD::Serial::MDTCB getTCB_RX();
     Thor::LLD::Serial::Config getConfiguration();
@@ -164,11 +163,6 @@ namespace Thor::LLD::USART
     volatile Reg32_t runtimeFlags; /**< Error/process flags set at runtime to indicate state */
 
     /*------------------------------------------------
-    Asynchronous Event Listeners
-    ------------------------------------------------*/
-    Chimera::Threading::BinarySemaphore *ISRWakeup_external;
-
-    /*------------------------------------------------
     Transfer Control Blocks
     ------------------------------------------------*/
     Thor::LLD::Serial::CDTCB txTCB;
@@ -179,16 +173,19 @@ namespace Thor::LLD::USART
      *  given a desired baud rate.
      *
      *  @param[in]  desiredBaud   The baud rate to be configured
+     *  @return uint32_t
      */
     uint32_t calculateBRR( const size_t desiredBaud );
 
     /**
      *  Disables the USART interrupts
+     *  @return void
      */
     inline void enterCriticalSection();
 
     /**
      *  Enables the USART interrupts
+     *  @return void
      */
     inline void exitCriticalSection();
   };

@@ -5,7 +5,7 @@
  *  Description:
  *    Includes the LLD specific headers for chip implementation details
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -21,7 +21,6 @@
 #elif defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/usart/hw_usart_driver.hpp>
 #include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/usart/hw_usart_types.hpp>
 #include <Thor/lld/stm32l4x/usart/hw_usart_prj.hpp>

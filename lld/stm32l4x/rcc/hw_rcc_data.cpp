@@ -10,35 +10,19 @@
 
 /* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/lld/interface/adc/adc_intf.hpp>
-#include <Thor/lld/interface/can/can_intf.hpp>
-#include <Thor/lld/interface/flash/flash_intf.hpp>
-#include <Thor/lld/interface/gpio/gpio_intf.hpp>
-#include <Thor/lld/interface/power/power_intf.hpp>
-#include <Thor/lld/interface/rcc/rcc_detail.hpp>
-#include <Thor/lld/interface/rcc/rcc_prv_data.hpp>
-#include <Thor/lld/interface/spi/spi_intf.hpp>
-#include <Thor/lld/interface/system/sys_intf.hpp>
-#include <Thor/lld/interface/timer/timer_intf.hpp>
-#include <Thor/lld/interface/usart/usart_intf.hpp>
-#include <Thor/lld/interface/usb/usb_intf.hpp>
-#include <Thor/lld/interface/watchdog/watchdog_intf.hpp>
-#include <Thor/lld/stm32l4x/adc/hw_adc_prj.hpp>
-#include <Thor/lld/stm32l4x/can/hw_can_prj.hpp>
-#include <Thor/lld/stm32l4x/crs/hw_crs_prj.hpp>
-#include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
-#include <Thor/lld/stm32l4x/iwdg/hw_iwdg_prj.hpp>
-#include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
-#include <Thor/lld/stm32l4x/spi/hw_spi_prj.hpp>
-#include <Thor/lld/stm32l4x/system/hw_sys_prj.hpp>
-#include <Thor/lld/stm32l4x/system/sys_memory_map_prj.hpp>
-#include <Thor/lld/stm32l4x/timer/hw_timer_prj.hpp>
-#include <Thor/lld/stm32l4x/usart/hw_usart_prj.hpp>
-#include <Thor/lld/stm32l4x/usb/hw_usb_prj.hpp>
-#include <Thor/lld/stm32l4x/wwdg/hw_wwdg_prj.hpp>
+#include <Thor/lld/interface/inc/adc>
+#include <Thor/lld/interface/inc/can>
+#include <Thor/lld/interface/inc/flash>
+#include <Thor/lld/interface/inc/gpio>
+#include <Thor/lld/interface/inc/power>
+#include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/spi>
+#include <Thor/lld/interface/inc/sys>
+#include <Thor/lld/interface/inc/timer>
+#include <Thor/lld/interface/inc/uart>
+#include <Thor/lld/interface/inc/usart>
+#include <Thor/lld/interface/inc/usb>
+#include <Thor/lld/interface/inc/watchdog>
 
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_RCC )

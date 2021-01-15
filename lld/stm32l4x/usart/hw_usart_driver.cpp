@@ -5,11 +5,8 @@
  *  Description:
  *    Implements the LLD interface to the STM32L4 series USART hardware.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
-
-/* STL Includes */
-#include <memory>
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -23,76 +20,16 @@
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/lld/common/cortex-m4/interrupts.hpp>
 #include <Thor/lld/common/types.hpp>
-#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
-#include <Thor/lld/interface/rcc/rcc_intf.hpp>
-#include <Thor/lld/interface/usart/usart_detail.hpp>
-#include <Thor/lld/interface/usart/usart_intf.hpp>
-#include <Thor/lld/interface/usart/usart_prv_data.hpp>
+#include <Thor/lld/interface/inc/interrupt>
+#include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/usart>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_USART )
-
-/*-------------------------------------------------------------------------------
-Aliases
--------------------------------------------------------------------------------*/
-namespace LLD = Thor::LLD::USART;
 
 namespace Thor::LLD::USART
 {
   /*-------------------------------------------------------------------------------
-  Variables
-  -------------------------------------------------------------------------------*/
-  static Driver s_usart_drivers[ NUM_USART_PERIPHS ];
-
-  /*-------------------------------------------------------------------------------
-  Constants
-  -------------------------------------------------------------------------------*/
-  static constexpr Chimera::Peripheral::Type s_peripheral_type = Chimera::Peripheral::Type::PERIPH_USART;
-
-  /*-------------------------------------------------------------------------------
-  Public Functions
-  -------------------------------------------------------------------------------*/
-  Chimera::Status_t initialize()
-  {
-    /*-------------------------------------------------
-    Attach all the expected peripherals to the drivers
-    -------------------------------------------------*/
-    if ( attachDriverInstances( s_usart_drivers, ARRAY_COUNT( s_usart_drivers ) ) )
-    {
-      return Chimera::Status::OK;
-    }
-    else
-    {
-      return Chimera::Status::FAIL;
-    }
-  }
-
-
-  bool isChannelSupported( const Chimera::Serial::Channel channel )
-  {
-    if ( channel < Chimera::Serial::Channel::NUM_OPTIONS )
-    {
-      return ( getResourceIndex( channel ) != INVALID_RESOURCE_INDEX );
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-
-  Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
-  {
-    if ( isChannelSupported( channel ) )
-    {
-      return &s_usart_drivers[ static_cast<size_t>( channel ) ];
-    }
-
-    return nullptr;
-  }
-
-
-  /*-------------------------------------------------------------------------------
-  Low Level Driver Implementation
+  Public Methods
   -------------------------------------------------------------------------------*/
   Driver::Driver() : periph( nullptr )
   {
@@ -148,7 +85,7 @@ namespace Thor::LLD::USART
     Ensure the clock is enabled otherwise the hardware is "dead"
     ------------------------------------------------*/
     auto rccPeriph = Thor::LLD::RCC::getPeripheralClock();
-    rccPeriph->enableClock( s_peripheral_type, resourceIndex );
+    rccPeriph->enableClock( Chimera::Peripheral::Type::PERIPH_USART, resourceIndex );
 
     /*------------------------------------------------
     Follow the initialization sequence as defined in RM0394 Rev 4, pg.1202
@@ -203,9 +140,9 @@ namespace Thor::LLD::USART
     Use the RCC's ability to reset whole peripherals back to default states
     -------------------------------------------------*/
     auto rcc = Thor::LLD::RCC::getPeripheralClock();
-    rcc->enableClock( s_peripheral_type, resourceIndex );
-    rcc->reset( s_peripheral_type, resourceIndex );
-    rcc->disableClock( s_peripheral_type, resourceIndex );
+    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_USART, resourceIndex );
+    rcc->reset( Chimera::Peripheral::Type::PERIPH_USART, resourceIndex );
+    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_USART, resourceIndex );
 
     return Chimera::Status::OK;
   }
@@ -214,8 +151,6 @@ namespace Thor::LLD::USART
   Chimera::Status_t Driver::reset()
   {
     deinit();
-    ISRWakeup_external = nullptr;
-
     return Chimera::Status::OK;
   }
 
@@ -578,12 +513,6 @@ namespace Thor::LLD::USART
   }
 
 
-  void Driver::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )
-  {
-    ISRWakeup_external = wakeup;
-  }
-
-
   Thor::LLD::Serial::CDTCB Driver::getTCB_TX()
   {
     Thor::LLD::Serial::CDTCB temp;
@@ -624,6 +553,9 @@ namespace Thor::LLD::USART
   }
 
 
+  /*-------------------------------------------------------------------------------
+  Protected Methods
+  -------------------------------------------------------------------------------*/
   void Driver::IRQHandler()
   {
     using namespace Chimera::Interrupt;
@@ -783,7 +715,7 @@ namespace Thor::LLD::USART
       /*------------------------------------------------
       Unblock the higher level driver
       ------------------------------------------------*/
-      if ( ( rxTCB.state == StateMachine::RX::RX_ABORTED || rxTCB.state == StateMachine::RX_COMPLETE ) && ISRWakeup_external )
+      if ( ( rxTCB.state == StateMachine::RX::RX_ABORTED || rxTCB.state == StateMachine::RX_COMPLETE ) )
       {
         /*-------------------------------------------------
         Regardless of the state this entered in, the
@@ -839,6 +771,9 @@ namespace Thor::LLD::USART
   }
 
 
+  /*-------------------------------------------------------------------------------
+  Private Methods
+  -------------------------------------------------------------------------------*/
   uint32_t Driver::calculateBRR( const size_t desiredBaud )
   {
     size_t periphClock   = 0u;
@@ -890,30 +825,5 @@ namespace Thor::LLD::USART
     Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
   }
 }    // namespace Thor::LLD::USART
-
-
-#if defined( STM32_USART1_PERIPH_AVAILABLE )
-void USART1_IRQHandler( void )
-{
-  ::LLD::s_usart_drivers[::LLD::USART1_RESOURCE_INDEX ].IRQHandler();
-}
-#endif /* STM32_USART1_PERIPH_AVAILABLE */
-
-
-#if defined( STM32_USART2_PERIPH_AVAILABLE )
-void USART2_IRQHandler( void )
-{
-  ::LLD::s_usart_drivers[::LLD::USART2_RESOURCE_INDEX ].IRQHandler();
-}
-#endif /* STM32_USART2_PERIPH_AVAILABLE */
-
-
-#if defined( STM32_USART3_PERIPH_AVAILABLE )
-void USART3_IRQHandler( void )
-{
-  ::LLD::s_usart_drivers[::LLD::USART3_RESOURCE_INDEX ].IRQHandler();
-}
-#endif /* STM32_USART3_PERIPH_AVAILABLE */
-
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_USART */

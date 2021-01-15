@@ -1,0 +1,18 @@
+/********************************************************************************
+ *  File Name:
+ *    serial
+ *
+ *  Description:
+ *    Low level driver interface includes
+ *
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_SERIAL_INTF_INCLUDES
+#define THOR_SERIAL_INTF_INCLUDES
+
+#include <Thor/lld/interface/serial/serial_intf.hpp>
+#include <Thor/lld/interface/serial/serial_types.hpp>
+
+#endif /* !THOR_SERIAL_INTF_INCLUDES */

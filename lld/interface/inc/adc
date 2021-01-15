@@ -1,0 +1,20 @@
+/********************************************************************************
+ *  File Name:
+ *    adc
+ *
+ *  Description:
+ *    Low level driver interface includes
+ *
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_ADC_INTF_INCLUDES
+#define THOR_ADC_INTF_INCLUDES
+
+#include <Thor/lld/interface/adc/adc_detail.hpp>
+#include <Thor/lld/interface/adc/adc_intf.hpp>
+#include <Thor/lld/interface/adc/adc_prv_data.hpp>
+#include <Thor/lld/interface/adc/adc_types.hpp>
+
+#endif /* !THOR_ADC_INTF_INCLUDES */

@@ -1,0 +1,19 @@
+/********************************************************************************
+ *  File Name:
+ *    power
+ *
+ *  Description:
+ *    Low level driver interface includes
+ *
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_POWER_INTF_INCLUDES
+#define THOR_POWER_INTF_INCLUDES
+
+#include <Thor/lld/interface/power/power_detail.hpp>
+#include <Thor/lld/interface/power/power_intf.hpp>
+#include <Thor/lld/interface/power/power_prv_data.hpp>
+
+#endif /* !THOR_POWER_INTF_INCLUDES */

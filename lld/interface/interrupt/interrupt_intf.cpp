@@ -15,11 +15,9 @@
 
 /* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
-#include <Thor/lld/interface/interrupt/interrupt_types.hpp>
-#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
-#include <Thor/lld/interface/system/sys_intf.hpp>
-#include <Thor/lld/interface/system/sys_prv_data.hpp>
+#include <Thor/lld/interface/inc/interrupt>
+#include <Thor/lld/interface/inc/sys>
+
 
 namespace Thor::LLD::INT
 {

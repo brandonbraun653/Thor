@@ -1,11 +1,11 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    serial_types.hpp
  *
- *   Description:
+ *  Description:
  *    STM32 Serial Driver Types
  *
- *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -24,32 +24,6 @@
 
 namespace Thor::LLD::Serial
 {
-  /*-------------------------------------------------------------------------------
-  Constants
-  -------------------------------------------------------------------------------*/
-  class ITSigUSART
-  {
-  public:
-    static constexpr Thor::LLD::Interrupt::InterruptSignal_t TRANSMIT_DATA_REGISTER_EMPTY =
-        Thor::LLD::Interrupt::USARTSigOffset + 0;
-    static constexpr Thor::LLD::Interrupt::InterruptSignal_t RECEIVED_DATA_READ_TO_READ =
-        Thor::LLD::Interrupt::USARTSigOffset + 1;
-    static constexpr Thor::LLD::Interrupt::InterruptSignal_t TRANSMISSION_COMPLETE = Thor::LLD::Interrupt::USARTSigOffset + 2;
-    static constexpr Thor::LLD::Interrupt::InterruptSignal_t IDLE_LINE_DETECTED    = Thor::LLD::Interrupt::USARTSigOffset + 3;
-    static constexpr Thor::LLD::Interrupt::InterruptSignal_t PARITY_ERROR          = Thor::LLD::Interrupt::USARTSigOffset + 4;
-    static constexpr Thor::LLD::Interrupt::InterruptSignal_t OVERRUN_ERROR         = Thor::LLD::Interrupt::USARTSigOffset + 5;
-    static constexpr Thor::LLD::Interrupt::InterruptSignal_t FRAMING_ERROR         = Thor::LLD::Interrupt::USARTSigOffset + 6;
-    static constexpr Thor::LLD::Interrupt::InterruptSignal_t BREAK_FLAG            = Thor::LLD::Interrupt::USARTSigOffset + 7;
-    static constexpr Thor::LLD::Interrupt::InterruptSignal_t NOISE_FLAG            = Thor::LLD::Interrupt::USARTSigOffset + 8;
-    static constexpr Thor::LLD::Interrupt::InterruptSignal_t CTS_FLAG              = Thor::LLD::Interrupt::USARTSigOffset + 9;
-
-    static constexpr Thor::LLD::Interrupt::InterruptSignal_t NUM_INTERRUPT_SIGNALS =
-        CTS_FLAG - TRANSMIT_DATA_REGISTER_EMPTY + 1;
-
-    static_assert( NUM_INTERRUPT_SIGNALS <= Thor::LLD::Interrupt::USARTMaxSig, "Too many interrupt signals for USART" );
-  };
-
-
   /*-------------------------------------------------------------------------------
   Enumerations
   -------------------------------------------------------------------------------*/

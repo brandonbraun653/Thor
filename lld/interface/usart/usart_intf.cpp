@@ -5,7 +5,7 @@
  *  Description:
  *    LLD interface functions that are processor independent
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 /* Chimera Includes */
@@ -13,10 +13,7 @@
 
 /* Thor Includes */
 #include <Thor/lld/common/types.hpp>
-#include <Thor/lld/interface/usart/usart_detail.hpp>
-#include <Thor/lld/interface/usart/usart_prv_data.hpp>
-#include <Thor/lld/interface/usart/usart_types.hpp>
-#include <Thor/lld/interface/usart/usart_intf.hpp>
+#include <Thor/lld/interface/inc/usart>
 
 
 namespace Thor::LLD::USART
