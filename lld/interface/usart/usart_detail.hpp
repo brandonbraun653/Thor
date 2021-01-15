@@ -19,7 +19,7 @@
 #include <Thor/lld/interface/usart/sim/usart_sim_variant.hpp>
 #include <Thor/lld/interface/usart/sim/usart_sim_types.hpp>
 #elif defined( TARGET_STM32F4 )
-#include <Thor/lld/stm32f4x/usart/hw_usart_driver.hpp>
+#include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
 #include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/usart/hw_usart_types.hpp>

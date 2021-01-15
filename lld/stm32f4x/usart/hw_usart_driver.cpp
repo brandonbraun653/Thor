@@ -23,12 +23,8 @@
 #include <Thor/cfg>
 #include <Thor/dma>
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
-#include <Thor/lld/stm32f4x/nvic/hw_nvic_driver.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_driver.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_types.hpp>
+#include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/usart>
 
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_USART )

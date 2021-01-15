@@ -2,10 +2,10 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
 gen_static_lib_variants(
   TARGET
-    thor_lld_stm32l4_usart
+    thor_lld_stm32f4_uart
   SOURCES
-    hw_usart_driver.cpp
-    hw_usart_data.cpp
+    hw_uart_driver.cpp
+    hw_uart_data.cpp
   PRV_LIBRARIES
     chimera_intf_inc
     thor_intf_inc

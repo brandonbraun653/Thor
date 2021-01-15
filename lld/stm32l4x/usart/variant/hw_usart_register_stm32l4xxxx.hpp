@@ -5,7 +5,7 @@
  *  Description:
  *    USART register definitions for the STM32L432KC series chips.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -26,13 +26,6 @@
 
 namespace Thor::LLD::USART
 {
-  /**
-   *  Initializes the LLD register resources and memory
-   *
-   *  @return void
-   */
-
-
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base
   -------------------------------------------------*/

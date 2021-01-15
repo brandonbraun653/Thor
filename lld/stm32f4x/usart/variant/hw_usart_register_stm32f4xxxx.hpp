@@ -1,53 +1,28 @@
 /********************************************************************************
  *  File Name:
- *    hw_usart_register_stm32f446xx.hpp
+ *    hw_usart_register_stm32f4xxxx.hpp
  *
  *  Description:
- *    Explicit hardware register definitions for the STM32F446xx USART/UART
- *    peripherals. The datasheet for this device makes no distinction between the
- *    UART and USART registers, so the definitions for both are combined here.
+ *    General STM32F4 register definitions
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *******************************************************************************/
 
 #pragma once
-#ifndef THOR_HW_USART_REGISTER_HPP
-#define THOR_HW_USART_REGISTER_HPP
+#ifndef THOR_LLD_USART_REGISTER_STM32F4XXXX_HPP
+#define THOR_LLD_USART_REGISTER_STM32F4XXXX_HPP
 
-/* C++ Includes */
-#include <array>
-#include <cstdint>
+/* STL Includes */
+#include <cstddef>
 
 /* Chimera Includes */
 #include <Chimera/common>
 
-/* Driver Includes */
-#include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
-
-#define STM32_USART1_PERIPH_AVAILABLE
-#define STM32_USART2_PERIPH_AVAILABLE
-#define STM32_USART3_PERIPH_AVAILABLE
-#define STM32_USART6_PERIPH_AVAILABLE
+/* Thor Includes */
+#include <Thor/lld/common/types.hpp>
 
 namespace Thor::LLD::USART
 {
-
-
-  static constexpr Reg32_t USART1_BASE_ADDR = Thor::System::MemoryMap::USART1_PERIPH_START_ADDRESS;
-  static constexpr Reg32_t USART2_BASE_ADDR = Thor::System::MemoryMap::USART2_PERIPH_START_ADDRESS;
-  static constexpr Reg32_t USART3_BASE_ADDR = Thor::System::MemoryMap::USART3_PERIPH_START_ADDRESS;
-  static constexpr Reg32_t USART6_BASE_ADDR = Thor::System::MemoryMap::USART6_PERIPH_START_ADDRESS;
-
-  static constexpr Reg32_t NUM_USART_PERIPHS = 4u;
-
-  static constexpr uint32_t USART1_RESOURCE_INDEX = 0u;
-  static constexpr uint32_t USART2_RESOURCE_INDEX = 1u;
-  static constexpr uint32_t USART3_RESOURCE_INDEX = 2u;
-  static constexpr uint32_t USART6_RESOURCE_INDEX = 3u;
-
-  static constexpr std::array<Reg32_t, NUM_USART_PERIPHS> periphAddressList = { USART1_BASE_ADDR, USART2_BASE_ADDR,
-                                                                                USART3_BASE_ADDR, USART6_BASE_ADDR };
-
   /*------------------------------------------------
   USART Status Register
   ------------------------------------------------*/
@@ -250,6 +225,6 @@ namespace Thor::LLD::USART
   static constexpr Reg32_t GTPR_GT_Pos  = ( 8U );
   static constexpr Reg32_t GTPR_GT_Msk  = ( 0xFFU << GTPR_GT_Pos );
   static constexpr Reg32_t GTPR_GT      = GTPR_GT_Msk;
-}    // namespace Thor::LLD::USART
+}  // namespace Thor::LLD::USART
 
-#endif /* !THOR_HW_USART_REGISTER_HPP */
+#endif  /* !THOR_LLD_USART_REGISTER_STM32F4XXXX_HPP */

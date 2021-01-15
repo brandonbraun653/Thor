@@ -14,11 +14,8 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/cortex-m4/utilities.hpp>
-#include <Thor/lld/stm32f4x/gpio/hw_gpio_driver.hpp>
-#include <Thor/lld/stm32f4x/gpio/hw_gpio_mapping.hpp>
-#include <Thor/lld/stm32f4x/gpio/hw_gpio_prj.hpp>
-#include <Thor/lld/stm32f4x/gpio/hw_gpio_types.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
+#include <Thor/lld/interface/inc/gpio>
+#include <Thor/lld/interface/inc/rcc>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 

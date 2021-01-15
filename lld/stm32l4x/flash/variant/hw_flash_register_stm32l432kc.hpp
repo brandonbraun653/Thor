@@ -5,7 +5,7 @@
  *  Description:
  *    FLASH register definitions for the STM32L432KC series chips.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -14,6 +14,9 @@
 
 /* C++ Includes */
 #include <cstdint>
+
+/* Chimera Includes */
+#include <Chimera/common>
 
 /* Driver Includes */
 #include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432kc.hpp>
@@ -25,13 +28,6 @@ Peripheral Availability
 
 namespace Thor::LLD::FLASH
 {
-  /**
-   *  Initializes the LLD register resources and memory
-   *
-   *  @return void
-   */
-
-
   /*-------------------------------------------------
   Peripheral Instance Memory Map Base
   -------------------------------------------------*/
@@ -45,8 +41,7 @@ namespace Thor::LLD::FLASH
   /*-------------------------------------------------
   Lookup addresses
   -------------------------------------------------*/
-  static constexpr size_t NUM_FLASH_PERIPHS                                 = 1;
-  static constexpr std::array<Reg32_t, NUM_FLASH_PERIPHS> periphAddressList = { FLASH_BASE_ADDR };
+  static constexpr size_t NUM_FLASH_PERIPHS = 1;
 
   /*-------------------------------------------------
   Peripheral Register Definitions

@@ -7,7 +7,7 @@
  *    peripherals. The datasheet for this device makes no distinction between the
  *    UART and USART registers, so the definitions for both are combined here.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -28,8 +28,9 @@
 
 namespace Thor::LLD::UART
 {
-
-
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
   static constexpr Reg32_t UART4_BASE_ADDR  = Thor::System::MemoryMap::UART4_PERIPH_START_ADDRESS;
   static constexpr Reg32_t UART5_BASE_ADDR  = Thor::System::MemoryMap::UART5_PERIPH_START_ADDRESS;
 
@@ -37,8 +38,6 @@ namespace Thor::LLD::UART
 
   static constexpr uint32_t UART4_RESOURCE_INDEX = 0u;
   static constexpr uint32_t UART5_RESOURCE_INDEX = 1u;
-
-  static constexpr std::array<Reg32_t, NUM_UART_PERIPHS> periphAddressList = { UART4_BASE_ADDR, UART5_BASE_ADDR };
 }    // namespace Thor::LLD::USART
 
 #endif /* !THOR_HW_UART_REGISTER_HPP */

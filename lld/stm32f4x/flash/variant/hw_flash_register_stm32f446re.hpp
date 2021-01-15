@@ -18,7 +18,7 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/system/sys_memory_map_prj.hpp>
 
-#define STM32_FLASH1_AVAILABLE
+#define STM32_FLASH_PERIPH_AVAILABLE
 
 namespace Thor::LLD::FLASH
 {

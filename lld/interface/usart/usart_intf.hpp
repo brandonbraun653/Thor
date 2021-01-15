@@ -149,6 +149,7 @@ namespace Thor::LLD::USART
     friend void( ::USART1_IRQHandler )();
     friend void( ::USART2_IRQHandler )();
     friend void( ::USART3_IRQHandler )();
+    friend void( ::USART6_IRQHandler )();
 
     /**
      *  Generic interrupt handler for all USART specific ISR signals

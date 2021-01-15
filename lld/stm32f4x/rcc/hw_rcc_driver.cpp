@@ -24,6 +24,7 @@
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/power>
 
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
 
 namespace Thor::LLD::RCC
 {
@@ -59,6 +60,8 @@ namespace Thor::LLD::RCC
       initialized = true;
     }
   }
+
+
   Chimera::Status_t prjGetHSIValue( size_t *const projectValue )
   {
     Chimera::Status_t result = Chimera::Status::FAIL;
@@ -166,6 +169,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
+
   Chimera::Status_t prjGetHCLKFreq( size_t *const projectValue )
   {
     Chimera::Status_t result = Chimera::Status::FAIL;
@@ -178,6 +182,7 @@ namespace Thor::LLD::RCC
 
     return result;
   }
+
 
   Chimera::Status_t prjGetPCLK1Freq( size_t *const projectValue )
   {
@@ -195,6 +200,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
+
   Chimera::Status_t prjGetPCLK2Freq( size_t *const projectValue )
   {
     Chimera::Status_t result = Chimera::Status::FAIL;
@@ -210,6 +216,7 @@ namespace Thor::LLD::RCC
 
     return result;
   }
+
 
   Chimera::Status_t prjGetOscillatorConfig( OscillatorInit *const projectValue )
   {
@@ -259,6 +266,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
+
   Chimera::Status_t prjGetClockConfig( ClockInit *const projectValue )
   {
     Chimera::Status_t result = Chimera::Status::FAIL;
@@ -284,18 +292,11 @@ namespace Thor::LLD::RCC
   }
 
 
-
-
-
   /*-------------------------------------------------------------------------------
   Static Functions
   -------------------------------------------------------------------------------*/
   static inline Chimera::Status_t HSEOscillatorConfig( const OscillatorInit *const init )
   {
-    using namespace CFGR;
-    using namespace PLLCFGR;
-    using namespace CR;
-
     const auto clockSource = SWS::get( RCC1_PERIPH );
     const auto pllSource   = SRC::get( RCC1_PERIPH );
 

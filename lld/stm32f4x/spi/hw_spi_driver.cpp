@@ -20,12 +20,9 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
-#include <Thor/lld/stm32f4x/nvic/hw_nvic_driver.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
-#include <Thor/lld/stm32f4x/spi/hw_spi_driver.hpp>
-#include <Thor/lld/stm32f4x/spi/hw_spi_mapping.hpp>
-#include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
-#include <Thor/lld/stm32f4x/spi/hw_spi_types.hpp>
+#include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/spi>
+
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_SPI )
 

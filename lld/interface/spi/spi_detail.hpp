@@ -6,7 +6,7 @@
  *    Common header for Thor SPI that configures the driver based on which
  *    chip family is being compiled against.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -20,9 +20,8 @@
 #include <Thor/lld/interface/spi/sim/spi_sim_variant.hpp>
 #include <Thor/lld/interface/spi/sim/spi_sim_types.hpp>
 #elif defined( TARGET_STM32F4 )
-#include <Thor/lld/stm32f4x/spi/hw_spi_driver.hpp>
 #include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
-#include <Thor/lld/stm32f4x/spi/hw_spi_mapping.hpp>
+#include <Thor/lld/stm32f4x/spi/hw_spi_types.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/spi/hw_spi_prj.hpp>
 #include <Thor/lld/stm32l4x/spi/hw_spi_types.hpp>

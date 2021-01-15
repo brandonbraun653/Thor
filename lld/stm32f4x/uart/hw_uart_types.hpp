@@ -24,18 +24,6 @@
 
 namespace Thor::LLD::UART
 {
-  /*------------------------------------------------
-  For the F4, the UART and USART peripherals are synonymous
-  ------------------------------------------------*/
-  using RegisterMap = Thor::LLD::USART::RegisterMap;
-
-  class Driver;
-
-  using DriverInstanceList = std::array<Driver *, NUM_UART_PERIPHS>;
-  using PeriphRegisterList = std::array<RegisterMap *, NUM_UART_PERIPHS>;
-  using DMASignalList      = std::array<Reg32_t, NUM_UART_PERIPHS>;
-
-
 }    // namespace Thor::LLD::UART
 
 #endif /* !THOR_HW_UART_TYPES_HPP */

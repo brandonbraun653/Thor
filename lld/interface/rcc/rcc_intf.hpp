@@ -259,6 +259,7 @@ namespace Thor::LLD::RCC
   class SystemClock /* Interface of ICoreClock */
   {
   public:
+    SystemClock();
     ~SystemClock();
     void enableClock( const Chimera::Clock::Bus clock );
     void disableClock( const Chimera::Clock::Bus clock );
@@ -271,7 +272,6 @@ namespace Thor::LLD::RCC
 
   private:
     friend SystemClock *getCoreClock();
-    SystemClock();
   };
 
 
@@ -338,6 +338,7 @@ namespace Thor::LLD::RCC
   class PeripheralController  /* Interface of IPeripheralClock */
   {
   public:
+    PeripheralController();
     ~PeripheralController();
 
     Chimera::Status_t reset( const Chimera::Peripheral::Type type, const size_t index );
@@ -348,7 +349,6 @@ namespace Thor::LLD::RCC
 
   private:
     friend PeripheralController *getPeripheralClock();
-    PeripheralController();
   };
 }    // namespace Thor::LLD::RCC
 
