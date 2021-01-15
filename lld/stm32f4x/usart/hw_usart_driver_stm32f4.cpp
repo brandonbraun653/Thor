@@ -149,7 +149,7 @@ namespace Thor::LLD::USART
   Chimera::Status_t Driver::enableIT( const Chimera::Hardware::SubPeripheral subPeriph )
   {
     using namespace Thor::Interrupt;
-    using namespace Thor::LLD::IT;
+    using namespace Thor::LLD::INT;
 
     setPriority( periphIRQn, USART_IT_PREEMPT_PRIORITY, 0u );
 
@@ -163,7 +163,7 @@ namespace Thor::LLD::USART
   Chimera::Status_t Driver::disableIT( const Chimera::Hardware::SubPeripheral subPeriph )
   {
     using namespace Chimera::Hardware;
-    using namespace Thor::LLD::IT;
+    using namespace Thor::LLD::INT;
 
     Chimera::Status_t result = Chimera::Status::OK;
 
@@ -678,12 +678,12 @@ namespace Thor::LLD::USART
 
   inline void Driver::enterCriticalSection()
   {
-    Thor::LLD::IT::disableIRQ( periphIRQn );
+    Thor::LLD::INT::disableIRQ( periphIRQn );
   }
 
   inline void Driver::exitCriticalSection()
   {
-    Thor::LLD::IT::enableIRQ( periphIRQn );
+    Thor::LLD::INT::enableIRQ( periphIRQn );
   }
 }    // namespace Thor::LLD::USART
 

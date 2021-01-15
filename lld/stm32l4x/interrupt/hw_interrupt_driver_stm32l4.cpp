@@ -23,7 +23,7 @@
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_IT )
 
-namespace Thor::LLD::IT
+namespace Thor::LLD::INT
 {
   Chimera::System::InterruptMask disableInterrupts()
   {
@@ -37,6 +37,6 @@ namespace Thor::LLD::IT
     CortexM4::enableInterrupts( interruptMask.mask );
   }
 
-}    // namespace Thor::LLD::IT
+}    // namespace Thor::LLD::INT
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_INTERRUPT */

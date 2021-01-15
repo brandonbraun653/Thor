@@ -57,6 +57,9 @@ namespace Chimera::Watchdog::Backend
   Chimera::Status_t initialize()
   {
     auto result = Chimera::Status::OK;
+
+    result |= Thor::Watchdog::initializeIWDG();
+    result |= Thor::Watchdog::initializeWWDG();
     return result;
   }
 

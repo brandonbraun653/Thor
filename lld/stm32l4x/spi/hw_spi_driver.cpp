@@ -122,9 +122,9 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Handle the ISR configuration
     ------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
-    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
-    Thor::LLD::IT::setPriority( Resource::IRQSignals[ resourceIndex ], Thor::Interrupt::SPI_IT_PREEMPT_PRIORITY, 0u );
+    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::setPriority( Resource::IRQSignals[ resourceIndex ], Thor::Interrupt::SPI_IT_PREEMPT_PRIORITY, 0u );
 
     return Chimera::Status::OK;
   }
@@ -343,7 +343,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Disable all interrupts
     ------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
     CR2_ALL::clear( mPeriph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
 
     /*------------------------------------------------
@@ -452,7 +452,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Configure the interrupts
     ------------------------------------------------*/
-    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
     enterCriticalSection();
     CR2_ALL::set( mPeriph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
 
@@ -525,13 +525,13 @@ namespace Thor::LLD::SPI
 
   inline void Driver::enterCriticalSection()
   {
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
   }
 
 
   inline void Driver::exitCriticalSection()
   {
-    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
   }
 
 

@@ -34,6 +34,7 @@ set(all_libraries
   thor_hld_dma
   thor_hld_exti
   thor_hld_gpio
+  thor_hld_interrupt
   thor_hld_pwm
   thor_hld_spi
   thor_hld_system

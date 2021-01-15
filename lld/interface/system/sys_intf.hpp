@@ -55,6 +55,14 @@ namespace Thor::LLD::SYS
   RIndex_t getResourceIndex( const std::uintptr_t address );
 
   /**
+   *  Gets the resource index of a system level peripheral type
+   *
+   *  @param[in]  periph        The type of peripheral to look up
+   *  @return RIndex_t
+   */
+  RIndex_t getResourceIndex( const Chimera::Peripheral::Type periph );
+
+  /**
    *  Enables the peripheral clock
    *  @return void
    */

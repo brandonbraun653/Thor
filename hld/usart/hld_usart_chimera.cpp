@@ -2,10 +2,10 @@
  *  File Name:
  *    hld_usart_chimera.cpp
  *
- *	 Description:
+ *  Description:
  *    Implementation of Chimera USART driver hooks
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* STL Includes */
@@ -203,23 +203,6 @@ namespace Chimera::USART
   {
     ::HLD::getDriver( mChannel )->postISRProcessing();
   }
-
-
-  /*-------------------------------------------------
-  Interface: Listener
-  -------------------------------------------------*/
-  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
-                                              size_t &registrationID )
-  {
-    return ::HLD::getDriver( mChannel )->registerListener( listener, timeout, registrationID );
-  }
-
-
-  Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
-  {
-    return ::HLD::getDriver( mChannel )->removeListener( registrationID, timeout );
-  }
-
 
   /*-------------------------------------------------
   Interface: AsyncIO

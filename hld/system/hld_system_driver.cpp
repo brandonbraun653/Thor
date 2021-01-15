@@ -73,33 +73,33 @@ namespace Thor::System
     Thor::DMA::DMAClass::get()->init();
 #endif
 
-#if defined( THOR_HLD_GPIO )
-    Thor::GPIO::initialize();
-#endif
+// #if defined( THOR_HLD_GPIO )
+//     Thor::GPIO::initialize();
+// #endif
 
-#if defined( THOR_HLD_IWDG )
-    Thor::Watchdog::initializeIWDG();
-#endif
+// #if defined( THOR_HLD_IWDG )
+//     Thor::Watchdog::initializeIWDG();
+// #endif
 
-#if defined( THOR_HLD_PWM )
-    Thor::PWM::initialize();
-#endif
+// #if defined( THOR_HLD_PWM )
+//     Thor::PWM::initialize();
+// #endif
 
-#if defined( THOR_HLD_SPI )
-    Thor::SPI::initialize();
-#endif
+// #if defined( THOR_HLD_SPI )
+//     Thor::SPI::initialize();
+// #endif
 
-#if defined( THOR_HLD_UART )
-    Thor::UART::initialize();
-#endif
+// #if defined( THOR_HLD_UART )
+//     Thor::UART::initialize();
+// #endif
 
-#if defined( THOR_HLD_USART )
-    Thor::USART::initialize();
-#endif
+// #if defined( THOR_HLD_USART )
+//     Thor::USART::initialize();
+// #endif
 
-#if defined( THOR_HLD_WWDG )
-    Thor::Watchdog::initializeWWDG();
-#endif
+// #if defined( THOR_HLD_WWDG )
+//     Thor::Watchdog::initializeWWDG();
+// #endif
 
     /*------------------------------------------------
     LLD Specific Initialization
@@ -112,7 +112,7 @@ namespace Thor::System
     Initialize interrupt settings
     ------------------------------------------------*/
 #if defined( THOR_LLD_IT )
-    Thor::LLD::IT::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
+    Thor::LLD::INT::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
 #endif
 
     return Chimera::Status::OK;
@@ -121,13 +121,13 @@ namespace Thor::System
 
   Chimera::System::InterruptMask disableInterrupts()
   {
-    return Thor::LLD::IT::disableInterrupts();
+    return Thor::LLD::INT::disableInterrupts();
   }
 
 
   void enableInterrupts( Chimera::System::InterruptMask &interruptMask )
   {
-    Thor::LLD::IT::enableInterrupts( interruptMask );
+    Thor::LLD::INT::enableInterrupts( interruptMask );
   }
 
 

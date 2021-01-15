@@ -109,8 +109,8 @@ enum IRQn_Type : int
 };
 
 
-namespace Thor::LLD::IT
+namespace Thor::LLD::INT
 {
-}    // namespace Thor::LLD::IT
+}    // namespace Thor::LLD::INT
 
 #endif /* !THOR_HW_INTERRUPT_REGISTER_STM32L432KC_HPP */

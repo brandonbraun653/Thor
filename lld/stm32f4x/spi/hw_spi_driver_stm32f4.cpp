@@ -104,9 +104,9 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Handle the ISR configuration
     ------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( periphIRQn );
-    Thor::LLD::IT::clearPendingIRQ( periphIRQn );
-    Thor::LLD::IT::setPriority( periphIRQn, Thor::Interrupt::SPI_IT_PREEMPT_PRIORITY, 0u );
+    Thor::LLD::INT::disableIRQ( periphIRQn );
+    Thor::LLD::INT::clearPendingIRQ( periphIRQn );
+    Thor::LLD::INT::setPriority( periphIRQn, Thor::Interrupt::SPI_IT_PREEMPT_PRIORITY, 0u );
 
     /*------------------------------------------------
     Driver registration with the backend
@@ -306,7 +306,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Disable all interrupts
     ------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( periphIRQn );
+    Thor::LLD::INT::disableIRQ( periphIRQn );
     CR2::clear( periph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
 
     /*------------------------------------------------
@@ -383,7 +383,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Configure the interrupts
     ------------------------------------------------*/
-    Thor::LLD::IT::enableIRQ( periphIRQn );
+    Thor::LLD::INT::enableIRQ( periphIRQn );
     enterCriticalSection();
     CR2::set( periph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
 
@@ -441,12 +441,12 @@ namespace Thor::LLD::SPI
 
   inline void Driver::enterCriticalSection()
   {
-    Thor::LLD::IT::disableIRQ( periphIRQn );
+    Thor::LLD::INT::disableIRQ( periphIRQn );
   }
 
   inline void Driver::exitCriticalSection()
   {
-    Thor::LLD::IT::enableIRQ( periphIRQn );
+    Thor::LLD::INT::enableIRQ( periphIRQn );
   }
 
   void Driver::IRQHandler()

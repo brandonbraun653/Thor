@@ -174,9 +174,9 @@ namespace Thor::LLD::ADC
     /*------------------------------------------------
     Handle the ISR configuration
     ------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
-    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
-    Thor::LLD::IT::setPriority( Resource::IRQSignals[ mResourceIndex ], Thor::Interrupt::ADC_IT_PREEMPT_PRIORITY, 0u );
+    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::INT::setPriority( Resource::IRQSignals[ mResourceIndex ], Thor::Interrupt::ADC_IT_PREEMPT_PRIORITY, 0u );
 
     /*-------------------------------------------------
     Reset the channel sample times to defaults
@@ -372,13 +372,13 @@ namespace Thor::LLD::ADC
 
   inline void Driver::enterCriticalSection()
   {
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 
   inline void Driver::exitCriticalSection()
   {
-    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 

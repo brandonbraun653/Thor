@@ -21,6 +21,7 @@
 
 /* Chimera Includes */
 #include <Chimera/event>
+#include <Chimera/interrupt>
 #include <Chimera/thread>
 
 /* Thor Includes */
@@ -29,6 +30,7 @@
 #include <Thor/event>
 #include <Thor/usart>
 #include <Thor/lld/common/types.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
 #include <Thor/lld/interface/usart/usart_intf.hpp>
 #include <Thor/lld/interface/usart/usart_detail.hpp>
 #include <Thor/lld/interface/usart/usart_prv_data.hpp>
@@ -41,10 +43,6 @@ Aliases
 namespace HLD = ::Thor::USART;
 namespace LLD = ::Thor::LLD::USART;
 
-using ThreadHandle = Chimera::Threading::detail::native_thread_handle_type;
-using BinarySemphr = Chimera::Threading::BinarySemaphore;
-using ThreadFunctn = Chimera::Function::void_func_void_ptr;
-
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
@@ -55,22 +53,34 @@ Variables
 -------------------------------------------------------------------------------*/
 static size_t s_driver_initialized;                        /**< Tracks the module level initialization state */
 static HLD::Driver hld_driver[ NUM_DRIVERS ];              /**< Driver objects */
-static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ];      /**< Handle to the ISR post processing thread */
-static BinarySemphr s_user_isr_signal[ NUM_DRIVERS ];      /**< Lock for each ISR post processing thread */
-static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ]; /**< RTOS aware function to execute at end of ISR */
 
 /*-------------------------------------------------------------------------------
 Private Function Declarations
 -------------------------------------------------------------------------------*/
-#if defined( STM32_USART1_PERIPH_AVAILABLE )
-static void USART1ISRPostProcessorThread( void *argument );
-#endif
-#if defined( STM32_USART2_PERIPH_AVAILABLE )
-static void USART2ISRPostProcessorThread( void *argument );
-#endif
-#if defined( STM32_USART3_PERIPH_AVAILABLE )
-static void USART3ISRPostProcessorThread( void *argument );
-#endif
+static void USARTxISRUserThread( void *arg )
+{
+  using namespace Chimera::Threading;
+
+  while ( 1 )
+  {
+    /*-------------------------------------------------
+    Wait for something to wake this thread. If the msg
+    isn't correct, go back to waiting.
+    -------------------------------------------------*/
+    if( !this_thread::pendTaskMsg( ITCMsg::TSK_MSG_ISR_HANDLER ) )
+    {
+      continue;
+    }
+
+    /*-------------------------------------------------
+    Handle every ISR. Don't know which triggered this.
+    -------------------------------------------------*/
+    for( size_t index = 0; index < NUM_DRIVERS; index++ )
+    {
+      hld_driver[ index ].postISRProcessing();
+    }
+  }
+}
 
 
 namespace Thor::USART
@@ -80,6 +90,8 @@ namespace Thor::USART
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
+    using namespace Chimera::Threading;
+
     /*------------------------------------------------
     Prevent multiple initializations (need reset first)
     ------------------------------------------------*/
@@ -89,22 +101,16 @@ namespace Thor::USART
     }
 
     /*------------------------------------------------
+    Register the ISR post processor thread
+    ------------------------------------------------*/
+    Thread userThread;
+    userThread.initialize( USARTxISRUserThread, nullptr, Priority::MAXIMUM, STACK_BYTES( 512 ), "PP_USARTx" );
+    LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_USART, userThread.start() );
+
+    /*------------------------------------------------
     Initialize the low level driver
     ------------------------------------------------*/
     ::LLD::initialize();
-
-    /*-------------------------------------------------
-    Initialize ISR post-processing routines
-    -------------------------------------------------*/
-#if defined( STM32_USART1_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[ ::LLD::USART1_RESOURCE_INDEX ] = USART1ISRPostProcessorThread;
-#endif
-#if defined( STM32_USART2_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[ ::LLD::USART2_RESOURCE_INDEX ] = USART2ISRPostProcessorThread;
-#endif
-#if defined( STM32_USART3_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[ ::LLD::USART3_RESOURCE_INDEX ] = USART3ISRPostProcessorThread;
-#endif
 
     /*-------------------------------------------------
     Lock the init sequence and exit
@@ -144,14 +150,16 @@ namespace Thor::USART
   Driver Implementation
   -------------------------------------------------------------------------------*/
   Driver::Driver() :
-      channel( Chimera::Serial::Channel::NOT_SUPPORTED ), resourceIndex( 0 ), listenerIDCount( 0 ), awaitRXComplete( 1 ),
+      enabled( false ), channel( Chimera::Serial::Channel::NOT_SUPPORTED ), resourceIndex( 0 ), awaitRXComplete( 1 ),
       awaitTXComplete( 1 ), rxLock( 1 ), txLock( 1 )
   {
   }
 
+
   Driver::~Driver()
   {
   }
+
 
   Chimera::Status_t Driver::assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins )
   {
@@ -173,12 +181,6 @@ namespace Thor::USART
     txPin->init( pins.tx );
     rxPin->init( pins.rx );
 
-    /*------------------------------------------------
-    Configure miscellaneous class members
-    ------------------------------------------------*/
-    listenerIDCount = 0u;
-    eventListeners.clear();
-
     return Chimera::Status::OK;
   }
 
@@ -198,28 +200,7 @@ namespace Thor::USART
     setMode( Chimera::Hardware::SubPeripheral::RX, rxMode );
     setMode( Chimera::Hardware::SubPeripheral::TX, txMode );
 
-    /*------------------------------------------------
-    Register the ISR post processor thread
-    ------------------------------------------------*/
-    std::array<char, 10> tmp;
-
-    if ( s_user_isr_thread_func[ resourceIndex ] )
-    {
-      s_user_isr_handle[ resourceIndex ] = {};
-
-      ::LLD::getDriver( channel )->attachISRWakeup( &s_user_isr_signal[ resourceIndex ] );
-
-      tmp.fill( 0 );
-      snprintf( tmp.data(), tmp.size(), "PP_USART%d", resourceIndex );
-      std::string_view threadName = tmp.data();
-
-      Chimera::Threading::Thread thread;
-      thread.initialize( s_user_isr_thread_func[ resourceIndex ], nullptr, Chimera::Threading::Priority::MAXIMUM,
-                         STACK_BYTES( 250 ), threadName );
-      thread.start();
-      s_user_isr_handle[ resourceIndex ] = thread.native_handle();
-    }
-
+    enabled = true;
     return Chimera::Status::OK;
   }
 
@@ -248,6 +229,7 @@ namespace Thor::USART
     return ::LLD::getDriver( channel )->init( cfg );
   }
 
+
   Chimera::Status_t Driver::setBaud( const uint32_t baud )
   {
     auto currentConfig = ::LLD::getDriver( channel )->getConfiguration();
@@ -255,6 +237,7 @@ namespace Thor::USART
 
     return ::LLD::getDriver( channel )->init( currentConfig );
   }
+
 
   Chimera::Status_t Driver::setMode( const Chimera::Hardware::SubPeripheral periph,
                                          const Chimera::Hardware::PeripheralMode mode )
@@ -273,6 +256,7 @@ namespace Thor::USART
 
     return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t Driver::write( const void *const buffer, const size_t length  )
   {
@@ -300,6 +284,7 @@ namespace Thor::USART
     return error;
   }
 
+
   Chimera::Status_t Driver::read( void *const buffer, const size_t length )
   {
     auto error = Chimera::Status::OK;
@@ -326,6 +311,7 @@ namespace Thor::USART
     return error;
   }
 
+
   Chimera::Status_t Driver::flush( const Chimera::Hardware::SubPeripheral periph )
   {
     Chimera::Status_t error = Chimera::Status::OK;
@@ -346,13 +332,23 @@ namespace Thor::USART
     return error;
   }
 
+
   void Driver::postISRProcessing()
   {
+    using namespace Chimera::Peripheral;
+    using namespace Chimera::Serial;
     using namespace Thor::LLD::USART;
 
-    const auto flags = ::LLD::getDriver( channel )->getFlags();
-    //auto event       = Chimera::Event::TRIGGER_INVALID;
+    if( !enabled )
+    {
+      return;
+    }
 
+    const auto flags = ::LLD::getDriver( channel )->getFlags();
+
+    /*-------------------------------------------------------------------------------
+    Handle TX Complete
+    -------------------------------------------------------------------------------*/
     if ( flags & Runtime::Flag::TX_COMPLETE )
     {
       /*------------------------------------------------
@@ -373,15 +369,24 @@ namespace Thor::USART
       }
 
       /*------------------------------------------------
-      Process Event Listeners. Semaphores unlocked in preparation
-      for the listeners to possibly try and write more data.
+      Notify those waiting on the event occurrance
       ------------------------------------------------*/
       awaitTXComplete.release();
       txLock.release();
 
-      processListeners( Chimera::Event::Trigger::TRIGGER_WRITE_COMPLETE );
+      /*-------------------------------------------------
+      Handle any user-space callback
+      -------------------------------------------------*/
+      auto callbacks = LLD::INT::getISRHandler( Type::PERIPH_USART, SIG_TX_COMPLETE );
+      if( callbacks && callbacks->userCallback )
+      {
+        callbacks->userCallback( callbacks );
+      }
     }
 
+    /*-------------------------------------------------------------------------------
+    Handle RX Complete or RX Idle
+    -------------------------------------------------------------------------------*/
     if ( ( flags & ::LLD::Runtime::Flag::RX_COMPLETE ) || ( flags & Runtime::Flag::RX_LINE_IDLE_ABORT ) )
     {
       /*------------------------------------------------
@@ -400,13 +405,19 @@ namespace Thor::USART
       rxBuffers.transferOutOf( tcb.remaining, tmp );
 
       /*------------------------------------------------
-      Process Event Listeners. Semaphores unlocked in preparation
-      for the listeners to possibly try and read more data.
+      Notify those waiting on the event occurrance
       ------------------------------------------------*/
       awaitRXComplete.release();
       rxLock.release();
 
-      processListeners( Chimera::Event::Trigger::TRIGGER_READ_COMPLETE );
+      /*-------------------------------------------------
+      Handle any user-space callback
+      -------------------------------------------------*/
+      auto callbacks = LLD::INT::getISRHandler( Type::PERIPH_USART, SIG_RX_COMPLETE );
+      if( callbacks && callbacks->userCallback )
+      {
+        callbacks->userCallback( callbacks );
+      }
     }
   }
 
@@ -561,40 +572,6 @@ namespace Thor::USART
   }
 
 
-  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
-                                                  size_t &registrationID )
-  {
-    registrationID = ++listenerIDCount;
-    listener.id    = registrationID;
-
-    eventListeners.push_back( listener );
-
-    return Chimera::Status::OK;
-  }
-
-
-  Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
-  {
-    for ( auto iterator = eventListeners.begin(); iterator != eventListeners.end(); iterator++ )
-    {
-      if ( iterator->id == registrationID )
-      {
-        eventListeners.erase( iterator );
-        return Chimera::Status::OK;
-        break;
-      }
-    }
-
-    return Chimera::Status::NOT_FOUND;
-  }
-
-
-  void Driver::processListeners( const Chimera::Event::Trigger event )
-  {
-    Chimera::Event::notifyListenerList( event, eventListeners, 0 );
-  }
-
-
   Chimera::Status_t Driver::readBlocking( void *const buffer, const size_t length )
   {
     return ::LLD::getDriver( channel )->receive( buffer, length );
@@ -721,56 +698,5 @@ namespace Thor::USART
   }
 
 }    // namespace Thor::USART
-
-
-#if defined( STM32_USART1_PERIPH_AVAILABLE )
-static void USART1ISRPostProcessorThread( void *argument )
-{
-  constexpr auto index = ::LLD::USART1_RESOURCE_INDEX;
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    s_user_isr_signal[ index ].acquire();
-    hld_driver[ index ].postISRProcessing();
-  }
-}
-#endif  /* STM32_USART1_PERIPH_AVAILABLE */
-
-
-#if defined( STM32_USART2_PERIPH_AVAILABLE )
-static void USART2ISRPostProcessorThread( void *argument )
-{
-  constexpr auto index = ::LLD::USART2_RESOURCE_INDEX;
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    s_user_isr_signal[ index ].acquire();
-    hld_driver[ index ].postISRProcessing();
-  }
-}
-#endif  /* STM32_USART2_PERIPH_AVAILABLE */
-
-
-#if defined( STM32_USART3_PERIPH_AVAILABLE )
-static void USART3ISRPostProcessorThread( void *argument )
-{
-  constexpr auto index = ::LLD::USART3_RESOURCE_INDEX;
-
-  while ( 1 )
-  {
-    /*------------------------------------------------
-    Wait for the ISR to wake up this thread before doing any processing
-    ------------------------------------------------*/
-    s_user_isr_signal[ index ].acquire();
-    hld_driver[ index ].postISRProcessing();
-  }
-}
-#endif  /* STM32_USART3_PERIPH_AVAILABLE */
 
 #endif /* THOR_HLD_USART */

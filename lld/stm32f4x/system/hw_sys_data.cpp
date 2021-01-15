@@ -3,22 +3,19 @@
  *    hw_sys_data.cpp
  *
  *  Description:
- *    Insert Description
+ *    Implements interface layer data requirements
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-/* Driver Includes */
-#include <Thor/cfg>
+/* Chimera Includes */
+#include <Chimera/common>
+
+/* Thor Includes */
 #include <Thor/lld/interface/system/sys_prv_data.hpp>
 
 namespace Thor::LLD::SYS
 {
-  /*-------------------------------------------------------------------------------
-  Peripheral Memory Maps
-  -------------------------------------------------------------------------------*/
-  RegisterMap *SYSCFG1_PERIPH = reinterpret_cast<RegisterMap *>( SYSCFG_BASE_ADDR );
-
   /*-------------------------------------------------------------------------------
   Public Data
   -------------------------------------------------------------------------------*/
@@ -47,5 +44,4 @@ namespace Thor::LLD::SYS
     Chimera::Peripheral::Type::PERIPH_WWDG
     /* clang-format on */
   };
-
-}  // namespace Thor::LLD::SYS
+}    // namespace Thor::LLD::SYS

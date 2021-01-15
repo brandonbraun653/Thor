@@ -52,8 +52,8 @@ namespace Thor::LLD::CRS
     /*-------------------------------------------------
     Disable interrupts on a peripheral level
     -------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( CRS_IRQn );
-    Thor::LLD::IT::clearPendingIRQ( CRS_IRQn );
+    Thor::LLD::INT::disableIRQ( CRS_IRQn );
+    Thor::LLD::INT::clearPendingIRQ( CRS_IRQn );
 
     /*-------------------------------------------------
     Disable individual interrupts

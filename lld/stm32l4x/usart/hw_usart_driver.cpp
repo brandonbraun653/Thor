@@ -13,6 +13,9 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/interrupt>
+#include <Chimera/serial>
+#include <Chimera/thread>
 
 /* Driver Includes */
 #include <Thor/cfg>
@@ -20,6 +23,7 @@
 #include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/lld/common/cortex-m4/interrupts.hpp>
 #include <Thor/lld/common/types.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/interface/usart/usart_detail.hpp>
 #include <Thor/lld/interface/usart/usart_intf.hpp>
@@ -49,8 +53,6 @@ namespace Thor::LLD::USART
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-
-
     /*-------------------------------------------------
     Attach all the expected peripherals to the drivers
     -------------------------------------------------*/
@@ -88,6 +90,7 @@ namespace Thor::LLD::USART
     return nullptr;
   }
 
+
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
@@ -95,9 +98,11 @@ namespace Thor::LLD::USART
   {
   }
 
+
   Driver::~Driver()
   {
   }
+
 
   Chimera::Status_t Driver::attach( RegisterMap *peripheral )
   {
@@ -235,8 +240,8 @@ namespace Thor::LLD::USART
     Ignore the subperiph argument as the actual transmit
     and receive functions called by the user handle that.
     -------------------------------------------------*/
-    Thor::LLD::IT::setPriority( Resource::IRQSignals[ resourceIndex ], Thor::Interrupt::USART_IT_PREEMPT_PRIORITY, 0u );
-    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::setPriority( Resource::IRQSignals[ resourceIndex ], Thor::Interrupt::USART_IT_PREEMPT_PRIORITY, 0u );
+    Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
 
     return Chimera::Status::OK;
   }
@@ -251,8 +256,8 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------
     Disable system level interrupt from peripheral, to prevent glitching
     -------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
-    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
 
     /*-------------------------------------------------
     Disable interrupt event generation inside the peripheral
@@ -274,7 +279,7 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------
     Re-enable the system level interrupts so other events can get through
     -------------------------------------------------*/
-    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
 
     return result;
   }
@@ -621,6 +626,10 @@ namespace Thor::LLD::USART
 
   void Driver::IRQHandler()
   {
+    using namespace Chimera::Interrupt;
+    using namespace Chimera::Peripheral;
+    using namespace Chimera::Serial;
+    using namespace Chimera::Threading;
     using namespace Configuration::Flags;
 
     /*------------------------------------------------
@@ -628,6 +637,7 @@ namespace Thor::LLD::USART
     ------------------------------------------------*/
     const uint32_t ISRCache = ISR::get( periph );
     const uint32_t CR1Cache = CR1::get( periph );
+    bool signalHLD          = false;
 
     /*------------------------------------------------
     Figure out which interrupt flags have been set
@@ -702,11 +712,13 @@ namespace Thor::LLD::USART
         runtimeFlags |= Runtime::Flag::TX_COMPLETE;
 
         /*------------------------------------------------
-        Unblock the higher level driver
+        Invoke a user callback if registered
         ------------------------------------------------*/
-        if ( ISRWakeup_external )
+        signalHLD                            = true;
+        const SignalCallback *const callback = INT::getISRHandler( Type::PERIPH_USART, SIG_TX_COMPLETE );
+        if ( callback->isrCallback )
         {
-          ISRWakeup_external->releaseFromISR();
+          callback->isrCallback();
         }
       }
     }
@@ -773,9 +785,21 @@ namespace Thor::LLD::USART
       ------------------------------------------------*/
       if ( ( rxTCB.state == StateMachine::RX::RX_ABORTED || rxTCB.state == StateMachine::RX_COMPLETE ) && ISRWakeup_external )
       {
-        // Regardless of the state this entered in, the transfer is complete now
+        /*-------------------------------------------------
+        Regardless of the state this entered in, the
+        transfer is complete now
+        -------------------------------------------------*/
         rxTCB.state = StateMachine::RX_COMPLETE;
-        ISRWakeup_external->releaseFromISR();
+
+        /*------------------------------------------------
+        Invoke a user callback if registered
+        ------------------------------------------------*/
+        signalHLD                            = true;
+        const SignalCallback *const callback = INT::getISRHandler( Type::PERIPH_USART, SIG_RX_COMPLETE );
+        if ( callback->isrCallback )
+        {
+          callback->isrCallback();
+        }
       }
     }
 
@@ -784,12 +808,33 @@ namespace Thor::LLD::USART
     ------------------------------------------------*/
     if ( errorFlags )
     {
+      /*-------------------------------------------------
+      Clear all the error flags
+      -------------------------------------------------*/
       ORECF::set( periph, errorFlags );
       NECF::set( periph, errorFlags );
       FECF::set( periph, errorFlags );
       PECF::set( periph, errorFlags );
 
       runtimeFlags |= errorFlags;
+
+      /*------------------------------------------------
+      Invoke a user callback if registered
+      ------------------------------------------------*/
+      signalHLD                            = true;
+      const SignalCallback *const callback = INT::getISRHandler( Type::PERIPH_USART, SIG_ERROR );
+      if ( callback->isrCallback )
+      {
+        callback->isrCallback();
+      }
+    }
+
+    /*-------------------------------------------------
+    Post an event to wake up the user-space handler
+    -------------------------------------------------*/
+    if ( signalHLD )
+    {
+      sendTaskMsg( INT::getUserTaskId( Type::PERIPH_USART ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
     }
   }
 
@@ -836,13 +881,13 @@ namespace Thor::LLD::USART
 
   inline void Driver::enterCriticalSection()
   {
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
   }
 
 
   inline void Driver::exitCriticalSection()
   {
-    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
+    Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
   }
 }    // namespace Thor::LLD::USART
 

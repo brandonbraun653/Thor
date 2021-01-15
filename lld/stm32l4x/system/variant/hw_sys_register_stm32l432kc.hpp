@@ -15,6 +15,9 @@
 /* STL Includes */
 #include <cstddef>
 
+/* Chimera Includes */
+#include <Chimera/common>
+
 /* Thor Includes */
 #include <Thor/lld/common/types.hpp>
 
@@ -24,9 +27,10 @@ namespace Thor::LLD::SYS
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
-  static constexpr size_t NUM_SYSCFG_PERIPHS = 1;
+  static constexpr size_t NUM_SYSCFG_PERIPHS       = 1;
   static constexpr RIndex_t SYSCFG1_RESOURCE_INDEX = 0;
+  static constexpr size_t NUM_PERIPHERAL_TYPES     = 21;  /**< Unique peripheral types on device */
 
-}  // namespace Thor::LLD::SYS
+}    // namespace Thor::LLD::SYS
 
-#endif  /* !THOR_HW_SYS_REGISTER_STM32L432KC_HPP */
+#endif /* !THOR_HW_SYS_REGISTER_STM32L432KC_HPP */

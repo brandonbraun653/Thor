@@ -69,7 +69,7 @@ namespace Thor::LLD::RCC
     Disable ISR handling so that other systems won't be
     totally corrupted by the clock switching.
     ------------------------------------------------*/
-    auto isrMask = Thor::LLD::IT::disableInterrupts();
+    auto isrMask = Thor::LLD::INT::disableInterrupts();
 
     /*------------------------------------------------
     If the current system clock is derived from the PLL, switch
@@ -119,7 +119,7 @@ namespace Thor::LLD::RCC
     Re-enable the ISRs, allowing the system to update itself
     in response to the new clock configurations.
     ------------------------------------------------*/
-    Thor::LLD::IT::enableInterrupts( isrMask );
+    Thor::LLD::INT::enableInterrupts( isrMask );
 
     return result;
   }
@@ -135,7 +135,7 @@ namespace Thor::LLD::RCC
       return false;
     }
 
-    auto isrMask = Thor::LLD::IT::disableInterrupts();
+    auto isrMask = Thor::LLD::INT::disableInterrupts();
 
     /*------------------------------------------------
     Configure the HSE oscillator
@@ -201,7 +201,7 @@ namespace Thor::LLD::RCC
       }
     }
 
-    Thor::LLD::IT::enableInterrupts( isrMask );
+    Thor::LLD::INT::enableInterrupts( isrMask );
     return true;
   }
 
@@ -216,7 +216,7 @@ namespace Thor::LLD::RCC
       return false;
     }
 
-    auto isrMask = Thor::LLD::IT::disableInterrupts();
+    auto isrMask = Thor::LLD::INT::disableInterrupts();
 
     /*------------------------------------------------
     Update the HCLK divisor
@@ -269,7 +269,7 @@ namespace Thor::LLD::RCC
       cfg.PCLK2Config.configure = false;
     }
 
-    Thor::LLD::IT::enableInterrupts( isrMask );
+    Thor::LLD::INT::enableInterrupts( isrMask );
     return true;
   }
 
@@ -765,7 +765,7 @@ namespace Thor::LLD::RCC
 
   void SystemClock::enableClock( const Chimera::Clock::Bus clock )
   {
-    auto isrMask = Thor::LLD::IT::disableInterrupts();
+    auto isrMask = Thor::LLD::INT::disableInterrupts();
 
     switch ( clock )
     {
@@ -813,13 +813,13 @@ namespace Thor::LLD::RCC
         break;
     }
 
-    Thor::LLD::IT::enableInterrupts( isrMask );
+    Thor::LLD::INT::enableInterrupts( isrMask );
   }
 
 
   void SystemClock::disableClock( const Chimera::Clock::Bus clock )
   {
-    auto isrMask = Thor::LLD::IT::disableInterrupts();
+    auto isrMask = Thor::LLD::INT::disableInterrupts();
 
     switch ( clock )
     {
@@ -867,7 +867,7 @@ namespace Thor::LLD::RCC
         break;
     }
 
-    Thor::LLD::IT::enableInterrupts( isrMask );
+    Thor::LLD::INT::enableInterrupts( isrMask );
   }
 
 
@@ -946,7 +946,7 @@ namespace Thor::LLD::RCC
     /*------------------------------------------------
     Prevent the clock selection update from being interrupted
     ------------------------------------------------*/
-    auto itMask = Thor::LLD::IT::disableInterrupts();
+    auto itMask = Thor::LLD::INT::disableInterrupts();
 
     /*------------------------------------------------
     Figure out the configuration bits that should be set. Go
@@ -1016,7 +1016,7 @@ namespace Thor::LLD::RCC
     /*------------------------------------------------
     The clock is stable now, allow normal program execution
     ------------------------------------------------*/
-    Thor::LLD::IT::enableInterrupts( itMask );
+    Thor::LLD::INT::enableInterrupts( itMask );
     return Chimera::Status::OK;
   }
 

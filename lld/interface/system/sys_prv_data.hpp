@@ -23,6 +23,12 @@ namespace Thor::LLD::SYS
   -------------------------------------------------------------------------------*/
   extern RegisterMap *SYSCFG1_PERIPH;
 
+  /**
+   *  A list of all supported peripherals on the target device, regardless
+   *  of whether or not a driver exists for it yet. This is meant to describe
+   *  possible system functionality.
+   */
+  extern const Chimera::Peripheral::Type AvailablePeriphs[ NUM_PERIPHERAL_TYPES ];
 }  // namespace Thor::LLD::SYS
 
 #endif  /* !THOR_LLD_SYS_DATA_HPP */

@@ -125,9 +125,9 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Configure the NVIC with the desired settings
       -------------------------------------------------*/
-      Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
-      Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
-      Thor::LLD::IT::setPriority( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ],
+      Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
+      Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
+      Thor::LLD::INT::setPriority( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ],
                                   Thor::Interrupt::CAN_IT_PREEMPT_PRIORITY, 0u );
 
       /*-------------------------------------------------

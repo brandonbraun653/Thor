@@ -95,7 +95,7 @@ namespace Thor::LLD::EXTI
     for ( Chimera::EXTI::EventLine_t x = 0; x < NUM_EXTI_LINES; x++ )
     {
       auto irq = static_cast<IRQn_Type>( Config::lineConfig[ x ].NVIC_IRQNumber );
-      Thor::LLD::IT::disableIRQ( irq );
+      Thor::LLD::INT::disableIRQ( irq );
 
       result |= detach( x );
     }
@@ -177,8 +177,8 @@ namespace Thor::LLD::EXTI
     // Enable the NVIC controller's interrupt
     auto irq = static_cast<IRQn_Type>( Config::lineConfig[ listener ].NVIC_IRQNumber );
 
-    Thor::LLD::IT::setPriority( irq, 5, 0 );
-    Thor::LLD::IT::enableIRQ( irq );
+    Thor::LLD::INT::setPriority( irq, 5, 0 );
+    Thor::LLD::INT::enableIRQ( irq );
 
     s_mtx.unlock();
     return Chimera::Status::OK;

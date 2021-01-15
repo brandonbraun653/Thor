@@ -1,16 +1,19 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *    hw_interrupt_register_stm32f446xx.hpp
  *
- *   Description:
+ *  Description:
  *    Interrupt register definitions for the STM32F446xx chip
  *
- *   2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_HW_INTERRUPT_REGISTER_HPP
 #define THOR_HW_INTERRUPT_REGISTER_HPP
+
+/* STL Includes */
+#include <cstddef>
 
 /*------------------------------------------------
 Interrupt vectors for the STM32F446xx. Must be defined
@@ -111,15 +114,12 @@ enum IRQn_Type
   SAI2_IRQn               = 91, /*!< SAI2 global Interrupt                                             */
   QUADSPI_IRQn            = 92, /*!< QuadSPI global Interrupt                                          */
   CEC_IRQn                = 93, /*!< CEC global Interrupt                                              */
-  SPDIF_RX_IRQn           = 94, /*!< SPDIF-RX global Interrupt                                          */
+  SPDIF_RX_IRQn           = 94, /*!< SPDIF-RX global Interrupt                                         */
   FMPI2C1_EV_IRQn         = 95, /*!< FMPI2C1 Event Interrupt                                           */
-  FMPI2C1_ER_IRQn         = 96  /*!< FMPI2C1 Error Interrupt                                           */
+  FMPI2C1_ER_IRQn         = 96, /*!< FMPI2C1 Error Interrupt                                           */
+
+  IRQ_NUM_USER_SIGNALS
 };
 
-
-namespace Thor::LLD::IT
-{
-
-}
 
 #endif /* !THOR_HW_INTERRUPT_REGISTER_HPP */

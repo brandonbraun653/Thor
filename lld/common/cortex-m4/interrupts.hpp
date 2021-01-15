@@ -19,7 +19,7 @@
 #include <Thor/lld/common/cmsis/configuration.hpp>
 #include <Thor/lld/common/cmsis/core/include/core_cm4.h>
 
-namespace Thor::LLD::IT
+namespace Thor::LLD::INT
 {
   static constexpr uint32_t NVIC_PRIORITYGROUP_0 = 0x00000007u; /*!< 0 bits for pre-emption priority, 4 bits for subpriority */
   static constexpr uint32_t NVIC_PRIORITYGROUP_1 = 0x00000006u; /*!< 1 bits for pre-emption priority, 3 bits for subpriority */

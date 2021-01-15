@@ -33,6 +33,7 @@ set(all_libraries
   thor_lld_intf_common
   thor_lld_intf_exti
   thor_lld_intf_gpio
+  thor_lld_intf_interrupt
   thor_lld_intf_rcc
   thor_lld_intf_spi
   thor_lld_intf_sys

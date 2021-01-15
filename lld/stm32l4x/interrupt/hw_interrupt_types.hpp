@@ -19,8 +19,8 @@
 /* Driver Includes */
 #include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
 
-namespace Thor::LLD::IT
+namespace Thor::LLD::INT
 {
-}    // namespace Thor::LLD::IT
+}    // namespace Thor::LLD::INT
 
 #endif /* !THOR_HW_INTERRUPT_TYPES_HPP*/

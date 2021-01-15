@@ -5,7 +5,7 @@
  *   Description:
  *    STM32 Interrupt Types
  *
- *   2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *   2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -14,6 +14,10 @@
 
 /* C++ Includes */
 #include <cstdint>
+
+/* ETL Includes */
+#include <etl/delegate.h>
+
 
 namespace Thor::LLD::Interrupt
 {
@@ -36,7 +40,6 @@ namespace Thor::LLD::Interrupt
 
   static constexpr InterruptSignal_t UARTSigOffset = USARTSigOffset + USARTMaxSig + 1;
   static constexpr InterruptSignal_t UARTMaxSig    = 10;
-
 }    // namespace Thor::LLD::Interrupt
 
 #endif /* !THOR_DRIVER_TYPES_INTERRUPT_HPP */

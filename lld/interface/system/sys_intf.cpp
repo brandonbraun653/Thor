@@ -42,6 +42,20 @@ namespace Thor::LLD::SYS
   }
 
 
+  RIndex_t getResourceIndex( const Chimera::Peripheral::Type periph )
+  {
+    for ( size_t x = 0; x < ARRAY_COUNT( AvailablePeriphs ); x++ )
+    {
+      if ( AvailablePeriphs[ x ] == periph )
+      {
+        return x;
+      }
+    }
+
+    return INVALID_RESOURCE_INDEX;
+  }
+
+
   void clockEnable()
   {
     auto rcc   = Thor::LLD::RCC::getPeripheralClock();

@@ -20,8 +20,8 @@
 #include <Thor/lld/stm32l4x/interrupt/hw_interrupt_mapping.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
 
-namespace Thor::LLD::IT
+namespace Thor::LLD::INT
 {
-}    // namespace Thor::LLD::IT
+}    // namespace Thor::LLD::INT
 
 #endif /* !THOR_HW_INTERRUPT_DRIVER_STM32L4_HPP */

@@ -6,7 +6,7 @@
  *    USART interface for Thor. This file supports the top level interface layer
  *    that all drivers for the underlying hardware must conform to.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -69,8 +69,6 @@ namespace Thor::USART
                                        boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
                                        const size_t hwBufferSize );
     Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph );
-    Chimera::Status_t registerListener( Chimera::Event::Actionable &listener, const size_t timeout, size_t &registrationID );
-    Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout );
     bool available( size_t *const bytes = nullptr );
     Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout );
     Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
@@ -84,12 +82,10 @@ namespace Thor::USART
     Chimera::GPIO::Driver_rPtr rxPin;
     Chimera::GPIO::Driver_rPtr txPin;
 
+    bool enabled;
     Chimera::Serial::Channel channel; /**< Hardware channel associated with this driver */
     size_t resourceIndex;             /**< Lookup table index for USART resources */
 
-
-    size_t listenerIDCount;
-    Chimera::Event::ActionableList eventListeners;
 
     Chimera::Threading::BinarySemaphore awaitRXComplete;
     Chimera::Threading::BinarySemaphore awaitTXComplete;
@@ -101,8 +97,6 @@ namespace Thor::USART
 
     Chimera::Hardware::PeripheralMode txMode;
     Chimera::Hardware::PeripheralMode rxMode;
-
-    void processListeners( const Chimera::Event::Trigger event );
 
     Chimera::Status_t readBlocking( void *const buffer, const size_t length );
     Chimera::Status_t readInterrupt( void *const buffer, const size_t length );

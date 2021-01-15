@@ -5,7 +5,7 @@
  *  Description:
  *    STM32 Driver UART Interface
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -14,6 +14,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/interrupt>
 #include <Chimera/usart>
 #include <Chimera/thread>
 
@@ -93,6 +94,15 @@ namespace Thor::LLD::USART
    */
   bool attachDriverInstances( Driver *const driverList, const size_t numDrivers );
 
+  /**
+   *  Registers a handler for the given peripheral interrupt signal
+   *
+   *  @param[in]  signal        Peripheral specific ISR signal
+   *  @param[in]  callback      Callback data to register
+   *  @return Chimera::Status_t
+   */
+  Chimera::Status_t registerHandler( const Chimera::Interrupt::Signal_t signal,
+                                     const Chimera::Interrupt::SignalCallback &callback );
 
   /*-------------------------------------------------------------------------------
   Classes
@@ -137,9 +147,9 @@ namespace Thor::LLD::USART
     Thor::LLD::Serial::Config getConfiguration();
 
   protected:
-    friend void(::USART1_IRQHandler )();
-    friend void(::USART2_IRQHandler )();
-    friend void(::USART3_IRQHandler )();
+    friend void( ::USART1_IRQHandler )();
+    friend void( ::USART2_IRQHandler )();
+    friend void( ::USART3_IRQHandler )();
 
     /**
      *  Generic interrupt handler for all USART specific ISR signals
@@ -156,7 +166,7 @@ namespace Thor::LLD::USART
     /*------------------------------------------------
     Asynchronous Event Listeners
     ------------------------------------------------*/
-    Chimera::Threading::BinarySemaphore * ISRWakeup_external;
+    Chimera::Threading::BinarySemaphore *ISRWakeup_external;
 
     /*------------------------------------------------
     Transfer Control Blocks

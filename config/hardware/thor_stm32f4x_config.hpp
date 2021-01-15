@@ -103,6 +103,10 @@ High Level Driver Support
 #define THOR_HLD_I2S
 #endif
 
+#ifndef THOR_HLD_INT
+#define THOR_HLD_INT
+#endif
+
 #ifndef THOR_HLD_IWDG
 #define THOR_HLD_IWDG
 #endif
@@ -287,6 +291,6 @@ Low Level Driver Support
 #define THOR_LLD_SPI
 #endif
 
-#endif 
+#endif
 
 #endif  /* !THOR_CONFIG_STM32F4X_HPP */

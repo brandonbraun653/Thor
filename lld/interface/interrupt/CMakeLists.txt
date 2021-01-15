@@ -1,21 +1,15 @@
-# ====================================================
-# Common
-# ====================================================
-set(LINK_LIBS
-  thor_intf_inc          # Thor public headers
-  chimera_intf_inc       # Chimera public headers
-  Boost::boost      # Boost headers
-  lld_common_inc    # 3rd Party headers
-  thor_lld_intf_build_options
-)
+include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
-# ====================================================
-# Mocked Low Level Driver
-# ====================================================
-set(MOCK_LLD thor_lld_mock_interrupt)
-add_library(${MOCK_LLD} STATIC
-  mock/interrupt_mock.cpp
+gen_static_lib_variants(
+  TARGET
+    thor_lld_intf_interrupt
+  SOURCES
+    interrupt_intf.cpp
+  PRV_LIBRARIES
+    chimera_intf_inc
+    thor_intf_inc
+    Boost::boost
+    lld_common_inc
+  EXPORT_DIR
+    "${PROJECT_BINARY_DIR}/Thor/lld"
 )
-target_link_libraries(${MOCK_LLD} PRIVATE ${LINK_LIBS} gmock_inc)
-export(TARGETS ${MOCK_LLD} FILE "${PROJECT_BINARY_DIR}/Thor/lld_mock/${MOCK_LLD}.cmake")
-

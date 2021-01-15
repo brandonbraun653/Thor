@@ -12,8 +12,16 @@
 #ifndef THOR_HW_INTERRUPT_PROJECT_HPP
 #define THOR_HW_INTERRUPT_PROJECT_HPP
 
+/* STL Includes */
+#include<cstddef>
+
 #if defined( STM32F446xx )
 #include <Thor/lld/stm32f4x/interrupt/variant/hw_interrupt_register_stm32f446xx.hpp>
 #endif
+
+namespace Thor::LLD::INT
+{
+  static constexpr size_t NUM_ISR_SIGNALS = IRQ_NUM_USER_SIGNALS;
+}  // namespace Thor::LLD::INT
 
 #endif /* !THOR_HW_INTERRUPT_PROJECT_HPP */

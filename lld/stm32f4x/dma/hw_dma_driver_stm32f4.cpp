@@ -451,7 +451,7 @@ namespace Thor::LLD::DMA
     /*------------------------------------------------
     Make sure the interrupt priority has been set to correctly
     ------------------------------------------------*/
-    Thor::LLD::IT::setPriority( streamIRQn, Thor::Interrupt::DMA_STREAM_PREEMPT_PRIORITY, 0 );
+    Thor::LLD::INT::setPriority( streamIRQn, Thor::Interrupt::DMA_STREAM_PREEMPT_PRIORITY, 0 );
 
     /*------------------------------------------------
     - Transfer complete
@@ -481,12 +481,12 @@ namespace Thor::LLD::DMA
 
   void StreamController::enterCriticalSection()
   {
-    Thor::LLD::IT::disableIRQ( streamIRQn );
+    Thor::LLD::INT::disableIRQ( streamIRQn );
   }
 
   void StreamController::exitCriticalSection()
   {
-    Thor::LLD::IT::enableIRQ( streamIRQn );
+    Thor::LLD::INT::enableIRQ( streamIRQn );
   }
 
   void StreamController::processListeners( const Chimera::Event::Trigger event )

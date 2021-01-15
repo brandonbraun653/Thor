@@ -210,22 +210,6 @@ namespace Chimera::UART
 
 
   /*-------------------------------------------------
-  Interface: Listener
-  -------------------------------------------------*/
-  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
-                                              size_t &registrationID )
-  {
-    return ::HLD::getDriver( mChannel )->registerListener( listener, timeout, registrationID );
-  }
-
-
-  Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
-  {
-    return ::HLD::getDriver( mChannel )->removeListener( registrationID, timeout );
-  }
-
-
-  /*-------------------------------------------------
   Interface: AsyncIO
   -------------------------------------------------*/
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )

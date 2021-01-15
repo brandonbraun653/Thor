@@ -95,9 +95,9 @@ namespace Thor::LLD::USB
     /*------------------------------------------------
     Handle the ISR configuration
     ------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
-    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
-    Thor::LLD::IT::setPriority( Resource::IRQSignals[ mResourceIndex ], Thor::Interrupt::USB_IT_PREEMPT_PRIORITY, 0u );
+    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::INT::setPriority( Resource::IRQSignals[ mResourceIndex ], Thor::Interrupt::USB_IT_PREEMPT_PRIORITY, 0u );
 
     return Chimera::Status::OK;
   }
@@ -143,8 +143,8 @@ namespace Thor::LLD::USB
     /*-------------------------------------------------
     Mask all interrupts and clear pending
     -------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
-    Thor::LLD::IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
 
     /*-------------------------------------------------
     Configure the GPIO
@@ -251,7 +251,7 @@ namespace Thor::LLD::USB
     /*-------------------------------------------------
     Disable interrupts
     -------------------------------------------------*/
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
 
     /*-------------------------------------------------
     Power down the peripheral
@@ -305,13 +305,13 @@ namespace Thor::LLD::USB
 
   inline void Driver::enterCriticalSection()
   {
-    Thor::LLD::IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 
   inline void Driver::exitCriticalSection()
   {
-    Thor::LLD::IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 

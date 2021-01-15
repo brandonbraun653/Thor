@@ -18,7 +18,7 @@
 
 #if defined( CORTEX_M4 )
 
-namespace Thor::LLD::IT
+namespace Thor::LLD::INT
 {
   void setPriorityGrouping( const uint32_t priorityGroup )
   {
@@ -76,6 +76,6 @@ namespace Thor::LLD::IT
   {
     NVIC_SystemReset();
   }
-}    // namespace Thor::LLD::IT
+}    // namespace Thor::LLD::INT
 
 #endif /* CORTEX_M4 */
