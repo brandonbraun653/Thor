@@ -19,7 +19,7 @@
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
+#include <Thor/lld/stm32f4x/system/sys_memory_map_prj.hpp>
 
 #define STM32_RCC1_PERIPH_AVAILABLE
 

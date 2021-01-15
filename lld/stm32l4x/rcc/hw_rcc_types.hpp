@@ -17,12 +17,11 @@
 
 /* Chimera/Includes */
 #include <Chimera/clock>
-#include <Chimera/container>
 #include <Chimera/common>
 
 /* Driver Includes */
-#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/common/registers/field_accessor.hpp>
+#include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/rcc/rcc_types.hpp>
 #include <Thor/lld/stm32l4x/rcc/hw_rcc_prj.hpp>
 

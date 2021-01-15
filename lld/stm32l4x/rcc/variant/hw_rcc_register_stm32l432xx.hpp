@@ -5,7 +5,7 @@
  *  Description:
  *    RCC register definitions for the STM32L432xx series chips
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -25,13 +25,9 @@
 
 namespace Thor::LLD::RCC
 {
-
-
   static constexpr Reg32_t NUM_RCC_PERIPHS     = 1;
   static constexpr uint8_t RCC1_RESOURCE_INDEX = 0u;
   static constexpr Reg32_t RCC1_BASE_ADDR      = Thor::System::MemoryMap::RCC_PERIPH_START_ADDRESS;
-
-  static constexpr std::array<Reg32_t, NUM_RCC_PERIPHS> periphAddressList = { RCC1_BASE_ADDR };
 
   /******************************************************************************/
   /*                                                                            */

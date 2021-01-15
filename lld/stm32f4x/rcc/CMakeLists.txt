@@ -6,6 +6,8 @@ gen_static_lib_variants(
   SOURCES
     hw_rcc_driver.cpp
     hw_rcc_data.cpp
+    hw_rcc_periph_ctrl.cpp
+    hw_rcc_sys_ctrl.cpp
   PRV_LIBRARIES
     aurora_intf_inc
     chimera_intf_inc

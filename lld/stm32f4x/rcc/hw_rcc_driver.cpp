@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    hw_rcc_driver_stm32f4.cpp
+ *    hw_rcc_driver.cpp
  *
  *  Description:
  *    Implements the low level driver for the Reset and Clock Control peripheral
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -19,38 +19,14 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
+#include <Thor/lld/common/cortex-m4/system_time.hpp>
 #include <Thor/lld/common/mapping/peripheral_mapping.hpp>
+#include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/power>
 
-#include <Thor/lld/stm32f4x/nvic/hw_nvic_driver.hpp>
-#include <Thor/lld/stm32f4x/power/hw_power_types.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_driver_prv.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_prj.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
-#include <Thor/lld/interface/rcc/rcc_intf.hpp>
-
-#include <Thor/lld/stm32f4x/flash/hw_flash_mapping.hpp>
-#include <Thor/lld/stm32f4x/gpio/hw_gpio_mapping.hpp>
-#include <Thor/lld/stm32f4x/power/hw_power_mapping.hpp>
-#include <Thor/lld/stm32f4x/uart/hw_uart_mapping.hpp>
-#include <Thor/lld/stm32f4x/usart/hw_usart_mapping.hpp>
-#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_mapping.hpp>
-
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC )
 
 namespace Thor::LLD::RCC
 {
-  /*------------------------------------------------
-  Local Variables and Constants
-  ------------------------------------------------*/
-  static constexpr uint8_t numPeriphs = static_cast<uint8_t>( Chimera::Peripheral::Type::NUM_SUPPORTED_TYPES );
-
-  /**
-   *  Lookup table for all RCC peripheral control registers.
-   */
-  static std::array<const PCC *, numPeriphs> periphLookupTables;
-
   /*------------------------------------------------
   Local Function Declarations
   ------------------------------------------------*/
@@ -67,9 +43,22 @@ namespace Thor::LLD::RCC
   static Chimera::Status_t OscillatorConfig( OscillatorInit *const init );
   static Chimera::Status_t ClockConfig( const ClockInit *const init );
 
-  /*------------------------------------------------
-  Default implementations of project level functions
-  ------------------------------------------------*/
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
+  void initialize()
+  {
+    using namespace Chimera::Peripheral;
+    using namespace Thor::LLD::RCC;
+
+    static bool initialized = false;
+
+    if ( !initialized )
+    {
+      initializeRegistry();
+      initialized = true;
+    }
+  }
   Chimera::Status_t prjGetHSIValue( size_t *const projectValue )
   {
     Chimera::Status_t result = Chimera::Status::FAIL;
@@ -85,6 +74,7 @@ namespace Thor::LLD::RCC
 
     return result;
   }
+
 
   Chimera::Status_t prjGetHSEValue( size_t *const projectValue )
   {
@@ -102,6 +92,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
+
   Chimera::Status_t prjGetLSIValue( size_t *const projectValue )
   {
     Chimera::Status_t result = Chimera::Status::FAIL;
@@ -118,6 +109,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
+
   Chimera::Status_t prjGetSysClockFreq( size_t *const projectValue )
   {
     const Chimera::Status_t prjResult = Chimera::Status::OK;
@@ -131,33 +123,33 @@ namespace Thor::LLD::RCC
 
     if ( projectValue && ( prjGetHSIValue( &hsiValue ) == prjResult ) && ( prjGetHSEValue( &hseValue ) == prjResult ) )
     {
-      switch ( CFGR::SWS::get( RCC1_PERIPH ) )
+      switch ( SWS::get( RCC1_PERIPH ) )
       {
-        case CFGR::SWS::HSI:
+        case SWS::HSI:
           sysclockfreq = hsiValue;
           break;
 
-        case CFGR::SWS::HSE:
+        case SWS::HSE:
           sysclockfreq = hseValue;
           break;
 
-        case CFGR::SWS::PLL:
-          pllm = PLLCFGR::M::get( RCC1_PERIPH );
+        case SWS::PLL:
+          pllm = PLLM::get( RCC1_PERIPH );
 
-          if ( PLLCFGR::SRC::get( RCC1_PERIPH ) == PLLCFGR::SRC::HSE )
+          if ( PLLSRC::get( RCC1_PERIPH ) == PLLSRC::HSE )
           {
             pllvco = static_cast<size_t>(
-                ( ( static_cast<uint64_t>( hseValue ) * ( static_cast<uint64_t>( PLLCFGR::N::get( RCC1_PERIPH ) >> PLLCFGR_PLLN_Pos ) ) ) ) /
+                ( ( static_cast<uint64_t>( hseValue ) * ( static_cast<uint64_t>( PLLN::get( RCC1_PERIPH ) >> PLLCFGR_PLLN_Pos ) ) ) ) /
                 static_cast<uint64_t>( pllm ) );
           }
           else
           {
             pllvco = static_cast<size_t>(
-                ( ( static_cast<uint64_t>( hsiValue ) * ( static_cast<uint64_t>( PLLCFGR::N::get( RCC1_PERIPH ) >> PLLCFGR_PLLN_Pos ) ) ) ) /
+                ( ( static_cast<uint64_t>( hsiValue ) * ( static_cast<uint64_t>( PLLN::get( RCC1_PERIPH ) >> PLLCFGR_PLLN_Pos ) ) ) ) /
                 static_cast<uint64_t>( pllm ) );
           }
 
-          pllp = ( ( ( PLLCFGR::P::get( RCC1_PERIPH ) >> PLLCFGR_PLLP_Pos ) + 1U ) * 2U );
+          pllp = ( ( ( PLLP::get( RCC1_PERIPH ) >> PLLCFGR_PLLP_Pos ) + 1U ) * 2U );
 
           sysclockfreq = pllvco / pllp;
           break;
@@ -253,7 +245,7 @@ namespace Thor::LLD::RCC
       128 MHz clock signal.
       ------------------------------------------------*/
       config.PLL.State  = CR::PLLConfig::ON;
-      config.PLL.Source = PLLCFGR::SRC::HSI;
+      config.PLL.Source = PLLSRC::HSI;
       config.PLL.M      = 8;
       config.PLL.N      = 128;
       config.PLL.P      = CR::PLLDiv::DIV2;
@@ -278,10 +270,10 @@ namespace Thor::LLD::RCC
 
       config.clock = Configuration::ClockType::HCLK | Configuration::ClockType::SYSCLK | Configuration::ClockType::PCLK1 |
                      Configuration::ClockType::PCLK2;
-      config.SYSCLKSource   = CFGR::SW::PLLCLK;
-      config.AHBCLKDivider  = CFGR::HPRE::DIV1;
-      config.APB1CLKDivider = CFGR::PPRE1::DIV4;
-      config.APB2CLKDivider = CFGR::PPRE2::DIV2;
+      config.SYSCLKSource   = SW::PLLCLK;
+      config.AHBCLKDivider  = HPRE::DIV1;
+      config.APB1CLKDivider = PPRE1::DIV4;
+      config.APB2CLKDivider = PPRE2::DIV2;
       config.FlashLatency   = 4;
 
       memcpy( projectValue, &config, sizeof( ClockInit ) );
@@ -291,270 +283,13 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  /*------------------------------------------------
-  Standalone Functions
-  ------------------------------------------------*/
-  void initialize()
-  {
-    using namespace Chimera::Peripheral;
-    using namespace Thor::LLD::RCC;
-
-    static bool initialized = false;
-
-    if ( !initialized )
-    {
-
-      initializeMapping();
-
-      /*------------------------------------------------
-      Register the lookup tables with the system
-      ------------------------------------------------*/
-      memset( periphLookupTables.data(), 0, sizeof( periphLookupTables ) );
 
 
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_DMA ) ] = &LookupTables::DMALookup;
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_GPIO ) ]  = &LookupTables::GPIOLookup;
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_SPI ) ] = &LookupTables::SPILookup;
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_UART ) ] = &LookupTables::UARTLookup;
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_USART ) ] = &LookupTables::USARTLookup;
-      periphLookupTables[ static_cast<uint8_t>( Type::PERIPH_WWDG ) ]  = &LookupTables::WWDGLookup;
-
-      initialized = true;
-    }
-  }
-
-  /*------------------------------------------------
-  SystemClock Class Implementation
-  ------------------------------------------------*/
-  ICoreClock *getCoreClock()
-  {
-    static SystemClock *ref = nullptr;
-    if( ref == nullptr )
-    {
-      ref = new SystemClock();
-    }
-
-    return ref;
-  }
-
-  SystemClock::SystemClock()
-  {
-    initialize();
-  }
-
-  SystemClock::~SystemClock()
-  {
-  }
-
-  Chimera::Status_t SystemClock::configureProjectClocks()
-  {
-    using namespace Thor::Driver;
-
-    Chimera::Status_t result          = Chimera::Status::FAIL;
-    const Chimera::Status_t prjResult = Chimera::Status::OK;
-
-    /*------------------------------------------------
-    Turn on the main internal regulator output voltage
-    ------------------------------------------------*/
-    APB1ENR::PWREN::set( RCC1_PERIPH, APB1ENR::PWRENConfig::ON );
-
-    /*------------------------------------------------
-    Set the voltage scaling to allow us to achieve max clock
-    ------------------------------------------------*/
-    PWR::CR::VOS::set( Thor::LLD::PWR::PWR_PERIPH, PWR::CR::VOS::VOLTAGE_SCALE_1 );
-
-    /*------------------------------------------------
-    Configure the system clocks
-    ------------------------------------------------*/
-    ClockInit clkCfg;
-    OscillatorInit oscCfg;
-
-    if ( ( prjGetOscillatorConfig( &oscCfg ) == prjResult ) && ( prjGetClockConfig( &clkCfg ) == prjResult ) )
-    {
-      /*------------------------------------------------
-      Initialize the oscillators which drive the system clocks
-      ------------------------------------------------*/
-      result = OscillatorConfig( &oscCfg );
-
-      /*------------------------------------------------
-      Initializes the CPU, AHB, and APB bus clocks
-      ------------------------------------------------*/
-      result = ClockConfig( &clkCfg );
-    }
-
-    return result;
-  }
-
-  Chimera::Status_t SystemClock::setPeriphClock( const Chimera::Peripheral::Type periph, const size_t freqHz )
-  {
-    Chimera::Status_t result = Chimera::Status::NOT_SUPPORTED;
-    return result;
-  }
-
-  Chimera::Status_t SystemClock::setCoreClock( const size_t freqHz )
-  {
-    Chimera::Status_t result = Chimera::Status::NOT_SUPPORTED;
-    return result;
-  }
-
-  Chimera::Status_t SystemClock::setCoreClockSource( const Thor::Clock::Source src )
-  {
-    Chimera::Status_t result = Chimera::Status::NOT_SUPPORTED;
-    return result;
-  }
-
-  Chimera::Status_t SystemClock::getClockFrequency( const ClockType_t clock, size_t *const freqHz )
-  {
-    Chimera::Status_t result = Chimera::Status::FAIL;
-
-    if ( freqHz )
-    {
-      switch ( clock )
-      {
-        case Configuration::ClockType::HCLK:
-          result = prjGetHCLKFreq( freqHz );
-          break;
-
-        case Configuration::ClockType::PCLK1:
-          result = prjGetPCLK1Freq( freqHz );
-          break;
-
-        case Configuration::ClockType::PCLK2:
-          result = prjGetPCLK2Freq( freqHz );
-          break;
-
-        case Configuration::ClockType::SYSCLK:
-          result = prjGetSysClockFreq( freqHz );
-          break;
-
-        default:
-          // result = Chimera::Status::FAIL;
-          break;
-      }
-    }
-
-    return result;
-  }
-
-  Chimera::Status_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address,
-                                                 size_t *const freqHz )
-  {
-    Chimera::Status_t result = Chimera::Status::FAIL;
-
-    auto clockLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->clockSource;
-    auto indexLookupTable = periphLookupTables[ static_cast<uint8_t>( periph ) ]->resourceIndexMap;
-
-    //auto tmp = reinterpret_cast<Chimera::Container::LightFlatMap<std::uintptr_t, size_t, NUM_DMA_PERIPHS>
-
-    if ( freqHz && clockLookupTable && indexLookupTable )
-    {
-      auto index       = indexLookupTable->find( address )->second;
-      auto sourceClock = clockLookupTable[ index ];
-
-      result = getClockFrequency( sourceClock, freqHz );
-    }
-
-    return result;
-  }
-
-  /*------------------------------------------------
-  PeripheralController Class Implementation
-  ------------------------------------------------*/
-  IPeripheralClock *getPeripheralClock()
-  {
-    static PeripheralController *ref = nullptr;
-
-    if ( !ref )
-    {
-      ref = new PeripheralController();
-    }
-
-    return ref;
-  }
-
-  PeripheralController::PeripheralController()
-  {
-    initialize();
-  }
-
-  PeripheralController::~PeripheralController()
-  {
-  }
-
-  Chimera::Status_t PeripheralController::reset( const Chimera::Peripheral::Type type, const size_t index )
-  {
-    Chimera::Status_t result = Chimera::Status::OK;
-
-    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->reset;
-    auto config      = lookupTable[ index ];
-    uint32_t tmp     = *config.reg;
-
-    /*------------------------------------------------
-    Begin the reset operation
-    ------------------------------------------------*/
-    tmp |= config.mask;
-    *config.reg = tmp;
-
-    /*------------------------------------------------
-    Remove the reset flag as it is not cleared automatically by hardware
-    ------------------------------------------------*/
-    tmp &= ~config.mask;
-    *config.reg = tmp;
-
-    return result;
-  }
-
-  Chimera::Status_t PeripheralController::enableClock( const Chimera::Peripheral::Type type, const size_t index )
-  {
-    Chimera::Status_t result = Chimera::Status::OK;
-
-    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
-    auto config      = lookupTable[ index ];
-    *config.reg |= config.mask;
-
-    return result;
-  }
-
-  Chimera::Status_t PeripheralController::disableClock( const Chimera::Peripheral::Type type, const size_t index )
-  {
-    Chimera::Status_t result = Chimera::Status::OK;
-
-    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clock;
-    auto config      = lookupTable[ index ];
-    *config.reg &= ~config.mask;
-
-    return result;
-  }
-
-  Chimera::Status_t PeripheralController::enableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
-  {
-    Chimera::Status_t result = Chimera::Status::OK;
-
-    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
-    auto config      = lookupTable[ index ];
-    *config.reg |= config.mask;
-
-    return result;
-  }
-
-  Chimera::Status_t PeripheralController::disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index )
-  {
-    Chimera::Status_t result = Chimera::Status::OK;
-
-    auto lookupTable = periphLookupTables[ static_cast<uint8_t>( type ) ]->clockLP;
-    auto config      = lookupTable[ index ];
-    *config.reg &= ~config.mask;
-
-    return result;
-  }
 
 
-  /**
-   *  Configures the high speed external oscillator clock selection
-   *
-   *  @param[in]  init    Initialization configuration struct
-   *  @return Chimera::Status_t
-   */
+  /*-------------------------------------------------------------------------------
+  Static Functions
+  -------------------------------------------------------------------------------*/
   static inline Chimera::Status_t HSEOscillatorConfig( const OscillatorInit *const init )
   {
     using namespace CFGR;
@@ -617,12 +352,7 @@ namespace Thor::LLD::RCC
     return Chimera::Status::OK;
   }
 
-  /**
-   *  Configures the internal high speed oscillator clock selection
-   *
-   *  @param[in]  init    Initialization configuration struct
-   *  @return Chimera::Status_t
-   */
+
   static inline Chimera::Status_t HSIOscillatorConfig( const OscillatorInit *const init )
   {
     using namespace CFGR;
@@ -692,12 +422,7 @@ namespace Thor::LLD::RCC
     return Chimera::Status::OK;
   }
 
-  /**
-   *  Configures the low speed internal oscillator clock selection
-   *
-   *  @param[in]  init    Initialization configuration struct
-   *  @return Chimera::Status_t
-   */
+
   static inline Chimera::Status_t LSIOscillatorConfig( const OscillatorInit *const init )
   {
     using namespace CSR;
@@ -727,12 +452,7 @@ namespace Thor::LLD::RCC
     return Chimera::Status::OK;
   }
 
-  /**
-   *  Configures the low speed external oscillator clock selection
-   *
-   *  @param[in]  init    Initialization configuration struct
-   *  @return Chimera::Status_t
-   */
+
   static inline Chimera::Status_t LSEOsciallatorConfig( const OscillatorInit *const init )
   {
     using namespace APB1ENR;
@@ -812,12 +532,7 @@ namespace Thor::LLD::RCC
     return Chimera::Status::OK;
   }
 
-  /**
-   *  Configures the PLL oscillator clock selection
-   *
-   *  @param[in]  init    Initialization configuration struct
-   *  @return Chimera::Status_t
-   */
+
   static Chimera::Status_t PLLOscillatorConfig( const OscillatorInit *const init )
   {
     using namespace CR;
@@ -873,9 +588,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  /**
-   *  Configures the HCLK
-   */
+
   static void HCLKConfig( const ClockInit *const init )
   {
     /*------------------------------------------------
@@ -885,20 +598,18 @@ namespace Thor::LLD::RCC
     ------------------------------------------------*/
     if ( ( init->clock & Configuration::ClockType::PCLK1 ) == Configuration::ClockType::PCLK1 )
     {
-      CFGR::PPRE1::set( RCC1_PERIPH, CFGR::PPRE1::DIV16 );
+      PPRE1::set( RCC1_PERIPH, PPRE1::DIV16 );
     }
 
     if ( ( init->clock & Configuration::ClockType::PCLK2 ) == Configuration::ClockType::PCLK2 )
     {
-      CFGR::PPRE2::set( RCC1_PERIPH, CFGR::PPRE2::DIV16 );
+      PPRE2::set( RCC1_PERIPH, PPRE2::DIV16 );
     }
 
-    CFGR::HPRE::set( RCC1_PERIPH, init->AHBCLKDivider );
+    HPRE::set( RCC1_PERIPH, init->AHBCLKDivider );
   }
 
-  /**
-   *
-   */
+
   static Chimera::Status_t SYSCLKConfig( const ClockInit *const init )
   {
     /*------------------------------------------------
@@ -906,15 +617,15 @@ namespace Thor::LLD::RCC
     ------------------------------------------------*/
     auto sysClkSrc = init->SYSCLKSource;
 
-    if ( ( sysClkSrc == CFGR::SW::HSE ) && !CR::HSERDY::get( RCC1_PERIPH ) )
+    if ( ( sysClkSrc == SW::HSE ) && !CR::HSERDY::get( RCC1_PERIPH ) )
     {
       return Chimera::Status::FAIL;
     }
-    else if ( ( ( sysClkSrc == CFGR::SW::PLLCLK ) || ( sysClkSrc == CFGR::SW::PLLRCLK ) ) && !CR::PLLRDY::get( RCC1_PERIPH ) )
+    else if ( ( ( sysClkSrc == SW::PLLCLK ) || ( sysClkSrc == SW::PLLRCLK ) ) && !CR::PLLRDY::get( RCC1_PERIPH ) )
     {
       return Chimera::Status::FAIL;
     }
-    else if ( ( sysClkSrc == CFGR::SW::HSI ) && !CR::HSIRDY::get( RCC1_PERIPH ) )
+    else if ( ( sysClkSrc == SW::HSI ) && !CR::HSIRDY::get( RCC1_PERIPH ) )
     {
       return Chimera::Status::FAIL;
     }
@@ -922,37 +633,31 @@ namespace Thor::LLD::RCC
     /*------------------------------------------------
     Configure the system clock and wait for the ready signal
     ------------------------------------------------*/
-    CFGR::SW::set( RCC1_PERIPH, init->SYSCLKSource );
+    SW::set( RCC1_PERIPH, init->SYSCLKSource );
 
     /* Assumes SW and SWS config bits mean the same thing */
-    while ( CFGR::SWS::getRightShifted( RCC1_PERIPH ) != init->SYSCLKSource )
+    while ( SWS::getRightShifted( RCC1_PERIPH ) != init->SYSCLKSource )
     {
     }
 
     return Chimera::Status::OK;
   }
 
-  /**
-   *
-   */
+
   static inline Chimera::Status_t PCLK1Config( const ClockInit *init )
   {
-    CFGR::PPRE1::set( RCC1_PERIPH, init->APB1CLKDivider );
+    PPRE1::set( RCC1_PERIPH, init->APB1CLKDivider );
     return Chimera::Status::OK;
   }
 
-  /**
-   *
-   */
+
   static inline Chimera::Status_t PCLK2Config( const ClockInit *init )
   {
-    CFGR::PPRE2::set( RCC1_PERIPH, init->APB2CLKDivider );
+    PPRE2::set( RCC1_PERIPH, init->APB2CLKDivider );
     return Chimera::Status::OK;
   }
 
-  /**
-   *
-   */
+
   static Chimera::Status_t UpdateFlashLatency( const uint32_t value )
   {
     using namespace Thor::LLD::FLASH;
@@ -971,9 +676,7 @@ namespace Thor::LLD::RCC
     return result;
   }
 
-  /**
-   *
-   */
+
   static Chimera::Status_t OscillatorConfig( OscillatorInit *const init )
   {
     Chimera::Status_t result = Chimera::Status::OK;
@@ -1002,6 +705,7 @@ namespace Thor::LLD::RCC
 
     return result;
   }
+
 
   static Chimera::Status_t ClockConfig( const ClockInit *const init )
   {
@@ -1045,5 +749,3 @@ namespace Thor::LLD::RCC
     return result;
   }
 }    // namespace Thor::LLD::RCC
-
-#endif /* TARGET_STM32F4 && THOR_DRIVER_RCC */
