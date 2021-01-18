@@ -80,6 +80,21 @@ namespace Thor::LLD::RCC
    */
   PeripheralController *getPeripheralClock();
 
+
+  /**
+   *  Gets the current frequency of the requested bus in Hz. If the bus is
+   *  not enabled or not supported by the device, a value of INVALID_CLOCK
+   *  is returned.
+   *
+   *  @param[in]  bus     Which bus to obtain the frequency for
+   *  @return size_t
+   */
+  size_t getBusFrequency( const Chimera::Clock::Bus bus );
+
+
+  void cacheExtOscFreq( const Chimera::Clock::Bus bus, const size_t freq );
+
+
   /**
    *  Gets the HSI oscillator frequency in Hz
    *  @return size_t

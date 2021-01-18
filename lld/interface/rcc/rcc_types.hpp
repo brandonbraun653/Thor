@@ -53,6 +53,12 @@ namespace Thor::LLD::RCC
   };
 
 
+  struct ExternalOscillator
+  {
+    size_t HSEFrequency;  /**< High speed external clock */
+    size_t LSEFrequency;  /**< Low speed external clock */
+  };
+
   /**
    *  Peripheral Control & Config (PCC)
    *  Describes a generic set of registers and configurations for a
