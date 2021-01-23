@@ -66,7 +66,7 @@ namespace Thor::LLD::Watchdog
     /*-------------------------------------------------
     Get the current PCLK frequency
     -------------------------------------------------*/
-    auto rcc        = Thor::LLD::RCC::getCoreClock();
+    auto rcc        = Thor::LLD::RCC::getCoreClockCtrl();
     size_t pclk     = rcc->getClockFrequency( Chimera::Clock::Bus::PCLK1 );
     float clkPeriod = 1.0f / static_cast<float>( pclk );
 
@@ -120,7 +120,7 @@ namespace Thor::LLD::Watchdog
     /*-------------------------------------------------
     WWDG has a hardcoded divider built into the module
     -------------------------------------------------*/
-    auto rcc    = Thor::LLD::RCC::getCoreClock();
+    auto rcc    = Thor::LLD::RCC::getCoreClockCtrl();
     size_t pclk = rcc->getClockFrequency( Chimera::Clock::Bus::PCLK1 );
     return pclk / 4096;
   }
@@ -153,7 +153,7 @@ namespace Thor::LLD::Watchdog
 
   void WindowDriver::enableClock()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_WWDG, mResourceIndex );
     rcc->reset( Chimera::Peripheral::Type::PERIPH_WWDG, mResourceIndex );
 

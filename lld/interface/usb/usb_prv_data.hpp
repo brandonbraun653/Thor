@@ -20,12 +20,14 @@
 #include <Chimera/usb>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/usb/usb_detail.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
+#if defined( THOR_LLD_USB )
 namespace Thor::LLD::USB
 {
   /*-------------------------------------------------------------------------------
@@ -67,4 +69,5 @@ namespace Thor::LLD::USB
   }    // namespace Resource
 }    // namespace Thor::LLD::USB
 
+#endif /* THOR_LLD_USB */
 #endif /* !THOR_LLD_USB_DATA */

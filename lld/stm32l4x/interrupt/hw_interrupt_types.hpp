@@ -16,9 +16,6 @@
 #include <cstdint>
 #include <array>
 
-/* Driver Includes */
-#include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
-
 namespace Thor::LLD::INT
 {
 }    // namespace Thor::LLD::INT

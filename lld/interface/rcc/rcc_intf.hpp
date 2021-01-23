@@ -29,6 +29,11 @@
 namespace Thor::LLD::RCC
 {
   /*-------------------------------------------------------------------------------
+  Forward Declarations
+  -------------------------------------------------------------------------------*/
+  struct ClockTreeInit;
+
+  /*-------------------------------------------------------------------------------
   Public Functions: Interface Implemented
   -------------------------------------------------------------------------------*/
   /**
@@ -36,6 +41,26 @@ namespace Thor::LLD::RCC
    *  @return const PCC *
    */
   PCC LLD_CONST *const getPCCRegistry( const Chimera::Peripheral::Type periph );
+
+  /**
+   *  Caches external oscillator frequencies. These are always static due to
+   *  being generated from crystals or resonators on the project board.
+   *
+   *  @param[in]  bus       Which clock bus is being cached
+   *  @param[in]  freq      Frequency of the clock
+   *  @return void
+   */
+  void cacheExtOscFreq( const Chimera::Clock::Bus bus, const size_t freq );
+
+  /**
+   *  Gets the current frequency of the requested bus in Hz. If the bus is
+   *  not enabled or not supported by the device, a value of INVALID_CLOCK
+   *  is returned.
+   *
+   *  @param[in]  bus     Which bus to obtain the frequency for
+   *  @return size_t
+   */
+  size_t getExtOscFreq( const Chimera::Clock::Bus bus );
 
 
   /*-------------------------------------------------------------------------------
@@ -72,14 +97,13 @@ namespace Thor::LLD::RCC
    *  Gets a reference to the core clock controller instance
    *  @return SystemClock *
    */
-  SystemClock *getCoreClock();
+  SystemClock *getCoreClockCtrl();
 
   /**
    *  Gets a reference to the peripheral clock controller instance
    *  @return PeripheralController *
    */
-  PeripheralController *getPeripheralClock();
-
+  PeripheralController *getPeriphClockCtrl();
 
   /**
    *  Gets the current frequency of the requested bus in Hz. If the bus is
@@ -91,95 +115,45 @@ namespace Thor::LLD::RCC
    */
   size_t getBusFrequency( const Chimera::Clock::Bus bus );
 
-
-  void cacheExtOscFreq( const Chimera::Clock::Bus bus, const size_t freq );
-
-
   /**
-   *  Gets the HSI oscillator frequency in Hz
-   *  @return size_t
-   */
-  size_t getHSIFreq();
-
-  /**
-   *  Gets the HSE oscillator frequency in Hz
-   *  @return size_t
-   */
-  size_t getHSEFreq();
-
-  /**
-   *  Sets the HSE oscillator frequency in Hz. Given that this is
-   *  an external clock, no configuration is performed and the value
-   *  is simply cached for later readout.
+   *  Conifgures the entire clock tree for the device. This may take a second
+   *  due to the likely large number of clocks.
    *
-   *  @param[in]  freq    The project's external HSE clock frequency
-   *  @return void
+   *  @param[in]  config      The clock tree settings
+   *  @return bool            True == Success, False == Failure
    */
-  void setHSEFreq( const size_t freq );
+  bool configureClockTree( ClockTreeInit &config );
 
   /**
-   *  Gets the LSE oscillator frequency in Hz
-   *  @return size_t
-   */
-  size_t getLSEFreq();
-
-  /**
-   *  Sets the LSE oscillator frequency in Hz. Given that this is
-   *  an external clock, no configuration is performed.
+   *  Helper function to calculate the core PLL oscillator frequency. This clock can then
+   *  be divided further to produce the various output clocks on the PLL.
    *
-   *  @param[in]  freq    The project's external LSE clock frequency
-   *  @return void
-   */
-  void setLSEFreq( const size_t freq );
-
-  /**
-   *  Gets the LSI oscillator frequency in Hz
-   *  @return size_t
-   */
-  size_t getLSIFreq();
-
-  /**
-   *  Gets the MSI oscillator frequency in Hz
-   *  @return size_t
-   */
-  size_t getMSIFreq();
-
-  /**
-   *  Gets the PLLCLK oscillator frequency in Hz
+   *  @warning  This calculation assumes that any necessary power configuration for the
+   *            desired mode has been performed.
    *
-   *  @note The function input expects a mask to be given that corresponds to
-   *        one of the PLL clock outputs. On the L4 chips, if the PLLR clock
-   *        is desired, pass in PLLCFGR_PLLR. PLLQ? -> PLLCFGR_PLLQ.
-   *        These definitions are in hw_rcc_register_stm32l4<xxxx>.hpp
+   *  @param[in]  pll         Which PLL on the device to configure
+   *  @param[in]  inFreq      Input frequency to the PLL
+   *  @param[in]  outFreq     VCO frequency used to drive internal PLL dividers
+   *  @param[out] config      Clock config structure to update with the calculated values
+   *  @return Chimera::Status_t
+   */
+  Chimera::Status_t calculatePLLBaseOscillator( const PLLType pll, const size_t inFreq, const size_t outFreq, ClockTreeInit &config );
+
+  /**
+   *  Helper function to calculate a PLL output clock register settings.
    *
-   *  @param[in]  mask    The desired PLL output clock to get
-   *  @return size_t
+   *  @warning  This calculation assumes that any necessary power configuration for the
+   *            desired mode has been performed.
+   *
+   *  @param[in]  pll         Which PLL on the device to configure
+   *  @param[in]  channel     Output channel the configuration is for
+   *  @param[in]  inFreq      Input frequency to the output divisor. This is the PLL core oscillator frequency.
+   *  @param[in]  outFreq     Output frequency used to drive circuitry external to PLL
+   *  @param[out] config      Clock config structure to update with the calculated values
+   *  @return Chimera::Status_t
    */
-  size_t getPLLCLKFreq( const uint32_t mask );
+  Chimera::Status_t calculatePLLOuputOscillator( const PLLType pll, const PLLOut channel, const size_t inFreq, const size_t outFreq, ClockTreeInit &config );
 
-  /**
-   *  Get's the current CPU core system clock frequency in Hz
-   *  @return size_t
-   */
-  size_t getSysClockFreq();
-
-  /**
-   *  Gets the current HSI oscillator frequency in Hz
-   *  @return size_t
-   */
-  size_t getHCLKFreq();
-
-  /**
-   *  Gets the current PCLK1 oscillator frequency in Hz
-   *  @return size_t
-   */
-  size_t getPCLK1Freq();
-
-  /**
-   *  Gets the current PCLK2 oscillator frequency in Hz
-   *  @return size_t
-   */
-  size_t getPCLK2Freq();
 
   /*-------------------------------------------------------------------------------
   Interface Classes
@@ -286,7 +260,7 @@ namespace Thor::LLD::RCC
     size_t getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address );
 
   private:
-    friend SystemClock *getCoreClock();
+    friend SystemClock *getCoreClockCtrl();
   };
 
 
@@ -363,7 +337,7 @@ namespace Thor::LLD::RCC
     Chimera::Status_t disableClockLowPower( const Chimera::Peripheral::Type type, const size_t index );
 
   private:
-    friend PeripheralController *getPeripheralClock();
+    friend PeripheralController *getPeriphClockCtrl();
   };
 }    // namespace Thor::LLD::RCC
 

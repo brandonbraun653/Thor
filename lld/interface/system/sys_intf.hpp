@@ -12,6 +12,10 @@
 #ifndef THOR_LLD_SYS_DRIVER_INTERFACE_HPP
 #define THOR_LLD_SYS_DRIVER_INTERFACE_HPP
 
+/* Chimera Includes */
+#include <Chimera/common>
+
+
 /* Thor Includes */
 #include <Thor/lld/common/types.hpp>
 

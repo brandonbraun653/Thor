@@ -140,7 +140,7 @@ namespace Thor::LLD::CAN
     Grab a few preliminary variables. These equations
     are derived from RM0394 Figure 488.
     -------------------------------------------------*/
-    size_t pclk = Thor::LLD::RCC::getCoreClock()->getPeriphClock( Chimera::Peripheral::Type::PERIPH_CAN,
+    size_t pclk = Thor::LLD::RCC::getCoreClockCtrl()->getPeriphClock( Chimera::Peripheral::Type::PERIPH_CAN,
                                                                   reinterpret_cast<std::uintptr_t>( periph ) );
 
     float nominalBitTime = 1.0f / ( float )( cfg.HWInit.baudRate );
@@ -182,7 +182,7 @@ namespace Thor::LLD::CAN
     Reg32_t brp = BRP::get( periph ) >> BTR_BRP_Pos;
     Reg32_t ts1 = TS1::get( periph ) >> BTR_TS1_Pos;
     Reg32_t ts2 = TS2::get( periph ) >> BTR_TS2_Pos;
-    size_t pclk = getCoreClock()->getPeriphClock( Type::PERIPH_CAN, reinterpret_cast<std::uintptr_t>( periph ) );
+    size_t pclk = getCoreClockCtrl()->getPeriphClock( Type::PERIPH_CAN, reinterpret_cast<std::uintptr_t>( periph ) );
 
     /*-------------------------------------------------
     Prevent div/0 in calculations below

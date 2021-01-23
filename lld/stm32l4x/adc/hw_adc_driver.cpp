@@ -351,21 +351,21 @@ namespace Thor::LLD::ADC
     Use the RCC peripheral to invoke the reset. The
     clock must be enabled first or else this won't work.
     -------------------------------------------------*/
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     return rcc->reset( Chimera::Peripheral::Type::PERIPH_ADC, mResourceIndex );
   }
 
 
   void Driver::clockEnable()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_ADC, mResourceIndex );
   }
 
 
   void Driver::clockDisable()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_ADC, mResourceIndex );
   }
 

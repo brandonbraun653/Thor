@@ -1,0 +1,17 @@
+/********************************************************************************
+ *  File Name:
+ *    startup
+ *
+ *  Description:
+ *    Low level driver interface includes
+ *
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_STARTUP_INTF_INCLUDES
+#define THOR_STARTUP_INTF_INCLUDES
+
+#include <Thor/lld/interface/startup/startup_detail.hpp>
+
+#endif /* !THOR_STARTUP_INTF_INCLUDES */

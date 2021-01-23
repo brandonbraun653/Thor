@@ -88,7 +88,7 @@ namespace Thor::LLD::GPIO
 
   void Driver::clockEnable()
   {
-    auto rcc   = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc   = Thor::LLD::RCC::getPeriphClockCtrl();
     auto index = getResourceIndex( reinterpret_cast<std::uintptr_t>( mPeriph ) );
 
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
@@ -97,7 +97,7 @@ namespace Thor::LLD::GPIO
 
   void Driver::clockDisable()
   {
-    auto rcc   = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc   = Thor::LLD::RCC::getPeriphClockCtrl();
     auto index = getResourceIndex( reinterpret_cast<std::uintptr_t>( mPeriph ) );
 
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );

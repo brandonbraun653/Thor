@@ -22,7 +22,6 @@
 
 /* Driver Includes */
 #include <Thor/lld/common/registers/field_accessor.hpp>
-#include <Thor/lld/stm32f4x/spi/hw_spi_prj.hpp>
 #include <Thor/lld/stm32f4x/interrupt/hw_interrupt_prj.hpp>
 
 namespace Thor::LLD::SPI
@@ -41,11 +40,6 @@ namespace Thor::LLD::SPI
     volatile Reg32_t I2SCFGR; /**< I2S Configuration Register,    Address Offset: 0x1C */
     volatile Reg32_t I2SPR;   /**< I2S Pre-scale Register,        Address Offset: 0x20 */
   };
-
-  using DriverInstanceList = std::array<Driver *, NUM_SPI_PERIPHS>;
-  using PeriphRegisterList = std::array<RegisterMap *, NUM_SPI_PERIPHS>;
-  using DMASignalList      = std::array<Reg32_t, NUM_SPI_PERIPHS>;
-  using IRQSignalList      = std::array<IRQn_Type, NUM_SPI_PERIPHS>;
 
   /*------------------------------------------------
   Configuration

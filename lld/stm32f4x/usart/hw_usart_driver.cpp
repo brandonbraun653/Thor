@@ -51,7 +51,7 @@ namespace Thor::LLD::USART
     /*------------------------------------------------
     Ensure the clock is enabled otherwise the hardware is "dead"
     ------------------------------------------------*/
-    auto rccPeriph = Thor::LLD::RCC::getPeripheralClock();
+    auto rccPeriph = Thor::LLD::RCC::getPeriphClockCtrl();
     rccPeriph->enableClock( peripheralType, resourceIndex );
   }
 
@@ -84,7 +84,7 @@ namespace Thor::LLD::USART
     /*------------------------------------------------
     Ensure the clock is enabled otherwise the hardware is "dead"
     ------------------------------------------------*/
-    auto rccPeriph = Thor::LLD::RCC::getPeripheralClock();
+    auto rccPeriph = Thor::LLD::RCC::getPeriphClockCtrl();
     rccPeriph->enableClock( peripheralType, resourceIndex );
 
     /*------------------------------------------------
@@ -112,7 +112,7 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::deinit()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->enableClock( peripheralType, resourceIndex );
     rcc->reset( peripheralType, resourceIndex );
     rcc->disableClock( peripheralType, resourceIndex );
@@ -642,7 +642,7 @@ namespace Thor::LLD::USART
     /*------------------------------------------------
     Figure out the frequency of the clock that drives the USART
     ------------------------------------------------*/
-    auto rccSys = Thor::LLD::RCC::getCoreClock();
+    auto rccSys = Thor::LLD::RCC::getCoreClockCtrl();
     rccSys->getPeriphClock( Chimera::Peripheral::Type::PERIPH_USART, periphAddress, &periphClock );
 
     /*------------------------------------------------

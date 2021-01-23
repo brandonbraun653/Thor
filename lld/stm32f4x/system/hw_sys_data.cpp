@@ -17,6 +17,11 @@
 namespace Thor::LLD::SYS
 {
   /*-------------------------------------------------------------------------------
+  Peripheral Memory Maps
+  -------------------------------------------------------------------------------*/
+  RegisterMap *SYSCFG1_PERIPH = reinterpret_cast<RegisterMap *>( SYSCFG_BASE_ADDR );
+
+  /*-------------------------------------------------------------------------------
   Public Data
   -------------------------------------------------------------------------------*/
   const Chimera::Peripheral::Type AvailablePeriphs[ NUM_PERIPHERAL_TYPES ] = {
@@ -44,4 +49,5 @@ namespace Thor::LLD::SYS
     Chimera::Peripheral::Type::PERIPH_WWDG
     /* clang-format on */
   };
+
 }    // namespace Thor::LLD::SYS

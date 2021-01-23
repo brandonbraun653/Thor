@@ -71,13 +71,13 @@ namespace Thor::LLD::TIMER
 
   void GeneralDriverImpl::clockEnable()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_TIM, mRIndex.value() );
   }
 
   void GeneralDriverImpl::clockDisable()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_TIM, mRIndex.value() );
   }
 

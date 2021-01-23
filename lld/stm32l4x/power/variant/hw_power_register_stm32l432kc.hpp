@@ -5,7 +5,7 @@
  *  Description:
  *    POWER register definitions for the STM32L432KC series chips.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -14,6 +14,9 @@
 
 /* C++ Includes */
 #include <cstdint>
+
+/* Chimera Includes */
+#include <Chimera/common>
 
 /* Driver Includes */
 #include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432kc.hpp>

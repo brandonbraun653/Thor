@@ -29,14 +29,16 @@ namespace LLD = ::Thor::LLD::CAN;
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
+#if defined( THOR_HLD_CAN )
 static constexpr size_t NUM_DRIVERS = ::LLD::NUM_CAN_PERIPHS;
+#endif  /* THOR_HLD_CAN */
 
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
 #if defined( THOR_HLD_CAN )
 static Chimera::CAN::Driver s_raw_driver[ NUM_DRIVERS ];
-#endif
+#endif  /* THOR_HLD_CAN */
 
 namespace Chimera::CAN::Backend
 {

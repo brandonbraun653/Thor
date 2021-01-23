@@ -18,6 +18,9 @@
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/sys>
 
+#if defined( CORTEX_M4 )
+#include <Thor/lld/common/cortex-m4/utilities.hpp>
+#endif
 
 namespace Thor::LLD::INT
 {
@@ -35,6 +38,8 @@ namespace Thor::LLD::INT
   /*-------------------------------------------------------------------------------
   Static Data
   -------------------------------------------------------------------------------*/
+  static Chimera::System::InterruptMask s_interrupt_state;
+
   /*-------------------------------------------------
   User-Space ISR Handler Thread Identifiers
   -------------------------------------------------*/
@@ -148,6 +153,12 @@ namespace Thor::LLD::INT
       UserThreadId[ x ] = Chimera::Threading::THREAD_ID_INVALID;
     }
 
+    /*-------------------------------------------------
+    Reset the interrupt mask counter
+    -------------------------------------------------*/
+    s_interrupt_state.count = 0;
+    s_interrupt_state.mask  = 0;
+
     return Chimera::Status::OK;
   }
 
@@ -226,6 +237,49 @@ namespace Thor::LLD::INT
     Return the data
     -------------------------------------------------*/
     return UserThreadId[ resourceIndex ];
+  }
+
+
+  Chimera::System::InterruptMask disableInterrupts()
+  {
+    /*-------------------------------------------------
+    Check the reference counter to see if this is the
+    first call to this function.
+    -------------------------------------------------*/
+    if ( !s_interrupt_state.count )
+    {
+#if defined( CORTEX_M4 )
+      s_interrupt_state.mask = CortexM4::disableInterrupts();
+#endif
+    }
+
+    /*-------------------------------------------------
+    Increment the reference counter for nested calls
+    -------------------------------------------------*/
+    s_interrupt_state.count += 1;
+    return s_interrupt_state;
+  }
+
+  void enableInterrupts( Chimera::System::InterruptMask &interruptMask )
+  {
+    /*-------------------------------------------------
+    Prevent underflow on too many calls
+    -------------------------------------------------*/
+    if ( s_interrupt_state.count > 0 )
+    {
+      s_interrupt_state.count -= 1;
+    }
+
+    /*-------------------------------------------------
+    Proper number of calls to unwind the call chain has
+    been made. Safe to unlock ISRs now.
+    -------------------------------------------------*/
+    if ( s_interrupt_state.count == 0 )
+    {
+#if defined( CORTEX_M4 )
+      CortexM4::enableInterrupts( interruptMask.mask );
+#endif
+    }
   }
 
 }    // namespace Thor::LLD::INT

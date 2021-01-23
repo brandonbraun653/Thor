@@ -24,6 +24,7 @@ namespace Thor::LLD::PWR
 {
   static constexpr uint32_t PWR_BASE_ADDR = Thor::System::MemoryMap::PWR_PERIPH_START_ADDRESS;
   static constexpr size_t NUM_PWR_PERIPHS = 1;
+  static constexpr uint32_t PWR_RESOURCE_INDEX = 0u;
 
   /*------------------------------------------------
   CR Register

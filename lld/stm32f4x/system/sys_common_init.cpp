@@ -1,18 +1,17 @@
 /********************************************************************************
- *   File Name:
+ *  File Name:
  *     sys_common_init.cpp
  *
- *   Description:
+ *  Description:
  *     Provides STM32F4xx generic initialization functionality
  *
- *   2019 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_prj.hpp>
+#include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/sys>
 
 /* ARM Includes: Must come last so the Thor Includes can configure various macros */
 #include <Thor/lld/common/cmsis/core/include/core_cm4.h>
@@ -51,7 +50,7 @@ void SystemInit()
 #ifdef VECT_TAB_SRAM
   SCB->VTOR = SRAM_BASE | VECT_TAB_OFFSET; /* Vector Table Relocation in Internal SRAM */
 #else
-  SCB->VTOR = Thor::System::MemoryMap::FLASH_BASE_ADDR |
+  SCB->VTOR = Thor::System::MemoryMap::FLASH_RGN_START_ADDR |
               Thor::System::MemoryMap::VECT_TAB_OFFSET; /* Vector Table Relocation in Internal FLASH */
 #endif
 }
@@ -63,11 +62,11 @@ void SystemInit()
   // Do something with this later
 }
 
-#else 
+#else
 
 void SystemInit()
 {
   // Needed for compilation
 }
 
-#endif 
+#endif

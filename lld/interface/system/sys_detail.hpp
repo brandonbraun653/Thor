@@ -21,9 +21,11 @@
 #elif defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/system/hw_sys_prj.hpp>
 #include <Thor/lld/stm32f4x/system/hw_sys_types.hpp>
+#include <Thor/lld/stm32f4x/system/sys_memory_map_prj.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/system/hw_sys_prj.hpp>
 #include <Thor/lld/stm32l4x/system/hw_sys_types.hpp>
+#include <Thor/lld/stm32l4x/system/sys_memory_map_prj.hpp>
 #else
 #pragma message( "sys_detail.hpp: Unknown target for LLD" )
 #endif

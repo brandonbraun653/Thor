@@ -20,11 +20,13 @@
 #include <Chimera/gpio>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_detail.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 
+#if defined( THOR_LLD_GPIO )
 namespace Thor::LLD::GPIO
 {
   /*-------------------------------------------------------------------------------
@@ -116,4 +118,5 @@ namespace Thor::LLD::GPIO
   }
 }    // namespace Thor::LLD::GPIO
 
+#endif /* THOR_LLD_GPIO */
 #endif /* !THOR_LLD_GPIO_DATA_HPP */

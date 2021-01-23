@@ -12,12 +12,14 @@
 #include <Chimera/common>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/spi/spi_detail.hpp>
 #include <Thor/lld/interface/spi/spi_prv_data.hpp>
 #include <Thor/lld/interface/spi/spi_types.hpp>
 #include <Thor/lld/interface/spi/spi_intf.hpp>
 
+#if defined( THOR_LLD_SPI )
 namespace Thor::LLD::SPI
 {
   /*-------------------------------------------------------------------------------
@@ -156,3 +158,5 @@ namespace Thor::LLD::SPI
     return result == Chimera::Status::OK;
   }
 }  // namespace Thor::LLD::SPI
+
+#endif /* THOR_LLD_SPI */

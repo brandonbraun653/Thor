@@ -12,12 +12,14 @@
 #include <Chimera/common>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/usb/usb_detail.hpp>
 #include <Thor/lld/interface/usb/usb_prv_data.hpp>
 #include <Thor/lld/interface/usb/usb_types.hpp>
 #include <Thor/lld/interface/usb/usb_intf.hpp>
 
+#if defined( THOR_LLD_USB )
 namespace Thor::LLD::USB
 {
   /*-------------------------------------------------------------------------------
@@ -106,3 +108,5 @@ namespace Thor::LLD::USB
     return result == Chimera::Status::OK;
   }
 }    // namespace Thor::LLD::USB
+
+#endif  /* THOR_LLD_USB */

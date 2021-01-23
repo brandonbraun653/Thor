@@ -1,0 +1,18 @@
+/********************************************************************************
+ *  File Name:
+ *    des
+ *
+ *  Description:
+ *    Low level driver interface includes
+ *
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ ********************************************************************************/
+
+#pragma once
+#ifndef THOR_DES_INTF_INCLUDES
+#define THOR_DES_INTF_INCLUDES
+
+#include <Thor/lld/interface/des/des_intf.hpp>
+#include <Thor/lld/interface/des/des_types.hpp>
+
+#endif /* !THOR_DES_INTF_INCLUDES */

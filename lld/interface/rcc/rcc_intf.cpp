@@ -16,6 +16,11 @@
 namespace Thor::LLD::RCC
 {
   /*-------------------------------------------------------------------------------
+  Static Data
+  -------------------------------------------------------------------------------*/
+  static ExternalOscillator s_ext_osc;
+
+  /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
   const PCC *const getPCCRegistry( const Chimera::Peripheral::Type periph )
@@ -32,6 +37,44 @@ namespace Thor::LLD::RCC
     Return the data
     -------------------------------------------------*/
     return PeripheralControlRegistry[ static_cast<size_t>( periph ) ];
+  }
+
+
+  void cacheExtOscFreq( const Chimera::Clock::Bus bus, const size_t freq )
+  {
+    switch( bus )
+    {
+      case Chimera::Clock::Bus::LSE:
+        s_ext_osc.LSEFrequency = freq;
+        break;
+
+      case Chimera::Clock::Bus::HSE:
+        s_ext_osc.HSEFrequency = freq;
+        break;
+
+      default:
+        // Do nothing
+        break;
+    }
+  }
+
+
+  size_t getExtOscFreq( const Chimera::Clock::Bus bus )
+  {
+    switch( bus )
+    {
+      case Chimera::Clock::Bus::LSE:
+        return s_ext_osc.LSEFrequency;
+        break;
+
+      case Chimera::Clock::Bus::HSE:
+        return s_ext_osc.HSEFrequency;
+        break;
+
+      default:
+        return INVALID_CLOCK;
+        break;
+    }
   }
 
 }  // namespace Thor::LLD::RCC

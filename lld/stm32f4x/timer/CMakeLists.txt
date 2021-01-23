@@ -2,13 +2,10 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
 gen_static_lib_variants(
   TARGET
-    thor_lld_stm32l4_system
+    thor_lld_stm32f4_timer
   SOURCES
-    hw_sys_startup.cpp
-    hw_sys_driver.cpp
-    hw_sys_data.cpp
+    hw_timer_driver.cpp
   PRV_LIBRARIES
-    aurora_intf_inc
     chimera_intf_inc
     thor_intf_inc
     Boost::boost

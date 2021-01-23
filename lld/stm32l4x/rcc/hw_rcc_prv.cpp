@@ -25,7 +25,7 @@ namespace Thor::LLD::RCC
   -------------------------------------------------------------------------------*/
   bool updatePLL( const uint32_t mask, OscillatorSettings &config )
   {
-    auto rcc    = getCoreClock();
+    auto rcc    = getCoreClockCtrl();
     auto result = false;
 
     /*------------------------------------------------
@@ -38,7 +38,7 @@ namespace Thor::LLD::RCC
     If the current system clock is derived from the PLL, switch
     to the HSI16 clock so that something is driving the ARM core.
     ------------------------------------------------*/
-    bool PLLIsSysClockSource = ( rcc->getCoreClockSource() == Chimera::Clock::Bus::PLLCLK );
+    bool PLLIsSysClockSource = ( rcc->getCoreClockSource() == Chimera::Clock::Bus::PLLP );
     if ( PLLIsSysClockSource )
     {
       rcc->enableClock( Chimera::Clock::Bus::HSI16 );
@@ -73,8 +73,8 @@ namespace Thor::LLD::RCC
     ------------------------------------------------*/
     if ( PLLIsSysClockSource )
     {
-      rcc->enableClock( Chimera::Clock::Bus::PLLCLK );
-      rcc->setCoreClockSource( Chimera::Clock::Bus::PLLCLK );
+      rcc->enableClock( Chimera::Clock::Bus::PLLP );
+      rcc->setCoreClockSource( Chimera::Clock::Bus::PLLP );
       rcc->disableClock( Chimera::Clock::Bus::HSI16 );
     }
 

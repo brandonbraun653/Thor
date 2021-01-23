@@ -14,25 +14,11 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/common/cortex-m4/utilities.hpp>
-#include <Thor/lld/stm32f4x/interrupt/hw_interrupt_prj.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_IT )
+#if defined( TARGET_STM32F4 )
 
 namespace Thor::LLD::INT
 {
-  Chimera::System::InterruptMask disableInterrupts()
-  {
-    Chimera::System::InterruptMask it;
-    it.mask = CortexM4::disableInterrupts();
-    return it;
-  }
-
-  void enableInterrupts( Chimera::System::InterruptMask &interruptMask )
-  {
-    CortexM4::enableInterrupts( interruptMask.mask );
-  }
-
 }    // namespace Thor::LLD::INT
 
 #endif /* TARGET_STM32F4 && THOR_DRIVER_INTERRUPT */

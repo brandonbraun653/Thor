@@ -12,10 +12,11 @@
 #include <Chimera/common>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/inc/usart>
 
-
+#if defined( THOR_LLD_USART )
 namespace Thor::LLD::USART
 {
   /*-------------------------------------------------------------------------------
@@ -154,3 +155,5 @@ namespace Thor::LLD::USART
     return result == Chimera::Status::OK;
   }
 }  // namespace Thor::LLD::USART
+
+#endif  /* THOR_LLD_USART */

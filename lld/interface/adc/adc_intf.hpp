@@ -18,6 +18,7 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/interrupts/adc_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/adc/adc_detail.hpp>
@@ -209,6 +210,7 @@ namespace Thor::LLD::ADC
   of the virtual class, but doesn't inherit due to the
   memory penalties. Definition is done project side.
   -------------------------------------------------*/
+  #if defined( THOR_LLD_ADC )
   class Driver
   {
   public:
@@ -242,6 +244,8 @@ namespace Thor::LLD::ADC
     SampleTime mChannelSampleTime[ NUM_ADC_CHANNELS_PER_PERIPH ];
     Chimera::ADC::DriverConfig mCfg;
   };
+
+  #endif  /* THOR_LLD_ADC */
 
 }    // namespace Thor::LLD::ADC
 

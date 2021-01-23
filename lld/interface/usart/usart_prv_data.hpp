@@ -20,11 +20,13 @@
 #include <Chimera/serial>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 #include <Thor/lld/interface/usart/usart_detail.hpp>
 
+#if defined( THOR_LLD_USART )
 namespace Thor::LLD::USART
 {
   /*-------------------------------------------------------------------------------
@@ -71,4 +73,5 @@ namespace Thor::LLD::USART
   }
 }    // namespace Thor::LLD::USART
 
+#endif /* THOR_LLD_USART */
 #endif /* !THOR_LLD_USART_DATA_HPP */

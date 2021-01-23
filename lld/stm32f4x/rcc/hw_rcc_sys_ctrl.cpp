@@ -9,6 +9,7 @@
  *******************************************************************************/
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/clock>
 
@@ -18,6 +19,7 @@
 #include <Thor/lld/common/mapping/peripheral_mapping.hpp>
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/power>
+#include <Thor/lld/interface/inc/flash>
 
 namespace Thor::LLD::RCC
 {
@@ -29,7 +31,7 @@ namespace Thor::LLD::RCC
   /*-------------------------------------------------------------------------------
   SystemClock Class Implementation
   -------------------------------------------------------------------------------*/
-  SystemClock *getCoreClock()
+  SystemClock *getCoreClockCtrl()
   {
     return &s_system_clock;
   }
@@ -48,83 +50,65 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t SystemClock::configureProjectClocks()
   {
-    using namespace Thor::Driver;
-
-    Chimera::Status_t result          = Chimera::Status::FAIL;
-    const Chimera::Status_t prjResult = Chimera::Status::OK;
-
     /*------------------------------------------------
     Turn on the main internal regulator output voltage
+    and set voltage scaling to achieve max clock.
     ------------------------------------------------*/
-    PWREN::set( RCC1_PERIPH, APB1ENR_PWREN );
+    PWR::setVoltageScaling( PWR::VoltageScale::SCALE_1 );
+
+    /*-------------------------------------------------
+    Set flash latency to a safe value for all possible
+    clocks. This will slow down the configuration, but
+    this is only performed once at startup.
+    -------------------------------------------------*/
+    FLASH::setLatency( 15 );
 
     /*------------------------------------------------
-    Set the voltage scaling to allow us to achieve max clock
+    Configure the system clocks to max performance
     ------------------------------------------------*/
-    PWR::VOS::set( Thor::LLD::PWR::PWR1_PERIPH, PWR::VOLTAGE_SCALE_1 );
+    constexpr size_t hsiClkIn     = 16000000;     // 24 MHz
+    constexpr size_t targetSysClk = 80000000;     // 80 MHz
+    constexpr size_t targetVcoClk = 240000000;    // 240 MHz
 
-    /*------------------------------------------------
-    Configure the system clocks
-    ------------------------------------------------*/
-    ClockInit clkCfg;
-    OscillatorInit oscCfg;
+    Chimera::Status_t cfgResult = Chimera::Status::OK;
 
-    if ( ( prjGetOscillatorConfig( &oscCfg ) == prjResult ) && ( prjGetClockConfig( &clkCfg ) == prjResult ) )
-    {
-      /*------------------------------------------------
-      Initialize the oscillators which drive the system clocks
-      ------------------------------------------------*/
-      result = OscillatorConfig( &oscCfg );
+    ClockTreeInit clkCfg;
+    clkCfg.clear();
 
-      /*------------------------------------------------
-      Initializes the CPU, AHB, and APB bus clocks
-      ------------------------------------------------*/
-      result = ClockConfig( &clkCfg );
-    }
+    clkCfg.enabled.hsi          = true;    // Needed for transfer of clock source
+    clkCfg.enabled.lsi          = true;    // Allows IWDG use
+    clkCfg.enabled.pll_core_clk = true;    // Will drive sys off PLL
 
-    return result;
+    clkCfg.mux.pll = Chimera::Clock::Bus::HSI16;
+    clkCfg.mux.sys = Chimera::Clock::Bus::PLLP;
+
+    clkCfg.prescaler.ahb  = 1;
+    clkCfg.prescaler.apb1 = 2;
+    clkCfg.prescaler.apb2 = 2;
+
+    cfgResult |= calculatePLLBaseOscillator( PLLType::CORE, hsiClkIn, targetVcoClk, clkCfg );
+    cfgResult |= calculatePLLOuputOscillator( PLLType::CORE, PLLOut::P, targetVcoClk, targetSysClk, clkCfg );
+
+    RT_HARD_ASSERT( cfgResult == Chimera::Status::OK );
+    RT_HARD_ASSERT( configureClockTree( clkCfg ) );
+
+    /*-------------------------------------------------
+    Trim the flash latency back to a performant range
+    now that the high speed clock has been configured.
+    -------------------------------------------------*/
+    FLASH::setLatency( 4 );
+
+    return cfgResult;
   }
 
 
   Chimera::Status_t SystemClock::setCoreClockSource( const Chimera::Clock::Bus src )
   {
-    Chimera::Status_t result = Chimera::Status::NOT_SUPPORTED;
-    return result;
+    /*-------------------------------------------------
+    Only static clock configurations are used right now
+    -------------------------------------------------*/
+    return Chimera::Status::NOT_SUPPORTED;
   }
-
-  Chimera::Status_t SystemClock::getClockFrequency( const ClockType_t clock, size_t *const freqHz )
-  {
-    Chimera::Status_t result = Chimera::Status::FAIL;
-
-    if ( freqHz )
-    {
-      switch ( clock )
-      {
-        case Configuration::ClockType::HCLK:
-          result = prjGetHCLKFreq( freqHz );
-          break;
-
-        case Configuration::ClockType::PCLK1:
-          result = prjGetPCLK1Freq( freqHz );
-          break;
-
-        case Configuration::ClockType::PCLK2:
-          result = prjGetPCLK2Freq( freqHz );
-          break;
-
-        case Configuration::ClockType::SYSCLK:
-          result = prjGetSysClockFreq( freqHz );
-          break;
-
-        default:
-          // result = Chimera::Status::FAIL;
-          break;
-      }
-    }
-
-    return result;
-  }
-
 
   size_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address )
   {
@@ -141,7 +125,7 @@ namespace Thor::LLD::RCC
     Perform the lookup
     -------------------------------------------------*/
     size_t idx = registry->getResourceIndex( address );
-    if( idx == INVALID_RESOURCE_INDEX )
+    if ( idx == INVALID_RESOURCE_INDEX )
     {
       return INVALID_CLOCK;
     }
@@ -149,4 +133,4 @@ namespace Thor::LLD::RCC
     return getClockFrequency( registry->clockSource[ idx ] );
   }
 
-}  // namespace Thor::LLD::RCC
+}    // namespace Thor::LLD::RCC

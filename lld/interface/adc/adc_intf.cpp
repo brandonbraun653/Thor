@@ -13,12 +13,14 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/adc/adc_detail.hpp>
 #include <Thor/lld/interface/adc/adc_prv_data.hpp>
 #include <Thor/lld/interface/adc/adc_types.hpp>
 #include <Thor/lld/interface/adc/adc_intf.hpp>
 
+#if defined( THOR_LLD_ADC )
 namespace Thor::LLD::ADC
 {
   /*-------------------------------------------------------------------------------
@@ -112,3 +114,5 @@ namespace Thor::LLD::ADC
     return result == Chimera::Status::OK;
   }
 }    // namespace Thor::LLD::ADC
+
+#endif  /* THOR_LLD_ADC */

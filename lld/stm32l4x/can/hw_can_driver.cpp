@@ -148,14 +148,14 @@ namespace Thor::LLD::CAN
 
   void Driver::enableClock()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_CAN, mResourceIndex );
   }
 
 
   void Driver::disableClock()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_CAN, mResourceIndex );
   }
 

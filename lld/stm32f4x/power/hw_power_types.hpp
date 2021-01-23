@@ -21,6 +21,22 @@
 
 namespace Thor::LLD::PWR
 {
+  /*-------------------------------------------------------------------------------
+  Enumerations
+  -------------------------------------------------------------------------------*/
+  enum class VoltageScale : uint8_t
+  {
+    SCALE_1,
+    SCALE_2,
+    SCALE_3,
+
+    NUM_OPTIONS,
+    INVALID
+  };
+
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
   struct RegisterMap
   {
     volatile uint32_t CR;  /**< PWR control register,         Address offset: 0x00 */
@@ -28,16 +44,18 @@ namespace Thor::LLD::PWR
   };
 
   /*------------------------------------------------
-  Control Register 1
+  Control Register
   ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CR, CR_ODSWEN_Msk, ODSWEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR, CR_ODEN_Msk, ODEN, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR, CR_VOS_Msk, VOS, BIT_ACCESS_RW );
 
-
-  namespace CR1
-  {
-    static constexpr Reg32_t VOS_SCALE_1 = CR_VOS_0;
-    static constexpr Reg32_t VOS_SCALE_2 = CR_VOS_1;
-  }    // namespace CR1
+  /*-------------------------------------------------
+  Control Status Register
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CSR, CSR_ODSWRDY_Msk, ODSWRDY, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_ODRDY_Msk, ODRDY, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CSR, CSR_VOSRDY_Msk, VOSRDY, BIT_ACCESS_R );
 
 }    // namespace Thor::LLD::PWR
 

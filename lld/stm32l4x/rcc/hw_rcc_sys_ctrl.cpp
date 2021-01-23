@@ -38,7 +38,7 @@ namespace Thor::LLD::RCC
   /*-------------------------------------------------------------------------------
   SystemClock Class Implementation
   -------------------------------------------------------------------------------*/
-  SystemClock *getCoreClock()
+  SystemClock *getCoreClockCtrl()
   {
     return &s_system_clock;
   }
@@ -85,7 +85,7 @@ namespace Thor::LLD::RCC
         }
         break;
 
-      case Chimera::Clock::Bus::PLLCLK:
+      case Chimera::Clock::Bus::PLLP:
         PLLON::set( RCC1_PERIPH, CR_PLLON );
         while ( !PLLRDY::get( RCC1_PERIPH ) )
         {
@@ -139,7 +139,7 @@ namespace Thor::LLD::RCC
         }
         break;
 
-      case Chimera::Clock::Bus::PLLCLK:
+      case Chimera::Clock::Bus::PLLP:
         PLLON::clear( RCC1_PERIPH, CR_PLLON );
         while ( PLLRDY::get( RCC1_PERIPH ) )
         {
@@ -221,7 +221,7 @@ namespace Thor::LLD::RCC
     ------------------------------------------------*/
     if ( configureOscillators( sOscillatorSettings ) && configureClocks( sDerivedClockSettings ) )
     {
-      setCoreClockSource( Chimera::Clock::Bus::PLLCLK );
+      setCoreClockSource( Chimera::Clock::Bus::PLLP );
       CortexM4::Clock::updateCoreClockCache( getSysClockFreq() );
 
       return Chimera::Status::OK;
@@ -272,7 +272,7 @@ namespace Thor::LLD::RCC
         CortexM4::Clock::updateCoreClockCache( getHSIFreq() );
         break;
 
-      case Chimera::Clock::Bus::PLLCLK:
+      case Chimera::Clock::Bus::PLLP:
         cfgOption = Config::SystemClockSelect::SYSCLK_PLL;
         expStatus = Config::SystemClockStatus::SYSCLK_PLL;
 
@@ -330,7 +330,7 @@ namespace Thor::LLD::RCC
         break;
 
       case Config::SystemClockSelect::SYSCLK_PLL:
-        return Chimera::Clock::Bus::PLLCLK;
+        return Chimera::Clock::Bus::PLLP;
         break;
 
       default:

@@ -6,7 +6,7 @@
  *    Declaration of data that must be defined by the LLD implementation or is
  *    shared among all possible drivers.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -26,6 +26,7 @@
 #include <Thor/lld/interface/can/can_types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
+#if defined( THOR_LLD_CAN )
 namespace Thor::LLD::CAN
 {
   /*-------------------------------------------------------------------------------
@@ -88,4 +89,5 @@ namespace Thor::LLD::CAN
   }    // namespace ResourceMap
 }    // namespace Thor::LLD::CAN
 
+#endif /* THOR_LLD_CAN */
 #endif /* !THOR_LLD_CAN_DATA_HPP */

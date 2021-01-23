@@ -132,21 +132,21 @@ namespace Thor::LLD::SPI
 
   Chimera::Status_t Driver::reset()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     return rcc->reset( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
 
   void Driver::clockEnable()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
 
   void Driver::clockDisable()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_SPI, resourceIndex );
   }
 
@@ -175,7 +175,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Find the best clock divisor need to achieve the desired clock frequency
     ------------------------------------------------*/
-    auto systemClock = Thor::LLD::RCC::getCoreClock();
+    auto systemClock = Thor::LLD::RCC::getCoreClockCtrl();
     auto periphAddr  = reinterpret_cast<std::uintptr_t>( mPeriph );
     auto clockFreq   = systemClock->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SPI, periphAddr );
 

@@ -5,7 +5,7 @@
  *  Description:
  *    LLD interface description for the power driver
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -15,6 +15,9 @@
 /* STL Includes */
 #include <cstddef>
 
+/* Chimera Includes */
+#include <Chimera/common>
+
 /* Thor Includes */
 #include <Thor/lld/common/types.hpp>
 
@@ -23,7 +26,6 @@ namespace Thor::LLD::PWR
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
-
   /**
    *  Looks up a resource index based on a raw peripheral instance
    *
@@ -31,6 +33,14 @@ namespace Thor::LLD::PWR
    *  @return RIndex_t
    */
   RIndex_t getResourceIndex( const std::uintptr_t address );
+
+  /**
+   *  Sets the internal voltage regulator output voltage
+   *
+   *  @param[in]  scale         Scaling value to set
+   *  @return Chimera::Status_t
+   */
+  Chimera::Status_t setVoltageScaling( const VoltageScale scale );
 
 }    // namespace Thor::LLD::PWR
 

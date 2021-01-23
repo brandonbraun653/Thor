@@ -85,18 +85,12 @@ namespace Thor::Clock
 
   size_t getFrequency( const Chimera::Clock::Bus bus )
   {
-    using namespace Thor::LLD::RCC;
-
-    auto rcc = getCoreClock();
-    return rcc->getClockFrequency( bus );
+    return Thor::LLD::RCC::getBusFrequency( bus );
   }
 
   Chimera::Status_t setFrequency( const Chimera::Clock::Bus bus, const size_t freq )
   {
-    using namespace Thor::LLD::RCC;
-
-    auto rcc = getCoreClock();
-    return rcc->setClockFrequency( bus, freq, false );
+    return Chimera::Status::NOT_AVAILABLE;
   }
 
 }    // namespace Thor::Clock

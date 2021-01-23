@@ -27,17 +27,39 @@ namespace Thor::LLD::RCC
   class SystemClock;
   class PeripheralController;
 
-
-  /*-------------------------------------------------------------------------------
-  Aliases
-  -------------------------------------------------------------------------------*/
-  using ClockType_t = Reg32_t;
-
-
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
   static constexpr size_t INVALID_CLOCK = 0xBAAAAAAD;
+
+  /*-------------------------------------------------------------------------------
+  Enumerations
+  -------------------------------------------------------------------------------*/
+  /**
+   *  Types of PLLs found in STM32 based systems
+   */
+  enum class PLLType : uint8_t
+  {
+    CORE,
+    I2S,
+    SAI,
+
+    NUM_OPTIONS,
+    INVALID
+  };
+
+  /**
+   *  Possible outputs found in STM32 PLLs
+   */
+  enum class PLLOut : uint8_t
+  {
+    P,
+    Q,
+    R,
+
+    NUM_OPTIONS,
+    INVALID
+  };
 
 
   /*-------------------------------------------------------------------------------
@@ -58,6 +80,7 @@ namespace Thor::LLD::RCC
     size_t HSEFrequency;  /**< High speed external clock */
     size_t LSEFrequency;  /**< Low speed external clock */
   };
+
 
   /**
    *  Peripheral Control & Config (PCC)

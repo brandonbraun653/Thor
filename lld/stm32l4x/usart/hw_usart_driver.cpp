@@ -84,7 +84,7 @@ namespace Thor::LLD::USART
     /*------------------------------------------------
     Ensure the clock is enabled otherwise the hardware is "dead"
     ------------------------------------------------*/
-    auto rccPeriph = Thor::LLD::RCC::getPeripheralClock();
+    auto rccPeriph = Thor::LLD::RCC::getPeriphClockCtrl();
     rccPeriph->enableClock( Chimera::Peripheral::Type::PERIPH_USART, resourceIndex );
 
     /*------------------------------------------------
@@ -139,7 +139,7 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------
     Use the RCC's ability to reset whole peripherals back to default states
     -------------------------------------------------*/
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_USART, resourceIndex );
     rcc->reset( Chimera::Peripheral::Type::PERIPH_USART, resourceIndex );
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_USART, resourceIndex );
@@ -783,7 +783,7 @@ namespace Thor::LLD::USART
     /*------------------------------------------------
     Figure out the frequency of the clock that drives the USART
     ------------------------------------------------*/
-    auto rccSys = Thor::LLD::RCC::getCoreClock();
+    auto rccSys = Thor::LLD::RCC::getCoreClockCtrl();
     periphClock = rccSys->getPeriphClock( Chimera::Peripheral::Type::PERIPH_USART, periphAddress );
 
     /*------------------------------------------------

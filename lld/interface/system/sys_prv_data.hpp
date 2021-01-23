@@ -5,12 +5,15 @@
  *  Description:
  *    Insert Description
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_SYS_DATA_HPP
 #define THOR_LLD_SYS_DATA_HPP
+
+/* Chimera Includes */
+#include <Chimera/common>
 
 /* Thor Includes */
 #include <Thor/lld/interface/system/sys_detail.hpp>

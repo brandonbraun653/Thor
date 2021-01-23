@@ -30,7 +30,7 @@ namespace Thor::LLD::RCC
   /*-------------------------------------------------------------------------------
   PeripheralController Class Implementation
   -------------------------------------------------------------------------------*/
-  PeripheralController *getPeripheralClock()
+  PeripheralController *getPeriphClockCtrl()
   {
     return &s_periph_clock;
   }

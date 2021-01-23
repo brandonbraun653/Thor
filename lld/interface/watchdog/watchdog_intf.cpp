@@ -5,7 +5,7 @@
  *  Description:
  *    Common watchdog interface function implementation
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 /* STL Includes */
@@ -26,6 +26,28 @@ namespace Thor::LLD::Watchdog
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
+  RIndex_t getResourceIndex( const std::uintptr_t address )
+  {
+#if defined( STM32_IWDG1_PERIPH_AVAILABLE ) && defined( THOR_LLD_IWDG )
+    if ( address == reinterpret_cast<std::uintptr_t>( IWDG1_PERIPH ) )
+    {
+      return IWDG::IWDG1_RESOURCE_INDEX;
+    }
+#endif
+
+#if defined( STM32_WWDG1_PERIPH_AVAILABLE ) && defined( THOR_LLD_WWDG )
+    if ( address == reinterpret_cast<std::uintptr_t>( WWDG1_PERIPH ) )
+    {
+      return WWDG::WWDG1_RESOURCE_INDEX;
+    }
+#endif
+
+    return INVALID_RESOURCE_INDEX;
+  }
+
+
+#if defined( THOR_LLD_IWDG )
+
   bool isSupported( const Chimera::Watchdog::IChannel channel )
   {
     switch ( channel )
@@ -43,20 +65,16 @@ namespace Thor::LLD::Watchdog
   }
 
 
-  bool isSupported( const Chimera::Watchdog::WChannel channel )
+  Chimera::Watchdog::IChannel getIChannel( const std::uintptr_t address )
   {
-    switch ( channel )
+#if defined( STM32_IWDG1_PERIPH_AVAILABLE )
+    if ( address == reinterpret_cast<std::uintptr_t>( IWDG1_PERIPH ) )
     {
-#if defined( STM32_WWDG1_PERIPH_AVAILABLE )
-      case Chimera::Watchdog::WChannel::WATCHDOG0:
-        return true;
-        break;
+      return Chimera::Watchdog::IChannel::WATCHDOG0;
+    }
 #endif
 
-      default:
-        return false;
-        break;
-    };
+    return Chimera::Watchdog::IChannel::UNKNOWN;
   }
 
 
@@ -74,69 +92,6 @@ namespace Thor::LLD::Watchdog
         return INVALID_RESOURCE_INDEX;
         break;
     };
-  }
-
-
-  RIndex_t getResourceIndex( const Chimera::Watchdog::WChannel channel )
-  {
-    switch ( channel )
-    {
-#if defined( STM32_WWDG1_PERIPH_AVAILABLE )
-      case Chimera::Watchdog::WChannel::WATCHDOG0:
-        return WWDG::WWDG1_RESOURCE_INDEX;
-        break;
-#endif
-
-      default:
-        return INVALID_RESOURCE_INDEX;
-        break;
-    };
-  }
-
-
-  RIndex_t getResourceIndex( const std::uintptr_t address )
-  {
-#if defined( STM32_IWDG1_PERIPH_AVAILABLE )
-    if ( address == reinterpret_cast<std::uintptr_t>( IWDG1_PERIPH ) )
-    {
-      return IWDG::IWDG1_RESOURCE_INDEX;
-    }
-#endif
-
-#if defined( STM32_WWDG1_PERIPH_AVAILABLE )
-    if ( address == reinterpret_cast<std::uintptr_t>( WWDG1_PERIPH ) )
-    {
-      return WWDG::WWDG1_RESOURCE_INDEX;
-    }
-#endif
-
-    return INVALID_RESOURCE_INDEX;
-  }
-
-
-  Chimera::Watchdog::IChannel getIChannel( const std::uintptr_t address )
-  {
-#if defined( STM32_IWDG1_PERIPH_AVAILABLE )
-    if ( address == reinterpret_cast<std::uintptr_t>( IWDG1_PERIPH ) )
-    {
-      return Chimera::Watchdog::IChannel::WATCHDOG0;
-    }
-#endif
-
-    return Chimera::Watchdog::IChannel::UNKNOWN;
-  }
-
-
-  Chimera::Watchdog::WChannel getWChannel( const std::uintptr_t address )
-  {
-#if defined( STM32_WWDG1_PERIPH_AVAILABLE )
-    if ( address == reinterpret_cast<std::uintptr_t>( WWDG1_PERIPH ) )
-    {
-      return Chimera::Watchdog::WChannel::WATCHDOG0;
-    }
-#endif
-
-    return Chimera::Watchdog::WChannel::UNKNOWN;
   }
 
 
@@ -163,6 +118,56 @@ namespace Thor::LLD::Watchdog
     return result == Chimera::Status::OK;
   }
 
+#endif  /* THOR_LLD_IWDG */
+
+
+#if defined( THOR_LLD_WWDG )
+  bool isSupported( const Chimera::Watchdog::WChannel channel )
+  {
+    switch ( channel )
+    {
+#if defined( STM32_WWDG1_PERIPH_AVAILABLE )
+      case Chimera::Watchdog::WChannel::WATCHDOG0:
+        return true;
+        break;
+#endif
+
+      default:
+        return false;
+        break;
+    };
+  }
+
+
+  RIndex_t getResourceIndex( const Chimera::Watchdog::WChannel channel )
+  {
+    switch ( channel )
+    {
+#if defined( STM32_WWDG1_PERIPH_AVAILABLE )
+      case Chimera::Watchdog::WChannel::WATCHDOG0:
+        return WWDG::WWDG1_RESOURCE_INDEX;
+        break;
+#endif
+
+      default:
+        return INVALID_RESOURCE_INDEX;
+        break;
+    };
+  }
+
+
+  Chimera::Watchdog::WChannel getWChannel( const std::uintptr_t address )
+  {
+#if defined( STM32_WWDG1_PERIPH_AVAILABLE )
+    if ( address == reinterpret_cast<std::uintptr_t>( WWDG1_PERIPH ) )
+    {
+      return Chimera::Watchdog::WChannel::WATCHDOG0;
+    }
+#endif
+
+    return Chimera::Watchdog::WChannel::UNKNOWN;
+  }
+
 
   bool attachDriverInstances( WindowDriver *const driverList, const size_t numDrivers )
   {
@@ -186,6 +191,9 @@ namespace Thor::LLD::Watchdog
 
     return result == Chimera::Status::OK;
   }
+
+
+#endif  /* THOR_LLD_WWDG */
 
 
   uint8_t calculatePrescaler( const size_t ms, const size_t clock, const size_t minCount, const size_t maxCount,

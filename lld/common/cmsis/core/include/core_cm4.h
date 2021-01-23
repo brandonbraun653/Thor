@@ -22,6 +22,8 @@
 
 #include <stdint.h>
 
+#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
+
 #ifdef __cplusplus
 extern "C"
 {

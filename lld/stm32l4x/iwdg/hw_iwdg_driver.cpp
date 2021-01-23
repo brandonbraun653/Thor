@@ -96,7 +96,7 @@ namespace Thor::LLD::Watchdog
 
   void IndependentDriver::enableClock()
   {
-    auto rcc = Thor::LLD::RCC::getCoreClock();
+    auto rcc = Thor::LLD::RCC::getCoreClockCtrl();
     rcc->enableClock( Chimera::Clock::Bus::LSI );
 
     /*-------------------------------------------------

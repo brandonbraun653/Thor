@@ -20,11 +20,13 @@
 #include <Chimera/adc>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/adc/adc_detail.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
+#if defined( THOR_LLD_ADC )
 namespace Thor::LLD::ADC
 {
   /*-------------------------------------------------------------------------------
@@ -75,4 +77,5 @@ namespace Thor::LLD::ADC
   }    // namespace Resource
 }    // namespace Thor::LLD::ADC
 
+#endif /* THOR_LLD_ADC */
 #endif /* !THOR_LLD_ADC_DATA */

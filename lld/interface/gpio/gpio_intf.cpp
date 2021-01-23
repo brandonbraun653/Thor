@@ -23,6 +23,7 @@
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 #include <Thor/lld/interface/gpio/gpio_intf.hpp>
 
+#if defined( THOR_LLD_GPIO )
 namespace Thor::LLD::GPIO
 {
   /*-------------------------------------------------------------------------------
@@ -679,3 +680,5 @@ namespace Thor::LLD::GPIO
   }
 
 }    // namespace Thor::LLD::GPIO
+
+#endif  /* THOR_LLD_GPIO */

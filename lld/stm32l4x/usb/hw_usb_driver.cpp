@@ -117,7 +117,7 @@ namespace Thor::LLD::USB
     /*-------------------------------------------------
     Enable the peripheral clock
     -------------------------------------------------*/
-    RCC::getCoreClock()->enableClock( Chimera::Clock::Bus::RC48 );
+    RCC::getCoreClockCtrl()->enableClock( Chimera::Clock::Bus::RC48 );
     clockEnable();
     clockReset();
 
@@ -284,21 +284,21 @@ namespace Thor::LLD::USB
 
   void Driver::clockReset()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->reset( Chimera::Peripheral::Type::PERIPH_USB, mResourceIndex );
   }
 
 
   void Driver::clockEnable()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_USB, mResourceIndex );
   }
 
 
   void Driver::clockDisable()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_USB, mResourceIndex );
   }
 

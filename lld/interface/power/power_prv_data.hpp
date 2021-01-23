@@ -17,6 +17,7 @@
 #include <cstddef>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/power/power_detail.hpp>
@@ -27,7 +28,7 @@ namespace Thor::LLD::PWR
   Peripheral Instances:
     Memory mapped structures that allow direct access to peripheral registers
   -------------------------------------------------------------------------------*/
-#if defined( STM32_PWR_PERIPH_AVAILABLE )
+#if defined( STM32_PWR1_PERIPH_AVAILABLE )
   extern RegisterMap *PWR_PERIPH;
 #endif
 

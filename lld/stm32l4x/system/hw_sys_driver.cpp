@@ -24,18 +24,6 @@ namespace Thor::LLD::SYS
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
-  bool inISR()
-  {
-    return CortexM4::inISR();
-  }
-
-
-  void softwareReset()
-  {
-    CortexM4::hardwareReset();
-  }
-
-
   void configureExtiSource( const Chimera::GPIO::Port port, const uint8_t pin )
   {
     /*-------------------------------------------------

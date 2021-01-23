@@ -16,12 +16,14 @@
 #include <Chimera/utility>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/can/can_detail.hpp>
 #include <Thor/lld/interface/can/can_prv_data.hpp>
 #include <Thor/lld/interface/can/can_types.hpp>
 #include <Thor/lld/interface/can/can_intf.hpp>
 
+#if defined( THOR_LLD_CAN )
 namespace Thor::LLD::CAN
 {
   /*-------------------------------------------------------------------------------
@@ -200,3 +202,5 @@ namespace Thor::LLD::CAN
     }
   }
 }    // namespace Thor::LLD::CAN
+
+#endif /* THOR_LLD_CAN */

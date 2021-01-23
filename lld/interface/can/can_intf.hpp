@@ -29,6 +29,7 @@
 #include <Thor/lld/interface/can/can_types.hpp>
 #include <Thor/lld/interface/can/can_detail.hpp>
 
+#if defined( THOR_LLD_CAN )
 namespace Thor::LLD::CAN
 {
   /*-------------------------------------------------------------------------------
@@ -338,4 +339,5 @@ namespace Thor::LLD::CAN
   };
 }    // namespace Thor::LLD::CAN
 
+#endif /* THOR_LLD_CAN */
 #endif /* !THOR_LLD_CAN_DRIVER_INTERFACE_HPP */

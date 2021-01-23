@@ -17,7 +17,6 @@
 #include <Thor/lld/interface/watchdog/watchdog_intf.hpp>
 #include <Thor/lld/stm32f4x/iwdg/hw_iwdg_types.hpp>
 #include <Thor/lld/stm32f4x/iwdg/variant/hw_iwdg_register_stm32f446re.hpp>
-#include <Thor/lld/stm32f4x/rcc/hw_rcc_mapping.hpp>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_IWDG ) && defined( STM32F446xx )
 

@@ -20,10 +20,12 @@
 #include <Chimera/serial>
 
 /* Driver Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/registers/field_accessor.hpp>
 #include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
 #include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
 
+#if defined( THOR_LLD_USART )
 namespace Thor::LLD::USART
 {
   /*-------------------------------------------------------------------------------
@@ -201,4 +203,5 @@ namespace Thor::LLD::USART
 
 }    // namespace Thor::LLD::USART
 
+#endif /* THOR_LLD_USART */
 #endif /* !THOR_HW_USART_TYPES_HPP */

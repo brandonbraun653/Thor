@@ -20,12 +20,14 @@
 #include <Chimera/spi>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/spi/spi_detail.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
+#if defined( THOR_LLD_SPI )
 namespace Thor::LLD::SPI
 {
   /*-------------------------------------------------------------------------------
@@ -79,4 +81,5 @@ namespace Thor::LLD::SPI
   }    // namespace ResourceMap
 }    // namespace Thor::LLD::SPI
 
+#endif /* THOR_LLD_SPI */
 #endif /* !THOR_LLD_SPI_DATA */

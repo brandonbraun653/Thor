@@ -82,10 +82,6 @@ namespace Thor::LLD::INT
    */
   Chimera::Threading::ThreadId getUserTaskId( const Chimera::Peripheral::Type type );
 
-
-  /*-------------------------------------------------------------------------------
-  Public Functions: LLD Implemented
-  -------------------------------------------------------------------------------*/
   /**
    *  Disables all interrupts and returns a mask indicating which
    *  ISR vector signals should be unmasked in enableInterrupts()

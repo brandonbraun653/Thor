@@ -18,6 +18,7 @@
 /* Thor Includes */
 #include <Thor/lld/common/cmsis/configuration.hpp>
 #include <Thor/lld/common/cmsis/core/include/core_cm4.h>
+#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
 namespace Thor::LLD::INT
 {

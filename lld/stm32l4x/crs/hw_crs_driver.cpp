@@ -30,14 +30,14 @@ namespace Thor::LLD::CRS
   -------------------------------------------------------------------------------*/
   void enableClock()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_CRS, CRS1_RESOURCE_INDEX );
   }
 
 
   void clockDisable()
   {
-    auto rcc = Thor::LLD::RCC::getPeripheralClock();
+    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->disableClock( Chimera::Peripheral::Type::PERIPH_CRS, CRS1_RESOURCE_INDEX );
   }
 

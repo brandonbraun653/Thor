@@ -928,6 +928,8 @@ namespace Thor::LLD::RCC
   /*------------------------------------------------
   CSR Register
   ------------------------------------------------*/
+  static constexpr Reg32_t CSR_ResetFlags_Msk = 0x0E000000;
+
   static constexpr Reg32_t CSR_LSION_Pos    = ( 0U );
   static constexpr Reg32_t CSR_LSION_Msk    = ( 0x1U << CSR_LSION_Pos );
   static constexpr Reg32_t CSR_LSION        = CSR_LSION_Msk;
