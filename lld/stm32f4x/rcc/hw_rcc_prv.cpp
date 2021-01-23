@@ -9,6 +9,7 @@
  *******************************************************************************/
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/clock>
 #include <Chimera/system>
 
@@ -170,6 +171,58 @@ namespace Thor::LLD::RCC
     return true;
   }
 
+  /*-------------------------------------------------------------------------------
+  Clock Muxing
+  -------------------------------------------------------------------------------*/
+  Chimera::Clock::Bus getSysClockSource()
+  {
+    using namespace Chimera::Clock;
+
+    switch ( SWS::get( RCC1_PERIPH ) )
+    {
+      case CFGR_SWS_HSE:
+        return Bus::HSE;
+        break;
+
+      case CFGR_SWS_HSI:
+        return Bus::HSI16;
+        break;
+
+      case CFGR_SWS_PLL:
+        return Bus::PLLP;
+        break;
+
+      case CFGR_SWS_PLLR:
+        return Bus::PLLR;
+        break;
+
+      default:
+        return Bus::UNKNOWN_BUS;
+        break;
+    };
+  }
+
+
+  Chimera::Clock::Bus getPLLClockSource()
+  {
+    using namespace Chimera::Clock;
+
+    switch ( PLLSRC::get( RCC1_PERIPH ) )
+    {
+      case PLLCFGR_PLLSRC_HSE:
+        return Bus::HSE;
+        break;
+
+      case PLLCFGR_PLLSRC_HSI:
+        return Bus::HSI16;
+        break;
+
+      default:
+        return Bus::UNKNOWN_BUS;
+        break;
+    };
+  }
+
 
   /*-------------------------------------------------------------------------------
   Runtime Bus Frequency Calculations
@@ -178,7 +231,7 @@ namespace Thor::LLD::RCC
   {
     using namespace Chimera::Clock;
 
-    switch( getSysClockSource() )
+    switch ( getSysClockSource() )
     {
       case Bus::HSE:
         // Constant, so recursive lookup is ok
@@ -213,17 +266,47 @@ namespace Thor::LLD::RCC
     Determine the PLL input base frequency
     -------------------------------------------------*/
     size_t input_freq;
-    switch( getPLLClockSource() )
+    switch ( getPLLClockSource() )
     {
       case Bus::HSE:
-
+        input_freq = getBusFrequency( Bus::HSE );
         break;
 
       case Bus::HSI16:
-
+        input_freq = getBusFrequency( Bus::HSI16 );
         break;
     };
 
+    /*-------------------------------------------------
+    Calculate the VCO frequency
+    -------------------------------------------------*/
+    uint32_t m = PLLM::get( RCC1_PERIPH ) >> PLLCFGR_PLLM_Pos;
+    RT_HARD_ASSERT( m );
+
+    uint32_t n = PLLN::get( RCC1_PERIPH ) >> PLLCFGR_PLLN_Pos;
+    RT_HARD_ASSERT( n );
+
+    uint32_t vco_freq = ( input_freq / m ) * n;
+
+    /*-------------------------------------------------
+    Calculate the PLL output frequency
+    -------------------------------------------------*/
+    if ( which == PLLOut::P )
+    {
+      uint32_t p = PLLP::get( RCC1_PERIPH ) >> PLLCFGR_PLLP_Pos;
+      RT_HARD_ASSERT( p );
+      return vco_freq / p;
+    }
+    else if ( which == PLLOut::R )
+    {
+      uint32_t r = PLLR::get( RCC1_PERIPH ) >> PLLCFGR_PLLR_Pos;
+      RT_HARD_ASSERT( r );
+      return vco_freq / r;
+    }
+    else
+    {
+      return INVALID_CLOCK;
+    }
   }
 
   /*-------------------------------------------------------------------------------

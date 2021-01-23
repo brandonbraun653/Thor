@@ -15,6 +15,7 @@
 #include <cstddef>
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/clock>
 #include <Chimera/utility>
@@ -177,11 +178,6 @@ namespace Thor::LLD::RCC
     result |= setPrescaleAHB( config );
     result |= setPrescaleAPB1( config );
     result |= setPrescaleAPB2( config );
-
-    /*-------------------------------------------------
-    Verify the system clock boundaries
-    -------------------------------------------------*/
-    // TODO
 
     /*-------------------------------------------------
     Re-enable interrupts now that configuration is done

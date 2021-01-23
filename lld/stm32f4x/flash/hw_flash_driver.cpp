@@ -91,7 +91,7 @@ namespace Thor::LLD::FLASH
     size_t rangeOpt = 0;
     switch ( PWR::getVoltageScale() )
     {
-      case PWR::VoltageScale::SCALE_3:
+      case PWR::VoltageScale::SCALE_1:
         rangeIdx = 0;
         rangeOpt = ARRAY_COUNT( Range1 );
         break;
@@ -101,7 +101,7 @@ namespace Thor::LLD::FLASH
         rangeOpt = ARRAY_COUNT( Range2 );
         break;
 
-      case PWR::VoltageScale::SCALE_1:
+      case PWR::VoltageScale::SCALE_3:
         rangeIdx = 2;
         rangeOpt = ARRAY_COUNT( Range3 );
         break;
@@ -113,17 +113,17 @@ namespace Thor::LLD::FLASH
     };
 
     /*-------------------------------------------------
-    Get the current system clock frequency
+    Get the current system clock frequency in MHz
     -------------------------------------------------*/
-    size_t clk = RCC::getCoreClockCtrl()->getClockFrequency( Chimera::Clock::Bus::AHB );
+    size_t clk = RCC::getCoreClockCtrl()->getClockFrequency( Chimera::Clock::Bus::SYSCLK );
+    clk /= 1000000;
 
     /*-------------------------------------------------
     Find the best wait state
     -------------------------------------------------*/
+    auto table = RangeTable[ rangeIdx ];
     for ( auto idx = 0; idx < rangeOpt; idx++ )
     {
-      auto table = RangeTable[ rangeIdx ];
-
       if ( ( table[ idx ].minClock < clk ) && ( clk <= table[ idx ].maxClock ) )
       {
         return table[ idx ].waitState;

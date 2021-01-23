@@ -103,17 +103,21 @@ namespace Thor::LLD::RCC
     ClockTreeInit clkCfg;
     clkCfg.clear();
 
+    /* Select which clocks to turn on  */
     clkCfg.enabled.hsi          = true;    // Needed for transfer of clock source
     clkCfg.enabled.lsi          = true;    // Allows IWDG use
     clkCfg.enabled.pll_core_clk = true;    // Will drive sys off PLL
 
+    /* Select clock mux routing */
     clkCfg.mux.pll = Chimera::Clock::Bus::HSI16;
     clkCfg.mux.sys = Chimera::Clock::Bus::PLLP;
 
+    /* Divisors from the system clock */
     clkCfg.prescaler.ahb  = 1;
     clkCfg.prescaler.apb1 = 4;
     clkCfg.prescaler.apb2 = 2;
 
+    /* Figure out PLL configuration settings */
     cfgResult |= calculatePLLBaseOscillator( PLLType::CORE, hsiClkIn, targetVcoClk, clkCfg );
     cfgResult |= calculatePLLOuputOscillator( PLLType::CORE, PLLOut::P, targetVcoClk, targetSysClk, clkCfg );
 
@@ -123,7 +127,8 @@ namespace Thor::LLD::RCC
     /*-------------------------------------------------
     Verify the user's target clocks have been achieved
     -------------------------------------------------*/
-    // TODO
+    size_t sys_clk = getSystemClock();
+    RT_HARD_ASSERT( sys_clk == targetSysClk );
 
     /*-------------------------------------------------
     Trim the flash latency back to a performant range
