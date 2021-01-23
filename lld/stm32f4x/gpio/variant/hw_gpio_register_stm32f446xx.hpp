@@ -54,6 +54,15 @@ namespace Thor::LLD::GPIO
   static constexpr uint32_t GPIOG_RESOURCE_INDEX = 6u;
   static constexpr uint32_t GPIOH_RESOURCE_INDEX = 7u;
 
+  static constexpr uint32_t GPIOA_NUM_PINS = 16u;
+  static constexpr uint32_t GPIOB_NUM_PINS = 16u;
+  static constexpr uint32_t GPIOC_NUM_PINS = 16u;
+  static constexpr uint32_t GPIOD_NUM_PINS = 16u;
+  static constexpr uint32_t GPIOE_NUM_PINS = 16u;
+  static constexpr uint32_t GPIOF_NUM_PINS = 16u;
+  static constexpr uint32_t GPIOG_NUM_PINS = 16u;
+  static constexpr uint32_t GPIOH_NUM_PINS = 2u;
+
 }    // namespace Thor::LLD::GPIO
 
 #endif /* !THOR_HW_GPIO_REGISTER_HPP */

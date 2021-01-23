@@ -15,12 +15,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
-#include <Thor/lld/interface/gpio/gpio_types.hpp>
-#include <Thor/lld/interface/gpio/gpio_intf.hpp>
-#include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
-
+#include <Thor/lld/interface/inc/gpio>
 
 #if defined( STM32L432xx ) && defined( THOR_LLD_GPIO )
 
