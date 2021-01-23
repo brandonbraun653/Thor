@@ -16,7 +16,7 @@
 #include <cstdint>
 
 /* Driver Includes */
-#include <Thor/lld/stm32l4x/system/hw_sys_prj.hpp>
+#include <Thor/lld/stm32f4x/system/hw_sys_prj.hpp>
 
 
 namespace Thor::LLD::SYS

@@ -205,7 +205,7 @@ namespace Thor::LLD::RCC
 #if defined( THOR_LLD_PWR )
   /* clang-format off */
   static const RegisterConfig PWR_ClockConfig[ PWR::NUM_PWR_PERIPHS ]      = {
-    { .mask = APB1ENR_PWREN, .reg  = &RCC1_PERIPH->AHB1ENR }
+    { .mask = APB1ENR_PWREN, .reg  = &RCC1_PERIPH->APB1ENR }
   };
 
   static const RegisterConfig PWR_ResetConfig[ PWR::NUM_PWR_PERIPHS ]      = {

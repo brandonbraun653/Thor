@@ -22,7 +22,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/registers/field_accessor.hpp>
-#include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
+#include <Thor/lld/stm32f4x/interrupt/hw_interrupt_prj.hpp>
 #include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
 
 #if defined( THOR_LLD_USART )

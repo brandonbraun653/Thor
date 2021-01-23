@@ -20,6 +20,8 @@
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/power>
 #include <Thor/lld/interface/inc/flash>
+#include <Thor/lld/interface/inc/interrupt>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_prv.hpp>
 
 namespace Thor::LLD::RCC
 {
@@ -47,15 +49,35 @@ namespace Thor::LLD::RCC
   {
   }
 
+  void SystemClock::enableClock( const Chimera::Clock::Bus clock )
+  {
+    auto isrMask = INT::disableInterrupts();
+
+    switch ( clock )
+    {
+      case Chimera::Clock::Bus::HSE:
+        HSEON::set( RCC1_PERIPH, CR_HSEON );
+        while ( !HSERDY::get( RCC1_PERIPH ) )
+        {
+          ;
+        }
+        break;
+
+      case Chimera::Clock::Bus::HSI16:
+        enableHSI();
+        break;
+
+      default:
+        RT_HARD_ASSERT( false );
+        break;
+    }
+
+    INT::enableInterrupts( isrMask );
+  }
+
 
   Chimera::Status_t SystemClock::configureProjectClocks()
   {
-    /*------------------------------------------------
-    Turn on the main internal regulator output voltage
-    and set voltage scaling to achieve max clock.
-    ------------------------------------------------*/
-    PWR::setVoltageScaling( PWR::VoltageScale::SCALE_1 );
-
     /*-------------------------------------------------
     Set flash latency to a safe value for all possible
     clocks. This will slow down the configuration, but
@@ -64,11 +86,17 @@ namespace Thor::LLD::RCC
     FLASH::setLatency( 15 );
 
     /*------------------------------------------------
+    Not strictly necessary, but done because this
+    config function uses the max system clock.
+    ------------------------------------------------*/
+    PWR::setOverdriveMode( true );
+
+    /*------------------------------------------------
     Configure the system clocks to max performance
     ------------------------------------------------*/
-    constexpr size_t hsiClkIn     = 16000000;     // 24 MHz
-    constexpr size_t targetSysClk = 80000000;     // 80 MHz
-    constexpr size_t targetVcoClk = 240000000;    // 240 MHz
+    constexpr size_t hsiClkIn     = 16000000;            // 24 MHz
+    constexpr size_t targetSysClk = 180000000;           // 80 MHz
+    constexpr size_t targetVcoClk = 2 * targetSysClk;    // 260 MHz
 
     Chimera::Status_t cfgResult = Chimera::Status::OK;
 
@@ -83,7 +111,7 @@ namespace Thor::LLD::RCC
     clkCfg.mux.sys = Chimera::Clock::Bus::PLLP;
 
     clkCfg.prescaler.ahb  = 1;
-    clkCfg.prescaler.apb1 = 2;
+    clkCfg.prescaler.apb1 = 4;
     clkCfg.prescaler.apb2 = 2;
 
     cfgResult |= calculatePLLBaseOscillator( PLLType::CORE, hsiClkIn, targetVcoClk, clkCfg );
@@ -93,10 +121,15 @@ namespace Thor::LLD::RCC
     RT_HARD_ASSERT( configureClockTree( clkCfg ) );
 
     /*-------------------------------------------------
+    Verify the user's target clocks have been achieved
+    -------------------------------------------------*/
+    // TODO
+
+    /*-------------------------------------------------
     Trim the flash latency back to a performant range
     now that the high speed clock has been configured.
     -------------------------------------------------*/
-    FLASH::setLatency( 4 );
+    FLASH::setLatency( FLASH::LATENCY_AUTO_DETECT );
 
     return cfgResult;
   }
@@ -104,11 +137,15 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t SystemClock::setCoreClockSource( const Chimera::Clock::Bus src )
   {
-    /*-------------------------------------------------
-    Only static clock configurations are used right now
-    -------------------------------------------------*/
-    return Chimera::Status::NOT_SUPPORTED;
+    return select_system_clock_source( src );
   }
+
+
+  size_t SystemClock::getClockFrequency( const Chimera::Clock::Bus clock )
+  {
+    return getBusFrequency( clock );
+  }
+
 
   size_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address )
   {

@@ -31,6 +31,8 @@ namespace Thor::LLD::RCC
   static constexpr size_t PLL_CORE_M_MAX        = 63;
   static constexpr size_t PLL_CORE_N_MIN        = 50;
   static constexpr size_t PLL_CORE_N_MAX        = 432;
+  static constexpr size_t PLL_CORE_P_MIN        = 2;
+  static constexpr size_t PLL_CORE_P_MAX        = 8;
   static constexpr size_t PLL_CORE_Q_MIN        = 2;
   static constexpr size_t PLL_CORE_Q_MAX        = 15;
   static constexpr size_t PLL_CORE_R_MIN        = 2;
@@ -46,10 +48,42 @@ namespace Thor::LLD::RCC
   -------------------------------------------------------------------------------*/
   bool configureCorePLL( ClockTreeInit &cfg )
   {
+    using namespace Chimera::Clock;
+
+    /*-------------------------------------------------
+    Double check input parameters. If the VCO control
+    params are out of bounds, reject the config. Else
+    if the divisors are out of bounds, simply set them
+    to the max division possible to reduce clock rate.
+    -------------------------------------------------*/
+    if ( ( cfg.PLLCore.M < PLL_CORE_M_MIN ) || ( cfg.PLLCore.M > PLL_CORE_M_MAX ) || ( cfg.PLLCore.N < PLL_CORE_N_MIN ) ||
+         ( cfg.PLLCore.N > PLL_CORE_N_MAX ) )
+    {
+      return false;
+    }
+
+    if ( ( cfg.PLLCore.P < PLL_CORE_P_MIN ) || ( cfg.PLLCore.P > PLL_CORE_P_MAX ) )
+    {
+      cfg.PLLCore.P = PLL_CORE_P_MAX;
+    }
+
+    if ( ( cfg.PLLCore.Q < PLL_CORE_Q_MIN ) || ( cfg.PLLCore.Q > PLL_CORE_Q_MAX ) )
+    {
+      cfg.PLLCore.Q = PLL_CORE_Q_MAX;
+    }
+
+    if ( ( cfg.PLLCore.R < PLL_CORE_R_MIN ) || ( cfg.PLLCore.R > PLL_CORE_R_MAX ) )
+    {
+      cfg.PLLCore.R = PLL_CORE_R_MAX;
+    }
+
+    /*-------------------------------------------------
+    Block all other code from execution
+    -------------------------------------------------*/
     auto isrMask = Chimera::System::disableInterrupts();
 
     /*-------------------------------------------------
-    Switch core clock source if currently using PLL
+    Switch core clock to HSI if currently using PLL
     -------------------------------------------------*/
     auto clk_src          = SW::get( RCC1_PERIPH );
     bool hsi_prev_enabled = false;
@@ -108,13 +142,9 @@ namespace Thor::LLD::RCC
       disableHSI();
     }
 
-    if ( ( clk_src & CFGR_SW_PLL ) == CFGR_SW_PLL )
+    if ( ( cfg.mux.sys == Bus::PLLP ) || ( cfg.mux.sys == Bus::PLLR ) )
     {
-      select_system_clock_source( Chimera::Clock::Bus::PLLP );
-    }
-    else if ( ( clk_src & CFGR_SW_PLLR ) == CFGR_SW_PLLR )
-    {
-      select_system_clock_source( Chimera::Clock::Bus::PLLR );
+      select_system_clock_source( cfg.mux.sys );
     }
 
     /*-------------------------------------------------
@@ -232,84 +262,28 @@ namespace Thor::LLD::RCC
     uint32_t lowestErr  = std::numeric_limits<uint32_t>::max();    // Error tracker
     uint32_t currentErr = lowestErr;
     int _target_X_out   = static_cast<int>( outFreq );
+    uint32_t _start     = 0;
+    uint32_t _stop      = 0;
+    uint32_t _incr      = 0;
 
     switch ( channel )
     {
       case PLLOut::P:
-        for ( auto div = 2; div <= 8; div += 2 )
-        {
-          X_out      = inFreq / div;
-          currentErr = abs( _target_X_out - static_cast<int>( X_out ) );
-
-          if ( currentErr < lowestErr )
-          {
-            calcX     = div;
-            lowestErr = currentErr;
-            if ( currentErr == 0 )
-            {
-              break;
-            }
-          }
-          else
-          {
-            /*-------------------------------------------------
-            Early stop condition. Due to initialization value
-            of error tracker and linear VCO equation, any error
-            increase means an inflection point was reached.
-            -------------------------------------------------*/
-            break;
-          }
-        }
-
-        // Drives the core, but can't exceed 180 MHz
-        RT_HARD_ASSERT( X_out <= 180000000 );
+        _start = PLL_CORE_P_MIN;
+        _stop  = PLL_CORE_P_MAX;
+        _incr  = 2;
         break;
 
       case PLLOut::Q:
-        for ( auto div = PLL_CORE_Q_MIN; div <= PLL_CORE_Q_MAX; div += 1 )
-        {
-          X_out      = inFreq / div;
-          currentErr = abs( _target_X_out - static_cast<int>( X_out ) );
-
-          if ( currentErr < lowestErr )
-          {
-            calcX     = div;
-            lowestErr = currentErr;
-            if ( currentErr == 0 )
-            {
-              break;
-            }
-          }
-          else
-          {
-            break;
-          }
-        }
-
-        // Drives USB and SDIO, which require 48 MHz clock or lower.
-        RT_HARD_ASSERT( X_out <= 48000000 );
+        _start = PLL_CORE_Q_MIN;
+        _stop  = PLL_CORE_Q_MAX;
+        _incr  = 1;
         break;
 
       case PLLOut::R:
-        for ( auto div = PLL_CORE_R_MIN; div <= PLL_CORE_R_MAX; div += 1 )
-        {
-          X_out      = inFreq / div;
-          currentErr = abs( _target_X_out - static_cast<int>( X_out ) );
-
-          if ( currentErr < lowestErr )
-          {
-            calcX     = div;
-            lowestErr = currentErr;
-            if ( currentErr == 0 )
-            {
-              break;
-            }
-          }
-          else
-          {
-            break;
-          }
-        }
+        _start = PLL_CORE_R_MIN;
+        _stop  = PLL_CORE_R_MAX;
+        _incr  = 1;
         break;
 
       default:
@@ -317,13 +291,54 @@ namespace Thor::LLD::RCC
         break;
     };
 
+
+    for ( auto div = _start; div <= _stop; div += _incr )
+    {
+      X_out      = inFreq / div;
+      currentErr = abs( _target_X_out - static_cast<int>( X_out ) );
+
+      if ( currentErr < lowestErr )
+      {
+        calcX     = div;
+        lowestErr = currentErr;
+        if ( currentErr == 0 )
+        {
+          break;
+        }
+      }
+      else
+      {
+        /*-------------------------------------------------
+        Early stop condition. Due to initialization value
+        of error tracker and linear VCO equation, any error
+        increase means an inflection point was reached.
+        -------------------------------------------------*/
+        X_out = inFreq / calcX;
+        break;
+      }
+    }
+
+    /*-------------------------------------------------
+    Verify the calculated settings
+    -------------------------------------------------*/
+    if ( channel == PLLOut::P )
+    {
+      // Drives the core, but can't exceed 180 MHz
+      RT_HARD_ASSERT( X_out <= 180000000 );
+    }
+    else if ( channel == PLLOut::Q )
+    {
+      // Drives USB and SDIO, which require 48 MHz clock or lower.
+      RT_HARD_ASSERT( X_out <= 48000000 );
+    }
+
     /*-------------------------------------------------
     Throw error if the clock deviates more than 5%
     -------------------------------------------------*/
     float exp = static_cast<float>( outFreq );
     float act = static_cast<float>( X_out );
 
-    if ( 0.05f > abs( ( act - exp ) / exp ) )
+    if ( 0.05f < abs( ( act - exp ) / exp ) )
     {
       return Chimera::Status::FAIL;
     }

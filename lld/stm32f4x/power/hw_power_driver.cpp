@@ -10,10 +10,13 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/clock>
 
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/power>
+#include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_prv.hpp>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_PWR )
 
@@ -33,6 +36,16 @@ namespace Thor::LLD::PWR
       return INVALID_RESOURCE_INDEX;
     }
   }
+
+
+  void clockEnable()
+  {
+    auto rcc   = Thor::LLD::RCC::getPeriphClockCtrl();
+    auto index = getResourceIndex( reinterpret_cast<std::uintptr_t>( PWR_PERIPH ) );
+
+    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_PWR, index );
+  }
+
 
   Chimera::Status_t setVoltageScaling( const VoltageScale scale )
   {
@@ -78,6 +91,78 @@ namespace Thor::LLD::PWR
     }
 
     return Chimera::Status::OK;
+  }
+
+
+  VoltageScale getVoltageScale()
+  {
+    uint32_t value = VOS::get( PWR_PERIPH ) >> CR_VOS_Pos;
+
+    switch( value )
+    {
+      case 0:
+      case 1:
+        return VoltageScale::SCALE_3;
+        break;
+
+      case 2:
+        return VoltageScale::SCALE_2;
+        break;
+
+      case 3:
+        return VoltageScale::SCALE_1;
+        break;
+
+      default:
+        return VoltageScale::INVALID;
+        break;
+    };
+  }
+
+
+  void setOverdriveMode( const bool state )
+  {
+    if ( state )
+    {
+      /*-------------------------------------------------
+      Overdrive can only be enabled if the system clock
+      is sourced from HSI/HSE. HSI is guaranteed to exist
+      -------------------------------------------------*/
+      RCC::enableHSI();
+      RCC::select_system_clock_source( Chimera::Clock::Bus::HSI16 );
+
+      /*-------------------------------------------------
+      Turn on the main internal regulator output voltage
+      and set voltage scaling to achieve max clock.
+      -------------------------------------------------*/
+      setVoltageScaling( VoltageScale::SCALE_1 );
+
+      /*-------------------------------------------------
+      Enable the overdrive hardware
+      -------------------------------------------------*/
+      ODEN::set( PWR_PERIPH, CR_ODEN );
+      while( !ODRDY::get( PWR_PERIPH ) )
+      {
+        continue;
+      }
+
+      /*-------------------------------------------------
+      Enable the overdrive switching
+      -------------------------------------------------*/
+      ODSWEN::set( PWR_PERIPH, CR_ODSWEN );
+      while( !ODSWRDY::get( PWR_PERIPH ) )
+      {
+        continue;
+      }
+    }
+    else
+    {
+      /*-------------------------------------------------
+      Simply clear the two overdrive enable bits
+      -------------------------------------------------*/
+      ODSWEN::clear( PWR_PERIPH, CR_ODSWEN );
+      ODEN::clear( PWR_PERIPH, CR_ODEN );
+    }
   }
 }    // namespace Thor::LLD::PWR
 

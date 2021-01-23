@@ -14,6 +14,7 @@
 
 /* Thor Includes */
 #include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/stm32f4x/rcc/hw_rcc_prv.hpp>
 
 namespace Thor::LLD::RCC
 {
@@ -31,6 +32,8 @@ namespace Thor::LLD::RCC
       {
         continue;
       }
+
+      enabled = true;
     }
 
     return enabled;
@@ -82,6 +85,14 @@ namespace Thor::LLD::RCC
         return false;
         break;
     };
+
+    /*-------------------------------------------------
+    Already set to the correct source?
+    -------------------------------------------------*/
+    if ( ( SW::get( RCC1_PERIPH ) == bitFlag ) && ( SWS::get( RCC1_PERIPH ) == waitFlag ) )
+    {
+      return true;
+    }
 
     /*-------------------------------------------------
     Prevent execution of other system code while the
@@ -159,6 +170,61 @@ namespace Thor::LLD::RCC
     return true;
   }
 
+
+  /*-------------------------------------------------------------------------------
+  Runtime Bus Frequency Calculations
+  -------------------------------------------------------------------------------*/
+  size_t getSystemClock()
+  {
+    using namespace Chimera::Clock;
+
+    switch( getSysClockSource() )
+    {
+      case Bus::HSE:
+        // Constant, so recursive lookup is ok
+        return getBusFrequency( Bus::HSE );
+        break;
+
+      case Bus::HSI16:
+        // Constant, so recursive lookup is ok
+        return getBusFrequency( Bus::HSI16 );
+        break;
+
+      case Bus::PLLP:
+        return getPLLClock( PLLOut::P );
+        break;
+
+      case Bus::PLLR:
+        return getPLLClock( PLLOut::R );
+        break;
+
+      default:
+        return INVALID_CLOCK;
+        break;
+    };
+  }
+
+
+  size_t getPLLClock( const PLLOut which )
+  {
+    using namespace Chimera::Clock;
+
+    /*-------------------------------------------------
+    Determine the PLL input base frequency
+    -------------------------------------------------*/
+    size_t input_freq;
+    switch( getPLLClockSource() )
+    {
+      case Bus::HSE:
+
+        break;
+
+      case Bus::HSI16:
+
+        break;
+    };
+
+  }
 
   /*-------------------------------------------------------------------------------
   Oscillator Configuration
@@ -276,11 +342,6 @@ namespace Thor::LLD::RCC
     /*-------------------------------------------------
     Currently not implemented cause no use for RTC clk
     -------------------------------------------------*/
-    if ( cfg.enabled.lsi )
-    {
-      Chimera::insert_debug_breakpoint();
-    }
-
     return true;
   }
 

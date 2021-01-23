@@ -30,11 +30,6 @@
 namespace Thor::LLD::RCC
 {
   /*-------------------------------------------------------------------------------
-  Public Data
-  -------------------------------------------------------------------------------*/
-  // ClockTreeInit clock_cfg;
-
-  /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
   void initialize()
@@ -127,8 +122,8 @@ namespace Thor::LLD::RCC
         return 32000u;
         break;
 
-      case Chimera::Clock::Bus::HCLK:
-        return SystemCoreClock;
+      case Chimera::Clock::Bus::SYSCLK:
+        return getSystemClock();
         break;
 
       case Chimera::Clock::Bus::HSE:
@@ -182,6 +177,11 @@ namespace Thor::LLD::RCC
     result |= setPrescaleAHB( config );
     result |= setPrescaleAPB1( config );
     result |= setPrescaleAPB2( config );
+
+    /*-------------------------------------------------
+    Verify the system clock boundaries
+    -------------------------------------------------*/
+    // TODO
 
     /*-------------------------------------------------
     Re-enable interrupts now that configuration is done

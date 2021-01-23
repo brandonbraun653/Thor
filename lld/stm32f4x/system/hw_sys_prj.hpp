@@ -15,7 +15,7 @@
 /*------------------------------------------------
 All STM32F4 devices
 ------------------------------------------------*/
-//#include <Thor/lld/stm32l4x/system/variant/hw_sys_register_stm32f4xxxx.hpp>
+//#include <Thor/lld/stm32f4x/system/variant/hw_sys_register_stm32f4xxxx.hpp>
 
 /*------------------------------------------------
 Chip specific STM32F4 devices

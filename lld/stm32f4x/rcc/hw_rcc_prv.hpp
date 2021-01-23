@@ -41,6 +41,18 @@ namespace Thor::LLD::RCC
   Chimera::Status_t calculatePLLOuputOscillator( const PLLOut channel, const size_t inFreq, const size_t outFreq, ClockTreeInit &config );
 
   /*-------------------------------------------------
+  Clock Mux
+  -------------------------------------------------*/
+  Chimera::Clock::Bus getSysClockSource();
+  Chimera::Clock::Bus getPLLClockSource();
+
+  /*-------------------------------------------------
+  Runtime Bus Frequency Calculation
+  -------------------------------------------------*/
+  size_t getSystemClock();
+  size_t getPLLClock( const PLLOut which );
+
+  /*-------------------------------------------------
   Oscillator Configuration
   -------------------------------------------------*/
   bool configureHSE( ClockTreeInit &cfg );

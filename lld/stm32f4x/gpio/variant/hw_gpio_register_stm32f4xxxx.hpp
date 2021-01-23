@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    hw_gpio_register_stm32l4xxxx.hpp
+ *    hw_gpio_register_stm32f4xxxx.hpp
  *
  *  Description:
  *    GPIO register definitions for the STM32L432KC series chips.

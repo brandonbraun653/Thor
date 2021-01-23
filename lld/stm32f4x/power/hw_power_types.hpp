@@ -26,9 +26,9 @@ namespace Thor::LLD::PWR
   -------------------------------------------------------------------------------*/
   enum class VoltageScale : uint8_t
   {
-    SCALE_1,
-    SCALE_2,
-    SCALE_3,
+    SCALE_1,  /**< High power/freq */
+    SCALE_2,  /**< Med power/freq */
+    SCALE_3,  /**< Low power/freq */
 
     NUM_OPTIONS,
     INVALID

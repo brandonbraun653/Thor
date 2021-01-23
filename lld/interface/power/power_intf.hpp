@@ -35,12 +35,33 @@ namespace Thor::LLD::PWR
   RIndex_t getResourceIndex( const std::uintptr_t address );
 
   /**
+   *  Enables the peripheral clock for the power module
+   *  @return void
+   */
+  void clockEnable();
+
+  /**
    *  Sets the internal voltage regulator output voltage
    *
    *  @param[in]  scale         Scaling value to set
    *  @return Chimera::Status_t
    */
   Chimera::Status_t setVoltageScaling( const VoltageScale scale );
+
+  /**
+   *  Gets the currently configured voltage scaling
+   *  @return VoltageScale
+   */
+  VoltageScale getVoltageScale();
+
+  /**
+   *  Enables/disables voltage regulators and switches needed to overdrive
+   *  the core clock.
+   *
+   *  @param[in]  state         Enable/disable
+   *  @return void
+   */
+  void setOverdriveMode( const bool state );
 
 }    // namespace Thor::LLD::PWR
 
