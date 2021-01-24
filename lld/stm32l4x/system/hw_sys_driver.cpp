@@ -13,11 +13,8 @@
 #include <Chimera/utility>
 
 /* Thor Includes */
-#include <Thor/lld/common/cortex-m4/utilities.hpp>
-#include <Thor/lld/interface/gpio/gpio_detail.hpp>
-#include <Thor/lld/interface/system/sys_detail.hpp>
-#include <Thor/lld/interface/system/sys_prv_data.hpp>
-#include <Thor/lld/interface/system/sys_intf.hpp>
+#include <Thor/lld/interface/inc/gpio>
+#include <Thor/lld/interface/inc/sys>
 
 namespace Thor::LLD::SYS
 {

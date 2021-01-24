@@ -1,9 +1,9 @@
 include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
 if(${THOR_CHIP} MATCHES "^L432$")
-  set(VARIANT_SRC hw_startup_stm32l432xx.c)
+  set(VARIANT_SRC hw_gpio_register_stm32l432kc.cpp)
 else()
-  message(FATAL_ERROR "Unsupported STM32L4 driver variant for: startup")
+  message(FATAL_ERROR "Unsupported STM32L4 driver variant for: gpio")
 endif()
 
 gen_static_lib_variants(

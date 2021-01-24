@@ -5,7 +5,7 @@
  *  Description:
  *    STM32 LLD SYS Interface Spec
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -14,7 +14,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
-
+#include <Chimera/gpio>
 
 /* Thor Includes */
 #include <Thor/lld/common/types.hpp>
@@ -38,6 +38,17 @@ namespace Thor::LLD::SYS
    *  @return void
    */
   void softwareReset();
+
+  /**
+   *  Configures the SYSCFG registers to select the proper pin to interrupt
+   *  the external interrupt lines 0-15.
+   *
+   *  @param[in]  port      GPIO port being configured
+   *  @param[in]  pin       GPIO pin being configured
+   *  @return void
+   */
+  void configureExtiSource( const Chimera::GPIO::Port port, const uint8_t pin );
+
 
   /*-------------------------------------------------------------------------------
   Public Functions (Implemented at the interface layer)

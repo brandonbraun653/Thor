@@ -9,7 +9,7 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 add_subdirectory("des")
 add_subdirectory("exti")
 add_subdirectory("flash")
-# add_subdirectory("gpio")
+add_subdirectory("gpio")
 add_subdirectory("interrupt")
 add_subdirectory("iwdg")
 add_subdirectory("power")
@@ -36,7 +36,7 @@ gen_intf_lib_variants(
     thor_lld_stm32f4_des
     thor_lld_stm32f4_exti
     thor_lld_stm32f4_flash
-    # thor_lld_stm32f4_gpio
+    thor_lld_stm32f4_gpio
     thor_lld_stm32f4_interrupt
     thor_lld_stm32f4_iwdg
     thor_lld_stm32f4_power

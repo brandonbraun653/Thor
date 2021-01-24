@@ -23,6 +23,18 @@
 
 namespace Thor::LLD::GPIO
 {
+  /*-------------------------------------------------
+  Peripheral Memory Map Addresses
+  -------------------------------------------------*/
+  static constexpr uint32_t GPIOA_BASE_ADDR = Thor::System::MemoryMap::GPIOA_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOB_BASE_ADDR = Thor::System::MemoryMap::GPIOB_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOC_BASE_ADDR = Thor::System::MemoryMap::GPIOC_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOD_BASE_ADDR = Thor::System::MemoryMap::GPIOD_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOE_BASE_ADDR = Thor::System::MemoryMap::GPIOE_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOF_BASE_ADDR = Thor::System::MemoryMap::GPIOF_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOG_BASE_ADDR = Thor::System::MemoryMap::GPIOG_PERIPH_START_ADDRESS;
+  static constexpr uint32_t GPIOH_BASE_ADDR = Thor::System::MemoryMap::GPIOH_PERIPH_START_ADDRESS;
+
   /*------------------------------------------------
   Alternate Functions
   ------------------------------------------------*/
@@ -46,6 +58,8 @@ namespace Thor::LLD::GPIO
   static constexpr uint8_t AF4_I2C3       = 0x04; /* I2C3 Alternate Function mapping */
   static constexpr uint8_t AF4_FMPI2C1    = 0x04; /* FMPI2C1 Alternate Function mapping */
   static constexpr uint8_t AF4_CEC        = 0x04; /* CEC Alternate Function mapping  */
+  static constexpr uint8_t AF5_I2S1       = 0x05;
+  static constexpr uint8_t AF5_I2S2       = 0x05;
   static constexpr uint8_t AF5_SPI1       = 0x05; /* SPI1/I2S1 Alternate Function mapping   */
   static constexpr uint8_t AF5_SPI2       = 0x05; /* SPI2/I2S2 Alternate Function mapping   */
   static constexpr uint8_t AF5_SPI3       = 0x05; /* SPI3/I2S3 Alternate Function mapping   */
@@ -54,6 +68,7 @@ namespace Thor::LLD::GPIO
   static constexpr uint8_t AF6_SPI3       = 0x06; /* SPI3/I2S3 Alternate Function mapping  */
   static constexpr uint8_t AF6_SPI4       = 0x06; /* SPI4 Alternate Function mapping       */
   static constexpr uint8_t AF6_SAI1       = 0x06; /* SAI1 Alternate Function mapping       */
+  static constexpr uint8_t AF6_I2S3       = 0x06;
   static constexpr uint8_t AF7_USART1     = 0x07; /* USART1 Alternate Function mapping     */
   static constexpr uint8_t AF7_USART2     = 0x07; /* USART2 Alternate Function mapping     */
   static constexpr uint8_t AF7_USART3     = 0x07; /* USART3 Alternate Function mapping     */
@@ -61,6 +76,7 @@ namespace Thor::LLD::GPIO
   static constexpr uint8_t AF7_SPI2       = 0x07; /* SPI2/I2S2 Alternate Function mapping  */
   static constexpr uint8_t AF7_SPI3       = 0x07; /* SPI3/I2S3 Alternate Function mapping  */
   static constexpr uint8_t AF7_SPDIFRX    = 0x07; /* SPDIFRX Alternate Function mapping      */
+  static constexpr uint8_t AF7_UART3      = 0x07;
   static constexpr uint8_t AF8_UART4      = 0x08; /* UART4 Alternate Function mapping  */
   static constexpr uint8_t AF8_UART5      = 0x08; /* UART5 Alternate Function mapping  */
   static constexpr uint8_t AF8_USART6     = 0x08; /* USART6 Alternate Function mapping */

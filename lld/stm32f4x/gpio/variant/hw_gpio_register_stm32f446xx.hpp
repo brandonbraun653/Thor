@@ -13,13 +13,15 @@
 #define THOR_HW_GPIO_REGISTER_HPP
 
 /* C++ Includes */
-#include <array>
 #include <cstdint>
 #include <cstddef>
 
-/* Driver Includes */
-#include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
+/* Chimera Includes */
+#include <Chimera/gpio>
 
+/*-------------------------------------------------------------------------------
+Macros
+-------------------------------------------------------------------------------*/
 #define STM32_GPIOA_PERIPH_AVAILABLE
 #define STM32_GPIOB_PERIPH_AVAILABLE
 #define STM32_GPIOC_PERIPH_AVAILABLE
@@ -31,19 +33,11 @@
 
 namespace Thor::LLD::GPIO
 {
-  /*-------------------------------------------------
-  Peripheral Instance Memory Map Base
-  -------------------------------------------------*/
-  static constexpr uint32_t GPIOA_BASE_ADDR = Thor::System::MemoryMap::GPIOA_PERIPH_START_ADDRESS;
-  static constexpr uint32_t GPIOB_BASE_ADDR = Thor::System::MemoryMap::GPIOB_PERIPH_START_ADDRESS;
-  static constexpr uint32_t GPIOC_BASE_ADDR = Thor::System::MemoryMap::GPIOC_PERIPH_START_ADDRESS;
-  static constexpr uint32_t GPIOD_BASE_ADDR = Thor::System::MemoryMap::GPIOD_PERIPH_START_ADDRESS;
-  static constexpr uint32_t GPIOE_BASE_ADDR = Thor::System::MemoryMap::GPIOE_PERIPH_START_ADDRESS;
-  static constexpr uint32_t GPIOF_BASE_ADDR = Thor::System::MemoryMap::GPIOF_PERIPH_START_ADDRESS;
-  static constexpr uint32_t GPIOG_BASE_ADDR = Thor::System::MemoryMap::GPIOG_PERIPH_START_ADDRESS;
-  static constexpr uint32_t GPIOH_BASE_ADDR = Thor::System::MemoryMap::GPIOH_PERIPH_START_ADDRESS;
-
-  static constexpr size_t NUM_GPIO_PERIPHS = 8;
+  /*-------------------------------------------------------------------------------
+  Constants
+  -------------------------------------------------------------------------------*/
+  static constexpr size_t NUM_GPIO_PERIPHS = 8;   /**< Supported GPIO peripherals */
+  static constexpr size_t NUM_GPIO_PINS    = 50;  /**< Max available pins to be configured as GPIO */
 
   static constexpr uint32_t GPIOA_RESOURCE_INDEX = 0u;
   static constexpr uint32_t GPIOB_RESOURCE_INDEX = 1u;
@@ -62,6 +56,12 @@ namespace Thor::LLD::GPIO
   static constexpr uint32_t GPIOF_NUM_PINS = 16u;
   static constexpr uint32_t GPIOG_NUM_PINS = 16u;
   static constexpr uint32_t GPIOH_NUM_PINS = 2u;
+
+  static constexpr uint8_t PRJ_MAX_PORTS         = NUM_GPIO_PERIPHS;
+  static constexpr uint8_t PRJ_MAX_PINS          = NUM_GPIO_PINS;
+  static constexpr uint8_t PRJ_MAX_PINS_PER_PORT = 16;
+
+  static constexpr Chimera::GPIO::Port PRJ_LAST_PORT = Chimera::GPIO::Port::PORTH;
 
 }    // namespace Thor::LLD::GPIO
 

@@ -5,7 +5,7 @@
  *  Description:
  *    Implements the low level driver for the GPIO mPeripheral
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
@@ -17,6 +17,7 @@
 #include <Thor/lld/interface/inc/gpio>
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/exti>
+#include <Thor/lld/interface/inc/sys>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
 

@@ -5,7 +5,7 @@
  *  Description:
  *    LLD interface functions that are processor independent
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 /* STL Includes */
@@ -18,10 +18,7 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
-#include <Thor/lld/interface/gpio/gpio_detail.hpp>
-#include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
-#include <Thor/lld/interface/gpio/gpio_types.hpp>
-#include <Thor/lld/interface/gpio/gpio_intf.hpp>
+#include <Thor/lld/interface/inc/gpio>
 
 #if defined( THOR_LLD_GPIO )
 namespace Thor::LLD::GPIO

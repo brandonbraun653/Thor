@@ -1,9 +1,9 @@
 include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
 if(${THOR_CHIP} MATCHES "^F446$")
-  set(VARIANT_SRC hw_startup_stm32f446xx.c)
+  set(VARIANT_SRC variant/hw_gpio_register_stm32f446xx.cpp)
 else()
-  message(FATAL_ERROR "Unsupported STM32L4 driver variant for: startup")
+  message(FATAL_ERROR "Unsupported STM32L4 driver variant for: gpio")
 endif()
 
 gen_static_lib_variants(
