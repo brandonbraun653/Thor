@@ -10,7 +10,7 @@ gen_static_lib_variants(
   TARGET
     thor_lld_stm32l4_gpio
   SOURCES
-    hw_gpio_driver.cpp
+    ../../interface/gpio/gpio_common_driver.cpp
     hw_gpio_data.cpp
     ${VARIANT_SRC}
   PRV_LIBRARIES

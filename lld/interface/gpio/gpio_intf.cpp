@@ -669,7 +669,7 @@ namespace Thor::LLD::GPIO
     Luckily ST seems to have made this simple. Each pin
     is directly mapped to a line of the same value.
     -------------------------------------------------*/
-#if defined( STM32L432xx )
+#if defined( STM32L432xx ) || defined( STM32F446xx )
     return static_cast<Chimera::EXTI::EventLine_t>( pin );
 #else
 #pragma error( "Evaluate your processor for EXTI configuration" )

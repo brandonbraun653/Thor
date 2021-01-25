@@ -1,28 +1,26 @@
 /********************************************************************************
  *  File Name:
- *    hw_gpio_driver.cpp
+ *    gpio_common_driver.cpp
  *
  *  Description:
- *    Implements the LLD interface to the STM32L4 series GPIO hardware.
+ *    Common low level driver for the STM32 GPIO. It seems that a lot of devices
+ *    share the same core hardware interface.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/utility>
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/interface/exti/exti_intf.hpp>
-#include <Thor/lld/interface/gpio/gpio_intf.hpp>
-#include <Thor/lld/interface/gpio/gpio_prv_data.hpp>
-#include <Thor/lld/interface/rcc/rcc_intf.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_prj.hpp>
-#include <Thor/lld/stm32l4x/gpio/hw_gpio_types.hpp>
-#include <Thor/lld/stm32l4x/system/hw_sys_driver.hpp>
+#include <Thor/lld/common/cortex-m4/utilities.hpp>
+#include <Thor/lld/interface/inc/gpio>
+#include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/exti>
+#include <Thor/lld/interface/inc/sys>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_GPIO )
+#if defined( THOR_LLD_GPIO ) && ( defined( TARGET_STM32F4 ) || defined( TARGET_STM32L4 ) )
 
 namespace Thor::LLD::GPIO
 {
@@ -31,14 +29,13 @@ namespace Thor::LLD::GPIO
   -------------------------------------------------------------------------------*/
   static Driver s_gpio_drivers[ NUM_GPIO_PERIPHS ];
 
-
-  /*-------------------------------------------------------------------------------
-  Public Functions
-  -------------------------------------------------------------------------------*/
+  /*-------------------------------------------------
+  LLD->HLD Interface Implementation
+  -------------------------------------------------*/
   Chimera::Status_t initialize()
   {
     /*-------------------------------------------------
-    Attach all the expected peripherals to the drivers
+    Attach all the expected mPeripherals to the drivers
     -------------------------------------------------*/
     if ( attachDriverInstances( s_gpio_drivers, ARRAY_COUNT( s_gpio_drivers ) ) )
     {
@@ -64,9 +61,9 @@ namespace Thor::LLD::GPIO
   }
 
 
-  /*-------------------------------------------------------------------------------
+  /*-----------------------------------------------------
   Low Level Driver Implementation
-  -------------------------------------------------------------------------------*/
+  -----------------------------------------------------*/
   Driver::Driver() : mPeriph( nullptr )
   {
   }
@@ -77,9 +74,9 @@ namespace Thor::LLD::GPIO
   }
 
 
-  void Driver::attach( RegisterMap *const peripheral )
+  void Driver::attach( RegisterMap *const mPeripheral )
   {
-    mPeriph = peripheral;
+    mPeriph = mPeripheral;
     clockEnable();
   }
 
@@ -91,7 +88,6 @@ namespace Thor::LLD::GPIO
 
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_GPIO, index );
   }
-
 
   void Driver::clockDisable()
   {
@@ -332,6 +328,7 @@ namespace Thor::LLD::GPIO
 
     EXTI::detach( line );
   }
+
 }    // namespace Thor::LLD::GPIO
 
-#endif /* TARGET_STM32L4 && THOR_DRIVER_GPIO */
+#endif /* THOR_LLD_GPIO && TARGET_XXXXX */

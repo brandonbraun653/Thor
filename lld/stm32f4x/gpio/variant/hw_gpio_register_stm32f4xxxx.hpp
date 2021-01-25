@@ -39,6 +39,10 @@ namespace Thor::LLD::GPIO
   Alternate Functions
   ------------------------------------------------*/
   static constexpr uint8_t AF0_RTC_50Hz   = 0x00; /* RTC_50Hz Alternate Function mapping                       */
+  static constexpr uint8_t AF0_RTC_REFIN  = 0x00;
+  static constexpr uint8_t AF0_NJTRST     = 0x00;
+  static constexpr uint8_t AF0_JTDO       = 0x00;
+  static constexpr uint8_t AF0_JTDI       = 0x00;
   static constexpr uint8_t AF0_MCO        = 0x00; /* MCO (MCO1 and MCO2) Alternate Function mapping            */
   static constexpr uint8_t AF0_TAMPER     = 0x00; /* TAMPER (TAMPER_1 and TAMPER_2) Alternate Function mapping */
   static constexpr uint8_t AF0_SWJ        = 0x00; /* SWJ (SWD and JTAG) Alternate Function mapping             */
@@ -68,6 +72,7 @@ namespace Thor::LLD::GPIO
   static constexpr uint8_t AF6_SPI3       = 0x06; /* SPI3/I2S3 Alternate Function mapping  */
   static constexpr uint8_t AF6_SPI4       = 0x06; /* SPI4 Alternate Function mapping       */
   static constexpr uint8_t AF6_SAI1       = 0x06; /* SAI1 Alternate Function mapping       */
+  static constexpr uint8_t AF6_I2S2       = 0x06;
   static constexpr uint8_t AF6_I2S3       = 0x06;
   static constexpr uint8_t AF7_USART1     = 0x07; /* USART1 Alternate Function mapping     */
   static constexpr uint8_t AF7_USART2     = 0x07; /* USART2 Alternate Function mapping     */
