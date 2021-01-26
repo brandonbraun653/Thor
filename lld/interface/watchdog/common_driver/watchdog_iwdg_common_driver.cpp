@@ -1,25 +1,28 @@
 /********************************************************************************
  *  File Name:
- *    hw_iwdg_driver_stm32f4.cpp
+ *    watchdog_iwdg_common_driver.cpp
  *
  *  Description:
- *    Independent watchdog driver for the STM32F4 series family
+ *    Shared driver to the IWDG peripheral
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* C++ Includes */
-#include <cmath>
+/* STL Includes */
+#include <cstring>
+#include <limits>
 
 /* Chimera Includes */
+#include <Chimera/algorithm>
 #include <Chimera/common>
+#include <Chimera/utility>
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/interface/inc/watchdog>
 #include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/watchdog>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_IWDG )
+#if defined( THOR_LLD_IWDG ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
 
 namespace Thor::LLD::Watchdog
 {
@@ -202,6 +205,8 @@ namespace Thor::LLD::Watchdog
 
     return timeout;
   }
-}    // namespace Thor::LLD::IWDG
 
-#endif /* TARGET_STM32F4 && THOR_DRIVER_WATCHDOG */
+}    // namespace Thor::LLD::Watchdog
+
+
+#endif /* TARGET_STM32L4 && THOR_DRIVER_IWDG */

@@ -3,7 +3,7 @@
  *    usart_intf.hpp
  *
  *  Description:
- *    STM32 Driver UART Interface
+ *    LLD interface to the USART module
  *
  *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
@@ -14,18 +14,17 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/interrupt>
 #include <Chimera/usart>
 #include <Chimera/thread>
 
 /* Thor Includes */
 #include <Thor/lld/common/interrupts/usart_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
+#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
 #include <Thor/lld/interface/serial/serial_intf.hpp>
 #include <Thor/lld/interface/serial/serial_types.hpp>
 #include <Thor/lld/interface/usart/usart_types.hpp>
-#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
-#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
 namespace Thor::LLD::USART
 {

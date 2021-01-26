@@ -1,25 +1,16 @@
-# ====================================================
-# Common
-# ====================================================
-set(LINK_LIBS
-  thor_intf_inc          # Thor public headers
-  chimera_intf_inc       # Chimera public headers
-  aurora_intf_inc        # Aurora public headers
-  Boost::boost      # Boost headers
-  lld_common_inc    # 3rd Party headers
-)
+include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
-# ====================================================
-# Driver Library
-# ====================================================
-function(build_library variant)
-  set(CORE thor_lld_stm32l4_iwdg${variant})
-  add_library(${CORE} STATIC
-    hw_iwdg_driver.cpp
+gen_static_lib_variants(
+  TARGET
+    thor_lld_stm32l4_iwdg
+  SOURCES
     hw_iwdg_data.cpp
-  )
-  target_link_libraries(${CORE} PRIVATE ${LINK_LIBS} prj_device_target prj_build_target${variant})
-  export(TARGETS ${CORE} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${CORE}.cmake")
-endfunction()
-
-add_target_variants(build_library)
+    ${THOR_ROOT}/lld/interface/watchdog/common_driver/watchdog_iwdg_common_driver.cpp
+  PRV_LIBRARIES
+    chimera_intf_inc
+    thor_intf_inc
+    Boost::boost
+    lld_common_inc
+  EXPORT_DIR
+    "${PROJECT_BINARY_DIR}/Thor/lld"
+)

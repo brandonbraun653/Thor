@@ -5,7 +5,7 @@
  *  Description:
  *    STM32 LLD ADC Interface Spec
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -23,7 +23,6 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/adc/adc_detail.hpp>
 #include <Thor/lld/interface/adc/adc_types.hpp>
-#include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
 
 namespace Thor::LLD::ADC
 {

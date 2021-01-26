@@ -155,6 +155,9 @@ namespace Thor::LLD::SPI
   REG_ACCESSOR( RegisterMap, CR1, CR1_CPOL_Msk, CPOL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR1, CR1_CPHA_Msk, CPHA, BIT_ACCESS_RW );
 
+  // Named "DS" for consistency with the common driver. Functionally the same thing.
+  REG_ACCESSOR( RegisterMap, CR1, CR1_DFF_Msk, DS, BIT_ACCESS_RW );
+
   /*------------------------------------------------
   Control Register 2
   ------------------------------------------------*/

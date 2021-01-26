@@ -160,44 +160,4 @@ namespace Thor::LLD::USART
 
 }    // namespace Thor::LLD::USART
 
-
-/*-------------------------------------------------------------------------------
-IRQ Handlers
--------------------------------------------------------------------------------*/
-#if defined( STM32_USART1_PERIPH_AVAILABLE )
-void USART1_IRQHandler( void )
-{
-  using namespace Thor::LLD::USART;
-  s_usart_drivers[ USART1_RESOURCE_INDEX ].IRQHandler();
-}
-#endif /* STM32_USART1_PERIPH_AVAILABLE */
-
-
-#if defined( STM32_USART2_PERIPH_AVAILABLE )
-void USART2_IRQHandler( void )
-{
-  using namespace Thor::LLD::USART;
-  s_usart_drivers[ USART2_RESOURCE_INDEX ].IRQHandler();
-}
-#endif /* STM32_USART2_PERIPH_AVAILABLE */
-
-
-#if defined( STM32_USART3_PERIPH_AVAILABLE )
-void USART3_IRQHandler( void )
-{
-  using namespace Thor::LLD::USART;
-  s_usart_drivers[ USART3_RESOURCE_INDEX ].IRQHandler();
-}
-#endif /* STM32_USART3_PERIPH_AVAILABLE */
-
-
-#if defined( STM32_USART6_PERIPH_AVAILABLE )
-void USART6_IRQHandler( void )
-{
-  using namespace Thor::LLD::USART;
-  s_usart_drivers[ USART6_RESOURCE_INDEX ].IRQHandler();
-}
-#endif /* STM32_USART6_PERIPH_AVAILABLE */
-
-
-#endif /* TARGET_STM32L4 && THOR_LLD_USART */
+#endif /* TARGET_STM32F4 && THOR_LLD_USART */

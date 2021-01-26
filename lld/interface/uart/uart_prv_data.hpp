@@ -23,7 +23,7 @@
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
-#include <Thor/lld/interface/usart/usart_detail.hpp>
+#include <Thor/lld/interface/uart/uart_detail.hpp>
 
 namespace Thor::LLD::UART
 {
@@ -31,15 +31,12 @@ namespace Thor::LLD::UART
   Peripheral Instances:
     Memory mapped structs that allow direct access to the registers of a peripheral
   -------------------------------------------------------------------------------*/
-// #if defined( STM32_UART1_PERIPH_AVAILABLE )
-//   extern RegisterMap *UART1_PERIPH;
-// #endif
-// #if defined( STM32_UART2_PERIPH_AVAILABLE )
-//   extern RegisterMap *UART2_PERIPH;
-// #endif
-// #if defined( STM32_UART3_PERIPH_AVAILABLE )
-//   extern RegisterMap *UART3_PERIPH;
-// #endif
+#if defined( STM32_UART4_PERIPH_AVAILABLE )
+  extern RegisterMap *UART4_PERIPH;
+#endif
+#if defined( STM32_UART5_PERIPH_AVAILABLE )
+  extern RegisterMap *UART5_PERIPH;
+#endif
 
 
   /*-------------------------------------------------------------------------------
@@ -50,9 +47,9 @@ namespace Thor::LLD::UART
   -------------------------------------------------------------------------------*/
   namespace ConfigMap
   {
-    // extern LLD_CONST Reg32_t CharWidth[ static_cast<size_t>( Chimera::Serial::CharWid::NUM_OPTIONS ) ];
-    // extern LLD_CONST Reg32_t Parity[ static_cast<size_t>( Chimera::Serial::Parity::NUM_OPTIONS ) ];
-    // extern LLD_CONST Reg32_t StopBits[ static_cast<size_t>( Chimera::Serial::StopBits::NUM_OPTIONS ) ];
+    extern LLD_CONST Reg32_t CharWidth[ static_cast<size_t>( Chimera::Serial::CharWid::NUM_OPTIONS ) ];
+    extern LLD_CONST Reg32_t Parity[ static_cast<size_t>( Chimera::Serial::Parity::NUM_OPTIONS ) ];
+    extern LLD_CONST Reg32_t StopBits[ static_cast<size_t>( Chimera::Serial::StopBits::NUM_OPTIONS ) ];
   }    // namespace ConfigMap
 
 
@@ -65,9 +62,9 @@ namespace Thor::LLD::UART
   -------------------------------------------------------------------------------*/
   namespace Resource
   {
-    // extern LLD_CONST Reg32_t RXDMASignals[ NUM_UART_PERIPHS ];
-    // extern LLD_CONST Reg32_t TXDMASignals[ NUM_UART_PERIPHS ];
-    // extern LLD_CONST IRQn_Type IRQSignals[ NUM_UART_PERIPHS ];
+    extern LLD_CONST Reg32_t RXDMASignals[ NUM_UART_PERIPHS ];
+    extern LLD_CONST Reg32_t TXDMASignals[ NUM_UART_PERIPHS ];
+    extern LLD_CONST IRQn_Type IRQSignals[ NUM_UART_PERIPHS ];
   }
 }    // namespace Thor::LLD::UART
 

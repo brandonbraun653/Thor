@@ -12,6 +12,15 @@
 #ifndef THOR_HW_USART_PROJECT_HPP
 #define THOR_HW_USART_PROJECT_HPP
 
+/*------------------------------------------------
+All STM32F4 devices
+------------------------------------------------*/
+#include <Thor/lld/stm32f4x/usart/variant/hw_usart_register_stm32f4xxxx.hpp>
+
+
+/*------------------------------------------------
+Chip specific STM32F4 devices
+------------------------------------------------*/
 #if defined( STM32F446xx )
 #include <Thor/lld/stm32f4x/usart/variant/hw_usart_register_stm32f446re.hpp>
 #endif

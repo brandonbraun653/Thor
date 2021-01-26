@@ -5,7 +5,7 @@
  *  Description:
  *    STM32 LLD SPI Interface Spec
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -21,7 +21,6 @@
 #include <Thor/lld/common/interrupts/spi_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/spi/spi_types.hpp>
-#include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
 
 namespace Thor::LLD::SPI
 {
@@ -196,9 +195,12 @@ namespace Thor::LLD::SPI
     friend void(::SPI1_IRQHandler )();
     friend void(::SPI2_IRQHandler )();
     friend void(::SPI3_IRQHandler )();
+    friend void(::SPI4_IRQHandler )();
+    friend void(::SPI5_IRQHandler )();
+    friend void(::SPI6_IRQHandler )();
 
     RegisterMap *mPeriph;
-    size_t resourceIndex; /**< Derived lookup table index for resource access */
+    size_t resourceIndex;
     Chimera::SPI::DriverConfig *periphConfig;
 
     /*------------------------------------------------

@@ -20,8 +20,8 @@
 #include <Thor/lld/stm32f4x/uart/hw_uart_prj.hpp>
 #include <Thor/lld/stm32f4x/uart/hw_uart_types.hpp>
 #elif defined( TARGET_STM32L4 )
-// #include <Thor/lld/stm32l4x/uart/hw_uart_prj.hpp>
-// #include <Thor/lld/stm32l4x/uart/hw_uart_types.hpp>
+#include <Thor/lld/stm32l4x/uart/hw_uart_prj.hpp>
+#include <Thor/lld/stm32l4x/uart/hw_uart_types.hpp>
 #else
 #pragma message( "uart_detail.hpp: Unknown target for LLD" )
 #endif

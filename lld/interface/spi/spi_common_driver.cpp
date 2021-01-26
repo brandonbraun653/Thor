@@ -5,7 +5,7 @@
  *  Description:
  *    Shared low level driver for STM32 SPI peripherals
  *
- *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* STL Includes */
@@ -254,6 +254,7 @@ namespace Thor::LLD::SPI
     /* Configure CR2 */
     SSOE::set( mPeriph, CR2_SSOE );
 
+#if defined( TARGET_STM32L4 )
     /*-------------------------------------------------
     Adjust the FIFO RX threshold based on sizing. If
     SZ == 8Bit, allow RXNE event on 1/4 FIFO lvl, else
@@ -261,7 +262,6 @@ namespace Thor::LLD::SPI
 
     See RM 40.4.9
     -------------------------------------------------*/
-#if defined( TARGET_STM32L4 )
     if ( periphConfig->HWInit.dataSize == Chimera::SPI::DataSize::SZ_8BIT )
     {
       /* FIFO must hit 1/4 level before RXNE event */

@@ -18,8 +18,8 @@ add_subdirectory("spi")
 add_subdirectory("startup")
 add_subdirectory("system")
 add_subdirectory("timer")
-# add_subdirectory("uart")
-# add_subdirectory("usart")
+add_subdirectory("uart")
+add_subdirectory("usart")
 # add_subdirectory("usb")
 add_subdirectory("wwdg")
 
@@ -45,8 +45,8 @@ gen_intf_lib_variants(
     thor_lld_stm32f4_startup
     thor_lld_stm32f4_system
     thor_lld_stm32f4_timer
-    # thor_lld_stm32f4_uart
-    # thor_lld_stm32f4_usart
+    thor_lld_stm32f4_uart
+    thor_lld_stm32f4_usart
     # thor_lld_stm32f4_usb
     thor_lld_stm32f4_wwdg
   EXPORT_DIR

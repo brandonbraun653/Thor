@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    hw_wwdg_driver_stm32f4.cpp
+ *    watchdog_wwdg_common_driver.cpp
  *
  *  Description:
- *    Window watchdog driver for the STM32F4 series chips
+ *    Shared driver to the WWDG peripheral
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* STL Includes */
@@ -21,14 +21,11 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
-#include <Thor/lld/interface/watchdog/watchdog_prv_data.hpp>
-#include <Thor/lld/interface/watchdog/watchdog_intf.hpp>
-#include <Thor/lld/interface/watchdog/watchdog_types.hpp>
-#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_prj.hpp>
-#include <Thor/lld/stm32f4x/wwdg/hw_wwdg_types.hpp>
+#include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/watchdog>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_WWDG )
+
+#if defined( THOR_LLD_WWDG ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
 
 namespace Thor::LLD::Watchdog
 {

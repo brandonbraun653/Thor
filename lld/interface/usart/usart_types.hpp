@@ -5,7 +5,7 @@
  *  Description:
  *    Common USART types used in Thor Drivers
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -38,6 +38,22 @@ namespace Thor::LLD::USART
   /*-------------------------------------------------------------------------------
   Enumerations
   -------------------------------------------------------------------------------*/
+  enum class ISRSignal : uint8_t
+  {
+    TRANSMIT_DATA_REG_EMPTY,
+    CLEAR_TO_SEND,
+    TRANSMIT_COMPLETE,
+    RECEIVED_DATA_READY,
+    OVERRUN_ERROR,
+    LINE_IDLE,
+    PARITY_ERROR,
+    BREAK_FLAG,
+    NOISE_FLAG,
+
+    NUM_OPTIONS,
+    INVALID
+  };
+
   namespace StateMachine
   {
     enum TX : Chimera::Status_t

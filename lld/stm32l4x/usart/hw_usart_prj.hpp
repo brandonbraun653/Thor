@@ -11,6 +11,7 @@
 #pragma once
 #ifndef THOR_HW_USART_PROJECT_HPP
 #define THOR_HW_USART_PROJECT_HPP
+
 /*------------------------------------------------
 All STM32L4 devices
 ------------------------------------------------*/

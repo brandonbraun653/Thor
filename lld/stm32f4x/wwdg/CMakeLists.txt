@@ -4,10 +4,9 @@ gen_static_lib_variants(
   TARGET
     thor_lld_stm32f4_wwdg
   SOURCES
-    hw_wwdg_driver.cpp
     hw_wwdg_data.cpp
+    ${THOR_ROOT}/lld/interface/watchdog/common_driver/watchdog_wwdg_common_driver.cpp
   PRV_LIBRARIES
-    aurora_intf_inc
     chimera_intf_inc
     thor_intf_inc
     Boost::boost

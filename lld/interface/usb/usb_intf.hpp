@@ -5,7 +5,7 @@
  *  Description:
  *    STM32 LLD USB Interface Spec
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -21,7 +21,6 @@
 #include <Thor/lld/common/interrupts/usb_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/usb/usb_types.hpp>
-#include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
 
 namespace Thor::LLD::USB
 {
