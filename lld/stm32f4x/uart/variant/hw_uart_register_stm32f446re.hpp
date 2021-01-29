@@ -23,6 +23,7 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
+#define THOR_LLD_HAS_UART
 #define STM32_UART4_PERIPH_AVAILABLE
 #define STM32_UART5_PERIPH_AVAILABLE
 

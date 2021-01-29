@@ -1,6 +1,6 @@
 /********************************************************************************
  *  File Name:
- *    usart_interrupt_vectors.hpp
+ *    uart_interrupt_vectors.hpp
  *
  *  Description:
  *    Provides ISR routine function prototypes that are common between all STM32
@@ -11,8 +11,8 @@
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_USART_INTERRUPT_VECTORS_HPP
-#define THOR_USART_INTERRUPT_VECTORS_HPP
+#ifndef THOR_UART_INTERRUPT_VECTORS_HPP
+#define THOR_UART_INTERRUPT_VECTORS_HPP
 
 #if defined( __cplusplus )
 extern "C"
@@ -26,4 +26,4 @@ extern "C"
 }
 #endif
 
-#endif /* !THOR_USART_INTERRUPT_VECTORS_HPP */
+#endif /* !THOR_UART_INTERRUPT_VECTORS_HPP */

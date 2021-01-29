@@ -155,6 +155,7 @@ namespace Thor::LLD::UART
 
       default:
         RT_HARD_ASSERT( false );
+        return false;
         break;
     };
   }

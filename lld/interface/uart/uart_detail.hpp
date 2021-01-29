@@ -20,8 +20,7 @@
 #include <Thor/lld/stm32f4x/uart/hw_uart_prj.hpp>
 #include <Thor/lld/stm32f4x/uart/hw_uart_types.hpp>
 #elif defined( TARGET_STM32L4 )
-#include <Thor/lld/stm32l4x/uart/hw_uart_prj.hpp>
-#include <Thor/lld/stm32l4x/uart/hw_uart_types.hpp>
+// No UARTs on this device except Low Power, which currently isn't supported.
 #else
 #pragma message( "uart_detail.hpp: Unknown target for LLD" )
 #endif

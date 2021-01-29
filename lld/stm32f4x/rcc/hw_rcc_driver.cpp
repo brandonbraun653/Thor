@@ -127,12 +127,25 @@ namespace Thor::LLD::RCC
         return getSystemClock();
         break;
 
+      case Chimera::Clock::Bus::HCLK:
+        return getHCLKFreq();
+        break;
+
+      case Chimera::Clock::Bus::PCLK1:
+        return getPCLK1Freq();
+        break;
+
+      case Chimera::Clock::Bus::PCLK2:
+        return getPCLK2Freq();
+        break;
+
       case Chimera::Clock::Bus::HSE:
       case Chimera::Clock::Bus::LSE:
         return getExtOscFreq( bus );
         break;
 
       default:
+        RT_HARD_ASSERT( false );
         return INVALID_CLOCK;
         break;
     }

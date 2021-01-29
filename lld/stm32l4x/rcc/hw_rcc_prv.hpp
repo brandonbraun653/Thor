@@ -35,6 +35,22 @@ namespace Thor::LLD::RCC
   bool updatePLL( const uint32_t mask, OscillatorSettings &config );
   bool configureOscillators( OscillatorSettings &cfg );
   bool configureClocks( DerivedClockSettings &cfg );
-}  // namespace Thor::LLD::RCC
 
-#endif  /* !THOR_LLD_RCC_PRIVATE_HPP */
+  void clearResetReason();
+  Chimera::System::ResetEvent getResetReason();
+  size_t getHSIFreq();
+  size_t getHSEFreq();
+  void setHSEFreq( const size_t freq );
+  size_t getLSEFreq();
+  void setLSEFreq( const size_t freq );
+  size_t getLSIFreq();
+  size_t getMSIFreq();
+  size_t getPLLCLKFreq( const uint32_t mask );
+  size_t getSysClockFreq();
+  size_t getHCLKFreq();
+  size_t getPCLK1Freq();
+  size_t getPCLK2Freq();
+
+}    // namespace Thor::LLD::RCC
+
+#endif /* !THOR_LLD_RCC_PRIVATE_HPP */

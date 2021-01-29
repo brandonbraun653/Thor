@@ -4,8 +4,9 @@ gen_static_lib_variants(
   TARGET
     thor_lld_stm32f4_spi
   SOURCES
-    ${THOR_ROOT}/lld/interface/spi/shared/spi_common_driver.cpp
+    ${THOR_ROOT}/lld/interface/spi/common_driver/spi_common_driver.cpp
     hw_spi_data.cpp
+    hw_spi_driver.cpp
   PRV_LIBRARIES
     chimera_intf_inc
     thor_intf_inc

@@ -13,7 +13,6 @@
 #define THOR_INTERRUPT_INCLUDES
 
 #include <Thor/hld/interrupt/hld_interrupt_driver.hpp>
-#include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/hld/interrupt/hld_interrupt_types.hpp>
 
 #endif /* !THOR_INTERRUPT_INCLUDES */

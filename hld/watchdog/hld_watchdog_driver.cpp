@@ -156,7 +156,7 @@ namespace Thor::Watchdog
       WLLD::NumPrescalers
     );
 
-    uint32_t prescalerRegVal = ILLD::RegisterPrescalers[ idx ];
+    uint32_t prescalerRegVal = Thor::LLD::WWDG::RegisterPrescalers[ idx ];
     uint32_t reloadRegVal = Thor::LLD::Watchdog::calculateReload(
       timeout_mS,
       wwdgClockFreq,
@@ -320,30 +320,30 @@ namespace Thor::Watchdog
     /* clang-format off */
     uint32_t idx = Thor::LLD::Watchdog::calculatePrescaler(
       timeout_mS,
-      ILLD::PERIPH_CLOCK_FREQ_HZ,
-      ILLD::COUNTER_MIN,
-      ILLD::COUNTER_MAX,
-      ILLD::DecimalPrescalers,
-      ILLD::RegisterPrescalers,
-      ILLD::NumPrescalers
+      Thor::LLD::IWDG::PERIPH_CLOCK_FREQ_HZ,
+      Thor::LLD::IWDG::COUNTER_MIN,
+      Thor::LLD::IWDG::COUNTER_MAX,
+      Thor::LLD::IWDG::DecimalPrescalers,
+      Thor::LLD::IWDG::RegisterPrescalers,
+      Thor::LLD::IWDG::NumPrescalers
     );
 
-    uint32_t prescalerRegVal = ILLD::RegisterPrescalers[ idx ];
+    uint32_t prescalerRegVal = Thor::LLD::IWDG::RegisterPrescalers[ idx ];
 
     uint32_t reloadRegVal = Thor::LLD::Watchdog::calculateReload(
       timeout_mS,
-      ILLD::PERIPH_CLOCK_FREQ_HZ,
-      ILLD::COUNTER_MIN,
-      ILLD::COUNTER_MAX,
-      ILLD::DecimalPrescalers[ idx ]
+      Thor::LLD::IWDG::PERIPH_CLOCK_FREQ_HZ,
+      Thor::LLD::IWDG::COUNTER_MIN,
+      Thor::LLD::IWDG::COUNTER_MAX,
+      Thor::LLD::IWDG::DecimalPrescalers[ idx ]
     );
     /* clang-format on */
 
     /*-------------------------------------------------
     Ensure the requested timeout can be achieved
     -------------------------------------------------*/
-    if ( !( ( 1000 * timeout_mS ) >= hwDriver->getMinTimeout( ILLD::DecimalPrescalers[ idx ] ) ) ||
-         !( ( 1000 * timeout_mS ) <= hwDriver->getMaxTimeout( ILLD::DecimalPrescalers[ idx ] ) ) )
+    if ( !( ( 1000 * timeout_mS ) >= hwDriver->getMinTimeout( Thor::LLD::IWDG::DecimalPrescalers[ idx ] ) ) ||
+         !( ( 1000 * timeout_mS ) <= hwDriver->getMaxTimeout( Thor::LLD::IWDG::DecimalPrescalers[ idx ] ) ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }

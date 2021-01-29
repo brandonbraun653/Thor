@@ -54,6 +54,29 @@ namespace Thor::LLD::RCC
     }
   }
 
+  size_t getBusFrequency( const Chimera::Clock::Bus bus )
+  {
+    switch ( bus )
+    {
+      case Chimera::Clock::Bus::HSI16:
+        return 16000000u;
+        break;
+
+      case Chimera::Clock::Bus::LSI:
+        return 32000u;
+        break;
+
+      case Chimera::Clock::Bus::HSE:
+      case Chimera::Clock::Bus::LSE:
+        return getExtOscFreq( bus );
+        break;
+
+      default:
+        return getCoreClockCtrl()->getClockFrequency( bus );
+        break;
+    }
+  }
+
 
   void clearResetReason()
   {

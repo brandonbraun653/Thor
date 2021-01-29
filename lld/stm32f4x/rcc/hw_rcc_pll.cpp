@@ -105,6 +105,32 @@ namespace Thor::LLD::RCC
     }
 
     /*-------------------------------------------------
+    Remap the P setting to the register value
+    -------------------------------------------------*/
+    switch( cfg.PLLCore.P )
+    {
+      case 2:
+        cfg.PLLCore.P = 0;
+        break;
+
+      case 4:
+        cfg.PLLCore.P = 1;
+        break;
+
+      case 6:
+        cfg.PLLCore.P = 2;
+        break;
+
+      case 8:
+        cfg.PLLCore.P = 3;
+        break;
+
+      default:
+        RT_HARD_ASSERT( false );
+        break;
+    };
+
+    /*-------------------------------------------------
     Configure the desired settings
     -------------------------------------------------*/
     PLLM::set( RCC1_PERIPH, cfg.PLLCore.M << PLLCFGR_PLLM_Pos );
@@ -330,6 +356,8 @@ namespace Thor::LLD::RCC
     {
       // Drives USB and SDIO, which require 48 MHz clock or lower.
       RT_HARD_ASSERT( X_out <= 48000000 );
+
+      // No need to convert. The register mapping works as is.
     }
 
     /*-------------------------------------------------

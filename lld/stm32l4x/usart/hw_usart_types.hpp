@@ -166,6 +166,7 @@ namespace Thor::LLD::USART
   REG_ACCESSOR( RegisterMap, CR1, CR1_OVER8_Msk, OVER8, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR1, CR1_PCE_Msk, PCE, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR1, CR1_PS_Msk, PS, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_PEIE_Msk, PEIE, BIT_ACCESS_RW );
 
   /*-------------------------------------------------
   Control Register 2
@@ -191,6 +192,11 @@ namespace Thor::LLD::USART
   REG_ACCESSOR( RegisterMap, ISR, ISR_Msk, ISR, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, ISR, ISR_TC_Msk, TC, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, ISR, ISR_RXNE_Msk, RXNE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_TXE_Msk, TXE, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_IDLE_Msk, IDLE, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_ORE_Msk, ORE, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_FE_Msk, FE, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, ISR, ISR_PE_Msk, PE, BIT_ACCESS_R );
 
   /*-------------------------------------------------
   Interrupt Flag Clear Register

@@ -20,7 +20,6 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/interface/usb/usb_intf.hpp>
 #include <Thor/lld/interface/usb/usb_prv_data.hpp>

@@ -20,9 +20,6 @@
 /* Thor Includes */
 #include <Thor/lld/common/interrupts/usart_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
-#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
-#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
-#include <Thor/lld/interface/serial/serial_intf.hpp>
 #include <Thor/lld/interface/serial/serial_types.hpp>
 #include <Thor/lld/interface/usart/usart_types.hpp>
 

@@ -5,7 +5,7 @@
  *  Description:
  *    STM32L4 Types for the POWER Peripheral
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -22,6 +22,23 @@
 
 namespace Thor::LLD::PWR
 {
+  /*-------------------------------------------------------------------------------
+  Enumerations
+  -------------------------------------------------------------------------------*/
+  enum class VoltageScale : uint8_t
+  {
+    SCALE_1,  /**< High power/freq */
+    SCALE_2,  /**< Med power/freq */
+    SCALE_3,  /**< Low power/freq */
+
+    NUM_OPTIONS,
+    INVALID
+  };
+
+
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
   struct RegisterMap
   {
     volatile Reg32_t CR1;   /*!< PWR power control register 1,        Address offset: 0x00 */

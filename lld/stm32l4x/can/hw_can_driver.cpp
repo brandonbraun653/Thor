@@ -29,7 +29,6 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/lld/interface/can/can_intf.hpp>
 #include <Thor/lld/interface/can/can_prv_data.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>

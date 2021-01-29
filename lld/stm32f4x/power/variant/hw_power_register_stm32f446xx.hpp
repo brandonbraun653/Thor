@@ -18,7 +18,7 @@
 /* Driver Includes */
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f446xx.hpp>
 
-#define STM32_PWR1_PERIPH_AVAILABLE
+#define STM32_PWR_PERIPH_AVAILABLE
 
 namespace Thor::LLD::PWR
 {

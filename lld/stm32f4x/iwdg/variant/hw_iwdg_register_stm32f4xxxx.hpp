@@ -25,8 +25,6 @@
 
 namespace Thor::LLD::IWDG
 {
-
-
   static constexpr Reg32_t IWDG1_BASE_ADDR      = Thor::System::MemoryMap::IWDG_PERIPH_START_ADDRESS;
   static constexpr Reg32_t PERIPH_CLOCK_FREQ_HZ = 32000u;
   static constexpr uint32_t COUNTER_MIN         = 0;
@@ -67,6 +65,11 @@ namespace Thor::LLD::IWDG
   static constexpr Reg32_t PR_PRESCALE_256 = 6;
   static constexpr Reg32_t PR_MIN_PRESCALE = PR_PRESCALE_4;
   static constexpr Reg32_t PR_MAX_PRESCALE = PR_PRESCALE_256;
+
+  static const uint32_t NumPrescalers                      = 7;
+  static const uint32_t DecimalPrescalers[ NumPrescalers ] = { 4, 8, 16, 32, 64, 128, 256 };
+  static const Reg32_t RegisterPrescalers[ NumPrescalers ] = { PR_PRESCALE_4,  PR_PRESCALE_8,   PR_PRESCALE_16, PR_PRESCALE_32,
+                                                               PR_PRESCALE_64, PR_PRESCALE_128, PR_PRESCALE_256 };
 
   /*-------------------------------------------------
   IWDG Reload Register

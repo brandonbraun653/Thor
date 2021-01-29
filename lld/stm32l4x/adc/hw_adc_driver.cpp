@@ -19,7 +19,6 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/hld/interrupt/hld_interrupt_definitions.hpp>
 #include <Thor/lld/interface/adc/adc_intf.hpp>
 #include <Thor/lld/interface/adc/adc_prv_data.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>

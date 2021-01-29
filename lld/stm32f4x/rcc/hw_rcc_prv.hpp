@@ -36,6 +36,8 @@ namespace Thor::LLD::RCC
 
   bool enableHSI();
   void disableHSI();
+  bool enableLSI();
+  void disableLSI();
 
   Chimera::Status_t calcPLLCoreSettings( const size_t inFreq, const size_t outFreq, ClockTreeInit &config );
   Chimera::Status_t calculatePLLOuputOscillator( const PLLOut channel, const size_t inFreq, const size_t outFreq, ClockTreeInit &config );
@@ -50,6 +52,9 @@ namespace Thor::LLD::RCC
   Runtime Bus Frequency Calculation
   -------------------------------------------------*/
   size_t getSystemClock();
+  size_t getHCLKFreq();
+  size_t getPCLK1Freq();
+  size_t getPCLK2Freq();
   size_t getPLLClock( const PLLOut which );
 
   /*-------------------------------------------------

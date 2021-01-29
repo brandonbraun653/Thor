@@ -57,13 +57,13 @@ namespace Thor::LLD::USART
 
   void prjWriteDataRegister( RegisterMap *const periph, const uint16_t data )
   {
-    periph->DR = data & DR_DR_Msk;
+    periph->TDR = data & TDR_TDR_Msk;
   }
 
 
   uint16_t prjReadDataRegister( RegisterMap *const periph )
   {
-    return periph->DR & DR_DR_Msk;
+    return periph->RDR & RDR_RDR_Msk;
   }
 
 
@@ -155,6 +155,7 @@ namespace Thor::LLD::USART
 
       default:
         RT_HARD_ASSERT( false );
+        return false;
         break;
     };
   }

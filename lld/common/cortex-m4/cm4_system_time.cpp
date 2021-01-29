@@ -9,6 +9,7 @@
  *******************************************************************************/
 
 /* Project Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/cortex-m4/register.hpp>
 #include <Thor/lld/common/cortex-m4/system_time.hpp>
 #include <Thor/lld/interface/rcc/rcc_detail.hpp>

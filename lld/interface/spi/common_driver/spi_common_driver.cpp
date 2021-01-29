@@ -22,6 +22,7 @@
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/spi>
 #include <Thor/lld/interface/inc/interrupt>
+#include <Thor/lld/interface/spi/common_driver/spi_common_intf.hpp>
 
 
 #if defined( THOR_LLD_SPI ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
@@ -175,7 +176,7 @@ namespace Thor::LLD::SPI
     auto periphAddr  = reinterpret_cast<std::uintptr_t>( mPeriph );
     auto clockFreq   = systemClock->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SPI, periphAddr );
 
-    if ( clockFreq == std::numeric_limits<size_t>::max() )
+    if ( clockFreq == Thor::LLD::RCC::INVALID_CLOCK )
     {
       return Chimera::Status::FAIL;
     }
@@ -254,25 +255,8 @@ namespace Thor::LLD::SPI
     /* Configure CR2 */
     SSOE::set( mPeriph, CR2_SSOE );
 
-#if defined( TARGET_STM32L4 )
-    /*-------------------------------------------------
-    Adjust the FIFO RX threshold based on sizing. If
-    SZ == 8Bit, allow RXNE event on 1/4 FIFO lvl, else
-    allow RXNE event on 1/2 FIFO lvl. FIFO has 4 lvls.
-
-    See RM 40.4.9
-    -------------------------------------------------*/
-    if ( periphConfig->HWInit.dataSize == Chimera::SPI::DataSize::SZ_8BIT )
-    {
-      /* FIFO must hit 1/4 level before RXNE event */
-      FRXTH::set( mPeriph, CR2_FRXTH );
-    }
-    else
-    {
-      /* FIFO must hit 1/2 level before RXNE event */
-      FRXTH::clear( mPeriph, CR2_FRXTH );
-    }
-#endif /* TARGET_STM32L4 */
+    /* Set up the transfer width */
+    prjConfigureTransferWidth( mPeriph, periphConfig->HWInit.dataSize );
 
     /*-------------------------------------------------
     Enable the SPI peripheral
@@ -335,11 +319,7 @@ namespace Thor::LLD::SPI
     }
 
     /*------------------------------------------------
-    Do any flags indicate an ongoing transfer or error?
-    ------------------------------------------------*/
-
-    /*------------------------------------------------
-    Disable all interrupts
+    Disable all SPI interrupts for this peripheral
     ------------------------------------------------*/
     Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
     CR2_ALL::clear( mPeriph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
@@ -374,9 +354,10 @@ namespace Thor::LLD::SPI
       }
 
       /*------------------------------------------------
-      The STM32L4 SPI FIFOs implement data packing, so even though the
-      bit configuration above is set, the DR has to be accessed as in
-      either 8 bit or 16 bit modes. Otherwise extra data can be TX'd.
+      Most STM32 SPI FIFOs implement data packing, so
+      even though the bit width has been set, the DR has
+      to be accessed appropriately, else unwanted data
+      will be transmitted.
       ------------------------------------------------*/
       if ( bytesPerTransfer == 1 )
       {
@@ -389,25 +370,28 @@ namespace Thor::LLD::SPI
         *dr      = txData;
       }
 
+      /*-------------------------------------------------
+      Always read the data register to prevent overruns.
+      Every TX generates an RX.
+      -------------------------------------------------*/
+#if defined( EMBEDDED )
+      /*-------------------------------------------------
+      You can get stuck here in the debugger if single
+      stepping and register auto-refresh is occurring.
+      That will read the DR and clear RXNE.
+      -------------------------------------------------*/
+      while ( !RXNE::get( mPeriph ) )
+      {
+        continue;
+      }
+#endif
+      rxData = mPeriph->DR;
+
       /*------------------------------------------------
-      Wait for the hw receive buffer to indicate data has
-      arrived, then read it out.
+      Copy in the data to the user, if they care
       ------------------------------------------------*/
       if ( rxBufferPtr )
       {
-#if defined( EMBEDDED )
-        while ( !RXNE::get( mPeriph ) )
-        {
-          /*-------------------------------------------------
-          You can get stuck here in the debugger if single
-          stepping and register auto-refresh is occurring.
-          That will read the DR and clear RXNE.
-          -------------------------------------------------*/
-          continue;
-        }
-#endif
-        rxData = mPeriph->DR;
-
         if ( ( bytesTransfered + 1u ) == bufferSize )
         {
           memcpy( rxBufferPtr + bytesTransfered, &rxData, 1u );
@@ -430,7 +414,9 @@ namespace Thor::LLD::SPI
     ------------------------------------------------*/
 #if defined( EMBEDDED )
     while ( BSY::get( mPeriph ) )
+    {
       continue;
+    }
 #endif
 
     return Chimera::Status::OK;
@@ -471,13 +457,8 @@ namespace Thor::LLD::SPI
     Data transfers must have 8-bit or 16-bit aligned access.
     Currently hardcoded to 8 for development...
     ------------------------------------------------*/
-    // Access the data register as 8-bit aligned
     auto dr = reinterpret_cast<volatile uint8_t *>( &mPeriph->DR );
-
-#if defined( TARGET_STM32L4 )
-    // Set the RX FIFO threshold to generate an RXNE event when 8-bits are received
-    FRXTH::set( mPeriph, Configuration::FIFOThreshold::RXNE_ON_8BIT );
-#endif /* TARGET_STM32L4 */
+    prjConfigureTransferWidth( mPeriph, Chimera::SPI::DataSize::SZ_8BIT );
 
     /*------------------------------------------------
     Start the transfer

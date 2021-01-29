@@ -40,28 +40,10 @@ namespace Thor::LLD::GPIO
   static constexpr RIndex_t GPIOA_RESOURCE_INDEX = 0;
   static constexpr RIndex_t GPIOB_RESOURCE_INDEX = 1;
   static constexpr RIndex_t GPIOC_RESOURCE_INDEX = 2;
-  static constexpr RIndex_t GPIOD_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
-  static constexpr RIndex_t GPIOE_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
-  static constexpr RIndex_t GPIOF_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
-  static constexpr RIndex_t GPIOG_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
-  static constexpr RIndex_t GPIOH_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
-  static constexpr RIndex_t GPIOI_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
-  static constexpr RIndex_t GPIOJ_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
-  static constexpr RIndex_t GPIOK_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
-  static constexpr RIndex_t GPIOL_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
 
   static constexpr uint8_t GPIOA_NUM_PINS = 16;
   static constexpr uint8_t GPIOB_NUM_PINS = 7;
   static constexpr uint8_t GPIOC_NUM_PINS = 2;
-  static constexpr uint8_t GPIOD_NUM_PINS = 0;
-  static constexpr uint8_t GPIOE_NUM_PINS = 0;
-  static constexpr uint8_t GPIOF_NUM_PINS = 0;
-  static constexpr uint8_t GPIOG_NUM_PINS = 0;
-  static constexpr uint8_t GPIOH_NUM_PINS = 0;
-  static constexpr uint8_t GPIOI_NUM_PINS = 0;
-  static constexpr uint8_t GPIOJ_NUM_PINS = 0;
-  static constexpr uint8_t GPIOK_NUM_PINS = 0;
-  static constexpr uint8_t GPIOL_NUM_PINS = 0;
 
   static constexpr uint8_t PRJ_MAX_PORTS         = NUM_GPIO_PERIPHS;
   static constexpr uint8_t PRJ_MAX_PINS          = NUM_GPIO_PINS;

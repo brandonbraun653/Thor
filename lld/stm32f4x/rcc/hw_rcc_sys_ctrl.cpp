@@ -67,6 +67,10 @@ namespace Thor::LLD::RCC
         enableHSI();
         break;
 
+      case Chimera::Clock::Bus::LSI:
+        enableLSI();
+        break;
+
       default:
         RT_HARD_ASSERT( false );
         break;
@@ -94,8 +98,8 @@ namespace Thor::LLD::RCC
     /*------------------------------------------------
     Configure the system clocks to max performance
     ------------------------------------------------*/
-    constexpr size_t hsiClkIn     = 16000000;            // 24 MHz
-    constexpr size_t targetSysClk = 180000000;           // 80 MHz
+    constexpr size_t hsiClkIn     = 16000000;            // 16 MHz
+    constexpr size_t targetSysClk = 180000000;           // 180 MHz
     constexpr size_t targetVcoClk = 2 * targetSysClk;    // 260 MHz
 
     Chimera::Status_t cfgResult = Chimera::Status::OK;
@@ -135,6 +139,12 @@ namespace Thor::LLD::RCC
     now that the high speed clock has been configured.
     -------------------------------------------------*/
     FLASH::setLatency( FLASH::LATENCY_AUTO_DETECT );
+
+    /*-------------------------------------------------
+    Make sure the rest of the system knows about the
+    new clock frequency.
+    -------------------------------------------------*/
+    CortexM4::Clock::updateCoreClockCache( sys_clk );
 
     return cfgResult;
   }

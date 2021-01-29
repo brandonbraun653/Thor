@@ -66,7 +66,7 @@ namespace Thor::System
     /*------------------------------------------------
     LLD Specific Initialization
     ------------------------------------------------*/
-    Thor::LLD::INT::setPriorityGrouping( Thor::Interrupt::SYSTEM_NVIC_PRIORITY_GROUPING );
+    Thor::LLD::INT::setPriorityGrouping( Thor::LLD::INT::SYSTEM_NVIC_PRIORITY_GROUPING );
 
 #if defined( THOR_LLD_DES )
     Thor::LLD::DES::initialize();

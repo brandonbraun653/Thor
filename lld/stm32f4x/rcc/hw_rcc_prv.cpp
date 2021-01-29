@@ -24,7 +24,7 @@ namespace Thor::LLD::RCC
   -------------------------------------------------------------------------------*/
   bool enableHSI()
   {
-    bool enabled = HSION::get( RCC1_PERIPH ) & HSIRDY::get( RCC1_PERIPH );
+    bool enabled = HSION::get( RCC1_PERIPH ) && HSIRDY::get( RCC1_PERIPH );
 
     if ( !enabled )
     {
@@ -45,6 +45,35 @@ namespace Thor::LLD::RCC
   {
     HSION::clear( RCC1_PERIPH, CR_HSION );
     while ( HSIRDY::get( RCC1_PERIPH ) )
+    {
+      continue;
+    }
+  }
+
+
+  bool enableLSI()
+  {
+    bool enabled = LSION::get( RCC1_PERIPH ) && LSIRDY::get( RCC1_PERIPH );
+
+    if ( !enabled )
+    {
+      LSION::set( RCC1_PERIPH, CSR_LSION );
+      while ( !LSIRDY::get( RCC1_PERIPH ) )
+      {
+        continue;
+      }
+
+      enabled = true;
+    }
+
+    return enabled;
+  }
+
+
+  void disableLSI()
+  {
+    LSION::clear( RCC1_PERIPH, CSR_LSION );
+    while ( LSIRDY::get( RCC1_PERIPH ) )
     {
       continue;
     }
@@ -258,6 +287,141 @@ namespace Thor::LLD::RCC
   }
 
 
+  size_t getHCLKFreq()
+  {
+    size_t hclkDiv                 = 1;
+    size_t systemClock             = getSystemClock();
+    Reg32_t ahbPrescalerConfigBits = HPRE::get( RCC1_PERIPH );
+
+    switch ( ahbPrescalerConfigBits )
+    {
+      case CFGR_HPRE_DIV1:
+        hclkDiv = 1;
+        break;
+
+      case CFGR_HPRE_DIV2:
+        hclkDiv = 2;
+        break;
+
+      case CFGR_HPRE_DIV4:
+        hclkDiv = 4;
+        break;
+
+      case CFGR_HPRE_DIV8:
+        hclkDiv = 8;
+        break;
+
+      case CFGR_HPRE_DIV16:
+        hclkDiv = 16;
+        break;
+
+      case CFGR_HPRE_DIV64:
+        hclkDiv = 64;
+        break;
+
+      case CFGR_HPRE_DIV128:
+        hclkDiv = 128;
+        break;
+
+      case CFGR_HPRE_DIV256:
+        hclkDiv = 256;
+        break;
+
+      case CFGR_HPRE_DIV512:
+        hclkDiv = 512;
+        break;
+
+      default:
+        hclkDiv = 1;
+        break;
+    }
+
+    return systemClock / hclkDiv;
+  }
+
+
+  size_t getPCLK1Freq()
+  {
+    /*------------------------------------------------
+    According to the clock tree diagram, PCLK1 is derived
+    from HCLK bus using the APB1 divisor.
+    ------------------------------------------------*/
+    size_t pclk1Div               = 1;
+    size_t hclkFreq               = getHCLKFreq();
+    size_t apbPrescalerConfigBits = PPRE1::get( RCC1_PERIPH );
+
+    switch ( apbPrescalerConfigBits )
+    {
+      case CFGR_PPRE1_DIV1:
+        pclk1Div = 1;
+        break;
+
+      case CFGR_PPRE1_DIV2:
+        pclk1Div = 2;
+        break;
+
+      case CFGR_PPRE1_DIV4:
+        pclk1Div = 4;
+        break;
+
+      case CFGR_PPRE1_DIV8:
+        pclk1Div = 8;
+        break;
+
+      case CFGR_PPRE1_DIV16:
+        pclk1Div = 16;
+        break;
+
+      default:
+        pclk1Div = 1;
+        break;
+    }
+
+    return hclkFreq / pclk1Div;
+  }
+
+
+  size_t getPCLK2Freq()
+  {
+    /*------------------------------------------------
+    According to the clock tree diagram, PCLK1 is derived
+    from HCLK bus using the APB1 divisor.
+    ------------------------------------------------*/
+    size_t pclk2Div               = 1;
+    size_t hclkFreq               = getHCLKFreq();
+    size_t apbPrescalerConfigBits = PPRE2::get( RCC1_PERIPH );
+
+    switch ( apbPrescalerConfigBits )
+    {
+      case CFGR_PPRE2_DIV1:
+        pclk2Div = 1;
+        break;
+
+      case CFGR_PPRE2_DIV2:
+        pclk2Div = 2;
+        break;
+
+      case CFGR_PPRE2_DIV4:
+        pclk2Div = 4;
+        break;
+
+      case CFGR_PPRE2_DIV8:
+        pclk2Div = 8;
+        break;
+
+      case CFGR_PPRE2_DIV16:
+        pclk2Div = 16;
+        break;
+
+      default:
+        pclk2Div = 1;
+        break;
+    }
+
+    return hclkFreq / pclk2Div;
+  }
+
+
   size_t getPLLClock( const PLLOut which )
   {
     using namespace Chimera::Clock;
@@ -294,6 +458,29 @@ namespace Thor::LLD::RCC
     if ( which == PLLOut::P )
     {
       uint32_t p = PLLP::get( RCC1_PERIPH ) >> PLLCFGR_PLLP_Pos;
+      switch( p )
+      {
+        case 0:
+          p = 2;
+          break;
+
+        case 1:
+          p = 4;
+          break;
+
+        case 2:
+          p = 6;
+          break;
+
+        case 3:
+          p = 8;
+          break;
+
+        default:
+          RT_HARD_ASSERT( false );
+          break;
+      };
+
       RT_HARD_ASSERT( p );
       return vco_freq / p;
     }
@@ -339,7 +526,7 @@ namespace Thor::LLD::RCC
   {
     if ( cfg.enabled.hsi )
     {
-      enableHSI();
+      return enableHSI();
     }
     else
     {
@@ -377,19 +564,11 @@ namespace Thor::LLD::RCC
   {
     if ( cfg.enabled.lsi )
     {
-      LSION::set( RCC1_PERIPH, CSR_LSION );
-      while ( !LSIRDY::get( RCC1_PERIPH ) )
-      {
-        continue;
-      }
+      return enableLSI();
     }
     else
     {
-      LSION::clear( RCC1_PERIPH, CSR_LSION );
-      while ( LSIRDY::get( RCC1_PERIPH ) )
-      {
-        continue;
-      }
+      disableLSI();
     }
 
     return true;

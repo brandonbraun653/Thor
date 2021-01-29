@@ -20,6 +20,7 @@
 
 /* Thor Includes */
 #include <Thor/lld/common/types.hpp>
+#include <Thor/lld/interface/power/power_detail.hpp>
 
 namespace Thor::LLD::PWR
 {

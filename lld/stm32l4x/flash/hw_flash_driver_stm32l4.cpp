@@ -48,28 +48,6 @@ namespace Thor::LLD::FLASH
     }
   }
 
-  /*-------------------------------------------------
-  Private LLD Function Implementation
-  -------------------------------------------------*/
-  bool isFLASH( const std::uintptr_t address )
-  {
-    bool result = false;
-
-    for ( auto &val : periphAddressList )
-    {
-      if ( val == address )
-      {
-        result = true;
-      }
-    }
-
-    return result;
-  }
-
-  /*-----------------------------------------------------
-  Low Level Driver Implementation
-  -----------------------------------------------------*/
-
 }    // namespace Thor::LLD::FLASH
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_FLASH */

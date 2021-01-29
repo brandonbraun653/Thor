@@ -258,12 +258,12 @@ namespace Thor::LLD::USART
   static constexpr Reg32_t BRR_Msk = 0x0000FFFF;
   static constexpr Reg32_t BRR_Rst = 0x00000000;
 
-  static constexpr uint32_t BRR_DIV_FRACTION_Pos = ( 0U );
-  static constexpr uint32_t BRR_DIV_FRACTION_Msk = ( 0xFUL << BRR_DIV_FRACTION_Pos );
-  static constexpr uint32_t BRR_DIV_FRACTION     = BRR_DIV_FRACTION_Msk;
+  static constexpr uint32_t BRR_DIV_Fraction_Pos = ( 0U );
+  static constexpr uint32_t BRR_DIV_Fraction_Msk = ( 0xFUL << BRR_DIV_Fraction_Pos );
+  static constexpr uint32_t BRR_DIV_Fraction     = BRR_DIV_Fraction_Msk;
   static constexpr uint32_t BRR_DIV_Mantissa_Pos = ( 4U );
-  static constexpr uint32_t BRR_DIV_MANTISSA_Msk = ( 0xFFFUL << BRR_DIV_Mantissa_Pos );
-  static constexpr uint32_t BRR_DIV_MANTISSA     = BRR_DIV_MANTISSA_Msk;
+  static constexpr uint32_t BRR_DIV_Mantissa_Msk = ( 0xFFFUL << BRR_DIV_Mantissa_Pos );
+  static constexpr uint32_t BRR_DIV_Mantissa     = BRR_DIV_Mantissa_Msk;
 
   /******************  Bit definition for GTPR register  ******************/
   static constexpr Reg32_t GTPR_Msk = 0x0000FFFF;
