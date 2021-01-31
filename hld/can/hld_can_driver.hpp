@@ -36,7 +36,7 @@ namespace Thor::CAN
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Driver : public Chimera::Threading::LockableCRTP<Driver>
+  class Driver : public Chimera::Threading::Lockable<Driver>
   {
   public:
     /*------------------------------------------------
@@ -79,8 +79,8 @@ namespace Thor::CAN
     void ProcessISREvent_StatusChange();
 
   private:
-    friend Chimera::Threading::LockableCRTP<Driver>;
-    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+    friend Chimera::Threading::Lockable<Driver>;
+
 
     /*-------------------------------------------------
     Cached configuration settings

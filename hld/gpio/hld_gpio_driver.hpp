@@ -36,7 +36,7 @@ namespace Thor::GPIO
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Driver : public Chimera::Threading::LockableCRTP<Driver>
+  class Driver : public Chimera::Threading::Lockable<Driver>
   {
   public:
     Driver();
@@ -53,12 +53,12 @@ namespace Thor::GPIO
     Chimera::EXTI::EventLine_t getInterruptLine();
 
   private:
-    friend Chimera::Threading::LockableCRTP<Driver>;
+    friend Chimera::Threading::Lockable<Driver>;
 
     Chimera::GPIO::Alternate mAlternate;
     Chimera::GPIO::Pin mPin;
     Chimera::GPIO::Port mPort;
-    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+
   };
 }    // namespace Thor::GPIO
 

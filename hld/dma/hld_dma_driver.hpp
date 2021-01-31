@@ -25,7 +25,7 @@ namespace Thor::DMA
   Chimera::Status_t initialize();
 
 #if 0
-  class DMAClass : public Chimera::Threading::LockableCRTP<DMAClass>
+  class DMAClass : public Chimera::Threading::Lockable<DMAClass>
   {
   public:
     ~DMAClass();
@@ -70,8 +70,8 @@ namespace Thor::DMA
     Chimera::Status_t removeListener( const size_t stream, const size_t registrationID, const size_t timeout );
 
   private:
-    friend Chimera::Threading::LockableCRTP<DMAClass>;
-    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+    friend Chimera::Threading::Lockable<DMAClass>;
+
 
     DMAClass();
 

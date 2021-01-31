@@ -48,7 +48,7 @@ namespace Thor::LLD::DMA
   /**
    *  Models a stream within a DMA controller peripheral (channel)
    */
-  class StreamController : virtual public IStream, public Chimera::Threading::LockableCRTP<StreamController>
+  class StreamController : virtual public IStream, public Chimera::Threading::Lockable<StreamController>
   {
   public:
     StreamController();
@@ -106,8 +106,8 @@ namespace Thor::LLD::DMA
     void IRQHandler( const uint8_t channel );
 
   private:
-    friend Chimera::Threading::LockableCRTP<StreamController>;
-    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+    friend Chimera::Threading::Lockable<StreamController>;
+
 
     StreamX *stream;
     RegisterMap *parent;

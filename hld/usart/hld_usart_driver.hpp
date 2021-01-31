@@ -46,7 +46,7 @@ namespace Thor::USART
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Driver : public Chimera::Threading::LockableCRTP<Driver>
+  class Driver : public Chimera::Threading::Lockable<Driver>
   {
   public:
     Driver();
@@ -76,8 +76,8 @@ namespace Thor::USART
     void postISRProcessing();
 
   private:
-    friend Chimera::Threading::LockableCRTP<Driver>;
-    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+    friend Chimera::Threading::Lockable<Driver>;
+
 
     Chimera::GPIO::Driver_rPtr rxPin;
     Chimera::GPIO::Driver_rPtr txPin;

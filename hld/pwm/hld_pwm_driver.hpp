@@ -40,7 +40,7 @@ namespace Thor::PWM
   Classes
   -------------------------------------------------------------------------------*/
   #if 0
-  class Driver : public Chimera::Threading::LockableCRTP<Driver>
+  class Driver : public Chimera::Threading::Lockable<Driver>
   {
   public:
     /*------------------------------------------------
@@ -59,8 +59,8 @@ namespace Thor::PWM
     Chimera::Status_t setPolarity( const Chimera::Timer::PWM::Polarity polarity ) final override;
 
   private:
-    friend Chimera::Threading::LockableCRTP<Driver>;
-    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+    friend Chimera::Threading::Lockable<Driver>;
+
 
     bool mInitialized;
     Chimera::Timer::Peripheral mPeripheral;

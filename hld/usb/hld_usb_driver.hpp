@@ -42,7 +42,7 @@ namespace Thor::USB
    *  Methods here at a minimum implement the interface specified in Chimera.
    *  Inheritance is avoided to minimize cost of virtual function lookup table.
    */
-  class Driver : public Chimera::Threading::LockableCRTP<Driver>
+  class Driver : public Chimera::Threading::Lockable<Driver>
   {
   public:
     Driver();
@@ -55,8 +55,8 @@ namespace Thor::USB
     void close();
 
   private:
-    friend Chimera::Threading::LockableCRTP<Driver>;
-    Chimera::Threading::RecursiveTimedMutex mClsMutex;
+    friend Chimera::Threading::Lockable<Driver>;
+
 
     Chimera::USB::Channel mChannel;
   };
