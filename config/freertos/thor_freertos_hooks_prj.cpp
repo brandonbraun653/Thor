@@ -8,6 +8,9 @@
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
+/* Aurora Logging */
+#include <Aurora/logging>
+
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/thread>

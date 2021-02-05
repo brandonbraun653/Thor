@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    hw_exti_driver.cpp
+ *    exti_common_driver.cpp
  *
  *  Description:
- *    EXTI driver for the STM32L4 series chips
+ *    EXTI common driver for STM32 chips
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 /* Aurora Includes */
@@ -17,14 +17,15 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/cfg>
+#include <Thor/lld/interface/inc/exti>
+#include <Thor/lld/interface/inc/rcc>
+
+#if defined( CORTEX_M4 )
 #include <Thor/lld/common/cortex-m4/interrupts.hpp>
-#include <Thor/lld/interface/exti/exti_prv_data.hpp>
-#include <Thor/lld/interface/exti/exti_intf.hpp>
-#include <Thor/lld/stm32l4x/exti/hw_exti_prj.hpp>
-#include <Thor/lld/stm32l4x/exti/hw_exti_types.hpp>
-
-// GPIO: get exti line for config?
-
+#else
+#pragma error( "Unsupported core for EXTI" )
+#endif
 
 /*-------------------------------------------------------------------------------
 Macros
@@ -33,12 +34,17 @@ Macros
 #define LISTENER_OFFSET( X )    ( ( X <= 31 ) ? 0 : 32 )
 #define LISTENER_BIT_SET( X )   ( 1u << ( static_cast<Reg32_t>( X ) - LISTENER_OFFSET( X ) ) )
 
-#define IMR_PTR( listenerId )   ( ( listenerId <= 31 ) ? &EXTI1_PERIPH->IMR1 : &EXTI1_PERIPH->IMR2 )
-#define EMR_PTR( listenerId )   ( ( listenerId <= 31 ) ? &EXTI1_PERIPH->EMR1 : &EXTI1_PERIPH->EMR2 )
-#define RTSR_PTR( listenerId )  ( ( listenerId <= 31 ) ? &EXTI1_PERIPH->RTSR1 : &EXTI1_PERIPH->RTSR2 )
-#define FTSR_PTR( listenerId )  ( ( listenerId <= 31 ) ? &EXTI1_PERIPH->FTSR1 : &EXTI1_PERIPH->FTSR2 )
-#define PR_PTR( listenerId )    ( ( listenerId <= 31 ) ? &EXTI1_PERIPH->PR1 : &EXTI1_PERIPH->PR2 )
-#define SWIER_PTR( listenerId ) ( ( listenerId <= 31 ) ? &EXTI1_PERIPH->SWIER1 : &EXTI1_PERIPH->SWIER2 )
+#define IMR_PTR( listenerId )   ( &EXTI1_PERIPH->IMR1 )
+#define EMR_PTR( listenerId )   ( &EXTI1_PERIPH->EMR1 )
+#define RTSR_PTR( listenerId )  ( &EXTI1_PERIPH->RTSR1 )
+#define FTSR_PTR( listenerId )  ( &EXTI1_PERIPH->FTSR1 )
+#define PR_PTR( listenerId )    ( &EXTI1_PERIPH->PR1 )
+#define SWIER_PTR( listenerId ) ( &EXTI1_PERIPH->SWIER1 )
+/* clang-format on */
+
+#if defined( TARGET_STM32L4 )
+#pragma error( "Need to add the additional exti port. There are two.")
+#endif
 
 namespace Thor::LLD::EXTI
 {
@@ -73,8 +79,12 @@ namespace Thor::LLD::EXTI
     Reset the cache and disable the hardware interrupts
     -------------------------------------------------*/
     auto result = Chimera::Status::OK;
-    for( Chimera::EXTI::EventLine_t x = 0; x < NUM_EXTI_LINES; x++ )
+    for ( Chimera::EXTI::EventLine_t x = 0; x < NUM_EXTI_LINES; x++ )
     {
+      auto irq = static_cast<IRQn_Type>( Config::lineConfig[ x ].NVIC_IRQNumber );
+      Thor::LLD::INT::disableIRQ( irq );
+      *PR_PTR( listener ) = LISTENER_BIT_SET( x );
+
       result |= detach( x );
     }
 
@@ -94,10 +104,11 @@ namespace Thor::LLD::EXTI
     Reset all the listeners
     -------------------------------------------------*/
     auto result = Chimera::Status::OK;
-    for( Chimera::EXTI::EventLine_t x = 0; x < NUM_EXTI_LINES; x++ )
+    for ( Chimera::EXTI::EventLine_t x = 0; x < NUM_EXTI_LINES; x++ )
     {
       auto irq = static_cast<IRQn_Type>( Config::lineConfig[ x ].NVIC_IRQNumber );
       Thor::LLD::INT::disableIRQ( irq );
+      *PR_PTR( listener ) = LISTENER_BIT_SET( x );
 
       result |= detach( x );
     }
@@ -112,14 +123,15 @@ namespace Thor::LLD::EXTI
   }
 
 
-  Chimera::Status_t attach( const Chimera::EXTI::EventLine_t listener, const Chimera::EXTI::EdgeTrigger edge, Chimera::Function::vGeneric callback )
+  Chimera::Status_t attach( const Chimera::EXTI::EventLine_t listener, const Chimera::EXTI::EdgeTrigger edge,
+                            Chimera::Function::vGeneric callback )
   {
     using namespace Chimera::EXTI;
 
     /*-------------------------------------------------
     Argument Checks
     -------------------------------------------------*/
-    if( !( listener < NUM_EXTI_LINES ) || !( edge < EdgeTrigger::NUM_OPTIONS ) || !callback )
+    if ( !( listener < NUM_EXTI_LINES ) || !( edge < EdgeTrigger::NUM_OPTIONS ) || !callback )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
@@ -127,7 +139,7 @@ namespace Thor::LLD::EXTI
     /*-------------------------------------------------
     Support checks
     -------------------------------------------------*/
-    if( !Config::lineConfig[ listener ].supported )
+    if ( !Config::lineConfig[ listener ].supported )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -135,7 +147,7 @@ namespace Thor::LLD::EXTI
     /*-------------------------------------------------
     Last check. Is this already configured?
     -------------------------------------------------*/
-    if( s_Callbacks[ listener ] )
+    if ( s_Callbacks[ listener ] )
     {
       return Chimera::Status::NOT_AVAILABLE;
     }
@@ -146,10 +158,10 @@ namespace Thor::LLD::EXTI
     s_mtx.lock();
 
     // Configure interrupt mask register: Masked (0) == disabled, Un-Masked (1) == enabled
-    *IMR_PTR(listener) |= LISTENER_BIT_SET( listener );
+    *IMR_PTR( listener ) |= LISTENER_BIT_SET( listener );
 
     // Configure the edge selection
-    switch( edge )
+    switch ( edge )
     {
       case EdgeTrigger::RISING_EDGE:
         *RTSR_PTR( listener ) |= LISTENER_BIT_SET( listener );
@@ -175,6 +187,9 @@ namespace Thor::LLD::EXTI
     // Cache the callback for later use
     s_Callbacks[ listener ] = callback;
 
+    // Clear any possible pending events
+    *PR_PTR( listener ) = LISTENER_BIT_SET( listener );
+
     // Enable the NVIC controller's interrupt
     auto irq = static_cast<IRQn_Type>( Config::lineConfig[ listener ].NVIC_IRQNumber );
 
@@ -188,7 +203,7 @@ namespace Thor::LLD::EXTI
 
   Chimera::Status_t detach( const Chimera::EXTI::EventLine_t listener )
   {
-    if( !( listener < NUM_EXTI_LINES ) )
+    if ( !( listener < NUM_EXTI_LINES ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
@@ -206,7 +221,7 @@ namespace Thor::LLD::EXTI
     *FTSR_PTR( listener ) &= ~LISTENER_BIT_SET( listener );
 
     // Clear any possible pending events
-    *PR_PTR( listener ) |= LISTENER_BIT_SET( listener );
+    *PR_PTR( listener ) = LISTENER_BIT_SET( listener );
 
     // Don't disable the NVIC just yet cause other signals share interrupt lines
 
@@ -225,7 +240,7 @@ namespace Thor::LLD::EXTI
     /*-------------------------------------------------
     Input Protection
     -------------------------------------------------*/
-    if( !( listener < NUM_EXTI_LINES ) )
+    if ( !( listener < NUM_EXTI_LINES ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
@@ -238,10 +253,10 @@ namespace Thor::LLD::EXTI
     effective again.
     -------------------------------------------------*/
     const auto listener_bit = LISTENER_BIT_SET( listener );
-    const auto swier_set = ( *SWIER_PTR( listener ) & listener_bit );
-    const auto pr_set = ( *PR_PTR( listener ) & listener_bit );
+    const auto swier_set    = ( *SWIER_PTR( listener ) & listener_bit );
+    const auto pr_set       = ( *PR_PTR( listener ) & listener_bit );
 
-    if( swier_set && !pr_set )
+    if ( swier_set && !pr_set )
     {
       *PR_PTR( listener ) |= listener_bit;
     }
@@ -257,23 +272,37 @@ namespace Thor::LLD::EXTI
 
   Chimera::Status_t disable( const Chimera::EXTI::EventLine_t listener )
   {
-    if( !( listener < NUM_EXTI_LINES ) )
+    /*-------------------------------------------------
+    Input Protection
+    -------------------------------------------------*/
+    if ( !( listener < NUM_EXTI_LINES ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
+    /*-------------------------------------------------
+    Disable the ISR and clear any pending events
+    -------------------------------------------------*/
     *IMR_PTR( listener ) &= ~LISTENER_BIT_SET( listener );
+    *PR_PTR( listener ) = LISTENER_BIT_SET( listener );
     return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t enable( const Chimera::EXTI::EventLine_t listener )
   {
-    if( !( listener < NUM_EXTI_LINES ) )
+    /*-------------------------------------------------
+    Input Protection
+    -------------------------------------------------*/
+    if ( !( listener < NUM_EXTI_LINES ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
+    /*-------------------------------------------------
+    Clear any pending events, then enable the ISR
+    -------------------------------------------------*/
+    *PR_PTR( listener ) = LISTENER_BIT_SET( listener );
     *IMR_PTR( listener ) |= LISTENER_BIT_SET( listener );
     return Chimera::Status::OK;
   }
@@ -293,7 +322,7 @@ namespace Thor::LLD::EXTI
     /*-------------------------------------------------
     Input Protection
     -------------------------------------------------*/
-    if( !( listener < 16 ) )
+    if ( !( listener < 16 ) )
     {
       return;
     }
@@ -301,17 +330,21 @@ namespace Thor::LLD::EXTI
     /*-------------------------------------------------
     Acknowledge the event, then invoke the callback
     -------------------------------------------------*/
-    if( *PR_PTR( listener ) & LISTENER_BIT_SET( listener ) )
+    if ( *PR_PTR( listener ) & LISTENER_BIT_SET( listener ) )
     {
-      *PR_PTR( listener ) |= LISTENER_BIT_SET( listener );
+      /*-------------------------------------------------
+      Only set a single bit at a time to prevent possible
+      erroneous clearing of other bits if |= is used.
+      -------------------------------------------------*/
+      *PR_PTR( listener ) = LISTENER_BIT_SET( listener );
 
-      if( s_Callbacks[ listener ])
+      if ( s_Callbacks[ listener ] )
       {
-        s_Callbacks[ listener ]( reinterpret_cast<void*>( &listener ) );
+        s_Callbacks[ listener ]( reinterpret_cast<void *>( &listener ) );
       }
     }
   }
-}  // namespace Thor::LLD::EXTI
+}    // namespace Thor::LLD::EXTI
 
 
 #if defined( __cplusplus )
@@ -321,7 +354,7 @@ extern "C"
 
   /**
    *  Handle GPIO external interrupts from Pin-0 on all ports. Only
-   *  a single pin can be configured to triger this ISR.
+   *  a single pin can be configured to trigger this ISR.
    */
   void EXTI0_IRQHandler()
   {
@@ -331,7 +364,7 @@ extern "C"
 
   /**
    *  Handle GPIO external interrupts from Pin-1 on all ports. Only
-   *  a single pin can be configured to triger this ISR.
+   *  a single pin can be configured to trigger this ISR.
    */
   void EXTI1_IRQHandler()
   {
@@ -341,7 +374,7 @@ extern "C"
 
   /**
    *  Handle GPIO external interrupts from Pin-2 on all ports. Only
-   *  a single pin can be configured to triger this ISR.
+   *  a single pin can be configured to trigger this ISR.
    */
   void EXTI2_IRQHandler()
   {
@@ -351,7 +384,7 @@ extern "C"
 
   /**
    *  Handle GPIO external interrupts from Pin-3 on all ports. Only
-   *  a single pin can be configured to triger this ISR.
+   *  a single pin can be configured to trigger this ISR.
    */
   void EXTI3_IRQHandler()
   {
@@ -361,7 +394,7 @@ extern "C"
 
   /**
    *  Handle GPIO external interrupts from Pin-4 on all ports. Only
-   *  a single pin can be configured to triger this ISR.
+   *  a single pin can be configured to trigger this ISR.
    */
   void EXTI4_IRQHandler()
   {
@@ -371,11 +404,11 @@ extern "C"
 
   /**
    *  Handle GPIO external interrupts from Pins 5-9 on all ports.
-   *  Multiple pins can be configured to triger this ISR.
+   *  Multiple pins can be configured to trigger this ISR.
    */
   void EXTI9_5_IRQHandler()
   {
-    for( auto x = 5; x < 10; x++ )
+    for ( auto x = 5; x < 10; x++ )
     {
       Thor::LLD::EXTI::IRQHandlerLine0_15( x );
     }
@@ -384,11 +417,11 @@ extern "C"
 
   /**
    *  Handle GPIO external interrupts from Pins 10-15 on all ports.
-   *  Multiple pins can be configured to triger this ISR.
+   *  Multiple pins can be configured to trigger this ISR.
    */
   void EXTI15_10_IRQHandler()
   {
-    for( auto x = 10; x < 16; x++ )
+    for ( auto x = 10; x < 16; x++ )
     {
       Thor::LLD::EXTI::IRQHandlerLine0_15( x );
     }

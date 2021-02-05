@@ -5,8 +5,8 @@ gen_static_lib_variants(
     thor_lld_stm32l4_system
   SOURCES
     hw_sys_startup.cpp
-    hw_sys_driver.cpp
     hw_sys_data.cpp
+    ${THOR_ROOT}/lld/interface/system/common_driver/sys_common_driver.cpp
   PRV_LIBRARIES
     aurora_intf_inc
     chimera_intf_inc

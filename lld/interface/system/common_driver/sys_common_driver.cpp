@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    sys_config.cpp
+ *    sys_common_driver.cpp
  *
  *  Description:
- *    Insert Description
+ *    Common driver for the SYSCFG peripheral
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 /* Chimera Includes */
@@ -13,8 +13,11 @@
 #include <Chimera/utility>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/inc/gpio>
 #include <Thor/lld/interface/inc/sys>
+
+#if defined( TARGET_STM32F4 ) || defined( TARGET_STM32L4 )
 
 namespace Thor::LLD::SYS
 {
@@ -37,7 +40,7 @@ namespace Thor::LLD::SYS
     Thor::LLD::SYS::clockEnable();
 
     /*-------------------------------------------------
-    Select the register to operate on. Convenietly,
+    Select the register to operate on. Conveniently,
     there are four pins per register, so use that to
     create an index.
     -------------------------------------------------*/
@@ -61,7 +64,7 @@ namespace Thor::LLD::SYS
     Calculate the offset and mask
     -------------------------------------------------*/
     const uint32_t BaseMask    = 0x7;
-    const uint32_t BitShift    = cfgRegIdx * PinsPerRegister;
+    const uint32_t BitShift    = ( pin % PinsPerRegister ) * PinsPerRegister;
     const uint32_t ShiftedMask = BaseMask << BitShift;
 
     /*-------------------------------------------------
@@ -74,3 +77,5 @@ namespace Thor::LLD::SYS
   }
 
 }    // namespace Thor::LLD::SYS
+
+#endif  /* TARGET_STM32F4 || TARGET_STM32L4 */
