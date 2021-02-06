@@ -113,6 +113,8 @@ namespace Chimera::GPIO
   {
 #if defined( THOR_HLD_GPIO )
     mDriver = ::HLD::getDriver( pinInit.port, pinInit.pin );
+
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->init( pinInit );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -124,6 +126,8 @@ namespace Chimera::GPIO
   {
 #if defined( THOR_HLD_GPIO )
     mDriver = ::HLD::getDriver( port, pin );
+
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->init( port, pin );
 #else
     return Chimera::Status::NOT_SUPPORTED;

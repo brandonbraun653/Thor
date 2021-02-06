@@ -13,6 +13,7 @@
 #include <memory>
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/usart>
 

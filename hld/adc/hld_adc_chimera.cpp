@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/adc>
 
@@ -132,36 +133,42 @@ namespace Chimera::ADC
 
   void Driver::close()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->close();
   }
 
 
   void Driver::setPowerState( const bool state )
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->setPowerState( state );
   }
 
 
   Chimera::ADC::Sample_t Driver::sampleChannel( const Chimera::ADC::Channel ch )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleChannel( ch );
   }
 
 
   Chimera::ADC::Sample_t Driver::sampleSensor( const Chimera::ADC::Sensor sensor )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleSensor( sensor );
   }
 
 
   Chimera::Status_t Driver::groupConfig( const Chimera::ADC::GroupInit &cfg )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->groupConfig( cfg );
   }
 
 
   Chimera::Status_t Driver::groupStartSample( const Chimera::ADC::SampleGroup grp )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->groupStartSample( grp );
   }
 
@@ -169,6 +176,7 @@ namespace Chimera::ADC
   Chimera::Status_t Driver::groupGetSample( const Chimera::ADC::SampleGroup grp, Chimera::ADC::Sample_t *const out,
                                             const size_t len )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->groupGetSample( grp, out, len );
   }
 
@@ -176,12 +184,14 @@ namespace Chimera::ADC
   Chimera::Status_t Driver::groupSetDMABuffer( const Chimera::ADC::SampleGroup grp, Chimera::ADC::Sample_t *const out,
                                                const size_t len )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->groupSetDMABuffer( grp, out, len );
   }
 
 
   Chimera::Status_t Driver::setSampleTime( const Chimera::ADC::Channel ch, const size_t cycles )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->setSampleTime( ch, cycles );
   }
 
@@ -189,24 +199,28 @@ namespace Chimera::ADC
   void Driver::setWatchdogThreshold( const Chimera::ADC::Watchdog wd, const Chimera::ADC::Sample_t low,
                                      const Chimera::ADC::Sample_t high )
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->setWatchdogThreshold( wd, low, high );
   }
 
 
   void Driver::onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb )
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->onInterrupt( bmSignal, cb );
   }
 
 
   float Driver::sampleToVoltage( const Chimera::ADC::Sample_t sample )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleToVoltage( sample );
   }
 
 
   float Driver::sampleToJunctionTemperature( const Sample_t sample )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleToJunctionTemperature( sample );
   }
 
@@ -216,30 +230,35 @@ namespace Chimera::ADC
   -------------------------------------------------*/
   void Driver::lock()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lock();
   }
 
 
   void Driver::lockFromISR()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lockFromISR();
   }
 
 
   bool Driver::try_lock_for( const size_t timeout )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->try_lock_for( timeout );
   }
 
 
   void Driver::unlock()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlock();
   }
 
 
   void Driver::unlockFromISR()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlockFromISR();
   }
 }    // namespace Chimera::ADC

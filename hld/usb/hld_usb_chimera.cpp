@@ -2,13 +2,14 @@
  *  File Name:
  *    hld_usb_chimera.cpp
  *
- *	 Description:
+ *  Description:
  *    Implementation of Chimera USB driver hooks
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/usb>
 
@@ -62,7 +63,7 @@ namespace Chimera::USB::Backend
   Chimera::USB::Driver_rPtr getDriver( const Channel ch )
   {
     auto idx = ::LLD::getResourceIndex( ch );
-    if( idx < NUM_DRIVERS )
+    if ( idx < NUM_DRIVERS )
     {
       return &s_raw_driver[ idx ];
     }
@@ -71,7 +72,7 @@ namespace Chimera::USB::Backend
       return nullptr;
     }
   }
-#endif  // THOR_HLD_USB
+#endif    // THOR_HLD_USB
 
   Chimera::Status_t registerDriver( Chimera::USB::Backend::DriverConfig &registry )
   {
@@ -111,6 +112,7 @@ namespace Chimera::USB
   Chimera::Status_t Driver::open( const PeriphConfig &cfg )
   {
     mDriver = reinterpret_cast<void *>( ::HLD::getDriver( cfg.channel ) );
+    RT_HARD_ASSERT( mDriver );
 
     if ( mDriver )
     {
@@ -125,6 +127,7 @@ namespace Chimera::USB
 
   void Driver::close()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->close();
   }
 
@@ -134,30 +137,35 @@ namespace Chimera::USB
   -------------------------------------------------*/
   void Driver::lock()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lock();
   }
 
 
   void Driver::lockFromISR()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lockFromISR();
   }
 
 
   bool Driver::try_lock_for( const size_t timeout )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->try_lock_for( timeout );
   }
 
 
   void Driver::unlock()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlock();
   }
 
 
   void Driver::unlockFromISR()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlockFromISR();
   }
 }    // namespace Chimera::USB

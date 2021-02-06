@@ -5,10 +5,11 @@
  *  Description:
  *    CAN hooks into the Chimera driver
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/can>
 
@@ -124,42 +125,49 @@ namespace Chimera::CAN
 
   Chimera::Status_t Driver::close()
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->close();
   }
 
 
   Chimera::CAN::CANStatus Driver::getStatus()
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->getStatus();
   }
 
 
   Chimera::Status_t Driver::send( const Chimera::CAN::BasicFrame &frame )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->send( frame );
   }
 
 
   Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->receive( frame );
   }
 
 
   Chimera::Status_t Driver::filter( const Chimera::CAN::Filter *const list, const size_t size )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->filter( list, size );
   }
 
 
   Chimera::Status_t Driver::flush( Chimera::CAN::BufferType buffer )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->flush( buffer );
   }
 
 
   size_t Driver::available()
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->available();
   }
 
@@ -170,12 +178,14 @@ namespace Chimera::CAN
   Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
                                               size_t &registrationID )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->registerListener( listener, timeout, registrationID );
   }
 
 
   Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->removeListener( registrationID, timeout );
   }
 
@@ -184,6 +194,7 @@ namespace Chimera::CAN
   -------------------------------------------------*/
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->await( event, timeout );
   }
 
@@ -191,6 +202,7 @@ namespace Chimera::CAN
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
                                    const size_t timeout )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->await( event, notifier, timeout );
   }
 
@@ -200,30 +212,35 @@ namespace Chimera::CAN
   -------------------------------------------------*/
   void Driver::lock()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lock();
   }
 
 
   void Driver::lockFromISR()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lockFromISR();
   }
 
 
   bool Driver::try_lock_for( const size_t timeout )
   {
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->try_lock_for( timeout );
   }
 
 
   void Driver::unlock()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlock();
   }
 
 
   void Driver::unlockFromISR()
   {
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlockFromISR();
   }
 }    // namespace Chimera::CAN

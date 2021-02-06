@@ -5,7 +5,7 @@
  *  Description:
  *    Implements the custom driver variant of the Thor USART interface.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -20,6 +20,7 @@
 #include <Aurora/constants>
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/event>
 #include <Chimera/interrupt>
 #include <Chimera/thread>
@@ -141,6 +142,7 @@ namespace Thor::USART
     }
     else
     {
+      RT_HARD_ASSERT( false );
       return nullptr;
     }
   }

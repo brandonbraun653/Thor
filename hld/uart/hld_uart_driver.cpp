@@ -5,13 +5,14 @@
  *  Description:
  *    Implements the custom driver variant of the Thor UART interface.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Aurora Includes */
 #include <Aurora/constants>
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/common>
 
 /* Thor Includes */
@@ -78,6 +79,8 @@ namespace Thor::UART
 
   Chimera::UART::Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
   {
+    // Currently not supported. Make sure it's not used.
+    RT_HARD_ASSERT( false );
     return nullptr;
   }
 

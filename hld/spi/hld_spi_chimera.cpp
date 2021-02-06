@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/spi>
 
@@ -132,6 +133,8 @@ namespace Chimera::SPI
   {
 #if defined( THOR_HLD_SPI )
     mDriver = ::HLD::getDriver( setupStruct.HWInit.hwChannel );
+
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->init( setupStruct );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -142,6 +145,7 @@ namespace Chimera::SPI
   Chimera::SPI::DriverConfig Driver::getInit()
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->getInit();
 #else
     return {};
@@ -152,6 +156,7 @@ namespace Chimera::SPI
   Chimera::Status_t Driver::deInit()
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->deInit();
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -162,6 +167,7 @@ namespace Chimera::SPI
   Chimera::Status_t Driver::setChipSelect( const Chimera::GPIO::State value )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->setChipSelect( value );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -172,6 +178,7 @@ namespace Chimera::SPI
   Chimera::Status_t Driver::setChipSelectControlMode( const Chimera::SPI::CSMode mode )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->setChipSelectControlMode( mode );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -182,6 +189,7 @@ namespace Chimera::SPI
   Chimera::Status_t Driver::writeBytes( const void *const txBuffer, const size_t length )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->writeBytes( txBuffer, length );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -192,6 +200,7 @@ namespace Chimera::SPI
   Chimera::Status_t Driver::readBytes( void *const rxBuffer, const size_t length )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->readBytes( rxBuffer, length );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -202,6 +211,7 @@ namespace Chimera::SPI
   Chimera::Status_t Driver::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->readWriteBytes( txBuffer, rxBuffer, length );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -212,6 +222,7 @@ namespace Chimera::SPI
   Chimera::Status_t Driver::setPeripheralMode( const Chimera::Hardware::PeripheralMode mode )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->setPeripheralMode( mode );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -222,6 +233,7 @@ namespace Chimera::SPI
   Chimera::Status_t Driver::setClockFrequency( const size_t freq, const size_t tolerance )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->setClockFrequency( freq, tolerance );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -232,6 +244,7 @@ namespace Chimera::SPI
   size_t Driver::getClockFrequency()
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->getClockFrequency();
 #else
     return 0;
@@ -246,6 +259,7 @@ namespace Chimera::SPI
                                               size_t &registrationID )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->registerListener( listener, timeout, registrationID );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -256,6 +270,7 @@ namespace Chimera::SPI
   Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->removeListener( registrationID, timeout );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -269,6 +284,7 @@ namespace Chimera::SPI
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->await( event, timeout );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -280,6 +296,7 @@ namespace Chimera::SPI
                                    const size_t timeout )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->await( event, notifier, timeout );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -293,6 +310,7 @@ namespace Chimera::SPI
   void Driver::lock()
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lock();
 #endif
   }
@@ -301,6 +319,7 @@ namespace Chimera::SPI
   void Driver::lockFromISR()
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lockFromISR();
 #endif
   }
@@ -309,6 +328,7 @@ namespace Chimera::SPI
   bool Driver::try_lock_for( const size_t timeout )
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->try_lock_for( timeout );
 #else
     return false;
@@ -319,6 +339,7 @@ namespace Chimera::SPI
   void Driver::unlock()
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlock();
 #endif
   }
@@ -327,6 +348,7 @@ namespace Chimera::SPI
   void Driver::unlockFromISR()
   {
 #if defined( THOR_HLD_SPI )
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlockFromISR();
 #endif
   }

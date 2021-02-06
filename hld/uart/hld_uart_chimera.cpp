@@ -5,13 +5,14 @@
  *	 Description:
  *    Implementation of Chimera UART driver hooks
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* STL Includes */
 #include <memory>
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/uart>
 

@@ -44,8 +44,8 @@ namespace Thor::GPIO
   /*-------------------------------------------------------------------------------
   Variables
   -------------------------------------------------------------------------------*/
-  static size_t s_driver_initialized;                /**< Tracks the module level initialization state */
-  static HLD::Driver hld_driver[ NUM_DRIVERS ];      /**< Driver objects */
+  static size_t s_driver_initialized;           /**< Tracks the module level initialization state */
+  static HLD::Driver hld_driver[ NUM_DRIVERS ]; /**< Driver objects */
 
 
   /*-------------------------------------------------------------------------------
@@ -79,18 +79,6 @@ namespace Thor::GPIO
 
   Chimera::Status_t reset()
   {
-    /*------------------------------------------------
-    Only allow clearing of local data during testing
-    ------------------------------------------------*/
-#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_GPIO )
-    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
-
-    for ( auto x = 0; x < NUM_DRIVERS; x++ )
-    {
-      hld_shared[ x ].reset();
-    }
-#endif
-
     return Chimera::Status::OK;
   }
 
@@ -125,21 +113,29 @@ namespace Thor::GPIO
   Chimera::Status_t Driver::init( const Chimera::GPIO::PinInit &pinInit )
   {
     auto result = Chimera::Status::FAIL;
-    auto idx    = LLD::getPinResourceIndex( pinInit.port, pinInit.pin );
-    auto locked = false;
 
     /*------------------------------------------------
-    Ensure the port enumeration matches up with the LLD
+    Ensure the requested pin is supported
     ------------------------------------------------*/
+    auto idx = LLD::getPinResourceIndex( pinInit.port, pinInit.pin );
     if ( idx < NUM_DRIVERS )
     {
+      result     = Chimera::Status::OK;
       mAlternate = pinInit.alternate;
       mPin       = pinInit.pin;
       mPort      = pinInit.port;
-      result     = setMode( pinInit.drive, pinInit.pull );
 
-      // Ignore the return code because if setMode doesn't work, this won't either
-      setState( pinInit.state );
+      /*-------------------------------------------------
+      Enable the peripheral clock
+      -------------------------------------------------*/
+      auto driver = LLD::getDriver( mPort, mPin );
+      driver->clockEnable();
+
+      /*-------------------------------------------------
+      Configure the basic IO mode settings
+      -------------------------------------------------*/
+      result |= setMode( pinInit.drive, pinInit.pull );
+      result |= setState( pinInit.state );
     }
 
     return result;
