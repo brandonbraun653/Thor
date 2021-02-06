@@ -5,7 +5,7 @@
  *  Description:
  *    SPI driver for Thor
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -163,7 +163,7 @@ namespace Thor::SPI
     }
 
     /*------------------------------------------------
-    Notifiy threads waiting on the transfer complete signal
+    Notify threads waiting on the transfer complete signal
     ------------------------------------------------*/
     awaitTransferComplete.release();
   }
