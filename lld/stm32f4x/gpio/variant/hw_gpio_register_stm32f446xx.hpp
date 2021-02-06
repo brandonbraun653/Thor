@@ -37,7 +37,7 @@ namespace Thor::LLD::GPIO
   Constants
   -------------------------------------------------------------------------------*/
   static constexpr size_t NUM_GPIO_PERIPHS = 8;   /**< Supported GPIO peripherals */
-  static constexpr size_t NUM_GPIO_PINS    = 50;  /**< Max available pins to be configured as GPIO */
+  static constexpr size_t NUM_GPIO_PINS    = 114;  /**< Max available pins to be configured as GPIO */
 
   static constexpr uint32_t GPIOA_RESOURCE_INDEX = 0u;
   static constexpr uint32_t GPIOB_RESOURCE_INDEX = 1u;

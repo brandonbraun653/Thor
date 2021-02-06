@@ -9,6 +9,7 @@
  ********************************************************************************/
 
 /* Chimera Includes */
+#include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/gpio>
 
@@ -133,6 +134,7 @@ namespace Chimera::GPIO
   Chimera::Status_t Driver::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull )
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->setMode( drive, pull );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -143,6 +145,7 @@ namespace Chimera::GPIO
   Chimera::Status_t Driver::setState( const Chimera::GPIO::State state )
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->setState( state );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -153,6 +156,7 @@ namespace Chimera::GPIO
   Chimera::Status_t Driver::getState( Chimera::GPIO::State &state )
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->getState( state );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -163,6 +167,7 @@ namespace Chimera::GPIO
   Chimera::Status_t Driver::toggle()
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->toggle();
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -173,6 +178,7 @@ namespace Chimera::GPIO
   Chimera::Status_t Driver::attachInterrupt( Chimera::Function::vGeneric &func, const Chimera::EXTI::EdgeTrigger trigger )
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->attachInterrupt( func, trigger );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -183,6 +189,7 @@ namespace Chimera::GPIO
   void Driver::detachInterrupt()
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->detachInterrupt();
 #endif
   }
@@ -191,6 +198,7 @@ namespace Chimera::GPIO
   Chimera::EXTI::EventLine_t Driver::getInterruptLine()
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->getInterruptLine();
 #else
     return 0;
@@ -203,6 +211,7 @@ namespace Chimera::GPIO
   void Driver::lock()
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lock();
 #endif
   }
@@ -211,6 +220,7 @@ namespace Chimera::GPIO
   void Driver::lockFromISR()
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lockFromISR();
 #endif
   }
@@ -219,6 +229,7 @@ namespace Chimera::GPIO
   bool Driver::try_lock_for( const size_t timeout )
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->try_lock_for( timeout );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -229,6 +240,7 @@ namespace Chimera::GPIO
   void Driver::unlock()
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlock();
 #endif
   }
@@ -237,6 +249,7 @@ namespace Chimera::GPIO
   void Driver::unlockFromISR()
   {
 #if defined( THOR_HLD_GPIO )
+    RT_HARD_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlockFromISR();
 #endif
   }
