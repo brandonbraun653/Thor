@@ -888,7 +888,7 @@ namespace Thor::LLD::CAN
   /*-------------------------------------------------------------------------------
   Asynchronous Operation
   -------------------------------------------------------------------------------*/
-  Chimera::Threading::BinarySemaphore *Driver::getISRSignal( Chimera::CAN::InterruptType signal )
+  Chimera::Thread::BinarySemaphore *Driver::getISRSignal( Chimera::CAN::InterruptType signal )
   {
     using namespace Chimera::CAN;
     switch ( signal )

@@ -36,7 +36,7 @@ namespace Thor::CAN
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Driver : public Chimera::Threading::Lockable<Driver>
+  class Driver : public Chimera::Thread::Lockable<Driver>
   {
   public:
     /*------------------------------------------------
@@ -67,7 +67,7 @@ namespace Thor::CAN
     Interface: AsyncIO
     -------------------------------------------------*/
     Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout );
-    Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+    Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                              const size_t timeout );
 
     /*-------------------------------------------------
@@ -79,7 +79,7 @@ namespace Thor::CAN
     void ProcessISREvent_StatusChange();
 
   private:
-    friend Chimera::Threading::Lockable<Driver>;
+    friend Chimera::Thread::Lockable<Driver>;
 
 
     /*-------------------------------------------------

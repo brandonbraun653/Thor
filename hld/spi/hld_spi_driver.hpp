@@ -33,7 +33,7 @@ namespace Thor::SPI
   Chimera::Status_t reset();
   Driver_rPtr getDriver( const Chimera::SPI::Channel channel );
 
-  class Driver : public Chimera::Threading::Lockable<Driver>
+  class Driver : public Chimera::Thread::Lockable<Driver>
   {
   public:
     /*------------------------------------------------
@@ -63,7 +63,7 @@ namespace Thor::SPI
     Async IO Interface
     ------------------------------------------------*/
     Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout );
-    Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+    Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                              const size_t timeout );
 
     /*------------------------------------------------
@@ -73,7 +73,7 @@ namespace Thor::SPI
     Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout );
 
   private:
-    friend Chimera::Threading::Lockable<Driver>;
+    friend Chimera::Thread::Lockable<Driver>;
 
 
     Chimera::SPI::DriverConfig config; /**< Configuration used to set up the class */
@@ -83,7 +83,7 @@ namespace Thor::SPI
     Chimera::GPIO::Driver_rPtr CS;     /**< SPI Chip Select gpio pin */
 
     Chimera::Event::ActionableList eventListeners;
-    Chimera::Threading::BinarySemaphore awaitTransferComplete; /**< Internal signal for current transfer completed */
+    Chimera::Thread::BinarySemaphore awaitTransferComplete; /**< Internal signal for current transfer completed */
   };
 
 }    // namespace Thor::SPI

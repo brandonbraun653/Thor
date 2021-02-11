@@ -199,7 +199,7 @@ namespace Chimera::CAN
   }
 
 
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                                    const size_t timeout )
   {
     RT_HARD_ASSERT( mDriver );

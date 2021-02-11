@@ -44,7 +44,7 @@ namespace Thor::UART
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Driver : public Chimera::Threading::Lockable<Driver>
+  class Driver : public Chimera::Thread::Lockable<Driver>
   {
   public:
     Driver();
@@ -68,12 +68,12 @@ namespace Thor::UART
     Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout );
     bool available( size_t *const bytes = nullptr );
     Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout );
-    Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+    Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                              const size_t timeout );
     void postISRProcessing();
 
   private:
-    friend Chimera::Threading::Lockable<Driver>;
+    friend Chimera::Thread::Lockable<Driver>;
 
   };
 }    // namespace Thor::UART

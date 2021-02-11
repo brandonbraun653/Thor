@@ -485,7 +485,7 @@ namespace Thor::LLD::SPI
   }
 
 
-  void Driver::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )
+  void Driver::attachISRWakeup( Chimera::Thread::BinarySemaphore *const wakeup )
   {
     ISRWakeup_external = wakeup;
   }

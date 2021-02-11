@@ -138,7 +138,7 @@ Classes
     {
       return Chimera::Status::NOT_INITIALIZED;
     }
-    else if( !try_lock_for( Chimera::Threading::TIMEOUT_25MS ) )
+    else if( !try_lock_for( Chimera::Thread::TIMEOUT_25MS ) )
     {
       return Chimera::Status::LOCKED;
     }
@@ -200,7 +200,7 @@ Classes
     {
       return Chimera::Status::NOT_INITIALIZED;
     }
-    else if( !try_lock_for( Chimera::Threading::TIMEOUT_25MS ) )
+    else if( !try_lock_for( Chimera::Thread::TIMEOUT_25MS ) )
     {
       return Chimera::Status::LOCKED;
     }

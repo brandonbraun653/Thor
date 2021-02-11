@@ -179,7 +179,7 @@ namespace Thor::UART
     return Chimera::Status::NOT_SUPPORTED;
   }
 
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                                       const size_t timeout )
   {
     return Chimera::Status::NOT_SUPPORTED;

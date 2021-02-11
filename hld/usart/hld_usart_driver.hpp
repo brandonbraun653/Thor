@@ -46,7 +46,7 @@ namespace Thor::USART
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Driver : public Chimera::Threading::Lockable<Driver>
+  class Driver : public Chimera::Thread::Lockable<Driver>
   {
   public:
     Driver();
@@ -71,12 +71,12 @@ namespace Thor::USART
     Chimera::Status_t disableBuffering( const Chimera::Hardware::SubPeripheral periph );
     bool available( size_t *const bytes = nullptr );
     Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout );
-    Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+    Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                              const size_t timeout );
     void postISRProcessing();
 
   private:
-    friend Chimera::Threading::Lockable<Driver>;
+    friend Chimera::Thread::Lockable<Driver>;
 
 
     Chimera::GPIO::Driver_rPtr rxPin;
@@ -87,10 +87,10 @@ namespace Thor::USART
     size_t resourceIndex;             /**< Lookup table index for USART resources */
 
 
-    Chimera::Threading::BinarySemaphore awaitRXComplete;
-    Chimera::Threading::BinarySemaphore awaitTXComplete;
-    Chimera::Threading::BinarySemaphore rxLock;
-    Chimera::Threading::BinarySemaphore txLock;
+    Chimera::Thread::BinarySemaphore awaitRXComplete;
+    Chimera::Thread::BinarySemaphore awaitTXComplete;
+    Chimera::Thread::BinarySemaphore rxLock;
+    Chimera::Thread::BinarySemaphore txLock;
 
     Chimera::Buffer::PeripheralBuffer txBuffers;
     Chimera::Buffer::PeripheralBuffer rxBuffers;

@@ -253,9 +253,9 @@ namespace Thor::LLD::CAN
      *  the event outside of the limited ISR context.
      *
      *  @param[in]  signal        Which ISR signal to get the semaphore for
-     *  @return Chimera::Threading::BinarySemaphore *
+     *  @return Chimera::Thread::BinarySemaphore *
      */
-    Chimera::Threading::BinarySemaphore *getISRSignal( Chimera::CAN::InterruptType signal );
+    Chimera::Thread::BinarySemaphore *getISRSignal( Chimera::CAN::InterruptType signal );
 
     /**
      *  Gets any information that was posted in relation to the last
@@ -335,7 +335,7 @@ namespace Thor::LLD::CAN
     ISR signaling and context buffers
     -------------------------------------------------*/
     ISREventContext mISREventContext[ NUM_CAN_IRQ_HANDLERS ];
-    Chimera::Threading::BinarySemaphore mISREventSignal[ NUM_CAN_IRQ_HANDLERS ];
+    Chimera::Thread::BinarySemaphore mISREventSignal[ NUM_CAN_IRQ_HANDLERS ];
   };
 }    // namespace Thor::LLD::CAN
 

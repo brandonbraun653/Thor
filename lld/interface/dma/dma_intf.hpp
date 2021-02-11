@@ -160,7 +160,7 @@ namespace Thor::LLD::DMA
      *  @param[in]  wakeup            Signal to be given to upon ISR events
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup ) = 0;
+    virtual Chimera::Status_t attachISRWakeup( Chimera::Thread::BinarySemaphore *const wakeup ) = 0;
 
     /**
      *  Reconfigures a stream for a new transfer

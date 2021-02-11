@@ -48,7 +48,7 @@ namespace Thor::TIMER
   High Level Driver Declaration
   -------------------------------------------------------------------------------*/
   // class AdvancedDriver :
-  //                        public Chimera::Threading::Lockable
+  //                        public Chimera::Thread::Lockable
   // {
   // public:
   //   /*------------------------------------------------
@@ -73,7 +73,7 @@ namespace Thor::TIMER
   // };
 
   // class GeneralDriver :
-  //                       public Chimera::Threading::Lockable
+  //                       public Chimera::Thread::Lockable
   // {
   // public:
   //   /*-------------------------------------------------
@@ -107,7 +107,7 @@ namespace Thor::TIMER
   // };
 
   // class BasicDriver :
-  //                     public Chimera::Threading::Lockable
+  //                     public Chimera::Thread::Lockable
   // {
   // public:
   //   /*------------------------------------------------
@@ -132,7 +132,7 @@ namespace Thor::TIMER
   // };
 
   // class LowPowerDriver :
-  //                        public Chimera::Threading::Lockable
+  //                        public Chimera::Thread::Lockable
   // {
   // public:
   //   /*------------------------------------------------

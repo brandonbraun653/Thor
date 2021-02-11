@@ -22,7 +22,7 @@
 
 #if defined( USING_FREERTOS ) || defined( USING_FREERTOS_THREADS )
 
-namespace Chimera::Threading::FreeRTOS
+namespace Chimera::Thread::FreeRTOS
 {
   void ApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
   {
@@ -58,7 +58,7 @@ namespace Chimera::Threading::FreeRTOS
   {
   }
 
-}    // namespace Chimera::Threading::FreeRTOS
+}    // namespace Chimera::Thread::FreeRTOS
 
 
 #endif /* USING_FREERTOS || USING_FREERTOS_THREADS */

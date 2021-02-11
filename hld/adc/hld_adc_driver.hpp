@@ -43,7 +43,7 @@ namespace Thor::ADC
    *  Methods here at a minimum implement the interface specified in Chimera.
    *  Inheritance is avoided to minimize cost of virtual function lookup table.
    */
-  class Driver : public Chimera::Threading::Lockable<Driver>
+  class Driver : public Chimera::Thread::Lockable<Driver>
   {
   public:
     /*-------------------------------------------------
@@ -80,7 +80,7 @@ namespace Thor::ADC
     float sampleToJunctionTemperature( const Chimera::ADC::Sample_t sample );
 
   private:
-    friend Chimera::Threading::Lockable<Driver>;
+    friend Chimera::Thread::Lockable<Driver>;
 
 
     Chimera::ADC::Converter mPeriph;

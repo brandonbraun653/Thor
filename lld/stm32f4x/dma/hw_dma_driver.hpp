@@ -48,7 +48,7 @@ namespace Thor::LLD::DMA
   /**
    *  Models a stream within a DMA controller peripheral (channel)
    */
-  class StreamController : virtual public IStream, public Chimera::Threading::Lockable<StreamController>
+  class StreamController : virtual public IStream, public Chimera::Thread::Lockable<StreamController>
   {
   public:
     StreamController();
@@ -56,7 +56,7 @@ namespace Thor::LLD::DMA
 
     Chimera::Status_t attach( StreamX *const peripheral, RegisterMap *const parent ) final override;
 
-    Chimera::Status_t attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup ) final override;
+    Chimera::Status_t attachISRWakeup( Chimera::Thread::BinarySemaphore *const wakeup ) final override;
 
     Chimera::Status_t configure( StreamConfig *const config, TCB *const controlBlock ) final override;
 
@@ -106,7 +106,7 @@ namespace Thor::LLD::DMA
     void IRQHandler( const uint8_t channel );
 
   private:
-    friend Chimera::Threading::Lockable<StreamController>;
+    friend Chimera::Thread::Lockable<StreamController>;
 
 
     StreamX *stream;
@@ -114,7 +114,7 @@ namespace Thor::LLD::DMA
     TCB controlBlock;
     size_t streamRegisterIndex;
     size_t streamResourceIndex;
-    Chimera::Threading::BinarySemaphore *wakeupSignal;
+    Chimera::Thread::BinarySemaphore *wakeupSignal;
     IRQn_Type streamIRQn;
 
     size_t listenerIDCount;

@@ -60,7 +60,7 @@ Private Function Declarations
 -------------------------------------------------------------------------------*/
 static void USARTxISRUserThread( void *arg )
 {
-  using namespace Chimera::Threading;
+  using namespace Chimera::Thread;
 
   while ( 1 )
   {
@@ -91,7 +91,7 @@ namespace Thor::USART
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
 
     /*------------------------------------------------
     Prevent multiple initializations (need reset first)
@@ -560,7 +560,7 @@ namespace Thor::USART
   }
 
 
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                                        const size_t timeout )
   {
     auto result = await( event, timeout );

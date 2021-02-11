@@ -446,7 +446,7 @@ namespace Thor::LLD::UART
     using namespace Chimera::Interrupt;
     using namespace Chimera::Peripheral;
     using namespace Chimera::Serial;
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
     using namespace Configuration::Flags;
 
     /*------------------------------------------------

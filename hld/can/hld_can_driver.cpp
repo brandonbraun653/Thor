@@ -36,8 +36,8 @@ Aliases
 namespace HLD = ::Thor::CAN;
 namespace LLD = ::Thor::LLD::CAN;
 
-using ThreadHandle = Chimera::Threading::detail::native_thread_handle_type;
-using BinarySemphr = Chimera::Threading::BinarySemaphore;
+using ThreadHandle = Chimera::Thread::detail::native_thread_handle_type;
+using BinarySemphr = Chimera::Thread::BinarySemaphore;
 using ThreadFunctn = Chimera::Function::void_func_void_ptr;
 
 /*-------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ static void CAN1ISR_ErrHandler( void *argument );
 
 namespace Thor::CAN
 {
-  using namespace Chimera::Threading;
+  using namespace Chimera::Thread;
 
   /*-------------------------------------------------------------------------------
   Static Functions
@@ -251,9 +251,9 @@ namespace Thor::CAN
     {
       if ( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ] )
       {
-        Chimera::Threading::Thread thread;
+        Chimera::Thread::Thread thread;
         thread.initialize( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ], nullptr,
-                           Chimera::Threading::Priority::LEVEL_5, STACK_BYTES( 250 ), nullptr );
+                           Chimera::Thread::Priority::LEVEL_5, STACK_BYTES( 250 ), nullptr );
         thread.start();
         s_user_isr_handle[ lldResourceIndex ][ isr_idx ] = thread.native_handle();
       }
@@ -447,7 +447,7 @@ namespace Thor::CAN
   }
 
 
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Threading::BinarySemaphore &notifier,
+  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                                    const size_t timeout )
   {
     return Chimera::Status::NOT_SUPPORTED;
@@ -476,7 +476,7 @@ namespace Thor::CAN
   void Driver::ProcessISREvent_TX()
   {
     using namespace Chimera::CAN;
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
 
     auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
     auto box = ::LLD::Mailbox::UNKNOWN;
@@ -502,7 +502,7 @@ namespace Thor::CAN
   void Driver::ProcessISREvent_RX()
   {
     using namespace Chimera::CAN;
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
 
     auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
 
@@ -521,7 +521,7 @@ namespace Thor::CAN
   void Driver::ProcessISREvent_Error()
   {
     using namespace Chimera::CAN;
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
 
     auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
 
@@ -540,7 +540,7 @@ namespace Thor::CAN
   void Driver::ProcessISREvent_StatusChange()
   {
     using namespace Chimera::CAN;
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
 
     auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
 

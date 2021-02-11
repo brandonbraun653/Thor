@@ -53,7 +53,7 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------------------------------------
   Shared Data
   -------------------------------------------------------------------------------*/
-  extern Chimera::Threading::ThreadId ISRThreadId[ NUM_ADC_PERIPHS ];
+  extern Chimera::Thread::TaskId ISRTaskId[ NUM_ADC_PERIPHS ];
 
 
   /*-------------------------------------------------------------------------------

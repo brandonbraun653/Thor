@@ -37,8 +37,8 @@ namespace Thor::ADC
   namespace HLD = ::Thor::ADC;
   namespace LLD = ::Thor::LLD::ADC;
 
-  using ThreadHandle = Chimera::Threading::detail::native_thread_handle_type;
-  using BinarySemphr = Chimera::Threading::BinarySemaphore;
+  using ThreadHandle = Chimera::Thread::detail::native_thread_handle_type;
+  using BinarySemphr = Chimera::Thread::BinarySemaphore;
   using ThreadFunctn = Chimera::Function::void_func_void_ptr;
 
   /*-------------------------------------------------------------------------------
@@ -67,10 +67,10 @@ namespace Thor::ADC
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
   static void ADC1ISRPostProcessorThread( void *argument )
   {
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
 
     constexpr auto index = LLD::ADC1_RESOURCE_INDEX;
-    ThreadMsg tskMsg     = TSK_MSG_NOP;
+    TaskMsg tskMsg     = TSK_MSG_NOP;
 
     while ( 1 )
     {
@@ -216,11 +216,11 @@ namespace Thor::ADC
       snprintf( tmp.data(), tmp.size(), "PP_ADC%d", lldResourceIndex );
       std::string_view threadName = tmp.data();
 
-      Chimera::Threading::Thread thread;
-      thread.initialize( s_user_isr_thread_func[ lldResourceIndex ], nullptr, Chimera::Threading::Priority::LEVEL_5,
+      Chimera::Thread::Thread thread;
+      thread.initialize( s_user_isr_thread_func[ lldResourceIndex ], nullptr, Chimera::Thread::Priority::LEVEL_5,
                          STACK_BYTES( 250 ), threadName );
 
-      LLD::ISRThreadId[ lldResourceIndex ]  = thread.start();
+      LLD::ISRTaskId[ lldResourceIndex ]  = thread.start();
       s_user_isr_handle[ lldResourceIndex ] = thread.native_handle();
     }
 

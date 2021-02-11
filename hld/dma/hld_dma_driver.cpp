@@ -100,8 +100,8 @@ static void DMA2_Stream7_ISRPostProcessorThread( void *argument );
 
 
 
-// static std::array<Chimera::Threading::detail::native_thread_handle_type, Thor::DMA::MAX_STREAMS> postProcessorHandle;
-// static std::array<Chimera::Threading::BinarySemaphore, Thor::DMA::MAX_STREAMS> postProcessorSignal;
+// static std::array<Chimera::Thread::detail::native_thread_handle_type, Thor::DMA::MAX_STREAMS> postProcessorHandle;
+// static std::array<Chimera::Thread::BinarySemaphore, Thor::DMA::MAX_STREAMS> postProcessorSignal;
 // static std::array<Chimera::Function::void_func_void_ptr, Thor::DMA::MAX_STREAMS> postProcessorThread;
 
 
@@ -240,7 +240,7 @@ namespace Thor::DMA
 
   Chimera::Status_t DMAClass::init()
   {
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
     using namespace Thor::LLD::DMA;
 
     // /*------------------------------------------------

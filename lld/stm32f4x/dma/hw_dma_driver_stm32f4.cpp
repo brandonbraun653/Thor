@@ -92,7 +92,7 @@ namespace Thor::LLD::DMA
 
   Chimera::Status_t StreamController::attach( StreamX *const peripheral, RegisterMap *const parent )
   {
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
 
     auto result = Chimera::Status::LOCKED;
 
@@ -113,9 +113,9 @@ namespace Thor::LLD::DMA
     return result;
   }
 
-  Chimera::Status_t StreamController::attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup )
+  Chimera::Status_t StreamController::attachISRWakeup( Chimera::Thread::BinarySemaphore *const wakeup )
   {
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
 
     auto result = Chimera::Status::LOCKED;
 
@@ -134,7 +134,7 @@ namespace Thor::LLD::DMA
 
   Chimera::Status_t StreamController::configure( StreamConfig *const config, TCB *const cb )
   {
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
 
     auto result = Chimera::Status::LOCKED;
 
@@ -235,7 +235,7 @@ namespace Thor::LLD::DMA
 
   Chimera::Status_t StreamController::start()
   {
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
 
     auto result = Chimera::Status::LOCKED;
 
@@ -299,7 +299,7 @@ namespace Thor::LLD::DMA
 
   Chimera::Status_t StreamController::postISRProcessing()
   {
-    using namespace Chimera::Threading;
+    using namespace Chimera::Thread;
 
     auto result = Chimera::Status::OK;
 

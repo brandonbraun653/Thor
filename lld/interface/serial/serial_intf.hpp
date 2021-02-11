@@ -234,7 +234,7 @@ namespace Thor::LLD::Serial
     virtual void killReceive() = 0;
 
 
-    virtual void attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup ) = 0;
+    virtual void attachISRWakeup( Chimera::Thread::BinarySemaphore *const wakeup ) = 0;
     virtual CDTCB getTCB_TX() = 0;
     virtual MDTCB getTCB_RX() = 0;
     virtual Config getConfiguration() = 0;

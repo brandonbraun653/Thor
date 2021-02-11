@@ -72,15 +72,15 @@ namespace Thor::LLD::INT
    *  @param[in]  id        The ID being cached
    *  @return void
    */
-  void setUserTaskId( const Chimera::Peripheral::Type type, const Chimera::Threading::ThreadId id );
+  void setUserTaskId( const Chimera::Peripheral::Type type, const Chimera::Thread::TaskId id );
 
   /**
    *  Gets the user-space thread ID registered with the interface
    *
    *  @param[in]  type      Which peripheral to look up
-   *  @return Chimera::Threading::ThreadId
+   *  @return Chimera::Thread::TaskId
    */
-  Chimera::Threading::ThreadId getUserTaskId( const Chimera::Peripheral::Type type );
+  Chimera::Thread::TaskId getUserTaskId( const Chimera::Peripheral::Type type );
 
   /**
    *  Disables all interrupts and returns a mask indicating which

@@ -43,7 +43,7 @@ namespace Thor::LLD::INT
   /*-------------------------------------------------
   User-Space ISR Handler Thread Identifiers
   -------------------------------------------------*/
-  static Chimera::Threading::ThreadId UserThreadId[ ARRAY_COUNT( SYS::AvailablePeriphs ) ];
+  static Chimera::Thread::TaskId UserTaskId[ ARRAY_COUNT( SYS::AvailablePeriphs ) ];
 
   /*-------------------------------------------------
   Peripheral Callback Storage
@@ -148,9 +148,9 @@ namespace Thor::LLD::INT
     /*-------------------------------------------------
     Reset the thread identifiers
     -------------------------------------------------*/
-    for ( size_t x = 0; x < ARRAY_COUNT( UserThreadId ); x++ )
+    for ( size_t x = 0; x < ARRAY_COUNT( UserTaskId ); x++ )
     {
-      UserThreadId[ x ] = Chimera::Threading::THREAD_ID_INVALID;
+      UserTaskId[ x ] = Chimera::Thread::THREAD_ID_INVALID;
     }
 
     /*-------------------------------------------------
@@ -202,9 +202,9 @@ namespace Thor::LLD::INT
   }
 
 
-  void setUserTaskId( const Chimera::Peripheral::Type type, const Chimera::Threading::ThreadId id )
+  void setUserTaskId( const Chimera::Peripheral::Type type, const Chimera::Thread::TaskId id )
   {
-    static_assert( ARRAY_COUNT( UserThreadId ) == ARRAY_COUNT( SYS::AvailablePeriphs ) );
+    static_assert( ARRAY_COUNT( UserTaskId ) == ARRAY_COUNT( SYS::AvailablePeriphs ) );
 
     /*-------------------------------------------------
     Input protection
@@ -218,11 +218,11 @@ namespace Thor::LLD::INT
     /*-------------------------------------------------
     Assign the data
     -------------------------------------------------*/
-    UserThreadId[ resourceIndex ] = id;
+    UserTaskId[ resourceIndex ] = id;
   }
 
 
-  Chimera::Threading::ThreadId getUserTaskId( const Chimera::Peripheral::Type type )
+  Chimera::Thread::TaskId getUserTaskId( const Chimera::Peripheral::Type type )
   {
     /*-------------------------------------------------
     Input protection
@@ -230,13 +230,13 @@ namespace Thor::LLD::INT
     size_t resourceIndex = SYS::getResourceIndex( type );
     if ( resourceIndex == INVALID_RESOURCE_INDEX )
     {
-      return Chimera::Threading::THREAD_ID_INVALID;
+      return Chimera::Thread::THREAD_ID_INVALID;
     }
 
     /*-------------------------------------------------
     Return the data
     -------------------------------------------------*/
-    return UserThreadId[ resourceIndex ];
+    return UserTaskId[ resourceIndex ];
   }
 
 

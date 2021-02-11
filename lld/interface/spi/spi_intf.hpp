@@ -154,7 +154,7 @@ namespace Thor::LLD::SPI
 
     virtual Chimera::Status_t killTransfer() = 0;
 
-    virtual void attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup ) = 0;
+    virtual void attachISRWakeup( Chimera::Thread::BinarySemaphore *const wakeup ) = 0;
 
     virtual HWTransfer getTransferBlock() = 0;
   };
@@ -183,7 +183,7 @@ namespace Thor::LLD::SPI
     Chimera::Status_t transferIT( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize );
     Chimera::Status_t transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize );
     Chimera::Status_t killTransfer();
-    void attachISRWakeup( Chimera::Threading::BinarySemaphore *const wakeup );
+    void attachISRWakeup( Chimera::Thread::BinarySemaphore *const wakeup );
     HWTransfer getTransferBlock();
 
   protected:
@@ -206,7 +206,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Asynchronous Event Listeners
     ------------------------------------------------*/
-    Chimera::Threading::BinarySemaphore *ISRWakeup_external;
+    Chimera::Thread::BinarySemaphore *ISRWakeup_external;
 
     /*------------------------------------------------
     Transfer Control Blocks

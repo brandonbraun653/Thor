@@ -52,7 +52,7 @@ namespace Thor::LLD::EXTI
   Static Data
   -------------------------------------------------------------------------------*/
   static size_t s_driver_initialized;
-  static Chimera::Threading::RecursiveMutex s_mtx;
+  static Chimera::Thread::RecursiveMutex s_mtx;
   static Chimera::Function::vGeneric s_Callbacks[ NUM_EXTI_LINES ];
 
 
