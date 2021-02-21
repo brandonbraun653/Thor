@@ -252,7 +252,7 @@ namespace Thor::SPI
       snprintf( tmp.data(), tmp.size(), "PP_SPI%d", lldResourceIndex );
       std::string_view threadName = tmp.data();
 
-      Chimera::Thread::Thread thread;
+      Chimera::Thread::Task thread;
       thread.initialize( s_user_isr_thread_func[ lldResourceIndex ], nullptr, Chimera::Thread::Priority::LEVEL_5,
                          STACK_BYTES( 250 ), threadName );
       thread.start();

@@ -104,7 +104,7 @@ namespace Thor::USART
     /*------------------------------------------------
     Register the ISR post processor thread
     ------------------------------------------------*/
-    Thread userThread;
+    Task userThread;
     userThread.initialize( USARTxISRUserThread, nullptr, Priority::MAXIMUM, STACK_BYTES( 512 ), "PP_USARTx" );
     LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_USART, userThread.start() );
 
