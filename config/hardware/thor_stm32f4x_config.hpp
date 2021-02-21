@@ -5,7 +5,7 @@
  *  Description:
  *    Configure Thor for an STM32F4x device
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -48,7 +48,7 @@
  *	@note	If the IMPRECISERR bit is set in the BFSR register on a Hard Fault, enabling this macro should cause the error to
  *become precise, thus loading the value of the offending instruction BFAR register. Currently only supported on Cortex-M3/M4.
  */
-#define WRITE_BUFFERING_DISABLED 0
+#define WRITE_BUFFERING_DISABLED 1
 
 #if defined( THOR_ENABLE_ALL_DRIVERS )
 

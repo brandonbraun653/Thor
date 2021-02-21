@@ -13,6 +13,10 @@
 /* C++ Includes */
 #include <cstdlib>
 
+/* Thor Includes */
+#include <Thor/cfg>
+#include <Thor/lld/common/cortex-m4/register.hpp>
+
 extern void SystemInit();
 extern int main();
 
@@ -57,6 +61,16 @@ extern "C"
     https://stackoverflow.com/questions/15265295/understanding-the-libc-init-array
     ------------------------------------------------*/
     __libc_init_array();
+
+    /*-------------------------------------------------
+    Debug functionality to cause all imprecise bus
+    fault access errors to become precise.
+    -------------------------------------------------*/
+#if defined( WRITE_BUFFERING_DISABLED ) && ( WRITE_BUFFERING_DISABLED == 1 )
+    volatile uint32_t actlr = *SCB_REG_ACTLR;
+    actlr |= ACTLR_DISDEFWBUF_Msk;
+    *SCB_REG_ACTLR = actlr;
+#endif /* WRITE_BUFFERING_DISABLED */
 
     /*------------------------------------------------
     Perform any chip specific initialization steps
