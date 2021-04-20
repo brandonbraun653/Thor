@@ -287,10 +287,6 @@ Low Level Driver Support
 
 //Enable specific drivers here
 
-#ifndef THOR_LLD_SPI
-#define THOR_LLD_SPI
-#endif
-
 #endif
 
 #endif  /* !THOR_CONFIG_STM32F4X_HPP */

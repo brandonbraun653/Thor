@@ -5,7 +5,7 @@ gen_static_lib_variants(
     thor_lld_stm32f4_iwdg
   SOURCES
     hw_iwdg_data.cpp
-    ${THOR_ROOT}/lld/interface/watchdog/common_driver/watchdog_iwdg_common_driver.cpp
+    ./../../../lld/interface/watchdog/common_driver/watchdog_iwdg_common_driver.cpp
   PRV_LIBRARIES
     chimera_intf_inc
     thor_intf_inc

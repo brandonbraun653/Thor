@@ -14,6 +14,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/peripheral>
 
 /* Thor Includes */
 #include <Thor/lld/interface/system/sys_detail.hpp>

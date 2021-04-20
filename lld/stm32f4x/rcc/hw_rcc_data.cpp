@@ -25,11 +25,11 @@
 #include <Thor/lld/interface/inc/watchdog>
 
 
-
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_RCC )
 
 namespace Thor::LLD::RCC
-{/*-------------------------------------------------------------------------------
+{
+  /*-------------------------------------------------------------------------------
   Peripheral Register Mappings
   -------------------------------------------------------------------------------*/
 #if defined( THOR_LLD_ADC )
@@ -425,7 +425,7 @@ namespace Thor::LLD::RCC
   Peripheral Control Structure Registration
   -------------------------------------------------------------------------------*/
   static const PCC sReg[] = {
-/* clang-format off */
+  /* clang-format off */
     #if defined( THOR_LLD_ADC )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_ADC ),

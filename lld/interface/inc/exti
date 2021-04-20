@@ -9,12 +9,12 @@
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_EXTI_INTF_INCLUEXTI
-#define THOR_EXTI_INTF_INCLUEXTI
+#ifndef THOR_EXTI_INTF_INCLUDE_EXTI
+#define THOR_EXTI_INTF_INCLUDE_EXTI
 
 #include <Thor/lld/interface/exti/exti_detail.hpp>
 #include <Thor/lld/interface/exti/exti_intf.hpp>
 #include <Thor/lld/interface/exti/exti_prv_data.hpp>
 #include <Thor/lld/interface/exti/exti_types.hpp>
 
-#endif /* !THOR_EXTI_INTF_INCLUEXTI */
+#endif /* !THOR_EXTI_INTF_INCLUDE_EXTI */

@@ -12,6 +12,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/macros.hpp>
+#include <Thor/lld/interface/inc/exti>
 #include <Thor/lld/interface/exti/exti_types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 #include <Thor/lld/stm32f4x/exti/hw_exti_types.hpp>

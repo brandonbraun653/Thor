@@ -1,9 +1,9 @@
 /********************************************************************************
  *  File Name:
- *    hw_rcc_register_stm32f446xx.hpp
+ *    hw_power_register_stm32f446xx.hpp
  *
  *  Description:
- *    RCC register definitions for the STM32F446xx series chips.
+ *    PWR register definitions for the STM32F446xx series chips.
  *
  *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/

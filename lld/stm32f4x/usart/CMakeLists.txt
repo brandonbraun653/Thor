@@ -6,7 +6,7 @@ gen_static_lib_variants(
   SOURCES
     hw_usart_driver.cpp
     hw_usart_data.cpp
-    ${THOR_ROOT}/lld/interface/usart/common_driver/usart_common_driver.cpp
+    ./../../../lld/interface/usart/common_driver/usart_common_driver.cpp
   PRV_LIBRARIES
     chimera_intf_inc
     thor_intf_inc
