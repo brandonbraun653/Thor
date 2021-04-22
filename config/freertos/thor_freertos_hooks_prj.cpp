@@ -26,6 +26,15 @@ namespace Chimera::Thread::FreeRTOS
 {
   void ApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
   {
+    /*-------------------------------------------------
+    Pull some task information
+    -------------------------------------------------*/
+    TaskStatus_t xTaskDetails;
+    vTaskGetTaskInfo( xTask, &xTaskDetails, pdTRUE, eInvalid );
+
+    /*-------------------------------------------------
+    Alert the debugger if connected, else reset
+    -------------------------------------------------*/
     Chimera::insert_debug_breakpoint();
     Chimera::System::softwareReset();
     while ( 1 ) {}
