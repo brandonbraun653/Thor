@@ -13,6 +13,9 @@
 /* C++ Includes */
 #include <cstdlib>
 
+/* Chimera Includes */
+#include <Chimera/common>
+
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/cortex-m4/register.hpp>
@@ -80,7 +83,7 @@ extern "C"
     /*------------------------------------------------
     System Execution Entry Point
     ------------------------------------------------*/
-    int retCode = main();
+    int UNUSED( retCode ) = main();
 
     /*------------------------------------------------
     Should never get here

@@ -105,7 +105,16 @@ namespace Thor::USART
     Register the ISR post processor thread
     ------------------------------------------------*/
     Task userThread;
-    userThread.initialize( USARTxISRUserThread, nullptr, Priority::MAXIMUM, STACK_BYTES( 512 ), "PP_USARTx" );
+    TaskConfig cfg;
+
+    cfg.arg        = nullptr;
+    cfg.function   = USARTxISRUserThread;
+    cfg.priority   = Priority::MAXIMUM;
+    cfg.stackWords = STACK_BYTES( 512 );
+    cfg.type       = TaskInitType::DYNAMIC;
+    cfg.name       = "PP_USARTx";
+
+    userThread.create( cfg );
     LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_USART, userThread.start() );
 
     /*------------------------------------------------
@@ -401,7 +410,6 @@ namespace Thor::USART
       Process Receive Buffers
       ------------------------------------------------*/
       auto tcb      = ::LLD::getDriver( channel )->getTCB_RX();
-      size_t rxSize = tcb.expected - tcb.remaining;
       size_t tmp    = 0;
 
       rxBuffers.transferOutOf( tcb.remaining, tmp );

@@ -45,7 +45,7 @@ namespace Thor::LLD::Watchdog
     Input Protection
     -------------------------------------------------*/
     bool validPrescaler = false;
-    for ( auto x = 0; x < WWDG::NumPrescalers; x++ )
+    for ( size_t x = 0; x < WWDG::NumPrescalers; x++ )
     {
       if ( prescaler == WWDG::DecimalPrescalers[ x ] )
       {

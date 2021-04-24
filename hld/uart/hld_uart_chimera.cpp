@@ -32,7 +32,7 @@ namespace LLD = ::Thor::LLD::UART;
 Constants
 -------------------------------------------------------------------------------*/
 static constexpr size_t NUM_DRIVERS = 1;    //::LLD::NUM_UART_PERIPHS;
-#pragma warning( "missing hld driver hooks for uart" )
+#pragma message( "missing hld driver hooks for uart" )
 
 /*-------------------------------------------------------------------------------
 Variables

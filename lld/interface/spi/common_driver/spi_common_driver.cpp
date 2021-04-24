@@ -96,8 +96,8 @@ namespace Thor::LLD::SPI
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
   Driver::Driver() :
-      ISRWakeup_external( nullptr ), mPeriph( nullptr ), periphConfig( nullptr ),
-      resourceIndex( std::numeric_limits<size_t>::max() )
+      mPeriph( nullptr ), resourceIndex( std::numeric_limits<size_t>::max() ), periphConfig( nullptr ),
+      ISRWakeup_external( nullptr )
   {
     memset( &txfr, 0, sizeof( txfr ) );
     txfr.status = Chimera::SPI::Status::TRANSFER_COMPLETE;
@@ -204,7 +204,7 @@ namespace Thor::LLD::SPI
     /* Clear any faults */
     if ( MODF::get( mPeriph ) )
     {
-      volatile Reg32_t dummyRead = SR_ALL::get( mPeriph );
+      volatile Reg32_t UNUSED( dummyRead ) = SR_ALL::get( mPeriph );
     }
 
     /* Destroy all previous settings */

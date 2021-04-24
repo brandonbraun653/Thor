@@ -173,6 +173,7 @@ namespace Thor::SPI
   ------------------------------------------------*/
   Chimera::Status_t Driver::init( const Chimera::SPI::DriverConfig &setupStruct )
   {
+    using namespace Chimera::Thread;
     auto result = Chimera::Status::OK;
 
     /*------------------------------------------------
@@ -239,22 +240,25 @@ namespace Thor::SPI
     /*------------------------------------------------
     Register the ISR post processor thread
     ------------------------------------------------*/
-    std::array<char, 10> tmp;
-
     if ( s_user_isr_thread_func[ lldResourceIndex ] )
     {
-      // Yeah this is gonna be bad if someone re-initializes the SPI driver....
-      // postProcessorHandles[ lldResourceIndex ] = nullptr;
-
       driver->attachISRWakeup( &s_user_isr_signal[ lldResourceIndex ] );
 
+      std::array<char, 10> tmp;
       tmp.fill( 0 );
       snprintf( tmp.data(), tmp.size(), "PP_SPI%d", lldResourceIndex );
-      std::string_view threadName = tmp.data();
 
-      Chimera::Thread::Task thread;
-      thread.initialize( s_user_isr_thread_func[ lldResourceIndex ], nullptr, Chimera::Thread::Priority::LEVEL_5,
-                         STACK_BYTES( 250 ), threadName );
+      Task thread;
+      TaskConfig cfg;
+
+      cfg.arg        = nullptr;
+      cfg.function   = s_user_isr_thread_func[ lldResourceIndex ];
+      cfg.priority   = Priority::MAXIMUM;
+      cfg.stackWords = STACK_BYTES( 250 );
+      cfg.type       = TaskInitType::DYNAMIC;
+      cfg.name       = tmp.data();
+
+      thread.create( cfg );
       thread.start();
       s_user_isr_handle[ lldResourceIndex ] = thread.native_handle();
     }

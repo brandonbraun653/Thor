@@ -12,6 +12,7 @@
 #include <cstdlib>
 
 /* Chimera Includes */
+#include <Chimera/common>
 #include <Chimera/thread>
 
 /* Thor Includes */
@@ -76,7 +77,7 @@ namespace Thor::LLD::TIMER
 
 #if defined( DEBUG )
     volatile size_t actualDiff = micros() - startTick;
-    volatile int error         = static_cast<int>( us ) - static_cast<int>( actualDiff );
+    volatile int UNUSED( error )         = static_cast<int>( us ) - static_cast<int>( actualDiff );
 #endif
   }
 }

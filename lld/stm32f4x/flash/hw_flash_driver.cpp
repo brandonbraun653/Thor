@@ -122,7 +122,7 @@ namespace Thor::LLD::FLASH
     Find the best wait state
     -------------------------------------------------*/
     auto table = RangeTable[ rangeIdx ];
-    for ( auto idx = 0; idx < rangeOpt; idx++ )
+    for ( size_t idx = 0; idx < rangeOpt; idx++ )
     {
       if ( ( table[ idx ].minClock < clk ) && ( clk <= table[ idx ].maxClock ) )
       {

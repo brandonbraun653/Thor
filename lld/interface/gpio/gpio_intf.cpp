@@ -313,7 +313,6 @@ namespace Thor::LLD::GPIO
     -------------------------------------------------*/
     size_t initializedPorts         = 0;
     Chimera::GPIO::Port currentPort = Chimera::GPIO::Port::PORTA;
-    Chimera::GPIO::Pin currentPin   = 0;
     RIndex_t resourceIndex          = 0;
 
     /*-------------------------------------------------

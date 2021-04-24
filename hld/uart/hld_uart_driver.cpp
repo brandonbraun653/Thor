@@ -35,7 +35,7 @@ namespace LLD = ::Thor::LLD::UART;
 Constants
 -------------------------------------------------------------------------------*/
 static constexpr size_t NUM_DRIVERS = 1; //LLD::NUM_UART_PERIPHS;
-#pragma warning("Missing LLD UART driver")
+#pragma message("Missing LLD UART driver")
 
 /*-------------------------------------------------------------------------------
 Variables

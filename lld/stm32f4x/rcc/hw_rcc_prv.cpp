@@ -439,6 +439,10 @@ namespace Thor::LLD::RCC
       case Bus::HSI16:
         input_freq = getBusFrequency( Bus::HSI16 );
         break;
+
+      default:
+        return INVALID_CLOCK;
+        break;
     };
 
     /*-------------------------------------------------
