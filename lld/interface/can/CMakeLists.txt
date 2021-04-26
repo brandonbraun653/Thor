@@ -9,7 +9,7 @@ gen_static_lib_variants(
     aurora_intf_inc
     chimera_intf_inc
     thor_intf_inc
-    Boost::boost
+
     lld_common_inc
   EXPORT_DIR
     "${PROJECT_BINARY_DIR}/Thor/lld_intf"

@@ -7,7 +7,7 @@ set(LINK_LIBS
   thor_intf_inc          # Thor public headers
   chimera_intf_inc       # Chimera public headers
   aurora_intf_inc        # Aurora public headers
-  Boost::boost      # Boost headers
+        # Boost headers
   lld_common_inc    # 3rd Party headers
 )
 

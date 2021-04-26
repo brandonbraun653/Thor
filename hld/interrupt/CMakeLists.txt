@@ -7,7 +7,7 @@ gen_static_lib_variants(
     hld_interrupt_chimera.cpp
     hld_interrupt_driver.cpp
   PRV_LIBRARIES
-    Boost::boost
+
     aurora_intf_inc
     chimera_intf_inc
     lld_common_inc

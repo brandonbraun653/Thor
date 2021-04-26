@@ -14,7 +14,7 @@
 #include <memory>
 
 /* Boost Includes */
-#include <boost/circular_buffer.hpp>
+#include <etl/circular_buffer.h>
 
 /* Aurora Includes */
 #include <Aurora/constants>
@@ -463,7 +463,7 @@ namespace Thor::USART
         while ( !tmp->empty() && ( bytesRead < len ) )
         {
           buffer[ bytesRead ] = tmp->front();
-          tmp->pop_front();
+          tmp->pop();
           bytesRead++;
         }
       }
@@ -480,7 +480,7 @@ namespace Thor::USART
 
 
   Chimera::Status_t Driver::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
-                                                 boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
+                                                 Chimera::Serial::CircularBuffer & userBuffer, uint8_t *const hwBuffer,
                                                  const size_t hwBufferSize )
   {
     Chimera::Status_t error = Chimera::Status::OK;

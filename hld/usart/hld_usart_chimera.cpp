@@ -226,7 +226,7 @@ namespace Chimera::USART
 
 
   Chimera::Status_t Driver::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
-                                             boost::circular_buffer<uint8_t> *const userBuffer, uint8_t *const hwBuffer,
+                                             Chimera::Serial::CircularBuffer & userBuffer, uint8_t *const hwBuffer,
                                              const size_t hwBufferSize )
   {
 #if defined( THOR_HLD_USART )
