@@ -17,7 +17,10 @@
 
 namespace Thor::LLD
 {
-  static const std::string_view VersionSTM32F4 = "2.3";
+  /**
+   *  v2.4: Removed boost
+   */
+  static const std::string_view VersionSTM32F4 = "2.4";
 }
 
 #endif  /* !THOR_LLD_STM32F4_VERSION_HPP */

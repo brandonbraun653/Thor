@@ -20,9 +20,10 @@ namespace Thor::HLD
   /**
    *  CHANGELOG:
    *
+   *  v2.4: Removed boost
    *  v2.3: Upgraded the build system. Added many new drivers.
    */
-  static constexpr std::string_view VersionString = "2.3.0";
+  static constexpr std::string_view VersionString = "2.4.0";
 
   static constexpr size_t VersionMajor = 2;
   static constexpr size_t VersionMinor = 3;

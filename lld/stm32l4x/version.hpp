@@ -21,8 +21,9 @@ namespace Thor::LLD
    *  CHANGELOG:
    *
    *  v1.1: Upgraded the build system. Added many new drivers.
+   *  v1.2: Removed boost
    */
-  static const std::string_view VersionSTM32L4 = "1.1";
+  static const std::string_view VersionSTM32L4 = "1.2";
 }    // namespace Thor::LLD
 
 #endif /* !THOR_LLD_STM32L4_VERSION_HPP */
