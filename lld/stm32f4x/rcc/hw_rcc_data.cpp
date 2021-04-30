@@ -33,19 +33,19 @@ namespace Thor::LLD::RCC
   Peripheral Register Mappings
   -------------------------------------------------------------------------------*/
 #if defined( THOR_LLD_ADC )
-  // /* clang-format off */
-  // static const RegisterConfig ADC_ClockConfig[ ADC::NUM_ADC_PERIPHS ]      = {
-  //   { .mask = AHB2ENR_ADCEN, .reg  = &RCC1_PERIPH->AHB2ENR }
-  // };
+  /* clang-format off */
+  static const RegisterConfig ADC_ClockConfig[ ADC::NUM_ADC_PERIPHS ]      = {
+    { .mask = APB2ENR_ADC1EN, .reg  = &RCC1_PERIPH->APB2ENR }
+  };
 
-  // static const RegisterConfig ADC_ResetConfig[ ADC::NUM_ADC_PERIPHS ]      = {
-  //   { .mask = AHB2RSTR_ADCRST, .reg = &RCC1_PERIPH->AHB2RSTR }
-  // };
+  static const RegisterConfig ADC_ResetConfig[ ADC::NUM_ADC_PERIPHS ]      = {
+    { .mask = APB2RSTR_ADCRST, .reg = &RCC1_PERIPH->APB2RSTR }
+  };
 
-  // static const Chimera::Clock::Bus ADC_SourceClock[ ADC::NUM_ADC_PERIPHS ] = {
-  //   Chimera::Clock::Bus::PCLK2
-  // };
-  // /* clang-format on */
+  static const Chimera::Clock::Bus ADC_SourceClock[ ADC::NUM_ADC_PERIPHS ] = {
+    Chimera::Clock::Bus::PCLK2
+  };
+  /* clang-format on */
 #endif /* THOR_LLD_ADC */
 
 #if defined( THOR_LLD_CAN )

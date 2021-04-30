@@ -5,7 +5,7 @@
  *  Description:
  *    Implements the custom driver variant of the Thor ADC interface.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -23,9 +23,8 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/adc>
-#include <Thor/lld/interface/adc/adc_intf.hpp>
-#include <Thor/lld/interface/adc/adc_detail.hpp>
-#include <Thor/lld/interface/adc/adc_prv_data.hpp>
+#include <Thor/lld/interface/inc/adc>
+#include <Thor/lld/interface/inc/interrupt>
 
 #if defined( THOR_HLD_ADC )
 
@@ -36,10 +35,6 @@ namespace Thor::ADC
   -------------------------------------------------------------------------------*/
   namespace HLD = ::Thor::ADC;
   namespace LLD = ::Thor::LLD::ADC;
-
-  using ThreadHandle = Chimera::Thread::detail::native_thread_handle_type;
-  using BinarySemphr = Chimera::Thread::BinarySemaphore;
-  using ThreadFunctn = Chimera::Function::void_func_void_ptr;
 
   /*-------------------------------------------------------------------------------
   Constants
@@ -52,42 +47,56 @@ namespace Thor::ADC
   -------------------------------------------------------------------------------*/
   static size_t s_driver_initialized;                        /**< Tracks the module level initialization state */
   static HLD::Driver hld_driver[ NUM_DRIVERS ];              /**< Driver objects */
-  static HLD::Driver_rPtr hld_shared[ NUM_DRIVERS ];         /**< Shared references to driver objects */
-  static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ];      /**< Handle to the ISR post processing thread */
-  static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ]; /**< RTOS aware function to execute at end of ISR */
 
-  /**
-   *  Cache for holding the last set of samples performed on each channel
-   */
-  static Chimera::ADC::Sample_t last_samples[ NUM_DRIVERS ][ LLD::NUM_ADC_CHANNELS_PER_PERIPH ];
+  //Should the LLD interface have an ISR event queue for each driver?
+  // Each supported channel should have a queue right? The measurement is
+  // taken off each channel, ISR fires, data retrieved, push to queue, signal
+  // the userspace ISR handler to retrieve the data.
+
+  // High resolution timestamps? Microseconds?
+
 
   /*-------------------------------------------------------------------------------
   Static Functions
   -------------------------------------------------------------------------------*/
-#if defined( STM32_ADC1_PERIPH_AVAILABLE )
-  static void ADC1ISRPostProcessorThread( void *argument )
+  /**
+   * @brief Userspace handler for interrupt events.
+   * This handles all instances of ADC peripherals and all their interrupts.
+   *
+   * @param arg     ignored
+   */
+  static void ADCxISRUserThread( void *arg )
   {
     using namespace Chimera::Thread;
 
-    constexpr auto index = LLD::ADC1_RESOURCE_INDEX;
-    TaskMsg tskMsg     = TSK_MSG_NOP;
-
     while ( 1 )
     {
-      auto rcvd = this_thread::receiveTaskMsg( tskMsg, TIMEOUT_BLOCK );
-      if ( rcvd && ( tskMsg == TSK_MSG_ISR_HANDLER ) )
+      /*-------------------------------------------------
+      Wait for something to wake this thread. If the msg
+      isn't correct, go back to waiting.
+      -------------------------------------------------*/
+      if( !this_thread::pendTaskMsg( ITCMsg::TSK_MSG_ISR_HANDLER ) )
+      {
+        continue;
+      }
+
+      /*-------------------------------------------------
+      Handle every ISR. Don't know which triggered this.
+      -------------------------------------------------*/
+      for( size_t index = 0; index < NUM_DRIVERS; index++ )
       {
         hld_driver[ index ].postISRProcessing();
       }
     }
   }
-#endif
 
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
+    using namespace Chimera::Thread;
+
     /*------------------------------------------------
     Prevent re-initialization from occurring
     ------------------------------------------------*/
@@ -104,29 +113,20 @@ namespace Thor::ADC
     result = Thor::LLD::ADC::initialize();
 
     /*------------------------------------------------
-    Initialize ISR post-processing routines
+    Register the ISR post processor thread
     ------------------------------------------------*/
-#if defined( STM32_ADC1_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[ LLD::ADC1_RESOURCE_INDEX ] = ADC1ISRPostProcessorThread;
-#endif
+    Task userThread;
+    TaskConfig cfg;
 
-    /*------------------------------------------------
-    Initialize local memory
-    ------------------------------------------------*/
-    // Driver pointers
-    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
-    {
-#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_ADC )
-      hld_shared[ x ] = HLD::Driver_rPtr( new HLD::Driver() );
-#else
-      hld_shared[ x ] = HLD::Driver_rPtr( &hld_driver[ x ] );
-#endif
-    }
+    cfg.arg        = nullptr;
+    cfg.function   = ADCxISRUserThread;
+    cfg.priority   = Priority::MAXIMUM;
+    cfg.stackWords = STACK_BYTES( 512 );
+    cfg.type       = TaskInitType::DYNAMIC;
+    cfg.name       = "PP_ADCx";
 
-    // Sample Cache
-    auto const arr_len = NUM_DRIVERS * LLD::NUM_ADC_CHANNELS_PER_PERIPH * sizeof( Chimera::ADC::Sample_t );
-    memset( last_samples, 0, arr_len );
-
+    userThread.create( cfg );
+    Thor::LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_ADC, userThread.start() );
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return result;
@@ -135,23 +135,11 @@ namespace Thor::ADC
 
   Chimera::Status_t reset()
   {
-    /*------------------------------------------------
-    Only allow clearing of local data during testing
-    ------------------------------------------------*/
-#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_ADC )
-    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
-
-    for ( auto x = 0; x < NUM_DRIVERS; x++ )
-    {
-      hld_shared[ x ].reset();
-    }
-#endif
-
     return Chimera::Status::OK;
   }
 
 
-  Driver_rPtr getDriver( const Chimera::ADC::Converter periph )
+  Driver_rPtr getDriver( const Chimera::ADC::Peripheral periph )
   {
     if ( auto idx = LLD::getResourceIndex( periph ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
@@ -167,7 +155,7 @@ namespace Thor::ADC
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mPeriph( Chimera::ADC::Converter::UNKNOWN )
+  Driver::Driver() : mPeriph( Chimera::ADC::Peripheral::UNKNOWN )
   {
     mConfig.clear();
   }
@@ -202,29 +190,6 @@ namespace Thor::ADC
     }
 
     /*-------------------------------------------------
-    Reset hld resources
-    -------------------------------------------------*/
-    memset( last_samples[ lldResourceIndex ], 0, LLD::NUM_ADC_CHANNELS_PER_PERIPH );
-
-    /*------------------------------------------------
-    Register the ISR post processor threads
-    ------------------------------------------------*/
-    if ( s_user_isr_thread_func[ lldResourceIndex ] )
-    {
-      std::array<char, 10> tmp;
-      tmp.fill( 0 );
-      snprintf( tmp.data(), tmp.size(), "PP_ADC%d", lldResourceIndex );
-      std::string_view threadName = tmp.data();
-
-      Chimera::Thread::Thread thread;
-      thread.initialize( s_user_isr_thread_func[ lldResourceIndex ], nullptr, Chimera::Thread::Priority::LEVEL_5,
-                         STACK_BYTES( 250 ), threadName );
-
-      LLD::ISRTaskId[ lldResourceIndex ]  = thread.start();
-      s_user_isr_handle[ lldResourceIndex ] = thread.native_handle();
-    }
-
-    /*-------------------------------------------------
     Initialize the low level driver
     -------------------------------------------------*/
     return driver->initialize( mConfig );
@@ -240,87 +205,6 @@ namespace Thor::ADC
     lld->reset();
     lld->clockReset();
     lld->clockDisable();
-  }
-
-
-  void Driver::setPowerState( const bool state )
-  {
-  }
-
-
-  Chimera::ADC::Sample_t Driver::sampleChannel( const Chimera::ADC::Channel ch )
-  {
-    if ( !( ch < Chimera::ADC::Channel::NUM_OPTIONS ) )
-    {
-      return Chimera::ADC::INVALID_SAMPLE;
-    }
-
-    return LLD::getDriver( mConfig.periph )->sampleChannel( ch );
-  }
-
-
-  Chimera::ADC::Sample_t Driver::sampleSensor( const Chimera::ADC::Sensor sensor )
-  {
-    /*-------------------------------------------------
-    Input Protection
-    -------------------------------------------------*/
-    if ( !( sensor < Chimera::ADC::Sensor::NUM_OPTIONS ) )
-    {
-      return Chimera::ADC::INVALID_SAMPLE;
-    }
-
-    /*-------------------------------------------------
-    Map the sensor into the project's ADC channels and
-    then perform the conversion.
-    -------------------------------------------------*/
-    auto channel = LLD::ConfigMap::SensorToChannel[ static_cast<size_t>( sensor ) ];
-    return LLD::getDriver( mConfig.periph )->sampleChannel( channel );
-  }
-
-
-  Chimera::Status_t Driver::groupConfig( const Chimera::ADC::GroupInit &cfg )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::groupStartSample( const Chimera::ADC::SampleGroup grp )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::groupGetSample( const Chimera::ADC::SampleGroup grp, Chimera::ADC::Sample_t *const out,
-                                            const size_t len )
-  {
-    /*-------------------------------------------------
-    Input protection
-    -------------------------------------------------*/
-
-
-    auto lld = LLD::getDriver( mConfig.periph );
-
-    /*-------------------------------------------------
-    Safely copy out the current data
-    -------------------------------------------------*/
-    Chimera::ADC::Sample_t tmp[ LLD::NUM_ADC_CHANNELS_PER_PERIPH ];
-
-    lld->enterCriticalSection();
-    memcpy( tmp, last_samples[ 0 ], ARRAY_BYTES( tmp ) );
-    lld->exitCriticalSection();
-
-    /*-------------------------------------------------
-    Store the data into the user's buffer
-    -------------------------------------------------*/
-
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::groupSetDMABuffer( const Chimera::ADC::SampleGroup grp, Chimera::ADC::Sample_t *const out,
-                                               const size_t len )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
@@ -373,9 +257,32 @@ namespace Thor::ADC
   }
 
 
-  void Driver::setWatchdogThreshold( const Chimera::ADC::Watchdog wd, const Chimera::ADC::Sample_t low,
-                                     const Chimera::ADC::Sample_t high )
+  Chimera::ADC::Sample_t Driver::sampleChannel( const Chimera::ADC::Channel ch )
   {
+    if ( !( ch < Chimera::ADC::Channel::NUM_OPTIONS ) )
+    {
+      return Chimera::ADC::INVALID_SAMPLE;
+    }
+
+    return LLD::getDriver( mConfig.periph )->sampleChannel( ch );
+  }
+
+
+  Chimera::Status_t Driver::configSequence( const Chimera::ADC::SequenceInit &cfg )
+  {
+    return Chimera::Status::NOT_SUPPORTED;
+  }
+
+
+  void Driver::startSequence()
+  {
+
+  }
+
+
+  void Driver::stopSequence()
+  {
+
   }
 
 
@@ -389,11 +296,6 @@ namespace Thor::ADC
     return LLD::getDriver( mConfig.periph )->sampleToVoltage( sample );
   }
 
-
-  float Driver::sampleToJunctionTemperature( const Chimera::ADC::Sample_t sample )
-  {
-    return LLD::getDriver( mConfig.periph )->sampleToTemp( sample );
-  }
 }    // namespace Thor::ADC
 
 #endif /* THOR_HLD_ADC */

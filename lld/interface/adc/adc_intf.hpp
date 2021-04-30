@@ -23,6 +23,7 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/adc/adc_detail.hpp>
 #include <Thor/lld/interface/adc/adc_types.hpp>
+#include <Thor/lld/interface/hw_base_peripheral.hpp>
 
 namespace Thor::LLD::ADC
 {
@@ -40,7 +41,7 @@ namespace Thor::LLD::ADC
    *  @param[in] periph         The ADC periph to grab (1 indexed)
    *  @return IDriver_rPtr      Instance of the ADC driver for the requested periph
    */
-  Driver_rPtr getDriver( const Chimera::ADC::Converter periph );
+  Driver_rPtr getDriver( const Chimera::ADC::Peripheral periph );
 
   /**
    *  Checks if the hardware ADC feature is supported
@@ -49,7 +50,7 @@ namespace Thor::LLD::ADC
    *  @param[in]  feature       The feature to check
    *  @return bool
    */
-  bool featureSupported( const Chimera::ADC::Converter periph, const Chimera::ADC::Feature feature );
+  bool featureSupported( const Chimera::ADC::Peripheral periph, const Chimera::ADC::Feature feature );
 
 
   /*-------------------------------------------------------------------------------
@@ -61,16 +62,16 @@ namespace Thor::LLD::ADC
    *  @param[in]  periph        The periph number to be checked
    *  @return bool
    */
-  bool isSupported( const Chimera::ADC::Converter periph );
+  bool isSupported( const Chimera::ADC::Peripheral periph );
 
   /**
-   *  Get's the resource index associated with a particular periph. If not
+   *  Gets the resource index associated with a particular periph. If not
    *  supported, will return INVALID_RESOURCE_INDEX
    *
    *  @param[in]  periph        The periph number to be checked
    *  @return RIndex_t
    */
-  RIndex_t getResourceIndex( const Chimera::ADC::Converter periph );
+  RIndex_t getResourceIndex( const Chimera::ADC::Peripheral periph );
 
   /**
    *  Looks up a resource index based on a raw peripheral instance
@@ -84,9 +85,9 @@ namespace Thor::LLD::ADC
    *  Gets the ADC periph associated with a peripheral address
    *
    *  @param[in]  address       Memory address the peripheral is mapped to
-   *  @return Chimera::ADC::Converter
+   *  @return Chimera::ADC::Peripheral
    */
-  Chimera::ADC::Converter getChannel( const std::uintptr_t address );
+  Chimera::ADC::Peripheral getChannel( const std::uintptr_t address );
 
   /**
    *  Initializes the ADC drivers by attaching the appropriate peripheral
@@ -105,7 +106,7 @@ namespace Thor::LLD::ADC
   Virtual class that defines the expected interface.
   Useful for mocking purposes.
   -------------------------------------------------*/
-  class IDriver
+  class IDriver : public virtual IBasePeriph
   {
   public:
     virtual ~IDriver() = default;
@@ -127,48 +128,25 @@ namespace Thor::LLD::ADC
     virtual Chimera::Status_t initialize( const Chimera::ADC::DriverConfig &cfg ) = 0;
 
     /**
-     *  Resets the hardware registers back to boot-up values
+     *  Sets the sample time for a given channel. The value is applied
+     *  just before the next conversion to prevent accidental overwrites.
      *
+     *  @param[in]  ch            Which channel to modify
+     *  @param[in]  time          ADC clock cycles to sample for
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t reset() = 0;
+    virtual Chimera::Status_t setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time ) = 0;
 
     /**
-     *  Reset the peripheral using the RCC driver. Despite the name, this
-     *  only affects the ADC peripheral, not the RCC clock configuration.
+     *  Sets up the ADC to run a sequence of conversions
      *
-     *  @return void
+     * @param[in] sequence      Sample sequence config
+     * @return Chimera::Status_t
      */
-    virtual void clockReset() = 0;
+    virtual Chimera::Status_t setupSequence( const Chimera::ADC::SequenceInit& sequence ) = 0;
 
     /**
-     *  Enables the peripheral clock
-     *
-     *  @return void
-     */
-    virtual void clockEnable() = 0;
-
-    /**
-     *  Disables the peripheral clock
-     *
-     *  @return void
-     */
-    virtual void clockDisable() = 0;
-
-    /**
-     *  Disables interrupts only on the ADC driver
-     *  @return void
-     */
-    virtual void enterCriticalSection() = 0;
-
-    /**
-     *  Re-enables interrupts only on the ADC driver
-     *  @return void
-     */
-    virtual void exitCriticalSection() = 0;
-
-    /**
-     *  Reads a single ADC channel and returns the result
+     *  Immediately reads a single ADC channel and returns the result
      *
      *  @param[in]  channel     The channel to read
      *  @return Chimera::ADC::Sample_t
@@ -184,23 +162,17 @@ namespace Thor::LLD::ADC
     virtual float sampleToVoltage( const Chimera::ADC::Sample_t sample ) = 0;
 
     /**
-     *  Sets the sample time for a given channel. The value is applied
-     *  just before the next conversion to prevent accidental overwrites.
-     *
-     *  @param[in]  ch            Which channel to modify
-     *  @param[in]  time          ADC clock cycles to sample for
-     *  @return Chimera::Status_t
+     *  Starts the sequence conversions
+     *  @return void
      */
-    virtual Chimera::Status_t setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time ) = 0;
+    virtual void startSequence() = 0;
 
     /**
-     *  Converts a sample to a calibrated junction temperature, assuming the
-     *  sample is from the on-chip temperature sensor.
-     *
-     *  @param[in]  sample        The temperature ADC sample
-     *  @return float
+     *  Starts the sequence conversions
+     *  @return void
      */
-    virtual float sampleToTemp( const Chimera::ADC::Sample_t sample ) = 0;
+    virtual void stopSequence() = 0;
+
   };
 
 
@@ -216,19 +188,27 @@ namespace Thor::LLD::ADC
     Driver();
     ~Driver();
 
-    Chimera::Status_t attach( RegisterMap *const peripheral );
-    Chimera::Status_t initialize( const Chimera::ADC::DriverConfig &cfg );
+    /*-------------------------------------------------
+    Implemented at LLD Interface Layer
+    -------------------------------------------------*/
     Chimera::Status_t reset();
     void clockReset();
     void clockEnable();
     void clockDisable();
-    void enterCriticalSection();
-    void exitCriticalSection();
+    void disableInterrupts();
+    void enableInterrupts();
 
+    /*-------------------------------------------------
+    Driver Specific Layer
+    -------------------------------------------------*/
+    Chimera::Status_t attach( RegisterMap *const peripheral );
+    Chimera::Status_t initialize( const Chimera::ADC::DriverConfig &cfg );
+    Chimera::Status_t setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time );
+    Chimera::Status_t setupSequence( const Chimera::ADC::SequenceInit& sequence );
     Chimera::ADC::Sample_t sampleChannel( const Chimera::ADC::Channel channel );
     float sampleToVoltage( const Chimera::ADC::Sample_t sample );
-    Chimera::Status_t setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time );
-    float sampleToTemp( const Chimera::ADC::Sample_t sample );
+    void startSequence();
+    void stopSequence();
 
   protected:
     void IRQHandler();
@@ -240,6 +220,7 @@ namespace Thor::LLD::ADC
     CommonRegisterMap *mCommon;
     size_t mResourceIndex;
     bool mConversionInProgress;
+    Chimera::ADC::Sample_t mChannelSample[ NUM_ADC_CHANNELS_PER_PERIPH ];
     SampleTime mChannelSampleTime[ NUM_ADC_CHANNELS_PER_PERIPH ];
     Chimera::ADC::DriverConfig mCfg;
   };

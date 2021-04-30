@@ -5,7 +5,7 @@
  *  Description:
  *    Thor ADC high level driver
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -18,6 +18,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/callback>
 #include <Chimera/adc>
 #include <Chimera/thread>
 
@@ -31,8 +32,8 @@ namespace Thor::ADC
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
-  Driver_rPtr getDriver( const Chimera::ADC::Converter periph );
-  bool featureSupported( const Chimera::ADC::Converter periph, const Chimera::ADC::Feature feature );
+  Driver_rPtr getDriver( const Chimera::ADC::Peripheral periph );
+  bool featureSupported( const Chimera::ADC::Peripheral periph, const Chimera::ADC::Feature feature );
 
 
   /*-------------------------------------------------------------------------------
@@ -63,28 +64,20 @@ namespace Thor::ADC
     -------------------------------------------------*/
     Chimera::Status_t open( const Chimera::ADC::DriverConfig &init );
     void close();
-    void setPowerState( const bool state );
-    Chimera::ADC::Sample_t sampleChannel( const Chimera::ADC::Channel ch );
-    Chimera::ADC::Sample_t sampleSensor( const Chimera::ADC::Sensor sensor );
-    Chimera::Status_t groupConfig( const Chimera::ADC::GroupInit &cfg );
-    Chimera::Status_t groupStartSample( const Chimera::ADC::SampleGroup grp );
-    Chimera::Status_t groupGetSample( const Chimera::ADC::SampleGroup grp, Chimera::ADC::Sample_t *const out,
-                                      const size_t len );
-    Chimera::Status_t groupSetDMABuffer( const Chimera::ADC::SampleGroup grp, Chimera::ADC::Sample_t *const out,
-                                         const size_t len );
     Chimera::Status_t setSampleTime( const Chimera::ADC::Channel ch, const size_t cycles );
-    void setWatchdogThreshold( const Chimera::ADC::Watchdog wd, const Chimera::ADC::Sample_t low,
-                               const Chimera::ADC::Sample_t high );
+    Chimera::ADC::Sample_t sampleChannel( const Chimera::ADC::Channel ch );
+    Chimera::Status_t configSequence( const Chimera::ADC::SequenceInit &cfg );
+    void startSequence();
+    void stopSequence();
     void onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb );
     float sampleToVoltage( const Chimera::ADC::Sample_t sample );
-    float sampleToJunctionTemperature( const Chimera::ADC::Sample_t sample );
 
   private:
     friend Chimera::Thread::Lockable<Driver>;
 
-
-    Chimera::ADC::Converter mPeriph;
+    Chimera::ADC::Peripheral mPeriph;
     Chimera::ADC::DriverConfig mConfig;
+    Chimera::ADC::CallbackArray mCallbacks;
   };
 }    // namespace Thor::ADC
 

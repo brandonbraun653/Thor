@@ -5,7 +5,7 @@
  *  Description:
  *    Implements the LLD interface to the ADC hardware.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* STL Includes */
@@ -19,16 +19,13 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/interface/adc/adc_intf.hpp>
-#include <Thor/lld/interface/adc/adc_prv_data.hpp>
-#include <Thor/lld/interface/rcc/rcc_intf.hpp>
-#include <Thor/lld/interface/rcc/rcc_prv_data.hpp>
-#include <Thor/lld/interface/timer/timer_intf.hpp>
-#include <Thor/lld/stm32l4x/adc/hw_adc_prj.hpp>
-#include <Thor/lld/stm32l4x/adc/hw_adc_types.hpp>
-#include <Thor/lld/stm32l4x/rcc/hw_rcc_types.hpp>
+#include <Thor/lld/interface/inc/adc>
+#include <Thor/lld/interface/inc/interrupt>
+#include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/timer>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_ADC )
+
+#if defined( THOR_LLD_ADC ) && defined( TARGET_STM32L4 )
 
 namespace Thor::LLD::ADC
 {
@@ -127,7 +124,7 @@ namespace Thor::LLD::ADC
   }
 
 
-  Driver_rPtr getDriver( const Chimera::ADC::Converter periph )
+  Driver_rPtr getDriver( const Chimera::ADC::Peripheral periph )
   {
     if ( auto idx = getResourceIndex( periph ); idx != INVALID_RESOURCE_INDEX )
     {
@@ -140,7 +137,7 @@ namespace Thor::LLD::ADC
   }
 
 
-  bool featureSupported( const Chimera::ADC::Converter periph, const Chimera::ADC::Feature feature )
+  bool featureSupported( const Chimera::ADC::Peripheral periph, const Chimera::ADC::Feature feature )
   {
     return true;
   }
@@ -175,7 +172,7 @@ namespace Thor::LLD::ADC
     ------------------------------------------------*/
     Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
     Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
-    Thor::LLD::INT::setPriority( Resource::IRQSignals[ mResourceIndex ], Thor::Interrupt::ADC_IT_PREEMPT_PRIORITY, 0u );
+    Thor::LLD::INT::setPriority( Resource::IRQSignals[ mResourceIndex ], Thor::LLD::INT::ADC_IT_PREEMPT_PRIORITY, 0u );
 
     /*-------------------------------------------------
     Reset the channel sample times to defaults
@@ -369,13 +366,13 @@ namespace Thor::LLD::ADC
   }
 
 
-  inline void Driver::enterCriticalSection()
+  inline void Driver::disableInterrupts()
   {
     Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 
-  inline void Driver::exitCriticalSection()
+  inline void Driver::enableInterrupts()
   {
     Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
@@ -449,7 +446,7 @@ namespace Thor::LLD::ADC
     Prevent peripheral interrupts as this conversion is
     fast enough that it doesn't make sense to use ISRs.
     -------------------------------------------------*/
-    enterCriticalSection();
+    disableInterrupts();
 
     /*-------------------------------------------------
     Perform the conversion, applying the fix for
@@ -484,7 +481,7 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------
     Re-enable ISRs and return the valid measurement
     -------------------------------------------------*/
-    exitCriticalSection();
+    enableInterrupts();
     return measurement;
   }
 

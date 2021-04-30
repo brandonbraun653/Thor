@@ -59,7 +59,7 @@ namespace Chimera::ADC::Backend
   }
 
 
-  Chimera::ADC::Driver_rPtr getDriver( const Converter periph )
+  Chimera::ADC::Driver_rPtr getDriver( const Peripheral periph )
   {
     auto idx = ::LLD::getResourceIndex( periph );
     if( idx < NUM_DRIVERS )
@@ -73,7 +73,7 @@ namespace Chimera::ADC::Backend
   }
 
 
-  bool featureSupported( const Converter periph, const Feature feature )
+  bool featureSupported( const Peripheral periph, const Feature feature )
   {
     return ::LLD::featureSupported( periph, feature );
   }
@@ -138,10 +138,10 @@ namespace Chimera::ADC
   }
 
 
-  void Driver::setPowerState( const bool state )
+  Chimera::Status_t Driver::setSampleTime( const Chimera::ADC::Channel ch, const size_t cycles )
   {
     RT_HARD_ASSERT( mDriver );
-    static_cast<::HLD::Driver_rPtr>( mDriver )->setPowerState( state );
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->setSampleTime( ch, cycles );
   }
 
 
@@ -152,55 +152,24 @@ namespace Chimera::ADC
   }
 
 
-  Chimera::ADC::Sample_t Driver::sampleSensor( const Chimera::ADC::Sensor sensor )
+  Chimera::Status_t Driver::configSequence( const Chimera::ADC::SequenceInit &cfg )
   {
     RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleSensor( sensor );
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->configSequence( cfg );
   }
 
 
-  Chimera::Status_t Driver::groupConfig( const Chimera::ADC::GroupInit &cfg )
+  void Driver::startSequence()
   {
     RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->groupConfig( cfg );
+    static_cast<::HLD::Driver_rPtr>( mDriver )->startSequence();
   }
 
 
-  Chimera::Status_t Driver::groupStartSample( const Chimera::ADC::SampleGroup grp )
+  void Driver::stopSequence()
   {
     RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->groupStartSample( grp );
-  }
-
-
-  Chimera::Status_t Driver::groupGetSample( const Chimera::ADC::SampleGroup grp, Chimera::ADC::Sample_t *const out,
-                                            const size_t len )
-  {
-    RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->groupGetSample( grp, out, len );
-  }
-
-
-  Chimera::Status_t Driver::groupSetDMABuffer( const Chimera::ADC::SampleGroup grp, Chimera::ADC::Sample_t *const out,
-                                               const size_t len )
-  {
-    RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->groupSetDMABuffer( grp, out, len );
-  }
-
-
-  Chimera::Status_t Driver::setSampleTime( const Chimera::ADC::Channel ch, const size_t cycles )
-  {
-    RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->setSampleTime( ch, cycles );
-  }
-
-
-  void Driver::setWatchdogThreshold( const Chimera::ADC::Watchdog wd, const Chimera::ADC::Sample_t low,
-                                     const Chimera::ADC::Sample_t high )
-  {
-    RT_HARD_ASSERT( mDriver );
-    static_cast<::HLD::Driver_rPtr>( mDriver )->setWatchdogThreshold( wd, low, high );
+    static_cast<::HLD::Driver_rPtr>( mDriver )->stopSequence();
   }
 
 
@@ -215,13 +184,6 @@ namespace Chimera::ADC
   {
     RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleToVoltage( sample );
-  }
-
-
-  float Driver::sampleToJunctionTemperature( const Sample_t sample )
-  {
-    RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleToJunctionTemperature( sample );
   }
 
 

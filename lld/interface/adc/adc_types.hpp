@@ -5,7 +5,7 @@
  *  Description:
  *    Common LLD ADC Types
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -13,7 +13,11 @@
 #define THOR_LLD_ADC_COMMON_TYPES_HPP
 
 /* C++ Includes */
+#include <array>
 #include <cstdint>
+
+/* ETL Includes */
+#include <etl/queue_spsc_locked.h>
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -26,10 +30,25 @@ namespace Thor::LLD::ADC
   class Driver;
   struct RegisterMap;
 
+
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
+  struct Measurement
+  {
+    size_t timestamp_us;          /**< System time in microseconds */
+    Chimera::ADC::Sample_t data;  /**< Channel data */
+  };
+
+
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
   using Driver_rPtr = Driver *;
+
+  template<size_t SIZE>
+  using ChannelQueue = etl::queue_spsc_locked<Measurement, SIZE>;
+
 
   /*-------------------------------------------------------------------------------
   Enumerations

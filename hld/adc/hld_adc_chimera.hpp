@@ -23,8 +23,8 @@ namespace Chimera::ADC::Backend
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
-  Driver_rPtr getDriver( const Converter periph );
-  bool featureSupported( const Converter periph, const Feature feature );
+  Driver_rPtr getDriver( const Peripheral periph );
+  bool featureSupported( const Peripheral periph, const Feature feature );
 }    // namespace Chimera::ADC::Backend
 
 #endif /* !THOR_ADC_CHIMERA_HOOKS_HPP */

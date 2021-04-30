@@ -2,7 +2,7 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
 gen_static_lib_variants(
   TARGET
-    thor_lld_stm32l4_adc
+    thor_lld_stm32f4_adc
   SOURCES
     hw_adc_driver.cpp
     hw_adc_data.cpp

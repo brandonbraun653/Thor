@@ -5,7 +5,7 @@
  *  Description:
  *    Includes the LLD specific headers for chip implementation details
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -18,6 +18,9 @@
 #elif defined( TARGET_LLD_TEST )
 #include <Thor/lld/interface/adc/sim/adc_sim_variant.hpp>
 #include <Thor/lld/interface/adc/sim/adc_sim_types.hpp>
+#elif defined( TARGET_STM32F4 )
+#include <Thor/lld/stm32f4x/adc/hw_adc_prj.hpp>
+#include <Thor/lld/stm32f4x/adc/hw_adc_types.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/adc/hw_adc_prj.hpp>
 #include <Thor/lld/stm32l4x/adc/hw_adc_types.hpp>

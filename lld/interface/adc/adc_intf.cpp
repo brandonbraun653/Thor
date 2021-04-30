@@ -5,7 +5,7 @@
  *  Description:
  *    LLD interface functions that are processor independent
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
@@ -15,28 +15,21 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
-#include <Thor/lld/interface/adc/adc_detail.hpp>
-#include <Thor/lld/interface/adc/adc_prv_data.hpp>
-#include <Thor/lld/interface/adc/adc_types.hpp>
-#include <Thor/lld/interface/adc/adc_intf.hpp>
+#include <Thor/lld/interface/inc/adc>
 
 #if defined( THOR_LLD_ADC )
+
 namespace Thor::LLD::ADC
 {
   /*-------------------------------------------------------------------------------
-  Shared Data
-  -------------------------------------------------------------------------------*/
-  Chimera::Thread::TaskId ISRTaskId[ NUM_ADC_PERIPHS ];
-
-  /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
-  bool isSupported( const Chimera::ADC::Converter periph )
+  bool isSupported( const Chimera::ADC::Peripheral periph )
   {
     switch ( periph )
     {
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
-      case Chimera::ADC::Converter::ADC_0:
+      case Chimera::ADC::Peripheral::ADC_0:
         return true;
         break;
 #endif
@@ -48,12 +41,12 @@ namespace Thor::LLD::ADC
   }
 
 
-  RIndex_t getResourceIndex( const Chimera::ADC::Converter periph )
+  RIndex_t getResourceIndex( const Chimera::ADC::Peripheral periph )
   {
     switch ( periph )
     {
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
-      case Chimera::ADC::Converter::ADC_0:
+      case Chimera::ADC::Peripheral::ADC_0:
         return ADC1_RESOURCE_INDEX;
         break;
 #endif
@@ -78,16 +71,16 @@ namespace Thor::LLD::ADC
   }
 
 
-  Chimera::ADC::Converter getChannel( const std::uintptr_t address )
+  Chimera::ADC::Peripheral getChannel( const std::uintptr_t address )
   {
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( ADC1_PERIPH ) )
     {
-      return Chimera::ADC::Converter::ADC_0;
+      return Chimera::ADC::Peripheral::ADC_0;
     }
 #endif
 
-    return Chimera::ADC::Converter::UNKNOWN;
+    return Chimera::ADC::Peripheral::UNKNOWN;
   }
 
 

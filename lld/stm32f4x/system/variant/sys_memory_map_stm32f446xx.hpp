@@ -63,7 +63,10 @@ namespace Thor::System::MemoryMap
   static constexpr uint32_t SPI4_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x3400;
   static constexpr uint32_t SPI1_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x3000;
   static constexpr uint32_t SDMMC_PERIPH_START_ADDRESS  = APB2_RGN_START_ADDR + 0x2C00;
-  static constexpr uint32_t ADCx_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x2000;
+  static constexpr uint32_t ADC123_COMMON_BASE          = APB2_RGN_START_ADDR + 0x2300;
+  static constexpr uint32_t ADC3_BASE                   = APB2_RGN_START_ADDR + 0x2200;
+  static constexpr uint32_t ADC2_BASE                   = APB2_RGN_START_ADDR + 0x2100;
+  static constexpr uint32_t ADC1_BASE                   = APB2_RGN_START_ADDR + 0x2000;
   static constexpr uint32_t USART6_PERIPH_START_ADDRESS = APB2_RGN_START_ADDR + 0x1400;
   static constexpr uint32_t USART1_PERIPH_START_ADDRESS = APB2_RGN_START_ADDR + 0x1000;
   static constexpr uint32_t TIM8_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x0400;

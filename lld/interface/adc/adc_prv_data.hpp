@@ -6,7 +6,7 @@
  *    Declaration of data that must be defined by the LLD implementation or is
  *    shared among all possible drivers.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -16,6 +16,9 @@
 /* STL Includes */
 #include <cstddef>
 
+/* Aurora Includes */
+#include <Aurora/utility>
+
 /* Chimera Includes */
 #include <Chimera/adc>
 
@@ -24,20 +27,24 @@
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/adc/adc_detail.hpp>
+#include <Thor/lld/interface/adc/adc_types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
 #if defined( THOR_LLD_ADC )
+
 namespace Thor::LLD::ADC
 {
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
-  static constexpr size_t DRIVER_MAX_PERIPHS = static_cast<size_t>( Chimera::ADC::Channel::NUM_OPTIONS );
+  static constexpr size_t DRIVER_MAX_PERIPHS         = static_cast<size_t>( Chimera::ADC::Channel::NUM_OPTIONS );
+  static constexpr size_t CHANNEL_QUEUE_SAMPLE_DEPTH = 8;
+  static constexpr size_t CHANNEL_QUEUE_SIZE         = EnumValue( Chimera::ADC::Channel::NUM_OPTIONS );
 
   /*-------------------------------------------------------------------------------
-  Project Defined Constants
+  Aliases
   -------------------------------------------------------------------------------*/
-
+  using PeriphQueue = std::shared_ptr<ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>>[ CHANNEL_QUEUE_SIZE ];
 
   /*-------------------------------------------------------------------------------
   Peripheral Instances:
@@ -49,12 +56,12 @@ namespace Thor::LLD::ADC
   extern RegisterMap *ADC1_PERIPH;
 #endif
 
-
   /*-------------------------------------------------------------------------------
   Shared Data
   -------------------------------------------------------------------------------*/
-  extern Chimera::Thread::TaskId ISRTaskId[ NUM_ADC_PERIPHS ];
-
+#if defined( STM32_ADC1_PERIPH_AVAILABLE )
+  extern PeriphQueue ADC1_Queue;
+#endif
 
   /*-------------------------------------------------------------------------------
   Configuration Maps:
