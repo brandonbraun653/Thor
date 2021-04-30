@@ -149,9 +149,9 @@ namespace Thor::LLD::ADC
      *  Immediately reads a single ADC channel and returns the result
      *
      *  @param[in]  channel     The channel to read
-     *  @return Chimera::ADC::Sample_t
+     *  @return Chimera::ADC::Sample
      */
-    virtual Chimera::ADC::Sample_t sampleChannel( const Chimera::ADC::Channel channel );
+    virtual Chimera::ADC::Sample sampleChannel( const Chimera::ADC::Channel channel );
 
     /**
      *  Converts a raw sample to the equivalent voltage
@@ -159,7 +159,7 @@ namespace Thor::LLD::ADC
      *  @param[in]  sample        The raw sample value to convert
      *  @return float
      */
-    virtual float sampleToVoltage( const Chimera::ADC::Sample_t sample ) = 0;
+    virtual float sampleToVoltage( const Chimera::ADC::Sample sample ) = 0;
 
     /**
      *  Starts the sequence conversions
@@ -205,8 +205,8 @@ namespace Thor::LLD::ADC
     Chimera::Status_t initialize( const Chimera::ADC::DriverConfig &cfg );
     Chimera::Status_t setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time );
     Chimera::Status_t setupSequence( const Chimera::ADC::SequenceInit& sequence );
-    Chimera::ADC::Sample_t sampleChannel( const Chimera::ADC::Channel channel );
-    float sampleToVoltage( const Chimera::ADC::Sample_t sample );
+    Chimera::ADC::Sample sampleChannel( const Chimera::ADC::Channel channel );
+    float sampleToVoltage( const Chimera::ADC::Sample sample );
     void startSequence();
     void stopSequence();
 
@@ -220,7 +220,7 @@ namespace Thor::LLD::ADC
     CommonRegisterMap *mCommon;
     size_t mResourceIndex;
     bool mConversionInProgress;
-    Chimera::ADC::Sample_t mChannelSample[ NUM_ADC_CHANNELS_PER_PERIPH ];
+    Chimera::ADC::Sample mChannelSample[ NUM_ADC_CHANNELS_PER_PERIPH ];
     SampleTime mChannelSampleTime[ NUM_ADC_CHANNELS_PER_PERIPH ];
     Chimera::ADC::DriverConfig mCfg;
   };

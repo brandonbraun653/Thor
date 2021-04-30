@@ -257,11 +257,11 @@ namespace Thor::ADC
   }
 
 
-  Chimera::ADC::Sample_t Driver::sampleChannel( const Chimera::ADC::Channel ch )
+  Chimera::ADC::Sample Driver::sampleChannel( const Chimera::ADC::Channel ch )
   {
     if ( !( ch < Chimera::ADC::Channel::NUM_OPTIONS ) )
     {
-      return Chimera::ADC::INVALID_SAMPLE;
+      return Chimera::ADC::Sample();
     }
 
     return LLD::getDriver( mConfig.periph )->sampleChannel( ch );
@@ -286,12 +286,18 @@ namespace Thor::ADC
   }
 
 
+  bool Driver::nextSample( const Chimera::ADC::Channel ch, Chimera::ADC::Sample &sample )
+  {
+    return false;
+  }
+
+
   void Driver::onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb )
   {
   }
 
 
-  float Driver::sampleToVoltage( const Chimera::ADC::Sample_t sample )
+  float Driver::sampleToVoltage( const Chimera::ADC::Sample sample )
   {
     return LLD::getDriver( mConfig.periph )->sampleToVoltage( sample );
   }

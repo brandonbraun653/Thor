@@ -378,7 +378,7 @@ namespace Thor::LLD::ADC
   }
 
 
-  Chimera::ADC::Sample_t Driver::sampleChannel( const Chimera::ADC::Channel channel )
+  Chimera::ADC::Sample Driver::sampleChannel( const Chimera::ADC::Channel channel )
   {
     using namespace Chimera::ADC;
 
@@ -469,7 +469,7 @@ namespace Thor::LLD::ADC
     EOC::set( mPeriph, ISR_EOC );
 
     // Read out the result of the conversion
-    Sample_t measurement = DATA::get( mPeriph );
+    Sample measurement = DATA::get( mPeriph );
 
     // Clear any other new ISR flags before interrupts are re-enabled
     Reg32_t newFlags = ISR_ALL::get( mPeriph ) & ~isrFlags;
@@ -486,13 +486,13 @@ namespace Thor::LLD::ADC
   }
 
 
-  float Driver::sampleToVoltage( const Chimera::ADC::Sample_t sample )
+  float Driver::sampleToVoltage( const Chimera::ADC::Sample sample )
   {
     return 0.0f;
   }
 
 
-  float Driver::sampleToTemp( const Chimera::ADC::Sample_t sample )
+  float Driver::sampleToTemp( const Chimera::ADC::Sample sample )
   {
     constexpr float VDDA = 3300.0f;    // mV
 

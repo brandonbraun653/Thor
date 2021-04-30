@@ -145,7 +145,7 @@ namespace Chimera::ADC
   }
 
 
-  Chimera::ADC::Sample_t Driver::sampleChannel( const Chimera::ADC::Channel ch )
+  Chimera::ADC::Sample Driver::sampleChannel( const Chimera::ADC::Channel ch )
   {
     RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleChannel( ch );
@@ -173,6 +173,12 @@ namespace Chimera::ADC
   }
 
 
+  bool Driver::nextSample( const Chimera::ADC::Channel ch, Chimera::ADC::Sample &sample )
+  {
+    RT_HARD_ASSERT( mDriver );
+    static_cast<::HLD::Driver_rPtr>( mDriver )->nextSample( ch, sample );
+  }
+
   void Driver::onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb )
   {
     RT_HARD_ASSERT( mDriver );
@@ -180,7 +186,7 @@ namespace Chimera::ADC
   }
 
 
-  float Driver::sampleToVoltage( const Chimera::ADC::Sample_t sample )
+  float Driver::sampleToVoltage( const Chimera::ADC::Sample sample )
   {
     RT_HARD_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleToVoltage( sample );

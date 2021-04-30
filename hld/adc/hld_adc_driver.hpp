@@ -65,12 +65,13 @@ namespace Thor::ADC
     Chimera::Status_t open( const Chimera::ADC::DriverConfig &init );
     void close();
     Chimera::Status_t setSampleTime( const Chimera::ADC::Channel ch, const size_t cycles );
-    Chimera::ADC::Sample_t sampleChannel( const Chimera::ADC::Channel ch );
+    Chimera::ADC::Sample sampleChannel( const Chimera::ADC::Channel ch );
     Chimera::Status_t configSequence( const Chimera::ADC::SequenceInit &cfg );
     void startSequence();
     void stopSequence();
+    bool nextSample( const Chimera::ADC::Channel ch, Chimera::ADC::Sample &sample );
     void onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb );
-    float sampleToVoltage( const Chimera::ADC::Sample_t sample );
+    float sampleToVoltage( const Chimera::ADC::Sample sample );
 
   private:
     friend Chimera::Thread::Lockable<Driver>;

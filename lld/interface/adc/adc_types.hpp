@@ -37,7 +37,7 @@ namespace Thor::LLD::ADC
   struct Measurement
   {
     size_t timestamp_us;          /**< System time in microseconds */
-    Chimera::ADC::Sample_t data;  /**< Channel data */
+    Chimera::ADC::Sample data;  /**< Channel data */
   };
 
 
