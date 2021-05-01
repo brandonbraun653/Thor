@@ -186,10 +186,10 @@ namespace Chimera::ADC
   }
 
 
-  float Driver::sampleToVoltage( const Chimera::ADC::Sample sample )
+  float Driver::toVoltage( const Chimera::ADC::Sample sample )
   {
     RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleToVoltage( sample );
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->toVoltage( sample );
   }
 
 

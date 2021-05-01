@@ -33,19 +33,16 @@
 
 #if defined( THOR_LLD_ADC ) && defined( TARGET_STM32F4 )
 
+/*-------------------------------------------------
+This driver expects some project side constants to
+be defined for helping with a few calculations.
+
+#define PRJ_ADC_VREF  (x.yzf)
+-------------------------------------------------*/
+#include "thor_adc_prj_config.hpp"
+
 namespace Thor::LLD::ADC
 {
-  /*-------------------------------------------------------------------------------
-  Macros
-  -------------------------------------------------------------------------------*/
-  /**
-   *  A conversion is in progress if:
-   *    ADSTART is set    OR
-   *    JADSTART is set   OR
-   *    EOC flag is set
-   */
-#define CNVRT_IN_PROGRESS( periph_ptr ) ( STRT::get( periph_ptr ) || JSTRT::get( periph_ptr ) || EOC::get( periph_ptr ) )
-
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
@@ -252,7 +249,6 @@ namespace Thor::LLD::ADC
   Chimera::ADC::Sample Driver::sampleChannel( const Chimera::ADC::Channel channel )
   {
     using namespace Chimera::ADC;
-    return Chimera::ADC::Sample();
 
     /*-------------------------------------------------
     Wait for the hardware to indicate it's free for a
@@ -263,7 +259,7 @@ namespace Thor::LLD::ADC
     not atomic, so stopping an existing conversion may
     be necessary in the future.
     -------------------------------------------------*/
-    while ( CNVRT_IN_PROGRESS( mPeriph ) )
+    while ( STRT::get( mPeriph ) || EOC::get( mPeriph ) )
     {
       continue;
     }
@@ -288,14 +284,19 @@ namespace Thor::LLD::ADC
     disableInterrupts();
 
     /*-------------------------------------------------
-    Perform the conversion
+    Perform the conversion. Debuggers beware! Stepping
+    through this section may cause your debugger to
+    read the DATA register behind the scenes, clearing
+    the EOC bit and causing this while loop to become
+    infinite!
     -------------------------------------------------*/
     startSequence();
     while ( !EOC::get( mPeriph ) )
     {
+      /* This bit is later cleared by the DATA register read */
       continue;
     }
-    EOC::set( mPeriph, SR_EOC );
+    stopSequence();
 
     Sample measurement;
     measurement.counts = DATA::get( mPeriph );
@@ -311,9 +312,42 @@ namespace Thor::LLD::ADC
   }
 
 
-  float Driver::sampleToVoltage( const Chimera::ADC::Sample sample )
+  float Driver::toVoltage( const Chimera::ADC::Sample sample )
   {
-    return 0.0f;
+    /*-------------------------------------------------
+    Get the current configured resolution
+    -------------------------------------------------*/
+    Reg32_t resolution = RES::get( mPeriph ) >> CR1_RES_Pos;
+    float fRes = 0.0;
+
+    switch( resolution )
+    {
+      case 0: // 12-bit
+        fRes = 4096;
+        break;
+
+      case 1: // 10-bit
+        fRes = 1024;
+        break;
+
+      case 2: // 8-bit
+        fRes = 256;
+        break;
+
+      case 3: // 6-bit
+        fRes = 64;
+        break;
+
+      default:
+        return 0.0f;
+        break;
+    }
+
+    /*-------------------------------------------------
+    Calculate the output voltage
+    -------------------------------------------------*/
+    float vSense = ( static_cast<float>( PRJ_ADC_VREF ) / fRes ) * static_cast<float>( sample.counts );
+    return vSense;
   }
 
 
@@ -338,6 +372,7 @@ namespace Thor::LLD::ADC
     the ADC can be prevented from continuous conversion.
     -------------------------------------------------*/
     CONT::clear( mPeriph, CR2_CONT );
+    STRT::clear( mPeriph, SR_STRT );
   }
 
 

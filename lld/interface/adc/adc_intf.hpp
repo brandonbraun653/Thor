@@ -159,7 +159,7 @@ namespace Thor::LLD::ADC
      *  @param[in]  sample        The raw sample value to convert
      *  @return float
      */
-    virtual float sampleToVoltage( const Chimera::ADC::Sample sample ) = 0;
+    virtual float toVoltage( const Chimera::ADC::Sample sample ) = 0;
 
     /**
      *  Starts the sequence conversions
@@ -206,7 +206,7 @@ namespace Thor::LLD::ADC
     Chimera::Status_t setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time );
     Chimera::Status_t setupSequence( const Chimera::ADC::SequenceInit& sequence );
     Chimera::ADC::Sample sampleChannel( const Chimera::ADC::Channel channel );
-    float sampleToVoltage( const Chimera::ADC::Sample sample );
+    float toVoltage( const Chimera::ADC::Sample sample );
     void startSequence();
     void stopSequence();
 

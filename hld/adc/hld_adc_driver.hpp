@@ -71,7 +71,7 @@ namespace Thor::ADC
     void stopSequence();
     bool nextSample( const Chimera::ADC::Channel ch, Chimera::ADC::Sample &sample );
     void onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb );
-    float sampleToVoltage( const Chimera::ADC::Sample sample );
+    float toVoltage( const Chimera::ADC::Sample sample );
 
   private:
     friend Chimera::Thread::Lockable<Driver>;

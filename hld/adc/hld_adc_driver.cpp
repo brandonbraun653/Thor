@@ -329,9 +329,9 @@ namespace Thor::ADC
   }
 
 
-  float Driver::sampleToVoltage( const Chimera::ADC::Sample sample )
+  float Driver::toVoltage( const Chimera::ADC::Sample sample )
   {
-    return LLD::getDriver( mConfig.periph )->sampleToVoltage( sample );
+    return LLD::getDriver( mConfig.periph )->toVoltage( sample );
   }
 
 }    // namespace Thor::ADC
