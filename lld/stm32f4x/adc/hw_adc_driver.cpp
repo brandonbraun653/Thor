@@ -5,12 +5,18 @@
  *  Description:
  *    Implements the LLD interface to the ADC hardware.
  *
- *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  Limitations:
+ *    This driver does not support injected channel conversions.
+ *
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* STL Includes */
 #include <cstring>
 #include <limits>
+
+/* Aurora Includes */
+#include <Aurora/utility>
 
 /* Chimera Includes */
 #include <Chimera/algorithm>
@@ -38,7 +44,7 @@ namespace Thor::LLD::ADC
    *    JADSTART is set   OR
    *    EOC flag is set
    */
-#define CNVRT_IN_PROGRESS( periph_ptr ) ( ADSTART::get( periph_ptr ) || JADSTART::get( periph_ptr ) || EOC::get( periph_ptr ) )
+#define CNVRT_IN_PROGRESS( periph_ptr ) ( STRT::get( periph_ptr ) || JSTRT::get( periph_ptr ) || EOC::get( periph_ptr ) )
 
   /*-------------------------------------------------------------------------------
   Constants
@@ -60,7 +66,7 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mPeriph( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX ), mConversionInProgress( false )
+  Driver::Driver() : mPeriph( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX )
   {
   }
 
@@ -74,6 +80,8 @@ namespace Thor::LLD::ADC
   -------------------------------------------------*/
   Chimera::Status_t Driver::attach( RegisterMap *const peripheral )
   {
+    using namespace Chimera::ADC;
+
     /*------------------------------------------------
     Get peripheral descriptor settings
     ------------------------------------------------*/
@@ -91,9 +99,9 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------
     Reset the channel sample times to defaults
     -------------------------------------------------*/
-    for ( size_t idx = 0; idx < ARRAY_COUNT( mChannelSampleTime ); idx++ )
+    for ( size_t idx = 0; idx < NUM_ADC_CHANNELS_PER_PERIPH; idx++ )
     {
-      mChannelSampleTime[ idx ] = SampleTime::SMP_24P5;
+      setSampleTime( static_cast<Channel>( idx ), SampleTime::SMP_28 );
     }
 
     return Chimera::Status::OK;
@@ -105,151 +113,84 @@ namespace Thor::LLD::ADC
     using namespace Thor::LLD::RCC;
 
     /*-------------------------------------------------
-    Configure the clock
+    Reset the device back to default register values
     -------------------------------------------------*/
-    if ( cfg.clockSource != Chimera::Clock::Bus::PCLK2 )
+    this->clockEnable();
+    this->reset();
+
+    /*-------------------------------------------------
+    Select the clock prescaler. On the F4, the ADC is
+    driven directly from the APB2 clock. (RM Fig.13)
+    -------------------------------------------------*/
+    switch ( cfg.clockPrescale )
     {
-      return Chimera::Status::INVAL_FUNC_PARAM;
-    }
+      case Chimera::ADC::Prescaler::DIV_2:
+        ADCPRE::set( ADC_COMMON, 0 << CCR_ADCPRE_Pos );
+        break;
 
-    // // Select the clock source
-    // ADCSEL::set( RCC1_PERIPH, Config::CCIPR::ADCSEL_SYS_CLOCK );
+      case Chimera::ADC::Prescaler::DIV_4:
+        ADCPRE::set( ADC_COMMON, 1 << CCR_ADCPRE_Pos );
+        break;
 
-    // // Turn on the core peripheral clock
-    // this->clockEnable();
-    // this->reset();
+      case Chimera::ADC::Prescaler::DIV_6:
+        ADCPRE::set( ADC_COMMON, 2 << CCR_ADCPRE_Pos );
+        break;
 
-    // // Set the clock mode to be asynchronous
-    // CKMODE::set( ADC_COMMON, 0 );
+      case Chimera::ADC::Prescaler::DIV_8:
+      default:
+        ADCPRE::set( ADC_COMMON, 3 << CCR_ADCPRE_Pos );
+        break;
+    };
 
-    // // Set the prescaler
-    // switch ( cfg.clockPrescale )
-    // {
-    //   case Chimera::ADC::Prescaler::DIV_1:
-    //     PRESC::set( ADC_COMMON, 0 << CCR_PRESC_Pos );
-    //     break;
+    /*-------------------------------------------------
+    Enable the temperature sensor and internal VRef
+    -------------------------------------------------*/
+    TSVREFE::set( ADC_COMMON, CCR_TSVREFE );
 
-    //   case Chimera::ADC::Prescaler::DIV_2:
-    //     PRESC::set( ADC_COMMON, 1 << CCR_PRESC_Pos );
-    //     break;
+    /*-------------------------------------------------
+    Assign the ADC resolution
+    -------------------------------------------------*/
+    switch ( cfg.resolution )
+    {
+      case Chimera::ADC::Resolution::BIT_12:
+        RES::set( mPeriph, 0x00 << CR1_RES_Pos );
+        break;
 
-    //   case Chimera::ADC::Prescaler::DIV_4:
-    //     PRESC::set( ADC_COMMON, 2 << CCR_PRESC_Pos );
-    //     break;
+      case Chimera::ADC::Resolution::BIT_10:
+        RES::set( mPeriph, 0x01 << CR1_RES_Pos );
+        break;
 
-    //   case Chimera::ADC::Prescaler::DIV_6:
-    //     PRESC::set( ADC_COMMON, 3 << CCR_PRESC_Pos );
-    //     break;
+      case Chimera::ADC::Resolution::BIT_8:
+        RES::set( mPeriph, 0x02 << CR1_RES_Pos );
+        break;
 
-    //   case Chimera::ADC::Prescaler::DIV_8:
-    //     PRESC::set( ADC_COMMON, 4 << CCR_PRESC_Pos );
-    //     break;
+      case Chimera::ADC::Resolution::BIT_6:
+      default:
+        RES::set( mPeriph, 0x03 << CR1_RES_Pos );
+        break;
+    };
 
-    //   case Chimera::ADC::Prescaler::DIV_10:
-    //     PRESC::set( ADC_COMMON, 5 << CCR_PRESC_Pos );
-    //     break;
+    /*-------------------------------------------------
+    Select the EOC interrupt to occur at the end of
+    each regular conversion.
+    -------------------------------------------------*/
+    EOCS::set( mPeriph, CR2_EOCS );
 
-    //   case Chimera::ADC::Prescaler::DIV_12:
-    //     PRESC::set( ADC_COMMON, 6 << CCR_PRESC_Pos );
-    //     break;
+    /*-------------------------------------------------
+    Initially disable DMA transfers
+    -------------------------------------------------*/
+    DDS::clear( mPeriph, CR2_DDS );
+    DMA::clear( mPeriph, CR2_DMA );
 
-    //   case Chimera::ADC::Prescaler::DIV_16:
-    //     PRESC::set( ADC_COMMON, 7 << CCR_PRESC_Pos );
-    //     break;
+    /*-------------------------------------------------
+    Enable ISRs
+    -------------------------------------------------*/
+    EOCIE::set( mPeriph, CR1_EOCIE ); /* End of conversion interrupt */
 
-    //   case Chimera::ADC::Prescaler::DIV_32:
-    //     PRESC::set( ADC_COMMON, 8 << CCR_PRESC_Pos );
-    //     break;
-
-    //   case Chimera::ADC::Prescaler::DIV_64:
-    //     PRESC::set( ADC_COMMON, 9 << CCR_PRESC_Pos );
-    //     break;
-
-    //   case Chimera::ADC::Prescaler::DIV_128:
-    //     PRESC::set( ADC_COMMON, 10 << CCR_PRESC_Pos );
-    //     break;
-
-    //   case Chimera::ADC::Prescaler::DIV_256:
-    //     PRESC::set( ADC_COMMON, 11 << CCR_PRESC_Pos );
-    //     break;
-
-    //   default:
-    //     // Prescaler not supported
-    //     break;
-    // };
-
-    // /*-------------------------------------------------
-    // Enable the sensor monitors
-    // -------------------------------------------------*/
-    // VBATEN::set( ADC_COMMON, CCR_VBATEN );    // External battery sensor
-    // TSEN::set( ADC_COMMON, CCR_TSEN );        // Internal temperature sensor
-    // VREFEN::set( ADC_COMMON, CCR_VREFEN );    // Internal bandgap vref sensor
-
-    // /*-------------------------------------------------
-    // Bring the ADC out of deep power down
-    // -------------------------------------------------*/
-    // DEEPPWD::clear( mPeriph, CR_DEEPPWD );    // Disable deep power down
-    // ADVREGEN::set( mPeriph, CR_ADVREGEN );    // Enable the voltage regulator
-
-    // // Allow the analog voltage regulator time to boot
-    // Chimera::delayMilliseconds( 250 );
-
-    // /*-------------------------------------------------
-    // Assign the ADC resolution
-    // -------------------------------------------------*/
-    // switch ( cfg.resolution )
-    // {
-    //   case Chimera::ADC::Resolution::BIT_12:
-    //     RES::set( mPeriph, 0 << CFGR_RES_Pos );
-    //     break;
-
-    //   case Chimera::ADC::Resolution::BIT_10:
-    //     RES::set( mPeriph, 1 << CFGR_RES_Pos );
-    //     break;
-
-    //   case Chimera::ADC::Resolution::BIT_8:
-    //     RES::set( mPeriph, 2 << CFGR_RES_Pos );
-    //     break;
-
-    //   case Chimera::ADC::Resolution::BIT_6:
-    //   default:
-    //     RES::set( mPeriph, 3 << CFGR_RES_Pos );
-    //     break;
-    // };
-
-    // /*-------------------------------------------------
-    // Calibrate the ADC
-    // -------------------------------------------------*/
-    // // Default to single ended inputs for all channels
-    // DIFSEL::clear( mPeriph, DIFSEL_DIFSEL );
-
-    // // Start calibration for single ended inputs
-    // ADCALDIF::clear( mPeriph, CR_ADCALDIF );
-    // ADCAL::set( mPeriph, CR_ADCAL );
-
-    // // Calibration complete when bit is cleared
-    // while ( ADCAL::get( mPeriph ) )
-    // {
-    //   continue;
-    // }
-
-    // /*-------------------------------------------------
-    // Enable ISRs
-    // -------------------------------------------------*/
-    // EOCIE::set( mPeriph, IER_EOCIE );
-    // JEOCIE::set( mPeriph, IER_JEOCIE );
-
-    // /*-------------------------------------------------
-    // Enable the ADC
-    // -------------------------------------------------*/
-    // ADEN::set( mPeriph, CR_ADEN );
-
-    // // Wait for ADC to signal it's ready, then ACK it via write 1.
-    // while ( !ADRDY::get( mPeriph ) )
-    // {
-    //   continue;
-    // }
-    // ADRDY::set( mPeriph, ISR_ADRDY );
+    /*-------------------------------------------------
+    Bring the ADC out of power down mode
+    -------------------------------------------------*/
+    ADON::set( mPeriph, CR2_ADON );
 
     return Chimera::Status::OK;
   }
@@ -257,24 +198,53 @@ namespace Thor::LLD::ADC
 
   Chimera::Status_t Driver::setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time )
   {
+    using namespace Chimera::ADC;
+
     /*-------------------------------------------------
     Input Protection
     -------------------------------------------------*/
-    if ( !( static_cast<size_t>( ch ) < ARRAY_COUNT( mChannelSampleTime ) ) )
+    if ( !( EnumValue( ch ) < NUM_ADC_CHANNELS_PER_PERIPH) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     /*-------------------------------------------------
-    Write access protection is provided by the HLD
+    Apply sample times to the registers
     -------------------------------------------------*/
-    mChannelSampleTime[ static_cast<size_t>( ch ) ] = time;
+    size_t chNum = static_cast<size_t>( ch );
+
+    if ( ch < Channel::ADC_CH_10 )
+    {
+      auto chPos     = static_cast<size_t>( chNum ) * SMPRx_BIT_Wid;
+      Reg32_t regVal = static_cast<size_t>( time ) << chPos;
+      Reg32_t curVal = SMPR1_ALL::get( mPeriph );
+
+      curVal &= ~( SMPRx_BIT_Msk << chPos );
+      curVal |= regVal;
+
+      SMPR1_ALL::set( mPeriph, curVal );
+    }
+    else
+    {
+      auto chOffset  = static_cast<size_t>( Channel::ADC_CH_10 );
+      auto chPos     = static_cast<size_t>( chNum ) - chOffset;
+      Reg32_t regVal = static_cast<size_t>( time ) << chPos;
+      Reg32_t curVal = SMPR2_ALL::get( mPeriph );
+
+      curVal &= ~( SMPRx_BIT_Msk << chPos );
+      curVal |= regVal;
+
+      SMPR2_ALL::set( mPeriph, curVal );
+    }
+
     return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t setupSequence( const Chimera::ADC::SequenceInit& sequence )
   {
+
+
     return Chimera::Status::NOT_SUPPORTED;
   }
 
@@ -284,107 +254,60 @@ namespace Thor::LLD::ADC
     using namespace Chimera::ADC;
     return Chimera::ADC::Sample();
 
-    // /*-------------------------------------------------
-    // Wait for the hardware to indicate it's free for a
-    // new transfer.
+    /*-------------------------------------------------
+    Wait for the hardware to indicate it's free for a
+    new transfer.
 
-    // This may have issues if a continuous transfer is
-    // running in the background. Access to these bits are
-    // not atomic, so stopping an existing conversion may
-    // be necessary in the future.
-    // -------------------------------------------------*/
-    // while ( !mConversionInProgress && CNVRT_IN_PROGRESS( mPeriph ) )
-    // {
-    //   continue;
-    // }
+    This may have issues if a continuous transfer is
+    running in the background. Access to these bits are
+    not atomic, so stopping an existing conversion may
+    be necessary in the future.
+    -------------------------------------------------*/
+    while ( CNVRT_IN_PROGRESS( mPeriph ) )
+    {
+      continue;
+    }
 
-    // // Internally lock out other measurements
-    // mConversionInProgress = true;
+    /*-------------------------------------------------
+    Set single conversion mode.
+    Set EOC flag to be set at end of single conversion
+    -------------------------------------------------*/
+    CONT::clear( mPeriph, CR2_CONT );
+    EOCS::set( mPeriph, CR2_EOCS );
 
-    // /*-------------------------------------------------
-    // Apply the currently configured sample time for this channel
-    // -------------------------------------------------*/
-    // size_t chNum = static_cast<size_t>( channel );
+    /*-------------------------------------------------
+    Configure the channel to be measured
+    -------------------------------------------------*/
+    L::set( mPeriph, 1u << SQR1_L_Pos );
+    SQ1::set( mPeriph, EnumValue( channel ) << SQR3_SQ1_Pos );
 
-    // if ( channel < Channel::ADC_CH_10 )
-    // {
-    //   auto chPos     = static_cast<size_t>( chNum ) * SMPRx_BIT_Wid;
-    //   Reg32_t regVal = static_cast<size_t>( mChannelSampleTime[ chNum ] ) << chPos;
+    /*-------------------------------------------------
+    Prevent peripheral interrupts as this conversion is
+    fast enough that it doesn't make sense to use ISRs.
+    -------------------------------------------------*/
+    disableInterrupts();
 
-    //   SMPR1_ALL::set( mPeriph, regVal );
-    // }
-    // else
-    // {
-    //   auto chOffset  = static_cast<size_t>( Channel::ADC_CH_10 );
-    //   auto chPos     = static_cast<size_t>( chNum ) - chOffset;
-    //   Reg32_t regVal = static_cast<size_t>( mChannelSampleTime[ chNum ] ) << chPos;
+    /*-------------------------------------------------
+    Perform the conversion
+    -------------------------------------------------*/
+    startSequence();
+    while ( !EOC::get( mPeriph ) )
+    {
+      continue;
+    }
+    EOC::set( mPeriph, SR_EOC );
 
-    //   SMPR2_ALL::set( mPeriph, regVal );
-    // }
+    Sample measurement;
+    measurement.counts = DATA::get( mPeriph );
+    measurement.us     = Chimera::micros();
 
-    // /*-------------------------------------------------
-    // Set single conversion mode
-    // -------------------------------------------------*/
-    // CONT::clear( mPeriph, CFGR_CONT );
+    /*-------------------------------------------------
+    Re-enable ISRs and return the valid measurement
+    -------------------------------------------------*/
+    Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    enableInterrupts();
 
-    // /*-------------------------------------------------
-    // Configure the channel to be measured
-    // -------------------------------------------------*/
-    // L::set( mPeriph, 1 );
-    // SQ1::set( mPeriph, chNum << SQR1_SQ1_Pos );
-
-    // /*-------------------------------------------------
-    // Clear the EOC flag (by set)
-    // -------------------------------------------------*/
-    // EOC::set( mPeriph, ISR_EOC );
-
-    // /*-------------------------------------------------
-    // Cache the ISR flags set before conversion. This
-    // allows clearing any new interrupts generated later.
-    // -------------------------------------------------*/
-    // Reg32_t isrFlags = ISR_ALL::get( mPeriph );
-
-    // /*-------------------------------------------------
-    // Prevent peripheral interrupts as this conversion is
-    // fast enough that it doesn't make sense to use ISRs.
-    // -------------------------------------------------*/
-    // disableInterrupts();
-
-    // /*-------------------------------------------------
-    // Perform the conversion, applying the fix for
-    // Errata 2.5.2.
-    // -------------------------------------------------*/
-    // // Start conversion, then acknowledge completion
-    // ADSTART::set( mPeriph, CR_ADSTART );
-    // while ( !EOC::get( mPeriph ) )
-    // {
-    //   continue;
-    // }
-    // EOC::set( mPeriph, ISR_EOC );
-
-    // // Convert one more time. This is the Errata fix.
-    // ADSTART::set( mPeriph, CR_ADSTART );
-    // while ( !EOC::get( mPeriph ) )
-    // {
-    //   continue;
-    // }
-    // EOC::set( mPeriph, ISR_EOC );
-
-    // // Read out the result of the conversion
-    // Sample measurement = DATA::get( mPeriph );
-
-    // // Clear any other new ISR flags before interrupts are re-enabled
-    // Reg32_t newFlags = ISR_ALL::get( mPeriph ) & ~isrFlags;
-    // ISR_ALL::set( mPeriph, newFlags );
-
-    // // Let this object know transfers are done
-    // mConversionInProgress = false;
-
-    // /*-------------------------------------------------
-    // Re-enable ISRs and return the valid measurement
-    // -------------------------------------------------*/
-    // enableInterrupts();
-    // return measurement;
+    return measurement;
   }
 
 
@@ -396,18 +319,33 @@ namespace Thor::LLD::ADC
 
   void Driver::startSequence()
   {
-
+    /*-------------------------------------------------
+    Set the start bit, then wait for HW to clear it
+    -------------------------------------------------*/
+    SWSTART::set( mPeriph, CR2_SWSTART );
+    while( SWSTART::get( mPeriph ) )
+    {
+      /* If stuck here, the ADC probably isn't enabled */
+      continue;
+    }
   }
 
 
   void Driver::stopSequence()
   {
-
+    /*-------------------------------------------------
+    You can't stop a single in-progress conversion, but
+    the ADC can be prevented from continuous conversion.
+    -------------------------------------------------*/
+    CONT::clear( mPeriph, CR2_CONT );
   }
 
 
   void Driver::IRQHandler()
   {
+    // Handle ISR event
+    // Push data to the queue if needed
+    // Alert the HLD user ISR task with Chimera::ADC::Interrupt signal
   }
 }    // namespace Thor::LLD::ADC
 

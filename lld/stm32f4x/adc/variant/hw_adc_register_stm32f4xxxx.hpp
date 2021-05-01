@@ -165,6 +165,10 @@ namespace Thor::LLD::ADC
   static constexpr uint32_t CR2_SWSTART      = CR2_SWSTART_Msk;
 
   /******************  Bit definition for SMPR1 register  *******************/
+  static constexpr Reg32_t SMPRx_BIT_Wid = 3;
+  static constexpr Reg32_t SMPRx_BIT_Msk = 0x7;
+  static constexpr Reg32_t SMPR1_ALL_Msk = 0x3FFFFFFF;
+
   static constexpr uint32_t SMPR1_SMP10_Pos = ( 0U );
   static constexpr uint32_t SMPR1_SMP10_Msk = ( 0x7UL << SMPR1_SMP10_Pos );
   static constexpr uint32_t SMPR1_SMP10     = SMPR1_SMP10_Msk;
@@ -221,6 +225,8 @@ namespace Thor::LLD::ADC
   static constexpr uint32_t SMPR1_SMP18_2   = ( 0x4UL << SMPR1_SMP18_Pos );
 
   /******************  Bit definition for SMPR2 register  *******************/
+  static constexpr Reg32_t SMPR2_ALL_Msk = 0x07FFFFFF;
+
   static constexpr uint32_t SMPR2_SMP0_Pos = ( 0U );
   static constexpr uint32_t SMPR2_SMP0_Msk = ( 0x7UL << SMPR2_SMP0_Pos );
   static constexpr uint32_t SMPR2_SMP0     = SMPR2_SMP0_Msk;

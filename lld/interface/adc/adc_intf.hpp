@@ -219,9 +219,6 @@ namespace Thor::LLD::ADC
     RegisterMap *mPeriph;
     CommonRegisterMap *mCommon;
     size_t mResourceIndex;
-    bool mConversionInProgress;
-    Chimera::ADC::Sample mChannelSample[ NUM_ADC_CHANNELS_PER_PERIPH ];
-    SampleTime mChannelSampleTime[ NUM_ADC_CHANNELS_PER_PERIPH ];
     Chimera::ADC::DriverConfig mCfg;
   };
 

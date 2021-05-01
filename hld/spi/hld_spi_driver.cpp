@@ -54,6 +54,7 @@ static HLD::Driver hld_driver[ NUM_DRIVERS ];              /**< Driver objects *
 static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ];      /**< Handle to the ISR post processing thread */
 static BinarySemphr s_user_isr_signal[ NUM_DRIVERS ];      /**< Lock for each ISR post processing thread */
 static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ]; /**< RTOS aware function to execute at end of ISR */
+static bool s_thread_created[ NUM_DRIVERS ];
 
 /*-------------------------------------------------------------------------------
 Private Function Declarations
@@ -108,6 +109,14 @@ namespace Thor::SPI
 #if defined( STM32_SPI4_PERIPH_AVAILABLE )
     s_user_isr_thread_func[::LLD::SPI4_RESOURCE_INDEX ] = SPI4ISRPostProcessorThread;
 #endif
+
+    /*-------------------------------------------------
+    Initialize Memory
+    -------------------------------------------------*/
+    for( size_t x=0; x < ARRAY_COUNT( s_thread_created ); x++)
+    {
+      s_thread_created[ x ] = false;
+    }
 
     /*-------------------------------------------------
     Lock the init sequence and exit
@@ -240,7 +249,7 @@ namespace Thor::SPI
     /*------------------------------------------------
     Register the ISR post processor thread
     ------------------------------------------------*/
-    if ( s_user_isr_thread_func[ lldResourceIndex ] )
+    if ( s_user_isr_thread_func[ lldResourceIndex ] && !s_thread_created[ lldResourceIndex ] )
     {
       driver->attachISRWakeup( &s_user_isr_signal[ lldResourceIndex ] );
 
@@ -254,13 +263,14 @@ namespace Thor::SPI
       cfg.arg        = nullptr;
       cfg.function   = s_user_isr_thread_func[ lldResourceIndex ];
       cfg.priority   = Priority::MAXIMUM;
-      cfg.stackWords = STACK_BYTES( 250 );
+      cfg.stackWords = STACK_BYTES( 512 );
       cfg.type       = TaskInitType::DYNAMIC;
       cfg.name       = tmp.data();
 
       thread.create( cfg );
       thread.start();
       s_user_isr_handle[ lldResourceIndex ] = thread.native_handle();
+      s_thread_created[ lldResourceIndex ] = true;
     }
 
     return result;

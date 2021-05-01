@@ -36,8 +36,8 @@ namespace Thor::LLD::ADC
   -------------------------------------------------------------------------------*/
   struct Measurement
   {
-    size_t timestamp_us;          /**< System time in microseconds */
-    Chimera::ADC::Sample data;  /**< Channel data */
+    size_t timestamp_us;       /**< System time in microseconds */
+    Chimera::ADC::Sample data; /**< Channel data */
   };
 
 
@@ -59,6 +59,7 @@ namespace Thor::LLD::ADC
    */
   enum class SampleTime : uint8_t
   {
+#if defined( STM32L432xx )
     SMP_2P5,   /**< 2.5 ADC Clock Cycles */
     SMP_6P5,   /**< 6.5 ADC Clock Cycles */
     SMP_12P5,  /**< 12.5 ADC Clock Cycles */
@@ -67,6 +68,17 @@ namespace Thor::LLD::ADC
     SMP_92P5,  /**< 92.5 ADC Clock Cycles */
     SMP_247P5, /**< 247.5 ADC Clock Cycles */
     SMP_640P5, /**< 640.5 ADC Clock Cycles */
+
+#elif defined( STM32F446xx )
+    SMP_3,   /**< 3 ADC Clock Cycles */
+    SMP_15,  /**< 15 ADC Clock Cycles */
+    SMP_28,  /**< 28 ADC Clock Cycles */
+    SMP_56,  /**< 56 ADC Clock Cycles */
+    SMP_84,  /**< 84 ADC Clock Cycles */
+    SMP_112, /**< 112 ADC Clock Cycles */
+    SMP_144, /**< 144 ADC Clock Cycles */
+    SMP_480, /**< 480 ADC Clock Cycles */
+#endif
 
     NUM_OPTIONS,
     UNKNOWN

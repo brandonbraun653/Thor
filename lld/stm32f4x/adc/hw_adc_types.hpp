@@ -106,6 +106,12 @@ namespace Thor::LLD::ADC
   REG_ACCESSOR( RegisterMap, CR2, CR2_ADON_Msk, ADON, BIT_ACCESS_RW );
 
   /*-------------------------------------------------
+  Sample Time Registers (1/2)
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, SMPR1, SMPR1_ALL_Msk, SMPR1_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, SMPR2, SMPR2_ALL_Msk, SMPR2_ALL, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
   Analog Watchdog Higher Threshold
   -------------------------------------------------*/
   REG_ACCESSOR( RegisterMap, HTR, HTR_HT_Msk, HTHRESH, BIT_ACCESS_RW );

@@ -48,13 +48,6 @@ namespace Thor::ADC
   static size_t s_driver_initialized;                        /**< Tracks the module level initialization state */
   static HLD::Driver hld_driver[ NUM_DRIVERS ];              /**< Driver objects */
 
-  //Should the LLD interface have an ISR event queue for each driver?
-  // Each supported channel should have a queue right? The measurement is
-  // taken off each channel, ISR fires, data retrieved, push to queue, signal
-  // the userspace ISR handler to retrieve the data.
-
-  // High resolution timestamps? Microseconds?
-
 
   /*-------------------------------------------------------------------------------
   Static Functions
@@ -168,6 +161,8 @@ namespace Thor::ADC
 
   void Driver::postISRProcessing()
   {
+    // Figure out what kind of interrupt happened
+    // Invoke any callbacks
   }
 
 
@@ -222,6 +217,8 @@ namespace Thor::ADC
     Convert the sample times
     -------------------------------------------------*/
     auto driver = LLD::getDriver( mConfig.periph );
+
+    #if defined( STM32L432xx )
     if ( cycles < 3 )
     {
       return driver->setSampleTime( ch, LLD::SampleTime::SMP_2P5 );
@@ -254,6 +251,41 @@ namespace Thor::ADC
     {
       return driver->setSampleTime( ch, LLD::SampleTime::SMP_640P5 );
     }
+
+    #elif defined( STM32F446xx )
+    if ( cycles < 4 )
+    {
+      return driver->setSampleTime( ch, LLD::SampleTime::SMP_3 );
+    }
+    else if ( cycles < 16 )
+    {
+      return driver->setSampleTime( ch, LLD::SampleTime::SMP_15 );
+    }
+    else if ( cycles < 29 )
+    {
+      return driver->setSampleTime( ch, LLD::SampleTime::SMP_28 );
+    }
+    else if ( cycles < 57 )
+    {
+      return driver->setSampleTime( ch, LLD::SampleTime::SMP_56 );
+    }
+    else if ( cycles < 85 )
+    {
+      return driver->setSampleTime( ch, LLD::SampleTime::SMP_84 );
+    }
+    else if ( cycles < 113 )
+    {
+      return driver->setSampleTime( ch, LLD::SampleTime::SMP_112 );
+    }
+    else if ( cycles < 145 )
+    {
+      return driver->setSampleTime( ch, LLD::SampleTime::SMP_144 );
+    }
+    else
+    {
+      return driver->setSampleTime( ch, LLD::SampleTime::SMP_480 );
+    }
+    #endif
   }
 
 
@@ -276,13 +308,13 @@ namespace Thor::ADC
 
   void Driver::startSequence()
   {
-
+    LLD::getDriver( mConfig.periph )->startSequence();
   }
 
 
   void Driver::stopSequence()
   {
-
+  LLD::getDriver( mConfig.periph )->stopSequence();
   }
 
 
