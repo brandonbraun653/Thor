@@ -44,7 +44,7 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
-  using PeriphQueue = std::shared_ptr<ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>>[ CHANNEL_QUEUE_SIZE ];
+  using PeriphQueue = std::array<std::shared_ptr<ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>>, CHANNEL_QUEUE_SIZE>;
 
   /*-------------------------------------------------------------------------------
   Peripheral Instances:

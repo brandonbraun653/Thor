@@ -21,6 +21,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/adc>
 
 namespace Thor::LLD::ADC
 {
@@ -30,24 +31,13 @@ namespace Thor::LLD::ADC
   class Driver;
   struct RegisterMap;
 
-
-  /*-------------------------------------------------------------------------------
-  Structures
-  -------------------------------------------------------------------------------*/
-  struct Measurement
-  {
-    size_t timestamp_us;       /**< System time in microseconds */
-    Chimera::ADC::Sample data; /**< Channel data */
-  };
-
-
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
   using Driver_rPtr = Driver *;
 
   template<size_t SIZE>
-  using ChannelQueue = etl::queue_spsc_locked<Measurement, SIZE>;
+  using ChannelQueue = etl::queue_spsc_locked<Chimera::ADC::Sample, SIZE>;
 
 
   /*-------------------------------------------------------------------------------

@@ -19,8 +19,10 @@
 #include <Aurora/utility>
 
 /* Chimera Includes */
+#include <Chimera/adc>
 #include <Chimera/algorithm>
 #include <Chimera/common>
+#include <Chimera/thread>
 #include <Chimera/utility>
 
 /* Driver Includes */
@@ -29,6 +31,8 @@
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/timer>
+
+#include "SEGGER_SYSVIEW.h"
 
 
 #if defined( THOR_LLD_ADC ) && defined( TARGET_STM32F4 )
@@ -59,11 +63,10 @@ namespace Thor::LLD::ADC
    */
   static constexpr float VREFINT_CAL_VREF = 3000.0f;
 
-
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mPeriph( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX )
+  Driver::Driver() : mPeriph( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX ), mSequenceIdx( 0 )
   {
   }
 
@@ -238,11 +241,123 @@ namespace Thor::LLD::ADC
   }
 
 
-  Chimera::Status_t setupSequence( const Chimera::ADC::SequenceInit& sequence )
+  Chimera::Status_t Driver::setupSequence( const Chimera::ADC::SequenceInit& sequence )
   {
+    using namespace Chimera::ADC;
 
+    /*-------------------------------------------------
+    Input protections
+    -------------------------------------------------*/
+    if ( !sequence.channels || !sequence.numChannels )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
 
-    return Chimera::Status::NOT_SUPPORTED;
+    /*-------------------------------------------------
+    Wait for the hardware to indicate it's free for a
+    new transfer.
+    -------------------------------------------------*/
+    stopSequence();
+    while ( STRT::get( mPeriph ) || EOC::get( mPeriph ) )
+    {
+      continue;
+    }
+
+    disableInterrupts();
+    {
+      /*-------------------------------------------------
+      Continuous or polling conversion?
+      -------------------------------------------------*/
+      switch( sequence.mode )
+      {
+        case SamplingMode::ONE_SHOT:
+          CONT::clear( mPeriph, CR2_CONT );
+          break;
+
+        case SamplingMode::CONTINUOUS:
+          CONT::set( mPeriph, CR2_CONT );
+          break;
+
+        case SamplingMode::TRIGGER:
+        default:
+          return Chimera::Status::NOT_SUPPORTED;
+          break;
+      }
+
+      /*-------------------------------------------------
+      Data will be transferred in the interrupts
+      -------------------------------------------------*/
+      EOCIE::set( mPeriph, CR1_EOCIE );
+      EOCS::set( mPeriph, CR2_EOCS );
+      Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+
+      /*-------------------------------------------------
+      Setup the sequence registers
+      -------------------------------------------------*/
+      Reg32_t totalSize = 0;
+
+      for( size_t idx = 0; idx < sequence.numChannels; idx++ )
+      {
+        Channel next = ( *sequence.channels )[ idx ];
+
+        /* Max of 16 channels can be queued */
+        if( idx >= 16 || !( next < Channel::NUM_OPTIONS ) )
+        {
+          break;
+        }
+        else
+        {
+          totalSize++;
+        }
+
+        /* Write to the appropriate register */
+        Reg32_t chNum = EnumValue( next );
+        if ( idx <= 5 )
+        {
+          auto chOffset  = 0;
+          auto chPos     = ( idx - chOffset ) * SQR1_BIT_Wid;
+          Reg32_t regVal = ( chNum & SQR3_BIT_Msk ) << chPos;
+          Reg32_t curVal = SQR3_ALL::get( mPeriph );
+
+          curVal &= ~( SQR3_BIT_Msk << chPos );
+          curVal |= regVal;
+
+          SQR3_ALL::set( mPeriph, curVal );
+        }
+        else if( idx <= 11 )
+        {
+          auto chOffset  = 5;
+          auto chPos     = ( idx - chOffset ) * SQR1_BIT_Wid;
+          Reg32_t regVal = ( chNum & SQR2_BIT_Msk ) << chPos;
+          Reg32_t curVal = SQR2_ALL::get( mPeriph );
+
+          curVal &= ~( SQR2_BIT_Msk << chPos );
+          curVal |= regVal;
+
+          SQR2_ALL::set( mPeriph, curVal );
+        }
+        else if( idx <= 15 )
+        {
+          auto chOffset  = 11;
+          auto chPos     = ( idx - chOffset ) * SQR1_BIT_Wid;
+          Reg32_t regVal = ( chNum & SQR1_BIT_Msk ) << chPos;
+          Reg32_t curVal = SQR1_ALL::get( mPeriph );
+
+          curVal &= ~( SQR1_BIT_Msk << chPos );
+          curVal |= regVal;
+
+          SQR1_ALL::set( mPeriph, curVal );
+        }
+      }
+
+      /*-------------------------------------------------
+      Let the ADC know how many channels to sequence
+      -------------------------------------------------*/
+      L::set( mPeriph, totalSize << SQR1_L_Pos );
+    }
+    enableInterrupts();
+
+    return Chimera::Status::OK;
   }
 
 
@@ -278,34 +393,35 @@ namespace Thor::LLD::ADC
     SQ1::set( mPeriph, EnumValue( channel ) << SQR3_SQ1_Pos );
 
     /*-------------------------------------------------
-    Prevent peripheral interrupts as this conversion is
-    fast enough that it doesn't make sense to use ISRs.
-    -------------------------------------------------*/
-    disableInterrupts();
-
-    /*-------------------------------------------------
     Perform the conversion. Debuggers beware! Stepping
     through this section may cause your debugger to
     read the DATA register behind the scenes, clearing
     the EOC bit and causing this while loop to become
     infinite!
     -------------------------------------------------*/
-    startSequence();
-    while ( !EOC::get( mPeriph ) )
-    {
-      /* This bit is later cleared by the DATA register read */
-      continue;
-    }
-    stopSequence();
-
     Sample measurement;
-    measurement.counts = DATA::get( mPeriph );
-    measurement.us     = Chimera::micros();
 
-    /*-------------------------------------------------
-    Re-enable ISRs and return the valid measurement
-    -------------------------------------------------*/
-    Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    disableInterrupts();
+    {
+      startSequence();
+      while ( !EOC::get( mPeriph ) )
+      {
+        /* This bit is later cleared by the DATA register read */
+        continue;
+      }
+      stopSequence();
+
+      /*-------------------------------------------------
+      Consume the measurement
+      -------------------------------------------------*/
+      measurement.counts = DATA::get( mPeriph );
+      measurement.us     = Chimera::micros();
+
+      /*-------------------------------------------------
+      Clear out any ISRs that may have fired
+      -------------------------------------------------*/
+      Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    }
     enableInterrupts();
 
     return measurement;
@@ -378,9 +494,96 @@ namespace Thor::LLD::ADC
 
   void Driver::IRQHandler()
   {
-    // Handle ISR event
-    // Push data to the queue if needed
-    // Alert the HLD user ISR task with Chimera::ADC::Interrupt signal
+    using namespace Chimera::ADC;
+    using namespace Chimera::Interrupt;
+    using namespace Chimera::Peripheral;
+    using namespace Chimera::Thread;
+
+    bool wakeUserTask = false;
+    TaskMsg tskMsg = ITCMsg::TSK_MSG_NOP;
+
+    SEGGER_SYSVIEW_RecordEnterISR();
+
+    /*-------------------------------------------------
+    Data Available?
+    -------------------------------------------------*/
+    if( EOC::get( mPeriph ) )
+    {
+      /* Pull out the data */
+      Sample measurement;
+      measurement.counts = DATA::get( mPeriph ); // Also clears EOC
+      measurement.us = Chimera::micros();
+
+      /* Get the channel currently being measured */
+      uint32_t channel = 0;
+      uint32_t offset = 0;
+      uint32_t maxIdx = L::get( mPeriph ) >> SQR1_L_Pos;
+
+      if( mSequenceIdx < 6 )
+      {
+        offset = ( mSequenceIdx - 0 ) * SQR1_BIT_Wid;
+        channel = ( SQR3_ALL::get( mPeriph ) >> offset ) & SQR1_BIT_Msk;
+      }
+      else if( mSequenceIdx < 12 )
+      {
+        offset = ( mSequenceIdx - 6 ) * SQR1_BIT_Wid;
+        channel = ( SQR2_ALL::get( mPeriph ) >> offset ) & SQR1_BIT_Msk;
+      }
+      else if( mSequenceIdx < 16 )
+      {
+        offset = ( mSequenceIdx - 12 ) * SQR1_BIT_Wid;
+        channel = ( SQR1_ALL::get( mPeriph ) >> offset ) & SQR1_BIT_Msk;
+      }
+
+      /* Push to the queue */
+      if( ( channel < ADC1_Queue.size() ) && ADC1_Queue[ channel ]->available_from_unlocked() )
+      {
+        ADC1_Queue[ channel ]->push_from_unlocked( measurement );
+      }
+
+      /* Update the sequence counter */
+      mSequenceIdx++;
+      if( mSequenceIdx >= maxIdx )
+      {
+        mSequenceIdx = 0;
+      }
+
+      wakeUserTask = true;
+      tskMsg |= ITCMsg::TSK_MSG_ISR_DATA_READY;
+    }
+
+    /*-------------------------------------------------
+    Overrun error?
+    -------------------------------------------------*/
+    if( OVR::get( mPeriph ) )
+    {
+      OVR::clear( mPeriph, SR_OVR );
+
+      /*-------------------------------------------------
+      If not using DMA transfers, the conversion can run
+      faster than software can process. Simply re-trigger
+      the ADC to continue where it left off. (RM 13.8.2)
+      -------------------------------------------------*/
+      if( !DMA::get( mPeriph ) && EOCS::get( mPeriph ) )
+      {
+        SWSTART::set( mPeriph, CR2_SWSTART );
+      }
+      else
+      {
+        wakeUserTask = true;
+        tskMsg |= ITCMsg::TSK_MSG_ISR_ERROR;
+      }
+    }
+
+    /*-------------------------------------------------
+    Wake up the user thread
+    -------------------------------------------------*/
+    if( wakeUserTask )
+    {
+      sendTaskMsg( INT::getUserTaskId( Type::PERIPH_ADC ), tskMsg, TIMEOUT_DONT_WAIT );
+    }
+
+    SEGGER_SYSVIEW_RecordExitISR();
   }
 }    // namespace Thor::LLD::ADC
 

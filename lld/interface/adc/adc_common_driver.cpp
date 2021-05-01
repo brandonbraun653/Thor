@@ -42,7 +42,7 @@ namespace Thor::LLD::ADC
   Shared Data
   -------------------------------------------------------------------------------*/
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
-  extern PeriphQueue ADC1_Queue;
+  PeriphQueue ADC1_Queue;
 #endif /* STM32_ADC1_PERIPH_AVAILABLE */
 
   /*-------------------------------------------------------------------------------
@@ -58,6 +58,9 @@ namespace Thor::LLD::ADC
     s_adc_drivers[ ADC1_RESOURCE_INDEX ].enableInterrupts();
   }
 
+  static etl::function_fv<lockADC1> adc1Lock;
+  static etl::function_fv<unlockADC1> adc1Unlock;
+
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
@@ -66,11 +69,7 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------
     Attach all the expected peripherals to the drivers
     -------------------------------------------------*/
-    if ( attachDriverInstances( s_adc_drivers, ARRAY_COUNT( s_adc_drivers ) ) )
-    {
-      return Chimera::Status::OK;
-    }
-    else
+    if ( !attachDriverInstances( s_adc_drivers, ARRAY_COUNT( s_adc_drivers ) ) )
     {
       return Chimera::Status::FAIL;
     }
@@ -79,14 +78,13 @@ namespace Thor::LLD::ADC
     Initialize ADC1 channel queues
     -------------------------------------------------*/
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
-    etl::function_fv<lockADC1> adc1Lock;
-    etl::function_fv<unlockADC1> adc1Unlock;
-
     for ( size_t ch = 0; ch < ARRAY_COUNT( ADC1_Queue ); ch++ )
     {
       ADC1_Queue[ ch ] = std::make_shared<ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>>( adc1Lock, adc1Unlock );
     }
 #endif /* STM32_ADC1_PERIPH_AVAILABLE */
+
+    return Chimera::Status::OK;
   }
 
 

@@ -30,6 +30,8 @@ gen_intf_lib(
     "include"
   INTF_LIBRARIES
     project_inc
+    chimera_intf_inc
+    aurora_intf_inc
   EXPORT_DIR
     "${PROJECT_BINARY_DIR}/Thor"
 )

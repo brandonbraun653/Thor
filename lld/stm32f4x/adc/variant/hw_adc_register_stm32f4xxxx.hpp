@@ -319,6 +319,10 @@ namespace Thor::LLD::ADC
   static constexpr uint32_t LTR_LT     = LTR_LT_Msk;
 
   /*******************  Bit definition for SQR1 register  *******************/
+  static constexpr Reg32_t SQR1_BIT_Wid = 5;
+  static constexpr Reg32_t SQR1_BIT_Msk = 0x1F;
+  static constexpr Reg32_t SQR1_ALL_Msk = 0x000FFFFF;
+
   static constexpr uint32_t SQR1_SQ13_Pos = ( 0U );
   static constexpr uint32_t SQR1_SQ13_Msk = ( 0x1FUL << SQR1_SQ13_Pos );
   static constexpr uint32_t SQR1_SQ13     = SQR1_SQ13_Msk;
@@ -360,6 +364,10 @@ namespace Thor::LLD::ADC
   static constexpr uint32_t SQR1_L_3      = ( 0x8UL << SQR1_L_Pos );
 
   /*******************  Bit definition for SQR2 register  *******************/
+  static constexpr Reg32_t SQR2_BIT_Wid = 5;
+  static constexpr Reg32_t SQR2_BIT_Msk = 0x1F;
+  static constexpr Reg32_t SQR2_ALL_Msk = 0x3FFFFFFF;
+
   static constexpr uint32_t SQR2_SQ7_Pos  = ( 0U );
   static constexpr uint32_t SQR2_SQ7_Msk  = ( 0x1FUL << SQR2_SQ7_Pos );
   static constexpr uint32_t SQR2_SQ7      = SQR2_SQ7_Msk;
@@ -410,6 +418,10 @@ namespace Thor::LLD::ADC
   static constexpr uint32_t SQR2_SQ12_4   = ( 0x10UL << SQR2_SQ12_Pos );
 
   /*******************  Bit definition for SQR3 register  *******************/
+  static constexpr Reg32_t SQR3_BIT_Wid = 5;
+  static constexpr Reg32_t SQR3_BIT_Msk = 0x1F;
+  static constexpr Reg32_t SQR3_ALL_Msk = 0x3FFFFFFF;
+
   static constexpr uint32_t SQR3_SQ1_Pos = ( 0U );
   static constexpr uint32_t SQR3_SQ1_Msk = ( 0x1FUL << SQR3_SQ1_Pos );
   static constexpr uint32_t SQR3_SQ1     = SQR3_SQ1_Msk;

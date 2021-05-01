@@ -220,6 +220,7 @@ namespace Thor::LLD::ADC
     CommonRegisterMap *mCommon;
     size_t mResourceIndex;
     Chimera::ADC::DriverConfig mCfg;
+    volatile uint8_t mSequenceIdx;
   };
 
   #endif  /* THOR_LLD_ADC */

@@ -9,10 +9,13 @@
  ********************************************************************************/
 
 /* C++ Includes */
+#include <bitset>
 #include <cstring>
 
 /* Aurora Includes */
 #include <Aurora/constants>
+#include <Aurora/logging>
+#include <Aurora/utility>
 
 /* Chimera Includes */
 #include <Chimera/adc>
@@ -45,8 +48,8 @@ namespace Thor::ADC
   /*-------------------------------------------------------------------------------
   Variables
   -------------------------------------------------------------------------------*/
-  static size_t s_driver_initialized;                        /**< Tracks the module level initialization state */
-  static HLD::Driver hld_driver[ NUM_DRIVERS ];              /**< Driver objects */
+  static size_t s_driver_initialized;           /**< Tracks the module level initialization state */
+  static HLD::Driver hld_driver[ NUM_DRIVERS ]; /**< Driver objects */
 
 
   /*-------------------------------------------------------------------------------
@@ -60,7 +63,10 @@ namespace Thor::ADC
    */
   static void ADCxISRUserThread( void *arg )
   {
+    using namespace Aurora::Logging;
     using namespace Chimera::Thread;
+
+    TaskMsg msg;
 
     while ( 1 )
     {
@@ -68,17 +74,29 @@ namespace Thor::ADC
       Wait for something to wake this thread. If the msg
       isn't correct, go back to waiting.
       -------------------------------------------------*/
-      if( !this_thread::pendTaskMsg( ITCMsg::TSK_MSG_ISR_HANDLER ) )
+      if ( !this_thread::receiveTaskMsg( msg, TIMEOUT_BLOCK ) )
       {
         continue;
       }
 
       /*-------------------------------------------------
+      Make the error visible to the user
+      -------------------------------------------------*/
+      // Currently will cause a stack overflow
+      // if( msg == ITCMsg::TSK_MSG_ISR_ERROR )
+      // {
+      //   LOG_ERROR( "ADC ISR registered an error\r\n" );
+      // }
+
+      /*-------------------------------------------------
       Handle every ISR. Don't know which triggered this.
       -------------------------------------------------*/
-      for( size_t index = 0; index < NUM_DRIVERS; index++ )
+      if( msg & ITCMsg::TSK_MSG_ISR_DATA_READY )
       {
-        hld_driver[ index ].postISRProcessing();
+        for ( size_t index = 0; index < NUM_DRIVERS; index++ )
+        {
+          hld_driver[ index ].postISRProcessing();
+        }
       }
     }
   }
@@ -161,8 +179,29 @@ namespace Thor::ADC
 
   void Driver::postISRProcessing()
   {
-    // Figure out what kind of interrupt happened
-    // Invoke any callbacks
+    using namespace Chimera::ADC;
+
+    for( size_t ch = 0; ch < Thor::LLD::ADC::NUM_ADC_CHANNELS_PER_PERIPH; ch++ )
+    {
+      /*-------------------------------------------------
+      Populate the interrupt information
+      -------------------------------------------------*/
+      InterruptDetail detail;
+      detail.channel = static_cast<Channel>( ch );
+      detail.isr = Interrupt::EOC_SEQUENCE;
+
+      /*-------------------------------------------------
+      Empty the queue
+      -------------------------------------------------*/
+      while( nextSample( static_cast<Channel>( ch ), detail.data ) )
+      {
+        if( mCallbacks[ EnumValue( detail.isr ) ] )
+        {
+          mCallbacks[ EnumValue( detail.isr ) ]( detail );
+        }
+      }
+    }
+
   }
 
 
@@ -178,6 +217,7 @@ namespace Thor::ADC
     if ( driver )
     {
       mConfig = cfg;
+      mPeriph = cfg.periph;
     }
     else
     {
@@ -218,7 +258,7 @@ namespace Thor::ADC
     -------------------------------------------------*/
     auto driver = LLD::getDriver( mConfig.periph );
 
-    #if defined( STM32L432xx )
+#if defined( STM32L432xx )
     if ( cycles < 3 )
     {
       return driver->setSampleTime( ch, LLD::SampleTime::SMP_2P5 );
@@ -252,7 +292,7 @@ namespace Thor::ADC
       return driver->setSampleTime( ch, LLD::SampleTime::SMP_640P5 );
     }
 
-    #elif defined( STM32F446xx )
+#elif defined( STM32F446xx )
     if ( cycles < 4 )
     {
       return driver->setSampleTime( ch, LLD::SampleTime::SMP_3 );
@@ -285,7 +325,7 @@ namespace Thor::ADC
     {
       return driver->setSampleTime( ch, LLD::SampleTime::SMP_480 );
     }
-    #endif
+#endif
   }
 
 
@@ -302,7 +342,7 @@ namespace Thor::ADC
 
   Chimera::Status_t Driver::configSequence( const Chimera::ADC::SequenceInit &cfg )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return LLD::getDriver( mConfig.periph )->setupSequence( cfg );
   }
 
 
@@ -314,18 +354,45 @@ namespace Thor::ADC
 
   void Driver::stopSequence()
   {
-  LLD::getDriver( mConfig.periph )->stopSequence();
+    LLD::getDriver( mConfig.periph )->stopSequence();
   }
 
 
   bool Driver::nextSample( const Chimera::ADC::Channel ch, Chimera::ADC::Sample &sample )
   {
-    return false;
+    using namespace Chimera::ADC;
+
+    /*-------------------------------------------------
+    Select the queue associated with this instance
+    -------------------------------------------------*/
+    Thor::LLD::ADC::PeriphQueue *queue = nullptr;
+    switch( mPeriph )
+    {
+      case Peripheral::ADC_0:
+        queue = &Thor::LLD::ADC::ADC1_Queue;
+        break;
+
+      default:
+        return false;
+        break;
+    }
+
+    /*-------------------------------------------------
+    Return the next data in the queue if it exists
+    -------------------------------------------------*/
+    bool has_data = (*queue)[ EnumValue( ch ) ]->pop( sample );
+    return has_data;
   }
 
 
   void Driver::onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb )
   {
+    using namespace Chimera::ADC;
+
+    if( bmSignal < Interrupt::NUM_OPTIONS )
+    {
+      mCallbacks[ EnumValue( bmSignal ) ] = cb;
+    }
   }
 
 

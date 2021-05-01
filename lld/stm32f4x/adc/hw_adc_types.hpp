@@ -124,6 +124,10 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------
   Regular Sequence Registers
   -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, SQR1, SQR1_ALL_Msk, SQR1_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, SQR2, SQR2_ALL_Msk, SQR2_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, SQR3, SQR3_ALL_Msk, SQR3_ALL, BIT_ACCESS_RW );
+
   REG_ACCESSOR( RegisterMap, SQR1, SQR1_L_Msk, L, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, SQR1, SQR1_SQ16_Msk, SQ16, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, SQR1, SQR1_SQ15_Msk, SQ15, BIT_ACCESS_RW );
