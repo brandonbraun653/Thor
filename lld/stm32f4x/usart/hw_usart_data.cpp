@@ -14,7 +14,7 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/hld/dma/hld_dma_intf.hpp>
+#include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/usart>
 
@@ -61,34 +61,34 @@ namespace Thor::LLD::USART
   -------------------------------------------------*/
   namespace Resource
   { /* clang-format off */
-    LLD_CONST Reg32_t RXDMASignals[ NUM_USART_PERIPHS ] = {
+    LLD_CONST DMA::Source RXDMASignals[ NUM_USART_PERIPHS ] = {
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART1_RX,
+      DMA::Source::USART1_RX,
 #endif
 #if defined( STM32_USART2_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART2_RX,
+      DMA::Source::USART2_RX,
 #endif
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART3_RX,
+      DMA::Source::USART3_RX,
 #endif
 #if defined( STM32_USART6_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART6_RX,
+      DMA::Source::USART6_RX,
 #endif
     };
 
 
-    LLD_CONST Reg32_t TXDMASignals[ NUM_USART_PERIPHS ] = {
+    LLD_CONST DMA::Source TXDMASignals[ NUM_USART_PERIPHS ] = {
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART1_TX,
+      DMA::Source::USART1_TX,
 #endif
 #if defined( STM32_USART2_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART2_TX,
+      DMA::Source::USART2_TX,
 #endif
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART3_TX,
+      DMA::Source::USART3_TX,
 #endif
 #if defined( STM32_USART6_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART6_TX,
+      DMA::Source::USART6_TX,
 #endif
     };
 

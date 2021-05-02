@@ -14,7 +14,7 @@
 
 namespace Thor::HLD
 {
-  using RIndex_t = uint8_t;
+
 }    // namespace Thor::HLD
 
 #endif /* !THOR_HLD_COMMON_TYPES_HPP */

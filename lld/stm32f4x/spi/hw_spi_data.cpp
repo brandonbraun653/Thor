@@ -6,7 +6,7 @@
  *    Provides structures for conversion and mapping between data types for fast
  *    runtime performance of driver code.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 /* STL Includes */
@@ -18,6 +18,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/spi>
+#include <Thor/lld/interface/inc/dma>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_SPI )
 
@@ -80,33 +81,33 @@ namespace Thor::LLD::SPI
   -------------------------------------------------------------------------------*/
   namespace Resource
   { /* clang-format off */
-    LLD_CONST Thor::DMA::Source_t RXDMASignals[ NUM_SPI_PERIPHS ] = {
+    LLD_CONST DMA::Source RXDMASignals[ NUM_SPI_PERIPHS ] = {
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_SPI1_RX,
+      Thor::LLD::DMA::Source::SPI1_RX,
 #endif
 #if defined( STM32_SPI2_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_SPI2_RX,
+      Thor::LLD::DMA::Source::SPI2_RX,
 #endif
 #if defined( STM32_SPI3_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_SPI3_RX,
+      Thor::LLD::DMA::Source::SPI3_RX,
 #endif
 #if defined( STM32_SPI4_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_SPI4_RX
+      Thor::LLD::DMA::Source::SPI4_RX
 #endif
     };
 
-    LLD_CONST Thor::DMA::Source_t TXDMASignals[ NUM_SPI_PERIPHS ] = {
+    LLD_CONST DMA::Source TXDMASignals[ NUM_SPI_PERIPHS ] = {
 #if defined( STM32_SPI1_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_SPI1_TX,
+      Thor::LLD::DMA::Source::SPI1_TX,
 #endif
 #if defined( STM32_SPI2_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_SPI2_TX,
+      Thor::LLD::DMA::Source::SPI2_TX,
 #endif
 #if defined( STM32_SPI3_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_SPI3_TX,
+      Thor::LLD::DMA::Source::SPI3_TX,
 #endif
 #if defined( STM32_SPI4_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_SPI4_TX
+      Thor::LLD::DMA::Source::SPI4_TX
 #endif
     };
 

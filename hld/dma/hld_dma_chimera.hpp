@@ -5,15 +5,12 @@
  *	 Description:
  *    Chimera hooks for implementing DMA
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_DMA_CHIMERA_HOOKS_HPP
 #define THOR_DMA_CHIMERA_HOOKS_HPP
-
-/* STL Includes */
-#include <memory>
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -23,7 +20,9 @@ namespace Chimera::DMA::Backend
 {
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
-  IDMA_sPtr getDriver( const Controller channel );
+  RequestId constructPipe( const PipeConfig &config );
+  RequestId transfer( const MemTransfer &transfer );
+  RequestId transfer( const PipeTransfer &transfer );
 }    // namespace Chimera::DMA::Backend
 
 #endif /* !THOR_DMA_CHIMERA_HOOKS_HPP */

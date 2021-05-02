@@ -15,6 +15,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/hld/dma/hld_dma_intf.hpp>
+#include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/uart>
 
@@ -63,22 +64,22 @@ namespace Thor::LLD::UART
   -------------------------------------------------*/
   namespace Resource
   { /* clang-format off */
-    LLD_CONST Reg32_t RXDMASignals[ NUM_UART_PERIPHS ] = {
+    LLD_CONST Thor::LLD::DMA::Source RXDMASignals[ NUM_UART_PERIPHS ] = {
 #if defined( STM32_UART4_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_UART4_RX,
+      Thor::LLD::DMA::Source::UART4_RX,
 #endif
 #if defined( STM32_UART5_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_UART5_RX,
+      Thor::LLD::DMA::Source::UART5_RX,
 #endif
     };
 
 
-    LLD_CONST Reg32_t TXDMASignals[ NUM_UART_PERIPHS ] = {
+    LLD_CONST Thor::LLD::DMA::Source TXDMASignals[ NUM_UART_PERIPHS ] = {
 #if defined( STM32_UART4_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_UART4_TX,
+      Thor::LLD::DMA::Source::UART4_TX,
 #endif
 #if defined( STM32_UART5_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_UART5_TX,
+      Thor::LLD::DMA::Source::UART5_TX,
 #endif
     };
 

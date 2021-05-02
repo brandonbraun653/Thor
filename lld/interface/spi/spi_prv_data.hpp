@@ -24,6 +24,7 @@
 #include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
+#include <Thor/lld/interface/dma/dma_types.hpp>
 #include <Thor/lld/interface/spi/spi_detail.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
@@ -75,8 +76,8 @@ namespace Thor::LLD::SPI
   -------------------------------------------------------------------------------*/
   namespace Resource
   {
-    extern LLD_CONST Thor::DMA::Source_t RXDMASignals[ NUM_SPI_PERIPHS ];
-    extern LLD_CONST Thor::DMA::Source_t TXDMASignals[ NUM_SPI_PERIPHS ];
+    extern LLD_CONST Thor::LLD::DMA::Source RXDMASignals[ NUM_SPI_PERIPHS ];
+    extern LLD_CONST Thor::LLD::DMA::Source TXDMASignals[ NUM_SPI_PERIPHS ];
     extern LLD_CONST IRQn_Type IRQSignals[ NUM_SPI_PERIPHS ];
   }    // namespace ResourceMap
 }    // namespace Thor::LLD::SPI

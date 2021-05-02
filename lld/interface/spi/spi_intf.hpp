@@ -53,7 +53,7 @@ namespace Thor::LLD::SPI
   bool isSupported( const Chimera::SPI::Channel channel );
 
   /**
-   *  Get's the resource index associated with a particular channel. If not
+   *  Gets the resource index associated with a particular channel. If not
    *  supported, will return INVALID_RESOURCE_INDEX
    *
    *  @param[in]  channel       The channel number to be checked

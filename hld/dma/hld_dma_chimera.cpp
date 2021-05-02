@@ -5,7 +5,7 @@
  *	 Description:
  *    Implementation of Chimera DMA driver hooks
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* STL Includes */
@@ -21,37 +21,52 @@
 
 namespace Chimera::DMA::Backend
 {
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    return Thor::DMA::initialize();
+    return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t reset()
   {
     return Chimera::Status::OK;
   }
 
-  Driver_rPtr getDriver( const Controller channel )
+
+  RequestId constructPipe( const PipeConfig &config )
   {
-    return nullptr;
+    return INVALID_REQUEST;
   }
 
-//   Chimera::Status_t registerDriver( Chimera::DMA::Backend::DriverConfig &registry )
-//   {
-// #if defined( THOR_HLD_DMA )
-//     registry.isSupported  = true;
-//     registry.createShared = create_shared_ptr;
-//     registry.createUnique = create_unique_ptr;
-//     registry.initialize   = initialize;
-//     registry.reset        = reset;
-//     return Chimera::Status::OK;
-// #else
-//     registry.isSupported  = false;
-//     registry.createShared = nullptr;
-//     registry.createUnique = nullptr;
-//     registry.initialize   = nullptr;
-//     registry.reset        = nullptr;
-//     return Chimera::Status::NOT_SUPPORTED;
-// #endif /* THOR_HLD_DMA */
-//  }
+
+  RequestId transfer( const MemTransfer &transfer )
+  {
+    return INVALID_REQUEST;
+  }
+
+
+  RequestId transfer( const PipeTransfer &transfer )
+  {
+    return INVALID_REQUEST;
+  }
+
+  Chimera::Status_t registerDriver( Chimera::DMA::Backend::DriverConfig &registry )
+  {
+#if defined( THOR_HLD_DMA )
+    registry.isSupported   = true;
+    registry.initialize    = initialize;
+    registry.reset         = reset;
+    registry.constructPipe = constructPipe;
+    registry.memTransfer   = transfer;
+    registry.pipeTransfer  = transfer;
+
+    return Chimera::Status::OK;
+#else
+    registry.isSupported = false;
+    return Chimera::Status::NOT_SUPPORTED;
+#endif /* THOR_HLD_DMA */
+  }
 }    // namespace Chimera::DMA::Backend

@@ -13,13 +13,13 @@
 #define THOR_HW_INTERRUPT_REGISTER_HPP
 
 /* STL Includes */
-#include <cstddef>
+#include <cstdint>
 
 /*------------------------------------------------
 Interrupt vectors for the STM32F446xx. Must be defined
 globally so access by CMSIS is possible.
 ------------------------------------------------*/
-enum IRQn_Type
+enum IRQn_Type : int
 {
   /******  Cortex-M4 Processor Exceptions Numbers ****************************************************************/
   NonMaskableInt_IRQn   = -14, /*!< 2 Non Maskable Interrupt                                          */

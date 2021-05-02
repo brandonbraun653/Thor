@@ -23,6 +23,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
+#include <Thor/lld/interface/dma/dma_types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 #include <Thor/lld/interface/uart/uart_detail.hpp>
 
@@ -65,8 +66,8 @@ namespace Thor::LLD::UART
   -------------------------------------------------------------------------------*/
   namespace Resource
   {
-    extern LLD_CONST Reg32_t RXDMASignals[ NUM_UART_PERIPHS ];
-    extern LLD_CONST Reg32_t TXDMASignals[ NUM_UART_PERIPHS ];
+    extern LLD_CONST DMA::Source RXDMASignals[ NUM_UART_PERIPHS ];
+    extern LLD_CONST DMA::Source TXDMASignals[ NUM_UART_PERIPHS ];
     extern LLD_CONST IRQn_Type IRQSignals[ NUM_UART_PERIPHS ];
   }
 }    // namespace Thor::LLD::UART

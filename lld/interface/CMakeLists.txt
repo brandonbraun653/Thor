@@ -5,6 +5,7 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 # ====================================================
 add_subdirectory("adc")
 add_subdirectory("can")
+add_subdirectory("dma")
 add_subdirectory("exti")
 add_subdirectory("gpio")
 add_subdirectory("interrupt")
@@ -25,6 +26,7 @@ gen_intf_lib_variants(
   LIBRARIES
     thor_lld_intf_adc
     thor_lld_intf_can
+    thor_lld_intf_dma
     thor_lld_intf_exti
     thor_lld_intf_gpio
     thor_lld_intf_interrupt

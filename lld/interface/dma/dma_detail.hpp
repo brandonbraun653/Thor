@@ -1,12 +1,12 @@
 /********************************************************************************
  *  File Name:
- *    dma.hpp
+ *    dma_detail.hpp
  *
  *  Description:
  *    Common header for Thor DMA that configures the driver based on which
  *    chip family is being compiled against.
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -17,9 +17,8 @@
 #include <Thor/lld/interface/dma/mock/dma_mock.hpp>
 #include <Thor/lld/interface/dma/mock/dma_mock_variant.hpp>
 #elif defined( TARGET_STM32F4 )
-#include <Thor/lld/stm32f4x/dma/hw_dma_driver.hpp>
+#include <Thor/lld/stm32f4x/dma/hw_dma_types.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_prj.hpp>
-#include <Thor/lld/stm32f4x/dma/hw_dma_mapping.hpp>
 #else
 #pragma message( "dma_detail.hpp: Unknown target for LLD" )
 #endif

@@ -61,26 +61,26 @@ namespace Thor::LLD::USART
   { /* clang-format off */
     LLD_CONST Reg32_t RXDMASignals[ NUM_USART_PERIPHS ] = {
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART1_RX,
+      Thor::LLD::DMA::Source::USART1_RX,
 #endif
 #if defined( STM32_USART2_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART2_RX,
+      Thor::LLD::DMA::Source::USART2_RX,
 #endif
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART3_RX
+      Thor::LLD::DMA::Source::USART3_RX
 #endif
     };
 
 
     LLD_CONST Reg32_t TXDMASignals[ NUM_USART_PERIPHS ] = {
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART1_TX,
+      Thor::LLD::DMA::Source::USART1_TX,
 #endif
 #if defined( STM32_USART2_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART2_TX,
+      Thor::LLD::DMA::Source::USART2_TX,
 #endif
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
-      Thor::DMA::Source::S_USART3_TX
+      Thor::LLD::DMA::Source::USART3_TX
 #endif
     };
 

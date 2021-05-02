@@ -12,6 +12,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/adc>
 #include <Thor/lld/interface/inc/can>
+#include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/flash>
 #include <Thor/lld/interface/inc/gpio>
 #include <Thor/lld/interface/inc/power>
@@ -79,6 +80,25 @@ namespace Thor::LLD::RCC
   // };
   // /* clang-format on */
 #endif /* THOR_LLD_CRS */
+
+#if defined( THOR_LLD_DMA )
+  /* clang-format off */
+  static const RegisterConfig DMA_ClockConfig[ DMA::NUM_DMA_PERIPHS ]      = {
+    { .mask = AHB1ENR_DMA1EN, .reg  = &RCC1_PERIPH->AHB1ENR },
+    { .mask = AHB1ENR_DMA2EN, .reg  = &RCC1_PERIPH->AHB1ENR }
+  };
+
+  static const RegisterConfig DMA_ResetConfig[ DMA::NUM_DMA_PERIPHS ]      = {
+    { .mask = AHB1RSTR_DMA1RST, .reg = &RCC1_PERIPH->AHB1RSTR },
+    { .mask = AHB1RSTR_DMA2RST, .reg = &RCC1_PERIPH->AHB1RSTR }
+  };
+
+  static const Chimera::Clock::Bus DMA_SourceClock[ DMA::NUM_DMA_PERIPHS ] = {
+    Chimera::Clock::Bus::HCLK,
+    Chimera::Clock::Bus::HCLK
+  };
+  /* clang-format on */
+#endif /* THOR_LLD_DMA */
 
 #if defined( THOR_LLD_FLASH )
   /* clang-format off */
@@ -467,6 +487,20 @@ namespace Thor::LLD::RCC
       .getResourceIndex = nullptr
     },
     #endif /* THOR_LLD_CRS */
+
+    #if defined( THOR_LLD_DMA )
+    {
+      .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_DMA ),
+      .elements         = DMA::NUM_DMA_PERIPHS,
+      .bfControl        = 0,
+      .reserved         = 0,
+      .clock            = reinterpret_cast<const RegisterConfig*>( &DMA_ClockConfig ),
+      .clockLP          = nullptr,
+      .reset            = reinterpret_cast<const RegisterConfig*>( &DMA_ResetConfig ),
+      .clockSource      = reinterpret_cast<const Chimera::Clock::Bus*>( &DMA_SourceClock ),
+      .getResourceIndex = DMA::getResourceIndex
+    },
+    #endif /* THOR_LLD_DMA */
 
     #if defined( THOR_LLD_FLASH )
     {

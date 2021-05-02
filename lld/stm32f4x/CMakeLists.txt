@@ -6,6 +6,7 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 add_subdirectory("adc")
 # add_subdirectory("can")
 add_subdirectory("des")
+add_subdirectory("dma")
 add_subdirectory("exti")
 add_subdirectory("flash")
 add_subdirectory("gpio")
@@ -32,6 +33,7 @@ gen_intf_lib_variants(
     # thor_lld_stm32f4_can
     # thor_lld_stm32f4_crs
     thor_lld_stm32f4_des
+    thor_lld_stm32f4_dma
     thor_lld_stm32f4_exti
     thor_lld_stm32f4_flash
     thor_lld_stm32f4_gpio

@@ -18,7 +18,12 @@
 /* Thor Includes */
 #include <Thor/lld/common/cmsis/configuration.hpp>
 #include <Thor/lld/common/cmsis/core/include/core_cm4.h>
-#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
+
+#if defined( TARGET_STM32F4 )
+#include <Thor/lld/stm32f4x/interrupt/hw_interrupt_prj.hpp>
+#elif defined( TARGET_STM32L4 )
+#include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
+#endif
 
 namespace Thor::LLD::INT
 {
