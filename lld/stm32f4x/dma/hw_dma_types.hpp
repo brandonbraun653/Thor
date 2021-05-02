@@ -190,9 +190,53 @@ namespace Thor::LLD::DMA
   /*-------------------------------------------------
   Stream x Configuration (SxCR)
   -------------------------------------------------*/
-  REG_ACCESSOR( StreamMap, CR, SxCR_CHSEL_Msk, CHSEL, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_CHSEL, CHSEL, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_MBURST, MBURST, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_PBURST, PBURST, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_CT, CT, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_DBM, DBM, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_PL, PL, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_PINCOS, PINCOS, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_MSIZE, MSIZE, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_PSIZE, PSIZE, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_MINC, MINC, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_PINC, PINC, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_CIRC, CIRC, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_DIR, DIR, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_PFCTRL, PFCTRL, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_TCIE, TCIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_HTIE, HTIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_TEIE, TEIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_DMEIE, DMEIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CR, SxCR_EN, EN, BIT_ACCESS_RW );
 
+  /*-------------------------------------------------
+  Stream x Number of Data (SxNDTR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( StreamMap, NDTR, SxNDT, NDT, BIT_ACCESS_RW );
 
+  /*-------------------------------------------------
+  Stream x Peripheral Address (SxPAR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( StreamMap, PAR, SxPAR_PA, PA, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Stream x Memory 0 Address (SxM0AR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( StreamMap, M0AR, SxM0AR_M0A, M0A, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Stream x Memory 1 Address (SxM1AR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( StreamMap, M1AR, SxM1AR_M1A, M1A, BIT_ACCESS_RW );
+
+  /*-------------------------------------------------
+  Stream x FIFO Control (SxFCR)
+  -------------------------------------------------*/
+  REG_ACCESSOR( StreamMap, FCR, SxFCR_FEIE, FEIE, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, FCR, SxFCR_FS, FS, BIT_ACCESS_R );
+  REG_ACCESSOR( StreamMap, FCR, SxFCR_DMDIS, DMDIS, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, FCR, SxFCR_FTH, FTH, BIT_ACCESS_RW );
 }    // namespace Thor::LLD::DMA
 
 #endif /* !THOR_HW_DMA_TYPES_HPP */
