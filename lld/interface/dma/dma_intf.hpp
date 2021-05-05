@@ -40,20 +40,52 @@ namespace Thor::LLD::DMA
   Chimera::Status_t initialize();
 
   /**
-   *  Gets a shared pointer to the driver for a particular channel
+   *  Gets a pointer to the driver for a particular dma controller
    *
    *  @param[in] control        The channel to grab
    *  @return Driver_rPtr       Instance of the driver for the requested channel
    */
   Driver_rPtr getDriver( const Controller control );
 
+  /**
+   * @brief Gets a pointer to the stream controller object
+   *
+   * @param control     Root controller instance id
+   * @param stream      Stream controller instance id
+   * @return Stream_rPtr
+   */
   Stream_rPtr getStream( const Controller control, const Streamer stream );
 
-  StreamMap *const streamView( RegisterMap *const periph, const size_t streamNum );
+  /**
+   * @brief Gets the stream controller's memory mapped registers from the parent DMA instance
+   *
+   * @param periph      Parent DMA instance
+   * @param streamNum   Which stream  to grab
+   * @return StreamMap*
+   */
+  StreamMap *streamView( RegisterMap *const periph, const Streamer streamNum );
+
 
   /*-------------------------------------------------------------------------------
   Public Functions (Implemented at the interface layer)
   -------------------------------------------------------------------------------*/
+  /**
+   *  Checks if the given hardware channel is supported on this device.
+   *
+   *  @param[in]  channel       The channel number to be checked
+   *  @return bool
+   */
+  bool isSupported( const Controller channel, const Streamer stream );
+
+  /**
+   *  Gets the resource index associated with a particular channel. If not
+   *  supported, will return INVALID_RESOURCE_INDEX
+   *
+   *  @param[in]  channel       The channel number to be checked
+   *  @return RIndex_t
+   */
+  RIndex_t getResourceIndex( const Controller channel, const Streamer stream );
+
   /**
    *  Looks up a resource index based on a raw peripheral instance
    *
@@ -61,6 +93,31 @@ namespace Thor::LLD::DMA
    *  @return RIndex_t
    */
   RIndex_t getResourceIndex( const std::uintptr_t address );
+
+  /**
+   *  Gets the DMA controller associated with a peripheral address
+   *
+   *  @param[in]  address       Memory address the peripheral is mapped to
+   *  @return Controller
+   */
+  Controller getController( const std::uintptr_t address );
+
+  /**
+   * @brief Gets the DMA stream associated with a peripheral address
+   *
+   * @param address             Memory address the peripheral is mapped to
+   * @return Streamer
+   */
+  Streamer getStream( const std::uintptr_t address );
+
+  /**
+   *  Initializes the drivers by attaching the appropriate peripheral
+   *
+   *  @param[in]  driverList    List of driver objects to be initialized
+   *  @param[in]  numDrivers    How many drivers are in driverList
+   *  @return bool
+   */
+  bool attachDriverInstances( Driver *const driverList, const size_t numDrivers );
 
 
   /*-------------------------------------------------------------------------------
@@ -80,58 +137,34 @@ namespace Thor::LLD::DMA
     virtual Chimera::Status_t attach( RegisterMap *const peripheral ) = 0;
 
     /**
+     * @brief Initialize the DMA controller
+     *
+     * @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t init() = 0;
+
+    /**
      *  Enables the DMA peripheral clock
      *
-     *  @return Chimera::Status_t
+     *  @return void
      */
-    virtual Chimera::Status_t clockEnable() = 0;
+    virtual void clockEnable() = 0;
 
     /**
      *  Disables the DMA peripheral clock
      *
-     *  @return Chimera::Status_t
+     *  @return void
      */
-    virtual Chimera::Status_t clockDisable() = 0;
+    virtual void clockDisable() = 0;
 
     /**
      *  Completely resets the entire driver, including all instance resources.
      *
      *  @note init() must be called again before the driver can be reused
      *
-     *  @return Chimera::Status_t
+     *  @return void
      */
-    virtual Chimera::Status_t reset() = 0;
-
-    /**
-     *  Performs low level driver initialization functionality
-     *
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t init() = 0;
-
-    /**
-     *  Reconfigures a stream for a new transfer
-     *
-     *  @param[in]  config            The stream's transfer configuration settings
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t configure( StreamMap *const stream, StreamConfig *const config, TCB *const controlBlock ) = 0;
-
-    /**
-     *  Starts the transfer on the given stream
-     *
-     *  @param[in]  stream            The stream to act upon
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t start( StreamMap *const stream ) = 0;
-
-    /**
-     *  Stops the transfer on the given stream
-     *
-     *  @param[in]  stream            The stream to act upon
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t abort( StreamMap *const stream ) = 0;
+    virtual void reset() = 0;
   };
 
 
@@ -142,16 +175,13 @@ namespace Thor::LLD::DMA
     ~Driver();
 
     Chimera::Status_t attach( RegisterMap *const peripheral );
-    Chimera::Status_t clockEnable();
-    Chimera::Status_t clockDisable();
-    Chimera::Status_t reset();
     Chimera::Status_t init();
-    Chimera::Status_t configure( StreamMap *const stream, StreamConfig *const config, TCB *const controlBlock );
-    Chimera::Status_t start( StreamMap *const stream );
-    Chimera::Status_t abort( StreamMap *const stream );
+    void clockEnable();
+    void clockDisable();
+    void reset();
 
   private:
-    RegisterMap *periph;
+    RegisterMap *mPeriph;
   };
 
 
@@ -161,7 +191,7 @@ namespace Thor::LLD::DMA
   /**
    *  Models the interface to a DMA controller stream
    */
-  class IStream : virtual public Chimera::Event::ListenerInterface
+  class IStream
   {
   public:
     virtual ~IStream() = default;
@@ -190,6 +220,27 @@ namespace Thor::LLD::DMA
      *  @return Chimera::Status_t
      */
     virtual Chimera::Status_t abort() = 0;
+
+    /**
+     * @brief Attaches a callback to execute on an ISR event
+     *
+     * This will run directly in the ISR
+     *
+     * @param irq           Signal to attach to
+     * @param callback      Callback function
+     * @return Chimera::Status_t
+     */
+    virtual Chimera::Status_t onIRQ( const Interrupt irq, ISRCallback &callback ) = 0;
+
+    /**
+     * @brief Enables interrupts for the configured stream
+     */
+    virtual void enableInterrupts() = 0;
+
+    /**
+     * @brief Disables interrupts for the configured stream
+     */
+    virtual void disableInterrupts() = 0;
   };
 
   /**
@@ -205,10 +256,9 @@ namespace Thor::LLD::DMA
     Chimera::Status_t configure( StreamConfig *const config, TCB *const controlBlock );
     Chimera::Status_t start();
     Chimera::Status_t abort();
-    void enableTransferIRQ();
-    void disableTransferIRQ();
-    void enterCriticalSection();
-    void exitCriticalSection();
+    Chimera::Status_t onIRQ( const Interrupt irq, ISRCallback &callback );
+    void enableInterrupts();
+    void disableInterrupts();
 
   protected:
     friend void( ::DMA1_Stream0_IRQHandler )();
@@ -240,12 +290,12 @@ namespace Thor::LLD::DMA
   private:
     friend Chimera::Thread::Lockable<Stream>;
 
-    StreamMap *stream;
-    RegisterMap *parent;
-    TCB controlBlock;
-    size_t streamRegisterIndex;
-    size_t streamResourceIndex;
-    IRQn_Type streamIRQn;
+    StreamMap *mStream;    /**< Stream's memory mapped registers */
+    RegisterMap *mPeriph;  /**< Core controller memory mapped registers */
+    size_t mRegisterIndex; /**< Register offset for the stream */
+    size_t mResourceIndex; /**< Resource index for the stream */
+    IRQn_Type mIRQn;       /**< Stream's IRQ number */
+    volatile TCB mTCB;     /**< Control block for current transfer */
   };
 
 }    // namespace Thor::LLD::DMA

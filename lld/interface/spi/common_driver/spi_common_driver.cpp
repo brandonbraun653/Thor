@@ -256,7 +256,9 @@ namespace Thor::LLD::SPI
     SSOE::set( mPeriph, CR2_SSOE );
 
     /* Set up the transfer width */
+    #if defined( TARGET_STM32L4 )
     prjConfigureTransferWidth( mPeriph, periphConfig->HWInit.dataSize );
+    #endif
 
     /*-------------------------------------------------
     Enable the SPI peripheral
@@ -458,7 +460,10 @@ namespace Thor::LLD::SPI
     Currently hardcoded to 8 for development...
     ------------------------------------------------*/
     auto dr = reinterpret_cast<volatile uint8_t *>( &mPeriph->DR );
+
+    #if defined( TARGET_STM32L4 )
     prjConfigureTransferWidth( mPeriph, Chimera::SPI::DataSize::SZ_8BIT );
+    #endif
 
     /*------------------------------------------------
     Start the transfer

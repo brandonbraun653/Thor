@@ -5,7 +5,7 @@
  *  Description:
  *    LLD interface functions that are processor independent
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 /* Chimera Includes */
@@ -14,10 +14,7 @@
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
-#include <Thor/lld/interface/spi/spi_detail.hpp>
-#include <Thor/lld/interface/spi/spi_prv_data.hpp>
-#include <Thor/lld/interface/spi/spi_types.hpp>
-#include <Thor/lld/interface/spi/spi_intf.hpp>
+#include <Thor/lld/interface/inc/spi>
 
 #if defined( THOR_LLD_SPI )
 namespace Thor::LLD::SPI

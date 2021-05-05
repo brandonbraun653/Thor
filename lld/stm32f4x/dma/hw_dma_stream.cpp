@@ -17,8 +17,7 @@ namespace Thor::LLD::DMA
   /*-------------------------------------------------------------------------------
   Stream Class
   -------------------------------------------------------------------------------*/
-  Stream::Stream() :
-      stream( nullptr ), parent( nullptr ), streamRegisterIndex( 0 ), streamResourceIndex( 0 )
+  Stream::Stream()
   {
   }
 
@@ -289,48 +288,13 @@ namespace Thor::LLD::DMA
   }
 
 
-  void Stream::enableTransferIRQ()
-  {
-    /*------------------------------------------------
-    Make sure the interrupt priority has been set to correctly
-    ------------------------------------------------*/
-    // Thor::LLD::INT::setPriority( streamIRQn, Thor::Interrupt::DMA_STREAM_PREEMPT_PRIORITY, 0 );
-
-    // /*------------------------------------------------
-    // - Transfer complete
-    // - Transfer error
-    // - Direct mode error
-    // - FIFO error
-    // ------------------------------------------------*/
-    // SxCR::TCIE::set( stream, SxCR_TCIE );
-    // SxCR::TEIE::set( stream, SxCR_TEIE );
-    // SxCR::DMEIE::set( stream, SxCR_DMEIE );
-    // SxFCR::FEIE::set( stream, SxFCR_FEIE );
-  }
-
-
-  void Stream::disableTransferIRQ()
-  {
-    /*------------------------------------------------
-    - Transfer complete
-    - Transfer error
-    - Direct mode error
-    - FIFO error
-    ------------------------------------------------*/
-    // SxCR::TCIE::set( stream, 0 );
-    // SxCR::TEIE::set( stream, 0 );
-    // SxCR::DMEIE::set( stream, 0 );
-    // SxFCR::FEIE::set( stream, 0 );
-  }
-
-
-  void Stream::enterCriticalSection()
+  void Stream::disableInterrupts()
   {
     //Thor::LLD::INT::disableIRQ( streamIRQn );
   }
 
 
-  void Stream::exitCriticalSection()
+  void Stream::enableInterrupts()
   {
     //Thor::LLD::INT::enableIRQ( streamIRQn );
   }

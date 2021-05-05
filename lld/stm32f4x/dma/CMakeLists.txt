@@ -4,9 +4,7 @@ gen_static_lib_variants(
   TARGET
     thor_lld_stm32f4_dma
   SOURCES
-    hw_dma_controller.cpp
     hw_dma_data.cpp
-    hw_dma_driver.cpp
     hw_dma_irq.cpp
     hw_dma_stream.cpp
   PRV_LIBRARIES

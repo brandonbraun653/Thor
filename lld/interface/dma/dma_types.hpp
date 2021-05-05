@@ -15,8 +15,11 @@
 /* C++ Includes */
 #include <cstdint>
 
+/* ETL Includes */
+#include <etl/delegate.h>
+
 /* Chimera Includes */
-#include <Chimera/event>
+#include <Chimera/dma>
 
 namespace Thor::LLD::DMA
 {
@@ -35,8 +38,8 @@ namespace Thor::LLD::DMA
   /*-------------------------------------------------------------------------------
   Constants
   -------------------------------------------------------------------------------*/
-  static constexpr uint8_t ON_DMA1  = ( 1u << 0 );
-  static constexpr uint8_t ON_DMA2  = ( 1u << 1 );
+  static constexpr uint8_t ON_DMA1 = ( 1u << 0 );
+  static constexpr uint8_t ON_DMA2 = ( 1u << 1 );
 
   static constexpr uint8_t ON_CHANNEL_POS = 2u;
   static constexpr uint8_t ON_CHANNEL_MSK = ( 0x7 << ON_CHANNEL_POS );
@@ -64,15 +67,21 @@ namespace Thor::LLD::DMA
   /*-------------------------------------------------------------------------------
   Enumerations
   -------------------------------------------------------------------------------*/
+  /**
+   * @brief Enumerates available DMA controllers
+   */
   enum class Controller : uint8_t
   {
     DMA_1,
     DMA_2,
 
-    NUM_OPTIONS
+    NUM_OPTIONS,
+    NONE
   };
 
-
+  /**
+   * @brief A stream that could be connected to a DMA controller
+   */
   enum class Streamer : uint8_t
   {
     STREAM_0,
@@ -84,10 +93,13 @@ namespace Thor::LLD::DMA
     STREAM_6,
     STREAM_7,
 
-    NUM_OPTIONS
+    NUM_OPTIONS,
+    NONE
   };
 
-
+  /**
+   * @brief A channel that could be connected to a DMA stream
+   */
   enum class Channel : uint8_t
   {
     CHANNEL_0,
@@ -103,6 +115,43 @@ namespace Thor::LLD::DMA
 
   };
 
+  /**
+   * @brief Interrupts that a stream can generate
+   */
+  enum class Interrupt : uint8_t
+  {
+    HALF_TRANSFER_COMPLETE,
+    FULL_TRANSFER_COMPLETE,
+    ERROR_TRANSFER,
+    ERROR_FIFO_UNDER_OVER_RUN,
+    ERROR_DIRECT_MODE,
+
+    NUM_OPTIONS
+  };
+
+  /**
+   * @brief Selects the FIFO operational mode
+   */
+  enum class FifoMode : uint8_t
+  {
+    DIRECT_ENABLE,
+    DIRECT_DISABLE,
+
+    NUM_OPTIONS
+  };
+
+  /**
+   * @brief Selects the threshold which will flush the FIFO
+   */
+  enum class FifoThreshold : uint8_t
+  {
+    QUARTER_FULL,
+    HALF_FULL,
+    THREE_QUARTER_FULL,
+    FULL,
+
+    NUM_OPTIONS
+  };
 
   /**
    * @brief All known DMA sources, but not all are supported by each device.
@@ -193,152 +242,72 @@ namespace Thor::LLD::DMA
   };
 
   /*-------------------------------------------------------------------------------
+  Aliases
+  -------------------------------------------------------------------------------*/
+  using ISRCallback = etl::delegate<void( Interrupt )>;
+
+  /*-------------------------------------------------------------------------------
   Structures
   -------------------------------------------------------------------------------*/
+  /**
+   * @brief Helper struct for mapping a DMA request signal
+   */
   struct StreamAttr
   {
-    const Source src;
-    const uint8_t attr;
+    Source request;     /**< DMA request signal */
+    uint8_t attributes; /**< Signal attributes */
   };
 
 
   /**
-   *  Configuration structure for the Serial peripherals (UART/USART).
-   *  Each member is expected to be equal to the exact value needed to
-   *  configure the appropriate control register. The calculation of these
-   *  values is left up to the hardware driver as this might vary from
-   *  chip to chip. Expect that these values will be writen directly to
-   *  a register without much translation or protection.
+   * @brief Configures a stream for a single transfer
    */
   struct StreamConfig
   {
-    /*------------------------------------------------
-    Specifies the channel used for the specified stream.
+    /*-------------------------------------------------
+    Thor Specific Configuration
+    -------------------------------------------------*/
+    bool periphAddrIncr;
+    bool memoryAddrIncr;
+    Channel channel;
+    FifoMode fifoMode;
+    FifoThreshold fifoThreshold;
 
-    Can be a value of Thor::LLD::DMA::Configuration::ChannelSelect
-    ------------------------------------------------*/
-    uint32_t Channel;
-
-    /*------------------------------------------------
-    Specifies if the data will be transferred from memory
-    to peripheral, from memory to memory or from peripheral to memory.
-
-    Can be a value of Thor::LLD::DMA::Configuration::Direction
-    ------------------------------------------------*/
-    uint32_t Direction;
-
-    /*------------------------------------------------
-    Specifies whether the Peripheral address register should be incremented or not
-
-    Can be a value of Thor::LLD::DMA::Configuration::PeriphIncrementMode
-    ------------------------------------------------*/
-    uint32_t PeriphInc;
-
-    /*------------------------------------------------
-    Specifies whether the memory address register should be incremented or not.
-
-    Can be a value of Thor::LLD::DMA::Configuration::MemoryIncrementMode
-    ------------------------------------------------*/
-    uint32_t MemInc;
-
-    /*------------------------------------------------
-    Specifies the Peripheral data width.
-
-    Can be a value of Thor::LLD::DMA::Configuration::PeriphDataSize
-    ------------------------------------------------*/
-    uint32_t PeriphDataAlignment;
-
-    /*------------------------------------------------
-    Specifies the Memory data width
-
-    Can be a value of Thor::LLD::DMA::Configuration::MemoryDataSize
-    ------------------------------------------------*/
-    uint32_t MemDataAlignment;
-
-    /*------------------------------------------------
-    Specifies the operation mode of the stream.
-
-    @note The circular buffer mode cannot be used if the memory-to-memory
-          data transfer is configured on the selected Stream
-
-    Can be a value of Thor::LLD::DMA::Configuration::Mode
-    ------------------------------------------------*/
-    uint32_t Mode;
-
-    /*------------------------------------------------
-    Specifies the software priority for the transfer
-    Can be a value of Thor::LLD::DMA::Configuration::PriorityLevel
-    ------------------------------------------------*/
-    uint32_t Priority;
-
-    /*------------------------------------------------
-    Specifies if the FIFO mode or Direct mode will be used for the specified stream.
-
-    @note The Direct mode (FIFO mode disabled) cannot be used if the
-          memory-to-memory data transfer is configured on the selected stream
-
-    Can be a value of Thor::LLD::DMA::Configuration::FIFODirectMode
-    ------------------------------------------------*/
-    uint32_t FIFOMode;
-
-    /*------------------------------------------------
-    Specifies the FIFO threshold level.
-
-    Can be a value of Thor::LLD::DMA::Configuration::FIFOThreshold
-    ------------------------------------------------*/
-    uint32_t FIFOThreshold;
-
-    /*------------------------------------------------
-    Specifies the Burst transfer configuration for the memory transfers.
-    It specifies the amount of data to be transferred in a single non interruptible
-    transaction.
-
-    @note The burst mode is possible only if the address Increment mode is enabled.
-
-    Can be a value of Thor::LLD::DMA::Configuration::MemoryBurst
-    ------------------------------------------------*/
-    uint32_t MemBurst;
-
-    /*------------------------------------------------
-    Specifies the Burst transfer configuration for the peripheral transfers.
-    It specifies the amount of data to be transferred in a single non interruptible
-    transaction.
-
-    @note The burst mode is possible only if the address Increment mode is enabled.
-
-    Can be a value of Thor::LLD::DMA::Configuration::PeriphBurst
-    ------------------------------------------------*/
-    uint32_t PeriphBurst;
+    /*-------------------------------------------------
+    Common Driver Configuration
+    -------------------------------------------------*/
+    Chimera::DMA::Mode dmaMode;
+    Chimera::DMA::Direction direction;
+    Chimera::DMA::Priority priority;
+    Chimera::DMA::BurstSize periphBurstSize;
+    Chimera::DMA::Alignment periphAddrAlign;
+    Chimera::DMA::BurstSize memoryBurstSize;
+    Chimera::DMA::Alignment memoryAddrAlign;
   };
 
-
+  /**
+   * @brief Transfer control block
+   * Keeps track of a single DMA transfer operating on a stream
+   */
   struct TCB
   {
+    /*-------------------------------------------------
+    Control Fields
+    -------------------------------------------------*/
     uint32_t srcAddress;       /**< Address where the data will be pulled from */
-    uint32_t dstAddress;       /**< Address where the data will be transfered into */
+    uint32_t dstAddress;       /**< Address where the data will be transferred into */
     uint32_t transferSize;     /**< How many bytes to transfer between source and destination */
-    uint32_t bytesTransfered;  /**< How many bytes were actually transfered */
+    uint32_t bytesTransferred; /**< How many bytes were actually transferred */
     uint32_t transferState;    /**< DMA transfer state machine status */
     uint32_t selectedChannel;  /**< When the ISR fires, will contain hardware channel that was used */
     uint32_t requestGenerator; /**< When the ISR fires, will contain the peripheral that generated the event */
 
+    /*-------------------------------------------------
+    Various Error Flags
+    -------------------------------------------------*/
     bool fifoError;
     bool directModeError;
     bool transferError;
-
-    void clear()
-    {
-      srcAddress       = 0u;
-      dstAddress       = 0u;
-      transferSize     = 0u;
-      bytesTransfered  = 0u;
-      transferState    = 0u;
-      selectedChannel  = 0u;
-      requestGenerator = 0u;
-      fifoError        = false;
-      directModeError  = false;
-      transferError    = false;
-    }
   };
 }    // namespace Thor::LLD::DMA
 
