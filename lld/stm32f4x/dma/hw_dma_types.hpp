@@ -138,23 +138,6 @@ namespace Thor::LLD::DMA
 
   }    // namespace Configuration
 
-
-  namespace Runtime
-  {
-    using Flag_t = uint32_t;
-    namespace Flag
-    {
-      static constexpr Flag_t TRANSFER_COMPLETE      = ( 1u << 0 );
-      static constexpr Flag_t TRANSFER_HALF_COMPLETE = ( 1u << 1 );
-      static constexpr Flag_t TRANSFER_ERROR         = ( 1u << 2 );
-      static constexpr Flag_t DIRECT_MODE_ERROR      = ( 1u << 3 );
-      static constexpr Flag_t FIFO_ERROR             = ( 1u << 4 );
-      static constexpr Flag_t TRANSFER_IN_PROGRESS   = ( 1u << 5 );
-      static constexpr Flag_t TRANSFER_READY         = ( 1u << 6 );
-      static constexpr Flag_t TRANSFER_NOT_READY     = ( 1u << 7 );
-    }    // namespace Flag
-  }      // namespace Runtime
-
   /*-------------------------------------------------------------------------------
   Structures
   -------------------------------------------------------------------------------*/
@@ -190,6 +173,8 @@ namespace Thor::LLD::DMA
   /*-------------------------------------------------
   Low Interrupt Status (LISR)
   -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, LISR, LISR_Msk, LISR_ALL, BIT_ACCESS_R );
+
   REG_ACCESSOR( RegisterMap, LISR, LISR_TCIF3, TCIF3, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, LISR, LISR_HTIF3, HTIF3, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, LISR, LISR_TEIF3, TEIF3, BIT_ACCESS_R );
@@ -217,6 +202,8 @@ namespace Thor::LLD::DMA
   /*-------------------------------------------------
   High Interrupt Status (HISR)
   -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, HISR, HISR_Msk, HISR_ALL, BIT_ACCESS_R );
+
   REG_ACCESSOR( RegisterMap, HISR, HISR_TCIF7, TCIF7, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, HISR, HISR_HTIF7, HTIF7, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, HISR, HISR_TEIF7, TEIF7, BIT_ACCESS_R );
@@ -298,6 +285,7 @@ namespace Thor::LLD::DMA
   /*-------------------------------------------------
   Stream x Configuration (SxCR)
   -------------------------------------------------*/
+  REG_ACCESSOR( StreamMap, CR, SxCR_Msk, CR_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( StreamMap, CR, SxCR_CHSEL, CHSEL, BIT_ACCESS_RW );
   REG_ACCESSOR( StreamMap, CR, SxCR_MBURST, MBURST, BIT_ACCESS_RW );
   REG_ACCESSOR( StreamMap, CR, SxCR_PBURST, PBURST, BIT_ACCESS_RW );
@@ -341,6 +329,7 @@ namespace Thor::LLD::DMA
   /*-------------------------------------------------
   Stream x FIFO Control (SxFCR)
   -------------------------------------------------*/
+  REG_ACCESSOR( StreamMap, FCR, SxFCR_Msk, FCR_ALL, BIT_ACCESS_R );
   REG_ACCESSOR( StreamMap, FCR, SxFCR_FEIE, FEIE, BIT_ACCESS_RW );
   REG_ACCESSOR( StreamMap, FCR, SxFCR_FS, FS, BIT_ACCESS_R );
   REG_ACCESSOR( StreamMap, FCR, SxFCR_DMDIS, DMDIS, BIT_ACCESS_RW );

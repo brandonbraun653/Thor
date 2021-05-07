@@ -18,6 +18,9 @@
 /* ETL Includes */
 #include <etl/delegate.h>
 
+/* Aurora Includes */
+#include <Aurora/utility>
+
 /* Chimera Includes */
 #include <Chimera/dma>
 
@@ -152,6 +155,37 @@ namespace Thor::LLD::DMA
 
     NUM_OPTIONS
   };
+
+  /**
+   * @brief Current state of the DMA stream
+   *
+   */
+
+  enum class _state : uint32_t
+  {
+    transfer_idle,
+    transfer_configured,
+    transfer_in_progress,
+    transfer_half_complete,
+    transfer_complete,
+    error_transfer,
+    error_direct,
+    error_fifo,
+  };
+
+  enum class StreamState : uint32_t
+  {
+    TRANSFER_IDLE          = ( 1u << EnumValue( _state::transfer_idle ) ),
+    TRANSFER_CONFIGURED    = ( 1u << EnumValue( _state::transfer_configured ) ),
+    TRANSFER_IN_PROGRESS   = ( 1u << EnumValue( _state::transfer_in_progress ) ),
+    TRANSFER_HALF_COMPLETE = ( 1u << EnumValue( _state::transfer_half_complete ) ),
+    TRANSFER_COMPLETE      = ( 1u << EnumValue( _state::transfer_complete ) ),
+    ERROR_TRANSFER         = ( 1u << EnumValue( _state::error_transfer ) ),
+    ERROR_DIRECT           = ( 1u << EnumValue( _state::error_direct ) ),
+    ERROR_FIFO             = ( 1u << EnumValue( _state::error_fifo ) ),
+  };
+  ENUM_CLS_BITWISE_OPERATOR( StreamState, | );
+  ENUM_CLS_BITWISE_OPERATOR( StreamState, & );
 
   /**
    * @brief All known DMA sources, but not all are supported by each device.
@@ -294,13 +328,15 @@ namespace Thor::LLD::DMA
     /*-------------------------------------------------
     Control Fields
     -------------------------------------------------*/
-    uint32_t srcAddress;       /**< Address where the data will be pulled from */
-    uint32_t dstAddress;       /**< Address where the data will be transferred into */
-    uint32_t transferSize;     /**< How many bytes to transfer between source and destination */
+    /* Driver Controlled */
+    StreamState state;         /**< DMA transfer state machine status */
     uint32_t bytesTransferred; /**< How many bytes were actually transferred */
-    uint32_t transferState;    /**< DMA transfer state machine status */
     uint32_t selectedChannel;  /**< When the ISR fires, will contain hardware channel that was used */
-    uint32_t requestGenerator; /**< When the ISR fires, will contain the peripheral that generated the event */
+
+    /* User Configured */
+    uint32_t srcAddress;   /**< Address where the data will be pulled from */
+    uint32_t dstAddress;   /**< Address where the data will be transferred into */
+    uint32_t transferSize; /**< How many bytes to transfer between source and destination */
 
     /*-------------------------------------------------
     Various Error Flags

@@ -282,10 +282,10 @@ namespace Thor::LLD::DMA
      *  Stream interrupt request handler
      *
      *  @param[in]  channel     The channel on the stream that generated the interrupt.
-     *  @param[in]  request     The request generator peripheral ID
+     *  @param[in]  status      Status registers for the given interrupt
      *  @return void
      */
-    void IRQHandler( const uint8_t channel );
+    void IRQHandler( const uint8_t channel, const uint8_t status );
 
   private:
     friend Chimera::Thread::Lockable<Stream>;
@@ -295,7 +295,13 @@ namespace Thor::LLD::DMA
     size_t mRegisterIndex; /**< Register offset for the stream */
     size_t mResourceIndex; /**< Resource index for the stream */
     IRQn_Type mIRQn;       /**< Stream's IRQ number */
-    volatile TCB mTCB;     /**< Control block for current transfer */
+    TCB mTCB;              /**< Control block for current transfer */
+
+    /**
+     * @brief Resets the LISR/HISR registers for the configured stream
+     * Assumes interrupt safe context.
+     */
+    void reset_isr();
   };
 
 }    // namespace Thor::LLD::DMA
