@@ -17,6 +17,8 @@
 
 /* ETL Includes */
 #include <etl/delegate.h>
+#include <etl/memory.h>
+#include <etl/queue_spsc_atomic.h>
 
 /* Aurora Includes */
 #include <Aurora/utility>
@@ -31,12 +33,14 @@ namespace Thor::LLD::DMA
   -------------------------------------------------------------------------------*/
   class Driver;
   class Stream;
+  struct TCB;
 
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
   using Driver_rPtr = Driver *;
   using Stream_rPtr = Stream *;
+  using ISREventQueue = etl::queue_spsc_atomic<TCB, 15, etl::memory_model::MEMORY_MODEL_SMALL>;
 
   /*-------------------------------------------------------------------------------
   Constants
@@ -114,7 +118,8 @@ namespace Thor::LLD::DMA
     CHANNEL_6,
     CHANNEL_7,
 
-    NUM_OPTIONS
+    NUM_OPTIONS,
+    INVALID
 
   };
 
@@ -168,9 +173,7 @@ namespace Thor::LLD::DMA
     transfer_in_progress,
     transfer_half_complete,
     transfer_complete,
-    error_transfer,
-    error_direct,
-    error_fifo,
+    error,
   };
 
   enum class StreamState : uint32_t
@@ -180,9 +183,7 @@ namespace Thor::LLD::DMA
     TRANSFER_IN_PROGRESS   = ( 1u << EnumValue( _state::transfer_in_progress ) ),
     TRANSFER_HALF_COMPLETE = ( 1u << EnumValue( _state::transfer_half_complete ) ),
     TRANSFER_COMPLETE      = ( 1u << EnumValue( _state::transfer_complete ) ),
-    ERROR_TRANSFER         = ( 1u << EnumValue( _state::error_transfer ) ),
-    ERROR_DIRECT           = ( 1u << EnumValue( _state::error_direct ) ),
-    ERROR_FIFO             = ( 1u << EnumValue( _state::error_fifo ) ),
+    ERROR                  = ( 1u << EnumValue( _state::error ) )
   };
   ENUM_CLS_BITWISE_OPERATOR( StreamState, | );
   ENUM_CLS_BITWISE_OPERATOR( StreamState, & );
@@ -301,8 +302,8 @@ namespace Thor::LLD::DMA
     /*-------------------------------------------------
     Thor Specific Configuration
     -------------------------------------------------*/
-    bool periphAddrIncr;
-    bool memoryAddrIncr;
+    bool dstAddrIncr;
+    bool srcAddrIncr;
     Channel channel;
     FifoMode fifoMode;
     FifoThreshold fifoThreshold;
@@ -313,10 +314,10 @@ namespace Thor::LLD::DMA
     Chimera::DMA::Mode dmaMode;
     Chimera::DMA::Direction direction;
     Chimera::DMA::Priority priority;
-    Chimera::DMA::BurstSize periphBurstSize;
-    Chimera::DMA::Alignment periphAddrAlign;
-    Chimera::DMA::BurstSize memoryBurstSize;
-    Chimera::DMA::Alignment memoryAddrAlign;
+    Chimera::DMA::BurstSize dstBurstSize;
+    Chimera::DMA::Alignment dstAddrAlign;
+    Chimera::DMA::BurstSize srcBurstSize;
+    Chimera::DMA::Alignment srcAddrAlign;
   };
 
   /**
@@ -329,9 +330,11 @@ namespace Thor::LLD::DMA
     Control Fields
     -------------------------------------------------*/
     /* Driver Controlled */
-    StreamState state;         /**< DMA transfer state machine status */
-    uint32_t bytesTransferred; /**< How many bytes were actually transferred */
-    uint32_t selectedChannel;  /**< When the ISR fires, will contain hardware channel that was used */
+    StreamState state;                 /**< DMA transfer state machine status */
+    uint32_t bytesTransferred;         /**< How many bytes were actually transferred */
+    uint32_t selectedChannel;          /**< When the ISR fires, will contain hardware channel that was used */
+    RIndex_t resourceIndex;            /**< Resource index of the controlling stream */
+    Chimera::DMA::RequestId requestId; /**< HLD request ID of the transfer */
 
     /* User Configured */
     uint32_t srcAddress;   /**< Address where the data will be pulled from */

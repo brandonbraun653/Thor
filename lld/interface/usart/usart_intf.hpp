@@ -14,8 +14,8 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/usart>
 #include <Chimera/thread>
+#include <Chimera/usart>
 
 /* Thor Includes */
 #include <Thor/lld/common/interrupts/usart_interrupt_vectors.hpp>
@@ -56,7 +56,7 @@ namespace Thor::LLD::USART
   bool isSupported( const Chimera::Serial::Channel channel );
 
   /**
-   *  Get's the resource index associated with a particular channel. If not
+   *  Gets the resource index associated with a particular channel. If not
    *  supported, will return INVALID_RESOURCE_INDEX
    *
    *  @param[in]  channel       The channel number to be checked
@@ -112,7 +112,7 @@ namespace Thor::LLD::USART
     /**
      *  Attaches a peripheral instance to the interaction model
      *
-     *  @param[in]  peripheral    Memory mapped struct of the desired SPI peripheral
+     *  @param[in]  peripheral    Memory mapped struct of the desired peripheral
      *  @return void
      */
     Chimera::Status_t attach( RegisterMap *const peripheral );
@@ -155,15 +155,18 @@ namespace Thor::LLD::USART
     void IRQHandler();
 
   private:
-    RegisterMap *periph;           /**< Points to the hardware registers for this instance */
-    size_t resourceIndex;          /**< Derived lookup table index for resource access */
-    volatile Reg32_t runtimeFlags; /**< Error/process flags set at runtime to indicate state */
+    /*-------------------------------------------------
+    Misc Driver State Variables
+    -------------------------------------------------*/
+    RegisterMap *mPeriph;           /**< Points to the hardware registers for this instance */
+    size_t mResourceIndex;          /**< Derived lookup table index for resource access */
+    volatile Reg32_t mRuntimeFlags; /**< Error/process flags set at runtime to indicate state */
 
     /*------------------------------------------------
     Transfer Control Blocks
     ------------------------------------------------*/
-    Thor::LLD::Serial::CDTCB txTCB;
-    Thor::LLD::Serial::MDTCB rxTCB;
+    Thor::LLD::Serial::CDTCB mTXTCB;
+    Thor::LLD::Serial::MDTCB mRXTCB;
 
     /**
      *  Calculates the appropriate configuration value for the Baud Rate Register
@@ -178,13 +181,13 @@ namespace Thor::LLD::USART
      *  Disables the USART interrupts
      *  @return void
      */
-    inline void enterCriticalSection();
+    inline void disableUSARTInterrupts();
 
     /**
      *  Enables the USART interrupts
      *  @return void
      */
-    inline void exitCriticalSection();
+    inline void enableUSARTInterrupts();
   };
 }    // namespace Thor::LLD::USART
 

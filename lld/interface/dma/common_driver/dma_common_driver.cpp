@@ -26,6 +26,33 @@ namespace Thor::LLD::DMA
   static Driver s_dma_drivers[ NUM_DMA_PERIPHS ];
   static Stream s_stream_drivers[ NUM_DMA_STREAMS_TOTAL ];
 
+  /*-------------------------------------------------------------------------------
+  Static Functions
+  -------------------------------------------------------------------------------*/
+  namespace Resource
+  {
+    // static void lockDMA()
+    // {
+    //   for( size_t idx = 0; idx < ARRAY_COUNT( Resource::IRQSignals ); idx++ )
+    //   {
+    //     INT::disableIRQ( Resource::IRQSignals[ idx ] );
+    //   }
+    // }
+
+    // static void unlockDMA()
+    // {
+    //   for( size_t idx = 0; idx < ARRAY_COUNT( Resource::IRQSignals ); idx++ )
+    //   {
+    //     INT::enableIRQ( Resource::IRQSignals[ idx ] );
+    //   }
+    // }
+
+    // static etl::function_fv<lockDMA> fv_lockDMA;
+    // static etl::function_fv<unlockDMA> fv_unlockDMA;
+
+    ISREventQueue ISRQueue; //{ fv_lockDMA, fv_unlockDMA };
+  }    // namespace Resource
+
 
   /*-------------------------------------------------------------------------------
   Interface Implementations
@@ -35,14 +62,17 @@ namespace Thor::LLD::DMA
     /*-------------------------------------------------
     Attach all the expected peripherals to the drivers
     -------------------------------------------------*/
-    if ( attachDriverInstances( s_dma_drivers, ARRAY_COUNT( s_dma_drivers ) ) )
+    attachDriverInstances( s_dma_drivers, ARRAY_COUNT( s_dma_drivers ) );
+
+    /*-------------------------------------------------
+    Perform the HW init sequence
+    -------------------------------------------------*/
+    for( size_t idx = 0; idx < ARRAY_COUNT( s_dma_drivers ); idx++ )
     {
-      return Chimera::Status::OK;
+      s_dma_drivers[ idx ].init();
     }
-    else
-    {
-      return Chimera::Status::FAIL;
-    }
+
+    return true;
   }
 
 
@@ -65,6 +95,19 @@ namespace Thor::LLD::DMA
     if( idx < ARRAY_COUNT( s_stream_drivers ) )
     {
       return &s_stream_drivers[ idx ];
+    }
+    else
+    {
+      return nullptr;
+    }
+  }
+
+
+  Stream_rPtr getStream( const RIndex_t index )
+  {
+    if( index < ARRAY_COUNT( s_stream_drivers ) )
+    {
+      return &s_stream_drivers[ index ];
     }
     else
     {
@@ -125,6 +168,27 @@ namespace Thor::LLD::DMA
   {
     mPeriph = peripheral;
     clockEnable();
+
+    auto result = Chimera::Status::OK;
+
+    result |= s_stream_drivers[ DMA1_STREAM0_RESOURCE_INDEX ].attach( DMA1_STREAM0, peripheral );
+    result |= s_stream_drivers[ DMA1_STREAM1_RESOURCE_INDEX ].attach( DMA1_STREAM1, peripheral );
+    result |= s_stream_drivers[ DMA1_STREAM2_RESOURCE_INDEX ].attach( DMA1_STREAM2, peripheral );
+    result |= s_stream_drivers[ DMA1_STREAM3_RESOURCE_INDEX ].attach( DMA1_STREAM3, peripheral );
+    result |= s_stream_drivers[ DMA1_STREAM4_RESOURCE_INDEX ].attach( DMA1_STREAM4, peripheral );
+    result |= s_stream_drivers[ DMA1_STREAM5_RESOURCE_INDEX ].attach( DMA1_STREAM5, peripheral );
+    result |= s_stream_drivers[ DMA1_STREAM6_RESOURCE_INDEX ].attach( DMA1_STREAM6, peripheral );
+    result |= s_stream_drivers[ DMA1_STREAM7_RESOURCE_INDEX ].attach( DMA1_STREAM7, peripheral );
+
+    result |= s_stream_drivers[ DMA2_STREAM0_RESOURCE_INDEX ].attach( DMA2_STREAM0, peripheral );
+    result |= s_stream_drivers[ DMA2_STREAM1_RESOURCE_INDEX ].attach( DMA2_STREAM1, peripheral );
+    result |= s_stream_drivers[ DMA2_STREAM2_RESOURCE_INDEX ].attach( DMA2_STREAM2, peripheral );
+    result |= s_stream_drivers[ DMA2_STREAM3_RESOURCE_INDEX ].attach( DMA2_STREAM3, peripheral );
+    result |= s_stream_drivers[ DMA2_STREAM4_RESOURCE_INDEX ].attach( DMA2_STREAM4, peripheral );
+    result |= s_stream_drivers[ DMA2_STREAM5_RESOURCE_INDEX ].attach( DMA2_STREAM5, peripheral );
+    result |= s_stream_drivers[ DMA2_STREAM6_RESOURCE_INDEX ].attach( DMA2_STREAM6, peripheral );
+    result |= s_stream_drivers[ DMA2_STREAM7_RESOURCE_INDEX ].attach( DMA2_STREAM7, peripheral );
+
     return Chimera::Status::OK;
   }
 

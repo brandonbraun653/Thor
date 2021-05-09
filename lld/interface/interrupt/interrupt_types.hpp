@@ -38,8 +38,8 @@ namespace Thor::LLD::INT
   static constexpr uint32_t SPI_IT_PREEMPT_PRIORITY     = 5;
   static constexpr uint32_t UART_DMA_PREEMPT_PRIORITY   = 5;
   static constexpr uint32_t UART_IT_PREEMPT_PRIORITY    = 5;
-  static constexpr uint32_t USART_DMA_PREEMPT_PRIORITY  = UART_DMA_PREEMPT_PRIORITY;
-  static constexpr uint32_t USART_IT_PREEMPT_PRIORITY   = UART_IT_PREEMPT_PRIORITY;
+  static constexpr uint32_t USART_DMA_PREEMPT_PRIORITY  = 5;
+  static constexpr uint32_t USART_IT_PREEMPT_PRIORITY   = 5;
   static constexpr uint32_t USB_IT_PREEMPT_PRIORITY     = 5;
 }    // namespace Thor::LLD::INT
 

@@ -13,11 +13,9 @@
 #include <cstdint>
 #include <memory>
 
-/* Boost Includes */
-#include <etl/circular_buffer.h>
-
 /* Aurora Includes */
 #include <Aurora/constants>
+#include <Aurora/utility>
 
 /* Chimera Includes */
 #include <Chimera/assert>
@@ -31,10 +29,9 @@
 #include <Thor/event>
 #include <Thor/usart>
 #include <Thor/lld/common/types.hpp>
-#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
-#include <Thor/lld/interface/usart/usart_intf.hpp>
-#include <Thor/lld/interface/usart/usart_detail.hpp>
-#include <Thor/lld/interface/usart/usart_prv_data.hpp>
+#include <Thor/lld/interface/inc/interrupt>
+#include <Thor/lld/interface/inc/usart>
+
 
 #if defined( THOR_HLD_USART )
 
@@ -52,8 +49,8 @@ static constexpr size_t NUM_DRIVERS = LLD::NUM_USART_PERIPHS;
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
-static size_t s_driver_initialized;                        /**< Tracks the module level initialization state */
-static HLD::Driver hld_driver[ NUM_DRIVERS ];              /**< Driver objects */
+static size_t s_driver_initialized;           /**< Tracks the module level initialization state */
+static HLD::Driver hld_driver[ NUM_DRIVERS ]; /**< Driver objects */
 
 /*-------------------------------------------------------------------------------
 Private Function Declarations
@@ -68,7 +65,7 @@ static void USARTxISRUserThread( void *arg )
     Wait for something to wake this thread. If the msg
     isn't correct, go back to waiting.
     -------------------------------------------------*/
-    if( !this_thread::pendTaskMsg( ITCMsg::TSK_MSG_ISR_HANDLER ) )
+    if ( !this_thread::pendTaskMsg( ITCMsg::TSK_MSG_ISR_HANDLER ) )
     {
       continue;
     }
@@ -76,7 +73,7 @@ static void USARTxISRUserThread( void *arg )
     /*-------------------------------------------------
     Handle every ISR. Don't know which triggered this.
     -------------------------------------------------*/
-    for( size_t index = 0; index < NUM_DRIVERS; index++ )
+    for ( size_t index = 0; index < NUM_DRIVERS; index++ )
     {
       hld_driver[ index ].postISRProcessing();
     }
@@ -137,15 +134,15 @@ namespace Thor::USART
   }
 
 
-  bool isChannelUSART( const Chimera::Serial::Channel channel )
+  bool isChannelUSART( const Chimera::Serial::Channel mChannel )
   {
-    return ::LLD::isSupported( channel );
+    return ::LLD::isSupported( mChannel );
   }
 
 
-  Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
+  Driver_rPtr getDriver( const Chimera::Serial::Channel mChannel )
   {
-    if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    if ( auto idx = ::LLD::getResourceIndex( mChannel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return &hld_driver[ idx ];
     }
@@ -161,8 +158,8 @@ namespace Thor::USART
   Driver Implementation
   -------------------------------------------------------------------------------*/
   Driver::Driver() :
-      enabled( false ), channel( Chimera::Serial::Channel::NOT_SUPPORTED ), resourceIndex( 0 ), awaitRXComplete( 1 ),
-      awaitTXComplete( 1 ), rxLock( 1 ), txLock( 1 )
+      mEnabled( false ), mChannel( Chimera::Serial::Channel::NOT_SUPPORTED ), mResourceIndex( 0 ), mAwaitRXComplete( 1 ),
+      mAwaitTXComplete( 1 ), mRxLock( 1 ), mTxLock( 1 )
   {
   }
 
@@ -175,24 +172,25 @@ namespace Thor::USART
   Chimera::Status_t Driver::assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins )
   {
     /*------------------------------------------------
-    Make sure the channel is actually supported
+    Make sure the mChannel is actually supported
     ------------------------------------------------*/
-    this->channel = channel;
-    resourceIndex = ::LLD::getResourceIndex( channel );
+    mChannel       = channel;
+    mResourceIndex = ::LLD::getResourceIndex( mChannel );
 
-    /*------------------------------------------------
-    Create the hardware drivers
-    ------------------------------------------------*/
-    txPin = Chimera::GPIO::getDriver( pins.tx.port, pins.tx.pin );
-    rxPin = Chimera::GPIO::getDriver( pins.rx.port, pins.rx.pin );
+    if ( mResourceIndex == Thor::LLD::INVALID_RESOURCE_INDEX )
+    {
+      return Chimera::Status::NOT_SUPPORTED;
+    }
 
     /*------------------------------------------------
     Initialize/Configure hardware drivers
     ------------------------------------------------*/
-    txPin->init( pins.tx );
-    rxPin->init( pins.rx );
+    auto result = Chimera::Status::OK;
 
-    return Chimera::Status::OK;
+    result |= Chimera::GPIO::getDriver( pins.tx.port, pins.tx.pin )->init( pins.tx );
+    result |= Chimera::GPIO::getDriver( pins.rx.port, pins.rx.pin )->init( pins.rx );
+
+    return result;
   }
 
 
@@ -202,8 +200,8 @@ namespace Thor::USART
     /*------------------------------------------------
     Ensure the internal event signals are reset
     ------------------------------------------------*/
-    awaitRXComplete.try_acquire();
-    awaitTXComplete.try_acquire();
+    mAwaitRXComplete.try_acquire();
+    mAwaitTXComplete.try_acquire();
 
     /*------------------------------------------------
     Initialize to the desired TX/RX modes
@@ -211,20 +209,20 @@ namespace Thor::USART
     setMode( Chimera::Hardware::SubPeripheral::RX, rxMode );
     setMode( Chimera::Hardware::SubPeripheral::TX, txMode );
 
-    enabled = true;
+    mEnabled = true;
     return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::end()
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return ::LLD::getDriver( mChannel )->deinit();
   }
 
 
   Chimera::Status_t Driver::configure( const Chimera::Serial::Config &config )
   {
-    Thor::LLD::Serial::Config cfg = ::LLD::getDriver( channel )->getConfiguration();
+    Thor::LLD::Serial::Config cfg = ::LLD::getDriver( mChannel )->getConfiguration();
 
     /*------------------------------------------------
     Convert between the generalize Chimera options into
@@ -233,47 +231,47 @@ namespace Thor::USART
     ------------------------------------------------*/
     cfg.BaudRate   = static_cast<uint32_t>( config.baud );
     cfg.Mode       = ::LLD::Configuration::Modes::TX_RX;
-    cfg.Parity     = ::LLD::ConfigMap::Parity[ static_cast<size_t>( config.parity ) ];
-    cfg.StopBits   = ::LLD::ConfigMap::StopBits[ static_cast<size_t>( config.stopBits ) ];
-    cfg.WordLength = ::LLD::ConfigMap::CharWidth[ static_cast<size_t>( config.width ) ];
+    cfg.Parity     = ::LLD::ConfigMap::Parity[ EnumValue( config.parity ) ];
+    cfg.StopBits   = ::LLD::ConfigMap::StopBits[ EnumValue( config.stopBits ) ];
+    cfg.WordLength = ::LLD::ConfigMap::CharWidth[ EnumValue( config.width ) ];
 
-    return ::LLD::getDriver( channel )->init( cfg );
+    return ::LLD::getDriver( mChannel )->init( cfg );
   }
 
 
   Chimera::Status_t Driver::setBaud( const uint32_t baud )
   {
-    auto currentConfig = ::LLD::getDriver( channel )->getConfiguration();
+    auto currentConfig     = ::LLD::getDriver( mChannel )->getConfiguration();
     currentConfig.BaudRate = baud;
 
-    return ::LLD::getDriver( channel )->init( currentConfig );
+    return ::LLD::getDriver( mChannel )->init( currentConfig );
   }
 
 
   Chimera::Status_t Driver::setMode( const Chimera::Hardware::SubPeripheral periph,
-                                         const Chimera::Hardware::PeripheralMode mode )
+                                     const Chimera::Hardware::PeripheralMode mode )
   {
     using namespace Chimera::Hardware;
 
     if ( ( periph == SubPeripheral::RX ) || ( periph == SubPeripheral::TXRX ) )
     {
-      rxMode = mode;
+      mRxMode = mode;
     }
 
     if ( ( periph == SubPeripheral::TX ) || ( periph == SubPeripheral::TXRX ) )
     {
-      txMode = mode;
+      mTxMode = mode;
     }
 
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t Driver::write( const void *const buffer, const size_t length  )
+  Chimera::Status_t Driver::write( const void *const buffer, const size_t length )
   {
     auto error = Chimera::Status::OK;
 
-    switch( txMode )
+    switch ( mTxMode )
     {
       case Chimera::Hardware::PeripheralMode::BLOCKING:
         error = writeBlocking( buffer, length );
@@ -300,7 +298,7 @@ namespace Thor::USART
   {
     auto error = Chimera::Status::OK;
 
-    switch( rxMode )
+    switch ( mRxMode )
     {
       case Chimera::Hardware::PeripheralMode::BLOCKING:
         error = readBlocking( buffer, length );
@@ -329,11 +327,11 @@ namespace Thor::USART
 
     if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
-      error = txBuffers.flush();
+      error = mTxBuffers.flush();
     }
     else if ( periph == Chimera::Hardware::SubPeripheral::RX )
     {
-      error = rxBuffers.flush();
+      error = mRxBuffers.flush();
     }
     else
     {
@@ -350,12 +348,18 @@ namespace Thor::USART
     using namespace Chimera::Serial;
     using namespace Thor::LLD::USART;
 
-    if( !enabled )
+    /*-------------------------------------------------
+    Entrancy protection
+    -------------------------------------------------*/
+    if ( !mEnabled )
     {
       return;
     }
 
-    const auto flags = ::LLD::getDriver( channel )->getFlags();
+    /*-------------------------------------------------
+    Read why the LLD decided to wake us up
+    -------------------------------------------------*/
+    const auto flags = ::LLD::getDriver( mChannel )->getFlags();
 
     /*-------------------------------------------------------------------------------
     Handle TX Complete
@@ -365,31 +369,34 @@ namespace Thor::USART
       /*------------------------------------------------
       Clear out the flags which got us in here
       ------------------------------------------------*/
-      ::LLD::getDriver( channel )->clearFlags( Runtime::Flag::TX_COMPLETE );
-      auto cb  = txBuffers.circularBuffer();
-      auto lb  = txBuffers.linearBuffer();
+      ::LLD::getDriver( mChannel )->clearFlags( Runtime::Flag::TX_COMPLETE );
+      auto cb = mTxBuffers.circularBuffer();
+      auto lb = mTxBuffers.linearBuffer();
 
       /*------------------------------------------------
-      Process Transmit Buffers
+      Process Transmit Buffers:
+      Pull waiting data from the circular buffer into
+      the linear buffer for the HW to transmit from.
       ------------------------------------------------*/
       if ( !cb->empty() )
       {
         size_t bytesToTransmit = 0;
-        txBuffers.transferInto( cb->size(), bytesToTransmit );
+        mTxBuffers.transferInto( cb->size(), bytesToTransmit );
         write( lb, bytesToTransmit );
       }
 
       /*------------------------------------------------
-      Notify those waiting on the event occurrance
+      Notify those waiting on the TX occurrance
       ------------------------------------------------*/
-      awaitTXComplete.release();
-      txLock.release();
+      mAwaitTXComplete.release();
+      mTxLock.release();
 
       /*-------------------------------------------------
-      Handle any user-space callback
+      Handle any user-space callback that was registered
+      with the Interrupt module for this peripheral.
       -------------------------------------------------*/
       auto callbacks = LLD::INT::getISRHandler( Type::PERIPH_USART, SIG_TX_COMPLETE );
-      if( callbacks && callbacks->userCallback )
+      if ( callbacks && callbacks->userCallback )
       {
         callbacks->userCallback( callbacks );
       }
@@ -403,28 +410,32 @@ namespace Thor::USART
       /*------------------------------------------------
       Clear out the flags which got us in here
       ------------------------------------------------*/
-      ::LLD::getDriver( channel )->clearFlags( Runtime::Flag::RX_COMPLETE );
-      ::LLD::getDriver( channel )->clearFlags( Runtime::Flag::RX_LINE_IDLE_ABORT );
+      ::LLD::getDriver( mChannel )->clearFlags( Runtime::Flag::RX_COMPLETE );
+      ::LLD::getDriver( mChannel )->clearFlags( Runtime::Flag::RX_LINE_IDLE_ABORT );
 
       /*------------------------------------------------
-      Process Receive Buffers
+      Process Receive Buffers:
+      Get the transfer control block for the last RX and
+      move the data from the linear HW buffer into the
+      circular buffer for the user to read.
       ------------------------------------------------*/
-      auto tcb      = ::LLD::getDriver( channel )->getTCB_RX();
-      size_t tmp    = 0;
+      auto tcb   = ::LLD::getDriver( mChannel )->getTCB_RX();
+      size_t tmp = 0;
 
-      rxBuffers.transferOutOf( tcb.remaining, tmp );
+      mRxBuffers.transferOutOf( tcb.remaining, tmp );
 
       /*------------------------------------------------
-      Notify those waiting on the event occurrance
+      Notify those waiting on the RX occurrance
       ------------------------------------------------*/
-      awaitRXComplete.release();
-      rxLock.release();
+      mAwaitRXComplete.release();
+      mRxLock.release();
 
       /*-------------------------------------------------
-      Handle any user-space callback
+      Handle any user-space callback that was registered
+      with the Interrupt module for this peripheral.
       -------------------------------------------------*/
       auto callbacks = LLD::INT::getISRHandler( Type::PERIPH_USART, SIG_RX_COMPLETE );
-      if( callbacks && callbacks->userCallback )
+      if ( callbacks && callbacks->userCallback )
       {
         callbacks->userCallback( callbacks );
       }
@@ -434,13 +445,24 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::toggleAsyncListening( const bool state )
   {
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    if ( mRxMode == Chimera::Hardware::PeripheralMode::BLOCKING )
+    {
+      return Chimera::Status::NOT_SUPPORTED;
+    }
+
+    /*-------------------------------------------------
+    Start listening if requested, else kill ongoing
+    -------------------------------------------------*/
     if ( state )
     {
-      return ::LLD::getDriver( channel )->receiveIT( rxBuffers.linearBuffer(), rxBuffers.linearSize() );
+      return this->read( mRxBuffers.linearBuffer(), mRxBuffers.linearSize() );
     }
     else
     {
-      ::LLD::getDriver( channel )->killReceive();
+      ::LLD::getDriver( mChannel )->killReceive();
       return Chimera::Status::OK;
     }
   }
@@ -458,7 +480,7 @@ namespace Thor::USART
     {
       size_t bytesRead = 0;
 
-      if ( auto tmp = rxBuffers.circularBuffer(); tmp )
+      if ( auto tmp = mRxBuffers.circularBuffer(); tmp )
       {
         while ( !tmp->empty() && ( bytesRead < len ) )
         {
@@ -480,20 +502,20 @@ namespace Thor::USART
 
 
   Chimera::Status_t Driver::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
-                                                 Chimera::Serial::CircularBuffer & userBuffer, uint8_t *const hwBuffer,
-                                                 const size_t hwBufferSize )
+                                             Chimera::Serial::CircularBuffer &userBuffer, uint8_t *const hwBuffer,
+                                             const size_t hwBufferSize )
   {
     Chimera::Status_t error = Chimera::Status::OK;
 
     if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
-      txBuffers.assign( userBuffer, hwBuffer, hwBufferSize );
-      txBuffers.flush();
+      mTxBuffers.assign( userBuffer, hwBuffer, hwBufferSize );
+      mTxBuffers.flush();
     }
     else if ( periph == Chimera::Hardware::SubPeripheral::RX )
     {
-      rxBuffers.assign( userBuffer, hwBuffer, hwBufferSize );
-      rxBuffers.flush();
+      mRxBuffers.assign( userBuffer, hwBuffer, hwBufferSize );
+      mRxBuffers.flush();
     }
     else
     {
@@ -508,18 +530,18 @@ namespace Thor::USART
   {
     Chimera::Status_t error = Chimera::Status::OK;
 
-//    if ( periph == Chimera::Hardware::SubPeripheral::TX )
-//    {
-//      PeripheralState.tx_buffering_enabled = false;
-//    }
-//    else if ( periph == Chimera::Hardware::SubPeripheral::RX )
-//    {
-//      PeripheralState.tx_buffering_enabled = false;
-//    }
-//    else
-//    {
-//      error = Chimera::Status::INVAL_FUNC_PARAM;
-//    }
+    //    if ( periph == Chimera::Hardware::SubPeripheral::TX )
+    //    {
+    //      PeripheralState.tx_buffering_mEnabled = false;
+    //    }
+    //    else if ( periph == Chimera::Hardware::SubPeripheral::RX )
+    //    {
+    //      PeripheralState.tx_buffering_mEnabled = false;
+    //    }
+    //    else
+    //    {
+    //      error = Chimera::Status::INVAL_FUNC_PARAM;
+    //    }
 
     return error;
   }
@@ -529,7 +551,7 @@ namespace Thor::USART
   {
     bool retval = false;
 
-    if ( auto tmp = rxBuffers.circularBuffer(); tmp && !tmp->empty() )
+    if ( auto tmp = mRxBuffers.circularBuffer(); tmp && !tmp->empty() )
     {
       retval = true;
 
@@ -552,24 +574,24 @@ namespace Thor::USART
       return Chimera::Status::NOT_SUPPORTED;
     }
 
-    if ( ( event == Trigger::TRIGGER_WRITE_COMPLETE ) && !awaitTXComplete.try_acquire_for( timeout ) )
+    if ( ( event == Trigger::TRIGGER_WRITE_COMPLETE ) && !mAwaitTXComplete.try_acquire_for( timeout ) )
     {
       return Chimera::Status::TIMEOUT;
     }
-    else if ( ( event == Trigger::TRIGGER_READ_COMPLETE ) && !awaitRXComplete.try_acquire_for( timeout ) )
+    else if ( ( event == Trigger::TRIGGER_READ_COMPLETE ) && !mAwaitRXComplete.try_acquire_for( timeout ) )
     {
       return Chimera::Status::TIMEOUT;
     }
 
-    awaitRXComplete.release();
-    awaitTXComplete.release();
+    mAwaitRXComplete.release();
+    mAwaitTXComplete.release();
 
     return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
-                                       const size_t timeout )
+                                   const size_t timeout )
   {
     auto result = await( event, timeout );
 
@@ -584,23 +606,23 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::readBlocking( void *const buffer, const size_t length )
   {
-    return ::LLD::getDriver( channel )->receive( buffer, length );
+    return ::LLD::getDriver( mChannel )->receive( buffer, length );
   }
 
 
-  Chimera::Status_t Driver::readInterrupt( void *const buffer, const size_t length  )
+  Chimera::Status_t Driver::readInterrupt( void *const buffer, const size_t length )
   {
     Chimera::Status_t error = Chimera::Status::OK;
 
-    if ( !rxBuffers.initialized() )
+    if ( !mRxBuffers.initialized() )
     {
       return Chimera::Status::NOT_INITIALIZED;
     }
 
-    if ( length <= rxBuffers.linearSize() )
+    if ( length <= mRxBuffers.linearSize() )
     {
-      memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
-      error = ::LLD::getDriver( channel )->receiveIT( rxBuffers.linearBuffer(), length );
+      memset( mRxBuffers.linearBuffer(), 0, mRxBuffers.linearSize() );
+      error = ::LLD::getDriver( mChannel )->receiveIT( mRxBuffers.linearBuffer(), length );
 
       if ( error == Chimera::Status::OK )
       {
@@ -620,15 +642,15 @@ namespace Thor::USART
   {
     Chimera::Status_t error = Chimera::Status::OK;
 
-    if ( !rxBuffers.initialized() )
+    if ( !mRxBuffers.initialized() )
     {
       return Chimera::Status::NOT_INITIALIZED;
     }
 
-    if ( length <= rxBuffers.linearSize() )
+    if ( length <= mRxBuffers.linearSize() )
     {
-      memset( rxBuffers.linearBuffer(), 0, rxBuffers.linearSize() );
-      error = ::LLD::getDriver( channel )->receiveDMA( rxBuffers.linearBuffer(), length );
+      memset( mRxBuffers.linearBuffer(), 0, mRxBuffers.linearSize() );
+      error = ::LLD::getDriver( mChannel )->receiveDMA( mRxBuffers.linearBuffer(), length );
 
       if ( error == Chimera::Status::OK )
       {
@@ -646,7 +668,7 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::writeBlocking( const void *const buffer, const size_t length )
   {
-    return ::LLD::getDriver( channel )->transmit( buffer, length );
+    return ::LLD::getDriver( mChannel )->transmit( buffer, length );
   }
 
 
@@ -654,7 +676,7 @@ namespace Thor::USART
   {
     Chimera::Status_t error = Chimera::Status::OK;
 
-    if ( !txBuffers.initialized() )
+    if ( !mTxBuffers.initialized() )
     {
       return Chimera::Status::NOT_INITIALIZED;
     }
@@ -663,16 +685,16 @@ namespace Thor::USART
     Hardware is free. Send the data directly. Otherwise
     queue everything up to send later.
     ------------------------------------------------*/
-    if ( txLock.try_acquire() )
+    if ( mTxLock.try_acquire() )
     {
-      awaitTXComplete.try_acquire();
-      error = ::LLD::getDriver( channel )->transmitIT( buffer, length );
+      mAwaitTXComplete.try_acquire();
+      error = ::LLD::getDriver( mChannel )->transmitIT( buffer, length );
     }
     else
     {
       size_t pushed = 0;
-      error = Chimera::Status::BUSY;
-      txBuffers.push( reinterpret_cast<const uint8_t *const>( buffer ), length, pushed );
+      error         = Chimera::Status::BUSY;
+      mTxBuffers.push( reinterpret_cast<const uint8_t *const>( buffer ), length, pushed );
     }
 
     return error;
@@ -683,7 +705,7 @@ namespace Thor::USART
   {
     Chimera::Status_t error = Chimera::Status::OK;
 
-    if ( !txBuffers.initialized() )
+    if ( !mTxBuffers.initialized() )
     {
       return Chimera::Status::NOT_INITIALIZED;
     }
@@ -692,16 +714,16 @@ namespace Thor::USART
     Hardware is free. Send the data directly. Otherwise
     queue everything up to send later.
     ------------------------------------------------*/
-    if ( txLock.try_acquire() )
+    if ( mTxLock.try_acquire() )
     {
-      awaitTXComplete.try_acquire();
-      error = ::LLD::getDriver( channel )->transmitDMA( buffer, length );
+      mAwaitTXComplete.try_acquire();
+      error = ::LLD::getDriver( mChannel )->transmitDMA( buffer, length );
     }
     else
     {
       size_t pushed = 0;
-      error = Chimera::Status::BUSY;
-      txBuffers.push( reinterpret_cast<const uint8_t *const>( buffer ), length, pushed );
+      error         = Chimera::Status::BUSY;
+      mTxBuffers.push( reinterpret_cast<const uint8_t *const>( buffer ), length, pushed );
     }
 
     return error;

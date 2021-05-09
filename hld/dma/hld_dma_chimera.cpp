@@ -1,15 +1,12 @@
 /********************************************************************************
  *  File Name:
- *    hld_gpio_chimera.cpp
+ *    hld_dma_chimera.cpp
  *
- *	 Description:
- *    Implementation of Chimera DMA driver hooks
+ *  Description:
+ *    Implementation of Chimera DMA driver registration hooks
  *
  *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
-
-/* STL Includes */
-#include <memory>
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -26,32 +23,33 @@ namespace Chimera::DMA::Backend
   -------------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    return Chimera::Status::OK;
+    return Thor::DMA::initialize();
   }
 
 
   Chimera::Status_t reset()
   {
-    return Chimera::Status::OK;
+    return Thor::DMA::reset();
   }
 
 
   RequestId constructPipe( const PipeConfig &config )
   {
-    return INVALID_REQUEST;
+    return Thor::DMA::constructPipe( config );
   }
 
 
   RequestId transfer( const MemTransfer &transfer )
   {
-    return INVALID_REQUEST;
+    return Thor::DMA::transfer( transfer );
   }
 
 
   RequestId transfer( const PipeTransfer &transfer )
   {
-    return INVALID_REQUEST;
+    return Thor::DMA::transfer( transfer );
   }
+
 
   Chimera::Status_t registerDriver( Chimera::DMA::Backend::DriverConfig &registry )
   {

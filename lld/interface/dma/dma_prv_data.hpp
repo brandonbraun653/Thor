@@ -129,6 +129,7 @@ namespace Thor::LLD::DMA
   -------------------------------------------------------------------------------*/
   namespace Resource
   {
+    extern ISREventQueue ISRQueue;
     extern LLD_CONST IRQn_Type IRQSignals[ NUM_DMA_STREAMS_TOTAL ];
   }    // namespace Resource
 

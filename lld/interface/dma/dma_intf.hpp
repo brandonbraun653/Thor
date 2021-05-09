@@ -57,6 +57,14 @@ namespace Thor::LLD::DMA
   Stream_rPtr getStream( const Controller control, const Streamer stream );
 
   /**
+   * @brief Get the Stream object from a resource index
+   *
+   * @param index               Resource index of the stream
+   * @return Stream_rPtr
+   */
+  Stream_rPtr getStream( const RIndex_t index );
+
+  /**
    * @brief Gets the stream controller's memory mapped registers from the parent DMA instance
    *
    * @param periph      Parent DMA instance
@@ -118,7 +126,6 @@ namespace Thor::LLD::DMA
    *  @return bool
    */
   bool attachDriverInstances( Driver *const driverList, const size_t numDrivers );
-
 
   /*-------------------------------------------------------------------------------
   Driver Interface
@@ -222,15 +229,9 @@ namespace Thor::LLD::DMA
     virtual Chimera::Status_t abort() = 0;
 
     /**
-     * @brief Attaches a callback to execute on an ISR event
-     *
-     * This will run directly in the ISR
-     *
-     * @param irq           Signal to attach to
-     * @param callback      Callback function
-     * @return Chimera::Status_t
+     * @brief Acknowledges the last transfer ISR data was handled
      */
-    virtual Chimera::Status_t onIRQ( const Interrupt irq, ISRCallback &callback ) = 0;
+    virtual void ackTransfer() = 0;
 
     /**
      * @brief Enables interrupts for the configured stream
@@ -256,7 +257,7 @@ namespace Thor::LLD::DMA
     Chimera::Status_t configure( StreamConfig *const config, TCB *const controlBlock );
     Chimera::Status_t start();
     Chimera::Status_t abort();
-    Chimera::Status_t onIRQ( const Interrupt irq, ISRCallback &callback );
+    void ackTransfer();
     void enableInterrupts();
     void disableInterrupts();
 
@@ -301,7 +302,10 @@ namespace Thor::LLD::DMA
      * @brief Resets the LISR/HISR registers for the configured stream
      * Assumes interrupt safe context.
      */
-    void reset_isr();
+    void reset_isr_flags();
+
+    void configure_memory_settings( const bool incr, const Chimera::DMA::BurstSize bSize, const Chimera::DMA::Alignment align );
+    void configure_periph_settings( const bool incr, const Chimera::DMA::BurstSize bSize, const Chimera::DMA::Alignment align );
   };
 
 }    // namespace Thor::LLD::DMA

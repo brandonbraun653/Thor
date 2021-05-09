@@ -47,22 +47,24 @@ namespace Thor::LLD::DMA
 
   static constexpr size_t DMA1_RESOURCE_INDEX         = 0u;
   static constexpr size_t DMA2_RESOURCE_INDEX         = 1u;
-  static constexpr size_t DMA1_STREAM0_RESOURCE_INDEX = 2u;
-  static constexpr size_t DMA1_STREAM1_RESOURCE_INDEX = 3u;
-  static constexpr size_t DMA1_STREAM2_RESOURCE_INDEX = 4u;
-  static constexpr size_t DMA1_STREAM3_RESOURCE_INDEX = 5u;
-  static constexpr size_t DMA1_STREAM4_RESOURCE_INDEX = 6u;
-  static constexpr size_t DMA1_STREAM5_RESOURCE_INDEX = 7u;
-  static constexpr size_t DMA1_STREAM6_RESOURCE_INDEX = 8u;
-  static constexpr size_t DMA1_STREAM7_RESOURCE_INDEX = 9u;
-  static constexpr size_t DMA2_STREAM0_RESOURCE_INDEX = 10u;
-  static constexpr size_t DMA2_STREAM1_RESOURCE_INDEX = 11u;
-  static constexpr size_t DMA2_STREAM2_RESOURCE_INDEX = 12u;
-  static constexpr size_t DMA2_STREAM3_RESOURCE_INDEX = 13u;
-  static constexpr size_t DMA2_STREAM4_RESOURCE_INDEX = 14u;
-  static constexpr size_t DMA2_STREAM5_RESOURCE_INDEX = 15u;
-  static constexpr size_t DMA2_STREAM6_RESOURCE_INDEX = 16u;
-  static constexpr size_t DMA2_STREAM7_RESOURCE_INDEX = 17u;
+
+  static constexpr size_t DMA1_STREAM0_RESOURCE_INDEX = 0u;
+  static constexpr size_t DMA1_STREAM1_RESOURCE_INDEX = 1u;
+  static constexpr size_t DMA1_STREAM2_RESOURCE_INDEX = 2u;
+  static constexpr size_t DMA1_STREAM3_RESOURCE_INDEX = 3u;
+  static constexpr size_t DMA1_STREAM4_RESOURCE_INDEX = 4u;
+  static constexpr size_t DMA1_STREAM5_RESOURCE_INDEX = 5u;
+  static constexpr size_t DMA1_STREAM6_RESOURCE_INDEX = 6u;
+  static constexpr size_t DMA1_STREAM7_RESOURCE_INDEX = 7u;
+  static constexpr size_t DMA2_STREAM0_RESOURCE_INDEX = 8u;
+  static constexpr size_t DMA2_STREAM1_RESOURCE_INDEX = 9u;
+  static constexpr size_t DMA2_STREAM2_RESOURCE_INDEX = 10u;
+  static constexpr size_t DMA2_STREAM3_RESOURCE_INDEX = 11u;
+  static constexpr size_t DMA2_STREAM4_RESOURCE_INDEX = 12u;
+  static constexpr size_t DMA2_STREAM5_RESOURCE_INDEX = 13u;
+  static constexpr size_t DMA2_STREAM6_RESOURCE_INDEX = 14u;
+  static constexpr size_t DMA2_STREAM7_RESOURCE_INDEX = 15u;
+  static constexpr size_t DMA_MAX_RESOURCE_IDX        = 16u;
 
 }    // namespace Thor::LLD::DMA
 

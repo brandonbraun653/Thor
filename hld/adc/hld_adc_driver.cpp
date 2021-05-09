@@ -132,7 +132,7 @@ namespace Thor::ADC
     cfg.arg        = nullptr;
     cfg.function   = ADCxISRUserThread;
     cfg.priority   = Priority::MAXIMUM;
-    cfg.stackWords = STACK_BYTES( 512 );
+    cfg.stackWords = STACK_BYTES( 1024 );
     cfg.type       = TaskInitType::DYNAMIC;
     cfg.name       = "PP_ADCx";
 
