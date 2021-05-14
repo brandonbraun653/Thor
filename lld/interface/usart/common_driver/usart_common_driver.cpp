@@ -303,7 +303,39 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::initDMA()
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    using namespace Chimera::DMA;
+    using namespace Chimera::Peripheral;
+
+    /*-------------------------------------------------
+    Configure the TX pipe
+    -------------------------------------------------*/
+    PipeConfig txCfg;
+    txCfg.alignment      = Alignment::BYTE;
+    txCfg.direction      = Direction::MEMORY_TO_PERIPH;
+    txCfg.mode           = Mode::DIRECT;
+    txCfg.periphAddr     = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
+    txCfg.priority       = Priority::MEDIUM;
+    txCfg.resourceIndex  = DMA::getResourceIndex( Resource::TXDMASignals[ mResourceIndex ] );
+    txCfg.channel        = static_cast<size_t>( DMA::getChannel( Resource::TXDMASignals[ mResourceIndex ] ) );
+    txCfg.threshold      = FifoThreshold::NONE;
+
+    /*-------------------------------------------------
+    FIFO errors are thrown even though we don't use it.
+    Doesn't seem to affect TX operations.
+    -------------------------------------------------*/
+    txCfg.errorsToIgnore = Errors::FIFO;
+
+    /*-------------------------------------------------
+    Construct the pipe and make a note of it's UUID
+    -------------------------------------------------*/
+    mTXDMARequestId = Thor::DMA::constructPipe( txCfg );
+
+    /*-------------------------------------------------
+    Configure the peripheral interrupts
+    -------------------------------------------------*/
+    enableIT( Chimera::Hardware::SubPeripheral::TXRX );
+
+    return Chimera::Status::OK;
   }
 
 
@@ -327,6 +359,8 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::transmitDMA( const void *const data, const size_t size )
   {
+    using namespace Chimera::DMA;
+
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
@@ -343,10 +377,37 @@ namespace Thor::LLD::USART
     {
       return Chimera::Status::BUSY;
     }
-    else    // No on-going transfers
-    {
 
+    initDMA();
+
+    disableUSARTInterrupts();
+    {
+      /* Instruct the USART to use DMA mode */
+      DMAT::set( mPeriph, CR3_DMAT );
+
+      /* Clear the transfer complete bit */
+      TC::clear( mPeriph, SR_TC );
+
+      /* Enable the USART completion interrupts */
+      prjEnableTransmitter( mPeriph );
+      prjEnableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
+
+      /* Configure the DMA transfer */
+      PipeTransfer cfg;
+      cfg.callback = TransferCallback::create<Driver, &Driver::onDMATXComplete>( *this );
+      cfg.pipe     = mTXDMARequestId;
+      cfg.size     = size;
+      cfg.addr     = reinterpret_cast<std::uintptr_t>( data );
+
+      /* Configure the USART transfer control block */
+      mTXTCB.buffer    = nullptr;
+      mTXTCB.expected  = size;
+      mTXTCB.remaining = size;
+      mRXTCB.state     = StateMachine::RX::RX_ONGOING;
+
+      Thor::DMA::transfer( cfg );
     }
+    enableUSARTInterrupts();
 
     return Chimera::Status::OK;
   }
@@ -725,6 +786,23 @@ namespace Thor::LLD::USART
   {
     Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
+
+
+  void Driver::onDMATXComplete( const Chimera::DMA::TransferStats &stats )
+  {
+    if( stats.error )
+    {
+      // Anything to do?
+    }
+    else
+    {
+      mTXTCB.state = StateMachine::TX::TX_COMPLETE;
+      mTXTCB.remaining = mTXTCB.expected - stats.size;
+
+      IRQHandler();
+    }
+  }
+
 }    // namespace Thor::LLD::USART
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_USART */

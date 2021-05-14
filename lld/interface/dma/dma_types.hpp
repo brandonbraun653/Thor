@@ -148,18 +148,6 @@ namespace Thor::LLD::DMA
     NUM_OPTIONS
   };
 
-  /**
-   * @brief Selects the threshold which will flush the FIFO
-   */
-  enum class FifoThreshold : uint8_t
-  {
-    QUARTER_FULL,
-    HALF_FULL,
-    THREE_QUARTER_FULL,
-    FULL,
-
-    NUM_OPTIONS
-  };
 
   /**
    * @brief Current state of the DMA stream
@@ -306,7 +294,6 @@ namespace Thor::LLD::DMA
     bool srcAddrIncr;
     Channel channel;
     FifoMode fifoMode;
-    FifoThreshold fifoThreshold;
 
     /*-------------------------------------------------
     Common Driver Configuration
@@ -314,6 +301,7 @@ namespace Thor::LLD::DMA
     Chimera::DMA::Mode dmaMode;
     Chimera::DMA::Direction direction;
     Chimera::DMA::Priority priority;
+    Chimera::DMA::FifoThreshold fifoThreshold;
     Chimera::DMA::BurstSize dstBurstSize;
     Chimera::DMA::Alignment dstAddrAlign;
     Chimera::DMA::BurstSize srcBurstSize;
@@ -330,11 +318,12 @@ namespace Thor::LLD::DMA
     Control Fields
     -------------------------------------------------*/
     /* Driver Controlled */
-    StreamState state;                 /**< DMA transfer state machine status */
-    uint32_t bytesTransferred;         /**< How many bytes were actually transferred */
-    uint32_t selectedChannel;          /**< When the ISR fires, will contain hardware channel that was used */
-    RIndex_t resourceIndex;            /**< Resource index of the controlling stream */
-    Chimera::DMA::RequestId requestId; /**< HLD request ID of the transfer */
+    Chimera::DMA::Errors errorsToIgnore; /**< Which errors to not care about */
+    StreamState state;                   /**< DMA transfer state machine status */
+    uint32_t bytesTransferred;           /**< How many bytes were actually transferred */
+    uint32_t selectedChannel;            /**< When the ISR fires, will contain hardware channel that was used */
+    RIndex_t resourceIndex;              /**< Resource index of the controlling stream */
+    Chimera::DMA::RequestId requestId;   /**< HLD request ID of the transfer */
 
     /* User Configured */
     uint32_t srcAddress;   /**< Address where the data will be pulled from */

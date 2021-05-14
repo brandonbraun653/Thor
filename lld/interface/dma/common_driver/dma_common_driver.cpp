@@ -166,30 +166,46 @@ namespace Thor::LLD::DMA
 
   Chimera::Status_t Driver::attach( RegisterMap *const peripheral )
   {
+    /*-------------------------------------------------
+    Configure the stream drivers
+    -------------------------------------------------*/
+    auto result = Chimera::Status::OK;
+    switch( getController( reinterpret_cast<std::uintptr_t>( peripheral ) ) )
+    {
+      case Controller::DMA_1:
+        result |= s_stream_drivers[ DMA1_STREAM0_RESOURCE_INDEX ].attach( DMA1_STREAM0, peripheral );
+        result |= s_stream_drivers[ DMA1_STREAM1_RESOURCE_INDEX ].attach( DMA1_STREAM1, peripheral );
+        result |= s_stream_drivers[ DMA1_STREAM2_RESOURCE_INDEX ].attach( DMA1_STREAM2, peripheral );
+        result |= s_stream_drivers[ DMA1_STREAM3_RESOURCE_INDEX ].attach( DMA1_STREAM3, peripheral );
+        result |= s_stream_drivers[ DMA1_STREAM4_RESOURCE_INDEX ].attach( DMA1_STREAM4, peripheral );
+        result |= s_stream_drivers[ DMA1_STREAM5_RESOURCE_INDEX ].attach( DMA1_STREAM5, peripheral );
+        result |= s_stream_drivers[ DMA1_STREAM6_RESOURCE_INDEX ].attach( DMA1_STREAM6, peripheral );
+        result |= s_stream_drivers[ DMA1_STREAM7_RESOURCE_INDEX ].attach( DMA1_STREAM7, peripheral );
+        break;
+
+      case Controller::DMA_2:
+        result |= s_stream_drivers[ DMA2_STREAM0_RESOURCE_INDEX ].attach( DMA2_STREAM0, peripheral );
+        result |= s_stream_drivers[ DMA2_STREAM1_RESOURCE_INDEX ].attach( DMA2_STREAM1, peripheral );
+        result |= s_stream_drivers[ DMA2_STREAM2_RESOURCE_INDEX ].attach( DMA2_STREAM2, peripheral );
+        result |= s_stream_drivers[ DMA2_STREAM3_RESOURCE_INDEX ].attach( DMA2_STREAM3, peripheral );
+        result |= s_stream_drivers[ DMA2_STREAM4_RESOURCE_INDEX ].attach( DMA2_STREAM4, peripheral );
+        result |= s_stream_drivers[ DMA2_STREAM5_RESOURCE_INDEX ].attach( DMA2_STREAM5, peripheral );
+        result |= s_stream_drivers[ DMA2_STREAM6_RESOURCE_INDEX ].attach( DMA2_STREAM6, peripheral );
+        result |= s_stream_drivers[ DMA2_STREAM7_RESOURCE_INDEX ].attach( DMA2_STREAM7, peripheral );
+        break;
+
+      default:
+        return Chimera::Status::NOT_SUPPORTED;
+        break;
+    };
+
+    /*-------------------------------------------------
+    Enable the peripheral
+    -------------------------------------------------*/
     mPeriph = peripheral;
     clockEnable();
 
-    auto result = Chimera::Status::OK;
-
-    result |= s_stream_drivers[ DMA1_STREAM0_RESOURCE_INDEX ].attach( DMA1_STREAM0, peripheral );
-    result |= s_stream_drivers[ DMA1_STREAM1_RESOURCE_INDEX ].attach( DMA1_STREAM1, peripheral );
-    result |= s_stream_drivers[ DMA1_STREAM2_RESOURCE_INDEX ].attach( DMA1_STREAM2, peripheral );
-    result |= s_stream_drivers[ DMA1_STREAM3_RESOURCE_INDEX ].attach( DMA1_STREAM3, peripheral );
-    result |= s_stream_drivers[ DMA1_STREAM4_RESOURCE_INDEX ].attach( DMA1_STREAM4, peripheral );
-    result |= s_stream_drivers[ DMA1_STREAM5_RESOURCE_INDEX ].attach( DMA1_STREAM5, peripheral );
-    result |= s_stream_drivers[ DMA1_STREAM6_RESOURCE_INDEX ].attach( DMA1_STREAM6, peripheral );
-    result |= s_stream_drivers[ DMA1_STREAM7_RESOURCE_INDEX ].attach( DMA1_STREAM7, peripheral );
-
-    result |= s_stream_drivers[ DMA2_STREAM0_RESOURCE_INDEX ].attach( DMA2_STREAM0, peripheral );
-    result |= s_stream_drivers[ DMA2_STREAM1_RESOURCE_INDEX ].attach( DMA2_STREAM1, peripheral );
-    result |= s_stream_drivers[ DMA2_STREAM2_RESOURCE_INDEX ].attach( DMA2_STREAM2, peripheral );
-    result |= s_stream_drivers[ DMA2_STREAM3_RESOURCE_INDEX ].attach( DMA2_STREAM3, peripheral );
-    result |= s_stream_drivers[ DMA2_STREAM4_RESOURCE_INDEX ].attach( DMA2_STREAM4, peripheral );
-    result |= s_stream_drivers[ DMA2_STREAM5_RESOURCE_INDEX ].attach( DMA2_STREAM5, peripheral );
-    result |= s_stream_drivers[ DMA2_STREAM6_RESOURCE_INDEX ].attach( DMA2_STREAM6, peripheral );
-    result |= s_stream_drivers[ DMA2_STREAM7_RESOURCE_INDEX ].attach( DMA2_STREAM7, peripheral );
-
-    return Chimera::Status::OK;
+    return result;
   }
 
 

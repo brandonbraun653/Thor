@@ -18,6 +18,22 @@
 namespace Thor::LLD::DMA
 {
   /*-------------------------------------------------------------------------------
+  Static Functions
+  -------------------------------------------------------------------------------*/
+  static uint8_t find_signal_attributes( const Source signal )
+  {
+    for( size_t idx = 0; idx < ARRAY_COUNT( Config::RequestMap ); idx++ )
+    {
+      if( signal == Config::RequestMap[ idx ].request )
+      {
+        return Config::RequestMap[ idx ].attributes;
+      }
+    }
+
+    return 0;
+  }
+
+  /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
   bool isSupported( const Controller channel, const Streamer stream )
@@ -148,6 +164,45 @@ namespace Thor::LLD::DMA
       };
     }
 #endif
+  }
+
+
+  RIndex_t getResourceIndex( const Source dmaSignal )
+  {
+    /*-------------------------------------------------
+    Find the entry in the DMA signal map
+    -------------------------------------------------*/
+    auto attr = find_signal_attributes( dmaSignal );
+    if( !attr )
+    {
+      return INVALID_RESOURCE_INDEX;
+    }
+
+    /*-------------------------------------------------
+    Convert the packed bit fields and look up the index
+    -------------------------------------------------*/
+    Controller ctrl = ( ( attr & ON_DMA1 ) == ON_DMA1 ) ? Controller::DMA_1 : Controller::DMA_2;
+    Streamer stream = static_cast<Streamer>( ( attr & ON_STREAM_MSK ) >> ON_STREAM_POS );
+
+    return getResourceIndex( ctrl, stream );
+  }
+
+
+  Channel getChannel( const Source dmaSignal )
+  {
+    /*-------------------------------------------------
+    Find the entry in the DMA signal map
+    -------------------------------------------------*/
+    auto attr = find_signal_attributes( dmaSignal );
+    if( !attr )
+    {
+      return Channel::INVALID;
+    }
+
+    /*-------------------------------------------------
+    Convert the packed bit field in to the channel id
+    -------------------------------------------------*/
+    return static_cast<Channel>( ( attr & ON_CHANNEL_MSK ) >> ON_CHANNEL_POS );
   }
 
 

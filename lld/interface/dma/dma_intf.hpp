@@ -86,6 +86,22 @@ namespace Thor::LLD::DMA
   bool isSupported( const Controller channel, const Streamer stream );
 
   /**
+   * @brief Get the resource index for the given DMA source signal
+   *
+   * @param dmaSignal           Signal to look up
+   * @return RIndex_t
+   */
+  RIndex_t getResourceIndex( const Source dmaSignal );
+
+  /**
+   * @brief Gets the channel associated with the DMA signal
+   *
+   * @param dmaSignal           Signal to look up
+   * @return Channel
+   */
+  Channel getChannel( const Source dmaSignal );
+
+  /**
    *  Gets the resource index associated with a particular channel. If not
    *  supported, will return INVALID_RESOURCE_INDEX
    *
@@ -109,6 +125,7 @@ namespace Thor::LLD::DMA
    *  @return Controller
    */
   Controller getController( const std::uintptr_t address );
+
 
   /**
    * @brief Gets the DMA stream associated with a peripheral address

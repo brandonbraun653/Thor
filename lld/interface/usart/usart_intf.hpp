@@ -14,6 +14,7 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/dma>
 #include <Chimera/thread>
 #include <Chimera/usart>
 
@@ -158,9 +159,11 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------
     Misc Driver State Variables
     -------------------------------------------------*/
-    RegisterMap *mPeriph;           /**< Points to the hardware registers for this instance */
-    size_t mResourceIndex;          /**< Derived lookup table index for resource access */
-    volatile Reg32_t mRuntimeFlags; /**< Error/process flags set at runtime to indicate state */
+    RegisterMap *mPeriph;                    /**< Points to the hardware registers for this instance */
+    size_t mResourceIndex;                   /**< Derived lookup table index for resource access */
+    volatile Reg32_t mRuntimeFlags;          /**< Error/process flags set at runtime to indicate state */
+    Chimera::DMA::RequestId mTXDMARequestId; /**< Request id of the TX DMA pipe for the driver */
+    Chimera::DMA::RequestId mRXDMARequestId; /**< Request id of the RX DMA pipe for the driver */
 
     /*------------------------------------------------
     Transfer Control Blocks
@@ -188,6 +191,9 @@ namespace Thor::LLD::USART
      *  @return void
      */
     inline void enableUSARTInterrupts();
+
+
+    void onDMATXComplete( const Chimera::DMA::TransferStats &stats );
   };
 }    // namespace Thor::LLD::USART
 

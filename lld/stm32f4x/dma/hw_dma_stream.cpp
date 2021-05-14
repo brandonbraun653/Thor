@@ -302,6 +302,7 @@ namespace Thor::LLD::DMA
   {
     using namespace Chimera::Peripheral;
     using namespace Chimera::Thread;
+    using namespace Chimera::DMA;
 
     static constexpr uint8_t TCIF  = 1u << 5;
     static constexpr uint8_t HTCIF = 1u << 4;
@@ -319,11 +320,13 @@ namespace Thor::LLD::DMA
     const Reg32_t fxcr = FCR_ALL::get( mStream );
 
     /*------------------------------------------------
-    Transfer Errors
+    Transfer Errors: Allow these to be ignored due to
+    some quirks with the hardware. USARTs will throw
+    FIFO errors even though it doesn't use the FIFO.
     ------------------------------------------------*/
-    mTCB.fifoError       = ( status & FEIF );
-    mTCB.transferError   = ( status & TEIF );
-    mTCB.directModeError = ( status & DMEIF );
+    mTCB.fifoError       = ( status & FEIF ) && ( ( mTCB.errorsToIgnore & Errors::FIFO ) != Errors::FIFO );
+    mTCB.transferError   = ( status & TEIF ) && ( ( mTCB.errorsToIgnore & Errors::TRANSFER ) != Errors::TRANSFER );
+    mTCB.directModeError = ( status & DMEIF ) && ( ( mTCB.errorsToIgnore & Errors::DIRECT ) != Errors::DIRECT );
 
     if( mTCB.fifoError || mTCB.transferError || mTCB.directModeError )
     {
@@ -356,12 +359,12 @@ namespace Thor::LLD::DMA
     -------------------------------------------------*/
     if( disableIsr )
     {
-      /* Reset the interrupt flags */
-      reset_isr_flags();
-
       /* Disable the interrupts */
       mStream->CR &= ~( SxCR_TCIE | SxCR_HTIE | SxCR_TEIE | SxCR_DMEIE );
       FEIE::clear( mStream, SxFCR_FEIE );
+
+      /* Reset the interrupt flags */
+      reset_isr_flags();
 
       /*-------------------------------------------------
       Wake up the HLD thread to handle the events. If the

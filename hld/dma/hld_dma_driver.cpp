@@ -236,7 +236,7 @@ namespace Thor::DMA
       return Chimera::DMA::INVALID_REQUEST;
     }
 
-    auto stream = ::LLD::getStream( idx );
+    ::LLD::Stream_rPtr stream = ::LLD::getStream( idx );
     if ( !stream )
     {
       return Chimera::DMA::INVALID_REQUEST;
@@ -246,18 +246,18 @@ namespace Thor::DMA
     Build up the transfer configuration
     -------------------------------------------------*/
     ::LLD::StreamConfig cfg;
-    cfg.dstAddrIncr  = true;
-    cfg.srcAddrIncr  = true;
-    cfg.channel         = ::LLD::Channel::INVALID;
-    cfg.fifoMode        = ::LLD::FifoMode::DIRECT_ENABLE;
-    cfg.fifoThreshold   = ::LLD::FifoThreshold::QUARTER_FULL;
-    cfg.dmaMode         = Chimera::DMA::Mode::DIRECT;
-    cfg.direction       = Chimera::DMA::Direction::MEMORY_TO_MEMORY;
-    cfg.priority        = transfer.priority;
-    cfg.dstBurstSize = Chimera::DMA::BurstSize::NUM_OPTIONS;
-    cfg.dstAddrAlign = Chimera::DMA::Alignment::NUM_OPTIONS;
-    cfg.srcBurstSize = Chimera::DMA::BurstSize::BURST_SIZE_1;
-    cfg.srcAddrAlign = transfer.alignment;
+    cfg.dstAddrIncr   = true;
+    cfg.srcAddrIncr   = true;
+    cfg.channel       = ::LLD::Channel::INVALID;
+    cfg.fifoMode      = ::LLD::FifoMode::DIRECT_ENABLE;
+    cfg.fifoThreshold = Chimera::DMA::FifoThreshold::FULL;
+    cfg.dmaMode       = Chimera::DMA::Mode::DIRECT;
+    cfg.direction     = Chimera::DMA::Direction::MEMORY_TO_MEMORY;
+    cfg.priority      = transfer.priority;
+    cfg.dstBurstSize  = Chimera::DMA::BurstSize::NUM_OPTIONS;
+    cfg.dstAddrAlign  = Chimera::DMA::Alignment::NUM_OPTIONS;
+    cfg.srcBurstSize  = Chimera::DMA::BurstSize::BURST_SIZE_1;
+    cfg.srcAddrAlign  = transfer.alignment;
 
     ::LLD::TCB tcb;
     tcb.srcAddress   = transfer.src;
@@ -285,7 +285,90 @@ namespace Thor::DMA
 
   Chimera::DMA::RequestId transfer( const Chimera::DMA::PipeTransfer &transfer )
   {
+    using namespace Chimera::DMA;
+    using namespace Chimera::Thread;
+    LockGuard lck( s_dma_lock );
 
+    /*-------------------------------------------------
+    Get the pipe configuration
+    -------------------------------------------------*/
+    auto iter = s_pipe_map.find( transfer.pipe );
+    if( iter == s_pipe_map.end() )
+    {
+      return Chimera::DMA::INVALID_REQUEST;
+    }
+
+    PipeConfig pipeCfg = iter->second;
+
+    /*-------------------------------------------------
+    Grab the stream the pipe was configured for
+    -------------------------------------------------*/
+    ::LLD::Stream_rPtr stream = ::LLD::getStream( static_cast<LLD::RIndex_t>( pipeCfg.resourceIndex ) );
+    if ( !stream )
+    {
+      return Chimera::DMA::INVALID_REQUEST;
+    }
+
+    /*-------------------------------------------------
+    Build up the transfer configuration
+    -------------------------------------------------*/
+    ::LLD::StreamConfig cfg;
+    ::LLD::TCB tcb;
+
+    if( pipeCfg.direction == Direction::MEMORY_TO_PERIPH )
+    {
+      cfg.dstAddrIncr   = false;
+      cfg.dstBurstSize  = Chimera::DMA::BurstSize::NUM_OPTIONS;
+      cfg.dstAddrAlign  = pipeCfg.alignment;
+      tcb.dstAddress    = pipeCfg.periphAddr;
+
+      cfg.srcAddrIncr   = true;
+      cfg.srcBurstSize  = pipeCfg.burstSize;
+      cfg.srcAddrAlign  = pipeCfg.alignment;
+      tcb.srcAddress    = transfer.addr;
+    }
+    else if( pipeCfg.direction == Direction::PERIPH_TO_MEMORY )
+    {
+      cfg.dstAddrIncr   = true;
+      cfg.dstBurstSize  = pipeCfg.burstSize;
+      cfg.dstAddrAlign  = pipeCfg.alignment;
+      tcb.dstAddress    = transfer.addr;
+
+      cfg.srcAddrIncr   = false;
+      cfg.srcBurstSize  = Chimera::DMA::BurstSize::NUM_OPTIONS;
+      cfg.srcAddrAlign  = pipeCfg.alignment;
+      tcb.srcAddress    = pipeCfg.periphAddr;
+    }
+    else
+    {
+      return Chimera::DMA::INVALID_REQUEST;
+    }
+
+    cfg.channel        = static_cast<::LLD::Channel>( pipeCfg.channel );
+    cfg.fifoMode       = ::LLD::FifoMode::DIRECT_ENABLE;
+    cfg.fifoThreshold  = pipeCfg.threshold;
+    cfg.dmaMode        = pipeCfg.mode;
+    cfg.direction      = pipeCfg.direction;
+    cfg.priority       = pipeCfg.priority;
+    tcb.transferSize   = transfer.size;
+    tcb.requestId      = s_rng();
+    tcb.errorsToIgnore = pipeCfg.errorsToIgnore;
+
+    /*-------------------------------------------------
+    Set the configuration on the stream
+    -------------------------------------------------*/
+    if ( stream->configure( &cfg, &tcb ) == Chimera::Status::OK )
+    {
+      s_stream_status[ pipeCfg.resourceIndex ].state    = ::LLD::StreamState::TRANSFER_IN_PROGRESS;
+      s_stream_status[ pipeCfg.resourceIndex ].callback = transfer.callback;
+
+      stream->start();
+      return tcb.requestId;
+    }
+    else
+    {
+      return Chimera::DMA::INVALID_REQUEST;
+    }
   }
 
 
