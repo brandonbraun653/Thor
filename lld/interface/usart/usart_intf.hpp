@@ -194,6 +194,7 @@ namespace Thor::LLD::USART
 
 
     void onDMATXComplete( const Chimera::DMA::TransferStats &stats );
+    void onDMARXComplete( const Chimera::DMA::TransferStats &stats );
   };
 }    // namespace Thor::LLD::USART
 

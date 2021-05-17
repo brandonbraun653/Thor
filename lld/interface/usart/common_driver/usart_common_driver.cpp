@@ -310,25 +310,40 @@ namespace Thor::LLD::USART
     Configure the TX pipe
     -------------------------------------------------*/
     PipeConfig txCfg;
-    txCfg.alignment      = Alignment::BYTE;
-    txCfg.direction      = Direction::MEMORY_TO_PERIPH;
-    txCfg.mode           = Mode::DIRECT;
-    txCfg.periphAddr     = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
-    txCfg.priority       = Priority::MEDIUM;
-    txCfg.resourceIndex  = DMA::getResourceIndex( Resource::TXDMASignals[ mResourceIndex ] );
-    txCfg.channel        = static_cast<size_t>( DMA::getChannel( Resource::TXDMASignals[ mResourceIndex ] ) );
-    txCfg.threshold      = FifoThreshold::NONE;
+    txCfg.alignment     = Alignment::BYTE;
+    txCfg.direction     = Direction::MEMORY_TO_PERIPH;
+    txCfg.mode          = Mode::DIRECT;
+    txCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
+    txCfg.priority      = Priority::MEDIUM;
+    txCfg.resourceIndex = DMA::getResourceIndex( Resource::TXDMASignals[ mResourceIndex ] );
+    txCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::TXDMASignals[ mResourceIndex ] ) );
+    txCfg.threshold     = FifoThreshold::NONE;
+
+    /*-------------------------------------------------
+    Configure the RX pipe
+    -------------------------------------------------*/
+    PipeConfig rxCfg;
+    rxCfg.alignment     = Alignment::BYTE;
+    rxCfg.direction     = Direction::PERIPH_TO_MEMORY;
+    rxCfg.mode          = Mode::DIRECT;
+    rxCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
+    rxCfg.priority      = Priority::MEDIUM;
+    rxCfg.resourceIndex = DMA::getResourceIndex( Resource::RXDMASignals[ mResourceIndex ] );
+    rxCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::TXDMASignals[ mResourceIndex ] ) );
+    rxCfg.threshold     = FifoThreshold::NONE;
 
     /*-------------------------------------------------
     FIFO errors are thrown even though we don't use it.
     Doesn't seem to affect TX operations.
     -------------------------------------------------*/
     txCfg.errorsToIgnore = Errors::FIFO;
+    rxCfg.errorsToIgnore = Errors::FIFO;
 
     /*-------------------------------------------------
     Construct the pipe and make a note of it's UUID
     -------------------------------------------------*/
     mTXDMARequestId = Thor::DMA::constructPipe( txCfg );
+    mRXDMARequestId = Thor::DMA::constructPipe( rxCfg );
 
     /*-------------------------------------------------
     Configure the peripheral interrupts
@@ -403,7 +418,7 @@ namespace Thor::LLD::USART
       mTXTCB.buffer    = nullptr;
       mTXTCB.expected  = size;
       mTXTCB.remaining = size;
-      mRXTCB.state     = StateMachine::RX::RX_ONGOING;
+      mTXTCB.state     = StateMachine::TX::TX_ONGOING;
 
       Thor::DMA::transfer( cfg );
     }
@@ -415,7 +430,68 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::receiveDMA( void *const data, const size_t size )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    using namespace Chimera::DMA;
+
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    if ( !data || !size )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
+    /*-------------------------------------------------
+    Ensure that the ISR has processed all data in the FIFO
+    -------------------------------------------------*/
+    auto status = rxTransferStatus();
+    if ( ( status != StateMachine::RX::RX_COMPLETE ) && ( status != StateMachine::RX::RX_READY ) )
+    {
+      return Chimera::Status::BUSY;
+    }
+
+
+    initDMA();
+    disableUSARTInterrupts();
+    {
+      /*------------------------------------------------
+      Only turn on RXNE so as to detect when the first byte arrives
+      ------------------------------------------------*/
+      prjEnableISRSignal( mPeriph, ISRSignal::RECEIVED_DATA_READY );
+
+      /*------------------------------------------------
+      Make sure line idle ISR is enabled. Regardless of
+      if there is data left to RX, the sender might just
+      suddenly stop, and that needs detection.
+      ------------------------------------------------*/
+      prjEnableISRSignal( mPeriph, ISRSignal::LINE_IDLE );
+      prjClrISRSignal( mPeriph, ISRSignal::LINE_IDLE );
+
+      /*------------------------------------------------
+      Prep the transfer control block to receive data
+      ------------------------------------------------*/
+      /* Configure the DMA transfer */
+      PipeTransfer cfg;
+      cfg.callback = TransferCallback::create<Driver, &Driver::onDMARXComplete>( *this );
+      cfg.pipe     = mRXDMARequestId;
+      cfg.size     = size;
+      cfg.addr     = reinterpret_cast<std::uintptr_t>( data );
+
+      /* Configure the USART transfer control block */
+      mRXTCB.buffer    = reinterpret_cast<uint8_t *const>( data );
+      mRXTCB.expected  = size;
+      mRXTCB.remaining = size;
+      mRXTCB.state     = StateMachine::RX::RX_ONGOING;
+
+      Thor::DMA::transfer( cfg );
+
+      /*------------------------------------------------
+      Turn on the RX hardware to begin listening for data
+      ------------------------------------------------*/
+      prjEnableReceiver( mPeriph );
+      enableUSARTInterrupts();
+    }
+
+    return Chimera::Status::OK;
   }
 
 
@@ -676,6 +752,12 @@ namespace Thor::LLD::USART
         -------------------------------------------------*/
         mRXTCB.state = StateMachine::RX::RX_ABORTED;
         mRuntimeFlags |= Runtime::Flag::RX_LINE_IDLE_ABORT;
+
+        /*-------------------------------------------------
+        Disable the DMA transfer if ongoing
+        -------------------------------------------------*/
+        // Need interface to get the stream for an IRQ signal
+        // Abort the transfer
       }
 
       /*------------------------------------------------
@@ -801,6 +883,12 @@ namespace Thor::LLD::USART
 
       IRQHandler();
     }
+  }
+
+
+  void Driver::onDMARXComplete( const Chimera::DMA::TransferStats &stats )
+  {
+    Chimera::insert_debug_breakpoint();
   }
 
 }    // namespace Thor::LLD::USART
