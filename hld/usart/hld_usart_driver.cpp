@@ -197,6 +197,8 @@ namespace Thor::USART
   Chimera::Status_t Driver::begin( const Chimera::Hardware::PeripheralMode txMode,
                                    const Chimera::Hardware::PeripheralMode rxMode )
   {
+    using namespace Chimera::Hardware;
+
     /*------------------------------------------------
     Ensure the internal event signals are reset
     ------------------------------------------------*/
@@ -206,11 +208,21 @@ namespace Thor::USART
     /*------------------------------------------------
     Initialize to the desired TX/RX modes
     ------------------------------------------------*/
-    setMode( Chimera::Hardware::SubPeripheral::RX, rxMode );
-    setMode( Chimera::Hardware::SubPeripheral::TX, txMode );
-
+    setMode( SubPeripheral::RX, rxMode );
+    setMode( SubPeripheral::TX, txMode );
     mEnabled = true;
-    return Chimera::Status::OK;
+
+    /*-------------------------------------------------
+    Start listening for data
+    -------------------------------------------------*/
+    if( ( rxMode == PeripheralMode::DMA ) || ( rxMode == PeripheralMode::INTERRUPT ) )
+    {
+      return this->toggleAsyncListening( true );
+    }
+    else
+    {
+      return Chimera::Status::OK;
+    }
   }
 
 
@@ -420,9 +432,10 @@ namespace Thor::USART
       circular buffer for the user to read.
       ------------------------------------------------*/
       auto tcb   = ::LLD::getDriver( mChannel )->getTCB_RX();
+      size_t bytes_received = tcb.expected - tcb.remaining;
       size_t tmp = 0;
 
-      mRxBuffers.transferOutOf( tcb.remaining, tmp );
+      mRxBuffers.transferOutOf( bytes_received, tmp );
 
       /*------------------------------------------------
       Notify those waiting on the RX occurrance
@@ -439,6 +452,11 @@ namespace Thor::USART
       {
         callbacks->userCallback( callbacks );
       }
+
+      /*-------------------------------------------------
+      Finally, start listening once more for more data
+      -------------------------------------------------*/
+      this->toggleAsyncListening( true );
     }
   }
 
