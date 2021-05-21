@@ -6,7 +6,7 @@
  *    Declaration of data that must be defined by the LLD implementation or is
  *    shared among all possible drivers.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -42,6 +42,9 @@ namespace Thor::LLD::USART
 #endif
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
   extern RegisterMap *USART3_PERIPH;
+#endif
+#if defined( STM32_USART6_PERIPH_AVAILABLE )
+  extern RegisterMap *USART6_PERIPH;
 #endif
 
 

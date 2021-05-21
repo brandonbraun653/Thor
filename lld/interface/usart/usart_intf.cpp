@@ -41,6 +41,11 @@ namespace Thor::LLD::USART
         return true;
         break;
 #endif
+#if defined( STM32_USART6_PERIPH_AVAILABLE )
+      case Chimera::Serial::Channel::SERIAL6:
+        return true;
+        break;
+#endif
 
       default:
         return false;
@@ -66,6 +71,11 @@ namespace Thor::LLD::USART
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
       case Chimera::Serial::Channel::SERIAL3:
         return USART3_RESOURCE_INDEX;
+        break;
+#endif
+#if defined( STM32_USART6_PERIPH_AVAILABLE )
+      case Chimera::Serial::Channel::SERIAL6:
+        return USART6_RESOURCE_INDEX;
         break;
 #endif
 
@@ -96,6 +106,12 @@ namespace Thor::LLD::USART
       return USART3_RESOURCE_INDEX;
     }
 #endif
+#if defined( STM32_USART6_PERIPH_AVAILABLE )
+    if ( address == reinterpret_cast<std::uintptr_t>( USART6_PERIPH ) )
+    {
+      return USART6_RESOURCE_INDEX;
+    }
+#endif
 
     return INVALID_RESOURCE_INDEX;
   }
@@ -119,6 +135,12 @@ namespace Thor::LLD::USART
     if ( address == reinterpret_cast<std::uintptr_t>( USART3_PERIPH ) )
     {
       return Chimera::Serial::Channel::SERIAL3;
+    }
+#endif
+#if defined( STM32_USART6_PERIPH_AVAILABLE )
+    if ( address == reinterpret_cast<std::uintptr_t>( USART6_PERIPH ) )
+    {
+      return Chimera::Serial::Channel::SERIAL6;
     }
 #endif
 
@@ -150,6 +172,9 @@ namespace Thor::LLD::USART
 #endif
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
     result |= driverList[ USART3_RESOURCE_INDEX ].attach( USART3_PERIPH );
+#endif
+#if defined( STM32_USART6_PERIPH_AVAILABLE )
+    result |= driverList[ USART6_RESOURCE_INDEX ].attach( USART6_PERIPH );
 #endif
 
     return result == Chimera::Status::OK;
