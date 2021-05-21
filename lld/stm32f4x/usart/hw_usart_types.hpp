@@ -179,6 +179,7 @@ namespace Thor::LLD::USART
   -------------------------------------------------*/
   REG_ACCESSOR( RegisterMap, CR3, CR3_Msk, CR3, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR3, CR3_DMAT_Msk, DMAT, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR3, CR3_DMAR_Msk, DMAR, BIT_ACCESS_RW );
 
   /*-------------------------------------------------
   Baurd Rate Register

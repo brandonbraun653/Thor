@@ -203,6 +203,8 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::transmitIT( const void *const data, const size_t size )
   {
+    using namespace Chimera::Hardware;
+
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
@@ -232,6 +234,7 @@ namespace Thor::LLD::USART
       mTXTCB.expected  = size;
       mTXTCB.remaining = size - 1u; /* Pre-decrement to account for this first byte TX */
       mTXTCB.state     = StateMachine::TX::TX_ONGOING;
+      mTXTCB.mode      = PeripheralMode::DMA;
 
       /*------------------------------------------------
       Shove the byte into the transmit data register,
@@ -256,6 +259,8 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::receiveIT( void *const data, const size_t size )
   {
+    using namespace Chimera::Hardware;
+
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
@@ -289,6 +294,7 @@ namespace Thor::LLD::USART
       mRXTCB.expected  = size;
       mRXTCB.remaining = size;
       mRXTCB.state     = StateMachine::RX::RX_ONGOING;
+      mRXTCB.mode      = PeripheralMode::INTERRUPT;
 
       /*------------------------------------------------
       Turn on the RX hardware to begin listening for data
@@ -329,7 +335,7 @@ namespace Thor::LLD::USART
     rxCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
     rxCfg.priority      = Priority::MEDIUM;
     rxCfg.resourceIndex = DMA::getResourceIndex( Resource::RXDMASignals[ mResourceIndex ] );
-    rxCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::TXDMASignals[ mResourceIndex ] ) );
+    rxCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::RXDMASignals[ mResourceIndex ] ) );
     rxCfg.threshold     = FifoThreshold::NONE;
 
     /*-------------------------------------------------
@@ -375,6 +381,7 @@ namespace Thor::LLD::USART
   Chimera::Status_t Driver::transmitDMA( const void *const data, const size_t size )
   {
     using namespace Chimera::DMA;
+    using namespace Chimera::Hardware;
 
     /*-------------------------------------------------
     Input protection
@@ -419,6 +426,7 @@ namespace Thor::LLD::USART
       mTXTCB.expected  = size;
       mTXTCB.remaining = size;
       mTXTCB.state     = StateMachine::TX::TX_ONGOING;
+      mTXTCB.mode      = PeripheralMode::DMA;
 
       Thor::DMA::transfer( cfg );
     }
@@ -431,6 +439,7 @@ namespace Thor::LLD::USART
   Chimera::Status_t Driver::receiveDMA( void *const data, const size_t size )
   {
     using namespace Chimera::DMA;
+    using namespace Chimera::Hardware;
 
     /*-------------------------------------------------
     Input protection
@@ -454,9 +463,9 @@ namespace Thor::LLD::USART
     disableUSARTInterrupts();
     {
       /*------------------------------------------------
-      Only turn on RXNE so as to detect when the first byte arrives
+      Instruct the USART to use DMA mode
       ------------------------------------------------*/
-      prjEnableISRSignal( mPeriph, ISRSignal::RECEIVED_DATA_READY );
+      DMAR::set( mPeriph, CR3_DMAR );
 
       /*------------------------------------------------
       Make sure line idle ISR is enabled. Regardless of
@@ -481,6 +490,8 @@ namespace Thor::LLD::USART
       mRXTCB.expected  = size;
       mRXTCB.remaining = size;
       mRXTCB.state     = StateMachine::RX::RX_ONGOING;
+      mRXTCB.mode      = PeripheralMode::DMA;
+
 
       Thor::DMA::transfer( cfg );
 
@@ -602,6 +613,7 @@ namespace Thor::LLD::USART
   -------------------------------------------------------------------------------*/
   void Driver::IRQHandler()
   {
+    using namespace Chimera::Hardware;
     using namespace Chimera::Interrupt;
     using namespace Chimera::Peripheral;
     using namespace Chimera::Serial;
@@ -756,8 +768,16 @@ namespace Thor::LLD::USART
         /*-------------------------------------------------
         Disable the DMA transfer if ongoing
         -------------------------------------------------*/
-        // Need interface to get the stream for an IRQ signal
-        // Abort the transfer
+        if( mRXTCB.mode == PeripheralMode::DMA )
+        {
+          RIndex_t dmaIdx = Thor::LLD::DMA::getResourceIndex( Resource::RXDMASignals[ this->mResourceIndex ] );
+          auto dmaStream = Thor::LLD::DMA::getStream( dmaIdx );
+
+          if( dmaStream )
+          {
+            dmaStream->abort();
+          }
+        }
       }
 
       /*------------------------------------------------
@@ -888,6 +908,12 @@ namespace Thor::LLD::USART
 
   void Driver::onDMARXComplete( const Chimera::DMA::TransferStats &stats )
   {
+    /*-------------------------------------------------
+    Per DMA RX instructions, disable USART DMA at the
+    end of the DMA interrupt.
+    -------------------------------------------------*/
+    DMAR::clear( mPeriph, CR3_DMAR );
+
     Chimera::insert_debug_breakpoint();
   }
 

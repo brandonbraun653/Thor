@@ -58,10 +58,11 @@ namespace Thor::LLD::Serial
    */
   struct CDTCB
   {
-    const uint8_t *buffer;   /**< Data buffer to transfer out of */
-    size_t remaining;        /**< How many bytes are left to transfer */
-    size_t expected;         /**< How many bytes were expected to receive */
-    Chimera::Status_t state; /**< Current state of the transfer */
+    const uint8_t *buffer;                  /**< Data buffer to transfer out of */
+    size_t remaining;                       /**< How many bytes are left to transfer */
+    size_t expected;                        /**< How many bytes were expected to receive */
+    Chimera::Status_t state;                /**< Current state of the transfer */
+    Chimera::Hardware::PeripheralMode mode; /**< Transfer mode being used */
 
     inline void reset()
     {
@@ -69,6 +70,7 @@ namespace Thor::LLD::Serial
       remaining = 0;
       expected  = 0;
       state     = StateMachine::TX::TX_READY;
+      mode      = Chimera::Hardware::PeripheralMode::UNKNOWN_MODE;
     }
   };
 
@@ -80,10 +82,11 @@ namespace Thor::LLD::Serial
    */
   struct MDTCB
   {
-    uint8_t *buffer;         /**< Data buffer to transfer into */
-    size_t remaining;        /**< How many bytes are left to transfer */
-    size_t expected;         /**< How many bytes were expected to receive */
-    Chimera::Status_t state; /**< Current state of the transfer */
+    uint8_t *buffer;                        /**< Data buffer to transfer into */
+    size_t remaining;                       /**< How many bytes are left to transfer */
+    size_t expected;                        /**< How many bytes were expected to receive */
+    Chimera::Status_t state;                /**< Current state of the transfer */
+    Chimera::Hardware::PeripheralMode mode; /**< Transfer mode being used */
 
     inline void reset()
     {
@@ -91,6 +94,7 @@ namespace Thor::LLD::Serial
       remaining = 0;
       expected  = 0;
       state     = StateMachine::RX::RX_READY;
+      mode      = Chimera::Hardware::PeripheralMode::UNKNOWN_MODE;
     }
   };
 
