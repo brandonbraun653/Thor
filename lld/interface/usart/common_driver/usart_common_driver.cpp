@@ -811,7 +811,6 @@ namespace Thor::LLD::USART
       /*-------------------------------------------------
       Clear all the error flags
       -------------------------------------------------*/
-      Chimera::insert_debug_breakpoint();
       mRuntimeFlags |= errorFlags;
 
       /*------------------------------------------------

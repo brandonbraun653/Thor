@@ -152,7 +152,7 @@ namespace Thor::LLD::USART
   {
     if ( isChannelSupported( channel ) )
     {
-      return &s_usart_drivers[ static_cast<size_t>( channel ) ];
+      return &s_usart_drivers[ getResourceIndex( channel ) ];
     }
 
     return nullptr;
@@ -189,6 +189,15 @@ void USART3_IRQHandler( void )
   s_usart_drivers[ USART3_RESOURCE_INDEX ].IRQHandler();
 }
 #endif /* STM32_USART3_PERIPH_AVAILABLE */
+
+
+#if defined( STM32_USART6_PERIPH_AVAILABLE )
+void USART6_IRQHandler( void )
+{
+  using namespace Thor::LLD::USART;
+  s_usart_drivers[ USART6_RESOURCE_INDEX ].IRQHandler();
+}
+#endif /* STM32_USART6_PERIPH_AVAILABLE */
 
 
 #endif /* TARGET_STM32F4 && THOR_LLD_USART */
