@@ -52,6 +52,13 @@ namespace Thor::LLD::ADC
   -------------------------------------------------------------------------------*/
   namespace Resource
   { /* clang-format off */
+
+    LLD_CONST DMA::Source DMASignals[ NUM_ADC_PERIPHS ] = {
+#if defined( STM32_ADC1_PERIPH_AVAILABLE )
+      Thor::LLD::DMA::Source::ADC1,
+#endif
+    };
+
     LLD_CONST IRQn_Type IRQSignals[ NUM_ADC_PERIPHS ] = {
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
       ADC_IRQn,

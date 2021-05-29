@@ -16,7 +16,8 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/interface/adc/adc_prv_data.hpp>
+#include <Thor/lld/interface/inc/dma>
+#include <Thor/lld/interface/inc/adc>
 
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_ADC )
 
@@ -52,6 +53,13 @@ namespace Thor::LLD::ADC
   -------------------------------------------------------------------------------*/
   namespace Resource
   { /* clang-format off */
+
+    LLD_CONST Thor::LLD::DMA::Source DMASignals[ NUM_ADC_PERIPHS ] = {
+#if defined( STM32_ADC1_PERIPH_AVAILABLE )
+      Thor::LLD::DMA::Source::ADC1,
+#endif
+    };
+
     LLD_CONST IRQn_Type IRQSignals[ NUM_ADC_PERIPHS ] = {
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
       ADC_IRQn,

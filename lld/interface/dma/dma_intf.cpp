@@ -164,6 +164,8 @@ namespace Thor::LLD::DMA
       };
     }
 #endif
+
+    return false;
   }
 
 
@@ -334,6 +336,8 @@ namespace Thor::LLD::DMA
       };
     }
 #endif
+
+    return INVALID_RESOURCE_INDEX;
   }
 
 

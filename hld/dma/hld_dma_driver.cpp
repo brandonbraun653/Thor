@@ -178,14 +178,14 @@ namespace Thor::DMA
     }
 
     /*-------------------------------------------------
-    First, search through the existing maps and make
-    sure a duplicate doesn't exist. If found, returns
-    the ID that the data was registered under.
+    If the DMA channel has been registered, overwrite
+    the settings and return its unique ID.
     -------------------------------------------------*/
     for( auto &iter : s_pipe_map )
     {
-      if( memcmp( &iter.second, &config, sizeof( config ) ) == 0 )
+      if ( ( iter.second.channel == config.channel ) && ( iter.second.resourceIndex == config.resourceIndex ) )
       {
+        iter.second = config;
         return iter.first;  // RequestId
       }
     }
@@ -264,6 +264,7 @@ namespace Thor::DMA
     tcb.dstAddress   = transfer.dst;
     tcb.transferSize = transfer.size;
     tcb.requestId    = s_rng();
+    tcb.elementSize  = transfer.alignment;
 
     /*-------------------------------------------------
     Set the configuration on the stream
@@ -353,6 +354,7 @@ namespace Thor::DMA
     tcb.transferSize   = transfer.size;
     tcb.requestId      = s_rng();
     tcb.errorsToIgnore = pipeCfg.errorsToIgnore;
+    tcb.elementSize    = pipeCfg.alignment;
 
     /*-------------------------------------------------
     Set the configuration on the stream
@@ -445,7 +447,7 @@ namespace Thor::DMA
         if( s_stream_status[ tcb.resourceIndex ].callback )
         {
           TransferStats stats;
-          stats.size      = tcb.bytesTransferred;
+          stats.size      = tcb.elementsTransferred;
           stats.requestId = tcb.requestId;
           stats.error     = ( tcb.state != ::LLD::StreamState::TRANSFER_COMPLETE );
 

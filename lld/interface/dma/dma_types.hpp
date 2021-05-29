@@ -320,10 +320,11 @@ namespace Thor::LLD::DMA
     /* Driver Controlled */
     Chimera::DMA::Errors errorsToIgnore; /**< Which errors to not care about */
     StreamState state;                   /**< DMA transfer state machine status */
-    uint32_t bytesTransferred;           /**< How many bytes were actually transferred */
+    uint32_t elementsTransferred;        /**< How many bytes were actually transferred */
     uint32_t selectedChannel;            /**< When the ISR fires, will contain hardware channel that was used */
     RIndex_t resourceIndex;              /**< Resource index of the controlling stream */
     Chimera::DMA::RequestId requestId;   /**< HLD request ID of the transfer */
+    Chimera::DMA::Alignment elementSize; /**< Size of each element that was transferred */
 
     /* User Configured */
     uint32_t srcAddress;   /**< Address where the data will be pulled from */

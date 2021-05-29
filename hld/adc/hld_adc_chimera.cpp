@@ -176,7 +176,7 @@ namespace Chimera::ADC
   bool Driver::nextSample( const Chimera::ADC::Channel ch, Chimera::ADC::Sample &sample )
   {
     RT_HARD_ASSERT( mDriver );
-    static_cast<::HLD::Driver_rPtr>( mDriver )->nextSample( ch, sample );
+    return static_cast<::HLD::Driver_rPtr>( mDriver )->nextSample( ch, sample );
   }
 
   void Driver::onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb )

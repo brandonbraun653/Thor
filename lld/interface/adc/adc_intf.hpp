@@ -15,6 +15,7 @@
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/adc>
+#include <Chimera/dma>
 #include <Chimera/thread>
 
 /* Thor Includes */
@@ -182,7 +183,7 @@ namespace Thor::LLD::ADC
   memory penalties. Definition is done project side.
   -------------------------------------------------*/
   #if defined( THOR_LLD_ADC )
-  class Driver
+  class Driver : public Chimera::Thread::Lockable<Driver>
   {
   public:
     Driver();
@@ -212,15 +213,30 @@ namespace Thor::LLD::ADC
 
   protected:
     void IRQHandler();
+    void onDMAComplete( const Chimera::DMA::TransferStats &stats );
 
   private:
     friend void( ::ADC_IRQHandler )();
+    friend Chimera::Thread::Lockable<Driver>;
 
-    RegisterMap *mPeriph;
-    CommonRegisterMap *mCommon;
-    size_t mResourceIndex;
-    Chimera::ADC::DriverConfig mCfg;
-    volatile uint8_t mSequenceIdx;
+    /*-------------------------------------------------
+    Memory mapped structures to peripheral registers
+    -------------------------------------------------*/
+    RegisterMap *mPeriph;       /**< Peripheral memory map */
+    CommonRegisterMap *mCommon; /**< Shared settings memory map */
+
+    /*-------------------------------------------------
+    Driver attributes
+    -------------------------------------------------*/
+    size_t mResourceIndex;                /**< Hardware resource index for this peripheral */
+    volatile uint8_t mSequenceIdx;        /**< Tracks which channel is being measured currently */
+    Chimera::ADC::DriverConfig mCfg;      /**< Basic driver configuration data */
+    Chimera::DMA::RequestId mDMAPipeID;   /**< Unique ID for dedicated DMA pipe */
+
+    /*-------------------------------------------------
+    Buffers
+    -------------------------------------------------*/
+    DMASample<NUM_ADC_CHANNELS_PER_PERIPH> mDMASampleBuffer;  /**< Buffer for the HW to work on */
   };
 
   #endif  /* THOR_LLD_ADC */

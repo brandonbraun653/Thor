@@ -16,9 +16,6 @@
 #include <Chimera/thread>
 #include <Chimera/dma>
 
-/* Thor Includes */
-#include <Thor/hld/dma/hld_dma_intf.hpp>
-
 namespace Thor::DMA
 {
   /*-------------------------------------------------------------------------------

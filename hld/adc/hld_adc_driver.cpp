@@ -80,22 +80,13 @@ namespace Thor::ADC
       }
 
       /*-------------------------------------------------
-      Make the error visible to the user
-      -------------------------------------------------*/
-      // Currently will cause a stack overflow
-      // if( msg == ITCMsg::TSK_MSG_ISR_ERROR )
-      // {
-      //   LOG_ERROR( "ADC ISR registered an error\r\n" );
-      // }
-
-      /*-------------------------------------------------
       Handle every ISR. Don't know which triggered this.
       -------------------------------------------------*/
       if( msg & ITCMsg::TSK_MSG_ISR_DATA_READY )
       {
         for ( size_t index = 0; index < NUM_DRIVERS; index++ )
         {
-          hld_driver[ index ].postISRProcessing();
+          //hld_driver[ index ].postISRProcessing();
         }
       }
     }
@@ -132,7 +123,7 @@ namespace Thor::ADC
     cfg.arg        = nullptr;
     cfg.function   = ADCxISRUserThread;
     cfg.priority   = Priority::MAXIMUM;
-    cfg.stackWords = STACK_BYTES( 1024 );
+    cfg.stackWords = STACK_BYTES( 2048 );
     cfg.type       = TaskInitType::DYNAMIC;
     cfg.name       = "PP_ADCx";
 
@@ -193,13 +184,13 @@ namespace Thor::ADC
       /*-------------------------------------------------
       Empty the queue
       -------------------------------------------------*/
-      while( nextSample( static_cast<Channel>( ch ), detail.data ) )
-      {
-        if( mCallbacks[ EnumValue( detail.isr ) ] )
-        {
-          mCallbacks[ EnumValue( detail.isr ) ]( detail );
-        }
-      }
+      // while( nextSample( static_cast<Channel>( ch ), detail.data ) )
+      // {
+      //   if( mCallbacks[ EnumValue( detail.isr ) ] )
+      //   {
+      //     mCallbacks[ EnumValue( detail.isr ) ]( detail );
+      //   }
+      // }
     }
 
   }
@@ -211,9 +202,7 @@ namespace Thor::ADC
     Validate inputs. Currently all basic configuration
     options are supported by this driver.
     -------------------------------------------------*/
-    auto driver           = LLD::getDriver( cfg.periph );
-    auto lldResourceIndex = LLD::getResourceIndex( cfg.periph );
-
+    auto driver = LLD::getDriver( cfg.periph );
     if ( driver )
     {
       mConfig = cfg;

@@ -74,6 +74,22 @@ namespace Thor::LLD::ADC
     UNKNOWN
   };
 
+
+  /*-------------------------------------------------------------------------------
+  Structures
+  -------------------------------------------------------------------------------*/
+  /**
+   * @brief Storage for samples in a DMA based ADC
+   *
+   * @tparam CH_SIZE Number of channels supported by the hardware
+   */
+  template<size_t CH_SIZE>
+  struct DMASample
+  {
+    std::array<uint16_t, CH_SIZE> rawSamples;                   /**< Raw buffer for DMA to fill */
+    std::array<Chimera::ADC::Channel, CH_SIZE> channelSequence; /**< ADC channel sampling order */
+  };
+
 }    // namespace Thor::LLD::ADC
 
 #endif /* !THOR_LLD_ADC_COMMON_TYPES_HPP */

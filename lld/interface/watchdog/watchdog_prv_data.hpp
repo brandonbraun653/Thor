@@ -22,7 +22,6 @@
 
 /* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/watchdog/watchdog_detail.hpp>

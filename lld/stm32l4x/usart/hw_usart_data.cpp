@@ -14,7 +14,6 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/hld/dma/hld_dma_intf.hpp>
 #include <Thor/lld/interface/inc/usart>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_USART )

@@ -28,6 +28,7 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/adc/adc_detail.hpp>
 #include <Thor/lld/interface/adc/adc_types.hpp>
+#include <Thor/lld/interface/dma/dma_types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
 #if defined( THOR_LLD_ADC )
@@ -44,6 +45,10 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
+  /**
+   * @brief Array of queues for each supported ADC hardware channel
+   * Queue is indexed like myQueue[ channel ]->push/pop.
+   */
   using PeriphQueue = std::array<std::shared_ptr<ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>>, CHANNEL_QUEUE_SIZE>;
 
   /*-------------------------------------------------------------------------------
@@ -80,6 +85,7 @@ namespace Thor::LLD::ADC
   -------------------------------------------------------------------------------*/
   namespace Resource
   {
+    extern LLD_CONST Thor::LLD::DMA::Source DMASignals[ NUM_ADC_PERIPHS ];
     extern LLD_CONST IRQn_Type IRQSignals[ NUM_ADC_PERIPHS ];
   }    // namespace Resource
 }    // namespace Thor::LLD::ADC
