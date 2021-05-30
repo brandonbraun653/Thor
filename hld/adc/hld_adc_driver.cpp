@@ -86,7 +86,7 @@ namespace Thor::ADC
       {
         for ( size_t index = 0; index < NUM_DRIVERS; index++ )
         {
-          //hld_driver[ index ].postISRProcessing();
+          hld_driver[ index ].postISRProcessing();
         }
       }
     }
@@ -123,7 +123,7 @@ namespace Thor::ADC
     cfg.arg        = nullptr;
     cfg.function   = ADCxISRUserThread;
     cfg.priority   = Priority::MAXIMUM;
-    cfg.stackWords = STACK_BYTES( 2048 );
+    cfg.stackWords = STACK_BYTES( 4096 );
     cfg.type       = TaskInitType::DYNAMIC;
     cfg.name       = "PP_ADCx";
 
@@ -175,7 +175,7 @@ namespace Thor::ADC
     for( size_t ch = 0; ch < Thor::LLD::ADC::NUM_ADC_CHANNELS_PER_PERIPH; ch++ )
     {
       /*-------------------------------------------------
-      Populate the interrupt information
+      Populate the interrupt information for the callback
       -------------------------------------------------*/
       InterruptDetail detail;
       detail.channel = static_cast<Channel>( ch );
@@ -184,13 +184,13 @@ namespace Thor::ADC
       /*-------------------------------------------------
       Empty the queue
       -------------------------------------------------*/
-      // while( nextSample( static_cast<Channel>( ch ), detail.data ) )
-      // {
-      //   if( mCallbacks[ EnumValue( detail.isr ) ] )
-      //   {
-      //     mCallbacks[ EnumValue( detail.isr ) ]( detail );
-      //   }
-      // }
+      while( nextSample( static_cast<Channel>( ch ), detail.data ) )
+      {
+        if( mCallbacks[ EnumValue( detail.isr ) ] )
+        {
+          mCallbacks[ EnumValue( detail.isr ) ]( detail );
+        }
+      }
     }
 
   }

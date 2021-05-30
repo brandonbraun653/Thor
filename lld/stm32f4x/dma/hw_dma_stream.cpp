@@ -19,8 +19,6 @@
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
 
-#include "SEGGER_SYSVIEW.h"
-
 namespace Thor::LLD::DMA
 {
   /*-------------------------------------------------------------------------------
@@ -281,6 +279,10 @@ namespace Thor::LLD::DMA
       mTCB.state = StreamState::TRANSFER_IN_PROGRESS;
     }
     enableInterrupts();
+
+    /*-------------------------------------------------
+    Enable the stream
+    -------------------------------------------------*/
     EN::set( mStream, SxCR_EN );
 
     return Chimera::Status::OK;
@@ -311,7 +313,6 @@ namespace Thor::LLD::DMA
     static constexpr uint8_t FEIF  = 1u << 0;
 
     bool disableIsr = false;
-    SEGGER_SYSVIEW_RecordEnterISR();
 
     /*------------------------------------------------
     Read the status registers and parse the flags for this stream
@@ -340,6 +341,11 @@ namespace Thor::LLD::DMA
     if ( ( status & TCIF ) && TCIE::get( mStream ) )
     {
       disableIsr = true;
+
+      /*-------------------------------------------------
+      Disable the stream
+      -------------------------------------------------*/
+      EN::clear( mStream, SxCR_EN );
 
       /*------------------------------------------------
       Update control block with the event information
@@ -370,20 +376,11 @@ namespace Thor::LLD::DMA
       reset_isr_flags();
 
       /*-------------------------------------------------
-      Wake up the HLD thread to handle the events. If the
-      assert fails, the queue is not large enough or is
-      not being processed quickly enough.
+      Wake up the HLD thread to handle the events
       -------------------------------------------------*/
-      // if( Resource::ISRQueue.full_from_unlocked() )
-      // {
-      //   Chimera::insert_debug_breakpoint();
-      // }
-
       Resource::ISRQueue.push( mTCB );
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_DMA ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
     }
-
-    SEGGER_SYSVIEW_RecordExitISR();
   }
 
 

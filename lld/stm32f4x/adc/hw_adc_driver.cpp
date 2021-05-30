@@ -464,19 +464,19 @@ namespace Thor::LLD::ADC
     switch ( resolution )
     {
       case 0:    // 12-bit
-        fRes = 4096;
+        fRes = 4096.0f;
         break;
 
       case 1:    // 10-bit
-        fRes = 1024;
+        fRes = 1024.0f;
         break;
 
       case 2:    // 8-bit
-        fRes = 256;
+        fRes = 256.0f;
         break;
 
       case 3:    // 6-bit
-        fRes = 64;
+        fRes = 64.0f;
         break;
 
       default:
@@ -487,7 +487,7 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------
     Calculate the output voltage
     -------------------------------------------------*/
-    float vSense = ( static_cast<float>( PRJ_ADC_VREF ) / fRes ) * static_cast<float>( sample.counts );
+    float vSense = ( static_cast<float>( PRJ_ADC_VREF ) * static_cast<float>( sample.counts ) ) / fRes;
     return vSense;
   }
 
@@ -555,6 +555,16 @@ namespace Thor::LLD::ADC
     DMA::clear( mPeriph, CR2_DMA );
 
     /*-------------------------------------------------
+    Overrun error? RM 13.8.1 states to re-initialize
+    the DMA after clearing this bit. This will happen
+    automatically at the start of next transfer.
+    -------------------------------------------------*/
+    if( OVR::get( mPeriph ) )
+    {
+      OVR::clear( mPeriph, SR_OVR );
+    }
+
+    /*-------------------------------------------------
     Wake up the HLD to process the new data
     -------------------------------------------------*/
     if ( stats.error )
@@ -563,52 +573,52 @@ namespace Thor::LLD::ADC
     }
     else
     {
-      //LockGuard lck( *this );
+      LockGuard lck( *this );
 
       /*-------------------------------------------------
       Select the queue associated with this instance
       -------------------------------------------------*/
-      // Thor::LLD::ADC::PeriphQueue *queue = nullptr;
-      // switch( getChannel( reinterpret_cast<std::uintptr_t>( mPeriph ) ) )
-      // {
-      //   case Chimera::ADC::Peripheral::ADC_0:
-      //     queue = &Thor::LLD::ADC::ADC1_Queue;
-      //     break;
+      Thor::LLD::ADC::PeriphQueue *queue = nullptr;
+      switch( getChannel( reinterpret_cast<std::uintptr_t>( mPeriph ) ) )
+      {
+        case Chimera::ADC::Peripheral::ADC_0:
+          queue = &Thor::LLD::ADC::ADC1_Queue;
+          break;
 
-      //   default:
-      //     /*-------------------------------------------------
-      //     Shouldn't hit this. Very bad if we do.
-      //     -------------------------------------------------*/
-      //     RT_HARD_ASSERT( false );
-      //     break;
-      // }
+        default:
+          /*-------------------------------------------------
+          Shouldn't hit this. Very bad if we do.
+          -------------------------------------------------*/
+          RT_HARD_ASSERT( false );
+          break;
+      }
 
-      // /*-------------------------------------------------
-      // Fill the queue with all the sample data
-      // -------------------------------------------------*/
-      // for( size_t idx = 0; idx < mDMASampleBuffer.channelSequence.size(); idx++ )
-      // {
-      //   /*-------------------------------------------------
-      //   Is the current sequence channel valid?
-      //   -------------------------------------------------*/
-      //   auto channel = mDMASampleBuffer.channelSequence[ idx ];
-      //   if ( channel == Chimera::ADC::Channel::UNKNOWN )
-      //   {
-      //     break;
-      //   }
+      /*-------------------------------------------------
+      Fill the queue with all the sample data
+      -------------------------------------------------*/
+      for( size_t idx = 0; idx < mDMASampleBuffer.channelSequence.size(); idx++ )
+      {
+        /*-------------------------------------------------
+        Is the current sequence channel valid?
+        -------------------------------------------------*/
+        auto channel = mDMASampleBuffer.channelSequence[ idx ];
+        if ( channel == Chimera::ADC::Channel::UNKNOWN )
+        {
+          break;
+        }
 
-      //   /*-------------------------------------------------
-      //   Move data into the queue for this channel
-      //   -------------------------------------------------*/
-      //   if( !( ( *queue )[ EnumValue( channel ) ]->full() ) )
-      //   {
-      //     Chimera::ADC::Sample sample;
-      //     sample.us     = Chimera::micros();
-      //     sample.counts = mDMASampleBuffer.rawSamples[ idx ];
+        /*-------------------------------------------------
+        Move data into the queue for this channel
+        -------------------------------------------------*/
+        if( !( ( *queue )[ EnumValue( channel ) ]->full() ) )
+        {
+          Chimera::ADC::Sample sample;
+          sample.us     = Chimera::micros();
+          sample.counts = mDMASampleBuffer.rawSamples[ idx ];
 
-      //     ( *queue )[ EnumValue( channel ) ]->push( sample );
-      //   }
-      // }
+          ( *queue )[ EnumValue( channel ) ]->push( sample );
+        }
+      }
 
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_ADC ), ITCMsg::TSK_MSG_ISR_DATA_READY, TIMEOUT_DONT_WAIT );
     }
