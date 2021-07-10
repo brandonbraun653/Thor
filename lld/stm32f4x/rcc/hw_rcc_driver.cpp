@@ -174,6 +174,11 @@ namespace Thor::LLD::RCC
       result |= configureCorePLL( config );
     }
 
+    // if( config.enabled.pll_sai_p || config.enabled.pll_sai_q )
+    // {
+    //   result |= configureSAIPLL( config );
+    // }
+
     /*-------------------------------------------------
     Configure the source mux's that aren't tied to
     oscillator inputs.
@@ -207,6 +212,7 @@ namespace Thor::LLD::RCC
     switch ( pll )
     {
       case PLLType::CORE:
+      case PLLType::SAI:
         return calcPLLCoreSettings( inFreq, outFreq, config );
         break;
 
@@ -223,6 +229,7 @@ namespace Thor::LLD::RCC
     switch ( pll )
     {
       case PLLType::CORE:
+      case PLLType::SAI:
         return calculatePLLOuputOscillator( channel, inFreq, outFreq, config );
         break;
 

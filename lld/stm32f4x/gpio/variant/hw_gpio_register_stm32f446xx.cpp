@@ -135,7 +135,7 @@ namespace Thor::LLD::GPIO
       { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_CH4    },
       { .registerAltFunc = AF7_USART1,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_CTS  },
       { .registerAltFunc = AF9_CAN1,          .chimeraAltFunc = Chimera::GPIO::Alternate::CAN1_RX     },
-      { .registerAltFunc = AF10_OTG_HS,       .chimeraAltFunc = Chimera::GPIO::Alternate::OTG_FS_DM   },
+      { .registerAltFunc = AF10_OTG_FS,       .chimeraAltFunc = Chimera::GPIO::Alternate::OTG_FS_DM   },
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
@@ -144,7 +144,7 @@ namespace Thor::LLD::GPIO
       { .registerAltFunc = AF7_USART1,        .chimeraAltFunc = Chimera::GPIO::Alternate::USART1_RTS  },
       { .registerAltFunc = AF8_SAI2,          .chimeraAltFunc = Chimera::GPIO::Alternate::SAI2_FS_B   },
       { .registerAltFunc = AF9_CAN1,          .chimeraAltFunc = Chimera::GPIO::Alternate::CAN1_TX     },
-      { .registerAltFunc = AF10_OTG_HS,       .chimeraAltFunc = Chimera::GPIO::Alternate::OTG_FS_DP   },
+      { .registerAltFunc = AF10_OTG_FS,       .chimeraAltFunc = Chimera::GPIO::Alternate::OTG_FS_DP   },
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 

@@ -65,6 +65,7 @@ namespace Thor::LLD::RCC
   bool configureLSE( ClockTreeInit &cfg );
   bool configureLSI( ClockTreeInit &cfg );
   bool configureCorePLL( ClockTreeInit &cfg );
+  bool configureSAIPLL( ClockTreeInit &cfg );
 
   /*-------------------------------------------------
   Clock Source Selection

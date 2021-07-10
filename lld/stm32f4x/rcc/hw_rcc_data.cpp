@@ -410,17 +410,20 @@ namespace Thor::LLD::RCC
 
 #if defined( THOR_LLD_USB )
   /* clang-format off */
-  // static const RegisterConfig USB_ClockConfig[ USB::NUM_USB_PERIPHS ]      = {
-  //   { .mask = APB1ENR1_USBFSEN, .reg  = &RCC1_PERIPH->APB1ENR1 }
-  // };
+  static const RegisterConfig USB_ClockConfig[ USB::NUM_USB_PERIPHS ]      = {
+    { .mask = AHB2ENR_OTGFSEN,  .reg  = &RCC1_PERIPH->AHB2ENR },   /* Full Speed */
+    { .mask = AHB1ENR_OTGHSEN,  .reg  = &RCC1_PERIPH->AHB1ENR },   /* High Speed */
+  };
 
-  // static const RegisterConfig USB_ResetConfig[ USB::NUM_USB_PERIPHS ]      = {
-  //   { .mask = APB1RSTR1_USBFSRST, .reg = &RCC1_PERIPH->APB1RSTR1 }
-  // };
+  static const RegisterConfig USB_ResetConfig[ USB::NUM_USB_PERIPHS ]      = {
+    { .mask = AHB2RSTR_OTGFSRST, .reg = &RCC1_PERIPH->AHB2RSTR },  /* Full Speed */
+    { .mask = AHB1RSTR_OTGHRST,  .reg = &RCC1_PERIPH->AHB1RSTR },  /* High Speed */
+  };
 
-  // static const Chimera::Clock::Bus USB_SourceClock[ USB::NUM_USB_PERIPHS ] = {
-  //   Chimera::Clock::Bus::APB1
-  // };
+  static const Chimera::Clock::Bus USB_SourceClock[ USB::NUM_USB_PERIPHS ] = {
+    Chimera::Clock::Bus::AHB,
+    Chimera::Clock::Bus::AHB
+  };
   /* clang-format on */
 #endif /* THOR_LLD_USB */
 

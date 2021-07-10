@@ -208,6 +208,11 @@ namespace Thor::LLD::RCC
   REG_ACCESSOR( RegisterMap, BDCR, BDCR_LSEON_Msk, LSEON, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, BDCR, BDCR_LSERDY_Msk, LSERDY, BIT_ACCESS_RW );
 
+  /*-------------------------------------------------
+  Dedicated Clock Config Register 2
+  -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, DCKCFGR2, DCKCFGR2_CK48MSEL_Msk, CK48MSEL, BIT_ACCESS_RW );
+
 }    // namespace Thor::LLD::RCC
 
 #endif /* !THOR_HW_RCC_TYPES_HPP */

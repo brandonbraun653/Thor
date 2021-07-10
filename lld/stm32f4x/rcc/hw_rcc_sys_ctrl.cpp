@@ -99,8 +99,9 @@ namespace Thor::LLD::RCC
     Configure the system clocks to max performance
     ------------------------------------------------*/
     constexpr size_t hsiClkIn     = 16000000;            // 16 MHz
-    constexpr size_t targetSysClk = 180000000;           // 180 MHz
-    constexpr size_t targetVcoClk = 2 * targetSysClk;    // 260 MHz
+    constexpr size_t targetSysClk = 120000000;           // 120 MHz
+    constexpr size_t targetUSBClk = 48000000;            // 48 MHz
+    constexpr size_t targetVcoClk = 2 * targetSysClk;    // 240 MHz
 
     Chimera::Status_t cfgResult = Chimera::Status::OK;
 
@@ -111,10 +112,12 @@ namespace Thor::LLD::RCC
     clkCfg.enabled.hsi          = true;    // Needed for transfer of clock source
     clkCfg.enabled.lsi          = true;    // Allows IWDG use
     clkCfg.enabled.pll_core_clk = true;    // Will drive sys off PLL
+    clkCfg.enabled.pll_core_q   = true;    // USB 48 MHz clock
 
     /* Select clock mux routing */
-    clkCfg.mux.pll = Chimera::Clock::Bus::HSI16;
-    clkCfg.mux.sys = Chimera::Clock::Bus::PLLP;
+    clkCfg.mux.pll   = Chimera::Clock::Bus::HSI16;
+    clkCfg.mux.sys   = Chimera::Clock::Bus::PLLP;
+    clkCfg.mux.usb48 = Chimera::Clock::Bus::PLLQ;
 
     /* Divisors from the system clock */
     clkCfg.prescaler.ahb  = 1;
@@ -124,6 +127,7 @@ namespace Thor::LLD::RCC
     /* Figure out PLL configuration settings */
     cfgResult |= calculatePLLBaseOscillator( PLLType::CORE, hsiClkIn, targetVcoClk, clkCfg );
     cfgResult |= calculatePLLOuputOscillator( PLLType::CORE, PLLOut::P, targetVcoClk, targetSysClk, clkCfg );
+    cfgResult |= calculatePLLOuputOscillator( PLLType::CORE, PLLOut::Q, targetVcoClk, targetUSBClk, clkCfg );
 
     RT_HARD_ASSERT( cfgResult == Chimera::Status::OK );
     RT_HARD_ASSERT( configureClockTree( clkCfg ) );

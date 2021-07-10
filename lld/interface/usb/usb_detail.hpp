@@ -19,6 +19,8 @@
 #elif defined( TARGET_LLD_TEST )
 #include <Thor/lld/interface/usb/sim/usb_sim_variant.hpp>
 #include <Thor/lld/interface/usb/sim/usb_sim_types.hpp>
+#elif defined( TARGET_STM32F4 )
+#include <Thor/lld/stm32f4x/usb/hw_usb_prj.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/usb/hw_usb_prj.hpp>
 #include <Thor/lld/stm32l4x/usb/hw_usb_types.hpp>

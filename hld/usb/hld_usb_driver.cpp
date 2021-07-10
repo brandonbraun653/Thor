@@ -64,15 +64,15 @@ namespace Thor::USB
     /*------------------------------------------------
     Initialize local memory
     ------------------------------------------------*/
-    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
-    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
-    {
-#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_USB )
-      hld_shared[ x ] = HLD::Driver_rPtr( new HLD::Driver() );
-#else
-      hld_shared[ x ] = HLD::Driver_rPtr( &hld_driver[ x ] );
-#endif
-    }
+//     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+//     for ( size_t x = 0; x < NUM_DRIVERS; x++ )
+//     {
+// #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_USB )
+//       hld_shared[ x ] = HLD::Driver_rPtr( new HLD::Driver() );
+// #else
+//       hld_shared[ x ] = HLD::Driver_rPtr( &hld_driver[ x ] );
+// #endif
+//     }
 
     /*------------------------------------------------
     Initialize the low level driver

@@ -20,6 +20,7 @@ add_subdirectory("system")
 add_subdirectory("timer")
 add_subdirectory("uart")
 add_subdirectory("usart")
+add_subdirectory("usb")
 add_subdirectory("wwdg")
 
 # ====================================================
@@ -31,7 +32,6 @@ gen_intf_lib_variants(
   LIBRARIES
     thor_lld_stm32f4_adc
     # thor_lld_stm32f4_can
-    # thor_lld_stm32f4_crs
     thor_lld_stm32f4_des
     thor_lld_stm32f4_dma
     thor_lld_stm32f4_exti
@@ -47,6 +47,7 @@ gen_intf_lib_variants(
     thor_lld_stm32f4_timer
     thor_lld_stm32f4_uart
     thor_lld_stm32f4_usart
+    thor_lld_stm32f4_usb
     thor_lld_stm32f4_wwdg
   EXPORT_DIR
     "${PROJECT_BINARY_DIR}/Thor/lld"

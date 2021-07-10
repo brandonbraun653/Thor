@@ -614,9 +614,27 @@ namespace Thor::LLD::RCC
 
   bool setSourceUSB48( ClockTreeInit &cfg )
   {
+    switch ( cfg.mux.usb48 )
+    {
     /*-------------------------------------------------
-    Currently not implemented cause no use for USB clk
+    SAI PLL-P
     -------------------------------------------------*/
+    case Chimera::Clock::Bus::PLLP:
+      CK48MSEL::set( RCC1_PERIPH, DCKCFGR2_CK48MSEL );
+      break;
+
+    /*-------------------------------------------------
+    CORE PLL-Q
+    -------------------------------------------------*/
+    case Chimera::Clock::Bus::PLLQ:
+      CK48MSEL::clear( RCC1_PERIPH, DCKCFGR2_CK48MSEL );
+      break;
+
+    default:
+      return false;
+      break;
+    }
+
     return true;
   }
 

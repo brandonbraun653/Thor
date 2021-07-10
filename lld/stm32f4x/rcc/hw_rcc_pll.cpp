@@ -181,6 +181,11 @@ namespace Thor::LLD::RCC
   }
 
 
+  bool configureSAIPLL( ClockTreeInit &cfg )
+  {
+    return false;
+  }
+
   Chimera::Status_t calcPLLCoreSettings( const size_t inFreq, const size_t outFreq, ClockTreeInit &config )
   {
     /**
@@ -354,10 +359,8 @@ namespace Thor::LLD::RCC
     }
     else if ( channel == PLLOut::Q )
     {
-      // Drives USB and SDIO, which require 48 MHz clock or lower.
-      RT_HARD_ASSERT( X_out <= 48000000 );
-
-      // No need to convert. The register mapping works as is.
+      // Drives USB and SDIO, which require 48 MHz clock exactly.
+      RT_HARD_ASSERT( X_out == 48000000 );
     }
 
     /*-------------------------------------------------

@@ -190,6 +190,11 @@ namespace Thor::LLD::GPIO
     const uint64_t mask   = AFR_CFG_X_MSK;
     const uint64_t AFcfg  = static_cast<uint64_t>( findAlternateFunction( port, pin, val ) );
 
+    /*-------------------------------------------------
+    Check to make sure the AF was found
+    -------------------------------------------------*/
+    RT_HARD_ASSERT( AFcfg != BAD_ALT_FUNC );
+
     /*------------------------------------------------
     64-bit wide read-modify-write sequence to AFRL & AFRH
     ------------------------------------------------*/
