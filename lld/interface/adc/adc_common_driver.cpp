@@ -134,13 +134,13 @@ namespace Thor::LLD::ADC
   }
 
 
-  inline void Driver::disableInterrupts()
+  void Driver::disableInterrupts()
   {
     Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 
-  inline void Driver::enableInterrupts()
+  void Driver::enableInterrupts()
   {
     Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
