@@ -7,7 +7,7 @@
  *    are tagged in the documentation, it is refering to the ARMv7-M Architecture
  *    Reference Manual.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 /* Thor Includes */
@@ -74,6 +74,16 @@ namespace CortexM4
     {
       continue;
     }
+  }
+
+
+  bool isDebuggerAttached()
+  {
+    /*-------------------------------------------------------------------------
+    See section C1.6.2. If this bit is set, debugger is attached.
+    -------------------------------------------------------------------------*/
+    volatile uint32_t val = *SCB_REG_DHCSR;
+    return ( val & DHCSR_C_DEBUGEN ) == DHCSR_C_DEBUGEN;
   }
 
 }    // namespace CortexM4

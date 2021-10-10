@@ -71,6 +71,14 @@ namespace CortexM4
    */
   void hardwareReset();
 
+  /**
+   * @brief Checks if the debugger is attached
+   *
+   * @return true
+   * @return false
+   */
+  bool isDebuggerAttached();
+
 }    // namespace CortexM4
 
 #endif /* !CORTEX_M4_UTILITIES_HPP */

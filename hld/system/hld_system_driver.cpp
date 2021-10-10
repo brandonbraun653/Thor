@@ -127,4 +127,10 @@ namespace Thor::System
     return Thor::LLD::SYS::softwareReset();
   }
 
+
+  bool isDebuggerAttached()
+  {
+    return Thor::LLD::SYS::isDebuggerAttached();
+  }
+
 }    // namespace Thor::System

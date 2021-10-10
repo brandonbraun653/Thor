@@ -40,6 +40,14 @@ namespace Thor::LLD::SYS
   void softwareReset();
 
   /**
+   * @brief Checks if the debugger is attached to the system
+   *
+   * @return true
+   * @return false
+   */
+  bool isDebuggerAttached();
+
+  /**
    *  Configures the SYSCFG registers to select the proper pin to interrupt
    *  the external interrupt lines 0-15.
    *

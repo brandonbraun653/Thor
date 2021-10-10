@@ -32,6 +32,7 @@ namespace Thor::System
   void getSystemInformation( Chimera::System::Information *&info );
   void softwareReset();
   bool inISR();
+  bool isDebuggerAttached();
 
   namespace Version
   {

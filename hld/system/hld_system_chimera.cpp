@@ -116,6 +116,12 @@ namespace Chimera::System::Backend
   }
 
 
+  bool isDebuggerAttached()
+  {
+    return Thor::System::isDebuggerAttached();
+  }
+
+
   namespace Version
   {
     std::string_view asString()
@@ -178,6 +184,7 @@ namespace Chimera::System::Backend
     registry.systemStartup          = systemStartup;
     registry.inISR                  = inISR;
     registry.softwareReset          = softwareReset;
+    registry.isDebuggerAttached     = isDebuggerAttached;
     registry.desc_About             = Description::about;
     registry.desc_BackendDriverName = Description::backendDriverName;
     registry.desc_DocumentationLink = Description::documentationLink;

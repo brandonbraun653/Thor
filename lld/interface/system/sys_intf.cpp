@@ -95,4 +95,14 @@ namespace Thor::LLD::SYS
     #endif
   }
 
+
+  bool isDebuggerAttached()
+  {
+    #if defined( CORTEX_M4 )
+    return CortexM4::isDebuggerAttached();
+    #else
+    return false;
+    #endif
+  }
+
 }  // namespace Thor::LLD:SYS
