@@ -23,7 +23,6 @@
 /* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/cortex-m4/system_time.hpp>
-#include <Thor/lld/common/mapping/peripheral_mapping.hpp>
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/power>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prv.hpp>

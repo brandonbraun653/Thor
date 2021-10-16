@@ -253,7 +253,7 @@ namespace Thor::CAN
       {
         Chimera::Thread::Thread thread;
         thread.initialize( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ], nullptr,
-                           Chimera::Thread::Priority::LEVEL_5, STACK_BYTES( 250 ), nullptr );
+                           Chimera::Thread::TaskPriority::LEVEL_5, STACK_BYTES( 250 ), nullptr );
         thread.start();
         s_user_isr_handle[ lldResourceIndex ][ isr_idx ] = thread.native_handle();
       }
