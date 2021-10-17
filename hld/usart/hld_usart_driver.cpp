@@ -159,7 +159,7 @@ namespace Thor::USART
   -------------------------------------------------------------------------------*/
   Driver::Driver() :
       mEnabled( false ), mChannel( Chimera::Serial::Channel::NOT_SUPPORTED ), mResourceIndex( 0 ), mAwaitRXComplete( 1 ),
-      mAwaitTXComplete( 1 ), mRxLock( 1 ), mTxLock( 1 )
+      mAwaitTXComplete( 1 ), mTxLock( 1 )
   {
   }
 
@@ -339,11 +339,15 @@ namespace Thor::USART
 
     if ( periph == Chimera::Hardware::SubPeripheral::TX )
     {
+      mTxLock.acquire();
       error = mTxBuffers.flush();
+      mTxLock.release();
     }
     else if ( periph == Chimera::Hardware::SubPeripheral::RX )
     {
+      mRxLock.lock();
       error = mRxBuffers.flush();
+      mRxLock.unlock();
     }
     else
     {
@@ -435,13 +439,14 @@ namespace Thor::USART
       size_t bytes_received = tcb.expected - tcb.remaining;
       size_t tmp = 0;
 
+      mRxLock.lock();
       mRxBuffers.transferOutOf( bytes_received, tmp );
+      mRxLock.unlock();
 
       /*------------------------------------------------
       Notify those waiting on the RX occurrance
       ------------------------------------------------*/
       mAwaitRXComplete.release();
-      mRxLock.release();
 
       /*-------------------------------------------------
       Handle any user-space callback that was registered
@@ -488,16 +493,22 @@ namespace Thor::USART
 
   Chimera::Status_t Driver::readAsync( uint8_t *const buffer, const size_t len )
   {
-    Chimera::Status_t error = Chimera::Status::OK;
-
+    /*-------------------------------------------------------------------------
+    Input protection
+    -------------------------------------------------------------------------*/
     if ( !buffer )
     {
-      error = Chimera::Status::INVAL_FUNC_PARAM;
+      return Chimera::Status::INVAL_FUNC_PARAM;
     }
-    else
-    {
-      size_t bytesRead = 0;
 
+    /*-------------------------------------------------------------------------
+    Read out data accumulated asynchronously
+    -------------------------------------------------------------------------*/
+    Chimera::Status_t error = Chimera::Status::OK;
+    size_t bytesRead        = 0;
+
+    mRxLock.lock();
+    {
       if ( auto tmp = mRxBuffers.circularBuffer(); tmp )
       {
         while ( !tmp->empty() && ( bytesRead < len ) )
@@ -507,12 +518,13 @@ namespace Thor::USART
           bytesRead++;
         }
       }
+    }
+    mRxLock.unlock();
 
 
-      if ( bytesRead != len )
-      {
-        error = Chimera::Status::EMPTY;
-      }
+    if ( bytesRead != len )
+    {
+      error = Chimera::Status::EMPTY;
     }
 
     return error;
@@ -569,14 +581,19 @@ namespace Thor::USART
   {
     bool retval = false;
 
-    if ( auto tmp = mRxBuffers.circularBuffer(); tmp && !tmp->empty() )
+    /*-------------------------------------------------------------------------
+    Check the RX user (circular) buffer if anything available
+    -------------------------------------------------------------------------*/
+    if ( auto tmp = mRxBuffers.circularBuffer(); tmp )
     {
-      retval = true;
+      mRxLock.lock();
+      retval = !tmp->empty();
 
       if ( bytes )
       {
-        *bytes = tmp->size();
+        *bytes = static_cast<size_t>( tmp->size() );
       }
+      mRxLock.unlock();
     }
 
     return retval;

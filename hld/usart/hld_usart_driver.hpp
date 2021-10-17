@@ -89,7 +89,7 @@ namespace Thor::USART
     /*-------------------------------------------------
     Internal locks for protecting the data buffers
     -------------------------------------------------*/
-    Chimera::Thread::BinarySemaphore mRxLock;
+    Chimera::Thread::RecursiveMutex mRxLock;
     Chimera::Thread::BinarySemaphore mTxLock;
 
     /*-------------------------------------------------
