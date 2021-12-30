@@ -114,9 +114,9 @@ namespace Thor::LLD::I2C
      * @brief Attaches a peripheral instance to the interaction model
      *
      * @param[in]  peripheral    Memory mapped struct of the desired peripheral
-     * @return void
+     * @return Chimera::Status_t
      */
-    void attach( RegisterMap *const peripheral );
+    Chimera::Status_t attach( RegisterMap *const peripheral );
 
     /**
      * @brief Enables the peripheral clock for the configured instance
@@ -189,18 +189,6 @@ namespace Thor::LLD::I2C
      * @return Chimera::Status_t
      */
     Chimera::Status_t transfer( const uint16_t address, const void *const tx_data, void *const rx_data, const size_t length );
-
-    /*-------------------------------------------------------------------------
-    Asynchronous Operation
-    -------------------------------------------------------------------------*/
-    /**
-     * Gets the driver's semaphore associated with an ISR event. The semaphore
-     * will be given to upon event occurrance, unblocking a task that's pending.
-     *
-     * @param[in]  signal        Which ISR signal to get the semaphore for
-     * @return Chimera::Thread::BinarySemaphore *
-     */
-    Chimera::Thread::BinarySemaphore *getISRSignal( Chimera::I2C::Interrupt signal );
 
     /*-------------------------------------------------------------------------
     ISR Protection Mechanisms

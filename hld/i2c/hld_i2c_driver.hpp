@@ -43,7 +43,7 @@ namespace Thor::I2C
     /*-------------------------------------------------------------------------
     Interface: Hardware
     -------------------------------------------------------------------------*/
-    Chimera::Status_t open( const DriverConfig &cfg );
+    Chimera::Status_t open( const Chimera::I2C::DriverConfig &cfg );
     Chimera::Status_t close();
     Chimera::Status_t read( const uint16_t address, void *const data, const size_t length );
     Chimera::Status_t write( const uint16_t address, const void *const data, const size_t length );
@@ -67,8 +67,7 @@ namespace Thor::I2C
     /*-------------------------------------------------------------------------
     ISR Event Handlers
     -------------------------------------------------------------------------*/
-    void ProcessISREvent_Normal();
-    void ProcessISREvent_Error();
+    void postISRProcessing();
 
   private:
     friend Chimera::Thread::Lockable<Driver>;

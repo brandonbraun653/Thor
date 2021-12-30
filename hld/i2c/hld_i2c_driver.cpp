@@ -71,8 +71,7 @@ namespace Thor::I2C
       -----------------------------------------------------------------------*/
       for ( size_t index = 0; index < NUM_DRIVERS; index++ )
       {
-        hld_driver[ index ].ProcessISREvent_Normal();
-        hld_driver[ index ].ProcessISREvent_Error();
+        hld_driver[ index ].postISRProcessing();
       }
     }
   }
@@ -82,16 +81,19 @@ namespace Thor::I2C
   ---------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t reset()
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Driver_rPtr getDriver( const Chimera::I2C::Channel channel )
   {
+    return nullptr;
   }
 
 
@@ -107,105 +109,80 @@ namespace Thor::I2C
   {
   }
 
-  /*-------------------------------------------------
-  Interface: Hardware
-  -------------------------------------------------*/
-  Chimera::Status_t Driver::open( const DriverConfig &cfg )
+
+  Chimera::Status_t Driver::open( const Chimera::I2C::DriverConfig &cfg )
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::close()
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::read( const uint16_t address, void *const data, const size_t length )
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::write( const uint16_t address, const void *const data, const size_t length )
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::transfer( const uint16_t address, const void *const tx_data, void *const rx_data,
                                       const size_t length )
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::stop()
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::start()
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
-  /*-------------------------------------------------
-  Interface: Listener
-  -------------------------------------------------*/
+
   Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
                                               size_t &registrationID )
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
-  /*-------------------------------------------------
-  Interface: AsyncIO
-  -------------------------------------------------*/
+
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                                    const size_t timeout )
   {
+    return Chimera::Status::NOT_SUPPORTED;
+  }
+
+
+  void Driver::postISRProcessing()
+  {
   }
 
 }    // namespace Thor::I2C
-
-
-#if defined( STM32_I2C1_PERIPH_AVAILABLE )
-void I2C1_EV_IRQHandler()
-{
-}
-
-
-void I2C1_ER_IRQHandler()
-{
-}
-#endif /* STM32_I2C1_PERIPH_AVAILABLE */
-
-#if defined( STM32_I2C2_PERIPH_AVAILABLE )
-void I2C2_EV_IRQHandler()
-{
-}
-
-
-void I2C2_ER_IRQHandler()
-{
-}
-#endif /* STM32_I2C2_PERIPH_AVAILABLE */
-
-
-#if defined( STM32_I2C3_PERIPH_AVAILABLE )
-void I2C3_EV_IRQHandler()
-{
-}
-
-
-void I2C3_ER_IRQHandler()
-{
-}
-#endif /* STM32_I2C3_PERIPH_AVAILABLE */
 
 #endif /* THOR_HLD_I2C */

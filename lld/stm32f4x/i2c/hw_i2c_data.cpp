@@ -20,18 +20,18 @@ Includes
 #if defined( TARGET_STM32F4 ) && defined( THOR_LLD_I2C )
 namespace Thor::LLD::I2C
 {
-  /*---------------------------------------------------------------------------
-  Peripheral Memory Maps
-  ---------------------------------------------------------------------------*/
-  #if defined( STM32_I2C1_PERIPH_AVAILABLE )
-    RegisterMap *I2C1_PERIPH = reinterpret_cast<RegisterMap *>( I2C1_BASE_ADDR );
-  #endif
-  #if defined( STM32_I2C2_PERIPH_AVAILABLE )
-    RegisterMap *I2C2_PERIPH = reinterpret_cast<RegisterMap *>( I2C2_BASE_ADDR );
-  #endif
-  #if defined( STM32_I2C3_PERIPH_AVAILABLE )
-    RegisterMap *I2C3_PERIPH = reinterpret_cast<RegisterMap *>( I2C3_BASE_ADDR );
-  #endif
+/*---------------------------------------------------------------------------
+Peripheral Memory Maps
+---------------------------------------------------------------------------*/
+#if defined( STM32_I2C1_PERIPH_AVAILABLE )
+  RegisterMap *I2C1_PERIPH = reinterpret_cast<RegisterMap *>( I2C1_BASE_ADDR );
+#endif
+#if defined( STM32_I2C2_PERIPH_AVAILABLE )
+  RegisterMap *I2C2_PERIPH = reinterpret_cast<RegisterMap *>( I2C2_BASE_ADDR );
+#endif
+#if defined( STM32_I2C3_PERIPH_AVAILABLE )
+  RegisterMap *I2C3_PERIPH = reinterpret_cast<RegisterMap *>( I2C3_BASE_ADDR );
+#endif
 
   /*---------------------------------------------------------------------------
   Configuration Maps
@@ -74,5 +74,98 @@ namespace Thor::LLD::I2C
     static_assert( static_cast<size_t>( IRQHandlerIndex::EVENT ) == 0 );
   } /* clang-format on */
 
-}  // namespace
-#endif  /* TARGET_STM32F4 && THOR_LLD_I2C */
+  /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
+  static Driver s_i2c_drivers[ NUM_I2C_PERIPHS ];
+
+  /*---------------------------------------------------------------------------
+  Public Functions
+  ---------------------------------------------------------------------------*/
+  Chimera::Status_t initialize()
+  {
+    if ( attachDriverInstances( s_i2c_drivers, ARRAY_COUNT( s_i2c_drivers ) ) )
+    {
+      return Chimera::Status::OK;
+    }
+    else
+    {
+      return Chimera::Status::FAIL;
+    }
+  }
+
+
+  bool isChannelSupported( const Chimera::I2C::Channel channel )
+  {
+    if ( channel < Chimera::I2C::Channel::NUM_OPTIONS )
+    {
+      return ( getResourceIndex( channel ) != INVALID_RESOURCE_INDEX );
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+
+  Driver_rPtr getDriver( const Chimera::I2C::Channel channel )
+  {
+    if ( isChannelSupported( channel ) )
+    {
+      return &s_i2c_drivers[ getResourceIndex( channel ) ];
+    }
+
+    return nullptr;
+  }
+}    // namespace Thor::LLD::I2C
+#endif /* TARGET_STM32F4 && THOR_LLD_I2C */
+
+
+/*-----------------------------------------------------------------------------
+IRQ Handlers
+-----------------------------------------------------------------------------*/
+#if defined( STM32_I2C1_PERIPH_AVAILABLE )
+void I2C1_EV_IRQHandler()
+{
+  using namespace Thor::LLD::I2C;
+  s_i2c_drivers[ I2C1_RESOURCE_INDEX ].IRQEventHandler();
+}
+
+
+void I2C1_ER_IRQHandler()
+{
+  using namespace Thor::LLD::I2C;
+  s_i2c_drivers[ I2C1_RESOURCE_INDEX ].IRQErrorHandler();
+}
+#endif /* STM32_I2C1_PERIPH_AVAILABLE */
+
+#if defined( STM32_I2C2_PERIPH_AVAILABLE )
+void I2C2_EV_IRQHandler()
+{
+  using namespace Thor::LLD::I2C;
+  s_i2c_drivers[ I2C2_RESOURCE_INDEX ].IRQEventHandler();
+}
+
+
+void I2C2_ER_IRQHandler()
+{
+  using namespace Thor::LLD::I2C;
+  s_i2c_drivers[ I2C2_RESOURCE_INDEX ].IRQErrorHandler();
+}
+#endif /* STM32_I2C2_PERIPH_AVAILABLE */
+
+
+#if defined( STM32_I2C3_PERIPH_AVAILABLE )
+void I2C3_EV_IRQHandler()
+{
+  using namespace Thor::LLD::I2C;
+  s_i2c_drivers[ I2C3_RESOURCE_INDEX ].IRQEventHandler();
+}
+
+
+void I2C3_ER_IRQHandler()
+{
+  using namespace Thor::LLD::I2C;
+  s_i2c_drivers[ I2C3_RESOURCE_INDEX ].IRQErrorHandler();
+}
+#endif /* STM32_I2C3_PERIPH_AVAILABLE */
