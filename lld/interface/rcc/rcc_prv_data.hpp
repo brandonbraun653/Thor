@@ -49,9 +49,6 @@ namespace Thor::LLD::RCC
   -------------------------------------------------------------------------------*/
   namespace Resource
   {
-    // extern LLD_CONST uint8_t AHBPrescaleTable[ NUM_AHB_PRESCALERS ];
-    // extern LLD_CONST uint8_t APBPrescaleTable[ NUM_APB_PRESCALERS ];
-    // extern LLD_CONST uint32_t MSIRangeTable[ NUM_MSI_RANGES ];
   }    // namespace ResourceMap
 }  // namespace
 

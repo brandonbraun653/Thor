@@ -8,6 +8,7 @@ add_subdirectory("can")
 add_subdirectory("dma")
 add_subdirectory("exti")
 add_subdirectory("gpio")
+add_subdirectory("i2c")
 add_subdirectory("interrupt")
 add_subdirectory("rcc")
 add_subdirectory("spi")
@@ -29,6 +30,7 @@ gen_intf_lib_variants(
     thor_lld_intf_dma
     thor_lld_intf_exti
     thor_lld_intf_gpio
+    thor_lld_intf_i2c
     thor_lld_intf_interrupt
     thor_lld_intf_rcc
     thor_lld_intf_spi

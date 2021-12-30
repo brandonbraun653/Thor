@@ -10,6 +10,7 @@ add_subdirectory("common")
 add_subdirectory("dma")
 add_subdirectory("exti")
 add_subdirectory("gpio")
+add_subdirectory("i2c")
 add_subdirectory("interrupt")
 add_subdirectory("pwm")
 add_subdirectory("spi")
@@ -30,6 +31,7 @@ set(all_libraries
   thor_hld_dma
   thor_hld_exti
   thor_hld_gpio
+  thor_hld_i2c
   thor_hld_interrupt
   thor_hld_pwm
   thor_hld_spi
