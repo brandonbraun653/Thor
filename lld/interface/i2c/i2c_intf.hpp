@@ -131,6 +131,22 @@ namespace Thor::LLD::I2C
     void disableClock();
 
     /**
+     * @brief Turns on interrupts for the given signal type, if supported.
+     *
+     * @param[in]  signal        The ISR event to enable
+     * @return void
+     */
+    void enableISRSignal( const InterruptBits signal );
+
+    /**
+     * @brief Turns off interrupts for the given signal type, if supported.
+     *
+     * @param[in]  signal        The ISR event to enable
+     * @return void
+     */
+    void disableISRSignal( const InterruptBits signal );
+
+    /**
      * @brief Configure the driver with the appropriate settings.
      *
      * These are more generic settings that apply across all implementations.
@@ -139,22 +155,6 @@ namespace Thor::LLD::I2C
      * @return Chimera::Status_t
      */
     Chimera::Status_t configure( const Chimera::I2C::DriverConfig &cfg );
-
-    /**
-     * @brief Turns on interrupts for the given signal type, if supported.
-     *
-     * @param[in]  signal        The ISR event to enable
-     * @return Chimera::Status_t
-     */
-    Chimera::Status_t enableISRSignal( const Chimera::I2C::Interrupt signal );
-
-    /**
-     * @brief Turns off interrupts for the given signal type, if supported.
-     *
-     * @param[in]  signal        The ISR event to enable
-     * @return void
-     */
-    void disableISRSignal( const Chimera::I2C::Interrupt signal );
 
     /*-------------------------------------------------------------------------
     Transmit and Receive Operations
@@ -195,7 +195,7 @@ namespace Thor::LLD::I2C
     -------------------------------------------------------------------------*/
     /**
      * Disables peripheral specific interrupts. This prevents the hardware from
-     * generating events when those events would interfere with a complex
+     * listening to ISR events when those events would interfere with a complex
      * operation.
      *
      * These events will be pending in the NVIC hardware and fire as soon as
@@ -211,6 +211,29 @@ namespace Thor::LLD::I2C
     void exitCriticalSection();
 
   protected:
+    /**
+     * @brief Perform a full-duplex transfer on the bus using interrupts
+     *
+     * @param address   Address to read/write from
+     * @param tx_data   Data buffer to write from
+     * @param rx_data   Data buffer to read into
+     * @param length    Number of bytes to transfer
+     * @return Chimera::Status_t
+     */
+    Chimera::Status_t transferIT( const uint16_t address, const void *const tx_data, void *const rx_data, const size_t length );
+
+    /**
+     * @brief Perform a full-duplex transfer on the bus using DMA
+     *
+     * @param address   Address to read/write from
+     * @param tx_data   Data buffer to write from
+     * @param rx_data   Data buffer to read into
+     * @param length    Number of bytes to transfer
+     * @return Chimera::Status_t
+     */
+    Chimera::Status_t transferDMA( const uint16_t address, const void *const tx_data, void *const rx_data,
+                                   const size_t length );
+
     /**
      * @brief Handler for error events
      */
@@ -247,11 +270,14 @@ namespace Thor::LLD::I2C
     /*-------------------------------------------------------------------------
     Driver Data
     -------------------------------------------------------------------------*/
-    RegisterMap *mPeriph;
-    Chimera::I2C::DriverConfig mCfg;
-
+    RegisterMap *mPeriph;                    /**< Memory mapped peripheral */
+    volatile bool mTxfrComplete;             /**< Indicates if a transfer is complete yet */
+    uint32_t mResourceIndex;                 /**< Derived lookup table index for resource access */
+    uint32_t mISRBits;                       /**< Masks which ISR signals the software will listen to */
+    Chimera::DMA::RequestId mTXDMARequestId; /**< Request id of the TX DMA pipe for the driver */
+    Chimera::DMA::RequestId mRXDMARequestId; /**< Request id of the RX DMA pipe for the driver */
   };
-}  // namespace Thor::LLD::I2C
+}    // namespace Thor::LLD::I2C
 
-#endif  /* THOR_LLD_I2C */
-#endif  /* !THOR_LLD_I2C_DRIVER_INTERFACE_HPP */
+#endif /* THOR_LLD_I2C */
+#endif /* !THOR_LLD_I2C_DRIVER_INTERFACE_HPP */

@@ -22,6 +22,33 @@ Includes
 namespace Thor::LLD::I2C
 {
   /*---------------------------------------------------------------------------
+  Enumerations
+  ---------------------------------------------------------------------------*/
+  /**
+   * Software representation of the interrupt bits that hardware can handle.
+   * These provide fine-grain control of which interrupts the software will
+   * listen to. Hardware ORs most of these signals together, which removes
+   * most of the control.
+   */
+  enum InterruptBits : uint32_t
+  {
+    bSB       = ( 1u << 0 ),  /**< Start bit sent (master) */
+    bADDR     = ( 1u << 1 ),  /**< Address sent (master) or Address Matched (slave ) */
+    bADD10    = ( 1u << 2 ),  /**< 10-bit header sent (master) */
+    bSTOPF    = ( 1u << 3 ),  /**< Stop received (slave) */
+    bBTF      = ( 1u << 4 ),  /**< Data byte transfer finished */
+    bRxNE     = ( 1u << 5 ),  /**< Receive buffer not empty */
+    bTxE      = ( 1u << 6 ),  /**< Transmit buffer empty */
+    bBERR     = ( 1u << 7 ),  /**< Bus error */
+    bARLO     = ( 1u << 8 ),  /**< Arbitration lost */
+    bAF       = ( 1u << 9 ),  /**< Acknowledge failure */
+    bOVR      = ( 1u << 10 ), /**< Overrun/underrun */
+    bPECERR   = ( 1u << 11 ), /**< PEC Error */
+    bTIMEOUT  = ( 1u << 12 ), /**< Timeout/Tlow error */
+    bSMBALERT = ( 1u << 13 )  /**< SMBus Alert */
+  };
+
+  /*---------------------------------------------------------------------------
   Structures
   ---------------------------------------------------------------------------*/
   struct RegisterMap
