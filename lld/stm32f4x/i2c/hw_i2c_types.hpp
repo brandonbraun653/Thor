@@ -104,6 +104,7 @@ namespace Thor::LLD::I2C
   REG_ACCESSOR( RegisterMap, DR, DR_DR_Msk, DR, BIT_ACCESS_RW );
 
   /* Status Register 1 */
+  REG_ACCESSOR( RegisterMap, SR1, SR1_ALL_Msk, SR1, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, SR1, SR1_SB_Msk, SB, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, SR1, SR1_ADDR_Msk, ADDR, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, SR1, SR1_BTF_Msk, BTF, BIT_ACCESS_R );
@@ -120,6 +121,7 @@ namespace Thor::LLD::I2C
   REG_ACCESSOR( RegisterMap, SR1, SR1_SMBALERT_Msk, SMBALERT, BIT_ACCESS_RCW0 );
 
   /* Status Register 2 */
+  REG_ACCESSOR( RegisterMap, SR2, SR2_ALL_Msk, SR2, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, SR2, SR2_MSL_Msk, MSL, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, SR2, SR2_BUSY_Msk, BUSY, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, SR2, SR2_TRA_Msk, TRA, BIT_ACCESS_R );

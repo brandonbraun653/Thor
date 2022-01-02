@@ -155,6 +155,7 @@ namespace Thor::LLD::I2C
   static constexpr uint32_t DR_DR     = DR_DR_Msk;
 
   /*******************  Bit definition for SR1 register  ********************/
+  static constexpr uint32_t SR1_ALL_Msk      = 0xDFDF;
   static constexpr uint32_t SR1_SB_Pos       = ( 0U );
   static constexpr uint32_t SR1_SB_Msk       = ( 0x1UL << SR1_SB_Pos );
   static constexpr uint32_t SR1_SB           = SR1_SB_Msk;
@@ -199,6 +200,7 @@ namespace Thor::LLD::I2C
   static constexpr uint32_t SR1_SMBALERT     = SR1_SMBALERT_Msk;
 
   /*******************  Bit definition for SR2 register  ********************/
+  static constexpr uint32_t SR2_ALL_Msk        = 0xFFF7;
   static constexpr uint32_t SR2_MSL_Pos        = ( 0U );
   static constexpr uint32_t SR2_MSL_Msk        = ( 0x1UL << SR2_MSL_Pos );
   static constexpr uint32_t SR2_MSL            = SR2_MSL_Msk;

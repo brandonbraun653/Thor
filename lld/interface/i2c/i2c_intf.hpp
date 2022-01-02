@@ -271,11 +271,11 @@ namespace Thor::LLD::I2C
     Driver Data
     -------------------------------------------------------------------------*/
     RegisterMap *mPeriph;                    /**< Memory mapped peripheral */
-    volatile bool mTxfrComplete;             /**< Indicates if a transfer is complete yet */
     uint32_t mResourceIndex;                 /**< Derived lookup table index for resource access */
     uint32_t mISRBits;                       /**< Masks which ISR signals the software will listen to */
     Chimera::DMA::RequestId mTXDMARequestId; /**< Request id of the TX DMA pipe for the driver */
     Chimera::DMA::RequestId mRXDMARequestId; /**< Request id of the RX DMA pipe for the driver */
+    TxfrCB mTransfer;                        /**< Current transfer */
   };
 }    // namespace Thor::LLD::I2C
 

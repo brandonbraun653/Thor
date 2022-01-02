@@ -13,13 +13,13 @@ Includes
 -----------------------------------------------------------------------------*/
 #include <Aurora/constants>
 #include <Chimera/event>
+#include <Chimera/gpio>
 #include <Chimera/i2c>
 #include <Chimera/thread>
 #include <Thor/cfg>
 #include <Thor/i2c>
-#include <Thor/lld/interface/i2c/i2c_detail.hpp>
-#include <Thor/lld/interface/i2c/i2c_intf.hpp>
-#include <Thor/lld/interface/i2c/i2c_types.hpp>
+#include <Thor/lld/interface/inc/i2c>
+#include <Thor/lld/interface/inc/interrupt>
 #include <array>
 #include <cstring>
 #include <limits>
@@ -81,19 +81,62 @@ namespace Thor::I2C
   ---------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    using namespace Chimera::Thread;
+    /*-------------------------------------------------------------------------
+    Prevent multiple initializations
+    -------------------------------------------------------------------------*/
+    if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
+    {
+      return Chimera::Status::OK;
+    }
+
+    /*-------------------------------------------------------------------------
+    Register the ISR post-processor thread
+    -------------------------------------------------------------------------*/
+    Task userThread;
+    TaskConfig cfg;
+
+    cfg.arg        = nullptr;
+    cfg.function   = I2CxISRUserThread;
+    cfg.priority   = Priority::MAXIMUM;
+    cfg.stackWords = STACK_BYTES( 512 );
+    cfg.type       = TaskInitType::DYNAMIC;
+    cfg.name       = "PP_I2Cx";
+
+    userThread.create( cfg );
+    LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_I2C, userThread.start() );
+
+    /*-------------------------------------------------------------------------
+    Initialize the low level driver
+    -------------------------------------------------------------------------*/
+    ::LLD::initialize();
+
+    /*-------------------------------------------------------------------------
+    Lock the init sequence and exit
+    -------------------------------------------------------------------------*/
+    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t reset()
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
+    return Chimera::Status::OK;
   }
 
 
   Driver_rPtr getDriver( const Chimera::I2C::Channel channel )
   {
-    return nullptr;
+    if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    {
+      return &hld_driver[ idx ];
+    }
+    else
+    {
+      RT_HARD_ASSERT( false );
+      return nullptr;
+    }
   }
 
 
@@ -112,43 +155,74 @@ namespace Thor::I2C
 
   Chimera::Status_t Driver::open( const Chimera::I2C::DriverConfig &cfg )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    /*-------------------------------------------------------------------------
+    Configure the SCL/SDA GPIO
+    -------------------------------------------------------------------------*/
+    auto pin = Chimera::GPIO::getDriver( cfg.SCLInit.port, cfg.SCLInit.pin );
+    auto result = pin->init( cfg.SCLInit );
+
+    pin = Chimera::GPIO::getDriver( cfg.SDAInit.port, cfg.SDAInit.pin );
+    result |= pin->init( cfg.SDAInit );
+
+    if( result != Chimera::Status::OK )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+    /*-------------------------------------------------------------------------
+    Configure the low level driver
+    -------------------------------------------------------------------------*/
+    if( ::LLD::getDriver( cfg.HWInit.channel )->configure( cfg ) == Chimera::Status::OK )
+    {
+      mConfig = cfg;
+      return Chimera::Status::OK;
+    }
+    else
+    {
+      return Chimera::Status::FAIL;
+    }
   }
 
 
   Chimera::Status_t Driver::close()
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::read( const uint16_t address, void *const data, const size_t length )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return ::LLD::getDriver( mConfig.HWInit.channel )->read( address, data, length );
   }
 
 
   Chimera::Status_t Driver::write( const uint16_t address, const void *const data, const size_t length )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return ::LLD::getDriver( mConfig.HWInit.channel )->write( address, data, length );
   }
 
 
   Chimera::Status_t Driver::transfer( const uint16_t address, const void *const tx_data, void *const rx_data,
                                       const size_t length )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return ::LLD::getDriver( mConfig.HWInit.channel )->transfer( address, tx_data, rx_data, length );
   }
 
 
   Chimera::Status_t Driver::stop()
   {
+    /*-------------------------------------------------------------------------
+    Technically supported in hardware, but not needed in software.
+    -------------------------------------------------------------------------*/
     return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::start()
   {
+    /*-------------------------------------------------------------------------
+    Technically supported in hardware, but not needed in software.
+    -------------------------------------------------------------------------*/
     return Chimera::Status::NOT_SUPPORTED;
   }
 
@@ -181,6 +255,7 @@ namespace Thor::I2C
 
   void Driver::postISRProcessing()
   {
+    // Check the LLD for any pending actions
   }
 
 }    // namespace Thor::I2C

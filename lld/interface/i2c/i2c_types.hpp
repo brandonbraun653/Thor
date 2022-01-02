@@ -15,6 +15,7 @@
 /*-----------------------------------------------------------------------------
 Includes
 -----------------------------------------------------------------------------*/
+#include <Chimera/peripheral>
 
 
 namespace Thor::LLD::I2C
@@ -51,6 +52,45 @@ namespace Thor::LLD::I2C
     NUM_OPTIONS,
     UNKNOWN,
   };
-}  // namespace Thor::LLD::I2C
 
-#endif  /* !THOR_LLD_I2C_TYPES_HPP */
+
+  enum class TxfrState : uint8_t
+  {
+    IDLE,       /**< Nothing happening */
+    ADDRESS,    /**< Device address needs to be sent */
+    DATA,       /**< Data payload being sent */
+    COMPLETE,   /**< Transfer complete */
+    ERROR,      /**< An error occurred */
+
+    NUM_OPTIONS,
+    UNKNOWN
+  };
+
+  /*---------------------------------------------------------------------------
+  Structures
+  ---------------------------------------------------------------------------*/
+  struct TxfrCB
+  {
+    volatile bool inProgress;               /**< Transfer in progress? */
+    uint16_t address;                       /**< Address being transferred to/from */
+    const void *txData;                     /**< Buffer for transmit data */
+    void *rxData;                           /**< Buffer for received data */
+    size_t index;                           /**< Byte index into the tx/rx buffers */
+    size_t length;                          /**< Number of bytes being transferred */
+    TxfrState state;                        /**< Current state of the transfer */
+    Chimera::Peripheral::TransferMode mode; /**< Mode of transfer being used */
+
+    void clear()
+    {
+      inProgress = false;
+      address    = 0;
+      txData     = nullptr;
+      rxData     = nullptr;
+      length     = 0;
+      state      = TxfrState::IDLE;
+      mode       = Chimera::Peripheral::TransferMode::UNKNOWN;
+    }
+  };
+}    // namespace Thor::LLD::I2C
+
+#endif /* !THOR_LLD_I2C_TYPES_HPP */
