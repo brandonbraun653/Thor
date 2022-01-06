@@ -190,6 +190,13 @@ namespace Thor::LLD::I2C
      */
     Chimera::Status_t transfer( const uint16_t address, const void *const tx_data, void *const rx_data, const size_t length );
 
+    /**
+     * @brief Gets the state of the last transfer
+     *
+     * @return TxfrCB*
+     */
+    TxfrCB *whatHappened();
+
     /*-------------------------------------------------------------------------
     ISR Protection Mechanisms
     -------------------------------------------------------------------------*/

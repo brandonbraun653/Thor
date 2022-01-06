@@ -34,9 +34,12 @@ namespace Thor::I2C
   /*---------------------------------------------------------------------------
   Classes
   ---------------------------------------------------------------------------*/
-  class Driver : public Chimera::Thread::Lockable<Driver>
+  class Driver : public Chimera::Thread::Lockable<Driver>,
+                 public Chimera::Thread::AsyncIO<Driver>
   {
   public:
+    using Chimera::Thread::AsyncIO<Driver>::AsyncIO;
+
     Driver();
     ~Driver();
 
@@ -58,19 +61,13 @@ namespace Thor::I2C
     Chimera::Status_t removeListener( const size_t registrationID, const size_t timeout );
 
     /*-------------------------------------------------------------------------
-    Interface: AsyncIO
-    -------------------------------------------------------------------------*/
-    Chimera::Status_t await( const Chimera::Event::Trigger event, const size_t timeout );
-    Chimera::Status_t await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
-                             const size_t timeout );
-
-    /*-------------------------------------------------------------------------
     ISR Event Handlers
     -------------------------------------------------------------------------*/
     void postISRProcessing();
 
   private:
     friend Chimera::Thread::Lockable<Driver>;
+    friend Chimera::Thread::AsyncIO<Driver>;
 
     Chimera::I2C::DriverConfig mConfig;
     Chimera::Event::ActionableList eventListeners;

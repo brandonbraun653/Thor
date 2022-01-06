@@ -184,6 +184,15 @@ namespace Thor::LLD::I2C
     ANOFF::clear( mPeriph, FLTR_ANOFF );
     DNF::set( mPeriph, ( 3u << FLTR_DNF_Pos ) );
 
+    /*-------------------------------------------------------------------------
+    Configure the interrupt controller
+    -------------------------------------------------------------------------*/
+    for ( size_t isrVec = 0; isrVec < Resource::ISR_VEC_PER_PERIPH; isrVec++ )
+    {
+      INT::setPriority( Resource::IRQSignals[ mResourceIndex ][ isrVec ], INT::I2C_IT_PREEMPT_PRIORITY, 0u );
+      INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ isrVec ] );
+    }
+
     /* Enable the peripheral */
     PE::set( mPeriph, CR1_PE );
 
@@ -252,6 +261,16 @@ namespace Thor::LLD::I2C
   }
 
 
+  TxfrCB *Driver::whatHappened()
+  {
+    /*-------------------------------------------------------------------------
+    No need to protect this data. Can't guarantee the caller context will be
+    safe from ISR modification after return.
+    -------------------------------------------------------------------------*/
+    return &mTransfer;
+  }
+
+
   void Driver::enterCriticalSection()
   {
     for ( size_t irqIdx = 0; irqIdx < Resource::ISR_VEC_PER_PERIPH; irqIdx++ )
@@ -289,6 +308,7 @@ namespace Thor::LLD::I2C
     Set up the transfer
     -------------------------------------------------------------------------*/
     /* Update the transfer control block */
+    mTransfer.clear();
     mTransfer.inProgress = true;
     mTransfer.address    = address;
     mTransfer.txData     = tx_data;
@@ -320,7 +340,29 @@ namespace Thor::LLD::I2C
 
   void Driver::IRQErrorHandler()
   {
-    // Notify the high priority thread for any errors
+    using namespace Chimera::Thread;
+    using namespace Chimera::Peripheral;
+
+    /*-------------------------------------------------------------------------
+    Local Variables
+    -------------------------------------------------------------------------*/
+    const uint32_t sr1 = SR1::get( mPeriph );
+    const uint32_t sr2 = SR2::get( mPeriph );
+
+    /*-------------------------------------------------------------------------
+    NACK? This is the most common issue.
+    -------------------------------------------------------------------------*/
+    if( sr1 & SR1_AF )
+    {
+      mTransfer.errorBF |= ( 1u << TxfrError::ERR_NACK );
+      AF::set( mPeriph, 0 );
+      STOP::set( mPeriph, CR1_STOP );
+    }
+
+    /*-------------------------------------------------------------------------
+    Wake the user task to respond to the error
+    -------------------------------------------------------------------------*/
+    sendTaskMsg( INT::getUserTaskId( Type::PERIPH_I2C ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
   }
 
 

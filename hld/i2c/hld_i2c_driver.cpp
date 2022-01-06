@@ -156,6 +156,11 @@ namespace Thor::I2C
   Chimera::Status_t Driver::open( const Chimera::I2C::DriverConfig &cfg )
   {
     /*-------------------------------------------------------------------------
+    Ensure the AsyncIO driver is ready
+    -------------------------------------------------------------------------*/
+    this->initAIO();
+
+    /*-------------------------------------------------------------------------
     Configure the SCL/SDA GPIO
     -------------------------------------------------------------------------*/
     auto pin = Chimera::GPIO::getDriver( cfg.SCLInit.port, cfg.SCLInit.pin );
@@ -240,22 +245,15 @@ namespace Thor::I2C
   }
 
 
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
-                                   const size_t timeout )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
   void Driver::postISRProcessing()
   {
-    // Check the LLD for any pending actions
+    auto txfr = ::LLD::getDriver( mConfig.HWInit.channel )->whatHappened();
+    txfr->inProgress = false;
+
+    if( txfr->errorBF & ( 1u << ::LLD::TxfrError::ERR_NACK ) )
+    {
+      this->signalAIO( Chimera::Event::Trigger::TRIGGER_SYSTEM_ERROR );
+    }
   }
 
 }    // namespace Thor::I2C
