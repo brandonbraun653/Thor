@@ -102,48 +102,6 @@ namespace Thor::LLD::ADC
   static Driver s_adc_drivers[ NUM_ADC_PERIPHS ];
 
   /*-------------------------------------------------------------------------------
-  Private Functions
-  -------------------------------------------------------------------------------*/
-
-  /*-------------------------------------------------------------------------------
-  Public Functions
-  -------------------------------------------------------------------------------*/
-  Chimera::Status_t initialize()
-  {
-    /*-------------------------------------------------
-    Attach all the expected peripherals to the drivers
-    -------------------------------------------------*/
-    if ( attachDriverInstances( s_adc_drivers, ARRAY_COUNT( s_adc_drivers ) ) )
-    {
-      return Chimera::Status::OK;
-    }
-    else
-    {
-      return Chimera::Status::FAIL;
-    }
-  }
-
-
-  Driver_rPtr getDriver( const Chimera::ADC::Peripheral periph )
-  {
-    if ( auto idx = getResourceIndex( periph ); idx != INVALID_RESOURCE_INDEX )
-    {
-      return &s_adc_drivers[ idx ];
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
-
-
-  bool featureSupported( const Chimera::ADC::Peripheral periph, const Chimera::ADC::Feature feature )
-  {
-    return true;
-  }
-
-
-  /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
   Driver::Driver() : mPeriph( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX ), mConversionInProgress( false )
@@ -177,9 +135,9 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------
     Reset the channel sample times to defaults
     -------------------------------------------------*/
-    for ( auto idx = 0; idx < ARRAY_COUNT( mChannelSampleTime ); idx++ )
+    for ( size_t idx = 0; idx < NUM_ADC_CHANNELS_PER_PERIPH; idx++ )
     {
-      mChannelSampleTime[ idx ] = SampleTime::SMP_24P5;
+      setSampleTime( static_cast<Chimera::ADC::Channel>( idx ), SampleTime::SMP_24P5 );
     }
 
     return Chimera::Status::OK;
@@ -341,46 +299,11 @@ namespace Thor::LLD::ADC
   }
 
 
-  Chimera::Status_t Driver::reset()
-  {
-    /*-------------------------------------------------
-    Use the RCC peripheral to invoke the reset. The
-    clock must be enabled first or else this won't work.
-    -------------------------------------------------*/
-    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
-    return rcc->reset( Chimera::Peripheral::Type::PERIPH_ADC, mResourceIndex );
-  }
-
-
-  void Driver::clockEnable()
-  {
-    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
-    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_ADC, mResourceIndex );
-  }
-
-
-  void Driver::clockDisable()
-  {
-    auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
-    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_ADC, mResourceIndex );
-  }
-
-
-  inline void Driver::disableInterrupts()
-  {
-    Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
-  }
-
-
-  inline void Driver::enableInterrupts()
-  {
-    Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
-  }
-
-
   Chimera::ADC::Sample Driver::sampleChannel( const Chimera::ADC::Channel channel )
   {
     using namespace Chimera::ADC;
+
+    Chimera::insert_debug_breakpoint();
 
     /*-------------------------------------------------
     Wait for the hardware to indicate it's free for a
@@ -402,23 +325,23 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------
     Apply the currently configured sample time for this channel
     -------------------------------------------------*/
-    size_t chNum = static_cast<size_t>( channel );
+    // size_t chNum = static_cast<size_t>( channel );
 
-    if ( channel < Channel::ADC_CH_10 )
-    {
-      auto chPos     = static_cast<size_t>( chNum ) * SMPRx_BIT_Wid;
-      Reg32_t regVal = static_cast<size_t>( mChannelSampleTime[ chNum ] ) << chPos;
+    // if ( channel < Channel::ADC_CH_10 )
+    // {
+    //   auto chPos     = static_cast<size_t>( chNum ) * SMPRx_BIT_Wid;
+    //   Reg32_t regVal = static_cast<size_t>( mChannelSampleTime[ chNum ] ) << chPos;
 
-      SMPR1_ALL::set( mPeriph, regVal );
-    }
-    else
-    {
-      auto chOffset  = static_cast<size_t>( Channel::ADC_CH_10 );
-      auto chPos     = static_cast<size_t>( chNum ) - chOffset;
-      Reg32_t regVal = static_cast<size_t>( mChannelSampleTime[ chNum ] ) << chPos;
+    //   SMPR1_ALL::set( mPeriph, regVal );
+    // }
+    // else
+    // {
+    //   auto chOffset  = static_cast<size_t>( Channel::ADC_CH_10 );
+    //   auto chPos     = static_cast<size_t>( chNum ) - chOffset;
+    //   Reg32_t regVal = static_cast<size_t>( mChannelSampleTime[ chNum ] ) << chPos;
 
-      SMPR2_ALL::set( mPeriph, regVal );
-    }
+    //   SMPR2_ALL::set( mPeriph, regVal );
+    // }
 
     /*-------------------------------------------------
     Set single conversion mode
@@ -429,7 +352,10 @@ namespace Thor::LLD::ADC
     Configure the channel to be measured
     -------------------------------------------------*/
     L::set( mPeriph, 1 );
-    SQ1::set( mPeriph, chNum << SQR1_SQ1_Pos );
+
+
+    Chimera::insert_debug_breakpoint();
+    //SQ1::set( mPeriph, chNum << SQR1_SQ1_Pos );
 
     /*-------------------------------------------------
     Clear the EOC flag (by set)
@@ -469,7 +395,8 @@ namespace Thor::LLD::ADC
     EOC::set( mPeriph, ISR_EOC );
 
     // Read out the result of the conversion
-    Sample measurement = DATA::get( mPeriph );
+    Sample measurement;
+    measurement.counts = DATA::get( mPeriph );
 
     // Clear any other new ISR flags before interrupts are re-enabled
     Reg32_t newFlags = ISR_ALL::get( mPeriph ) & ~isrFlags;
@@ -492,43 +419,50 @@ namespace Thor::LLD::ADC
   }
 
 
-  float Driver::sampleToTemp( const Chimera::ADC::Sample sample )
-  {
-    constexpr float VDDA = 3300.0f;    // mV
-
-    float ts_cal_lo = static_cast<float>( *TEMPSENSOR_CAL1_ADDR ) * ( VDDA / TEMPSENSOR_CAL_VREFANALOG );
-    float ts_cal_hi = static_cast<float>( *TEMPSENSOR_CAL2_ADDR ) * ( VDDA / TEMPSENSOR_CAL_VREFANALOG );
-    float ts_data   = static_cast<float>( sample );
-
-    /*-------------------------------------------------
-    Calculate the temperature (RM 16.4.32)
-    -------------------------------------------------*/
-    float r = ( ts_data - ts_cal_lo );
-    float x = static_cast<float>( TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP ) / ( ts_cal_hi - ts_cal_lo );
-    float y = r * x + 30.0f;
-
-    float scaler =
-        static_cast<float>( TEMPSENSOR_CAL2_TEMP - TEMPSENSOR_CAL1_TEMP ) / static_cast<float>( ts_cal_hi - ts_cal_lo );
-    float result = ( scaler * static_cast<float>( ts_data - ts_cal_lo ) ) + 30;
-
-    return result;
-  }
-
-
   Chimera::Status_t Driver::setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time )
   {
+    using namespace Chimera::ADC;
+
     /*-------------------------------------------------
     Input Protection
     -------------------------------------------------*/
-    if ( !( static_cast<size_t>( ch ) < ARRAY_COUNT( mChannelSampleTime ) ) )
+    if ( !( EnumValue( ch ) < NUM_ADC_CHANNELS_PER_PERIPH ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     /*-------------------------------------------------
-    Write access protection is provided by the HLD
+    Apply sample times to the registers
     -------------------------------------------------*/
-    mChannelSampleTime[ static_cast<size_t>( ch ) ] = time;
+
+
+    Chimera::insert_debug_breakpoint();
+    // size_t chNum = static_cast<size_t>( ch );
+
+    // if ( ch < Channel::ADC_CH_10 )
+    // {
+    //   auto chPos     = static_cast<size_t>( chNum ) * SMPRx_BIT_Wid;
+    //   Reg32_t regVal = static_cast<size_t>( time ) << chPos;
+    //   Reg32_t curVal = SMPR1_ALL::get( mPeriph );
+
+    //   curVal &= ~( SMPRx_BIT_Msk << chPos );
+    //   curVal |= regVal;
+
+    //   SMPR1_ALL::set( mPeriph, curVal );
+    // }
+    // else
+    // {
+    //   auto chOffset  = static_cast<size_t>( Channel::ADC_CH_10 );
+    //   auto chPos     = static_cast<size_t>( chNum ) - chOffset;
+    //   Reg32_t regVal = static_cast<size_t>( time ) << chPos;
+    //   Reg32_t curVal = SMPR2_ALL::get( mPeriph );
+
+    //   curVal &= ~( SMPRx_BIT_Msk << chPos );
+    //   curVal |= regVal;
+
+    //   SMPR2_ALL::set( mPeriph, curVal );
+    // }
+
     return Chimera::Status::OK;
   }
 
@@ -539,14 +473,5 @@ namespace Thor::LLD::ADC
   {
   }
 }    // namespace Thor::LLD::ADC
-
-
-#if defined( STM32_ADC1_PERIPH_AVAILABLE )
-void ADC_IRQHandler()
-{
-  using namespace Thor::LLD::ADC;
-  s_adc_drivers[ ADC1_RESOURCE_INDEX ].IRQHandler();
-}
-#endif
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_ADC */

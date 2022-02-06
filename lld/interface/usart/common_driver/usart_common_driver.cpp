@@ -312,6 +312,9 @@ namespace Thor::LLD::USART
     using namespace Chimera::DMA;
     using namespace Chimera::Peripheral;
 
+    #if !defined( THOR_LLD_DMA )
+    return Chimera::Status::NOT_SUPPORTED;
+    #else
     /*-------------------------------------------------
     Configure the TX pipe
     -------------------------------------------------*/
@@ -357,6 +360,7 @@ namespace Thor::LLD::USART
     enableIT( Chimera::Hardware::SubPeripheral::TXRX );
 
     return Chimera::Status::OK;
+    #endif  /* !THOR_LLD_DMA */
   }
 
 
@@ -383,6 +387,9 @@ namespace Thor::LLD::USART
     using namespace Chimera::DMA;
     using namespace Chimera::Hardware;
 
+    #if !defined( THOR_LLD_DMA )
+    return Chimera::Status::NOT_SUPPORTED;
+    #else
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
@@ -408,7 +415,11 @@ namespace Thor::LLD::USART
       DMAT::set( mPeriph, CR3_DMAT );
 
       /* Clear the transfer complete bit */
+      #if defined( STM32F446xx )
       TC::clear( mPeriph, SR_TC );
+      #elif defined( STM32L432xx )
+      TC::clear( mPeriph, ISR_TC );
+      #endif
 
       /* Enable the USART completion interrupts */
       prjEnableTransmitter( mPeriph );
@@ -433,6 +444,7 @@ namespace Thor::LLD::USART
     enableUSARTInterrupts();
 
     return Chimera::Status::OK;
+    #endif  /* THOR_LLD_DMA */
   }
 
 
@@ -441,6 +453,9 @@ namespace Thor::LLD::USART
     using namespace Chimera::DMA;
     using namespace Chimera::Hardware;
 
+    #if !defined( THOR_LLD_DMA )
+    return Chimera::Status::NOT_SUPPORTED;
+    #else
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
@@ -503,6 +518,7 @@ namespace Thor::LLD::USART
     }
 
     return Chimera::Status::OK;
+    #endif  /* THOR_LLD_DMA */
   }
 
 
@@ -768,6 +784,7 @@ namespace Thor::LLD::USART
         /*-------------------------------------------------
         Disable the DMA transfer if ongoing
         -------------------------------------------------*/
+        #if defined( THOR_LLD_DMA )
         if( mRXTCB.mode == PeripheralMode::DMA )
         {
           RIndex_t dmaIdx = Thor::LLD::DMA::getResourceIndex( Resource::RXDMASignals[ this->mResourceIndex ] );
@@ -778,6 +795,7 @@ namespace Thor::LLD::USART
             dmaStream->abort();
           }
         }
+        #endif  /* THOR_LLD_DMA */
       }
 
       /*------------------------------------------------
@@ -907,6 +925,7 @@ namespace Thor::LLD::USART
 
   void Driver::onDMARXComplete( const Chimera::DMA::TransferStats &stats )
   {
+    #if defined( THOR_LLD_DMA )
     /*-------------------------------------------------
     Per DMA RX instructions, disable USART DMA at the
     end of the DMA interrupt.
@@ -914,6 +933,7 @@ namespace Thor::LLD::USART
     DMAR::clear( mPeriph, CR3_DMAR );
 
     Chimera::insert_debug_breakpoint();
+    #endif
   }
 
 }    // namespace Thor::LLD::USART

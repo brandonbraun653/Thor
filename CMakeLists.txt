@@ -11,11 +11,6 @@ add_subdirectory("hld")
 add_subdirectory("lld")
 
 # ====================================================
-# Path Constants
-# ====================================================
-set(THOR_ROOT "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "" FORCE)
-
-# ====================================================
 # Various exports
 # ====================================================
 

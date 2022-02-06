@@ -6,7 +6,7 @@ gen_static_lib_variants(
   SOURCES
     hw_sys_startup.cpp
     hw_sys_data.cpp
-    ${THOR_ROOT}/lld/interface/system/common_driver/sys_common_driver.cpp
+    ./../../../lld/interface/system/common_driver/sys_common_driver.cpp
   PRV_LIBRARIES
     aurora_intf_inc
     chimera_intf_inc

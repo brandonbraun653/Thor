@@ -228,6 +228,7 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------
     Driver attributes
     -------------------------------------------------*/
+    bool mConversionInProgress;
     size_t mResourceIndex;                /**< Hardware resource index for this peripheral */
     volatile uint8_t mSequenceIdx;        /**< Tracks which channel is being measured currently */
     Chimera::ADC::DriverConfig mCfg;      /**< Basic driver configuration data */

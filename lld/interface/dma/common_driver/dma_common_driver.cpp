@@ -5,7 +5,7 @@
  *  Description:
  *    Shared driver for DMA across multiple STM32 chips
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 /* Aurora Includes */
@@ -15,9 +15,11 @@
 #include <Chimera/utility>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/rcc>
 
+#if defined( THOR_LLD_DMA )
 namespace Thor::LLD::DMA
 {
   /*-------------------------------------------------------------------------------
@@ -236,3 +238,4 @@ namespace Thor::LLD::DMA
   }
 
 }  // namespace Thor::LLD::DMA
+#endif  /* THOR_LLD_DMA */

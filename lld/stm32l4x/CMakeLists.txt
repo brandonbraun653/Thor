@@ -19,7 +19,6 @@ add_subdirectory("startup")
 add_subdirectory("system")
 add_subdirectory("timer")
 add_subdirectory("usart")
-add_subdirectory("usb")
 add_subdirectory("wwdg")
 
 # ====================================================
@@ -42,7 +41,6 @@ set(all_libraries
   thor_lld_stm32l4_system
   thor_lld_stm32l4_timer
   thor_lld_stm32l4_usart
-  thor_lld_stm32l4_usb
   thor_lld_stm32l4_wwdg
 )
 

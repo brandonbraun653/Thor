@@ -22,11 +22,14 @@
 #include <Chimera/thread>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/interrupts/dma_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/dma/dma_types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
+
+#if defined( THOR_LLD_DMA )
 namespace Thor::LLD::DMA
 {
   /*-------------------------------------------------------------------------------
@@ -327,4 +330,5 @@ namespace Thor::LLD::DMA
 
 }    // namespace Thor::LLD::DMA
 
+#endif /* THOR_LLD_DMA */
 #endif /* !THOR_DRIVER_MODEL_DMA_HPP */

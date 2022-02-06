@@ -26,6 +26,10 @@
 /* Chimera Includes */
 #include <Chimera/dma>
 
+/* Thor Includes */
+#include <Thor/cfg>
+
+
 namespace Thor::LLD::DMA
 {
   /*-------------------------------------------------------------------------------
@@ -340,4 +344,5 @@ namespace Thor::LLD::DMA
   };
 }    // namespace Thor::LLD::DMA
 
+// #endif /* THOR_LLD_DMA */
 #endif /* !THOR_DRIVER_DMA_COMMON_TYPES_HPP */

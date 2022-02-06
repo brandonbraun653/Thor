@@ -58,6 +58,8 @@ namespace Thor::LLD::USART
   -------------------------------------------------*/
   namespace Resource
   { /* clang-format off */
+
+#if defined( THOR_LLD_DMA )
     LLD_CONST Reg32_t RXDMASignals[ NUM_USART_PERIPHS ] = {
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
       Thor::LLD::DMA::Source::USART1_RX,
@@ -82,7 +84,7 @@ namespace Thor::LLD::USART
       Thor::LLD::DMA::Source::USART3_TX
 #endif
     };
-
+#endif  /* THOR_LLD_DMA */
 
     LLD_CONST IRQn_Type IRQSignals[ NUM_USART_PERIPHS ] = {
 #if defined( STM32_USART1_PERIPH_AVAILABLE )

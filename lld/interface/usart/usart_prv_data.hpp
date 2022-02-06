@@ -71,8 +71,11 @@ namespace Thor::LLD::USART
   -------------------------------------------------------------------------------*/
   namespace Resource
   {
+    #if defined( THOR_LLD_DMA )
     extern LLD_CONST DMA::Source RXDMASignals[ NUM_USART_PERIPHS ];
     extern LLD_CONST DMA::Source TXDMASignals[ NUM_USART_PERIPHS ];
+    #endif
+
     extern LLD_CONST IRQn_Type IRQSignals[ NUM_USART_PERIPHS ];
   }
 }    // namespace Thor::LLD::USART

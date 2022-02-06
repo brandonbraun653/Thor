@@ -17,10 +17,13 @@
 #include <Aurora/utility>
 
 /* Thor Includes */
+#include <Thor/cfg>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/dma/dma_detail.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
+
+#if defined( THOR_LLD_DMA )
 
 namespace Thor::LLD::DMA
 {
@@ -135,4 +138,5 @@ namespace Thor::LLD::DMA
 
 }    // namespace Thor::LLD::DMA
 
+#endif /* THOR_LLD_DMA */
 #endif /* !THOR_LLD_DMA_PRV_DATA_HPP */
