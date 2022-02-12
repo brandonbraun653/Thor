@@ -466,6 +466,11 @@ namespace Thor::LLD::ADC
     return Chimera::Status::OK;
   }
 
+
+  Chimera::Status_t Driver::setupSequence( const Chimera::ADC::SequenceInit &sequence )
+  {
+  }
+
   /*-------------------------------------------------
   Driver Protected Methods
   -------------------------------------------------*/

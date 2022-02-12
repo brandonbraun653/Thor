@@ -29,15 +29,12 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/interface/can/can_intf.hpp>
-#include <Thor/lld/interface/can/can_prv_data.hpp>
-#include <Thor/lld/interface/rcc/rcc_intf.hpp>
-#include <Thor/lld/stm32l4x/can/hw_can_prj.hpp>
-#include <Thor/lld/stm32l4x/can/hw_can_prv_driver.hpp>
-#include <Thor/lld/stm32l4x/can/hw_can_types.hpp>
+#include <Thor/lld/interface/inc/interrupt>
+#include <Thor/lld/interface/inc/can>
+#include <Thor/lld/interface/inc/rcc>
+
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_CAN )
-
 namespace Thor::LLD::CAN
 {
   /*-------------------------------------------------------------------------------
@@ -127,7 +124,7 @@ namespace Thor::LLD::CAN
       Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
       Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
       Thor::LLD::INT::setPriority( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ],
-                                  Thor::Interrupt::CAN_IT_PREEMPT_PRIORITY, 0u );
+                                  INT::CAN_IT_PREEMPT_PRIORITY, 0u );
 
       /*-------------------------------------------------
       Reset the semaphores to their un-signaled state
@@ -258,7 +255,7 @@ namespace Thor::LLD::CAN
     and the FINIT bit set in the CAN_FMR register.
     -------------------------------------------------*/
     prv_enter_initialization_mode( mPeriph );
-    FINIT::set( mPeriph, FMR_FINIT );
+    //FININT::set( mPeriph, FMR_FINIT );
 
     /*-------------------------------------------------
     Reset the entire filter configuration
@@ -480,7 +477,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Leave filter initialization mode
     -------------------------------------------------*/
-    FINIT::clear( mPeriph, FMR_FINIT );
+    //FININT::clear( mPeriph, FMR_FINIT );
     prv_enter_normal_mode( mPeriph );
 
     /*-------------------------------------------------
@@ -512,8 +509,8 @@ namespace Thor::LLD::CAN
       Transmit Interrupts
       -------------------------------------------------*/
       case InterruptType::TRANSMIT_MAILBOX_EMPTY:
-        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_TX_ISR_SIGNAL_INDEX ] );
-        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_TX_ISR_SIGNAL_INDEX ] );
+        INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_TX_ISR_SIGNAL_INDEX ] );
+        INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_TX_ISR_SIGNAL_INDEX ] );
         TMEIE::set( mPeriph, IER_TMEIE );
         break;
 
@@ -521,22 +518,22 @@ namespace Thor::LLD::CAN
       FIFO Interrupts: Operate on both FIFOs at once
       -------------------------------------------------*/
       case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
-        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
-        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
         FMPIE0::set( mPeriph, IER_FMPIE0 );
         FMPIE1::set( mPeriph, IER_FMPIE1 );
         break;
 
       case InterruptType::RECEIVE_FIFO_FULL:
-        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
-        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
         FFIE0::set( mPeriph, IER_FFIE0 );
         FFIE1::set( mPeriph, IER_FFIE1 );
         break;
 
       case InterruptType::RECEIVE_FIFO_OVERRUN:
-        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
-        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
+        INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
         FOVIE0::set( mPeriph, IER_FOVIE0 );
         FOVIE1::set( mPeriph, IER_FOVIE1 );
         break;
@@ -545,14 +542,14 @@ namespace Thor::LLD::CAN
       Status Change Interrupts
       -------------------------------------------------*/
       case InterruptType::SLEEP_EVENT:
-        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
-        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
+        INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
+        INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
         SLKIE::set( mPeriph, IER_SLKIE );
         break;
 
       case InterruptType::WAKEUP_EVENT:
-        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
-        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
+        INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
+        INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
         WKUIE::set( mPeriph, IER_WKUIE );
         break;
 
@@ -561,29 +558,29 @@ namespace Thor::LLD::CAN
       masked by ERRIE, so ensure it is on.
       -------------------------------------------------*/
       case InterruptType::ERROR_CODE_EVENT:
-        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
-        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
         ERRIE::set( mPeriph, IER_ERRIE );
         LECIE::set( mPeriph, IER_LECIE );
         break;
 
       case InterruptType::ERROR_BUS_OFF_EVENT:
-        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
-        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
         ERRIE::set( mPeriph, IER_ERRIE );
         BOFIE::set( mPeriph, IER_BOFIE );
         break;
 
       case InterruptType::ERROR_PASSIVE_EVENT:
-        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
-        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
         ERRIE::set( mPeriph, IER_ERRIE );
         EPVIE::set( mPeriph, IER_EPVIE );
         break;
 
       case InterruptType::ERROR_WARNING_EVENT:
-        IT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
-        IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
+        INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
         ERRIE::set( mPeriph, IER_ERRIE );
         EWGIE::set( mPeriph, IER_EWGIE );
         break;
@@ -762,7 +759,7 @@ namespace Thor::LLD::CAN
     -------------------------------------------------*/
     volatile TxMailbox *box = prv_get_free_tx_mailbox( mPeriph );
 
-    if ( !box && !mTXBuffer.pushFromISR( frame ) )
+    if ( !box && !mTXBuffer.push( frame ) )
     {
       result = Chimera::Status::FULL;
     }
@@ -1116,13 +1113,13 @@ namespace Thor::LLD::CAN
     Pull data from the transmit buffer and assign it
     to any free mailboxes.
     -------------------------------------------------*/
-    while ( !mTXBuffer.emptyFromISR() )
+    while ( !mTXBuffer.empty() )
     {
       volatile TxMailbox *box = prv_get_free_tx_mailbox( mPeriph );
 
       if ( box )
       {
-        prv_assign_frame_to_mailbox( box, mTXBuffer.popFromISR() );
+        prv_assign_frame_to_mailbox( box, mTXBuffer.pop() );
       }
       else
       {
@@ -1253,7 +1250,7 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Push the data into the frame buffer
       -------------------------------------------------*/
-      if ( !mRXBuffer.pushFromISR( frame ) )
+      if ( !mRXBuffer.push( frame ) )
       {
         mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].frameLostBuffer = true;
       }
@@ -1395,7 +1392,7 @@ namespace Thor::LLD::CAN
       /*-------------------------------------------------
       Push the data into the frame buffer
       -------------------------------------------------*/
-      if ( !mRXBuffer.pushFromISR( frame ) )
+      if ( !mRXBuffer.push( frame ) )
       {
         mISREventContext[ CAN_RX_ISR_SIGNAL_INDEX ].event.rx[ mailboxIdx ].frameLostBuffer = true;
       }
@@ -1606,7 +1603,7 @@ namespace Thor::LLD::CAN
   {
     for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
     {
-      IT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
+      INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
     }
   }
 
@@ -1615,7 +1612,7 @@ namespace Thor::LLD::CAN
   {
     for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
     {
-      IT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
+      INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
     }
   }
 

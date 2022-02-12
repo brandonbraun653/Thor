@@ -148,18 +148,6 @@ namespace Thor::CAN
 #endif
 
     /*-------------------------------------------------
-    Initialize shared references to drivers
-    -------------------------------------------------*/
-    for ( size_t x = 0; x < NUM_DRIVERS; x++ )
-    {
-#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_CAN )
-      hld_shared[ x ] = ::HLD::Driver_rPtr( new ::HLD::Driver() );
-#else
-      hld_shared[ x ] = ::HLD::Driver_rPtr( &hld_driver[ x ] );
-#endif
-    }
-
-    /*-------------------------------------------------
     Lock the init sequence and exit
     -------------------------------------------------*/
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
@@ -247,17 +235,17 @@ namespace Thor::CAN
     -------------------------------------------------*/
     size_t lldResourceIndex = ::LLD::getResourceIndex( cfg.HWInit.channel );
 
-    for ( auto isr_idx = 0; isr_idx < ::LLD::NUM_CAN_IRQ_HANDLERS; isr_idx++ )
-    {
-      if ( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ] )
-      {
-        Chimera::Thread::Thread thread;
-        thread.initialize( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ], nullptr,
-                           Chimera::Thread::TaskPriority::LEVEL_5, STACK_BYTES( 250 ), nullptr );
-        thread.start();
-        s_user_isr_handle[ lldResourceIndex ][ isr_idx ] = thread.native_handle();
-      }
-    }
+    // for ( auto isr_idx = 0; isr_idx < ::LLD::NUM_CAN_IRQ_HANDLERS; isr_idx++ )
+    // {
+    //   if ( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ] )
+    //   {
+    //     Chimera::Thread::Thread thread;
+    //     thread.initialize( s_user_isr_thread_func[ lldResourceIndex ][ isr_idx ], nullptr,
+    //                        Chimera::Thread::TaskPriority::LEVEL_5, STACK_BYTES( 250 ), nullptr );
+    //     thread.start();
+    //     s_user_isr_handle[ lldResourceIndex ][ isr_idx ] = thread.native_handle();
+    //   }
+    // }
 
     /*-------------------------------------------------
     Initialize the ISR events to listen to
