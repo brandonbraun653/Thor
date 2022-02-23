@@ -5,14 +5,16 @@
  *  Description:
  *    Thor CAN types
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_HLD_CAN_TYPES_HPP
 #define THOR_HLD_CAN_TYPES_HPP
 
-/* C++ Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <memory>
 
 namespace Thor::CAN
@@ -27,6 +29,8 @@ namespace Thor::CAN
   Aliases
   -------------------------------------------------------------------------------*/
   using Driver_rPtr = Driver *;
+
+
   /*-------------------------------------------------------------------------------
   Enumerations
   -------------------------------------------------------------------------------*/
@@ -41,6 +45,6 @@ namespace Thor::CAN
     UNKNOWN
   };
 
-}
+}    // namespace Thor::CAN
 
 #endif /* !THOR_HLD_CAN_TYPES_HPP */

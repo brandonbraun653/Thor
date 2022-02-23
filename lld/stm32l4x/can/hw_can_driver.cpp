@@ -8,50 +8,42 @@
  *    the STM32L4 drivers because it handles the communication buffers. Typically
  *    this is done by the HLD, but due to the networked nature of CAN, a high
  *    volume of traffic could be present. Responsiveness is important, so data
- *    transfers are handled in the ISRs.
+ *    transfers are handled in the ISRs. The STM32L4 has no DMA on the CAN periph
+ *    so only an interrupt based controller is implemented.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* STL Includes */
-#include <cstdint>
-#include <cstddef>
-#include <cstring>
-#include <limits>
-
-/* Aurora Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Aurora/math>
-
-/* Chimera Includes */
 #include <Chimera/algorithm>
 #include <Chimera/common>
 #include <Chimera/utility>
-
-/* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/can>
+#include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <limits>
 
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_CAN )
 namespace Thor::LLD::CAN
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Static Variables
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static Driver s_can_drivers[ NUM_CAN_PERIPHS ];
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-
-
-    /*-------------------------------------------------
-    Attach all the expected peripherals to the drivers
-    -------------------------------------------------*/
     if ( attachDriverInstances( s_can_drivers, ARRAY_COUNT( s_can_drivers ) ) )
     {
       return Chimera::Status::OK;
@@ -76,9 +68,9 @@ namespace Thor::LLD::CAN
   }
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Low Level Driver Implementation
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   Driver::Driver() : mPeriph( nullptr ), mResourceIndex( std::numeric_limits<size_t>::max() )
   {
   }
@@ -86,55 +78,34 @@ namespace Thor::LLD::CAN
 
   Driver::~Driver()
   {
-    /*-------------------------------------------------
-    Disable peripheral level ISR signals
-    -------------------------------------------------*/
-    for ( auto signalIdx = 0; signalIdx < static_cast<size_t>( Chimera::CAN::InterruptType::NUM_OPTIONS ); signalIdx++ )
-    {
-      disableISRSignal( static_cast<Chimera::CAN::InterruptType>( signalIdx ) );
-    }
-
-    /*-------------------------------------------------
-    Reduce power consumption
-    -------------------------------------------------*/
-    disableClock();
+    // Driver is statically allocated. Will never be torn down.
   }
 
-  /*-------------------------------------------------------------------------------
-  Configuration
-  -------------------------------------------------------------------------------*/
+
   void Driver::attach( RegisterMap *const peripheral )
   {
     using namespace Chimera::CAN;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Get peripheral descriptor settings
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     mPeriph        = peripheral;
     mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
 
-    /*------------------------------------------------
-    System level ISR configuration
-    ------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    System level (NVIC) ISR configuration
+    -------------------------------------------------------------------------*/
     for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
     {
-      /*-------------------------------------------------
-      Configure the NVIC with the desired settings
-      -------------------------------------------------*/
       Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
       Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
       Thor::LLD::INT::setPriority( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ],
                                   INT::CAN_IT_PREEMPT_PRIORITY, 0u );
-
-      /*-------------------------------------------------
-      Reset the semaphores to their un-signaled state
-      -------------------------------------------------*/
-      mISREventSignal[ handlerIdx ].try_acquire();
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Disable peripheral level ISR signals
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     for ( auto signalIdx = 0; signalIdx < static_cast<size_t>( InterruptType::NUM_OPTIONS ); signalIdx++ )
     {
       disableISRSignal( static_cast<InterruptType>( signalIdx ) );
@@ -160,9 +131,9 @@ namespace Thor::LLD::CAN
   {
     using namespace Chimera::CAN;
 
-    /*-------------------------------------------------
-    Initialize the GPIO drivers
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Initialize the GPIO pins
+    -------------------------------------------------------------------------*/
     auto txPin = Chimera::GPIO::getDriver( cfg.TXInit.port, cfg.TXInit.pin );
     auto rxPin = Chimera::GPIO::getDriver( cfg.RXInit.port, cfg.RXInit.pin );
 
@@ -180,25 +151,24 @@ namespace Thor::LLD::CAN
       return Chimera::Status::FAILED_INIT;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Initialize the TX/RX circular buffers
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !mTXBuffer.init( cfg.HWInit.txBuffer, cfg.HWInit.txElements ) ||
          !mRXBuffer.init( cfg.HWInit.rxBuffer, cfg.HWInit.rxElements ) )
     {
       return Chimera::Status::FAILED_INIT;
     }
 
-    /*-------------------------------------------------
-    Reset the driver registers to default values then
-    configure hardware for initialization.
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Reset the driver registers to default values then config HW for init
+    -------------------------------------------------------------------------*/
     prv_reset( mPeriph );
     prv_enter_initialization_mode( mPeriph );
 
-    /*-------------------------------------------------
-    Set up Bit Timing
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Set up bit timings
+    -------------------------------------------------------------------------*/
     float actualBaud  = static_cast<float>( prv_set_baud_rate( mPeriph, cfg ) );
     float desiredBaud = static_cast<float>( cfg.HWInit.baudRate );
 
@@ -207,20 +177,20 @@ namespace Thor::LLD::CAN
       return Chimera::Status::FAILED_INIT;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Set up the resync jump width
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Reg32_t shiftedJumpWidth = ( cfg.HWInit.resyncJumpWidth & BTR_SJW_Wid ) << BTR_SJW_Pos;
     SJW::set( mPeriph, shiftedJumpWidth );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Turn on Non-Auto Retransmit Mode
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     NART::set( mPeriph, MCR_NART );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Request to leave init mode
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     prv_enter_normal_mode( mPeriph );
     return Chimera::Status::OK;
   }
@@ -230,18 +200,17 @@ namespace Thor::LLD::CAN
   {
     using namespace Chimera::CAN;
 
-    /*-------------------------------------------------
-    Input protection
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
     if ( !filterList || !filterSize || ( filterSize > NUM_CAN_MAX_FILTERS ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*-------------------------------------------------
-    Sort the filters by how much space they consume.
-    This allows for an easier placement algorithm.
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Sort filters by consumed space, which results in easier placement
+    -------------------------------------------------------------------------*/
     uint8_t sortedFilterIdx[ NUM_CAN_MAX_FILTERS ];
     CLEAR_ARRAY( sortedFilterIdx );
 
@@ -250,16 +219,16 @@ namespace Thor::LLD::CAN
       return Chimera::Status::FAIL;
     }
 
-    /*-------------------------------------------------
-    Configuration requires being in initialization mode
-    and the FINIT bit set in the CAN_FMR register.
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Configuration requires being in initialization mode and the FINIT bit set
+    in the CAN_FMR register.
+    -------------------------------------------------------------------------*/
     prv_enter_initialization_mode( mPeriph );
-    //FININT::set( mPeriph, FMR_FINIT );
+    FINIT::set( mPeriph, FMR_FINIT );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Reset the entire filter configuration
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     mPeriph->FM1R  = 0;
     mPeriph->FS1R  = 0;
     mPeriph->FFA1R = 0;
@@ -272,13 +241,13 @@ namespace Thor::LLD::CAN
       mPeriph->sFilterBank[ bankIdx ].FR2 = FLTR_RST_2;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Attempt to place each filter in the filter banks
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     bool bankConfigured       = false;      // Tracks if the current bank has been configured already
     size_t bankIdx            = 0;          // Which hardware filter bank currently being processed
     size_t userIdx            = 0;          // Which user filter currently being processed
-    size_t fltrIdx            = 0;          // Generic index tracking progress of filter processing
+    size_t filterIdx            = 0;          // Generic index tracking progress of filter processing
     size_t numValidFilters    = 0;          // Number of valid filter configurations attempted to be placed
     size_t numPlacedFilters   = 0;          // Number of filters that were successfully placed
     uint8_t fifo0FMI_current  = 0;          // Current filter match index for FIFO0
@@ -288,38 +257,34 @@ namespace Thor::LLD::CAN
     MessageFilter *filter     = nullptr;    // Pointer to the current user filter
     volatile FilterReg *bank  = nullptr;    // Current bank being processed
 
-
     do
     {
-      /*-------------------------------------------------
+      /*-----------------------------------------------------------------------
       Grab the highest priority filter to place next
-      -------------------------------------------------*/
-      userIdx = sortedFilterIdx[ fltrIdx ];
+      -----------------------------------------------------------------------*/
+      userIdx = sortedFilterIdx[ filterIdx ];
       filter  = &filterList[ userIdx ];
       bank    = &mPeriph->sFilterBank[ bankIdx ];
 
-      /*-------------------------------------------------
-      Is the filter even marked as valid? No point trying
-      to place it unless it is.
-      -------------------------------------------------*/
+      /*-----------------------------------------------------------------------
+      Is the filter marked as valid? No point trying to place unless it is.
+      -----------------------------------------------------------------------*/
       if ( !filter->valid )
       {
-        fltrIdx++;
+        filterIdx++;
         continue;
       }
 
-      /*-------------------------------------------------
-      Is the filter the right type to be placed in this
-      filter bank? Can't mix filter modes willy nilly. A
-      new mode requires a new filter bank.
-      -------------------------------------------------*/
+      /*-----------------------------------------------------------------------
+      Is the filter the right type to be placed in this filter bank? Can't mix
+      filter modes. A new mode requires a new filter bank.
+      -----------------------------------------------------------------------*/
       if ( bankConfigured && ( filter->filterType != prv_get_filter_bank_mode( mPeriph, bankIdx ) ) )
       {
-        /*-------------------------------------------------
-        FMI is linear, so if the bank is partially assigned
-        then the remaining unassigned filters are skipped.
-        The skipping needs to be tracked.
-        -------------------------------------------------*/
+        /*---------------------------------------------------------------------
+        FMI is linear, so if the bank is partially assigned then the remaining
+        unassigned filters are skipped. This skipping needs to be tracked.
+        ---------------------------------------------------------------------*/
         if ( prv_get_filter_bank_fifo( mPeriph, bankIdx ) == Mailbox::RX_MAILBOX_1 )
         {
           fifo0FMI_current += fifo0FMI_toAssign;
@@ -331,21 +296,19 @@ namespace Thor::LLD::CAN
           fifo1FMI_toAssign = 0;
         }
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Reset the trackers for the next bank
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         bankIdx++;
         bankConfigured = false;
         continue;
       }
       else
       {
-        /*-------------------------------------------------
-        New bank! The next filter is guaranteed to fit
-        because it determines the bank properties.
-
-        Reset the FMI counters based on the new mode.
-        -------------------------------------------------*/
+        /*---------------------------------------------------------------------
+        New bank! The next filter is guaranteed to fit because it determines
+        the bank properties. Reset the FMI counters based on the new mode.
+        ---------------------------------------------------------------------*/
         uint8_t *fmi = &fifo0FMI_toAssign;
         if ( filter->fifoBank == Mailbox::RX_MAILBOX_2 )
         {
@@ -373,35 +336,33 @@ namespace Thor::LLD::CAN
         };
       }
 
-      /*-------------------------------------------------
-      Alright, so the filter is the correct type, but is
-      there room in the bank to hold it? If not, move on
-      to the next bank.
-      -------------------------------------------------*/
+      /*-----------------------------------------------------------------------
+      Alright, so the filter is the correct type, but is there room in the bank
+      to hold it? If not, move on to the next bank.
+      -----------------------------------------------------------------------*/
       auto nextSlot = FilterSlot::UNKNOWN;
 
       if ( prv_does_filter_fit( filter, bank, nextSlot ) )
       {
-        /*-------------------------------------------------
-        Phew, all the checks passed. Now to actually start
-        assigning the filter into hardware.
-        -------------------------------------------------*/
+        /*---------------------------------------------------------------------
+        All the checks passed. Now to start assigning the filter into hardware.
+        ---------------------------------------------------------------------*/
         numValidFilters++;
         prv_assign_filter( filter, bank, nextSlot );
       }
       else
       {
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Move on to the next bank. This one is out of room.
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         bankIdx++;
         bankConfigured = false;
         continue;
       }
 
-      /*-------------------------------------------------
+      /*-----------------------------------------------------------------------
       Configure Mask/List Mode & Scale
-      -------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       switch ( filter->filterType )
       {
         case Thor::CAN::FilterType::MODE_16BIT_LIST:
@@ -429,9 +390,9 @@ namespace Thor::LLD::CAN
           break;
       };
 
-      /*-------------------------------------------------
+      /*-----------------------------------------------------------------------
       Configure FIFO Assignment
-      -------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       switch ( filter->fifoBank )
       {
         case Mailbox::RX_MAILBOX_1:
@@ -453,9 +414,9 @@ namespace Thor::LLD::CAN
           break;
       };
 
-      /*-------------------------------------------------
+      /*-----------------------------------------------------------------------
       Configure Activation State
-      -------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       if ( filter->active )
       {
         mPeriph->FA1R |= ( 1u << bankIdx );
@@ -465,24 +426,24 @@ namespace Thor::LLD::CAN
         mPeriph->FA1R &= ~( 1u << bankIdx );
       }
 
-      /*-------------------------------------------------
+      /*-----------------------------------------------------------------------
       Update tracking data
-      -------------------------------------------------*/
-      fltrIdx++;                // Just completed parsing one of the user's filters
+      -----------------------------------------------------------------------*/
+      filterIdx++;              // Just completed parsing one of the user's filters
       numPlacedFilters++;       // Just completed parsing a valid filter
       bankConfigured = true;    // The current filter bank has been configured at least once now
 
-    } while ( ( bankIdx < NUM_CAN_FILTER_BANKS ) && ( fltrIdx < filterSize ) );
+    } while ( ( bankIdx < NUM_CAN_FILTER_BANKS ) && ( filterIdx < filterSize ) );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Leave filter initialization mode
-    -------------------------------------------------*/
-    //FININT::clear( mPeriph, FMR_FINIT );
+    -------------------------------------------------------------------------*/
+    FINIT::clear( mPeriph, FMR_FINIT );
     prv_enter_normal_mode( mPeriph );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Were all the filters placed?
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( numPlacedFilters == numValidFilters )
     {
       return Chimera::Status::OK;
@@ -1131,6 +1092,7 @@ namespace Thor::LLD::CAN
     Awaken high priority thread for processing this ISR
     -------------------------------------------------*/
     mISREventSignal[ CAN_TX_ISR_SIGNAL_INDEX ].releaseFromISR();
+    //sendTaskMsg( INT::getUserTaskId( Type::PERIPH_USART ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
   }
 
 

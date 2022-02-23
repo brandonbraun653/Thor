@@ -335,7 +335,6 @@ namespace Thor::LLD::CAN
     ISR signaling and context buffers
     -------------------------------------------------*/
     ISREventContext mISREventContext[ NUM_CAN_IRQ_HANDLERS ];
-    Chimera::Thread::BinarySemaphore mISREventSignal[ NUM_CAN_IRQ_HANDLERS ];
   };
 }    // namespace Thor::LLD::CAN
 

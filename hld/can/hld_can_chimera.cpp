@@ -179,14 +179,16 @@ namespace Chimera::CAN
                                               size_t &registrationID )
   {
     RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->registerListener( listener, timeout, registrationID );
+    // return static_cast<::HLD::Driver_rPtr>( mDriver )->registerListener( listener, timeout, registrationID );
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
   Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
   {
     RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->removeListener( registrationID, timeout );
+    // return static_cast<::HLD::Driver_rPtr>( mDriver )->removeListener( registrationID, timeout );
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
   /*-------------------------------------------------
@@ -195,7 +197,8 @@ namespace Chimera::CAN
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
     RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->await( event, timeout );
+    // return static_cast<::HLD::Driver_rPtr>( mDriver )->await( event, timeout );
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 
@@ -203,7 +206,8 @@ namespace Chimera::CAN
                                    const size_t timeout )
   {
     RT_HARD_ASSERT( mDriver );
-    return static_cast<::HLD::Driver_rPtr>( mDriver )->await( event, notifier, timeout );
+    //return static_cast<::HLD::Driver_rPtr>( mDriver )->await( event, notifier, timeout );
+    return Chimera::Status::NOT_SUPPORTED;
   }
 
 

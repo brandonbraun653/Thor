@@ -1,28 +1,17 @@
 include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
-# ====================================================
-# Common
-# ====================================================
-set(LINK_LIBS
-  thor_intf_inc          # Thor public headers
-  chimera_intf_inc       # Chimera public headers
-  aurora_intf_inc        # Aurora public headers
-        # Boost headers
-  lld_common_inc    # 3rd Party headers
-)
-
-# ====================================================
-# Driver Library (+ Variant)
-# ====================================================
-function(build_library variant)
-  set(CORE thor_lld_stm32l4_can${variant})
-  add_library(${CORE} STATIC
+gen_static_lib_variants(
+  TARGET
+    thor_lld_stm32l4_can
+  SOURCES
     hw_can_driver.cpp
     hw_can_data.cpp
     hw_can_prv_driver.cpp
-  )
-  target_link_libraries(${CORE} PRIVATE ${LINK_LIBS} prj_device_target prj_build_target${variant})
-  export(TARGETS ${CORE} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${CORE}.cmake")
-endfunction()
-
-add_target_variants(build_library)
+  PRV_LIBRARIES
+    aurora_intf_inc
+    chimera_intf_inc
+    lld_common_inc
+    thor_intf_inc
+  EXPORT_DIR
+    "${PROJECT_BINARY_DIR}/Thor/hld"
+)
