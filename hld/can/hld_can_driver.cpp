@@ -388,6 +388,12 @@ namespace Thor::CAN
   }
 
 
+  void Driver::postISRProcessing()
+  {
+
+  }
+
+
   void Driver::ProcessISREvent_TX()
   {
     using namespace Chimera::CAN;

@@ -25,12 +25,8 @@
 
 /* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/interface/can/can_intf.hpp>
-#include <Thor/lld/interface/can/can_prv_data.hpp>
-#include <Thor/lld/interface/rcc/rcc_intf.hpp>
-#include <Thor/lld/stm32l4x/can/hw_can_prj.hpp>
-#include <Thor/lld/stm32l4x/can/hw_can_prv_driver.hpp>
-#include <Thor/lld/stm32l4x/can/hw_can_types.hpp>
+#include <Thor/lld/interface/inc/can>
+#include <Thor/lld/interface/inc/rcc>
 
 #if defined( TARGET_STM32L4 ) && defined( THOR_LLD_CAN )
 
@@ -220,11 +216,7 @@ namespace Thor::LLD::CAN
   bool prv_validate_frame( const Chimera::CAN::BasicFrame &frame )
   {
     using namespace Chimera::CAN;
-
-    /* clang-format off */
-    if ( ( frame.idMode >= IdType::NUM_OPTIONS ) ||
-         ( frame.frameType >= FrameType::NUM_OPTIONS ) )
-    /* clang-format on */
+    if ( ( frame.idMode >= IdType::NUM_OPTIONS ) || ( frame.frameType >= FrameType::NUM_OPTIONS ) )
     {
       return false;
     }

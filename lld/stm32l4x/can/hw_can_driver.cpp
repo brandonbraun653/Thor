@@ -459,25 +459,18 @@ namespace Thor::LLD::CAN
   {
     using namespace Chimera::CAN;
 
-    /*-------------------------------------------------
-    Enable an ISR event based on RM0394 Fig. 490. Proper
-    functionality assumes that the NVIC controller has
-    been correctly initialized.
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Enable an ISR event based on RM0394 Fig. 490. Proper functionality assumes
+    that the NVIC controller has been correctly initialized.
+    -------------------------------------------------------------------------*/
     switch ( signal )
     {
-      /*-------------------------------------------------
-      Transmit Interrupts
-      -------------------------------------------------*/
       case InterruptType::TRANSMIT_MAILBOX_EMPTY:
         INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_TX_ISR_SIGNAL_INDEX ] );
         INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_TX_ISR_SIGNAL_INDEX ] );
         TMEIE::set( mPeriph, IER_TMEIE );
         break;
 
-      /*-------------------------------------------------
-      FIFO Interrupts: Operate on both FIFOs at once
-      -------------------------------------------------*/
       case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
         INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
         INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_RX_ISR_SIGNAL_INDEX ] );
@@ -499,9 +492,6 @@ namespace Thor::LLD::CAN
         FOVIE1::set( mPeriph, IER_FOVIE1 );
         break;
 
-      /*-------------------------------------------------
-      Status Change Interrupts
-      -------------------------------------------------*/
       case InterruptType::SLEEP_EVENT:
         INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
         INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_STS_ISR_SIGNAL_INDEX ] );
@@ -514,10 +504,6 @@ namespace Thor::LLD::CAN
         WKUIE::set( mPeriph, IER_WKUIE );
         break;
 
-      /*-------------------------------------------------
-      Error Interrupts: Error signals are additionally
-      masked by ERRIE, so ensure it is on.
-      -------------------------------------------------*/
       case InterruptType::ERROR_CODE_EVENT:
         INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
         INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ CAN_ERR_ISR_SIGNAL_INDEX ] );
@@ -564,16 +550,10 @@ namespace Thor::LLD::CAN
     -------------------------------------------------*/
     switch ( signal )
     {
-      /*-------------------------------------------------
-      Transmit Interrupts
-      -------------------------------------------------*/
       case InterruptType::TRANSMIT_MAILBOX_EMPTY:
         TMEIE::clear( mPeriph, IER_TMEIE );
         break;
 
-      /*-------------------------------------------------
-      FIFO Interrupts
-      -------------------------------------------------*/
       case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
         FMPIE0::clear( mPeriph, IER_FMPIE0 );
         FMPIE1::clear( mPeriph, IER_FMPIE1 );
@@ -589,9 +569,6 @@ namespace Thor::LLD::CAN
         FOVIE1::clear( mPeriph, IER_FOVIE1 );
         break;
 
-      /*-------------------------------------------------
-      Status Change Interrupts
-      -------------------------------------------------*/
       case InterruptType::SLEEP_EVENT:
         SLKIE::clear( mPeriph, IER_SLKIE );
         break;
@@ -600,9 +577,6 @@ namespace Thor::LLD::CAN
         WKUIE::clear( mPeriph, IER_WKUIE );
         break;
 
-      /*-------------------------------------------------
-      Error Interrupts
-      -------------------------------------------------*/
       case InterruptType::ERROR_CODE_EVENT:
         LECIE::clear( mPeriph, IER_LECIE );
         break;
@@ -682,9 +656,6 @@ namespace Thor::LLD::CAN
   }
 
 
-  /*-------------------------------------------------------------------------------
-  Transmit & Receive Operations
-  -------------------------------------------------------------------------------*/
   Chimera::Status_t Driver::send( const Chimera::CAN::BasicFrame &frame )
   {
     using namespace Chimera::CAN;
@@ -754,9 +725,6 @@ namespace Thor::LLD::CAN
   }
 
 
-  /*-------------------------------------------------------------------------------
-  Control
-  -------------------------------------------------------------------------------*/
   void Driver::flushTX()
   {
     /*-------------------------------------------------
@@ -840,60 +808,6 @@ namespace Thor::LLD::CAN
       }
     }
     exitCriticalSection();
-  }
-
-
-  /*-------------------------------------------------------------------------------
-  Asynchronous Operation
-  -------------------------------------------------------------------------------*/
-  Chimera::Thread::BinarySemaphore *Driver::getISRSignal( Chimera::CAN::InterruptType signal )
-  {
-    using namespace Chimera::CAN;
-    switch ( signal )
-    {
-      /*-------------------------------------------------
-      Transmit Interrupts
-      -------------------------------------------------*/
-      // case InterruptType::TX_ISR:
-      case InterruptType::TRANSMIT_MAILBOX_EMPTY:
-        return &mISREventSignal[ CAN_TX_ISR_SIGNAL_INDEX ];
-        break;
-
-      /*-------------------------------------------------
-      FIFO Interrupts
-      -------------------------------------------------*/
-      // case InterruptType::RX_ISR:
-      case InterruptType::RECEIVE_FIFO_NEW_MESSAGE:
-      case InterruptType::RECEIVE_FIFO_FULL:
-      case InterruptType::RECEIVE_FIFO_OVERRUN:
-        return &mISREventSignal[ CAN_RX_ISR_SIGNAL_INDEX ];
-        break;
-
-      /*-------------------------------------------------
-      Status Change
-      -------------------------------------------------*/
-      // case InterruptType::STS_ISR:
-      case InterruptType::SLEEP_EVENT:
-      case InterruptType::WAKEUP_EVENT:
-        return &mISREventSignal[ CAN_STS_ISR_SIGNAL_INDEX ];
-        break;
-
-      /*-------------------------------------------------
-      Error Interrupts
-      -------------------------------------------------*/
-      // case InterruptType::ERR_ISR
-      case InterruptType::ERROR_CODE_EVENT:
-      case InterruptType::ERROR_BUS_OFF_EVENT:
-      case InterruptType::ERROR_PASSIVE_EVENT:
-      case InterruptType::ERROR_WARNING_EVENT:
-        return &mISREventSignal[ CAN_ERR_ISR_SIGNAL_INDEX ];
-        break;
-
-      default:
-        Chimera::insert_debug_breakpoint();
-        return nullptr;
-        break;
-    };
   }
 
 
@@ -1005,9 +919,6 @@ namespace Thor::LLD::CAN
   }
 
 
-  /*-------------------------------------------------------------------------------
-  Protected Functions
-  -------------------------------------------------------------------------------*/
   /**
    *  This ISR handles events generated by:
    *    - Transmit mailbox 0/1/2 is empty
@@ -1017,6 +928,9 @@ namespace Thor::LLD::CAN
    */
   void Driver::CAN1_TX_IRQHandler()
   {
+    using namespace Chimera::Thread;
+    using namespace Chimera::Peripheral;
+
     /*-------------------------------------------------
     Ensure the ISR type is set correctly
     -------------------------------------------------*/
@@ -1091,8 +1005,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Awaken high priority thread for processing this ISR
     -------------------------------------------------*/
-    mISREventSignal[ CAN_TX_ISR_SIGNAL_INDEX ].releaseFromISR();
-    //sendTaskMsg( INT::getUserTaskId( Type::PERIPH_USART ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
+    sendTaskMsg( INT::getUserTaskId( Type::PERIPH_CAN ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
   }
 
 
@@ -1108,6 +1021,9 @@ namespace Thor::LLD::CAN
   void Driver::CAN1_FIFO0_IRQHandler()
   {
     using namespace Chimera::CAN;
+    using namespace Chimera::Thread;
+    using namespace Chimera::Peripheral;
+
     constexpr size_t mailboxIdx = 0;
 
     /*-------------------------------------------------
@@ -1234,7 +1150,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Awaken high priority thread for processing this ISR
     -------------------------------------------------*/
-    mISREventSignal[ CAN_RX_ISR_SIGNAL_INDEX ].releaseFromISR();
+    sendTaskMsg( INT::getUserTaskId( Type::PERIPH_CAN ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
   }
 
 
@@ -1250,6 +1166,9 @@ namespace Thor::LLD::CAN
   void Driver::CAN1_FIFO1_IRQHandler()
   {
     using namespace Chimera::CAN;
+    using namespace Chimera::Thread;
+    using namespace Chimera::Peripheral;
+
     constexpr size_t mailboxIdx = 1;
 
     /*-------------------------------------------------
@@ -1376,7 +1295,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Awaken high priority thread for processing this ISR
     -------------------------------------------------*/
-    mISREventSignal[ CAN_RX_ISR_SIGNAL_INDEX ].releaseFromISR();
+    sendTaskMsg( INT::getUserTaskId( Type::PERIPH_CAN ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
   }
 
 
@@ -1392,6 +1311,9 @@ namespace Thor::LLD::CAN
    */
   void Driver::CAN1_ERR_STS_CHG_IRQHandler()
   {
+    using namespace Chimera::Thread;
+    using namespace Chimera::Peripheral;
+
     /*-------------------------------------------------
     Define flags for detecting event categories
     -------------------------------------------------*/
@@ -1455,7 +1377,7 @@ namespace Thor::LLD::CAN
       -------------------------------------------------*/
       if ( hpThreadShouldWake )
       {
-        mISREventSignal[ CAN_STS_ISR_SIGNAL_INDEX ].releaseFromISR();
+        sendTaskMsg( INT::getUserTaskId( Type::PERIPH_CAN ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
       }
     }
 
@@ -1555,7 +1477,7 @@ namespace Thor::LLD::CAN
       -------------------------------------------------*/
       if ( hpThreadShouldWake )
       {
-        mISREventSignal[ sigIdx ].releaseFromISR();
+        sendTaskMsg( INT::getUserTaskId( Type::PERIPH_CAN ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
       }
     }
   }
@@ -1563,26 +1485,31 @@ namespace Thor::LLD::CAN
 
   void Driver::enterCriticalSection()
   {
+    auto isrMask = INT::disableInterrupts();
     for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
     {
       INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
     }
+    INT::enableInterrupts( isrMask );
   }
 
 
   void Driver::exitCriticalSection()
   {
+    auto isrMask = INT::disableInterrupts();
     for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
     {
       INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
     }
+    INT::enableInterrupts( isrMask );
   }
 
 }    // namespace Thor::LLD::CAN
 
-/*-------------------------------------------------------------------------------
+
+/*-----------------------------------------------------------------------------
 Interrupt Vectors
--------------------------------------------------------------------------------*/
+-----------------------------------------------------------------------------*/
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
 void CAN1_TX_IRQHandler()
 {
@@ -1607,6 +1534,6 @@ void CAN1_SCE_IRQHandler()
   using namespace Thor::LLD::CAN;
   s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN1_ERR_STS_CHG_IRQHandler();
 }
-#endif
+#endif  /* STM32_CAN1_PERIPH_AVAILABLE */
 
 #endif /* TARGET_STM32L4 & THOR_LLD_CAN */

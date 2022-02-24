@@ -245,19 +245,6 @@ namespace Thor::LLD::CAN
     Asynchronous Operation
     -------------------------------------------------------------------------------*/
     /**
-     *  Gets the driver's semaphore associated with an ISR event. The semaphore
-     *  will be given to upon event occurance, unblocking a task that is pending.
-     *
-     *  @warning Only a single thread should consume the signal. The purpose of
-     *  this function is to allow a high priority thread in the HLD to process
-     *  the event outside of the limited ISR context.
-     *
-     *  @param[in]  signal        Which ISR signal to get the semaphore for
-     *  @return Chimera::Thread::BinarySemaphore *
-     */
-    Chimera::Thread::BinarySemaphore *getISRSignal( Chimera::CAN::InterruptType signal );
-
-    /**
      *  Gets any information that was posted in relation to the last
      *  ISR event.
      *
