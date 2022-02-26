@@ -152,7 +152,7 @@ namespace Thor::CAN
     cfg.name       = "PP_CANx";
 
     userThread.create( cfg );
-    LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_USART, userThread.start() );
+    LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_CAN, userThread.start() );
 
     /*-------------------------------------------------------------------------
     Initialize the low level driver

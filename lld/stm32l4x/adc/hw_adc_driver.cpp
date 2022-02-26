@@ -436,7 +436,7 @@ namespace Thor::LLD::ADC
     -------------------------------------------------*/
 
 
-    Chimera::insert_debug_breakpoint();
+    //Chimera::insert_debug_breakpoint();
     // size_t chNum = static_cast<size_t>( ch );
 
     // if ( ch < Channel::ADC_CH_10 )
