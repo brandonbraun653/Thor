@@ -121,7 +121,7 @@ namespace Thor::LLD::CAN
     bool valid;                        /**< Should this filter configuration even be trusted as valid? */
     bool active;                       /**< Should this filter be active? */
     uint32_t identifier;               /**< Determines dominant/recessive bit level for the matching identifier */
-    uint32_t mask;                     /**< Optional: If mask mode, determines bits used for id comparison */
+    uint32_t mask;                     /**< Optional: If mask mode, determines bits used for id comparison. Typically 0 is don't care. */
     Mailbox fifoBank;                  /**< Which filter bank this message should be placed in */
     Thor::CAN::FilterType filterType;  /**< Hardware filtering mode */
     Chimera::CAN::FrameType frameType; /**< What kind of framing should the filter use? */
