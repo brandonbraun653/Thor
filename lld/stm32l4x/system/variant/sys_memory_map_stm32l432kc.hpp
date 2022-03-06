@@ -115,11 +115,20 @@ namespace Thor::System::MemoryMap
   /*-------------------------------------------------
   AHB1
   -------------------------------------------------*/
+  static constexpr uint32_t DMA1_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDRESS + 0x0000;
+  static constexpr uint32_t DMA1_PERIPH_END_ADDRESS = AHB1_RGN_START_ADDRESS + 0x03FF;
+
+  static constexpr uint32_t DMA2_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDRESS + 0x0400;
+  static constexpr uint32_t DMA2_PERIPH_END_ADDRESS = AHB1_RGN_START_ADDRESS + 0x07FF;
+
   static constexpr uint32_t RCC_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDRESS + 0x1000;
   static constexpr uint32_t RCC_PERIPH_END_ADDRESS   = AHB1_RGN_START_ADDRESS + 0x13FF;
 
   static constexpr uint32_t FLASH_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDRESS + 0x2000;
   static constexpr uint32_t FLASH_PERIPH_END_ADDRESS   = AHB1_RGN_START_ADDRESS + 0x23FF;
+
+  static constexpr uint32_t CRC_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDRESS + 0x3000;
+  static constexpr uint32_t CRC_PERIPH_END_ADDRESS   = AHB1_RGN_START_ADDRESS + 0x33FF;
 
   /*-------------------------------------------------
   AHB2

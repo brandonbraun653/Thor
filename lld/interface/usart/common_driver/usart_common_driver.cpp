@@ -322,11 +322,18 @@ namespace Thor::LLD::USART
     txCfg.alignment     = Alignment::BYTE;
     txCfg.direction     = Direction::MEMORY_TO_PERIPH;
     txCfg.mode          = Mode::DIRECT;
-    txCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
     txCfg.priority      = Priority::MEDIUM;
     txCfg.resourceIndex = DMA::getResourceIndex( Resource::TXDMASignals[ mResourceIndex ] );
     txCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::TXDMASignals[ mResourceIndex ] ) );
     txCfg.threshold     = FifoThreshold::NONE;
+
+    #if defined( TARGET_STM32F4 )
+    txCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
+    #elif defined( TARGET_STM32L4 )
+    txCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->TDR );
+    #else
+    #error Need to fill this out
+    #endif
 
     /*-------------------------------------------------
     Configure the RX pipe
@@ -335,11 +342,18 @@ namespace Thor::LLD::USART
     rxCfg.alignment     = Alignment::BYTE;
     rxCfg.direction     = Direction::PERIPH_TO_MEMORY;
     rxCfg.mode          = Mode::DIRECT;
-    rxCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
     rxCfg.priority      = Priority::MEDIUM;
     rxCfg.resourceIndex = DMA::getResourceIndex( Resource::RXDMASignals[ mResourceIndex ] );
     rxCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::RXDMASignals[ mResourceIndex ] ) );
     rxCfg.threshold     = FifoThreshold::NONE;
+
+    #if defined( TARGET_STM32F4 )
+    rxCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
+    #elif defined( TARGET_STM32L4 )
+    rxCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->RDR );
+    #else
+    #error Need to fill this out
+    #endif
 
     /*-------------------------------------------------
     FIFO errors are thrown even though we don't use it.

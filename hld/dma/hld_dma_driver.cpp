@@ -230,7 +230,7 @@ namespace Thor::DMA
     Get the next available stream. For whatever reason,
     memory transfers are only supported on DMA2.
     -------------------------------------------------*/
-    auto idx = nextFreeStream( ::LLD::DMA2_STREAM0_RESOURCE_INDEX );
+    auto idx = nextFreeStream( ::LLD::DMA2_FIRST_STREAM_RESOURCE_INDEX );
     if ( idx == LLD::INVALID_RESOURCE_INDEX )
     {
       return Chimera::DMA::INVALID_REQUEST;

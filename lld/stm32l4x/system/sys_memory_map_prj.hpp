@@ -5,7 +5,7 @@
  *  Description:
  *    Chip specific memory map includes
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -22,6 +22,6 @@ Chip specific additional memory mappings
 -------------------------------------------------*/
 #if defined( STM32L432xx )
 #include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432kc.hpp>
-#endif 
+#endif
 
 #endif  /* !THOR_LLD_SYS_MEMORY_MAP_PROJECT_HPP */

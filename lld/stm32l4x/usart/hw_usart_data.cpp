@@ -60,7 +60,7 @@ namespace Thor::LLD::USART
   { /* clang-format off */
 
 #if defined( THOR_LLD_DMA )
-    LLD_CONST Reg32_t RXDMASignals[ NUM_USART_PERIPHS ] = {
+    LLD_CONST DMA::Source RXDMASignals[ NUM_USART_PERIPHS ] = {
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
       Thor::LLD::DMA::Source::USART1_RX,
 #endif
@@ -73,7 +73,7 @@ namespace Thor::LLD::USART
     };
 
 
-    LLD_CONST Reg32_t TXDMASignals[ NUM_USART_PERIPHS ] = {
+    LLD_CONST DMA::Source TXDMASignals[ NUM_USART_PERIPHS ] = {
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
       Thor::LLD::DMA::Source::USART1_TX,
 #endif

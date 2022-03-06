@@ -120,15 +120,33 @@ namespace Thor::LLD::DMA
 
   StreamMap *streamView( RegisterMap *const periph, const Streamer streamNum )
   {
-    /*------------------------------------------------
-    This equation taken directly from register spec in datasheet.
+    #if defined( STM32F446xx )
+    /*-------------------------------------------------------------------------
     See 9.5.5 in RM0390
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static constexpr size_t fixedOffset  = 0x10;
     static constexpr size_t streamOffset = 0x18;
 
     auto address = reinterpret_cast<std::uintptr_t>( periph ) + fixedOffset + ( streamOffset * EnumValue( streamNum ) );
     return reinterpret_cast<StreamMap *const>( address );
+
+    #elif defined( STM32L432xx )
+    /*-------------------------------------------------------------------------
+    See 11.6.3 in RM0394
+    -------------------------------------------------------------------------*/
+    static constexpr size_t fixedOffset  = 0x08;
+    static constexpr size_t streamOffset = 0x14;
+
+    if( ( EnumValue( streamNum ) < 1 ) || ( EnumValue( streamNum ) > 7 ) )
+    {
+      return nullptr;
+    }
+
+    auto address = reinterpret_cast<std::uintptr_t>( periph ) + fixedOffset + ( streamOffset * ( EnumValue( streamNum ) - 1 ) );
+    return reinterpret_cast<StreamMap *const>( address );
+    #else
+    return nullptr;
+    #endif
   }
 
 
@@ -175,25 +193,57 @@ namespace Thor::LLD::DMA
     switch( getController( reinterpret_cast<std::uintptr_t>( peripheral ) ) )
     {
       case Controller::DMA_1:
+#if defined( STM32_DMA1_STREAM0_AVAILABLE )
         result |= s_stream_drivers[ DMA1_STREAM0_RESOURCE_INDEX ].attach( DMA1_STREAM0, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM1_AVAILABLE )
         result |= s_stream_drivers[ DMA1_STREAM1_RESOURCE_INDEX ].attach( DMA1_STREAM1, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM2_AVAILABLE )
         result |= s_stream_drivers[ DMA1_STREAM2_RESOURCE_INDEX ].attach( DMA1_STREAM2, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM3_AVAILABLE )
         result |= s_stream_drivers[ DMA1_STREAM3_RESOURCE_INDEX ].attach( DMA1_STREAM3, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM4_AVAILABLE )
         result |= s_stream_drivers[ DMA1_STREAM4_RESOURCE_INDEX ].attach( DMA1_STREAM4, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM5_AVAILABLE )
         result |= s_stream_drivers[ DMA1_STREAM5_RESOURCE_INDEX ].attach( DMA1_STREAM5, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM6_AVAILABLE )
         result |= s_stream_drivers[ DMA1_STREAM6_RESOURCE_INDEX ].attach( DMA1_STREAM6, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM7_AVAILABLE )
         result |= s_stream_drivers[ DMA1_STREAM7_RESOURCE_INDEX ].attach( DMA1_STREAM7, peripheral );
+#endif
         break;
 
       case Controller::DMA_2:
+#if defined( STM32_DMA1_STREAM0_AVAILABLE )
         result |= s_stream_drivers[ DMA2_STREAM0_RESOURCE_INDEX ].attach( DMA2_STREAM0, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM1_AVAILABLE )
         result |= s_stream_drivers[ DMA2_STREAM1_RESOURCE_INDEX ].attach( DMA2_STREAM1, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM2_AVAILABLE )
         result |= s_stream_drivers[ DMA2_STREAM2_RESOURCE_INDEX ].attach( DMA2_STREAM2, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM3_AVAILABLE )
         result |= s_stream_drivers[ DMA2_STREAM3_RESOURCE_INDEX ].attach( DMA2_STREAM3, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM4_AVAILABLE )
         result |= s_stream_drivers[ DMA2_STREAM4_RESOURCE_INDEX ].attach( DMA2_STREAM4, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM5_AVAILABLE )
         result |= s_stream_drivers[ DMA2_STREAM5_RESOURCE_INDEX ].attach( DMA2_STREAM5, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM6_AVAILABLE )
         result |= s_stream_drivers[ DMA2_STREAM6_RESOURCE_INDEX ].attach( DMA2_STREAM6, peripheral );
+#endif
+#if defined( STM32_DMA1_STREAM7_AVAILABLE )
         result |= s_stream_drivers[ DMA2_STREAM7_RESOURCE_INDEX ].attach( DMA2_STREAM7, peripheral );
+#endif
         break;
 
       default:

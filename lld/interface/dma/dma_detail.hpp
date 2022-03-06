@@ -19,6 +19,9 @@
 #elif defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/dma/hw_dma_types.hpp>
 #include <Thor/lld/stm32f4x/dma/hw_dma_prj.hpp>
+#elif defined( TARGET_STM32L4 )
+#include <Thor/lld/stm32l4x/dma/hw_dma_types.hpp>
+#include <Thor/lld/stm32l4x/dma/hw_dma_prj.hpp>
 #else
 #pragma message( "dma_detail.hpp: Unknown target for LLD" )
 #endif

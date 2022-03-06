@@ -5,9 +5,8 @@
  *  Description:
  *    LLD interface functions that are processor independent
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
-
 
 /* Thor Includes */
 #include <Thor/cfg>
@@ -613,49 +612,49 @@ namespace Thor::LLD::DMA
 #endif
 
 #if defined( STM32_DMA1_STREAM1_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM1 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM1 ) )
     {
       return Streamer::STREAM_1;
     }
 #endif
 
 #if defined( STM32_DMA1_STREAM2_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM2 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM2 ) )
     {
       return Streamer::STREAM_2;
     }
 #endif
 
 #if defined( STM32_DMA1_STREAM3_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM3 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM3 ) )
     {
       return Streamer::STREAM_3;
     }
 #endif
 
 #if defined( STM32_DMA1_STREAM4_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM4 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM4 ) )
     {
       return Streamer::STREAM_4;
     }
 #endif
 
 #if defined( STM32_DMA1_STREAM5_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM5 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM5 ) )
     {
       return Streamer::STREAM_5;
     }
 #endif
 
 #if defined( STM32_DMA1_STREAM6_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM6 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM6 ) )
     {
       return Streamer::STREAM_6;
     }
 #endif
 
 #if defined( STM32_DMA1_STREAM7_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM7 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA1_STREAM7 ) )
     {
       return Streamer::STREAM_7;
     }
@@ -672,49 +671,49 @@ namespace Thor::LLD::DMA
 #endif
 
 #if defined( STM32_DMA2_STREAM1_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM1 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM1 ) )
     {
       return Streamer::STREAM_1;
     }
 #endif
 
 #if defined( STM32_DMA2_STREAM2_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM2 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM2 ) )
     {
       return Streamer::STREAM_2;
     }
 #endif
 
 #if defined( STM32_DMA2_STREAM3_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM3 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM3 ) )
     {
       return Streamer::STREAM_3;
     }
 #endif
 
 #if defined( STM32_DMA2_STREAM4_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM4 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM4 ) )
     {
       return Streamer::STREAM_4;
     }
 #endif
 
 #if defined( STM32_DMA2_STREAM5_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM5 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM5 ) )
     {
       return Streamer::STREAM_5;
     }
 #endif
 
 #if defined( STM32_DMA2_STREAM6_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM6 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM6 ) )
     {
       return Streamer::STREAM_6;
     }
 #endif
 
 #if defined( STM32_DMA2_STREAM7_AVAILABLE )
-    else if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM7 ) )
+    if( address == reinterpret_cast<std::uintptr_t>( DMA2_STREAM7 ) )
     {
       return Streamer::STREAM_7;
     }
