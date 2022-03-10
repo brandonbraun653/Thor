@@ -110,6 +110,7 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------
   Interrupt Enable Register (IER)
   -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, IER, IER_ALL_Msk, IER_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, IER, IER_JQOVFIE_Msk, JQOVFIE, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, IER, IER_AWD3IE_Msk, AWD3IE, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, IER, IER_AWD2IE_Msk, AWD2IE, BIT_ACCESS_RW );
@@ -178,6 +179,11 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------
   Regular Sequence Register (SQR)
   -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, SQR1, SQR1_ALL_Msk, SQR1_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, SQR2, SQR2_ALL_Msk, SQR2_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, SQR3, SQR3_ALL_Msk, SQR3_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, SQR4, SQR4_ALL_Msk, SQR4_ALL, BIT_ACCESS_RW );
+
   REG_ACCESSOR( RegisterMap, SQR1, SQR1_L_Msk, L, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, SQR1, SQR1_SQ1_Msk, SQ1, BIT_ACCESS_RW );
 
@@ -185,6 +191,21 @@ namespace Thor::LLD::ADC
   Regular Data Register
   -------------------------------------------------*/
   REG_ACCESSOR( RegisterMap, DR, DR_RDATA_Msk, DATA, BIT_ACCESS_R );
+
+  /*---------------------------------------------------------------------------
+  Injected sequence Register
+  ---------------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, JSQR, JSQR_ALL_Msk, JSQR_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, JSQR, JSQR_JL_Msk, JL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, JSQR, JSQR_JSQ1_Msk, JSQ1, BIT_ACCESS_RW );
+
+  /*---------------------------------------------------------------------------
+  Injected Sequence Data Registers
+  ---------------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, JDR1, JDR1_JDATA_Msk, JDATA1, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, JDR2, JDR2_JDATA_Msk, JDATA2, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, JDR3, JDR3_JDATA_Msk, JDATA3, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, JDR4, JDR4_JDATA_Msk, JDATA4, BIT_ACCESS_R );
 
   /*-------------------------------------------------
   Differential Mode Selection Register (DIFSEL)

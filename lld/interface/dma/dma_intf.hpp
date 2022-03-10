@@ -317,6 +317,7 @@ namespace Thor::LLD::DMA
     size_t mResourceIndex; /**< Resource index for the stream */
     IRQn_Type mIRQn;       /**< Stream's IRQ number */
     TCB mTCB;              /**< Control block for current transfer */
+    StreamConfig mCfg;     /**< Transfer config */
 
     /**
      * @brief Resets the LISR/HISR registers for the configured stream

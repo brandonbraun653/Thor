@@ -23,22 +23,22 @@ namespace Thor::LLD::DMA
   Peripheral Memory Maps
   -------------------------------------------------------------------------------*/
   RegisterMap *DMA1_PERIPH = reinterpret_cast<RegisterMap *>( DMA1_BASE_ADDR );
-  StreamMap *DMA1_STREAM1    = reinterpret_cast<StreamMap *>( DMA1_STREAM1_BASE_ADDR );
-  StreamMap *DMA1_STREAM2    = reinterpret_cast<StreamMap *>( DMA1_STREAM2_BASE_ADDR );
-  StreamMap *DMA1_STREAM3    = reinterpret_cast<StreamMap *>( DMA1_STREAM3_BASE_ADDR );
-  StreamMap *DMA1_STREAM4    = reinterpret_cast<StreamMap *>( DMA1_STREAM4_BASE_ADDR );
-  StreamMap *DMA1_STREAM5    = reinterpret_cast<StreamMap *>( DMA1_STREAM5_BASE_ADDR );
-  StreamMap *DMA1_STREAM6    = reinterpret_cast<StreamMap *>( DMA1_STREAM6_BASE_ADDR );
-  StreamMap *DMA1_STREAM7    = reinterpret_cast<StreamMap *>( DMA1_STREAM7_BASE_ADDR );
+  StreamMap *DMA1_STREAM1  = reinterpret_cast<StreamMap *>( DMA1_STREAM1_BASE_ADDR );
+  StreamMap *DMA1_STREAM2  = reinterpret_cast<StreamMap *>( DMA1_STREAM2_BASE_ADDR );
+  StreamMap *DMA1_STREAM3  = reinterpret_cast<StreamMap *>( DMA1_STREAM3_BASE_ADDR );
+  StreamMap *DMA1_STREAM4  = reinterpret_cast<StreamMap *>( DMA1_STREAM4_BASE_ADDR );
+  StreamMap *DMA1_STREAM5  = reinterpret_cast<StreamMap *>( DMA1_STREAM5_BASE_ADDR );
+  StreamMap *DMA1_STREAM6  = reinterpret_cast<StreamMap *>( DMA1_STREAM6_BASE_ADDR );
+  StreamMap *DMA1_STREAM7  = reinterpret_cast<StreamMap *>( DMA1_STREAM7_BASE_ADDR );
 
   RegisterMap *DMA2_PERIPH = reinterpret_cast<RegisterMap *>( DMA2_BASE_ADDR );
-  StreamMap *DMA2_STREAM1    = reinterpret_cast<StreamMap *>( DMA2_STREAM1_BASE_ADDR );
-  StreamMap *DMA2_STREAM2    = reinterpret_cast<StreamMap *>( DMA2_STREAM2_BASE_ADDR );
-  StreamMap *DMA2_STREAM3    = reinterpret_cast<StreamMap *>( DMA2_STREAM3_BASE_ADDR );
-  StreamMap *DMA2_STREAM4    = reinterpret_cast<StreamMap *>( DMA2_STREAM4_BASE_ADDR );
-  StreamMap *DMA2_STREAM5    = reinterpret_cast<StreamMap *>( DMA2_STREAM5_BASE_ADDR );
-  StreamMap *DMA2_STREAM6    = reinterpret_cast<StreamMap *>( DMA2_STREAM6_BASE_ADDR );
-  StreamMap *DMA2_STREAM7    = reinterpret_cast<StreamMap *>( DMA2_STREAM7_BASE_ADDR );
+  StreamMap *DMA2_STREAM1  = reinterpret_cast<StreamMap *>( DMA2_STREAM1_BASE_ADDR );
+  StreamMap *DMA2_STREAM2  = reinterpret_cast<StreamMap *>( DMA2_STREAM2_BASE_ADDR );
+  StreamMap *DMA2_STREAM3  = reinterpret_cast<StreamMap *>( DMA2_STREAM3_BASE_ADDR );
+  StreamMap *DMA2_STREAM4  = reinterpret_cast<StreamMap *>( DMA2_STREAM4_BASE_ADDR );
+  StreamMap *DMA2_STREAM5  = reinterpret_cast<StreamMap *>( DMA2_STREAM5_BASE_ADDR );
+  StreamMap *DMA2_STREAM6  = reinterpret_cast<StreamMap *>( DMA2_STREAM6_BASE_ADDR );
+  StreamMap *DMA2_STREAM7  = reinterpret_cast<StreamMap *>( DMA2_STREAM7_BASE_ADDR );
 
   /*-------------------------------------------------------------------------------
   Configuration Maps
@@ -273,9 +273,22 @@ namespace Thor::LLD::DMA
   namespace Resource
   {
     extern LLD_CONST IRQn_Type IRQSignals[ NUM_DMA_STREAMS_TOTAL ] = {
-      DMA1_Stream0_IRQn, DMA1_Stream1_IRQn, DMA1_Stream2_IRQn, DMA1_Stream3_IRQn, DMA1_Stream4_IRQn, DMA1_Stream5_IRQn,
-      DMA1_Stream6_IRQn, DMA2_Stream0_IRQn, DMA2_Stream1_IRQn, DMA2_Stream2_IRQn, DMA2_Stream3_IRQn,
-      DMA2_Stream4_IRQn, DMA2_Stream5_IRQn, DMA2_Stream6_IRQn
+      /* clang-format off */
+      DMA1_Stream0_IRQn,
+      DMA1_Stream1_IRQn,
+      DMA1_Stream2_IRQn,
+      DMA1_Stream3_IRQn,
+      DMA1_Stream4_IRQn,
+      DMA1_Stream5_IRQn,
+      DMA1_Stream6_IRQn,
+      DMA2_Stream0_IRQn,
+      DMA2_Stream1_IRQn,
+      DMA2_Stream2_IRQn,
+      DMA2_Stream3_IRQn,
+      DMA2_Stream4_IRQn,
+      DMA2_Stream5_IRQn,
+      DMA2_Stream6_IRQn
+      /* clang-format on */
     };
   }
 

@@ -441,7 +441,7 @@ namespace Thor::LLD::USART
 
       /* Configure the DMA transfer */
       PipeTransfer cfg;
-      cfg.callback = TransferCallback::create<Driver, &Driver::onDMATXComplete>( *this );
+      cfg.userCallback = TransferCallback::create<Driver, &Driver::onDMATXComplete>( *this );
       cfg.pipe     = mTXDMARequestId;
       cfg.size     = size;
       cfg.addr     = reinterpret_cast<std::uintptr_t>( data );
@@ -509,7 +509,7 @@ namespace Thor::LLD::USART
       ------------------------------------------------*/
       /* Configure the DMA transfer */
       PipeTransfer cfg;
-      cfg.callback = TransferCallback::create<Driver, &Driver::onDMARXComplete>( *this );
+      cfg.userCallback = TransferCallback::create<Driver, &Driver::onDMARXComplete>( *this );
       cfg.pipe     = mRXDMARequestId;
       cfg.size     = size;
       cfg.addr     = reinterpret_cast<std::uintptr_t>( data );

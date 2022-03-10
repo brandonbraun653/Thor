@@ -152,7 +152,7 @@ namespace Thor::LLD::DMA
       /*------------------------------------------------
       Select the DMA channel request
       ------------------------------------------------*/
-      switch( mResourceIndex )
+      switch ( mResourceIndex )
       {
         case DMA1_STREAM1_RESOURCE_INDEX:
         case DMA2_STREAM1_RESOURCE_INDEX:
@@ -263,6 +263,7 @@ namespace Thor::LLD::DMA
       INT::enableIRQ( mIRQn );
 
       mTCB.state = StreamState::TRANSFER_CONFIGURED;
+      mCfg       = *config;
     }
     enableInterrupts();
 
@@ -309,79 +310,103 @@ namespace Thor::LLD::DMA
 
   void Stream::IRQHandler( const uint8_t channel, const uint8_t status )
   {
+    /*-------------------------------------------------------------------------
+    Local Namespaces
+    -------------------------------------------------------------------------*/
     using namespace Chimera::Peripheral;
     using namespace Chimera::Thread;
     using namespace Chimera::DMA;
 
+    /*-------------------------------------------------------------------------
+    Local Constants
+    -------------------------------------------------------------------------*/
     static constexpr uint8_t TEIF  = 1u << 3;
     static constexpr uint8_t HTCIF = 1u << 2;
     static constexpr uint8_t TCIF  = 1u << 1;
     static constexpr uint8_t GIF   = 1u << 0;
 
-    bool disableIsr = false;
+    /*-------------------------------------------------------------------------
+    Local Variables
+    -------------------------------------------------------------------------*/
+    bool disableIsr     = false;
+    bool wakeUserThread = false;
 
-    /*------------------------------------------------
-    Read the status registers and parse the flags for this stream
-    ------------------------------------------------*/
-    const Reg32_t sxcr = CR_ALL::get( mStream );
-
-    /*------------------------------------------------
-    Transfer Errors: Allow these to be ignored due to
-    some quirks with the hardware. USARTs will throw
-    FIFO errors even though it doesn't use the FIFO.
-    ------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Transfer Errors: Allow these to be ignored due to some quirks with the
+    hardware. USARTs will throw FIFO errors even though it doesn't use it.
+    -------------------------------------------------------------------------*/
     mTCB.fifoError       = false;
     mTCB.directModeError = false;
     mTCB.transferError   = ( status & TEIF ) && ( ( mTCB.errorsToIgnore & Errors::TRANSFER ) != Errors::TRANSFER );
 
     if ( mTCB.transferError )
     {
-      disableIsr = true;
-      mTCB.state = StreamState::ERROR;
+      disableIsr     = true;
+      wakeUserThread = mTCB.wakeUserOnComplete;
+      mTCB.state     = StreamState::ERROR;
     }
 
-    /*------------------------------------------------
-    Transfer Complete
-    ------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Transfer Complete?
+    -------------------------------------------------------------------------*/
     if ( ( status & TCIF ) && TCIE::get( mStream ) )
     {
-      disableIsr = true;
-
-      /*-------------------------------------------------
-      Disable the stream
-      -------------------------------------------------*/
-      EN::clear( mStream, CCR_EN );
-
-      /*------------------------------------------------
-      Update control block with the event information
-      ------------------------------------------------*/
       mTCB.selectedChannel     = channel;
       mTCB.elementsTransferred = mTCB.transferSize - NDT::get( mStream );
       mTCB.state               = StreamState::TRANSFER_COMPLETE;
-    }
 
-    /*------------------------------------------------
-    Transfer Half-Complete
-    ------------------------------------------------*/
-    if ( ( status & HTCIF ) && HTIE::get( mStream ) )
-    {
-      mStream->CCR &= ~CCR_HTIE;
-    }
+      /*-----------------------------------------------------------------------
+      Only disable DMA if requested
+      -----------------------------------------------------------------------*/
+      if ( !mTCB.persistent )
+      {
+        disableIsr     = true;
+        wakeUserThread = mTCB.wakeUserOnComplete;
+        EN::clear( mStream, CCR_EN );
+      }
 
-    /*-------------------------------------------------
-    Disable ISR signals on exit if needed
-    -------------------------------------------------*/
-    if ( disableIsr )
-    {
-      /* Disable the interrupts */
-      mStream->CCR &= ~( CCR_TCIE | CCR_HTIE | CCR_TEIE );
-
-      /* Reset the interrupt flags */
+      /*-----------------------------------------------------------------------
+      ACK the transfer complete flag
+      -----------------------------------------------------------------------*/
       reset_isr_flags();
 
-      /*-------------------------------------------------
-      Wake up the HLD thread to handle the events
-      -------------------------------------------------*/
+      /*-----------------------------------------------------------------------
+      Invoke the ISR callback should one exist
+      -----------------------------------------------------------------------*/
+      if ( mTCB.isrCallback )
+      {
+        Chimera::DMA::TransferStats stats;
+        stats.clear();
+        stats.error     = false;
+        stats.requestId = mTCB.requestId;
+        stats.size      = mTCB.elementsTransferred;
+
+        mTCB.isrCallback( stats );
+      }
+    }
+
+    /*-------------------------------------------------------------------------
+    ACK the half-transfer complete flag
+    -------------------------------------------------------------------------*/
+    if ( ( status & HTCIF ) && HTIE::get( mStream ) )
+    {
+      reset_isr_flags();
+    }
+
+    /*-------------------------------------------------------------------------
+    Disable the ISR signals on exit if needed
+    -------------------------------------------------------------------------*/
+    if ( disableIsr )
+    {
+      mStream->CCR &= ~( CCR_TCIE | CCR_HTIE | CCR_TEIE );
+      reset_isr_flags();
+    }
+
+    /*-------------------------------------------------------------------------
+    Wake up the user thread to handle the generated events
+    -------------------------------------------------------------------------*/
+    if ( wakeUserThread )
+    {
       Resource::ISRQueue.push( mTCB );
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_DMA ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
     }

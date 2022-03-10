@@ -89,6 +89,8 @@ namespace Thor::ADC
           hld_driver[ index ].postISRProcessing();
         }
       }
+
+      // TODO: Handle the error case
     }
   }
 
@@ -351,9 +353,17 @@ namespace Thor::ADC
   {
     using namespace Chimera::ADC;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
+    Synchronize the queue with the DMA buffers
+    -------------------------------------------------------------------------*/
+    auto driver = LLD::getDriver( mConfig.periph );
+    driver->stopSequence();
+    driver->syncSequence();
+    driver->startSequence();
+
+    /*-------------------------------------------------------------------------
     Select the queue associated with this instance
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Thor::LLD::ADC::PeriphQueue *queue = nullptr;
     switch( mPeriph )
     {
@@ -366,9 +376,9 @@ namespace Thor::ADC
         break;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Return the next data in the queue if it exists
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     bool has_data = (*queue)[ EnumValue( ch ) ]->pop( sample );
     return has_data;
   }

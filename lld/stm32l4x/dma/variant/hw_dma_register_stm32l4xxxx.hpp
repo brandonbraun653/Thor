@@ -31,24 +31,22 @@ namespace Thor::LLD::DMA
   Peripheral Instance Memory Map
   -------------------------------------------------------------------------------*/
   static constexpr Reg32_t DMA1_BASE_ADDR         = Thor::System::MemoryMap::DMA1_PERIPH_START_ADDRESS;
-  static constexpr Reg32_t DMA1_STREAM0_BASE_ADDR = DMA1_BASE_ADDR + 0x010u;
-  static constexpr Reg32_t DMA1_STREAM1_BASE_ADDR = DMA1_BASE_ADDR + 0x028u;
-  static constexpr Reg32_t DMA1_STREAM2_BASE_ADDR = DMA1_BASE_ADDR + 0x040u;
-  static constexpr Reg32_t DMA1_STREAM3_BASE_ADDR = DMA1_BASE_ADDR + 0x058u;
-  static constexpr Reg32_t DMA1_STREAM4_BASE_ADDR = DMA1_BASE_ADDR + 0x070u;
-  static constexpr Reg32_t DMA1_STREAM5_BASE_ADDR = DMA1_BASE_ADDR + 0x088u;
-  static constexpr Reg32_t DMA1_STREAM6_BASE_ADDR = DMA1_BASE_ADDR + 0x0A0u;
-  static constexpr Reg32_t DMA1_STREAM7_BASE_ADDR = DMA1_BASE_ADDR + 0x0B8u;
+  static constexpr Reg32_t DMA1_STREAM1_BASE_ADDR = DMA1_BASE_ADDR + 0x008u;
+  static constexpr Reg32_t DMA1_STREAM2_BASE_ADDR = DMA1_BASE_ADDR + 0x01Cu;
+  static constexpr Reg32_t DMA1_STREAM3_BASE_ADDR = DMA1_BASE_ADDR + 0x030u;
+  static constexpr Reg32_t DMA1_STREAM4_BASE_ADDR = DMA1_BASE_ADDR + 0x044u;
+  static constexpr Reg32_t DMA1_STREAM5_BASE_ADDR = DMA1_BASE_ADDR + 0x058u;
+  static constexpr Reg32_t DMA1_STREAM6_BASE_ADDR = DMA1_BASE_ADDR + 0x06Cu;
+  static constexpr Reg32_t DMA1_STREAM7_BASE_ADDR = DMA1_BASE_ADDR + 0x080u;
 
   static constexpr Reg32_t DMA2_BASE_ADDR         = Thor::System::MemoryMap::DMA2_PERIPH_START_ADDRESS;
-  static constexpr Reg32_t DMA2_STREAM0_BASE_ADDR = DMA2_BASE_ADDR + 0x010u;
-  static constexpr Reg32_t DMA2_STREAM1_BASE_ADDR = DMA2_BASE_ADDR + 0x028u;
-  static constexpr Reg32_t DMA2_STREAM2_BASE_ADDR = DMA2_BASE_ADDR + 0x040u;
-  static constexpr Reg32_t DMA2_STREAM3_BASE_ADDR = DMA2_BASE_ADDR + 0x058u;
-  static constexpr Reg32_t DMA2_STREAM4_BASE_ADDR = DMA2_BASE_ADDR + 0x070u;
-  static constexpr Reg32_t DMA2_STREAM5_BASE_ADDR = DMA2_BASE_ADDR + 0x088u;
-  static constexpr Reg32_t DMA2_STREAM6_BASE_ADDR = DMA2_BASE_ADDR + 0x0A0u;
-  static constexpr Reg32_t DMA2_STREAM7_BASE_ADDR = DMA2_BASE_ADDR + 0x0B8u;
+  static constexpr Reg32_t DMA2_STREAM1_BASE_ADDR = DMA2_BASE_ADDR + 0x008u;
+  static constexpr Reg32_t DMA2_STREAM2_BASE_ADDR = DMA2_BASE_ADDR + 0x01Cu;
+  static constexpr Reg32_t DMA2_STREAM3_BASE_ADDR = DMA2_BASE_ADDR + 0x030u;
+  static constexpr Reg32_t DMA2_STREAM4_BASE_ADDR = DMA2_BASE_ADDR + 0x044u;
+  static constexpr Reg32_t DMA2_STREAM5_BASE_ADDR = DMA2_BASE_ADDR + 0x058u;
+  static constexpr Reg32_t DMA2_STREAM6_BASE_ADDR = DMA2_BASE_ADDR + 0x06Cu;
+  static constexpr Reg32_t DMA2_STREAM7_BASE_ADDR = DMA2_BASE_ADDR + 0x080u;
 
   /*-------------------------------------------------------------------------------
   Peripheral Register Definitions

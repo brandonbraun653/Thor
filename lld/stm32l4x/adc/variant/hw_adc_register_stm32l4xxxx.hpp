@@ -73,6 +73,7 @@ namespace Thor::LLD::ADC
   static constexpr Reg32_t ISR_JQOVF     = ISR_JQOVF_Msk;
 
   /********************  Bit definition for IER register  *******************/
+  static constexpr Reg32_t IER_ALL_Msk     = 0x7FF;
   static constexpr Reg32_t IER_ADRDYIE_Pos = ( 0U );
   static constexpr Reg32_t IER_ADRDYIE_Msk = ( 0x1UL << IER_ADRDYIE_Pos );
   static constexpr Reg32_t IER_ADRDYIE     = IER_ADRDYIE_Msk;
@@ -256,6 +257,7 @@ namespace Thor::LLD::ADC
 
   /********************  Bit definition for SMPR1 register  *****************/
   static constexpr Reg32_t SMPRx_BIT_Wid = 3;
+  static constexpr Reg32_t SMPRx_BIT_Msk = 0x7;
   static constexpr Reg32_t SMPR1_ALL_Msk = 0x3FFFFFFF;
 
   static constexpr Reg32_t SMPR1_SMP0_Pos = ( 0U );
@@ -478,6 +480,10 @@ namespace Thor::LLD::ADC
   static constexpr Reg32_t TR3_HT3_7   = ( 0x80UL << TR3_HT3_Pos );
 
   /********************  Bit definition for SQR1 register  ******************/
+  static constexpr Reg32_t SQR1_BIT_Wid = 5;
+  static constexpr Reg32_t SQR1_BIT_Msk = 0x1F;
+  static constexpr Reg32_t SQR1_ALL_Msk = 0x1F7DF7CF;
+
   static constexpr Reg32_t SQR1_L_Pos = ( 0U );
   static constexpr Reg32_t SQR1_L_Msk = ( 0xFUL << SQR1_L_Pos );
   static constexpr Reg32_t SQR1_L     = SQR1_L_Msk;
@@ -523,6 +529,10 @@ namespace Thor::LLD::ADC
   static constexpr Reg32_t SQR1_SQ4_4   = ( 0x10UL << SQR1_SQ4_Pos );
 
   /********************  Bit definition for SQR2 register  ******************/
+  static constexpr Reg32_t SQR2_BIT_Wid = 5;
+  static constexpr Reg32_t SQR2_BIT_Msk = 0x1F;
+  static constexpr Reg32_t SQR2_ALL_Msk = 0x1F7DF7DF;
+
   static constexpr Reg32_t SQR2_SQ5_Pos = ( 0U );
   static constexpr Reg32_t SQR2_SQ5_Msk = ( 0x1FUL << SQR2_SQ5_Pos );
   static constexpr Reg32_t SQR2_SQ5     = SQR2_SQ5_Msk;
@@ -569,6 +579,10 @@ namespace Thor::LLD::ADC
   static constexpr Reg32_t SQR2_SQ9_4   = ( 0x10UL << SQR2_SQ9_Pos );
 
   /********************  Bit definition for SQR3 register  ******************/
+  static constexpr Reg32_t SQR3_BIT_Wid = 5;
+  static constexpr Reg32_t SQR3_BIT_Msk = 0x1F;
+  static constexpr Reg32_t SQR3_ALL_Msk = 0x1F7DF7DF;
+
   static constexpr Reg32_t SQR3_SQ10_Pos = ( 0U );
   static constexpr Reg32_t SQR3_SQ10_Msk = ( 0x1FUL << SQR3_SQ10_Pos );
   static constexpr Reg32_t SQR3_SQ10     = SQR3_SQ10_Msk;
@@ -615,6 +629,10 @@ namespace Thor::LLD::ADC
   static constexpr Reg32_t SQR3_SQ14_4   = ( 0x10UL << SQR3_SQ14_Pos );
 
   /********************  Bit definition for SQR4 register  ******************/
+  static constexpr Reg32_t SQR4_BIT_Wid = 5;
+  static constexpr Reg32_t SQR4_BIT_Msk = 0x1F;
+  static constexpr Reg32_t SQR4_ALL_Msk = 0x000007DF;
+
   static constexpr Reg32_t SQR4_SQ15_Pos = ( 0U );
   static constexpr Reg32_t SQR4_SQ15_Msk = ( 0x1FUL << SQR4_SQ15_Pos );
   static constexpr Reg32_t SQR4_SQ15     = SQR4_SQ15_Msk;
@@ -655,6 +673,8 @@ namespace Thor::LLD::ADC
   static constexpr Reg32_t DR_RDATA_15  = ( 0x8000UL << DR_RDATA_Pos );
 
   /********************  Bit definition for JSQR register  ******************/
+  static constexpr Reg32_t JSQR_ALL_Msk = 0x7DF7DFFF;
+
   static constexpr Reg32_t JSQR_JL_Pos = ( 0U );
   static constexpr Reg32_t JSQR_JL_Msk = ( 0x3UL << JSQR_JL_Pos );
   static constexpr Reg32_t JSQR_JL     = JSQR_JL_Msk;

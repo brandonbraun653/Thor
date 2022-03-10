@@ -110,6 +110,8 @@ namespace Thor::LLD::DMA
     StreamMap _reserved;     /**< Padding */
     volatile uint32_t CSELR; /**< DMA channel selection register      , Address offset: 0xA8 */
   };
+  static_assert( offsetof( RegisterMap, STREAM1 ) == 0x08 );
+  static_assert( offsetof( RegisterMap, STREAM2 ) == 0x1C );
   static_assert( offsetof( RegisterMap, CSELR ) == 0xA8 );
 
   /*-------------------------------------------------------------------------------

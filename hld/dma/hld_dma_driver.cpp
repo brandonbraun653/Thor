@@ -6,7 +6,7 @@
  *   Implements DMA high level drivers, which focuses on managing configurations
  *   for the wide variety of streams that may be possible.
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* C++ Includes */
@@ -43,7 +43,7 @@ Configuration Constants
 Number of pipe configurations to remember
 -------------------------------------------------*/
 #ifndef THOR_HLD_DMA_MAX_PIPE_CONFIGURATIONS
-#define THOR_HLD_DMA_MAX_PIPE_CONFIGURATIONS  ( 5 )
+#define THOR_HLD_DMA_MAX_PIPE_CONFIGURATIONS ( 5 )
 #endif
 
 /*-------------------------------------------------------------------------------
@@ -62,17 +62,16 @@ namespace Thor::DMA
   /*-------------------------------------------------------------------------------
   Aliases
   -------------------------------------------------------------------------------*/
-  using PipeCfgMap = etl::unordered_map<Chimera::DMA::RequestId, Chimera::DMA::PipeConfig, THOR_HLD_DMA_MAX_PIPE_CONFIGURATIONS>;
+  using PipeCfgMap =
+      etl::unordered_map<Chimera::DMA::RequestId, Chimera::DMA::PipeConfig, THOR_HLD_DMA_MAX_PIPE_CONFIGURATIONS>;
 
 
   /*-------------------------------------------------------------------------------
   Structures
   -------------------------------------------------------------------------------*/
-
   struct StreamStatus
   {
-    ::LLD::StreamState state;   /**< Is this stream busy? */
-
+    ::LLD::StreamState state;                /**< Is this stream busy? */
     Chimera::DMA::TransferCallback callback; /**< Optional callback to be invoked on completion or error */
   };
 
@@ -99,22 +98,18 @@ namespace Thor::DMA
     using namespace Chimera::Thread;
     LockGuard lck( s_dma_lock );
 
-    /*-------------------------------------------------
-    Do a generic reset
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Reset DMA and the driver module
+    -------------------------------------------------------------------------*/
     Thor::DMA::reset();
-
-    /*-------------------------------------------------
-    Initialize the streams
-    -------------------------------------------------*/
-    for( auto &stream : s_stream_status )
+    for ( auto &stream : s_stream_status )
     {
       stream.state = ::LLD::StreamState::TRANSFER_IDLE;
     }
 
-    /*------------------------------------------------
-    Register the ISR post processor thread
-    ------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Register the high priority stream event processor thread
+    -------------------------------------------------------------------------*/
     Task userThread;
     TaskConfig cfg;
 
@@ -128,9 +123,9 @@ namespace Thor::DMA
     userThread.create( cfg );
     LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_DMA, userThread.start() );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Initialize the low level driver
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     return ::LLD::initialize();
   }
 
@@ -140,14 +135,7 @@ namespace Thor::DMA
     using namespace Chimera::Thread;
     LockGuard lck( s_dma_lock );
 
-    /*-------------------------------------------------
-    Reset the pipe configuration memory
-    -------------------------------------------------*/
     s_pipe_map.clear();
-
-    /*-------------------------------------------------
-    Re-seed the RNG
-    -------------------------------------------------*/
     s_rng.initialise( Chimera::millis() );
 
     return Chimera::Status::OK;
@@ -169,30 +157,29 @@ namespace Thor::DMA
     using namespace Chimera::Thread;
     LockGuard lck( s_dma_lock );
 
-    /*-------------------------------------------------
-    Input protection
-    -------------------------------------------------*/
-    if( s_pipe_map.full() )
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if ( s_pipe_map.full() )
     {
       return Chimera::DMA::INVALID_REQUEST;
     }
 
-    /*-------------------------------------------------
-    If the DMA channel has been registered, overwrite
-    the settings and return its unique ID.
-    -------------------------------------------------*/
-    for( auto &iter : s_pipe_map )
+    /*-------------------------------------------------------------------------
+    Previously registered? Overwrite the settings and return original ID.
+    -------------------------------------------------------------------------*/
+    for ( auto &iter : s_pipe_map )
     {
       if ( ( iter.second.channel == config.channel ) && ( iter.second.resourceIndex == config.resourceIndex ) )
       {
         iter.second = config;
-        return iter.first;  // RequestId
+        return iter.first;    // RequestId
       }
     }
 
-    /*-------------------------------------------------
-    Not a duplicate, so insert the object into the map
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    New request pipe
+    -------------------------------------------------------------------------*/
     Chimera::DMA::RequestId id = s_rng();
     s_pipe_map.insert( { id, config } );
 
@@ -205,11 +192,8 @@ namespace Thor::DMA
     using namespace Chimera::Thread;
     LockGuard lck( s_dma_lock );
 
-    /*-------------------------------------------------
-    Find the stored pipe configuration
-    -------------------------------------------------*/
     auto iter = s_pipe_map.find( id );
-    if( iter == s_pipe_map.end() )
+    if ( iter == s_pipe_map.end() )
     {
       return false;
     }
@@ -226,10 +210,10 @@ namespace Thor::DMA
     using namespace Chimera::Thread;
     LockGuard lck( s_dma_lock );
 
-    /*-------------------------------------------------
-    Get the next available stream. For whatever reason,
-    memory transfers are only supported on DMA2.
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Get the next available stream. For whatever reason, memory transfers are
+    only supported on DMA2.
+    -------------------------------------------------------------------------*/
     auto idx = nextFreeStream( ::LLD::DMA2_FIRST_STREAM_RESOURCE_INDEX );
     if ( idx == LLD::INVALID_RESOURCE_INDEX )
     {
@@ -242,9 +226,9 @@ namespace Thor::DMA
       return Chimera::DMA::INVALID_REQUEST;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Build up the transfer configuration
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     ::LLD::StreamConfig cfg;
     cfg.dstAddrIncr   = true;
     cfg.srcAddrIncr   = true;
@@ -260,15 +244,17 @@ namespace Thor::DMA
     cfg.srcAddrAlign  = transfer.alignment;
 
     ::LLD::TCB tcb;
-    tcb.srcAddress   = transfer.src;
-    tcb.dstAddress   = transfer.dst;
-    tcb.transferSize = transfer.size;
-    tcb.requestId    = s_rng();
-    tcb.elementSize  = transfer.alignment;
+    tcb.srcAddress         = transfer.src;
+    tcb.dstAddress         = transfer.dst;
+    tcb.transferSize       = transfer.size;
+    tcb.requestId          = s_rng();
+    tcb.elementSize        = transfer.alignment;
+    tcb.persistent         = false;
+    tcb.wakeUserOnComplete = true;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Set the configuration on the stream
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( stream->configure( &cfg, &tcb ) == Chimera::Status::OK )
     {
       s_stream_status[ idx ].state    = ::LLD::StreamState::TRANSFER_IN_PROGRESS;
@@ -290,79 +276,82 @@ namespace Thor::DMA
     using namespace Chimera::Thread;
     LockGuard lck( s_dma_lock );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Get the pipe configuration
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto iter = s_pipe_map.find( transfer.pipe );
-    if( iter == s_pipe_map.end() )
+    if ( iter == s_pipe_map.end() )
     {
       return Chimera::DMA::INVALID_REQUEST;
     }
 
     PipeConfig pipeCfg = iter->second;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Grab the stream the pipe was configured for
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     ::LLD::Stream_rPtr stream = ::LLD::getStream( static_cast<LLD::RIndex_t>( pipeCfg.resourceIndex ) );
     if ( !stream )
     {
       return Chimera::DMA::INVALID_REQUEST;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Build up the transfer configuration
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     ::LLD::StreamConfig cfg;
     ::LLD::TCB tcb;
 
-    if( pipeCfg.direction == Direction::MEMORY_TO_PERIPH )
+    if ( pipeCfg.direction == Direction::MEMORY_TO_PERIPH )
     {
-      cfg.dstAddrIncr   = false;
-      cfg.dstBurstSize  = Chimera::DMA::BurstSize::NUM_OPTIONS;
-      cfg.dstAddrAlign  = pipeCfg.alignment;
-      tcb.dstAddress    = pipeCfg.periphAddr;
+      cfg.dstAddrIncr  = false;
+      cfg.dstBurstSize = Chimera::DMA::BurstSize::NUM_OPTIONS;
+      cfg.dstAddrAlign = pipeCfg.alignment;
+      tcb.dstAddress   = pipeCfg.periphAddr;
 
-      cfg.srcAddrIncr   = true;
-      cfg.srcBurstSize  = pipeCfg.burstSize;
-      cfg.srcAddrAlign  = pipeCfg.alignment;
-      tcb.srcAddress    = transfer.addr;
+      cfg.srcAddrIncr  = true;
+      cfg.srcBurstSize = pipeCfg.burstSize;
+      cfg.srcAddrAlign = pipeCfg.alignment;
+      tcb.srcAddress   = transfer.addr;
     }
-    else if( pipeCfg.direction == Direction::PERIPH_TO_MEMORY )
+    else if ( pipeCfg.direction == Direction::PERIPH_TO_MEMORY )
     {
-      cfg.dstAddrIncr   = true;
-      cfg.dstBurstSize  = pipeCfg.burstSize;
-      cfg.dstAddrAlign  = pipeCfg.alignment;
-      tcb.dstAddress    = transfer.addr;
+      cfg.dstAddrIncr  = true;
+      cfg.dstBurstSize = pipeCfg.burstSize;
+      cfg.dstAddrAlign = pipeCfg.alignment;
+      tcb.dstAddress   = transfer.addr;
 
-      cfg.srcAddrIncr   = false;
-      cfg.srcBurstSize  = Chimera::DMA::BurstSize::NUM_OPTIONS;
-      cfg.srcAddrAlign  = pipeCfg.alignment;
-      tcb.srcAddress    = pipeCfg.periphAddr;
+      cfg.srcAddrIncr  = false;
+      cfg.srcBurstSize = Chimera::DMA::BurstSize::NUM_OPTIONS;
+      cfg.srcAddrAlign = pipeCfg.alignment;
+      tcb.srcAddress   = pipeCfg.periphAddr;
     }
     else
     {
       return Chimera::DMA::INVALID_REQUEST;
     }
 
-    cfg.channel        = static_cast<::LLD::Channel>( pipeCfg.channel );
-    cfg.fifoMode       = ::LLD::FifoMode::DIRECT_ENABLE;
-    cfg.fifoThreshold  = pipeCfg.threshold;
-    cfg.dmaMode        = pipeCfg.mode;
-    cfg.direction      = pipeCfg.direction;
-    cfg.priority       = pipeCfg.priority;
-    tcb.transferSize   = transfer.size;
-    tcb.requestId      = s_rng();
-    tcb.errorsToIgnore = pipeCfg.errorsToIgnore;
-    tcb.elementSize    = pipeCfg.alignment;
+    cfg.channel            = static_cast<::LLD::Channel>( pipeCfg.channel );
+    cfg.fifoMode           = ::LLD::FifoMode::DIRECT_ENABLE;
+    cfg.fifoThreshold      = pipeCfg.threshold;
+    cfg.dmaMode            = pipeCfg.mode;
+    cfg.direction          = pipeCfg.direction;
+    cfg.priority           = pipeCfg.priority;
+    tcb.transferSize       = transfer.size;
+    tcb.requestId          = s_rng();
+    tcb.errorsToIgnore     = pipeCfg.errorsToIgnore;
+    tcb.elementSize        = pipeCfg.alignment;
+    tcb.persistent         = pipeCfg.persistent;
+    tcb.wakeUserOnComplete = pipeCfg.wakeUserOnComplete;
+    tcb.isrCallback        = transfer.isrCallback;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Set the configuration on the stream
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( stream->configure( &cfg, &tcb ) == Chimera::Status::OK )
     {
       s_stream_status[ pipeCfg.resourceIndex ].state    = ::LLD::StreamState::TRANSFER_IN_PROGRESS;
-      s_stream_status[ pipeCfg.resourceIndex ].callback = transfer.callback;
+      s_stream_status[ pipeCfg.resourceIndex ].callback = transfer.userCallback;
 
       stream->start();
       return tcb.requestId;
@@ -382,9 +371,9 @@ namespace Thor::DMA
     using namespace Chimera::Thread;
     LockGuard lck( s_dma_lock );
 
-    for( size_t idx = lower_bound; idx < s_stream_status.size(); idx++ )
+    for ( size_t idx = lower_bound; idx < s_stream_status.size(); idx++ )
     {
-      if( s_stream_status[ idx ].state == ::LLD::StreamState::TRANSFER_IDLE )
+      if ( s_stream_status[ idx ].state == ::LLD::StreamState::TRANSFER_IDLE )
       {
         return static_cast<LLD::RIndex_t>( idx );
       }
@@ -394,6 +383,18 @@ namespace Thor::DMA
   }
 
 
+  /**
+   * @brief High priority thread to handle completion/error events
+   *
+   * This will run on every DMA peripheral and channel combination as this single thread
+   * handles every event. I'm trading off execution time for RAM here cause stack space
+   * is usually more scarce than processing power on most MCUs.
+   *
+   * Only DMA transactions that are explicitly marked as needing to notify the user of
+   * an event will trigger this thread. Otherwise, events are handled at the LLD layer.
+   *
+   * @param arg Unused
+   */
   static void DMAxStreamxISRUserThread( void *arg )
   {
     using namespace Chimera::DMA;
@@ -401,50 +402,49 @@ namespace Thor::DMA
 
     while ( 1 )
     {
-      /*-------------------------------------------------
-      Wait for something to wake this thread. If the msg
-      isn't correct, go back to waiting.
-      -------------------------------------------------*/
+      /*-----------------------------------------------------------------------
+      Wait for something to wake this thread
+      -----------------------------------------------------------------------*/
       if ( !this_thread::pendTaskMsg( ITCMsg::TSK_MSG_ISR_HANDLER ) )
       {
         continue;
       }
 
-      /*-------------------------------------------------
+      /*-----------------------------------------------------------------------
       Handle all pending DMA transfer events
-      -------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       ::LLD::TCB tcb;
 
       auto msk = Chimera::System::disableInterrupts();
-      while( ::LLD::Resource::ISRQueue.pop( tcb ))
+      while ( ::LLD::Resource::ISRQueue.pop( tcb ) )
       {
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Prevent invalid array access
-        -------------------------------------------------*/
-        if( ( tcb.resourceIndex == LLD::INVALID_RESOURCE_INDEX ) || !( tcb.resourceIndex < s_stream_status.size() ) )
+        ---------------------------------------------------------------------*/
+        if ( ( tcb.resourceIndex == LLD::INVALID_RESOURCE_INDEX ) || !( tcb.resourceIndex < s_stream_status.size() ) )
         {
           continue;
         }
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Update the stream's availability
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         s_stream_status[ tcb.resourceIndex ].state = ::LLD::StreamState::TRANSFER_IDLE;
 
-        /*-------------------------------------------------
-        Acknowledge the ISR was handled, allowing another
-        transfer to take place on this stream.
-        -------------------------------------------------*/
+        /*---------------------------------------------------------------------
+        Acknowledge the ISR was handled, allowing another transfer to take
+        place on this stream.
+        ---------------------------------------------------------------------*/
         auto stream = ::LLD::getStream( tcb.resourceIndex );
-        if( stream )
+        if ( stream )
         {
           stream->ackTransfer();
         }
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         User has a callback?
-        -------------------------------------------------*/
-        if( s_stream_status[ tcb.resourceIndex ].callback )
+        ---------------------------------------------------------------------*/
+        if ( s_stream_status[ tcb.resourceIndex ].callback )
         {
           TransferStats stats;
           stats.size      = tcb.elementsTransferred;
@@ -458,8 +458,6 @@ namespace Thor::DMA
       Chimera::System::enableInterrupts( msk );
     }
   }
-
-
 
 }    // namespace Thor::DMA
 

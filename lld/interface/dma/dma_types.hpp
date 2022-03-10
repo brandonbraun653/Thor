@@ -5,7 +5,7 @@
  *  Description:
  *    Common DMA types used in Thor drivers
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -339,9 +339,12 @@ namespace Thor::LLD::DMA
     Chimera::DMA::Alignment elementSize; /**< Size of each element that was transferred */
 
     /* User Configured */
-    uint32_t srcAddress;   /**< Address where the data will be pulled from */
-    uint32_t dstAddress;   /**< Address where the data will be transferred into */
-    uint32_t transferSize; /**< How many bytes to transfer between source and destination */
+    uint32_t srcAddress;                        /**< Address where the data will be pulled from */
+    uint32_t dstAddress;                        /**< Address where the data will be transferred into */
+    uint32_t transferSize;                      /**< How many bytes to transfer between source and destination */
+    bool persistent;                            /**< Whether or not to leave the stream enabled after transfer complete */
+    bool wakeUserOnComplete;                    /**< Wake the user thread to handle results? */
+    Chimera::DMA::TransferCallback isrCallback; /**< Callback to execute inside ISR on events */
 
     /*-------------------------------------------------
     Various Error Flags
