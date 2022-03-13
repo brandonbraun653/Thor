@@ -242,6 +242,85 @@ namespace Thor::LLD::RCC
 #endif /* THOR_LLD_SYSCFG */
 
 #if defined( THOR_LLD_TIMER )
+  /* clang-format off */
+  static const RegisterConfig TIMER_ClockConfig[ TIMER::NUM_TIMER_PERIPHS ] = {
+    #if defined( STM32_TIMER1_PERIPH_AVAILABLE )
+    { .mask = APB2ENR_TIM1EN, .reg  = &RCC1_PERIPH->APB2ENR },
+    #endif
+
+    #if defined( STM32_TIMER2_PERIPH_AVAILABLE )
+    { .mask = APB1ENR1_TIM2EN, .reg  = &RCC1_PERIPH->APB1ENR1 },
+    #endif
+
+    #if defined( STM32_TIMER6_PERIPH_AVAILABLE )
+    { .mask = APB1ENR1_TIM6EN, .reg  = &RCC1_PERIPH->APB1ENR1 },
+    #endif
+
+    #if defined( STM32_TIMER7_PERIPH_AVAILABLE )
+    { .mask = APB1ENR1_TIM7EN, .reg  = &RCC1_PERIPH->APB1ENR1 },
+    #endif
+
+    #if defined( STM32_TIMER15_PERIPH_AVAILABLE )
+    { .mask = APB2ENR_TIM15EN, .reg  = &RCC1_PERIPH->APB2ENR },
+    #endif
+
+    #if defined( STM32_TIMER16_PERIPH_AVAILABLE )
+    { .mask = APB2ENR_TIM16EN, .reg  = &RCC1_PERIPH->APB2ENR },
+    #endif
+  };
+
+  static const RegisterConfig TIMER_ResetConfig[ TIMER::NUM_TIMER_PERIPHS ] = {
+    #if defined( STM32_TIMER1_PERIPH_AVAILABLE )
+    { .mask = APB2RSTR_TIM1RST, .reg  = &RCC1_PERIPH->APB2RSTR },
+    #endif
+
+    #if defined( STM32_TIMER2_PERIPH_AVAILABLE )
+    { .mask = APB1RSTR1_TIM2RST, .reg  = &RCC1_PERIPH->APB1RSTR1 },
+    #endif
+
+    #if defined( STM32_TIMER6_PERIPH_AVAILABLE )
+    { .mask = APB1RSTR1_TIM6RST, .reg  = &RCC1_PERIPH->APB1RSTR1 },
+    #endif
+
+    #if defined( STM32_TIMER7_PERIPH_AVAILABLE )
+    { .mask = APB1RSTR1_TIM7RST, .reg  = &RCC1_PERIPH->APB1RSTR1 },
+    #endif
+
+    #if defined( STM32_TIMER15_PERIPH_AVAILABLE )
+    { .mask = APB2RSTR_TIM15RST, .reg  = &RCC1_PERIPH->APB2RSTR },
+    #endif
+
+    #if defined( STM32_TIMER16_PERIPH_AVAILABLE )
+    { .mask = APB2RSTR_TIM16RST, .reg  = &RCC1_PERIPH->APB2RSTR },
+    #endif
+  };
+
+  static const Chimera::Clock::Bus TIMER_SourceClock[ TIMER::NUM_TIMER_PERIPHS ] = {
+    #if defined( STM32_TIMER1_PERIPH_AVAILABLE )
+    Chimera::Clock::Bus::APB2,
+    #endif
+
+    #if defined( STM32_TIMER2_PERIPH_AVAILABLE )
+    Chimera::Clock::Bus::APB1,
+    #endif
+
+    #if defined( STM32_TIMER6_PERIPH_AVAILABLE )
+    Chimera::Clock::Bus::APB1,
+    #endif
+
+    #if defined( STM32_TIMER7_PERIPH_AVAILABLE )
+    Chimera::Clock::Bus::APB1,
+    #endif
+
+    #if defined( STM32_TIMER15_PERIPH_AVAILABLE )
+    Chimera::Clock::Bus::APB2,
+    #endif
+
+    #if defined( STM32_TIMER16_PERIPH_AVAILABLE )
+    Chimera::Clock::Bus::APB2,
+    #endif
+  };
+  /* clang-format on */
 #endif /* THOR_LLD_TIMER */
 
 #if defined( THOR_LLD_USART )

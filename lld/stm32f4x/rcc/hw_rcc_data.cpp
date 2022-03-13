@@ -614,7 +614,7 @@ namespace Thor::LLD::RCC
 
     #if defined( THOR_LLD_TIMER )
     {
-      .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_TIMER ),
+      .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_TIMERER ),
       .elements         = TIMER::NUM_TIMER_PERIPHS,
       .bfControl        = 0,
       .reserved         = 0,

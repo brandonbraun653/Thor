@@ -1,28 +1,16 @@
 include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
-# ====================================================
-# Common
-# ====================================================
-set(LINK_LIBS
-  thor_intf_inc          # Thor public headers
-  chimera_intf_inc       # Chimera public headers
-  aurora_intf_inc        # Aurora public headers
-        # Boost headers
-  lld_common_inc    # 3rd Party headers
-)
-
-# ====================================================
-# Driver Library (+ Variant)
-# ====================================================
-function(build_library variant)
-  set(CORE thor_lld_stm32l4_timer${variant})
-  add_library(${CORE} STATIC
+gen_static_lib_variants(
+  TARGET
+    thor_lld_stm32l4_timer
+  SOURCES
     hw_timer_driver_stm32l4.cpp
     hw_timer_driver_stm32l4_general.cpp
-    hw_timer_mapping.cpp
-  )
-  target_link_libraries(${CORE} PRIVATE ${LINK_LIBS} prj_device_target prj_build_target${variant})
-  export(TARGETS ${CORE} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${CORE}.cmake")
-endfunction()
-
-add_target_variants(build_library)
+  PRV_LIBRARIES
+    aurora_intf_inc
+    chimera_intf_inc
+    thor_intf_inc
+    lld_common_inc
+  EXPORT_DIR
+    "${PROJECT_BINARY_DIR}/Thor/hld"
+)

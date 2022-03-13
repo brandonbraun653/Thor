@@ -13,6 +13,7 @@ add_subdirectory("interrupt")
 add_subdirectory("rcc")
 add_subdirectory("spi")
 add_subdirectory("system")
+add_subdirectory("timer")
 add_subdirectory("usart")
 add_subdirectory("usb")
 add_subdirectory("watchdog")
@@ -35,6 +36,7 @@ gen_intf_lib_variants(
     thor_lld_intf_rcc
     thor_lld_intf_spi
     thor_lld_intf_sys
+    thor_lld_intf_timer
     thor_lld_intf_usart
     thor_lld_intf_usb
     thor_lld_intf_watchdog

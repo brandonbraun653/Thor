@@ -40,7 +40,7 @@ namespace Thor::LLD::SYS
     Chimera::Peripheral::Type::PERIPH_RTC,
     Chimera::Peripheral::Type::PERIPH_SPI,
     Chimera::Peripheral::Type::PERIPH_SYSCFG,
-    Chimera::Peripheral::Type::PERIPH_TIM,
+    Chimera::Peripheral::Type::PERIPH_TIMER,
     Chimera::Peripheral::Type::PERIPH_UART,
     Chimera::Peripheral::Type::PERIPH_USART,
     Chimera::Peripheral::Type::PERIPH_USB,

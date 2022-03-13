@@ -22,11 +22,30 @@
 
 namespace Thor::LLD::TIMER
 {
-  /*-------------------------------------------------------------------------------
-  Peripheral Instances:
-    Memory mapped structs that allow direct access to the registers of a peripheral
-  -------------------------------------------------------------------------------*/
-
+  /*---------------------------------------------------------------------------
+  Peripheral Instances
+  ---------------------------------------------------------------------------*/
+#if defined( STM32_TIMER1_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER1_PERIPH;
+#endif
+#if defined( STM32_TIMER2_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER2_PERIPH;
+#endif
+#if defined( STM32_TIMER3_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER3_PERIPH;
+#endif
+#if defined( STM32_TIMER6_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER6_PERIPH;
+#endif
+#if defined( STM32_TIMER7_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER7_PERIPH;
+#endif
+#if defined( STM32_TIMER15_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER15_PERIPH;
+#endif
+#if defined( STM32_TIMER16_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER16_PERIPH;
+#endif
 
 
   /*-------------------------------------------------------------------------------

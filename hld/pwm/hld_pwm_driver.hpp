@@ -63,7 +63,7 @@ namespace Thor::PWM
 
 
     bool mInitialized;
-    Chimera::Timer::Peripheral mPeripheral;
+    Chimera::Timer::Instance mPeripheral;
     Chimera::Timer::PWM::Config mPWMConfig;
 
     Thor::GPIO::Driver_rPtr mpOutputPin;

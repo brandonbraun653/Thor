@@ -53,26 +53,6 @@ namespace Thor::LLD::TIMER
    */
   bool isChannelSupported( const size_t channel );
 
-  // IAdvancedDriver_rPtr getAdvancedDriver( const Thor::HLD::RIndex channel );
-
-  // IBasicDriver_rPtr getBasicDriver( const Thor::HLD::RIndex channel );
-
-  // GeneralDriver_rPtr getGeneralDriver( const Thor::HLD::RIndex channel );
-
-  // ILowPowerDriver_rPtr getLowPowerDriver( const Thor::HLD::RIndex channel );
-
-  // /**
-  //  *  Gets the peripheral description data associated with the
-  //  *  resource index.
-  //  *
-  //  *  @note This data is mapped to a resource index provided by the LLD implementation.
-  //  *        Do not use a HLD resource index to
-  //  *
-  //  *  @param[in]  lldIndex    The look up index (must be from LLD's perspective)
-  //  *  @return const DeviceDescription *
-  //  */
-  // const DeviceDescription *getPeripheralDescriptor( const Thor::LLD::RIndex lldIndex );
-
   /**
    *  Looks up a resource index based on a raw peripheral instance
    *
@@ -85,83 +65,49 @@ namespace Thor::LLD::TIMER
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class ICommonDriver
+  /**
+   * @brief Shared functionality among the General/Basic/Advanced drivers
+   */
+  class CommonHWDriver
   {
   public:
-    virtual ~ICommonDriver() = default;
+    /**
+     *  Attaches a peripheral instance to the interaction model
+     *
+     *  @param[in]  peripheral    Memory mapped struct of the desired peripheral
+     *  @return void
+     */
+    Chimera::Status_t attach( RegisterMap *const peripheral );
 
     /**
      *  Resets the hardware registers back to boot-up values
      *
      *  @return Chimera::Status_t
      */
-    virtual Chimera::Status_t reset() = 0;
+    Chimera::Status_t reset();
 
     /**
      *  Enables the peripheral clock
      *
      *  @return void
      */
-    virtual void clockEnable() = 0;
+    void clockEnable();
 
     /**
      *  Disables the peripheral clock
      *
      *  @return void
      */
-    virtual void clockDisable() = 0;
+    void clockDisable();
 
-    virtual void enableChannel( const size_t channel ) = 0;
+    void enableChannel( const size_t channel );
 
-    virtual void disableChannel( const size_t channel ) = 0;
-    //
-    //    virtual bool hasFunctionality( const Functionality func ) = 0;
-    //
-    //    virtual bool isType( const Type type ) = 0;
+    void disableChannel( const size_t channel );
+
+  protected:
+    RegisterMap * mPeriph;
   };
 
-  class IAdvancedDriver : public virtual ICommonDriver
-  {
-  public:
-    virtual ~IAdvancedDriver() = default;
-
-    /**
-     *  Attaches a peripheral instance to the interaction model
-     *
-     *  @param[in]  peripheral    Memory mapped struct of the desired peripheral
-     *  @return void
-     */
-    virtual Chimera::Status_t attach( RegisterMap *const peripheral ) = 0;
-  };
-
-  class IBasicDriver : public virtual ICommonDriver
-  {
-  public:
-    virtual ~IBasicDriver() = default;
-
-
-    /**
-     *  Attaches a peripheral instance to the interaction model
-     *
-     *  @param[in]  peripheral    Memory mapped struct of the desired peripheral
-     *  @return void
-     */
-    virtual Chimera::Status_t attach( RegisterMap *const peripheral ) = 0;
-  };
-
-  class ILowPowerDriver : public virtual ICommonDriver
-  {
-  public:
-    virtual ~ILowPowerDriver() = default;
-
-    /**
-     *  Attaches a peripheral instance to the interaction model
-     *
-     *  @param[in]  peripheral    Memory mapped struct of the desired peripheral
-     *  @return void
-     */
-    virtual Chimera::Status_t attach( LPRegisterMap *const peripheral ) = 0;
-  };
 }    // namespace Thor::LLD::TIMER
 
 #endif /* !LLD_TIMER_INTERFACE_HPP */

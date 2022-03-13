@@ -5,22 +5,20 @@
  *	 Description:
  *    Implementation of Chimera Timer driver hooks
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* STL Includes */
-#include <memory>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
 #include <Chimera/timer>
-
-/* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/timer>
 #include <Thor/hld/timer/hld_timer_chimera.hpp>
-#include <Thor/hld/timer/hld_timer_prv_driver.hpp>
-#include <Thor/lld/interface/timer/timer_detail.hpp>
+#include <Thor/lld/interface/inc/timer>
+#include <Thor/timer>
+#include <memory>
+
 
 namespace Chimera::Timer
 {
@@ -68,9 +66,6 @@ namespace Chimera::Timer
 
     Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverConfig &registry )
     {
-      /*-------------------------------------------------
-      Some functionality will always be enabled
-      -------------------------------------------------*/
       registry.isSupported            = true;
       registry.initialize             = initialize;
       registry.reset                  = reset;
@@ -80,10 +75,9 @@ namespace Chimera::Timer
       registry.micros                 = micros;
       registry.blockDelayMicroseconds = blockDelayMicroseconds;
       registry.blockDelayMilliseconds = blockDelayMilliseconds;
+      registry.build                  = Thor::TIMER::Factory::build;
 
       return Chimera::Status::OK;
     }
   }    // namespace Backend
-
 }    // namespace Chimera::Timer
-     // namespace Chimera::Timer

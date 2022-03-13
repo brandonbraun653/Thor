@@ -254,7 +254,7 @@ namespace Thor::LLD::DMA
       /*-------------------------------------------------
       Interrupt Settings: By default, enable everything
       -------------------------------------------------*/
-      mStream->CCR |= ( CCR_TCIE | CCR_HTIE | CCR_TEIE );
+      mStream->CCR |= ( CCR_TCIE | CCR_TEIE );
 
       /*-------------------------------------------------
       Configure the global interrupt priority

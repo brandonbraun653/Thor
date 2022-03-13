@@ -5,7 +5,7 @@
  *  Description:
  *    STM32 Interrupt Types
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -14,6 +14,7 @@
 
 /* STL Includes */
 #include <cstdint>
+#include <Thor/hld/common/preprocessor.hpp>
 
 
 /*-----------------------------------------------------------------------------
