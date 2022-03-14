@@ -38,48 +38,22 @@ namespace Thor::LLD::TIMER
   ---------------------------------------------------------------------------*/
   using AdvancedDriver_rPtr = AdvancedDriver *;
   using BasicDriver_rPtr    = BasicDriver *;
-  using GeneralDriver_rPtr   = GeneralDriver *;
+  using GeneralDriver_rPtr  = GeneralDriver *;
 
   /*---------------------------------------------------------------------------
   Enumerations
   ---------------------------------------------------------------------------*/
   /**
-   *  The category of timer peripheral that can exist. Not all
-   *  timers have the same capabilities.
+   * @brief Enumerates available hardware driver types
    */
-  enum class Type : uint8_t
+  enum class HardwareType : uint8_t
   {
-    INVALID,
-    ADVANCED_TIMER,
-    BASIC_TIMER,
-    GENERAL_PURPOSE_TIMER,
-    LOW_POWER_TIMER,
+    ADVANCED,
+    BASIC,
+    GENERAL,
 
-    NUM_OPTIONS
-  };
-
-  /**
-   *  Possible actions that a timer can do or behave as
-   */
-  enum class Functionality : uint8_t
-  {
-    PWM_GENERATION,
-
-  };
-
-  /*---------------------------------------------------------------------------
-  Structures
-  ---------------------------------------------------------------------------*/
-  struct DeviceDescription
-  {
-    uint8_t counterWidth;
-    uint8_t numChannels;
-    Type timerType;
-
-    void *registerMap;
-
-    const Chimera::Algorithm::OptionsList *supportedEvents;
-    const Chimera::Algorithm::OptionsList *supportedModes;
+    NUM_OPTIONS,
+    INVALID
   };
 
 }    // namespace Thor::LLD::TIMER

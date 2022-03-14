@@ -6,8 +6,8 @@ gen_static_lib_variants(
   SOURCES
     driver/lld_timer_advanced.cpp
     driver/lld_timer_basic.cpp
-    driver/lld_timer_driver_data.cpp
-    driver/lld_timer_driver_intf.cpp
+    driver/lld_timer_data.cpp
+    driver/lld_timer_intf.cpp
     driver/lld_timer_general.cpp
   PRV_LIBRARIES
     chimera_intf_inc

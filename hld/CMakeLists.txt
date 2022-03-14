@@ -12,7 +12,6 @@ add_subdirectory("exti")
 add_subdirectory("gpio")
 add_subdirectory("i2c")
 add_subdirectory("interrupt")
-add_subdirectory("pwm")
 add_subdirectory("spi")
 add_subdirectory("system")
 add_subdirectory("timer")
@@ -37,7 +36,6 @@ gen_intf_lib_variants(
     thor_hld_gpio
     thor_hld_i2c
     thor_hld_interrupt
-    thor_hld_pwm
     thor_hld_spi
     thor_hld_system
     thor_hld_timer

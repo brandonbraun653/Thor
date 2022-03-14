@@ -14,10 +14,9 @@ Includes
 #include <Aurora/constants>
 #include <Chimera/common>
 #include <Thor/cfg>
-#include <Thor/timer>
 #include <Thor/hld/common/types.hpp>
-#include <Thor/timer>
 #include <Thor/lld/interface/inc/timer>
+#include <Thor/timer>
 
 
 namespace Thor::TIMER
@@ -30,14 +29,19 @@ namespace Thor::TIMER
   ---------------------------------------------------------------------------*/
   Chimera::Status_t initializeModule()
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Prevent re-initialization from occurring
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto result = Chimera::Status::OK;
     if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
     {
       return result;
     }
+
+    /*-------------------------------------------------------------------------
+    Initialize the low level drivers
+    -------------------------------------------------------------------------*/
+    result = Thor::LLD::TIMER::initializeModule();
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return result;

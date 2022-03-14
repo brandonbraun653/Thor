@@ -44,7 +44,7 @@ gen_intf_lib_variants(
     thor_lld_stm32l4_spi
     thor_lld_stm32l4_startup
     thor_lld_stm32l4_system
-    thor_lld_stm32l4_timer
+    #thor_lld_stm32l4_timer
     thor_lld_stm32l4_usart
     thor_lld_stm32l4_wwdg
   EXPORT_DIR

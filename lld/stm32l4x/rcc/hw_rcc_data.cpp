@@ -543,7 +543,7 @@ namespace Thor::LLD::RCC
       .clockLP          = nullptr,
       .reset            = reinterpret_cast<const RegisterConfig*>( &TIMER_ResetConfig ),
       .clockSource      = reinterpret_cast<const Chimera::Clock::Bus*>( &TIMER_SourceClock ),
-      .getResourceIndex = TIMER::getResourceIndex
+      .getResourceIndex = TIMER::getGlobalResourceIndex
     },
     #endif /* THOR_LLD_TIMER */
 

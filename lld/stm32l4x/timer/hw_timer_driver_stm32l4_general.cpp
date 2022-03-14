@@ -24,66 +24,6 @@
 
 namespace Thor::LLD::TIMER
 {
-  // static std::array<GeneralDriver_rPtr, NUM_GENERAL_PERIPHS> s_general_drivers;
-
-  // /*-------------------------------------------------------------------------------
-  // LLD Public Free Functions
-  // -------------------------------------------------------------------------------*/
-  // GeneralDriver_rPtr getGeneralDriver( const Thor::HLD::RIndex channel )
-  // {
-  //   const auto ch = channel.value();
-
-  //   /*------------------------------------------------
-  //   Input protection
-  //   ------------------------------------------------*/
-  //   if ( ch >= s_general_drivers.size() )
-  //   {
-  //     return nullptr;
-  //   }
-
-  //   /*------------------------------------------------
-  //   Create the driver if it doesn't exist yet
-  //   ------------------------------------------------*/
-  //   if ( !s_general_drivers[ ch ] )
-  //   {
-  //     s_general_drivers[ ch ] = new GeneralDriverImpl;
-  //   }
-
-  //   return s_general_drivers[ ch ];
-  // }
-
-  // /*-------------------------------------------------------------------------------
-  // General Low Level Driver Implementation
-  // -------------------------------------------------------------------------------*/
-  // GeneralDriverImpl::GeneralDriverImpl() : mpPeriph( nullptr )
-  // {
-  // }
-
-  // GeneralDriverImpl::~GeneralDriverImpl()
-  // {
-  // }
-
-  // Chimera::Status_t GeneralDriverImpl::reset()
-  // {
-  //   return Chimera::Status::OK;
-  // }
-
-  // void GeneralDriverImpl::clockEnable()
-  // {
-  //   auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
-  //   //rcc->enableClock( Chimera::Peripheral::Type::PERIPH_TIMER, mRIndex.value() );
-  // }
-
-  // void GeneralDriverImpl::clockDisable()
-  // {
-  //   auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
-  //   //rcc->disableClock( Chimera::Peripheral::Type::PERIPH_TIMER, mRIndex.value() );
-  // }
-
-  // void GeneralDriverImpl::toggleCounter( const bool state )
-  // {
-  //   state ? CEN::set( mpPeriph, TIM_CR1_CEN ) : CEN::set( mpPeriph, 0 );
-  // }
 
   // void GeneralDriverImpl::toggleChannel( const Chimera::Timer::Channel channel, const bool state )
   // {
@@ -117,41 +57,6 @@ namespace Thor::LLD::TIMER
   //   return Chimera::Status::OK;
   // }
 
-  // Chimera::Status_t GeneralDriverImpl::initBaseTimer( const Chimera::Timer::DriverConfig &cfg )
-  // {
-  //   /*------------------------------------------------
-  //   Turn on the peripehral clock and ensure the counter has been turned off
-  //   ------------------------------------------------*/
-  //   clockEnable();
-  //   toggleCounter( false );
-
-  //   /*------------------------------------------------
-  //   Configure the base timer
-  //   ------------------------------------------------*/
-  //   /* Set the counter direction */
-  //   DIR::set( mpPeriph, LUT_Direction[ static_cast<size_t>( cfg.countDirection ) ] );
-
-  //   /* Set the Auto-Reload Register */
-  //   ARR::set( mpPeriph, cfg.reloadValue );
-
-  //   /* Automatically buffer the ARR register updates */
-  //   ARPE::set( mpPeriph, TIM_CR1_ARPE );
-
-  //   /* Set the clock prescaler */
-  //   PSC::set( mpPeriph, cfg.prescaler );
-
-  //   /* Reset the counter to the reload value, indicating a "reset" */
-  //   CNT::set( mpPeriph, cfg.reloadValue );
-
-  //   /* Make sure One Pulse mode is disabled */
-  //   OPM::set( mpPeriph, 0 );
-
-  //   /*------------------------------------------------
-  //   Re-enable the counter
-  //   ------------------------------------------------*/
-  //   toggleCounter( true );
-  //   return Chimera::Status::OK;
-  // }
 
   // Chimera::Status_t GeneralDriverImpl::initPWM( const Chimera::Timer::PWM::Config &cfg )
   // {

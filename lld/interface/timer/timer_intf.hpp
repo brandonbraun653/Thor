@@ -5,7 +5,7 @@
  *  Description:
  *    LLD Timer Interface
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -17,7 +17,6 @@
 
 /* Chimera Includes */
 #include <Chimera/common>
-#include <Chimera/pwm>
 #include <Chimera/timer>
 
 /* Thor Includes */
@@ -41,72 +40,36 @@ namespace Thor::LLD::TIMER
   Public Functions
   -------------------------------------------------------------------------------*/
   /**
-   *  Initializes the low level driver
+   * @brief Initializes the low level driver
    */
   Chimera::Status_t initializeModule();
 
   /**
-   *  Checks if the given hardware channel is supported on this device.
+   * @brief Looks up the global resource index based on a raw peripheral address
    *
-   *  @param[in]  channel       The channel number to be checked
-   *  @return bool
+   * @param address     The peripheral address
+   * @return RIndex_t
    */
-  bool isChannelSupported( const size_t channel );
+  RIndex_t getGlobalResourceIndex( const std::uintptr_t address );
 
   /**
-   *  Looks up a resource index based on a raw peripheral instance
+   * @brief Looks up the Timer type resource index based on a raw peripheral address
    *
-   *  @param[in]  address       The peripheral address
-   *  @return RIndex_t
+   * There are a subset of resources per timer type (general, advanced, etc.) that
+   * may be accessed.
+   *
+   * @param address     The peripheral address
+   * @return RIndex_t
    */
-  RIndex_t getResourceIndex( const std::uintptr_t address );
+  RIndex_t getTypeResourceIndex( const std::uintptr_t address );
 
-
-  /*-------------------------------------------------------------------------------
-  Classes
-  -------------------------------------------------------------------------------*/
   /**
-   * @brief Shared functionality among the General/Basic/Advanced drivers
+   * @brief Translates a peripheral address into the appropriate hardware type
+   *
+   * @param address     The peripheral address
+   * @return HardwareType
    */
-  class CommonHWDriver
-  {
-  public:
-    /**
-     *  Attaches a peripheral instance to the interaction model
-     *
-     *  @param[in]  peripheral    Memory mapped struct of the desired peripheral
-     *  @return void
-     */
-    Chimera::Status_t attach( RegisterMap *const peripheral );
-
-    /**
-     *  Resets the hardware registers back to boot-up values
-     *
-     *  @return Chimera::Status_t
-     */
-    Chimera::Status_t reset();
-
-    /**
-     *  Enables the peripheral clock
-     *
-     *  @return void
-     */
-    void clockEnable();
-
-    /**
-     *  Disables the peripheral clock
-     *
-     *  @return void
-     */
-    void clockDisable();
-
-    void enableChannel( const size_t channel );
-
-    void disableChannel( const size_t channel );
-
-  protected:
-    RegisterMap * mPeriph;
-  };
+  HardwareType getHardwareType( const std::uintptr_t address );
 
 }    // namespace Thor::LLD::TIMER
 

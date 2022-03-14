@@ -17,7 +17,6 @@
 #include <Thor/interrupt>
 #include <Thor/dma>
 #include <Thor/gpio>
-#include <Thor/pwm>
 #include <Thor/spi>
 #include <Thor/uart>
 #include <Thor/usart>

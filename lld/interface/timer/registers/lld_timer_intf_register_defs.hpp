@@ -76,15 +76,15 @@ namespace Thor::LLD::TIMER
   /*---------------------------------------------------------------------------
   TIMx_CR1: Control Register 1
   ---------------------------------------------------------------------------*/
-  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_UIFREMAP, UIFREMAP, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_CKD, CKD, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_ARPE, ARPE, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_CMS, CMS, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_DIR, DIR, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_OPM, OPM, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_URS, URS, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_UDIS, UDIS, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CR1, TIM_CR1_CEN, CEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_UIFREMAP, UIFREMAP, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_CKD, CKD, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_ARPE, ARPE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_CMS, CMS, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_DIR, DIR, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_OPM, OPM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_URS, URS, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_UDIS, UDIS, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR1, CR1_CEN, CEN, BIT_ACCESS_RW );
 
   /*---------------------------------------------------------------------------
   TIMx_CR2: Control Register 2
@@ -114,49 +114,49 @@ namespace Thor::LLD::TIMER
   /*---------------------------------------------------------------------------
   TIMx_CCMR1: capture/compare mode register 1
   ---------------------------------------------------------------------------*/
-  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_OC2M, OC2M, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_OC2PE, OC2PE, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_CC2S, CC2S, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_OC1M, OC1M, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_OC1PE, OC1PE, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCMR1, TIM_CCMR1_CC1S, CC1S, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR1, CCMR1_OC2M, OC2M, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR1, CCMR1_OC2PE, OC2PE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR1, CCMR1_CC2S, CC2S, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR1, CCMR1_OC1M, OC1M, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR1, CCMR1_OC1PE, OC1PE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR1, CCMR1_CC1S, CC1S, BIT_ACCESS_RW );
 
   /*---------------------------------------------------------------------------
   TIMx_CCMR2: capture/compare mode register 2
   ---------------------------------------------------------------------------*/
-  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_OC4M, OC4M, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_OC4PE, OC4PE, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_CC4S, CC4S, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_OC3M, OC3M, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_OC3PE, OC3PE, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCMR2, TIM_CCMR2_CC3S, CC3S, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR2, CCMR2_OC4M, OC4M, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR2, CCMR2_OC4PE, OC4PE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR2, CCMR2_CC4S, CC4S, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR2, CCMR2_OC3M, OC3M, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR2, CCMR2_OC3PE, OC3PE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCMR2, CCMR2_CC3S, CC3S, BIT_ACCESS_RW );
 
   /*---------------------------------------------------------------------------
   TIMx_CCER:  capture/compare enable register
   ---------------------------------------------------------------------------*/
-  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC1P, CC1P, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC1E, CC1E, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC2P, CC2P, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC2E, CC2E, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC3P, CC3P, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC3E, CC3E, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC4P, CC4P, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCER, TIM_CCER_CC4E, CC4E, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC1P, CC1P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC1E, CC1E, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC2P, CC2P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC2E, CC2E, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC3P, CC3P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC3E, CC3E, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC4P, CC4P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC4E, CC4E, BIT_ACCESS_RW );
 
   /*---------------------------------------------------------------------------
   TIMx_CNT:   counter register
   ---------------------------------------------------------------------------*/
-  REG_ACCESSOR( RegisterMap, CNT, TIM_CNT_CNT, CNT, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CNT, CNT_CNT, CNT, BIT_ACCESS_RW );
 
   /*---------------------------------------------------------------------------
   TIMx_PSC:   prescaler
   ---------------------------------------------------------------------------*/
-  REG_ACCESSOR( RegisterMap, PSC, TIM_PSC_PSC, PSC, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PSC, PSC_PSC, PSC, BIT_ACCESS_RW );
 
   /*---------------------------------------------------------------------------
   TIMx_ARR:   auto-reload register
   ---------------------------------------------------------------------------*/
-  REG_ACCESSOR( RegisterMap, ARR, TIM_ARR_ARR, ARR, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, ARR, ARR_ARR, ARR, BIT_ACCESS_RW );
 
   /*---------------------------------------------------------------------------
   TIMx_RCR:   repetition counter register
@@ -166,10 +166,10 @@ namespace Thor::LLD::TIMER
   /*---------------------------------------------------------------------------
   TIMx_CCR1:  capture/compare register 1-4
   ---------------------------------------------------------------------------*/
-  REG_ACCESSOR( RegisterMap, CCR1, TIM_CCR1_CCR1, CCR1, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCR2, TIM_CCR2_CCR2, CCR2, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCR3, TIM_CCR3_CCR3, CCR3, BIT_ACCESS_RW );
-  REG_ACCESSOR( RegisterMap, CCR4, TIM_CCR4_CCR4, CCR4, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCR1, CCR1_CCR1, CCR1, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCR2, CCR2_CCR2, CCR2, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCR3, CCR3_CCR3, CCR3, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCR4, CCR4_CCR4, CCR4, BIT_ACCESS_RW );
 
   /*---------------------------------------------------------------------------
   TIMx_BDTR:  break and dead-time register
