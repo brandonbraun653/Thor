@@ -3,9 +3,9 @@
  *    hw_i2c_driver.cpp
  *
  *  Description:
- *    I2C driver for STM32F4
+ *    I2C driver for STM32L4
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2022 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -19,7 +19,7 @@ Includes
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
 
-#if defined( THOR_LLD_I2C ) && defined( TARGET_STM32F4 )
+#if defined( THOR_LLD_I2C ) && defined( TARGET_STM32L4 )
 namespace Thor::LLD::I2C
 {
   /*---------------------------------------------------------------------------
@@ -121,68 +121,51 @@ namespace Thor::LLD::I2C
 
     /* Reset the peripheral hardware using dedicated interface */
     this->enableClock();
-    SWRST::set( mPeriph, CR1_SWRST );
-    SWRST::clear( mPeriph, CR1_SWRST );
+    PE::clear( mPeriph, CR1_PE );
 
     /* Assign peripheral clock frequency */
     auto rccControl = Thor::LLD::RCC::getCoreClockCtrl();
     auto freq       = rccControl->getPeriphClock( pType, reinterpret_cast<std::uintptr_t>( mPeriph ) );
     auto freqMHz    = freq / 1000000;
 
-    RT_HARD_ASSERT( ( 2 <= freqMHz ) && ( freqMHz <= 50 ) );
-    FREQ::set( mPeriph, ( freqMHz << CR2_FREQ_Pos ) );
+    /*-------------------------------------------------------------------------
+    Rather than go through an expensive and buggy clock timing register setup,
+    I used the STM32CubeMX tool to auto-calculate the required values. I've
+    found that my projects don't alter the core system clock, so it's easier to
+    just use these hard-coded values. The assert will guarantee compatibility
+    breaks will get noticed.
 
-    /* Set Full Speed or Standard mode */
-    if ( cfg.HWInit.frequency == Chimera::I2C::Frequency::F400KHZ )
+    These values assume:
+      I2C Clock: 80 MHz
+      Digital Noise Filter Coefficient: 4
+      Analog Noise Filter: Enabled
+      Rise Time: 50ns
+      Fall Time: 50ns
+    -------------------------------------------------------------------------*/
+    RT_HARD_ASSERT( freqMHz == 80 );
+
+    ANFOFF::clear( mPeriph, CR1_ANFOFF );          // Enable analog filter
+    DNF::set( mPeriph, ( 4u << CR1_DNF_Pos ) );    // Enable digital filter
+
+    switch ( cfg.HWInit.frequency )
     {
-      // Per datasheet, 400kHz speed can't be reached if peripheral clock isn't multiple of 10
-      RT_HARD_ASSERT( ( freq % 10 ) == 0 );
-      FS::set( mPeriph, CCR_FS );
-    }
-    else
-    {
-      RT_HARD_ASSERT( cfg.HWInit.frequency == Chimera::I2C::Frequency::F100KHZ );
-      FS::clear( mPeriph, CCR_FS );
-    }
+      case Chimera::I2C::Frequency::F400KHZ:
+        TIMINGR_ALL::set( mPeriph, 0x00B02585 );
+        break;
 
-    /* Set clock duty cycle */
-    DUTY::clear( mPeriph, CCR_DUTY );
+      case Chimera::I2C::Frequency::F100KHZ:
+        TIMINGR_ALL::set( mPeriph, 0x105081FF );
+        break;
 
-    /* Configure clock high/low timings */
-    const float pClockPeriod   = 1.0f / static_cast<float>( freq );
-    const float pClockPeriodNs = pClockPeriod * 1000000000.0f;
-
-    float tmp     = 0.0f;
-    float rtRatio = 0.0f;
-    if ( cfg.HWInit.frequency == Chimera::I2C::Frequency::F100KHZ )
-    {
-      tmp     = ( period100khz / 2.0f ) / pClockPeriodNs;
-      rtRatio = pClockPeriodNs / maxrt100khz;
-    }
-    else
-    {
-      tmp     = ( period400khz / 3.0f ) / pClockPeriodNs;
-      rtRatio = pClockPeriodNs / maxrt400khz;
-    }
-
-    size_t ccr_val = static_cast<size_t>( tmp );
-    CCR::set( mPeriph, ( ccr_val << CCR_CCR_Pos ) );
-
-    /* Configure clock rise time limits */
-    size_t rt_val = static_cast<size_t>( rtRatio ) + 1u;
-    TRISE::set( mPeriph, ( rt_val << TRISE_TRISE_Pos ) );
+      default:
+        RT_HARD_ASSERT( false );
+        break;
+    };
 
     /*-------------------------------------------------------------------------
-    Configure basic hardware settings
+    Configure hardware interrupts
     -------------------------------------------------------------------------*/
-    /* Configure interrupts */
-    ITBUFEN::set( mPeriph, CR2_ITBUFEN );
-    ITEVTEN::set( mPeriph, CR2_ITEVTEN );
-    ITERREN::set( mPeriph, CR2_ITERREN );
-
-    /* Configure noise filtering */
-    ANOFF::clear( mPeriph, FLTR_ANOFF );
-    DNF::set( mPeriph, ( 3u << FLTR_DNF_Pos ) );
+    CR1_ALL::set( mPeriph, ( CR1_NACKIE | CR1_TCIE | CR1_ERRIE | CR1_TXIE | CR1_RXIE ) );
 
     /*-------------------------------------------------------------------------
     Configure the interrupt controller
@@ -314,16 +297,29 @@ namespace Thor::LLD::I2C
     mTransfer.txData     = tx_data;
     mTransfer.rxData     = rx_data;
     mTransfer.length     = length;
-    mTransfer.state      = TxfrState::ADDRESS;
+    mTransfer.state      = TxfrState::DATA;
+    mTransfer.index      = 0;
     mTransfer.mode       = Chimera::Peripheral::TransferMode::INTERRUPT;
 
-    /* Ensure the expected interrupts are enabled */
-    enableISRSignal( bSB );
+    ADD10::clear( mPeriph, CR2_ADD10 );                                // 7-bit addressing mode
+    SADD::set( mPeriph, ( mTransfer.address << CR2_SADD_Pos ) );       // Destination address
+    NBYTES::set( mPeriph, ( mTransfer.length << CR2_NBYTES_Pos ) );    // Total data bytes
+
+    if ( tx_data )
+    {
+      RDWRN::clear( mPeriph, CR2_RD_WRN );    // Write transfer
+    }
+    else
+    {
+      RDWRN::set( mPeriph, CR2_RD_WRN );    // Read transfer
+    }
 
     /*-------------------------------------------------------------------------
     Trigger the transfer. This will jump to the event interrupt handler.
     -------------------------------------------------------------------------*/
-    START::set( mPeriph, CR1_START );
+    PECBYTE::clear( mPeriph, CR2_PECBYTE );    // No packet error checking
+    AUTOEND::set( mPeriph, CR2_AUTOEND );      // Auto end the transfer after last byte
+    START::set( mPeriph, CR2_START );
 
     return Chimera::Status::OK;
   }
@@ -346,18 +342,8 @@ namespace Thor::LLD::I2C
     /*-------------------------------------------------------------------------
     Local Variables
     -------------------------------------------------------------------------*/
-    const uint32_t sr1 = SR1::get( mPeriph );
-    const uint32_t sr2 = SR2::get( mPeriph );
+    const uint32_t isr = ISR_ALL::get( mPeriph );
 
-    /*-------------------------------------------------------------------------
-    NACK? This is the most common issue.
-    -------------------------------------------------------------------------*/
-    if( sr1 & SR1_AF )
-    {
-      mTransfer.errorBF |= ( 1u << TxfrError::ERR_NACK );
-      AF::set( mPeriph, 0 );
-      STOP::set( mPeriph, CR1_STOP );
-    }
 
     /*-------------------------------------------------------------------------
     Wake the user task to respond to the error
@@ -374,35 +360,41 @@ namespace Thor::LLD::I2C
     /*-------------------------------------------------------------------------
     Local Variables
     -------------------------------------------------------------------------*/
-    const uint32_t sr1 = SR1::get( mPeriph );
-    const uint32_t sr2 = SR2::get( mPeriph );
-    uint32_t data_reg = 0;
-    uint8_t *rx_data_ptr = nullptr;
+    const uint32_t isr = ISR_ALL::get( mPeriph );
+
+    uint32_t data_reg          = 0;
+    uint8_t *rx_data_ptr       = nullptr;
     const uint8_t *tx_data_ptr = nullptr;
 
     /*-------------------------------------------------------------------------
     Handle an on-going transfer in Interrupt mode
     -------------------------------------------------------------------------*/
-    if( mTransfer.inProgress && ( mTransfer.mode == Chimera::Peripheral::TransferMode::INTERRUPT ) )
+    if ( mTransfer.inProgress && ( mTransfer.mode == Chimera::Peripheral::TransferMode::INTERRUPT ) )
     {
-      switch( mTransfer.state )
+      /*-----------------------------------------------------------------------
+      NACK? This is the most common issue.
+      -----------------------------------------------------------------------*/
+      if ( isr & ISR_NACKF )
       {
-        case TxfrState::ADDRESS:
-          if( sr1 & SR1_SB )
-          {
-            DR::set( mPeriph, mTransfer.address << DR_DR_Pos );
-            mTransfer.index = 0;
-            mTransfer.state = TxfrState::DATA;
-          }
-          break;
+        mTransfer.inProgress = false;
+        mTransfer.state      = TxfrState::ERROR;
+        mTransfer.errorBF |= ( 1u << TxfrError::ERR_NACK );
+        NACKCF::set( mPeriph, ICR_NACKCF );
+        STOP::set( mPeriph, CR2_STOP );
+      }
 
+      /*-----------------------------------------------------------------------
+      Handle the current transfer state
+      -----------------------------------------------------------------------*/
+      switch ( mTransfer.state )
+      {
         case TxfrState::DATA:
           /*-------------------------------------------------------------------
           Pull new data off the RX shift register
           -------------------------------------------------------------------*/
-          if ( ( sr1 & SR1_RXNE ) && mTransfer.rxData )
+          if ( ( isr & ISR_RXNE ) && mTransfer.rxData )
           {
-            data_reg                       = DR::get( mPeriph );
+            data_reg                       = RXDATA::get( mPeriph );
             rx_data_ptr                    = reinterpret_cast<uint8_t *>( mTransfer.rxData );
             rx_data_ptr[ mTransfer.index ] = static_cast<uint8_t>( data_reg );
           }
@@ -410,31 +402,37 @@ namespace Thor::LLD::I2C
           /*-------------------------------------------------------------------
           Push new data to the TX shift register
           -------------------------------------------------------------------*/
-          if ( ( sr1 & SR1_TXE ) && mTransfer.txData )
+          if ( ( isr & ISR_TXE ) && mTransfer.txData )
           {
             tx_data_ptr = reinterpret_cast<const uint8_t *>( mTransfer.txData );
-            DR::set( mPeriph, tx_data_ptr[ mTransfer.index ] );
+            TXDATA::set( mPeriph, tx_data_ptr[ mTransfer.index ] );
           }
 
           /*-------------------------------------------------------------------
           Update the tracking data
           -------------------------------------------------------------------*/
           mTransfer.index++;
-          if( mTransfer.index < mTransfer.length )
+          if ( mTransfer.index <= mTransfer.length )
           {
             mTransfer.state = TxfrState::COMPLETE;
           }
           break;
 
         case TxfrState::COMPLETE:
+          ICR_ALL::set( mPeriph, 0xFFFFFFFF );
           sendTaskMsg( INT::getUserTaskId( Type::PERIPH_I2C ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
           break;
 
         case TxfrState::ERROR:
         default:
-
+          ICR_ALL::set( mPeriph, 0xFFFFFFFF );
+          sendTaskMsg( INT::getUserTaskId( Type::PERIPH_I2C ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
           break;
       };
+    }
+    else
+    {
+      ICR_ALL::set( mPeriph, 0xFFFFFFFF );
     }
   }
 

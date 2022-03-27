@@ -38,6 +38,10 @@ namespace Thor::System::MemoryMap
   /*-------------------------------------------------
   APB1
   -------------------------------------------------*/
+  static constexpr uint32_t I2C3_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x5C00;
+  static constexpr uint32_t I2C2_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x5800;
+  static constexpr uint32_t I2C1_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x5400;
+
   static constexpr uint32_t CAN1_PERIPH_START_ADDRESS = APB1_RGN_START_ADDRESS + 0x6400;
   static constexpr uint32_t CAN1_PERIPH_END_ADDRESS   = APB1_RGN_START_ADDRESS + 0x67FF;
 

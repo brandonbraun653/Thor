@@ -81,14 +81,4 @@ namespace Thor::TIMER
   {
     Thor::LLD::TIMER::blockDelayMicros( us );
   }
-
-
-  namespace Factory
-  {
-    Chimera::Timer::ITimer *build( const Chimera::Timer::TimerInterface type, const Chimera::Timer::Instance periph )
-    {
-      return nullptr;
-    }
-  }
-
 }    // namespace Thor::TIMER

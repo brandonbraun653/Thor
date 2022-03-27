@@ -5,7 +5,7 @@
  *  Description:
  *    Includes the LLD specific headers for chip implementation details
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -21,9 +21,9 @@
 #elif defined( TARGET_STM32F4 )
 #include <Thor/lld/stm32f4x/i2c/hw_i2c_prj.hpp>
 #include <Thor/lld/stm32f4x/i2c/hw_i2c_types.hpp>
-// #elif defined( TARGET_STM32L4 )
-// #include <Thor/lld/stm32l4x/i2c/hw_i2c_prj.hpp>
-// #include <Thor/lld/stm32l4x/i2c/hw_i2c_types.hpp>
+#elif defined( TARGET_STM32L4 )
+#include <Thor/lld/stm32l4x/i2c/hw_i2c_prj.hpp>
+#include <Thor/lld/stm32l4x/i2c/hw_i2c_types.hpp>
 #else
 #pragma message( "i2c_detail.hpp: Unknown target for LLD" )
 #endif

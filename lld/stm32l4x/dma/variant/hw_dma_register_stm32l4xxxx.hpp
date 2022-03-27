@@ -9,7 +9,8 @@
  *******************************************************************************/
 
 #pragma once
-#ifndef THOR_HW_REGISTER_STM32L4XXXX_HPP
+#ifndef THOR_HW_DMA_REGISTER_STM32L4XXX_HPP
+#define THOR_HW_DMA_REGISTER_STM32L4XXX_HPP
 
 #include <Chimera/common>
 #include <Thor/lld/stm32l4x/system/sys_memory_map_prj.hpp>
@@ -335,4 +336,4 @@ namespace Thor::LLD::DMA
 
 }    // namespace Thor::LLD::DMA
 
-#endif
+#endif  /* THOR_HW_DMA_REGISTER_STM32L4XXX_HPP */

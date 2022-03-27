@@ -15,6 +15,7 @@
 #include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/flash>
 #include <Thor/lld/interface/inc/gpio>
+#include <Thor/lld/interface/inc/i2c>
 #include <Thor/lld/interface/inc/power>
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/spi>
@@ -161,6 +162,52 @@ namespace Thor::LLD::RCC
   };
   /* clang-format on */
 #endif /* THOR_LLD_GPIO */
+
+#if defined( THOR_LLD_I2C )
+  /* clang-format off */
+  static const RegisterConfig I2C_ClockConfig[ I2C::NUM_I2C_PERIPHS ]      = {
+    #if defined( STM32_I2C1_PERIPH_AVAILABLE )
+    { .mask = APB1ENR1_I2C1EN, .reg  = &RCC1_PERIPH->APB1ENR1 },
+    #endif
+
+    #if defined( STM32_I2C2_PERIPH_AVAILABLE )
+    { .mask = APB1ENR1_I2C2EN, .reg  = &RCC1_PERIPH->APB1ENR1 },
+    #endif
+
+    #if defined( STM32_I2C3_PERIPH_AVAILABLE )
+    { .mask = APB1ENR1_I2C3EN, .reg  = &RCC1_PERIPH->APB1ENR1 }
+    #endif
+  };
+
+  static const RegisterConfig I2C_ResetConfig[ I2C::NUM_I2C_PERIPHS ]      = {
+    #if defined( STM32_I2C1_PERIPH_AVAILABLE )
+    { .mask = APB1RSTR1_I2C1RST, .reg = &RCC1_PERIPH->APB1RSTR1 },
+    #endif
+
+    #if defined( STM32_I2C2_PERIPH_AVAILABLE )
+    { .mask = APB1RSTR1_I2C2RST, .reg = &RCC1_PERIPH->APB1RSTR1 },
+    #endif
+
+    #if defined( STM32_I2C3_PERIPH_AVAILABLE )
+    { .mask = APB1RSTR1_I2C3RST, .reg = &RCC1_PERIPH->APB1RSTR1 }
+    #endif
+  };
+
+  static const Chimera::Clock::Bus I2C_SourceClock[ I2C::NUM_I2C_PERIPHS ] = {
+    #if defined( STM32_I2C1_PERIPH_AVAILABLE )
+    Chimera::Clock::Bus::APB1,
+    #endif
+
+    #if defined( STM32_I2C2_PERIPH_AVAILABLE )
+    Chimera::Clock::Bus::APB1,
+    #endif
+
+    #if defined( STM32_I2C3_PERIPH_AVAILABLE )
+    Chimera::Clock::Bus::APB1
+    #endif
+  };
+  /* clang-format on */
+#endif  /* THOR_LLD_I2C */
 
 #if defined( THOR_LLD_PWR )
   /* clang-format off */
@@ -490,6 +537,20 @@ namespace Thor::LLD::RCC
       .getResourceIndex = GPIO::getResourceIndex
     },
     #endif /* THOR_LLD_GPIO */
+
+    #if defined( THOR_LLD_I2C )
+    {
+      .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_I2C ),
+      .elements         = I2C::NUM_I2C_PERIPHS,
+      .bfControl        = 0,
+      .reserved         = 0,
+      .clock            = reinterpret_cast<const RegisterConfig*>( &I2C_ClockConfig ),
+      .clockLP          = nullptr,
+      .reset            = reinterpret_cast<const RegisterConfig*>( &I2C_ResetConfig ),
+      .clockSource      = reinterpret_cast<const Chimera::Clock::Bus*>( &I2C_SourceClock ),
+      .getResourceIndex = I2C::getResourceIndex
+    },
+    #endif /* THOR_LLD_I2C */
 
     #if defined( THOR_LLD_PWR )
     {

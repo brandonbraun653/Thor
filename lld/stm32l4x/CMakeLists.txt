@@ -11,6 +11,7 @@ add_subdirectory("dma")
 add_subdirectory("exti")
 add_subdirectory("flash")
 add_subdirectory("gpio")
+add_subdirectory("i2c")
 add_subdirectory("interrupt")
 add_subdirectory("iwdg")
 add_subdirectory("power")
@@ -37,6 +38,7 @@ gen_intf_lib_variants(
     thor_lld_stm32l4_exti
     thor_lld_stm32l4_flash
     thor_lld_stm32l4_gpio
+    thor_lld_stm32l4_i2c
     thor_lld_stm32l4_interrupt
     thor_lld_stm32l4_iwdg
     thor_lld_stm32l4_power
@@ -44,7 +46,6 @@ gen_intf_lib_variants(
     thor_lld_stm32l4_spi
     thor_lld_stm32l4_startup
     thor_lld_stm32l4_system
-    #thor_lld_stm32l4_timer
     thor_lld_stm32l4_usart
     thor_lld_stm32l4_wwdg
   EXPORT_DIR

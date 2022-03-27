@@ -102,6 +102,7 @@ namespace Thor::LLD::GPIO
   {
     /* Determine how far to shift into the register based on the config bit width */
     Reg32_t const shift_val = pin * MODER_CFG_X_WID;
+    Reg32_t tmp = 0;
 
     /*------------------------------------------------
     1. Read the current state of the register
@@ -109,10 +110,32 @@ namespace Thor::LLD::GPIO
     3. Assign bits from (2) with new value, masked appropriately
     4. Push into the device register
     ------------------------------------------------*/
-    Reg32_t tmp = mPeriph->MODER;
+    tmp = mPeriph->MODER;
     tmp &= ~( MODER_CFG_X_MSK << shift_val );
     tmp |= ( ConfigMap::ModeMap[ static_cast<size_t>( drive ) ] & MODER_CFG_X_MSK ) << shift_val;
     mPeriph->MODER = tmp;
+
+    /*-------------------------------------------------------------------------
+    Set the output drive type
+    -------------------------------------------------------------------------*/
+    tmp = mPeriph->OTYPER;
+    switch( drive )
+    {
+      case Chimera::GPIO::Drive::ALTERNATE_OPEN_DRAIN:
+      case Chimera::GPIO::Drive::OUTPUT_OPEN_DRAIN:
+        tmp |= ( 1u << pin );
+        break;
+
+      case Chimera::GPIO::Drive::ALTERNATE_PUSH_PULL:
+      case Chimera::GPIO::Drive::OUTPUT_PUSH_PULL:
+        tmp &= ~( 1u << pin );
+        break;
+
+      default:
+        // Nothing to modify
+        break;
+    };
+    mPeriph->OTYPER = tmp;
 
     return Chimera::Status::OK;
   }

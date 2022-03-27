@@ -75,7 +75,6 @@ namespace Chimera::Timer
       registry.micros                 = micros;
       registry.blockDelayMicroseconds = blockDelayMicroseconds;
       registry.blockDelayMilliseconds = blockDelayMilliseconds;
-      registry.build                  = Thor::TIMER::Factory::build;
 
       return Chimera::Status::OK;
     }
