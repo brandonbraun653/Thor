@@ -69,8 +69,17 @@ namespace Thor::LLD::I2C
   enum TxfrError : uint8_t
   {
     ERR_NACK,
+    ERR_BUS,
+    ERR_ARBITRATION_LOSS,
+    ERR_OVER_UNDER_RUN,
+    ERR_PACKET_ERROR_CHECK,
+    ERR_TIMEOUT,
+    ERR_SMBUS_ALERT,
 
+    ERR_NUM_OPTIONS,
+    ERR_UNKNOWN
   };
+  static_assert( ERR_NUM_OPTIONS < CHAR_BIT );
 
   /*---------------------------------------------------------------------------
   Structures

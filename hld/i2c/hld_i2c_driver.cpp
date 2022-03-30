@@ -161,6 +161,28 @@ namespace Thor::I2C
     this->initAIO();
 
     /*-------------------------------------------------------------------------
+    Reset the I2C bus by twiddling the SCL line
+    -------------------------------------------------------------------------*/
+    Chimera::GPIO::PinInit sclCfg;
+
+    sclCfg.clear();
+    sclCfg.alternate = Chimera::GPIO::Alternate::NONE;
+    sclCfg.drive     = Chimera::GPIO::Drive::OUTPUT_PUSH_PULL;
+    sclCfg.pull      = Chimera::GPIO::Pull::NO_PULL;
+    sclCfg.pin       = cfg.SCLInit.pin;
+    sclCfg.port      = cfg.SCLInit.port;
+    sclCfg.state     = Chimera::GPIO::State::HIGH;
+    sclCfg.validity  = true;
+
+    auto gpio = Chimera::GPIO::getDriver( sclCfg.port, sclCfg.pin );
+    gpio->init( sclCfg);
+    for( size_t cnt = 0; cnt < 30; cnt++ )
+    {
+      gpio->toggle();
+    }
+
+
+    /*-------------------------------------------------------------------------
     Configure the SCL/SDA GPIO
     -------------------------------------------------------------------------*/
     auto pin = Chimera::GPIO::getDriver( cfg.SCLInit.port, cfg.SCLInit.pin );
