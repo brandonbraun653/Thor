@@ -181,9 +181,8 @@ namespace Thor::I2C
       gpio->toggle();
     }
 
-
     /*-------------------------------------------------------------------------
-    Configure the SCL/SDA GPIO
+    Configure the SCL/SDA GPIO for peripheral function
     -------------------------------------------------------------------------*/
     auto pin = Chimera::GPIO::getDriver( cfg.SCLInit.port, cfg.SCLInit.pin );
     auto result = pin->init( cfg.SCLInit );
@@ -269,13 +268,34 @@ namespace Thor::I2C
 
   void Driver::postISRProcessing()
   {
-    auto txfr = ::LLD::getDriver( mConfig.HWInit.channel )->whatHappened();
-    txfr->inProgress = false;
+    /*-------------------------------------------------------------------------
+    Get what happened from the hardware driver
+    -------------------------------------------------------------------------*/
+    const auto txfr = ::LLD::getDriver( mConfig.HWInit.channel )->whatHappened();
 
-    if( txfr->errorBF & ( 1u << ::LLD::TxfrError::ERR_NACK ) )
+    /*-------------------------------------------------------------------------
+    Parse the IRQ event based on transfer status
+    -------------------------------------------------------------------------*/
+    switch( txfr.state )
     {
-      this->signalAIO( Chimera::Event::Trigger::TRIGGER_SYSTEM_ERROR );
-    }
+      case ::LLD::TxfrState::COMPLETE:
+        this->signalAIO( Chimera::Event::Trigger::TRIGGER_TRANSFER_COMPLETE );
+        break;
+
+      case ::LLD::TxfrState::ERROR:
+        if( txfr.errorBF & ( 1u << ::LLD::TxfrError::ERR_NACK ) )
+        {
+          this->signalAIO( Chimera::Event::Trigger::TRIGGER_NACK );
+        }
+        else
+        {
+          this->signalAIO( Chimera::Event::Trigger::TRIGGER_SYSTEM_ERROR );
+        }
+        break;
+
+      default:
+        return;
+    };
   }
 
 }    // namespace Thor::I2C

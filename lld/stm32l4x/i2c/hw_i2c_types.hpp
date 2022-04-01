@@ -92,6 +92,7 @@ namespace Thor::LLD::I2C
   REG_ACCESSOR( RegisterMap, CR1, CR1_PECEN_Msk, PECEN, BIT_ACCESS_RW );
 
   /* Control Register 2 */
+  REG_ACCESSOR( RegisterMap, CR2, CR2_ALL_Msk, CR2_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR2, CR2_SADD_Msk, SADD, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR2, CR2_RD_WRN_Msk, RDWRN, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR2, CR2_ADD10_Msk, ADD10, BIT_ACCESS_RW );

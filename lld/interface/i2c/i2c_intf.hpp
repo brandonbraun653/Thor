@@ -193,9 +193,9 @@ namespace Thor::LLD::I2C
     /**
      * @brief Gets the state of the last transfer
      *
-     * @return TxfrCB*
+     * @return TxfrCB
      */
-    TxfrCB *whatHappened();
+    TxfrCB whatHappened();
 
     /*-------------------------------------------------------------------------
     ISR Protection Mechanisms
@@ -283,6 +283,7 @@ namespace Thor::LLD::I2C
     Chimera::DMA::RequestId mTXDMARequestId; /**< Request id of the TX DMA pipe for the driver */
     Chimera::DMA::RequestId mRXDMARequestId; /**< Request id of the RX DMA pipe for the driver */
     TxfrCB mTransfer;                        /**< Current transfer */
+    TxfrCB mTransferCache;                   /**< Cache of last transfer */
   };
 }    // namespace Thor::LLD::I2C
 

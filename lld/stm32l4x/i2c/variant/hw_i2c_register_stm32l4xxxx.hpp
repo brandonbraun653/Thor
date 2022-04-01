@@ -98,6 +98,7 @@ namespace Thor::LLD::I2C
   static constexpr uint32_t CR1_PECEN         = CR1_PECEN_Msk;
 
   /******************  Bit definition for CR2 register  ********************/
+  static constexpr uint32_t CR2_ALL_Msk       = 0x07FFFFFF;
   static constexpr uint32_t CR2_SADD_Pos    = ( 0U );
   static constexpr uint32_t CR2_SADD_Msk    = ( 0x3FFUL << CR2_SADD_Pos );
   static constexpr uint32_t CR2_SADD        = CR2_SADD_Msk;

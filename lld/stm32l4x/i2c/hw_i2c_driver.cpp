@@ -25,10 +25,10 @@ namespace Thor::LLD::I2C
   /*---------------------------------------------------------------------------
   Constants
   ---------------------------------------------------------------------------*/
-  static constexpr size_t DMA_TRANS_POINT = 2; /**< When transfers switch from Interrupt to DMA driven */
-  static constexpr uint32_t EV_ISR_FLAGS  =    /**< ISR Events to listen to */
-      ( CR1_ERRIE | CR1_TCIE | CR1_STOPIE | CR1_NACKIE | CR1_ADDRIE | CR1_RXIE | CR1_TXIE );
-  static constexpr uint32_t EV_ICR_FLAGS =     /**< All interrupt flag clear events */
+  static constexpr size_t   DMA_TRANS_POINT = 2; /**< When transfers switch from Interrupt to DMA driven */
+  static constexpr uint32_t EV_ISR_FLAGS    =    /**< ISR Events to listen to */
+      ( CR1_ERRIE | CR1_TCIE | CR1_STOPIE | CR1_NACKIE | CR1_ADDRIE );
+  static constexpr uint32_t EV_ICR_FLAGS = /**< All interrupt flag clear events */
       ( ICR_ALERTCF | ICR_TIMOUTCF | ICR_PECCF | ICR_OVRCF | ICR_ARLOCF | ICR_BERRCF | ICR_STOPCF | ICR_NACKCF | ICR_ADDRCF );
 
   /*---------------------------------------------------------------------------
@@ -178,6 +178,13 @@ namespace Thor::LLD::I2C
   Chimera::Status_t Driver::read( const uint16_t address, void *const data, const size_t length )
   {
     /*-------------------------------------------------------------------------
+    Enable interrupts
+    -------------------------------------------------------------------------*/
+    ICR_ALL::set( mPeriph, EV_ICR_FLAGS );                  // Clear any pending interrupts
+    TXIE::clear( mPeriph, CR1_TXIE );                       // Disable the TXIS interrupt
+    CR1_ALL::setbit( mPeriph, EV_ISR_FLAGS | CR1_RXIE );    // Enable ISR events
+
+    /*-------------------------------------------------------------------------
     Set up the read transfer
     -------------------------------------------------------------------------*/
     RDWRN::set( mPeriph, CR2_RD_WRN );
@@ -187,6 +194,13 @@ namespace Thor::LLD::I2C
 
   Chimera::Status_t Driver::write( const uint16_t address, const void *const data, const size_t length )
   {
+    /*-------------------------------------------------------------------------
+    Enable interrupts
+    -------------------------------------------------------------------------*/
+    ICR_ALL::set( mPeriph, EV_ICR_FLAGS );                  // Clear any pending interrupts
+    RXIE::clear( mPeriph, CR1_RXIE );                       // Disable the RXNE interrupt
+    CR1_ALL::setbit( mPeriph, EV_ISR_FLAGS | CR1_TXIE );    // Enable ISR events
+
     /*-------------------------------------------------------------------------
     Set up the write transfer
     -------------------------------------------------------------------------*/
@@ -205,13 +219,17 @@ namespace Thor::LLD::I2C
   }
 
 
-  TxfrCB *Driver::whatHappened()
+  TxfrCB Driver::whatHappened()
   {
     /*-------------------------------------------------------------------------
-    No need to protect this data. Can't guarantee the caller context will be
-    safe from ISR modification after return.
+    Another transfer could be on-going, so copy out what happened last time.
+    Protected from ISRs to prevent updating mid-copy.
     -------------------------------------------------------------------------*/
-    return &mTransfer;
+    enterCriticalSection();
+    auto tmp = mTransferCache;
+    exitCriticalSection();
+
+    return tmp;
   }
 
 
@@ -239,44 +257,46 @@ namespace Thor::LLD::I2C
     /*-------------------------------------------------------------------------
     Input Protection
     -------------------------------------------------------------------------*/
-    Chimera::Thread::LockGuard _lock( *this );
-    if ( mTransfer.inProgress )
+    if ( length > 255 )
+    {
+      /*-----------------------------------------------------------------------
+      The particular driver implementation only works for byte transfers that
+      are <= 255. A different architecture is needed for more per RM0394.
+      -----------------------------------------------------------------------*/
+      return Chimera::Status::MEMORY;
+    }
+    else if ( mTransfer.inProgress )
     {
       return Chimera::Status::BUSY;
     }
-
-    /* The peripheral should never be busy at this point */
-    RT_HARD_ASSERT( BUSY::get( mPeriph ) == 0 );
 
     /*-------------------------------------------------------------------------
     Set up the transfer control block
     -------------------------------------------------------------------------*/
     mTransfer.clear();
-    mTransfer.inProgress = true;
-    mTransfer.address    = address;
-    mTransfer.txData     = tx_data;
-    mTransfer.rxData     = rx_data;
-    mTransfer.length     = length;
-    mTransfer.state      = TxfrState::DATA;
-    mTransfer.index      = 0;
-    mTransfer.mode       = Chimera::Peripheral::TransferMode::INTERRUPT;
+    mTransfer.inProgress    = true;
+    mTransfer.slave_address = address;
+    mTransfer.txData        = reinterpret_cast<const uint8_t *>( tx_data );
+    mTransfer.rxData        = reinterpret_cast<uint8_t *>( rx_data );
+    mTransfer.bytes_left    = length;
+    mTransfer.state         = TxfrState::DATA;
+    mTransfer.offset        = 0;
+    mTransfer.txfrMode      = Chimera::Peripheral::TransferMode::INTERRUPT;
 
     /*-------------------------------------------------------------------------
-    Configure the hardware for the transfer. The address field is shifted by
+    Configure the hardware transfer address. The address field is shifted by
     1 additional position due to forced 7-bit transfer mode. See the definition
     for this field in RM0394 for more information.
     -------------------------------------------------------------------------*/
-    ADD10::clear( mPeriph, CR2_ADD10 );                                     // 7-bit addressing mode
-    SADD::set( mPeriph, ( mTransfer.address << ( CR2_SADD_Pos + 1 ) ) );    // Destination address
-    NBYTES::set( mPeriph, ( mTransfer.length << CR2_NBYTES_Pos ) );         // Total data bytes
-    PECBYTE::clear( mPeriph, CR2_PECBYTE );                                 // No packet error checking
-    AUTOEND::clear( mPeriph, CR2_AUTOEND );                                 // Auto end the transfer after last byte
+    ADD10::clear( mPeriph, CR2_ADD10 );                                           // 7-bit addressing mode
+    SADD::set( mPeriph, ( mTransfer.slave_address << ( CR2_SADD_Pos + 1 ) ) );    // Destination address
 
     /*-------------------------------------------------------------------------
-    Enable interrupts
+    Setup transfers using the control flow for NBYTES <=255.
     -------------------------------------------------------------------------*/
-    ICR_ALL::set( mPeriph, EV_ICR_FLAGS );       // Clear any pending interrupts
-    CR1_ALL::setbit( mPeriph, EV_ISR_FLAGS );    // Enable ISR events
+    NBYTES::set( mPeriph, ( mTransfer.bytes_left << CR2_NBYTES_Pos ) );    // Total data bytes
+    RELOAD::clear( mPeriph, CR2_RELOAD );                                  // Disable reload of NBYTES
+    AUTOEND::clear( mPeriph, CR2_AUTOEND );                                // Disable auto stop at end of transfer
 
     /*-------------------------------------------------------------------------
     Finally, start the transfer
@@ -372,36 +392,52 @@ namespace Thor::LLD::I2C
     /*-------------------------------------------------------------------------
     Wake the user task to respond to the error
     -------------------------------------------------------------------------*/
+    mTransferCache = mTransfer;
     sendTaskMsg( INT::getUserTaskId( Type::PERIPH_I2C ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
   }
 
 
-  /**
-   * @brief Handle the normal event IRQ
-   *
-   * Handling behavior is taken from table 190 in RM0394.
-   */
   void Driver::IRQEventHandler()
   {
     using namespace Chimera::Thread;
     using namespace Chimera::Peripheral;
 
     /*-------------------------------------------------------------------------
-    Local Variables
+    Local Constants
     -------------------------------------------------------------------------*/
-    const uint32_t isr = ISR_ALL::get( mPeriph );
-
-    uint32_t data_reg          = 0;
-    uint8_t *rx_data_ptr       = nullptr;
-    const uint8_t *tx_data_ptr = nullptr;
+    const uint32_t isr = ISR_ALL::get( mPeriph ); /* Interrupt status register */
+    const uint32_t cr2 = CR2_ALL::get( mPeriph ); /* Control register 2 */
 
     /*-------------------------------------------------------------------------
-    Handle an on-going transfer in Interrupt mode
+    Local Variables
     -------------------------------------------------------------------------*/
-    if ( mTransfer.inProgress && ( mTransfer.mode == Chimera::Peripheral::TransferMode::INTERRUPT ) )
+    bool wake_user_thread = false; /**< Does the HLD thread need waking? */
+
+    /*-------------------------------------------------------------------------
+    Edge case we shouldn't normally hit. Clear all ISR events and disable the
+    interrupt enable flags for Event type signals.
+    -------------------------------------------------------------------------*/
+    if ( !mTransfer.inProgress || ( mTransfer.txfrMode != TransferMode::INTERRUPT ) )
+    {
+      ICR_ALL::set( mPeriph, EV_ICR_FLAGS );
+      CR1_ALL::clear( mPeriph, EV_ISR_FLAGS );
+      return;
+    }
+
+    /*-------------------------------------------------------------------------
+    Handle Transfers
+    -------------------------------------------------------------------------*/
+    if ( ( cr2 & CR2_RD_WRN ) && ( isr & ISR_RXNE ) && mTransfer.bytes_left )    // RX
+    {
+      uint32_t tmp                         = RXDATA::get( mPeriph );
+      mTransfer.rxData[ mTransfer.offset ] = static_cast<uint8_t>( tmp & 0xFF );
+      mTransfer.offset++;
+      mTransfer.bytes_left--;
+    }
+    else if ( ( cr2 & CR2_RD_WRN ) == 0 )    // TX
     {
       /*-----------------------------------------------------------------------
-      Did a NACK event occur? This is likely the most common issue.
+      Did a NACK event occur?
       -----------------------------------------------------------------------*/
       if ( isr & ISR_NACKF )
       {
@@ -417,100 +453,49 @@ namespace Thor::LLD::I2C
         ---------------------------------------------------------------------*/
         NACKCF::set( mPeriph, ICR_NACKCF );
         STOP::set( mPeriph, CR2_STOP );
+        wake_user_thread = true;
       }
 
       /*-----------------------------------------------------------------------
-      Handle the current transfer state
+      Did any kind of TX interrupt occur? Write the next data byte.
       -----------------------------------------------------------------------*/
-      switch ( mTransfer.state )
+      if ( ( isr & ISR_TXIS ) && mTransfer.bytes_left )
       {
-        case TxfrState::DATA:
-          /*-------------------------------------------------------------------
-          Pull new data off the RX shift register
-          -------------------------------------------------------------------*/
-          if ( isr & ISR_RXNE )
-          {
-            /*-----------------------------------------------------------------
-            Reading the data causes the RXNE flag to be cleared
-            -----------------------------------------------------------------*/
-            data_reg = RXDATA::get( mPeriph );
-
-            /*-----------------------------------------------------------------
-            Copy into the user buffer if needed
-            -----------------------------------------------------------------*/
-            if ( mTransfer.rxData )
-            {
-              rx_data_ptr                    = reinterpret_cast<uint8_t *>( mTransfer.rxData );
-              rx_data_ptr[ mTransfer.index ] = static_cast<uint8_t>( data_reg );
-            }
-          }
-
-          /*-------------------------------------------------------------------
-          Push new data to the TX shift register if required
-          -------------------------------------------------------------------*/
-          if ( ( isr & ISR_TXE ) && mTransfer.txData )
-          {
-            tx_data_ptr = reinterpret_cast<const uint8_t *>( mTransfer.txData );
-            TXDATA::set( mPeriph, tx_data_ptr[ mTransfer.index ] );
-          }
-
-          /*-------------------------------------------------------------------
-          Update the tracking data
-          -------------------------------------------------------------------*/
-          mTransfer.index++;
-          if ( mTransfer.index >= mTransfer.length )
-          {
-            mTransfer.state = TxfrState::COMPLETE;
-          }
-          break;
-
-        case TxfrState::COMPLETE:
-          /*-------------------------------------------------------------------
-          Send the stop condition to clear the event
-          -------------------------------------------------------------------*/
-          STOP::set( mPeriph, CR2_STOP );
-
-          /*-------------------------------------------------------------------
-          Update the driver transfer control block
-          -------------------------------------------------------------------*/
-          mTransfer.inProgress = false;
-          mTransfer.errorBF    = 0;
-
-          /*-------------------------------------------------------------------
-          Let the HLD task know we're done
-          -------------------------------------------------------------------*/
-          sendTaskMsg( INT::getUserTaskId( Type::PERIPH_I2C ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
-          break;
-
-        case TxfrState::ERROR:
-        default:
-          /*-------------------------------------------------------------------
-          Place the peripheral into a safe state
-          -------------------------------------------------------------------*/
-          STOP::set( mPeriph, CR2_STOP );
-          ICR_ALL::set( mPeriph, EV_ICR_FLAGS );
-          CR1_ALL::clear( mPeriph, EV_ISR_FLAGS );
-
-          /*-------------------------------------------------------------------
-          Ensure the LLD knows we're done
-          -------------------------------------------------------------------*/
-          mTransfer.inProgress = false;
-
-          /*-------------------------------------------------------------------
-          Wake the HLD task to handle the error
-          -------------------------------------------------------------------*/
-          sendTaskMsg( INT::getUserTaskId( Type::PERIPH_I2C ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
-          break;
-      };
+        TXDATA::set( mPeriph, mTransfer.txData[ mTransfer.offset ] );
+        mTransfer.offset++;
+        mTransfer.bytes_left--;
+      }
     }
-    else
+
+    /*-----------------------------------------------------------------------
+    If the transfer is about to end when this byte clocks in/out, the TC flag
+    will immediately be set. Ensure the stop condition will be sent once the
+    byte actually finishes.
+    -----------------------------------------------------------------------*/
+    if ( !mTransfer.bytes_left && TC::get( mPeriph ) )    // Only hit if AUTOEND == 0
     {
-      /*-----------------------------------------------------------------------
-      Edge case we shouldn't normally hit. Clear all ISR events and disable the
-      interrupt enable flags for Event type signals.
-      -----------------------------------------------------------------------*/
-      ICR_ALL::set( mPeriph, EV_ICR_FLAGS );
-      CR1_ALL::clear( mPeriph, EV_ISR_FLAGS );
+      STOP::set( mPeriph, CR2_STOP );
+    }
+
+    /*-----------------------------------------------------------------------
+    Did a stop condition occur? This is the "real" TC event.
+    -----------------------------------------------------------------------*/
+    if ( isr & ISR_STOPF )
+    {
+      STOPCF::set( mPeriph, ICR_STOPCF );
+
+      mTransfer.inProgress = false;
+      mTransfer.state      = TxfrState::COMPLETE;
+      wake_user_thread     = true;
+    }
+
+    /*-------------------------------------------------------------------------
+    Wake up the HLD thread for post-processing
+    -------------------------------------------------------------------------*/
+    if ( wake_user_thread )
+    {
+      mTransferCache = mTransfer;
+      sendTaskMsg( INT::getUserTaskId( Type::PERIPH_I2C ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
     }
   }
 

@@ -86,26 +86,26 @@ namespace Thor::LLD::I2C
   ---------------------------------------------------------------------------*/
   struct TxfrCB
   {
-    volatile bool inProgress;               /**< Transfer in progress? */
-    uint16_t address;                       /**< Address being transferred to/from */
-    const void *txData;                     /**< Buffer for transmit data */
-    void *rxData;                           /**< Buffer for received data */
-    size_t index;                           /**< Byte index into the tx/rx buffers */
-    size_t length;                          /**< Number of bytes being transferred */
-    TxfrState state;                        /**< Current state of the transfer */
-    uint32_t errorBF;                       /**< Error bitfield (1u << TxfrError::value ) */
-    Chimera::Peripheral::TransferMode mode; /**< Mode of transfer being used */
+    volatile bool                     inProgress;    /**< Transfer in progress? */
+    uint16_t                          slave_address; /**< Address being transferred to/from */
+    const uint8_t                    *txData;        /**< Buffer for transmit data */
+    uint8_t                          *rxData;        /**< Buffer for received data */
+    size_t                            offset;        /**< Byte index into the tx/rx buffers */
+    size_t                            bytes_left;    /**< Number of bytes being transferred */
+    TxfrState                         state;         /**< Current state of the transfer */
+    uint32_t                          errorBF;       /**< Error bitfield (1u << TxfrError::value ) */
+    Chimera::Peripheral::TransferMode txfrMode;      /**< Mode of transfer being used */
 
     void clear()
     {
-      inProgress = false;
-      address    = 0;
-      txData     = nullptr;
-      rxData     = nullptr;
-      length     = 0;
-      state      = TxfrState::IDLE;
-      mode       = Chimera::Peripheral::TransferMode::UNKNOWN;
-      errorBF    = 0;
+      inProgress    = false;
+      slave_address = 0;
+      txData        = nullptr;
+      rxData        = nullptr;
+      offset        = 0;
+      state         = TxfrState::IDLE;
+      txfrMode      = Chimera::Peripheral::TransferMode::UNKNOWN;
+      errorBF       = 0;
     }
   };
 }    // namespace Thor::LLD::I2C

@@ -2,7 +2,7 @@
 AccessModifierOffset: '-2'
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: 'true'
-AlignConsecutiveDeclarations: 'false'
+AlignConsecutiveDeclarations: 'true'
 AlignConsecutiveMacros: 'true'
 AlignEscapedNewlines: Left
 AlignOperands: 'true'
