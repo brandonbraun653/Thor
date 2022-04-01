@@ -323,7 +323,6 @@ namespace Thor::LLD::DMA
     static constexpr uint8_t TEIF  = 1u << 3;
     static constexpr uint8_t HTCIF = 1u << 2;
     static constexpr uint8_t TCIF  = 1u << 1;
-    static constexpr uint8_t GIF   = 1u << 0;
 
     /*-------------------------------------------------------------------------
     Local Variables

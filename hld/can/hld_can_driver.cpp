@@ -245,7 +245,7 @@ namespace Thor::CAN
     Turn off all ISRs to prevent interruption
     -------------------------------------------------------------------------*/
     auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
-    for ( auto isr = 0; isr < static_cast<size_t>( InterruptType::NUM_OPTIONS ); isr++ )
+    for ( size_t isr = 0; isr < static_cast<size_t>( InterruptType::NUM_OPTIONS ); isr++ )
     {
       lld->disableISRSignal( static_cast<InterruptType>( isr ) );
     }
@@ -306,7 +306,7 @@ namespace Thor::CAN
     Allocate the appropriate amount of memory on the stack and initialize it
     -------------------------------------------------------------------------*/
     ::LLD::MessageFilter hwFilters[ hwFilterLength ];
-    for ( auto x = 0; x < hwFilterLength; x++ )
+    for ( size_t x = 0; x < hwFilterLength; x++ )
     {
       hwFilters[ x ].clear();
     }
@@ -316,7 +316,7 @@ namespace Thor::CAN
     -------------------------------------------------------------------------*/
     ::LLD::Mailbox lastBox = ::LLD::Mailbox::RX_MAILBOX_1;
 
-    for ( auto x = 0; x < size; x++ )
+    for ( size_t x = 0; x < size; x++ )
     {
       /*-----------------------------------------------------------------------
       Assign basic metrics directly
@@ -396,84 +396,21 @@ namespace Thor::CAN
 
   void Driver::ProcessISREvent_TX()
   {
-    using namespace Chimera::CAN;
-    using namespace Chimera::Thread;
-
-    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
-    auto box = ::LLD::Mailbox::UNKNOWN;
-
-    /*-------------------------------------------------
-    Get the context of the last ISR
-    -------------------------------------------------*/
-    auto context = lld->getISRContext( InterruptType::RX_ISR );
-
-    /*-------------------------------------------------
-    Invoke any user callback
-    -------------------------------------------------*/
-    // TX?
-    // TX Error?
-
-    /*-------------------------------------------------
-    Signal internal semaphores for events
-    -------------------------------------------------*/
-    // Any events to signal?
   }
 
 
   void Driver::ProcessISREvent_RX()
   {
-    using namespace Chimera::CAN;
-    using namespace Chimera::Thread;
-
-    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
-
-    /*-------------------------------------------------
-    Get the context of the last ISR
-    -------------------------------------------------*/
-    auto context = lld->getISRContext( InterruptType::RX_ISR );
-
-    /*-------------------------------------------------
-    Invoke user call back on the RX event
-    -------------------------------------------------*/
-    // todo
   }
 
 
   void Driver::ProcessISREvent_Error()
   {
-    using namespace Chimera::CAN;
-    using namespace Chimera::Thread;
-
-    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
-
-    /*-------------------------------------------------
-    Get the context of the last ISR
-    -------------------------------------------------*/
-    auto context = lld->getISRContext( InterruptType::ERR_ISR );
-
-    /*-------------------------------------------------
-    Invoke user call back on the RX event
-    -------------------------------------------------*/
-    // todo
   }
 
 
   void Driver::ProcessISREvent_StatusChange()
   {
-    using namespace Chimera::CAN;
-    using namespace Chimera::Thread;
-
-    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
-
-    /*-------------------------------------------------
-    Get the context of the last ISR
-    -------------------------------------------------*/
-    auto context = lld->getISRContext( InterruptType::STS_ISR );
-
-    /*-------------------------------------------------
-    Invoke user call back on the RX event
-    -------------------------------------------------*/
-    // todo
   }
 
 }    // namespace Thor::CAN

@@ -43,7 +43,7 @@ Macros
 /* clang-format on */
 
 #if defined( TARGET_STM32L4 )
-#pragma error( "Need to add the additional exti port. There are two.")
+#pragma message( "Need to add the additional exti port. There are two.")
 #endif
 
 namespace Thor::LLD::EXTI

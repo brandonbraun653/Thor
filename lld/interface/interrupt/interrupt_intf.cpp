@@ -104,7 +104,7 @@ namespace Thor::LLD::INT
     }
 
     /* Ensure the device has this ISR signal */
-    if ( signal >= SignalHandlers[ resourceIndex ].elements )
+    if ( signal >= static_cast<int>( SignalHandlers[ resourceIndex ].elements ) )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }

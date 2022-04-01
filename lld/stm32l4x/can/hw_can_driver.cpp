@@ -95,7 +95,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------------------------------
     System level (NVIC) ISR configuration
     -------------------------------------------------------------------------*/
-    for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
+    for ( size_t handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
     {
       Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
       Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
@@ -106,7 +106,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------------------------------
     Disable peripheral level ISR signals
     -------------------------------------------------------------------------*/
-    for ( auto signalIdx = 0; signalIdx < static_cast<size_t>( InterruptType::NUM_OPTIONS ); signalIdx++ )
+    for ( size_t signalIdx = 0; signalIdx < EnumValue( InterruptType::NUM_OPTIONS ); signalIdx++ )
     {
       disableISRSignal( static_cast<InterruptType>( signalIdx ) );
     }
@@ -1486,7 +1486,7 @@ namespace Thor::LLD::CAN
   void Driver::enterCriticalSection()
   {
     auto isrMask = INT::disableInterrupts();
-    for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
+    for ( size_t handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
     {
       INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
     }
@@ -1497,7 +1497,7 @@ namespace Thor::LLD::CAN
   void Driver::exitCriticalSection()
   {
     auto isrMask = INT::disableInterrupts();
-    for ( auto handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
+    for ( size_t handlerIdx = 0; handlerIdx < NUM_CAN_IRQ_HANDLERS; handlerIdx++ )
     {
       INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
     }

@@ -632,7 +632,7 @@ namespace Thor::LLD::CAN
         break;
 
       case IdType::EXTENDED:
-        id = EXT_ID32_IDE_BIT | ( filter->identifier << EXT_ID32_SHIFT ) & EXT_ID32_MASK;
+        id = EXT_ID32_IDE_BIT | ( ( filter->identifier << EXT_ID32_SHIFT ) & EXT_ID32_MASK );
 
         if ( filter->frameType == FrameType::REMOTE )
         {
@@ -685,8 +685,8 @@ namespace Thor::LLD::CAN
         break;
 
       case IdType::EXTENDED:
-        id   = EXT_ID32_IDE_BIT | ( filter->identifier << EXT_ID32_SHIFT ) & EXT_ID32_MASK;
-        mask = EXT_ID32_IDE_BIT | ( filter->mask << EXT_ID32_SHIFT ) & EXT_ID32_MASK;
+        id   = EXT_ID32_IDE_BIT | ( ( filter->identifier << EXT_ID32_SHIFT ) & EXT_ID32_MASK );
+        mask = EXT_ID32_IDE_BIT | ( ( filter->mask << EXT_ID32_SHIFT ) & EXT_ID32_MASK );
 
         if ( filter->frameType == FrameType::REMOTE )
         {
