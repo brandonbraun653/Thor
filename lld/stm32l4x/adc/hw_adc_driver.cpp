@@ -40,6 +40,26 @@ a few calculations.
 namespace Thor::LLD::ADC
 {
   /*---------------------------------------------------------------------------
+  Static Constants
+  ---------------------------------------------------------------------------*/
+  /**
+   * @brief Internal voltage reference, address of parameter VREFINT_CAL
+   *
+   * VrefInt ADC raw data acquired at temperature 30 DegC (tolerance: +-5 DegC)
+   * Vref+ = 3.0 V (tolerance: +-10 mV).
+   */
+  static const uint16_t *const VREFINT_CAL_ADDR = reinterpret_cast<uint16_t *>( 0x1FFF75AAUL );
+
+  /**
+   * @brief Internal analog voltage reference (Vref+)
+   *
+   * Value with which temperature sensor has been calibrated in production
+   * (tolerance: +-10 mV) (unit: mV).
+   */
+  static constexpr float VREFINT_CAL_VREF_MV = 3000.0f;
+
+
+  /*---------------------------------------------------------------------------
   Static Variables
   ---------------------------------------------------------------------------*/
   static Driver s_adc_drivers[ NUM_ADC_PERIPHS ];
@@ -48,8 +68,8 @@ namespace Thor::LLD::ADC
   Driver Implementation
   ---------------------------------------------------------------------------*/
   Driver::Driver() :
-      mPeriph( nullptr ), mCommon( nullptr ), mConversionInProgress( false ), mResourceIndex( INVALID_RESOURCE_INDEX ),
-      mSequenceIdx( 0 ), mCfg( {} ), mDMAPipeID( 0 ), mDMAPaused( false )
+      mPeriph( nullptr ), mCommon( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX ), mCalcVdda( 0.0f ), mCfg( {} ),
+      mSeqCfg( {} ), mDMAPipeID( 0 )
   {
   }
 
@@ -94,79 +114,22 @@ namespace Thor::LLD::ADC
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    // Select the clock source
+    // Select the clock source to use the system clock
     ADCSEL::set( RCC1_PERIPH, Config::CCIPR::ADCSEL_SYS_CLOCK );
 
     // Turn on the core peripheral clock
     this->clockEnable();
     this->reset();
 
-    // Set the clock mode to be asynchronous
-    CKMODE::set( ADC_COMMON, 0 );
-
-    // Set the prescaler. Chimera enums line up with the bit shift for now, but may not later.
-    // Don't try to simplify this to a smaller statement.
-    switch ( cfg.clockPrescale )
+    // Select the highest available synchronous clock rate (16.7.2, CKMODE[1:0])
+    if ( HPRE::get( RCC1_PERIPH ) == 0 )
     {
-      case Chimera::ADC::Prescaler::DIV_1:
-        PRESC::set( ADC_COMMON, 0 << CCR_PRESC_Pos );
-        break;
-
-      case Chimera::ADC::Prescaler::DIV_2:
-        PRESC::set( ADC_COMMON, 1 << CCR_PRESC_Pos );
-        break;
-
-      case Chimera::ADC::Prescaler::DIV_4:
-        PRESC::set( ADC_COMMON, 2 << CCR_PRESC_Pos );
-        break;
-
-      case Chimera::ADC::Prescaler::DIV_6:
-        PRESC::set( ADC_COMMON, 3 << CCR_PRESC_Pos );
-        break;
-
-      case Chimera::ADC::Prescaler::DIV_8:
-        PRESC::set( ADC_COMMON, 4 << CCR_PRESC_Pos );
-        break;
-
-      case Chimera::ADC::Prescaler::DIV_10:
-        PRESC::set( ADC_COMMON, 5 << CCR_PRESC_Pos );
-        break;
-
-      case Chimera::ADC::Prescaler::DIV_12:
-        PRESC::set( ADC_COMMON, 6 << CCR_PRESC_Pos );
-        break;
-
-      case Chimera::ADC::Prescaler::DIV_16:
-        PRESC::set( ADC_COMMON, 7 << CCR_PRESC_Pos );
-        break;
-
-      case Chimera::ADC::Prescaler::DIV_32:
-        PRESC::set( ADC_COMMON, 8 << CCR_PRESC_Pos );
-        break;
-
-      case Chimera::ADC::Prescaler::DIV_64:
-        PRESC::set( ADC_COMMON, 9 << CCR_PRESC_Pos );
-        break;
-
-      case Chimera::ADC::Prescaler::DIV_128:
-        PRESC::set( ADC_COMMON, 10 << CCR_PRESC_Pos );
-        break;
-
-      case Chimera::ADC::Prescaler::DIV_256:
-        PRESC::set( ADC_COMMON, 11 << CCR_PRESC_Pos );
-        break;
-
-      default:
-        // Prescaler not supported
-        break;
-    };
-
-    /*-------------------------------------------------------------------------
-    Enable the sensor monitors
-    -------------------------------------------------------------------------*/
-    VBATEN::set( ADC_COMMON, CCR_VBATEN );    // External battery sensor
-    TSEN::set( ADC_COMMON, CCR_TSEN );        // Internal temperature sensor
-    VREFEN::set( ADC_COMMON, CCR_VREFEN );    // Internal bandgap vref sensor
+      CKMODE::set( ADC_COMMON, ( 0x1 << CCR_CKMODE_Pos ) );
+    }
+    else
+    {
+      CKMODE::set( ADC_COMMON, ( 0x2 << CCR_CKMODE_Pos ) );
+    }
 
     /*-------------------------------------------------------------------------
     Bring the ADC out of deep power down
@@ -176,6 +139,13 @@ namespace Thor::LLD::ADC
 
     // Allow the analog voltage regulator time to boot
     Chimera::delayMilliseconds( 250 );
+
+    /*-------------------------------------------------------------------------
+    Enable the sensor monitors
+    -------------------------------------------------------------------------*/
+    VBATEN::set( ADC_COMMON, CCR_VBATEN );    // External battery sensor
+    TSEN::set( ADC_COMMON, CCR_TSEN );        // Internal temperature sensor
+    VREFEN::set( ADC_COMMON, CCR_VREFEN );    // Internal bandgap vref sensor
 
     /*-------------------------------------------------------------------------
     Assign the ADC resolution
@@ -205,7 +175,7 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     for ( size_t idx = 0; idx < NUM_ADC_CHANNELS_PER_PERIPH; idx++ )
     {
-      setSampleTime( static_cast<Chimera::ADC::Channel>( idx ), SampleTime::SMP_24P5 );
+      setSampleTime( static_cast<Chimera::ADC::Channel>( idx ), SampleTime::SMP_640P5 );
     }
 
     /*-------------------------------------------------------------------------
@@ -233,11 +203,11 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------------------------------
     Configure the DMA transfers from the ADC's perspective
     -------------------------------------------------------------------------*/
-    DMACFG::set( mPeriph, CFGR_DMACFG );    // Circular mode
-    DMAEN::clear( mPeriph, CFGR_DMAEN );    // Disable DMA (for now)
+    DMACFG::clear( mPeriph, CFGR_DMACFG );    // Disable circular mode
+    DMAEN::clear( mPeriph, CFGR_DMAEN );      // Disable DMA (for now)
 
     /*-------------------------------------------------------------------------
-    Configure the DMA pipe
+    Configure the DMA pipe to run in the background without event interrupts
     -------------------------------------------------------------------------*/
     PipeConfig dmaCfg;
     dmaCfg.clear();
@@ -245,7 +215,7 @@ namespace Thor::LLD::ADC
     dmaCfg.direction          = Direction::PERIPH_TO_MEMORY;
     dmaCfg.mode               = Mode::CIRCULAR;
     dmaCfg.periphAddr         = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
-    dmaCfg.priority           = Priority::MEDIUM;
+    dmaCfg.priority           = Priority::VERY_HIGH;
     dmaCfg.resourceIndex      = Thor::LLD::DMA::getResourceIndex( Resource::DMASignals[ mResourceIndex ] );
     dmaCfg.channel            = static_cast<size_t>( Thor::LLD::DMA::getChannel( Resource::DMASignals[ mResourceIndex ] ) );
     dmaCfg.threshold          = FifoThreshold::NONE;
@@ -253,7 +223,6 @@ namespace Thor::LLD::ADC
     dmaCfg.wakeUserOnComplete = false;
 
     mDMAPipeID = Thor::DMA::constructPipe( dmaCfg );
-    mDMAPaused = false;
 
     /*-------------------------------------------------------------------------
     Enable the ADC
@@ -266,6 +235,16 @@ namespace Thor::LLD::ADC
       continue;
     }
     ADRDY::set( mPeriph, ISR_ADRDY );
+
+    /*-------------------------------------------------------------------------
+    Sample the internal voltage reference to calculate the real VDDA+ present
+    on the MCU pin. This will always be present on Channel 0.
+    -------------------------------------------------------------------------*/
+    Chimera::ADC::Sample vref_sample  = sampleChannel( Chimera::ADC::Channel::ADC_CH_0 );
+    const float          vrefint_data = static_cast<float>( vref_sample.counts );
+    const float          vrefint_cal  = static_cast<float>( *VREFINT_CAL_ADDR );
+
+    mCalcVdda = ( VREFINT_CAL_VREF_MV * ( vrefint_cal / vrefint_data ) ) / 1000.0f;
 
     return Chimera::Status::OK;
   }
@@ -331,11 +310,11 @@ namespace Thor::LLD::ADC
 
   float Driver::toVoltage( const Chimera::ADC::Sample sample )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Get the current configured resolution
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Reg32_t resolution = RES::get( mPeriph ) >> CFGR_RES_Pos;
-    float fRes         = 0.0;
+    float   fRes       = 0.0;
 
     switch ( resolution )
     {
@@ -360,11 +339,10 @@ namespace Thor::LLD::ADC
         break;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Calculate the output voltage
-    -------------------------------------------------*/
-    float vSense = ( static_cast<float>( PRJ_ADC_VREF ) * static_cast<float>( sample.counts ) ) / fRes;
-    return vSense;
+    -------------------------------------------------------------------------*/
+    return ( mCalcVdda * static_cast<float>( sample.counts ) ) / fRes;
   }
 
 
@@ -387,7 +365,7 @@ namespace Thor::LLD::ADC
 
     if ( ch < Channel::ADC_CH_10 )
     {
-      auto chPos     = static_cast<size_t>( chNum ) * SMPRx_BIT_Wid;
+      auto    chPos  = static_cast<size_t>( chNum ) * SMPRx_BIT_Wid;
       Reg32_t regVal = static_cast<size_t>( time ) << chPos;
       Reg32_t curVal = SMPR1_ALL::get( mPeriph );
 
@@ -398,10 +376,10 @@ namespace Thor::LLD::ADC
     }
     else
     {
-      auto chOffset  = static_cast<size_t>( Channel::ADC_CH_10 );
-      auto chPos     = static_cast<size_t>( chNum ) - chOffset;
-      Reg32_t regVal = static_cast<size_t>( time ) << chPos;
-      Reg32_t curVal = SMPR2_ALL::get( mPeriph );
+      auto    chOffset = static_cast<size_t>( Channel::ADC_CH_10 );
+      auto    chPos    = static_cast<size_t>( chNum ) - chOffset;
+      Reg32_t regVal   = static_cast<size_t>( time ) << chPos;
+      Reg32_t curVal   = SMPR2_ALL::get( mPeriph );
 
       curVal &= ~( SMPRx_BIT_Msk << chPos );
       curVal |= regVal;
@@ -425,6 +403,16 @@ namespace Thor::LLD::ADC
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
+#if defined( STM32L432xx )
+    /*-------------------------------------------------------------------------
+    Unfortunately, I've not been able to get continuous DMA based sampling
+    working on this chip. Extensive debug sessions showed that circular + cont
+    mode leads to corruption of data. Switching to one-shot mode or triggered
+    conversions allows regular channel sequences to convert with DMA just fine.
+    -------------------------------------------------------------------------*/
+    RT_HARD_ASSERT( sequence.seqMode != SamplingMode::CONTINUOUS );
+#endif /* STM32L432xx */
+
     /*-------------------------------------------------------------------------
     Wait for hardware to indicate it's free for a new transfer
     -------------------------------------------------------------------------*/
@@ -435,9 +423,10 @@ namespace Thor::LLD::ADC
       /*-----------------------------------------------------------------------
       Select continuous or polling conversion
       -----------------------------------------------------------------------*/
-      switch ( sequence.mode )
+      switch ( sequence.seqMode )
       {
-        case SamplingMode::ONE_SHOT:
+        case SamplingMode::ONE_SHOT:    // Software initiated
+        case SamplingMode::TRIGGER:     // Hardware initiated
           CONT::clear( mPeriph, CFGR_CONT );
           break;
 
@@ -445,11 +434,11 @@ namespace Thor::LLD::ADC
           CONT::set( mPeriph, CFGR_CONT );
           break;
 
-        case SamplingMode::TRIGGER:
         default:
           return Chimera::Status::NOT_SUPPORTED;
           break;
       }
+      mSeqCfg = sequence;
 
       /*-----------------------------------------------------------------------
       Set up the hardware sequence sampling registers
@@ -478,7 +467,7 @@ namespace Thor::LLD::ADC
         Configure the appropriate register
         ---------------------------------------------------------------------*/
         Reg32_t chNum  = EnumValue( next );
-        size_t chPos   = 0;
+        size_t  chPos  = 0;
         Reg32_t regVal = 0;
         Reg32_t curVal = 0;
 
@@ -548,19 +537,22 @@ namespace Thor::LLD::ADC
 
   void Driver::startSequence()
   {
+    using namespace Chimera::ADC;
     using namespace Chimera::DMA;
 
-    /*-----------------------------------------------------------------------
-    Disable interrupts. DMA is the primary data mover.
-    -----------------------------------------------------------------------*/
-    IER_ALL::clear( mPeriph, ( IER_OVRIE | IER_EOSIE | IER_EOCIE | IER_EOSMPIE | IER_ADRDYIE ) );
-    Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    /*-------------------------------------------------------------------------
+    Wait for the hardware to not be busy
+    -------------------------------------------------------------------------*/
+    while ( ADSTART::get( mPeriph ) || JADSTP::get( mPeriph ) )
+    {
+      continue;
+    }
 
     /*-------------------------------------------------------------------------
     Configure the DMA transfer. Assumes each transfer is sized to a half-word.
     -------------------------------------------------------------------------*/
     PipeTransfer cfg;
-    cfg.isrCallback = TransferCallback::create<Driver, &Driver::onDMAComplete>( *this );
+    cfg.isrCallback = {};
     cfg.pipe        = mDMAPipeID;
     cfg.size        = L::get( mPeriph ) >> SQR1_L_Pos;
     cfg.addr        = reinterpret_cast<std::uintptr_t>( mDMASampleBuffer.rawSamples.data() );
@@ -572,27 +564,65 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------------------------------
     Start the transfer
     -------------------------------------------------------------------------*/
-    mDMASampleBuffer.rawSamples.fill( 0 );
-    ADSTART::set( mPeriph, CR_ADSTART );
+    if ( mSeqCfg.seqMode == SamplingMode::TRIGGER )
+    {
+      switch ( mSeqCfg.trigMode )
+      {
+        case TriggerMode::RISING_EDGE:
+          EXTEN::set( mPeriph, ( 0x1 << CFGR_EXTEN_Pos ) );
+          break;
+
+        case TriggerMode::FALLING_EDGE:
+          EXTEN::set( mPeriph, ( 0x2 << CFGR_EXTEN_Pos ) );
+          break;
+
+        case TriggerMode::BOTH_EDGE:
+          EXTEN::set( mPeriph, ( 0x3 << CFGR_EXTEN_Pos ) );
+          break;
+
+        default:
+          RT_HARD_ASSERT( false );    // Bad configuration
+          break;
+      };
+
+      RT_HARD_ASSERT( mSeqCfg.trigChannel <= NUM_ADC_EXT_TRIG_CHANNELS );
+      EXTSEL::set( mPeriph, ( mSeqCfg.trigChannel << CFGR_EXTSEL_Pos ) );
+    }
+    else
+    {
+      EXTEN::clear( mPeriph, CFGR_EXTEN );
+      ADSTART::set( mPeriph, CR_ADSTART );
+    }
   }
 
 
   void Driver::stopSequence()
   {
+    using namespace Chimera::ADC;
+
     /*-------------------------------------------------------------------------
     Command the stop and wait for it to take effect
     -------------------------------------------------------------------------*/
     ADSTP::set( mPeriph, CR_ADSTP );
-    while ( ADSTART::get( mPeriph ) )
+    JADSTP::set( mPeriph, CR_JADSTP );
+    while ( ADSTART::get( mPeriph ) || JADSTP::get( mPeriph ) )
     {
       continue;
     }
 
     /*-------------------------------------------------------------------------
-    Prevent any repeated conversions from happening
+    Stop generating DMA requests on ADC side (but leave DMA configured)
     -------------------------------------------------------------------------*/
     DMAEN::clear( mPeriph, CFGR_DMAEN );
     OVR::clear( mPeriph, ISR_OVR );
+
+    /*-------------------------------------------------------------------------
+    Stop listening to hardware trigger signals
+    -------------------------------------------------------------------------*/
+    if ( mSeqCfg.seqMode == SamplingMode::TRIGGER )
+    {
+      EXTEN::clear( mPeriph, CFGR_EXTEN );
+    }
   }
 
 
@@ -618,18 +648,18 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     for ( size_t idx = 0; idx < mDMASampleBuffer.channelSequence.size(); idx++ )
     {
-      /*-----------------------------------------------------------------------
+      /*---------------------------------------------------------------------
       Is the current sequence channel valid?
-      -----------------------------------------------------------------------*/
+      ---------------------------------------------------------------------*/
       auto channel = mDMASampleBuffer.channelSequence[ idx ];
       if ( channel == Chimera::ADC::Channel::UNKNOWN )
       {
         break;
       }
 
-      /*-----------------------------------------------------------------------
+      /*---------------------------------------------------------------------
       Move data into the queue for this channel
-      -----------------------------------------------------------------------*/
+      ---------------------------------------------------------------------*/
       if ( !( ( *queue )[ EnumValue( channel ) ]->full() ) )
       {
         Chimera::ADC::Sample sample;
@@ -641,67 +671,6 @@ namespace Thor::LLD::ADC
     }
   }
 
-
-  void Driver::onDMAComplete( const Chimera::DMA::TransferStats &stats )
-  {
-    using namespace Chimera::Thread;
-    using namespace Chimera::Peripheral;
-
-    /*-------------------------------------------------------------------------
-    Determine some information about the execution context
-    -------------------------------------------------------------------------*/
-    const bool isContinuous = CONT::get( mPeriph );
-    const bool isOverrun    = OVR::get( mPeriph );
-
-    /*-------------------------------------------------------------------------
-    Running in continuous conversion mode? Don't bother the main ADC thread
-    (except on error) as this would generate an enormous number of wakeups.
-    -------------------------------------------------------------------------*/
-    if ( isContinuous )
-    {
-      if ( stats.error || isOverrun )
-      {
-        stopSequence();
-        sendTaskMsg( INT::getUserTaskId( Type::PERIPH_ADC ), ITCMsg::TSK_MSG_ISR_ERROR, TIMEOUT_DONT_WAIT );
-      }
-
-      return;
-    }
-    // else running in single shot mode
-
-    /*-------------------------------------------------------------------------
-    Disable the DMA on the ADC to force the user to set up a new transfer.
-    -------------------------------------------------------------------------*/
-    stopSequence();
-
-    /*-------------------------------------------------------------------------
-    Overrun error? RM 13.8.1 states to re-initialize the DMA after clearing
-    this bit. This will happen automatically at the start of next transfer.
-    -------------------------------------------------------------------------*/
-    if ( isOverrun )
-    {
-      OVR::clear( mPeriph, ISR_OVR );
-    }
-
-    /*-------------------------------------------------------------------------
-    Wake up the HLD with either an error or new data
-    -------------------------------------------------------------------------*/
-    if ( stats.error )
-    {
-      sendTaskMsg( INT::getUserTaskId( Type::PERIPH_ADC ), ITCMsg::TSK_MSG_ISR_ERROR, TIMEOUT_DONT_WAIT );
-    }
-    else
-    {
-      syncSequence();
-      sendTaskMsg( INT::getUserTaskId( Type::PERIPH_ADC ), ITCMsg::TSK_MSG_ISR_DATA_READY, TIMEOUT_DONT_WAIT );
-    }
-  }
-
-
-  void Driver::IRQHandler()
-  {
-    // Not actually used
-  }
 }    // namespace Thor::LLD::ADC
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_ADC */

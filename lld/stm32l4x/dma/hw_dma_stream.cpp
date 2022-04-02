@@ -251,14 +251,25 @@ namespace Thor::LLD::DMA
           break;
       }
 
-      /*-------------------------------------------------
-      Interrupt Settings: By default, enable everything
-      -------------------------------------------------*/
-      mStream->CCR |= ( CCR_TCIE | CCR_TEIE );
+      /*-----------------------------------------------------------------------
+      Interrupt Settings: If the user registers a callback, make sure the ISR
+      handlers get executed to process it. Always allow the error events to be
+      processed by driver.
+      -----------------------------------------------------------------------*/
+      mStream->CCR |= CCR_TEIE;
 
-      /*-------------------------------------------------
+      if( mTCB.isrCallback )
+      {
+        mStream->CCR |= CCR_TCIE;
+      }
+      else
+      {
+        mStream->CCR &= ~CCR_TCIE;
+      }
+
+      /*-----------------------------------------------------------------------
       Configure the global interrupt priority
-      -------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       INT::setPriority( mIRQn, INT::DMA_STREAM_PREEMPT_PRIORITY, 0u );
       INT::enableIRQ( mIRQn );
 

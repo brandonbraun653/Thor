@@ -33,6 +33,7 @@ namespace Thor::LLD::ADC
   static constexpr size_t NUM_ADC_IRQ_HANDLERS        = 1;
   static constexpr RIndex_t ADC1_RESOURCE_INDEX       = 0u;
   static constexpr size_t NUM_ADC_CHANNELS_PER_PERIPH = 19;
+  static constexpr size_t NUM_ADC_EXT_TRIG_CHANNELS   = 15;
 
 }    // namespace Thor::LLD::ADC
 

@@ -159,7 +159,8 @@ namespace Thor::ADC
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mPeriph( Chimera::ADC::Peripheral::UNKNOWN )
+  Driver::Driver() :
+      mPeriph( Chimera::ADC::Peripheral::UNKNOWN ), mConfig( {} ), mSeqMode( Chimera::ADC::SamplingMode::UNKNOWN )
   {
     mConfig.clear();
   }
@@ -167,34 +168,6 @@ namespace Thor::ADC
 
   Driver::~Driver()
   {
-  }
-
-
-  void Driver::postISRProcessing()
-  {
-    using namespace Chimera::ADC;
-
-    for( size_t ch = 0; ch < Thor::LLD::ADC::NUM_ADC_CHANNELS_PER_PERIPH; ch++ )
-    {
-      /*-------------------------------------------------
-      Populate the interrupt information for the callback
-      -------------------------------------------------*/
-      InterruptDetail detail;
-      detail.channel = static_cast<Channel>( ch );
-      detail.isr = Interrupt::EOC_SEQUENCE;
-
-      /*-------------------------------------------------
-      Empty the queue
-      -------------------------------------------------*/
-      while( nextSample( static_cast<Channel>( ch ), detail.data ) )
-      {
-        if( mCallbacks[ EnumValue( detail.isr ) ] )
-        {
-          mCallbacks[ EnumValue( detail.isr ) ]( detail );
-        }
-      }
-    }
-
   }
 
 
@@ -349,17 +322,40 @@ namespace Thor::ADC
   }
 
 
-  bool Driver::nextSample( const Chimera::ADC::Channel ch, Chimera::ADC::Sample &sample )
+  bool Driver::nextSeqSample( const Chimera::ADC::Channel ch, Chimera::ADC::Sample &sample )
+  {
+    static constexpr size_t SAMPLE_SIZE = 1;
+
+    return SAMPLE_SIZE == multiSeqSample( &ch, &sample, SAMPLE_SIZE );
+  }
+
+
+  size_t Driver::multiSeqSample( const Chimera::ADC::Channel *ch_arr, Chimera::ADC::Sample *sample_arr, const size_t size )
   {
     using namespace Chimera::ADC;
 
     /*-------------------------------------------------------------------------
-    Synchronize the queue with the DMA buffers
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if( !ch_arr || !sample_arr || !size )
+    {
+      return 0;
+    }
+
+    /*-------------------------------------------------------------------------
+    Synchronize the HLD queue with the DMA buffers
     -------------------------------------------------------------------------*/
     auto driver = LLD::getDriver( mConfig.periph );
-    driver->stopSequence();
-    driver->syncSequence();
-    driver->startSequence();
+    if( ( mSeqMode == SamplingMode::CONTINUOUS ) || ( mSeqMode == SamplingMode::TRIGGER ) )
+    {
+      driver->stopSequence();
+      driver->syncSequence();
+      driver->startSequence();
+    }
+    else /* One-shot software triggered. Should be safe to pull directly. */
+    {
+      driver->syncSequence();
+    }
 
     /*-------------------------------------------------------------------------
     Select the queue associated with this instance
@@ -377,12 +373,27 @@ namespace Thor::ADC
     }
 
     /*-------------------------------------------------------------------------
-    Return the next data in the queue if it exists
+    Return as much data as available
     -------------------------------------------------------------------------*/
-    bool has_data = (*queue)[ EnumValue( ch ) ]->pop( sample );
-    return has_data;
-  }
+    size_t num_good_retrievals = 0;
 
+    for( size_t idx = 0; idx < size; idx++ )
+    { /* clang-format off */
+      const size_t req_channel = static_cast<size_t>( ch_arr[ idx ] );
+
+      if ( ( req_channel >= queue->size() )
+        || ( queue->at( req_channel )->pop( sample_arr[ idx ] ) == false ) )
+      {
+        sample_arr[ idx ].clear();
+      }
+      else
+      {
+        num_good_retrievals++;
+      }
+    } /* clang-format on */
+
+    return num_good_retrievals;
+  }
 
   void Driver::onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb )
   {
@@ -398,6 +409,48 @@ namespace Thor::ADC
   float Driver::toVoltage( const Chimera::ADC::Sample sample )
   {
     return LLD::getDriver( mConfig.periph )->toVoltage( sample );
+  }
+
+
+  void Driver::postISRProcessing()
+  {
+    using namespace Chimera::ADC;
+
+
+    /*-------------------------------------------------------------------------
+    Need to figure out the architecture for how I want to move ADC data around.
+    Currently this assumes notification to the user via callbacks when a single
+    transfer is complete (one-shot mode). The downside is that any user calls to
+    nextSeqSample will get choked because this high priority thread is emptying the
+    queue.
+
+    In continuous mode, this never runs and it's up to the user to call
+    nextSeqSample to empty the queue. This makes some sense.
+
+    Perhaps add a guard to only allow this to execute in one-shot mode? Where
+    should this behavior be documented? Chimera?
+    -------------------------------------------------------------------------*/
+
+    // for( size_t ch = 0; ch < Thor::LLD::ADC::NUM_ADC_CHANNELS_PER_PERIPH; ch++ )
+    // {
+    //   /*-----------------------------------------------------------------------
+    //   Populate the interrupt information for the callback
+    //   -----------------------------------------------------------------------*/
+    //   InterruptDetail detail;
+    //   detail.channel = static_cast<Channel>( ch );
+    //   detail.isr = Interrupt::EOC_SEQUENCE;
+
+    //   /*-----------------------------------------------------------------------
+    //   Empty the queue
+    //   -----------------------------------------------------------------------*/
+    //   while( nextSeqSample( static_cast<Channel>( ch ), detail.data ) )
+    //   {
+    //     if( mCallbacks[ EnumValue( detail.isr ) ] )
+    //     {
+    //       mCallbacks[ EnumValue( detail.isr ) ]( detail );
+    //     }
+    //   }
+    // }
   }
 
 }    // namespace Thor::ADC
