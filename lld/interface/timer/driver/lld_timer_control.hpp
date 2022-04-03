@@ -25,6 +25,9 @@ namespace Thor::LLD::TIMER
   -------------------------------------------------------------------------------*/
   /**
    * @brief Shared functionality among the General/Basic/Advanced drivers
+   *
+   * Supplies methods for interacting with the Control Registers and their
+   * configuration.
    */
   template<class Derived>
   class ControlUnit
@@ -38,6 +41,67 @@ namespace Thor::LLD::TIMER
     {
     }
 
+    /*-------------------------------------------------------------------------
+    Auto-Reload Buffering: CR1_ARPE
+    -------------------------------------------------------------------------*/
+    enum class ARBehavior
+    {
+      AUTO_RELOAD_DIRECT,
+      AUTO_RELOAD_BUFFER
+    };
+
+    inline void setAutoReloadBehavior( const ARBehavior &behavior )
+    {
+      ARPE::set( static_cast<Derived *>( this )->mPeriph, EnumValue( behavior ) << CR1_ARPE_Pos );
+    }
+
+    /*-------------------------------------------------------------------------
+    Alignment Mode: CR1_CMS
+    -------------------------------------------------------------------------*/
+    enum class AlignMode
+    {
+      EDGE_ALIGNED,
+      CENTER_ALIGNED_1,
+      CENTER_ALIGNED_2,
+      CENTER_ALIGNED_3
+    };
+
+    inline void setAlignment( const AlignMode &align )
+    {
+      CMS::set( static_cast<Derived *>( this )->mPeriph, EnumValue( align ) << CR1_CMS_Pos );
+    }
+
+    /*-------------------------------------------------------------------------
+    Count Direction: CR1_DIR
+    -------------------------------------------------------------------------*/
+    enum class CountDir
+    {
+      COUNT_UP,
+      COUNT_DN
+    };
+
+    inline void setCountDirection( const CountDir &dir )
+    {
+      DIR::set( static_cast<Derived *>( this )->mPeriph, EnumValue( dir ) << CR1_DIR_Pos );
+    }
+
+    /*-------------------------------------------------------------------------
+    Pulse Mode: CR1_OPM
+    -------------------------------------------------------------------------*/
+    enum class PulseMode
+    {
+      CONTINUE_ON_UPDATE_EVENT,
+      STOP_ON_UPDATE_EVENT
+    };
+
+    inline void setPulseMode( const PulseMode &mode )
+    {
+      OPM::set( static_cast<Derived *>( this )->mPeriph, EnumValue( mode ) << CR1_OPM_Pos );
+    }
+
+    /*-------------------------------------------------------------------------
+    Counter Enable/Disable: CR1_CEN
+    -------------------------------------------------------------------------*/
     inline void enableCounter()
     {
       CEN::set( static_cast<Derived *>( this )->mPeriph, CR1_CEN );
@@ -48,9 +112,24 @@ namespace Thor::LLD::TIMER
       CEN::clear( static_cast<Derived *>( this )->mPeriph, CR1_CEN );
     }
 
-    inline void ctlBufferARREnable()
+    /*-------------------------------------------------------------------------
+    Master Mode Selection: CR2_MMS
+    -------------------------------------------------------------------------*/
+    enum class MasterMode
     {
-      ARPE::set( static_cast<Derived *>( this )->mPeriph, CR1_ARPE );
+      RESET,
+      ENABLE,
+      UPDATE,
+      COMPARE_PULSE,
+      COMPARE_OC1REF,
+      COMPARE_OC2REF,
+      COMPARE_OC3REF,
+      COMPARE_OC4REF
+    };
+
+    inline void setMasterMode( const MasterMode &mode )
+    {
+      MMS::set( static_cast<Derived *>( this )->mPeriph, EnumValue( mode ) << CR2_MMS );
     }
   };
 

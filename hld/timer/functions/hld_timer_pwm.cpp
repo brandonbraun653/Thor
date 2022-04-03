@@ -29,6 +29,8 @@ namespace Chimera::Timer::PWM
 
   Chimera::Status_t Driver::init( const DriverConfig &cfg )
   {
+    // Init the core
+
     return Chimera::Status::NOT_SUPPORTED;
   }
 
@@ -57,7 +59,7 @@ namespace Chimera::Timer::PWM
   }
 
 
-  Chimera::Status_t Driver::setPolarity( const Chimera::Timer::PWM::OutputPolarity polarity )
+  Chimera::Status_t Driver::setPolarity( const Chimera::Timer::PWM::Polarity polarity )
   {
     return Chimera::Status::NOT_SUPPORTED;
   }
