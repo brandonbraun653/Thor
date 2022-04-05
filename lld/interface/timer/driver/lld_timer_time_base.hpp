@@ -80,16 +80,16 @@ namespace Thor::LLD::TIMER
       -------------------------------------------------------------------------*/
       static_cast<Derived *>( this )->disableCounter();
 
-      /* Set the counter direction */
-      if constexpr ( timerType == HardwareType::ADVANCED )
-      {
-        DIR::set( periph, CR1_DIR );
-      }
+      // /* Set the counter direction */
+      // if constexpr ( timerType == HardwareType::ADVANCED )
+      // {
+      //   DIR::set( periph, CR1_DIR );
+      // }
 
-      ARPE::set( periph, CR1_ARPE );     /* Buffer the auto reload register updates */
-      ARR::set( periph, reloadValue );   /* Set the reload value */
-      PSC::set( periph, clockPrescale ); /* Adjust the prescaler */
-      CNT::set( periph, reloadValue );   /* Reset counter to indicate a reset */
+      // ARPE::set( periph, CR1_ARPE );     /* Buffer the auto reload register updates */
+      // ARR::set( periph, reloadValue );   /* Set the reload value */
+      // PSC::set( periph, clockPrescale ); /* Adjust the prescaler */
+      // CNT::set( periph, reloadValue );   /* Reset counter to indicate a reset */
 
       return Chimera::Status::OK;
     }

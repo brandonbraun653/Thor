@@ -26,6 +26,16 @@
 
 namespace Thor::LLD::TIMER
 {
+  /*---------------------------------------------------------------------------
+  Forward Declarations
+  ---------------------------------------------------------------------------*/
+  class Driver;
+
+  /*---------------------------------------------------------------------------
+  Aliases
+  ---------------------------------------------------------------------------*/
+  using Driver_rPtr = Driver *;
+
   /*-------------------------------------------------------------------------------
   HLD->LLD Required Free Functions
   -------------------------------------------------------------------------------*/
@@ -70,6 +80,24 @@ namespace Thor::LLD::TIMER
    * @return HardwareType
    */
   HardwareType getHardwareType( const std::uintptr_t address );
+
+  /**
+   * @brief Gets the driver associated with timer instance
+   *
+   * @param instance    Which instance to get
+   * @return Driver_rPtr
+   */
+  Driver_rPtr getDriver( const Chimera::Timer::Instance &instance );
+
+  /*---------------------------------------------------------------------------
+  Classes
+  ---------------------------------------------------------------------------*/
+
+  class Driver
+  {
+    // Turn the "getDriver" method into an intrusive list lookup. Use
+    // dynamic creation of the driver class to save memory. It'll be in RAM anyways.
+  };
 
 }    // namespace Thor::LLD::TIMER
 

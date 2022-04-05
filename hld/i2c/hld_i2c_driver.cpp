@@ -198,7 +198,7 @@ namespace Thor::I2C
     /*-------------------------------------------------------------------------
     Configure the low level driver
     -------------------------------------------------------------------------*/
-    if( ::LLD::getDriver( cfg.HWInit.channel )->configure( cfg ) == Chimera::Status::OK )
+    if( ::LLD::getLLDriver( cfg.HWInit.channel )->configure( cfg ) == Chimera::Status::OK )
     {
       mConfig = cfg;
       return Chimera::Status::OK;
@@ -218,20 +218,20 @@ namespace Thor::I2C
 
   Chimera::Status_t Driver::read( const uint16_t address, void *const data, const size_t length )
   {
-    return ::LLD::getDriver( mConfig.HWInit.channel )->read( address, data, length );
+    return ::LLD::getLLDriver( mConfig.HWInit.channel )->read( address, data, length );
   }
 
 
   Chimera::Status_t Driver::write( const uint16_t address, const void *const data, const size_t length )
   {
-    return ::LLD::getDriver( mConfig.HWInit.channel )->write( address, data, length );
+    return ::LLD::getLLDriver( mConfig.HWInit.channel )->write( address, data, length );
   }
 
 
   Chimera::Status_t Driver::transfer( const uint16_t address, const void *const tx_data, void *const rx_data,
                                       const size_t length )
   {
-    return ::LLD::getDriver( mConfig.HWInit.channel )->transfer( address, tx_data, rx_data, length );
+    return ::LLD::getLLDriver( mConfig.HWInit.channel )->transfer( address, tx_data, rx_data, length );
   }
 
 
@@ -271,7 +271,7 @@ namespace Thor::I2C
     /*-------------------------------------------------------------------------
     Get what happened from the hardware driver
     -------------------------------------------------------------------------*/
-    const auto txfr = ::LLD::getDriver( mConfig.HWInit.channel )->whatHappened();
+    const auto txfr = ::LLD::getLLDriver( mConfig.HWInit.channel )->whatHappened();
 
     /*-------------------------------------------------------------------------
     Parse the IRQ event based on transfer status

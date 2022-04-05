@@ -47,28 +47,6 @@ namespace Thor::LLD::TIMER
   extern RegisterMap *TIMER16_PERIPH;
 #endif
 
-
-  /*-------------------------------------------------------------------------------
-  Configuration Maps:
-    These convert high level configuration options into low level register config
-    options. The idea is to allow the user to specify some general options, then
-    convert that over to what the peripheral understands during config/init steps.
-  -------------------------------------------------------------------------------*/
-  namespace ConfigMap
-  {
-  }    // namespace ConfigMap
-
-
-  /*-------------------------------------------------------------------------------
-  Peripheral Resources:
-    These objects define critical resources used in the low level driver. The goal
-    is to minimize memory consumption, so these arrays only hold enough information
-    for the currently configured number of peripherals. They are intended to be
-    accessed directly via the _ResourceIndex_ attribute of the ConfigMap namespace.
-  -------------------------------------------------------------------------------*/
-  namespace Resource
-  {
-  }
 }    // namespace Thor::LLD::TIMER
 
 #endif /* !THOR_LLD_TIMER_DATA_HPP */

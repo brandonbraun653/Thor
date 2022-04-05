@@ -35,9 +35,19 @@ namespace Thor::LLD::I2C
   Public Functions (Implemented by the project)
   ---------------------------------------------------------------------------*/
   /**
-   *  Initializes the low level driver
+   *  Initializes the low level driver in the integrating project
    *
    *  @return Chimera::Status_t
+   */
+  Chimera::Status_t init_prj_driver();
+
+  /*---------------------------------------------------------------------------
+  Public Functions (Implemented at the interface layer)
+  ---------------------------------------------------------------------------*/
+  /**
+   * @brief Initialize the I2C interface layer
+   *
+   * @return Chimera::Status_t
    */
   Chimera::Status_t initialize();
 
@@ -47,11 +57,8 @@ namespace Thor::LLD::I2C
    *  @param[in]  channel     The I2C channel to get
    *  @return IDriver_rPtr    Instance of the I2C driver for the requested channel
    */
-  Driver_rPtr getDriver( const Chimera::I2C::Channel channel );
+  Driver_rPtr getLLDriver( const Chimera::I2C::Channel channel );
 
-  /*---------------------------------------------------------------------------
-  Public Functions (Implemented at the interface layer)
-  ---------------------------------------------------------------------------*/
   /**
    *  Checks if the given hardware channel is supported on this device.
    *
@@ -88,15 +95,6 @@ namespace Thor::LLD::I2C
    *  @return Chimera::I2C::Channel
    */
   Chimera::I2C::Channel getChannel( const std::uintptr_t address );
-
-  /**
-   *  Initializes the I2C drivers by attaching the appropriate peripheral
-   *
-   *  @param[in]  driverList    List of driver objects to be initialized
-   *  @param[in]  numDrivers    How many drivers are in driverList
-   *  @return bool
-   */
-  bool attachDriverInstances( Driver *const driverList, const size_t numDrivers );
 
   /*---------------------------------------------------------------------------
   Classes

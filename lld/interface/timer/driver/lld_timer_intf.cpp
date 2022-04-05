@@ -245,4 +245,9 @@ namespace Thor::LLD::TIMER
     return HardwareType::INVALID;
   }
 
+
+  Driver_rPtr getDriver( const Chimera::Timer::Instance &instance )
+  {
+    
+  }
 }    // namespace Thor::LLD::TIMER
