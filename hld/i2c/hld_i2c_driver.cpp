@@ -16,6 +16,7 @@ Includes
 #include <Chimera/gpio>
 #include <Chimera/i2c>
 #include <Chimera/thread>
+#include <Chimera/peripheral>
 #include <Thor/cfg>
 #include <Thor/i2c>
 #include <Thor/lld/interface/inc/i2c>
@@ -41,7 +42,8 @@ static constexpr size_t NUM_DRIVERS = LLD::NUM_I2C_PERIPHS;
 Variables
 -----------------------------------------------------------------------------*/
 static size_t s_driver_initialized;           /**< Tracks the module level initialization state */
-static HLD::Driver hld_driver[ NUM_DRIVERS ]; /**< Driver objects */
+
+static Chimera::DeviceManager<HLD::Driver, Chimera::I2C::Channel, NUM_DRIVERS> s_hld_drivers;
 
 namespace Thor::I2C
 {
@@ -56,6 +58,9 @@ namespace Thor::I2C
   static void I2CxISRUserThread( void *arg )
   {
     using namespace Chimera::Thread;
+
+    Chimera::I2C::Channel instance_list[ EnumValue( Chimera::I2C::Channel::NUM_OPTIONS ) ];
+
     while ( 1 )
     {
       /*-----------------------------------------------------------------------
@@ -69,9 +74,11 @@ namespace Thor::I2C
       /*-----------------------------------------------------------------------
       Handle every ISR. Don't know which triggered this.
       -----------------------------------------------------------------------*/
-      for ( size_t index = 0; index < NUM_DRIVERS; index++ )
+      const size_t count = s_hld_drivers.registeredInstances( instance_list, ARRAY_COUNT( instance_list ) );
+      for( size_t idx = 0; idx < count; idx++ )
       {
-        hld_driver[ index ].postISRProcessing();
+        auto driver = s_hld_drivers.get( instance_list[ idx ] );
+        driver->postISRProcessing();
       }
     }
   }
@@ -128,15 +135,12 @@ namespace Thor::I2C
 
   Driver_rPtr getDriver( const Chimera::I2C::Channel channel )
   {
-    if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    if( !::LLD::isSupported( channel ) )
     {
-      return &hld_driver[ idx ];
-    }
-    else
-    {
-      RT_HARD_ASSERT( false );
       return nullptr;
     }
+
+    return s_hld_drivers.getOrCreate( channel );
   }
 
 

@@ -13,6 +13,7 @@ Includes
 -----------------------------------------------------------------------------*/
 #include <Chimera/common>
 #include <Chimera/thread>
+#include <Chimera/peripheral>
 #include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/inc/i2c>
