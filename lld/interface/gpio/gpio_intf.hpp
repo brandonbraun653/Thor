@@ -5,34 +5,41 @@
  *  Description:
  *    STM32 LLD GPIO Interface Spec
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_GPIO_DRIVER_INTERFACE_HPP
 #define THOR_LLD_GPIO_DRIVER_INTERFACE_HPP
 
-/* STL Includes */
-#include <limits>
-
-/* Chimera Includes */
-#include <Chimera/gpio>
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/exti>
-
-/* Thor Includes */
+#include <Chimera/gpio>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
+#include <limits>
 
 namespace Thor::LLD::GPIO
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Constants
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr Reg32_t BAD_ALT_FUNC = std::numeric_limits<Reg32_t>::max();
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions (Implemented by the project)
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
+  /**
+   * @brief Initializes the low level driver in the integrating project
+   * @return Chimera::Status_t
+   */
+  Chimera::Status_t init_prj_driver();
+
+  /*---------------------------------------------------------------------------
+  Public Functions (Implemented at the interface layer)
+  ---------------------------------------------------------------------------*/
   /**
    *  Initializes the low level driver
    *
@@ -52,11 +59,8 @@ namespace Thor::LLD::GPIO
    *  @param[in]  pin         Which pin on the given port
    *  @return IDriver_rPtr    Instance of the GPIO driver for the requested channel
    */
-  Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
+  Driver_rPtr getLLDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 
-  /*-------------------------------------------------------------------------------
-  Public Functions (Implemented at the interface layer)
-  -------------------------------------------------------------------------------*/
   /**
    *  Checks if the given hardware channel is supported on this device.
    *
@@ -159,211 +163,135 @@ namespace Thor::LLD::GPIO
   Chimera::EXTI::EventLine_t findEventLine( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin );
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Classes
-  -------------------------------------------------------------------------------*/
-  /*-------------------------------------------------
-  Virtual class that defines the expected interface.
-  Useful for mocking purposes.
-  -------------------------------------------------*/
-  class IDriver
-  {
-  public:
-    virtual ~IDriver() = default;
-
-    /**
-     *  Attaches a peripheral instance to the interaction model
-     *
-     *  @param[in]  peripheral    Memory mapped struct of the desired GPIO peripheral
-     *  @return void
-     */
-    virtual void attach( RegisterMap *const peripheral ) = 0;
-
-    /**
-     *  Enables the peripheral clock
-     *
-     *  @return void
-     */
-    virtual void clockEnable() = 0;
-
-    /**
-     *  Disables the peripheral clock
-     *
-     *  @return void
-     */
-    virtual void clockDisable() = 0;
-
-    /**
-     *  Sets the output drive type for the GPIO pin
-     *
-     *  @param[in]  pin       The pin to act on
-     *  @param[in]  drive     The drive type of the GPIO
-     *  @return Chimera::Status_t
-     *
-     *  |  Return Value |                Explanation               |
-     *  |:-------------:|:----------------------------------------:|
-     *  |            OK | The drive state was successfully updated |
-     *  |          FAIL | The drive state failed to be updated     |
-     *  |       TIMEOUT | The resource lock timed-out              |
-     *  | NOT_SUPPORTED | The drive state is not supported         |
-     */
-    virtual Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive ) = 0;
-
-    /**
-     *  Set the drive strength of the GPIO output
-     *
-     *  @param[in]  pin       The pin to act on
-     *  @param[in]  speed     The drive speed to set
-     *  @return Chimera::Status_t
-     *
-     *  |  Return Value |             Explanation            |
-     *  |:-------------:|:----------------------------------:|
-     *  |            OK | The speed was successfully updated |
-     *  |          FAIL | The speed failed to be updated     |
-     *  |       TIMEOUT | The resource lock timed-out        |
-     *  | NOT_SUPPORTED | The speed is not supported         |
-     */
-    virtual Chimera::Status_t speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed ) = 0;
-
-    /**
-     *  Set the pull up/down resistor configuration
-     *
-     *  @param[in]  pin       The pin to act on
-     *  @param[in]  pull      The pull up/down state to set
-     *  @return Chimera::Status_t
-     *
-     *  |  Return Value |                   Explanation                   |
-     *  |:-------------:|:-----------------------------------------------:|
-     *  |            OK | The pull up/down value was successfully updated |
-     *  |          FAIL | The pull up/down value failed to be updated     |
-     *  |       TIMEOUT | The resource lock timed-out                     |
-     *  | NOT_SUPPORTED | The pull up/down value is not supported         |
-     */
-    virtual Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull ) = 0;
-
-    /**
-     *  Writes the entire output data register for the configured port
-     *
-     *  @param[in]  pin       The pin to act on
-     *  @param[in]  val       The value to set the output register to
-     *  @return Chimera::Status_t
-     *
-     *  |  Return Value |                Explanation                |
-     *  |:-------------:|:-----------------------------------------:|
-     *  |            OK | The output state was successfully updated |
-     *  |          FAIL | The output state failed to be updated     |
-     *  |       TIMEOUT | The resource lock timed-out               |
-     *  | NOT_SUPPORTED | The output state is not supported         |
-     */
-    virtual Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state ) = 0;
-
-    /**
-     *  Configures the GPIO alternate function register
-     *
-     *  @param[in]  pin       The pin to act on
-     *  @param[in]  val       The value to set the AF register to
-     *  @return Chimera::Status_t
-     *
-     *  |  Return Value |                   Explanation                   |
-     *  |:-------------:|:-----------------------------------------------:|
-     *  |            OK | The alternate function was successfully updated |
-     *  |          FAIL | The alternate function failed to be updated     |
-     *  |       TIMEOUT | The resource lock timed-out                     |
-     *  | NOT_SUPPORTED | The alternate function is not supported         |
-     */
-    virtual Chimera::Status_t alternateFunctionSet( const uint8_t pin, const Chimera::GPIO::Alternate val ) = 0;
-
-    /**
-     *  Reads the given pin's state
-     *
-     *  @return Chimera::GPIO::State
-     */
-    virtual Chimera::GPIO::State read( const uint8_t pin ) = 0;
-
-    /**
-     *  Reads the drive register for the configured port
-     *
-     *  @param[in]  pin       The pin to act on
-     *  @param[in]  timeout   How long to wait for the resource to become available
-     *  @return Chimera::GPIO::Drive
-     */
-    virtual Chimera::GPIO::Drive driveGet( const uint8_t pin ) = 0;
-
-    /**
-     *  Reads the speed register for the configured port
-     *
-     *  @param[in]  pin       The pin to act on
-     *  @param[in]  timeout   How long to wait for the resource to become available
-     *  @return Thor::LLD::GPIO::Speed
-     */
-    virtual Thor::LLD::GPIO::Speed speedGet( const uint8_t pin ) = 0;
-
-    /**
-     *  Reads the pull up/down register for the configured port
-     *
-     *  @param[in]  pin       The pin to act on
-     *  @param[in]  timeout   How long to wait for the resource to become available
-     *  @return Chimera::GPIO::Pull
-     */
-    virtual Chimera::GPIO::Pull pullGet( const uint8_t pin ) = 0;
-
-    /**
-     *  Reads the current GPIO alternate function register configuration
-     *
-     *  @param[in]  pin       The pin to act on
-     *  @param[in]  timeout   How long to wait for the resource to become available
-     *  @return Chimera::GPIO::Alternate
-     */
-    virtual Chimera::GPIO::Alternate alternateFunctionGet( const uint8_t pin ) = 0;
-
-    /**
-     *  Attaches an interrupt callback for a GPIO pin that has been configured
-     *  to use external interrupts.
-     *
-     *  @param[in]  pin       The pin to act on
-     *  @param[in]  func      The function to be called
-     *  @param[in]  trigger   What edge to trigger on
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t attachInterrupt( const uint8_t pin, Chimera::Function::vGeneric &func,
-                                               const Chimera::EXTI::EdgeTrigger trigger ) = 0;
-
-    /**
-     *  Detaches a previously configured interrupt
-     *
-     *  @param[in]  pin       The pin to act on
-     *  @return void
-     */
-    virtual void detachInterrupt( const uint8_t pin ) = 0;
-  };
-
-
-  /*-------------------------------------------------
-  Concrete driver declaration. Implements the interface
-  of the virtual class, but doesn't inherit due to the
-  memory penalties. Definition is done project side.
-  -------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   class Driver
   {
   public:
     Driver();
     ~Driver();
 
-    void attach( RegisterMap *const peripheral );
+    /**
+     * @brief Attaches a peripheral instance to the interaction model
+     *
+     * @param peripheral  Memory mapped struct of the desired GPIO peripheral
+     * @return Chimera::Status_t
+     */
+    Chimera::Status_t attach( RegisterMap *const peripheral );
+
+    /**
+     * @brief Enables the peripheral clock
+     */
     void clockEnable();
+
+    /**
+     * @brief Disables the peripheral clock
+     */
     void clockDisable();
+
+    /**
+     * @brief Sets the output drive type for the GPIO pin
+     *
+     * @param pin   The pin to act on
+     * @param drive The drive type of the GPIO
+     * @return Chimera::Status_t
+     */
     Chimera::Status_t driveSet( const uint8_t pin, const Chimera::GPIO::Drive drive );
+
+    /**
+     * @brief Set the drive strength of the GPIO output
+     *
+     * @param pin   The pin to act on
+     * @param speed The drive speed to set
+     * @return Chimera::Status_t
+     */
     Chimera::Status_t speedSet( const uint8_t pin, const Thor::LLD::GPIO::Speed speed );
+
+    /**
+     * @brief Set the pull up/down resistor configuration
+     *
+     * @param pin   The pin to act on
+     * @param pull  The pull up/down state to set
+     * @return Chimera::Status_t
+     */
     Chimera::Status_t pullSet( const uint8_t pin, const Chimera::GPIO::Pull pull );
+
+    /**
+     * @brief Writes the pin to a logical state
+     *
+     * @param pin   The pin to act on
+     * @param state The pin state to set
+     * @return Chimera::Status_t
+     */
     Chimera::Status_t write( const uint8_t pin, const Chimera::GPIO::State state );
+
+    /**
+     * @brief Configures the GPIO alternate function register
+     *
+     * @param pin   The pin to act on
+     * @param val   Alternate function to configure
+     * @return Chimera::Status_t
+     */
     Chimera::Status_t alternateFunctionSet( const uint8_t pin, const Chimera::GPIO::Alternate val );
+
+    /**
+     * @brief Reads the given pin's state
+     *
+     * @param pin   The pin to read
+     * @return Chimera::GPIO::State
+     */
     Chimera::GPIO::State read( const uint8_t pin );
+
+    /**
+     * @brief Gets the currently configured drive setting
+     *
+     * @param pin   The pin to read settings for
+     * @return Chimera::GPIO::Drive
+     */
     Chimera::GPIO::Drive driveGet( const uint8_t pin );
+
+    /**
+     * @brief Reads the speed register for the configured port
+     *
+     * @param pin   The pin to act on
+     * @return Thor::LLD::GPIO::Speed
+     */
     Thor::LLD::GPIO::Speed speedGet( const uint8_t pin );
+
+    /**
+     * @brief Reads the pull up/down register for the configured port
+     *
+     * @param pin   The pin to act on
+     * @return Chimera::GPIO::Pull
+     */
     Chimera::GPIO::Pull pullGet( const uint8_t pin );
+
+    /**
+     * @brief Reads the current GPIO alternate function register configuration
+     *
+     * @param pin   The pin to act on
+     * @return Chimera::GPIO::Alternate
+     */
     Chimera::GPIO::Alternate alternateFunctionGet( const uint8_t pin );
+
+    /**
+     * @brief Attaches an interrupt callback for a GPIO pin that has been configured
+     * to use external interrupts.
+     *
+     * @param pin     The pin to act on
+     * @param func    The function to be called
+     * @param trigger What edge to trigger on
+     * @return Chimera::Status_t
+     */
     Chimera::Status_t attachInterrupt( const uint8_t pin, Chimera::Function::vGeneric &func,
                                        const Chimera::EXTI::EdgeTrigger trigger );
+
+    /**
+     * @brief Detaches a previously configured interrupt
+     *
+     * @param pin   The pin to act on
+     */
     void detachInterrupt( const uint8_t pin );
 
   private:

@@ -5,17 +5,16 @@
  *  Description:
  *    LLD interface functions that are processor independent
  *
- *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-/* STL Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <type_traits>
-
-/* Chimera Includes */
 #include <Chimera/common>
+#include <Chimera/peripheral>
 #include <Chimera/utility>
-
-/* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/inc/gpio>
@@ -23,9 +22,9 @@
 #if defined( THOR_LLD_GPIO )
 namespace Thor::LLD::GPIO
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Constants
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
 #if defined( THOR_LLD_GPIO )
   /* clang-format off */
   static const uint8_t portIndex[ DRIVER_MAX_PORTS ] = {
@@ -58,12 +57,83 @@ namespace Thor::LLD::GPIO
     GPIOL_PIN_RINDEX_OFFSET
   };
   /* clang-format on */
-#endif  // THOR_LLD_GPIO
+#endif    // THOR_LLD_GPIO
 
+  /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
+  static Chimera::DeviceManager<Driver, Chimera::GPIO::Port, NUM_GPIO_PERIPHS> s_gpio_drivers;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
+  Chimera::Status_t __weak init_prj_driver()
+  {
+    return Chimera::Status::OK;
+  }
+
+
+  Chimera::Status_t initialize()
+  {
+    /*-------------------------------------------------------------------------
+    Bind the memory mapped peripherals to the driver instances
+    -------------------------------------------------------------------------*/
+    Chimera::Status_t result = Chimera::Status::OK;
+
+#if defined( STM32_GPIOA_PERIPH_AVAILABLE )
+    result |= getLLDriver( Chimera::GPIO::Port::PORTA, 0 )->attach( GPIOA_PERIPH );
+#endif
+#if defined( STM32_GPIOB_PERIPH_AVAILABLE )
+    result |= getLLDriver( Chimera::GPIO::Port::PORTB, 0 )->attach( GPIOB_PERIPH );
+#endif
+#if defined( STM32_GPIOC_PERIPH_AVAILABLE )
+    result |= getLLDriver( Chimera::GPIO::Port::PORTC, 0 )->attach( GPIOC_PERIPH );
+#endif
+#if defined( STM32_GPIOD_PERIPH_AVAILABLE )
+    result |= getLLDriver( Chimera::GPIO::Port::PORTD, 0 )->attach( GPIOD_PERIPH );
+#endif
+#if defined( STM32_GPIOE_PERIPH_AVAILABLE )
+    result |= getLLDriver( Chimera::GPIO::Port::PORTE, 0 )->attach( GPIOE_PERIPH );
+#endif
+#if defined( STM32_GPIOF_PERIPH_AVAILABLE )
+    result |= getLLDriver( Chimera::GPIO::Port::PORTF, 0 )->attach( GPIOF_PERIPH );
+#endif
+#if defined( STM32_GPIOG_PERIPH_AVAILABLE )
+    result |= getLLDriver( Chimera::GPIO::Port::PORTG, 0 )->attach( GPIOG_PERIPH );
+#endif
+#if defined( STM32_GPIOH_PERIPH_AVAILABLE )
+    result |= getLLDriver( Chimera::GPIO::Port::PORTH, 0 )->attach( GPIOH_PERIPH );
+#endif
+#if defined( STM32_GPIOI_PERIPH_AVAILABLE )
+    result |= getLLDriver( Chimera::GPIO::Port::PORTI, 0 )->attach( GPIOI_PERIPH );
+#endif
+#if defined( STM32_GPIOJ_PERIPH_AVAILABLE )
+    result |= getLLDriver( Chimera::GPIO::Port::PORTJ, 0 )->attach( GPIOJ_PERIPH );
+#endif
+#if defined( STM32_GPIOK_PERIPH_AVAILABLE )
+    result |= getLLDriver( Chimera::GPIO::Port::PORTK, 0 )->attach( GPIOK_PERIPH );
+#endif
+
+    RT_HARD_ASSERT( result == Chimera::Status::OK );
+
+    /*-------------------------------------------------------------------------
+    Invoke the chip specific sequence if any
+    -------------------------------------------------------------------------*/
+    return init_prj_driver();
+  }
+
+
+  Driver_rPtr getLLDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
+  {
+    if ( !isSupported( port, pin ) )
+    {
+      return nullptr;
+    }
+
+    return s_gpio_drivers.getOrCreate( port );
+  }
+
+
   bool isSupported( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
   {
     /*-------------------------------------------------
@@ -303,131 +373,6 @@ namespace Thor::LLD::GPIO
     }
 
     return retVal;
-  }
-
-
-  bool attachDriverInstances( Driver *const driverList, const size_t numDrivers )
-  {
-    /*-------------------------------------------------
-    Algorithm vars
-    -------------------------------------------------*/
-    size_t initializedPorts         = 0;
-    Chimera::GPIO::Port currentPort = Chimera::GPIO::Port::PORTA;
-    RIndex_t resourceIndex          = 0;
-
-    /*-------------------------------------------------
-    Reject bad inputs
-    -------------------------------------------------*/
-    if ( !driverList || !numDrivers || ( numDrivers > NUM_GPIO_PERIPHS ) )
-    {
-      return false;
-    }
-
-    /*-------------------------------------------------
-    Walk the port attribute configuration
-    -------------------------------------------------*/
-    for ( size_t portIdx = 0; portIdx < PRJ_MAX_PORTS; portIdx++ )
-    {
-      /*-------------------------------------------------
-      Find the peripheral memory map of the current port
-      -------------------------------------------------*/
-      RegisterMap *periphInstance;
-      currentPort = prjPortAttributes[ portIdx ].portID;
-
-      switch ( currentPort )
-      {
-#if defined( STM32_GPIOA_PERIPH_AVAILABLE )
-        case Chimera::GPIO::Port::PORTA:
-          periphInstance = GPIOA_PERIPH;
-          break;
-#endif
-#if defined( STM32_GPIOB_PERIPH_AVAILABLE )
-        case Chimera::GPIO::Port::PORTB:
-          periphInstance = GPIOB_PERIPH;
-          break;
-#endif
-#if defined( STM32_GPIOC_PERIPH_AVAILABLE )
-        case Chimera::GPIO::Port::PORTC:
-          periphInstance = GPIOC_PERIPH;
-          break;
-#endif
-#if defined( STM32_GPIOD_PERIPH_AVAILABLE )
-        case Chimera::GPIO::Port::PORTD:
-          periphInstance = GPIOD_PERIPH;
-          break;
-#endif
-#if defined( STM32_GPIOE_PERIPH_AVAILABLE )
-        case Chimera::GPIO::Port::PORTE:
-          periphInstance = GPIOE_PERIPH;
-          break;
-#endif
-#if defined( STM32_GPIOF_PERIPH_AVAILABLE )
-        case Chimera::GPIO::Port::PORTF:
-          periphInstance = GPIOF_PERIPH;
-          break;
-#endif
-#if defined( STM32_GPIOG_PERIPH_AVAILABLE )
-        case Chimera::GPIO::Port::PORTG:
-          periphInstance = GPIOG_PERIPH;
-          break;
-#endif
-#if defined( STM32_GPIOH_PERIPH_AVAILABLE )
-        case Chimera::GPIO::Port::PORTH:
-          periphInstance = GPIOH_PERIPH;
-          break;
-#endif
-#if defined( STM32_GPIOI_PERIPH_AVAILABLE )
-        case Chimera::GPIO::Port::PORTI:
-          periphInstance = GPIOI_PERIPH;
-          break;
-#endif
-#if defined( STM32_GPIOJ_PERIPH_AVAILABLE )
-        case Chimera::GPIO::Port::PORTJ:
-          periphInstance = GPIOJ_PERIPH;
-          break;
-#endif
-#if defined( STM32_GPIOK_PERIPH_AVAILABLE )
-        case Chimera::GPIO::Port::PORTK:
-          periphInstance = GPIOK_PERIPH;
-          break;
-#endif
-        default:
-          /*-------------------------------------------------
-          An unsupported port was attempted to be initialized
-          -------------------------------------------------*/
-          Chimera::insert_debug_breakpoint();
-          return false;
-          break;
-      }
-
-      /*-------------------------------------------------
-      Attach the peripheral
-      -------------------------------------------------*/
-      resourceIndex = portIndex[ portIdx ];
-      driverList[ resourceIndex ].attach( periphInstance );
-      initializedPorts++;
-
-      /*-------------------------------------------------
-      Ensure we don't initialize too many pins
-      -------------------------------------------------*/
-      if ( initializedPorts < numDrivers )
-      {
-        continue;    // More things left to do
-      }
-      else if ( ( portIdx + 1 ) < PRJ_MAX_PORTS )
-      {
-        return false;    // Hit the limit, but the loop thinks we still have more to go.
-      }
-      else
-      {
-        break;
-      }
-    }
-
-    /*-------------------------------------------------
-    One last check: Were all the expected drivers initialized?
-    -------------------------------------------------*/
-    return initializedPorts == numDrivers;
   }
 
 
@@ -677,4 +622,4 @@ namespace Thor::LLD::GPIO
 
 }    // namespace Thor::LLD::GPIO
 
-#endif  /* THOR_LLD_GPIO */
+#endif /* THOR_LLD_GPIO */

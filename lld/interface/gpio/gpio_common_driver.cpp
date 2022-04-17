@@ -6,7 +6,7 @@
  *    Common low level driver for the STM32 GPIO. It seems that a lot of devices
  *    share the same core hardware interface.
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 /* Chimera Includes */
@@ -24,43 +24,6 @@
 
 namespace Thor::LLD::GPIO
 {
-  /*-------------------------------------------------------------------------------
-  Variables
-  -------------------------------------------------------------------------------*/
-  static Driver s_gpio_drivers[ NUM_GPIO_PERIPHS ];
-
-  /*-------------------------------------------------
-  LLD->HLD Interface Implementation
-  -------------------------------------------------*/
-  Chimera::Status_t initialize()
-  {
-    /*-------------------------------------------------
-    Attach all the expected mPeripherals to the drivers
-    -------------------------------------------------*/
-    if ( attachDriverInstances( s_gpio_drivers, ARRAY_COUNT( s_gpio_drivers ) ) )
-    {
-      return Chimera::Status::OK;
-    }
-    else
-    {
-      return Chimera::Status::FAIL;
-    }
-  }
-
-
-  Driver_rPtr getDriver( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
-  {
-    if ( auto idx = getResourceIndex( port ); idx != INVALID_RESOURCE_INDEX )
-    {
-      return &s_gpio_drivers[ idx ];
-    }
-    else
-    {
-      return nullptr;
-    }
-  }
-
-
   /*-----------------------------------------------------
   Low Level Driver Implementation
   -----------------------------------------------------*/
@@ -74,10 +37,10 @@ namespace Thor::LLD::GPIO
   }
 
 
-  void Driver::attach( RegisterMap *const mPeripheral )
+  Chimera::Status_t Driver::attach( RegisterMap *const mPeripheral )
   {
     mPeriph = mPeripheral;
-    clockEnable();
+    return Chimera::Status::OK;
   }
 
 
