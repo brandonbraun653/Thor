@@ -35,7 +35,9 @@ namespace Chimera::Timer
 
   void Core::startCounter()
   {
-
+    // How should I get the correct driver for the instance? Should I have a pointer
+    // to each possible type? Look at my previous notes for inspiration. I thought
+    // I had something clever...
   }
 
 

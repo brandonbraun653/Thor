@@ -17,9 +17,9 @@ Includes
 -----------------------------------------------------------------------------*/
 #include <Thor/lld/interface/timer/timer_intf.hpp>
 #include <Thor/lld/interface/timer/timer_types.hpp>
-#include <Thor/lld/interface/timer/driver/lld_timer_common.hpp>
-#include <Thor/lld/interface/timer/driver/lld_timer_control.hpp>
-#include <Thor/lld/interface/timer/driver/lld_timer_time_base.hpp>
+#include <Thor/lld/interface/timer/functions/lld_timer_common.hpp>
+#include <Thor/lld/interface/timer/functions/lld_timer_control.hpp>
+#include <Thor/lld/interface/timer/functions/lld_timer_time_base.hpp>
 
 namespace Thor::LLD::TIMER
 {
@@ -27,17 +27,12 @@ namespace Thor::LLD::TIMER
   Public Functions
   ---------------------------------------------------------------------------*/
   /**
-   * @brief Initialize the general driver module
-   */
-  void initGeneralDriver();
-
-  /**
    * @brief Get the General Driver object
    *
-   * @param typeIndex   Peripheral type resource index
+   * @param instance   Peripheral hardware instance
    * @return GeneralDriver_rPtr
    */
-  GeneralDriver_rPtr getGeneralDriver( const RIndex_t typeIndex );
+  GeneralDriver_rPtr getGeneralDriver( const Chimera::Timer::Instance instance );
 
   /*---------------------------------------------------------------------------
   Classes
@@ -50,7 +45,7 @@ namespace Thor::LLD::TIMER
 
     constexpr HardwareType timerType()
     {
-      return HardwareType::GENERAL;
+      return HardwareType::TIMER_HW_GENERAL;
     }
 
   protected:

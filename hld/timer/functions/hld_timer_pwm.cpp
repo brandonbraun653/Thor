@@ -12,12 +12,28 @@
 Includes
 -----------------------------------------------------------------------------*/
 #include <Chimera/common>
+#include <Chimera/peripheral>
 #include <Chimera/timer>
+#include <Thor/lld/interface/inc/timer>
+
+/*-----------------------------------------------------------------------------
+Constants
+-----------------------------------------------------------------------------*/
+static constexpr size_t REQ_HW_TIMER_TYPES =
+    ( Thor::LLD::TIMER::HardwareType::TIMER_HW_ADVANCED | Thor::LLD::TIMER::HardwareType::TIMER_HW_BASIC |
+      Thor::LLD::TIMER::HardwareType::TIMER_HW_GENERAL );
+
+/*-----------------------------------------------------------------------------
+Static Data
+-----------------------------------------------------------------------------*/
+static Chimera::DeviceManager<Thor::LLD::TIMER::UnifiedDriver, Chimera::Timer::Instance,
+                              EnumValue( Chimera::Timer::Instance::NUM_OPTIONS )>
+    s_driver_resources;
 
 
 namespace Chimera::Timer::PWM
 {
-  Driver::Driver()
+  Driver::Driver() : mTimerImpl( nullptr )
   {
   }
 
@@ -29,9 +45,36 @@ namespace Chimera::Timer::PWM
 
   Chimera::Status_t Driver::init( const DriverConfig &cfg )
   {
-    // Init the core
+    using namespace Thor::LLD::TIMER;
 
-    return Chimera::Status::NOT_SUPPORTED;
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if( !( getHardwareType( cfg.coreCfg.instance ) & REQ_HW_TIMER_TYPES ) )
+    {
+      return Chimera::Status::NOT_SUPPORTED;
+    }
+
+    /*-------------------------------------------------------------------------
+    Create the driver handle if it hasn't been already
+    -------------------------------------------------------------------------*/
+    if( !mTimerImpl )
+    {
+      mTimerImpl = std::make_shared<void *>();
+    }
+
+    /*-------------------------------------------------------------------------
+    Grab the driver for this instance and register it with the class
+    -------------------------------------------------------------------------*/
+    auto driver = s_driver_resources.getOrCreate( cfg.coreCfg.instance );
+    *driver = getUnifiedDriver( cfg.coreCfg.instance );
+
+
+    // Can I reinterpret cast to one of the CRTP classes to access common functions?
+    // Try to call the core config function...
+    driver->driver.basic
+
+    return Chimera::Status::OK;
   }
 
 

@@ -13,10 +13,11 @@
 #ifndef THOR_LLD_TIMER_DATA_HPP
 #define THOR_LLD_TIMER_DATA_HPP
 
-/* STL Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <cstddef>
-
-/* Thor Includes */
+#include <Chimera/timer>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/common/types.hpp>
 
@@ -47,6 +48,10 @@ namespace Thor::LLD::TIMER
   extern RegisterMap *TIMER16_PERIPH;
 #endif
 
+  /*-----------------------------------------------------------------------------
+  Map peripheral instances at a channel level
+  -----------------------------------------------------------------------------*/
+  extern RegisterMap *const PeriphRegisterBlock[ EnumValue( Chimera::Timer::Instance::NUM_OPTIONS ) ];
 }    // namespace Thor::LLD::TIMER
 
 #endif /* !THOR_LLD_TIMER_DATA_HPP */

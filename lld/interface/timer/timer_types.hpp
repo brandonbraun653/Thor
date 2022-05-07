@@ -32,6 +32,7 @@ namespace Thor::LLD::TIMER
 
   struct RegisterMap;
   struct LPRegisterMap;
+  struct UnifiedDriver;
 
   /*---------------------------------------------------------------------------
   Aliases
@@ -39,6 +40,7 @@ namespace Thor::LLD::TIMER
   using AdvancedDriver_rPtr = AdvancedDriver *;
   using BasicDriver_rPtr    = BasicDriver *;
   using GeneralDriver_rPtr  = GeneralDriver *;
+  using UnifiedDriver_rPtr  = UnifiedDriver *;
 
   /*---------------------------------------------------------------------------
   Enumerations
@@ -46,14 +48,36 @@ namespace Thor::LLD::TIMER
   /**
    * @brief Enumerates available hardware driver types
    */
-  enum class HardwareType : uint8_t
+  enum HardwareType : size_t
   {
-    ADVANCED,
-    BASIC,
-    GENERAL,
+    TIMER_HW_INVALID  = 0,
+    TIMER_HW_ADVANCED = ( 1u << 0 ),
+    TIMER_HW_BASIC    = ( 1u << 1 ),
+    TIMER_HW_GENERAL  = ( 1u << 2 ),
 
-    NUM_OPTIONS,
-    INVALID
+    NUM_OPTIONS = 3
+  };
+
+  /*---------------------------------------------------------------------------
+  Structures
+  ---------------------------------------------------------------------------*/
+  /**
+   * @brief Single object to pass around one of the 3 supported timer drivers
+   *
+   */
+  struct UnifiedDriver
+  {
+    union _XDriver
+    {
+      AdvancedDriver_rPtr advanced;
+      BasicDriver_rPtr    basic;
+      GeneralDriver_rPtr  general;
+    } driver;          /**< Driver instance */
+    HardwareType type; /**< Type of driver */
+
+    UnifiedDriver() : type( TIMER_HW_INVALID )
+    {
+    }
   };
 
 }    // namespace Thor::LLD::TIMER

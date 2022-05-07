@@ -83,7 +83,7 @@ namespace Thor::LLD::TIMER
 
 #if defined( DEBUG )
     volatile size_t actualDiff = micros() - startTick;
-    volatile int error         = static_cast<int>( us ) - static_cast<int>( actualDiff );
+    volatile int    error      = static_cast<int>( us ) - static_cast<int>( actualDiff );
     ( void )error;
 #endif
   }
@@ -91,10 +91,6 @@ namespace Thor::LLD::TIMER
 
   Chimera::Status_t initializeModule()
   {
-    /*-------------------------------------------------------------------------
-    Power up the generic timer type drivers
-    -------------------------------------------------------------------------*/
-    initGeneralDriver();
     return Chimera::Status::OK;
   }
 
@@ -202,52 +198,124 @@ namespace Thor::LLD::TIMER
 #if defined( STM32_TIMER1_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( TIMER1_PERIPH ) )
     {
-      return HardwareType::ADVANCED;
+      return HardwareType::TIMER_HW_ADVANCED;
     }
 #endif
 #if defined( STM32_TIMER2_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( TIMER2_PERIPH ) )
     {
-      return HardwareType::GENERAL;
+      return HardwareType::TIMER_HW_GENERAL;
     }
 #endif
 #if defined( STM32_TIMER3_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( TIMER3_PERIPH ) )
     {
-      return HardwareType::GENERAL;
+      return HardwareType::TIMER_HW_GENERAL;
     }
 #endif
 #if defined( STM32_TIMER6_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( TIMER6_PERIPH ) )
     {
-      return HardwareType::BASIC;
+      return HardwareType::TIMER_HW_BASIC;
     }
 #endif
 #if defined( STM32_TIMER7_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( TIMER7_PERIPH ) )
     {
-      return HardwareType::BASIC;
+      return HardwareType::TIMER_HW_BASIC;
     }
 #endif
 #if defined( STM32_TIMER15_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( TIMER15_PERIPH ) )
     {
-      return HardwareType::GENERAL;
+      return HardwareType::TIMER_HW_GENERAL;
     }
 #endif
 #if defined( STM32_TIMER16_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( TIMER16_PERIPH ) )
     {
-      return HardwareType::GENERAL;
+      return HardwareType::TIMER_HW_GENERAL;
     }
 #endif
 
-    return HardwareType::INVALID;
+    return TIMER_HW_INVALID;
   }
 
 
-  Driver_rPtr getDriver( const Chimera::Timer::Instance &instance )
+  HardwareType getHardwareType( const Chimera::Timer::Instance &instance )
   {
-    
+    switch ( instance )
+    {
+#if defined( STM32_TIMER1_PERIPH_AVAILABLE )
+      case Chimera::Timer::Instance::TIMER1:
+        return HardwareType::TIMER_HW_ADVANCED;
+#endif
+#if defined( STM32_TIMER2_PERIPH_AVAILABLE )
+      case Chimera::Timer::Instance::TIMER2:
+        return HardwareType::TIMER_HW_GENERAL;
+#endif
+#if defined( STM32_TIMER3_PERIPH_AVAILABLE )
+      case Chimera::Timer::Instance::TIMER3:
+        return HardwareType::TIMER_HW_GENERAL;
+#endif
+#if defined( STM32_TIMER6_PERIPH_AVAILABLE )
+      case Chimera::Timer::Instance::TIMER6:
+        return HardwareType::TIMER_HW_BASIC;
+#endif
+#if defined( STM32_TIMER7_PERIPH_AVAILABLE )
+      case Chimera::Timer::Instance::TIMER7:
+        return HardwareType::TIMER_HW_BASIC;
+#endif
+#if defined( STM32_TIMER15_PERIPH_AVAILABLE )
+      case Chimera::Timer::Instance::TIMER15:
+        return HardwareType::TIMER_HW_GENERAL;
+#endif
+#if defined( STM32_TIMER16_PERIPH_AVAILABLE )
+      case Chimera::Timer::Instance::TIMER16:
+        return HardwareType::TIMER_HW_GENERAL;
+#endif
+
+      default:
+        return TIMER_HW_INVALID;
+    };
+  }
+
+
+  UnifiedDriver getUnifiedDriver( const Chimera::Timer::Instance &instance )
+  {
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if ( instance >= Chimera::Timer::Instance::NUM_OPTIONS )
+    {
+      return {};
+    }
+
+    /*-------------------------------------------------------------------------
+    Build the unified driver object
+    -------------------------------------------------------------------------*/
+    UnifiedDriver output;
+    output.type = getHardwareType( reinterpret_cast<std::uintptr_t>( PeriphRegisterBlock[ EnumValue( instance ) ] ) );
+
+    switch ( output.type )
+    {
+      case HardwareType::TIMER_HW_ADVANCED:
+        output.driver.advanced = getAdvancedDriver( instance );
+        break;
+
+      case HardwareType::TIMER_HW_BASIC:
+        output.driver.basic = getBasicDriver( instance );
+        break;
+
+      case HardwareType::TIMER_HW_GENERAL:
+        output.driver.general = getGeneralDriver( instance );
+        break;
+
+      default:
+        // Do nothing
+        break;
+    };
+
+    return output;
   }
 }    // namespace Thor::LLD::TIMER

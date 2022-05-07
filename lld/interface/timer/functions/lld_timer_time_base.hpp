@@ -81,7 +81,7 @@ namespace Thor::LLD::TIMER
       static_cast<Derived *>( this )->disableCounter();
 
       // /* Set the counter direction */
-      // if constexpr ( timerType == HardwareType::ADVANCED )
+      // if constexpr ( timerType == HardwareType::TIMER_HW_ADVANCED )
       // {
       //   DIR::set( periph, CR1_DIR );
       // }

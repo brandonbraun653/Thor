@@ -19,7 +19,6 @@ add_subdirectory("rcc")
 add_subdirectory("spi")
 add_subdirectory("startup")
 add_subdirectory("system")
-add_subdirectory("timer")
 add_subdirectory("usart")
 add_subdirectory("wwdg")
 

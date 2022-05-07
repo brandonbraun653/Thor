@@ -82,22 +82,20 @@ namespace Thor::LLD::TIMER
   HardwareType getHardwareType( const std::uintptr_t address );
 
   /**
+   * @brief Translates a peripheral address into the appropriate hardware type
+   *
+   * @param instance    The peripheral instance ID
+   * @return HardwareType
+   */
+  HardwareType getHardwareType( const Chimera::Timer::Instance &instance );
+
+  /**
    * @brief Gets the driver associated with timer instance
    *
    * @param instance    Which instance to get
-   * @return Driver_rPtr
+   * @return UnifiedDriver
    */
-  Driver_rPtr getDriver( const Chimera::Timer::Instance &instance );
-
-  /*---------------------------------------------------------------------------
-  Classes
-  ---------------------------------------------------------------------------*/
-
-  class Driver
-  {
-    // Turn the "getDriver" method into an intrusive list lookup. Use
-    // dynamic creation of the driver class to save memory. It'll be in RAM anyways.
-  };
+  UnifiedDriver getUnifiedDriver( const Chimera::Timer::Instance &instance );
 
 }    // namespace Thor::LLD::TIMER
 
