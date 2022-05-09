@@ -93,9 +93,9 @@ namespace Thor::LLD::TIMER
    * @brief Gets the driver associated with timer instance
    *
    * @param instance    Which instance to get
-   * @return UnifiedDriver
+   * @return Handle_rPtr
    */
-  UnifiedDriver getUnifiedDriver( const Chimera::Timer::Instance &instance );
+  Handle_rPtr getHandle( const Chimera::Timer::Instance &instance );
 
 }    // namespace Thor::LLD::TIMER
 

@@ -4,11 +4,8 @@ gen_static_lib_variants(
   TARGET
     thor_lld_intf_timer
   SOURCES
-    driver/lld_timer_advanced.cpp
-    driver/lld_timer_basic.cpp
-    driver/lld_timer_data.cpp
-    driver/lld_timer_intf.cpp
-    driver/lld_timer_general.cpp
+    lld_timer_data.cpp
+    lld_timer_intf.cpp
   PRV_LIBRARIES
     chimera_intf_inc
     thor_intf_inc

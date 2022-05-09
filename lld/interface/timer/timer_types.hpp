@@ -26,21 +26,14 @@ namespace Thor::LLD::TIMER
   /*---------------------------------------------------------------------------
   Forward Declarations
   ---------------------------------------------------------------------------*/
-  class AdvancedDriver;
-  class BasicDriver;
-  class GeneralDriver;
-
+  class Handle;
   struct RegisterMap;
   struct LPRegisterMap;
-  struct UnifiedDriver;
 
   /*---------------------------------------------------------------------------
   Aliases
   ---------------------------------------------------------------------------*/
-  using AdvancedDriver_rPtr = AdvancedDriver *;
-  using BasicDriver_rPtr    = BasicDriver *;
-  using GeneralDriver_rPtr  = GeneralDriver *;
-  using UnifiedDriver_rPtr  = UnifiedDriver *;
+  using Handle_rPtr  = Handle *;
 
   /*---------------------------------------------------------------------------
   Enumerations
@@ -59,25 +52,25 @@ namespace Thor::LLD::TIMER
   };
 
   /*---------------------------------------------------------------------------
-  Structures
+  Classes
   ---------------------------------------------------------------------------*/
   /**
-   * @brief Single object to pass around one of the 3 supported timer drivers
+   * @brief Represents state of the three supported timer variants
    *
+   * Supports: Basic, Advanced, General timers
    */
-  struct UnifiedDriver
+  class Handle
   {
-    union _XDriver
-    {
-      AdvancedDriver_rPtr advanced;
-      BasicDriver_rPtr    basic;
-      GeneralDriver_rPtr  general;
-    } driver;          /**< Driver instance */
-    HardwareType type; /**< Type of driver */
+  public:
+    RegisterMap *mReg;          /**< Memory mapped registers */
+    HardwareType mType;         /**< Type of driver */
+    RIndex_t     mGlobalIndex;  /**< Global resource index for all timer peripherals */
+    RIndex_t     mTypeIndex;    /**< Resource index for specific timer type (General, Advanced, etc.) */
 
-    UnifiedDriver() : type( TIMER_HW_INVALID )
+    Handle() : mReg( nullptr ), mType( TIMER_HW_INVALID )
     {
     }
+  private:
   };
 
 }    // namespace Thor::LLD::TIMER

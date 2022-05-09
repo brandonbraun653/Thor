@@ -15,85 +15,83 @@
 /*-----------------------------------------------------------------------------
 Includes
 -----------------------------------------------------------------------------*/
-#include <cstdint>
 #include <Chimera/common>
-#include <Thor/lld/interface/timer/timer_types.hpp>
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
+#include <Thor/lld/interface/timer/timer_types.hpp>
+#include <cstdint>
+#include <limits>
 
 namespace Thor::LLD::TIMER
 {
   /*---------------------------------------------------------------------------
+  Constants
+  ---------------------------------------------------------------------------*/
+  static constexpr float RATE_UNKNOWN = std::numeric_limits<float>::max();
+
+  /*---------------------------------------------------------------------------
   Enumerations
   ---------------------------------------------------------------------------*/
+  enum class ClockSource
+  {
+    INTERNAL,
+    EXTERNAL_MODE_1,
+    EXTERNAL_MODE_2,
+    INTERNAL_TRIGGER
+  };
 
   /*---------------------------------------------------------------------------
   Structures
   ---------------------------------------------------------------------------*/
-
-
-  /*---------------------------------------------------------------------------
-  Classes
-  ---------------------------------------------------------------------------*/
-  /**
-   * @brief Shared functionality among the General/Basic/Advanced drivers
-   */
-  template<class Derived>
-  class TimeBase
+  struct TickConfig
   {
-  public:
-    TimeBase()
+    float       rate_ns;   /**< Base "tick" period in nanoseconds */
+    float       tolerance; /**< Acceptable error rate percent */
+    ClockSource clock_src; /**< Clock driving the timer */
+
+    TickConfig() : rate_ns( 0.0f ), tolerance( 0.0f ), clock_src( ClockSource::INTERNAL )
     {
-    }
-
-    ~TimeBase()
-    {
-    }
-
-    /**
-     * @brief Sets the core time base for the entire Timer
-     * @note The timer is disabled when this function exits
-     *
-     * @param rollover_period_ms    Period in which the counter rolls over (milliseconds)
-     * @return Chimera::Status_t
-     */
-    Chimera::Status_t configureTimeBase( const float rollover_period_ms )
-    {
-      /*-------------------------------------------------------------------------
-      Local Constants
-      -------------------------------------------------------------------------*/
-      constexpr HardwareType timerType = static_cast<Derived *>( this )->timerType();
-
-      /*-------------------------------------------------------------------------
-      Local Variables
-      -------------------------------------------------------------------------*/
-      RegisterMap *periph = static_cast<Derived *>( this )->mPeriph;
-
-      /*-------------------------------------------------------------------------
-      Calculate configuration values
-      -------------------------------------------------------------------------*/
-      uint32_t direction     = 0;
-      uint32_t reloadValue   = 0;
-      uint32_t clockPrescale = 0;
-
-      /*-------------------------------------------------------------------------
-      Configure the base timer
-      -------------------------------------------------------------------------*/
-      static_cast<Derived *>( this )->disableCounter();
-
-      // /* Set the counter direction */
-      // if constexpr ( timerType == HardwareType::TIMER_HW_ADVANCED )
-      // {
-      //   DIR::set( periph, CR1_DIR );
-      // }
-
-      // ARPE::set( periph, CR1_ARPE );     /* Buffer the auto reload register updates */
-      // ARR::set( periph, reloadValue );   /* Set the reload value */
-      // PSC::set( periph, clockPrescale ); /* Adjust the prescaler */
-      // CNT::set( periph, reloadValue );   /* Reset counter to indicate a reset */
-
-      return Chimera::Status::OK;
     }
   };
+
+  /*---------------------------------------------------------------------------
+  Public Methods
+  ---------------------------------------------------------------------------*/
+  /**
+   * @brief Sets the tick resolution for the entire Timer
+   * @note The timer is disabled when this function exits
+   *
+   * @param timer     The timer being acted on
+   * @param cfg       Configuration to apply
+   * @return Chimera::Status_t
+   */
+  Chimera::Status_t setBaseTick( Handle_rPtr timer, const TickConfig &cfg );
+
+  /**
+   * @brief Reads register settings to determine the current tick rate
+   *
+   * @param timer     The timer being acted on
+   * @return float    Time base period in nanoseconds
+   */
+  float getBaseTick( const Handle_rPtr timer );
+
+  /**
+   * @brief Sets the event generation rate of a timer
+   * @note Only valid if the timer is clocked from an internal source
+   *
+   * @param timer     The timer being acted on
+   * @param rate_ns   What rate an event should be generated at (nanoseconds)
+   * @return Chimera::Status_t
+   */
+  Chimera::Status_t setEventRate( Handle_rPtr timer, const float rate_ns );
+
+  /**
+   * @brief Get rate at which events are being generated by a timer
+   * @note Only valid if the timer is clocked from an internal source
+   *
+   * @param timer     The timer being acted on
+   * @return float    The event rate period in nanoseconds
+   */
+  float getEventRate( Handle_rPtr timer );
 
 }    // namespace Thor::LLD::TIMER
 

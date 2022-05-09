@@ -21,6 +21,11 @@ Includes
 namespace Thor::LLD::TIMER
 {
   /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
+  static Chimera::DeviceManager<Handle, Chimera::Timer::Instance, NUM_TIMER_PERIPHS> s_timer_handles;
+
+  /*---------------------------------------------------------------------------
   Public Functions
   ---------------------------------------------------------------------------*/
   size_t millis()
@@ -281,41 +286,19 @@ namespace Thor::LLD::TIMER
   }
 
 
-  UnifiedDriver getUnifiedDriver( const Chimera::Timer::Instance &instance )
+  Handle_rPtr getHandle( const Chimera::Timer::Instance &instance )
   {
     /*-------------------------------------------------------------------------
     Input Protection
     -------------------------------------------------------------------------*/
     if ( instance >= Chimera::Timer::Instance::NUM_OPTIONS )
     {
-      return {};
+      return nullptr;
     }
 
     /*-------------------------------------------------------------------------
     Build the unified driver object
     -------------------------------------------------------------------------*/
-    UnifiedDriver output;
-    output.type = getHardwareType( reinterpret_cast<std::uintptr_t>( PeriphRegisterBlock[ EnumValue( instance ) ] ) );
-
-    switch ( output.type )
-    {
-      case HardwareType::TIMER_HW_ADVANCED:
-        output.driver.advanced = getAdvancedDriver( instance );
-        break;
-
-      case HardwareType::TIMER_HW_BASIC:
-        output.driver.basic = getBasicDriver( instance );
-        break;
-
-      case HardwareType::TIMER_HW_GENERAL:
-        output.driver.general = getGeneralDriver( instance );
-        break;
-
-      default:
-        // Do nothing
-        break;
-    };
-
-    return output;
+    return s_timer_handles.getOrCreate( instance );
   }
 }    // namespace Thor::LLD::TIMER

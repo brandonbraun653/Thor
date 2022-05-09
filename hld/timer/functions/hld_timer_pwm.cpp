@@ -24,9 +24,20 @@ static constexpr size_t REQ_HW_TIMER_TYPES =
       Thor::LLD::TIMER::HardwareType::TIMER_HW_GENERAL );
 
 /*-----------------------------------------------------------------------------
+Structures
+-----------------------------------------------------------------------------*/
+/**
+ * @brief PWM controller data
+ */
+struct ControlBlock
+{
+
+};
+
+/*-----------------------------------------------------------------------------
 Static Data
 -----------------------------------------------------------------------------*/
-static Chimera::DeviceManager<Thor::LLD::TIMER::UnifiedDriver, Chimera::Timer::Instance,
+static Chimera::DeviceManager<ControlBlock, Chimera::Timer::Instance,
                               EnumValue( Chimera::Timer::Instance::NUM_OPTIONS )>
     s_driver_resources;
 
@@ -61,18 +72,16 @@ namespace Chimera::Timer::PWM
     if( !mTimerImpl )
     {
       mTimerImpl = std::make_shared<void *>();
+
+
+      // Great idea!
+      // Use the hash of the configuration to assign a key to void pointer?
     }
 
     /*-------------------------------------------------------------------------
     Grab the driver for this instance and register it with the class
     -------------------------------------------------------------------------*/
     auto driver = s_driver_resources.getOrCreate( cfg.coreCfg.instance );
-    *driver = getUnifiedDriver( cfg.coreCfg.instance );
-
-
-    // Can I reinterpret cast to one of the CRTP classes to access common functions?
-    // Try to call the core config function...
-    driver->driver.basic
 
     return Chimera::Status::OK;
   }
