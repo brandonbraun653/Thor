@@ -247,6 +247,34 @@ namespace Thor::LLD::TIMER
   }
 
 
+  uint32_t getMaxReload( const Chimera::Timer::Instance &instance )
+  {
+    switch( instance )
+    {
+      case Chimera::Timer::Instance::TIMER16:
+        return std::numeric_limits<uint16_t>::max();
+
+      default:
+        RT_HARD_ASSERT( false ); // Missing a timer definition!
+        return 0;
+    };
+  }
+
+
+  uint32_t getMaxChannel( const Chimera::Timer::Instance &instance )
+  {
+    switch ( instance )
+    {
+      case Chimera::Timer::Instance::TIMER16:
+        return 2;
+
+      default:
+        RT_HARD_ASSERT( false ); // Missing a timer definition!
+        return 0;
+    };
+  }
+
+
   HardwareType getHardwareType( const Chimera::Timer::Instance &instance )
   {
     switch ( instance )
@@ -283,6 +311,17 @@ namespace Thor::LLD::TIMER
       default:
         return TIMER_HW_INVALID;
     };
+  }
+
+
+  RegisterMap* getPeriphRegister( const Chimera::Timer::Instance &instance )
+  {
+    if( instance >= Chimera::Timer::Instance::NUM_OPTIONS )
+    {
+      return nullptr;
+    }
+
+    return PeriphRegisterBlock[ EnumValue( instance ) ];
   }
 
 

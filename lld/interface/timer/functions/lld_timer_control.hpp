@@ -37,7 +37,7 @@ namespace Thor::LLD::TIMER
 
   inline void setAutoReloadBehavior( Handle_rPtr timer, const ARBehavior &behavior )
   {
-    ARPE::set( timer->mReg, EnumValue( behavior ) << CR1_ARPE_Pos );
+    ARPE::set( timer->registers, EnumValue( behavior ) << CR1_ARPE_Pos );
   }
 
   /*-------------------------------------------------------------------------
@@ -53,7 +53,7 @@ namespace Thor::LLD::TIMER
 
   inline void setAlignment( Handle_rPtr timer, const AlignMode &align )
   {
-    CMS::set( timer->mReg, EnumValue( align ) << CR1_CMS_Pos );
+    CMS::set( timer->registers, EnumValue( align ) << CR1_CMS_Pos );
   }
 
   /*-------------------------------------------------------------------------
@@ -67,7 +67,7 @@ namespace Thor::LLD::TIMER
 
   inline void setCountDirection( Handle_rPtr timer, const CountDir &dir )
   {
-    DIR::set( timer->mReg, EnumValue( dir ) << CR1_DIR_Pos );
+    DIR::set( timer->registers, EnumValue( dir ) << CR1_DIR_Pos );
   }
 
   /*-------------------------------------------------------------------------
@@ -81,7 +81,7 @@ namespace Thor::LLD::TIMER
 
   inline void setPulseMode( Handle_rPtr timer, const PulseMode &mode )
   {
-    OPM::set( timer->mReg, EnumValue( mode ) << CR1_OPM_Pos );
+    OPM::set( timer->registers, EnumValue( mode ) << CR1_OPM_Pos );
   }
 
   /*-------------------------------------------------------------------------
@@ -89,12 +89,12 @@ namespace Thor::LLD::TIMER
   -------------------------------------------------------------------------*/
   inline void enableCounter( Handle_rPtr timer )
   {
-    CEN::set( timer->mReg, CR1_CEN );
+    CEN::set( timer->registers, CR1_CEN );
   }
 
   inline void disableCounter( Handle_rPtr timer )
   {
-    CEN::clear( timer->mReg, CR1_CEN );
+    CEN::clear( timer->registers, CR1_CEN );
   }
 
   /*-------------------------------------------------------------------------
@@ -114,9 +114,33 @@ namespace Thor::LLD::TIMER
 
   inline void setMasterMode( Handle_rPtr timer, const MasterMode &mode )
   {
-    MMS::set( timer->mReg, EnumValue( mode ) << CR2_MMS );
+    MMS::set( timer->registers, EnumValue( mode ) << CR2_MMS_Pos );
   }
 
+
+  /*---------------------------------------------------------------------------
+  Main Output Enable: BDTR
+  ---------------------------------------------------------------------------*/
+  /**
+   * @brief Enables all the timer's output channels
+   * @note  Individual channel behavior is dependent on CCxE, CCxNE bits
+   *
+   * @param timer   Which timer to act on
+   */
+  inline void enableAllOutput( Handle_rPtr timer )
+  {
+    MOE::set( timer->registers, BDTR_MOE );
+  }
+
+  /**
+   * @brief Disables all the timer's output channels
+   *
+   * @param timer   Which timer to act on
+   */
+  inline void disableAllOutput( Handle_rPtr timer )
+  {
+    MOE::clear( timer->registers, BDTR_MOE );
+  }
 }    // namespace Thor::LLD::TIMER
 
 #endif /* !THOR_LLD_TIMER_CONTROL_UNIT_DRIVER_HPP */

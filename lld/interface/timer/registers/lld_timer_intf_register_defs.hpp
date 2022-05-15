@@ -21,9 +21,6 @@ Includes
 
 namespace Thor::LLD::TIMER
 {
-  /*---------------------------------------------------------------------------
-  Structures
-  ---------------------------------------------------------------------------*/
   /**
    * @brief Generalized register mapping that applies to Advanced, Basic, and General Purpose timers
    */
@@ -222,12 +219,16 @@ namespace Thor::LLD::TIMER
   ---------------------------------------------------------------------------*/
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC1E, CC1E, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC1P, CC1P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC1NP, CC1NP, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC2E, CC2E, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC2P, CC2P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC2NP, CC2NP, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC3E, CC3E, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC3P, CC3P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC3NP, CC3NP, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC4E, CC4E, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC4P, CC4P, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CCER, CCER_CC4NP, CC4NP, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC5E, CC5E, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC5P, CC5P, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC6E, CC6E, BIT_ACCESS_RW );

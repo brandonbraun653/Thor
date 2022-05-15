@@ -22,31 +22,31 @@ namespace Thor::LLD::TIMER
   ---------------------------------------------------------------------------*/
   void attach( Handle_rPtr timer, RegisterMap *const peripheral )
   {
-    timer->mReg         = peripheral;
-    timer->mType        = getHardwareType( reinterpret_cast<std::uintptr_t>( peripheral ) );
-    timer->mGlobalIndex = getGlobalResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
-    timer->mTypeIndex   = getTypeResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
+    timer->registers   = peripheral;
+    timer->type        = getHardwareType( reinterpret_cast<std::uintptr_t>( peripheral ) );
+    timer->globalIndex = getGlobalResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
+    timer->typeIndex   = getTypeResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
   }
 
 
   void reset( Handle_rPtr timer )
   {
     auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
-    rcc->reset( Chimera::Peripheral::Type::PERIPH_TIMER, timer->mGlobalIndex );
+    rcc->reset( Chimera::Peripheral::Type::PERIPH_TIMER, timer->globalIndex );
   }
 
 
   void clockEnable( Handle_rPtr timer )
   {
     auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
-    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_TIMER, timer->mGlobalIndex );
+    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_TIMER, timer->globalIndex );
   }
 
 
   void clockDisable( Handle_rPtr timer )
   {
     auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
-    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_TIMER, timer->mGlobalIndex );
+    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_TIMER, timer->globalIndex );
   }
 
 

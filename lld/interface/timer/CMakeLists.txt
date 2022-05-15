@@ -6,6 +6,11 @@ gen_static_lib_variants(
   SOURCES
     lld_timer_data.cpp
     lld_timer_intf.cpp
+    functions/lld_timer_capture_compare.cpp
+    functions/lld_timer_common.cpp
+    functions/lld_timer_helpers.cpp
+    functions/lld_timer_output_compare.cpp
+    functions/lld_timer_time_base.cpp
   PRV_LIBRARIES
     chimera_intf_inc
     thor_intf_inc

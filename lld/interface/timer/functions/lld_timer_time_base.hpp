@@ -64,15 +64,15 @@ namespace Thor::LLD::TIMER
    * @param cfg       Configuration to apply
    * @return Chimera::Status_t
    */
-  Chimera::Status_t setBaseTick( Handle_rPtr timer, const TickConfig &cfg );
+  Chimera::Status_t setBaseTickPeriod( Handle_rPtr timer, const TickConfig &cfg );
 
   /**
-   * @brief Reads register settings to determine the current tick rate
+   * @brief Reads register settings to determine the current tick period
    *
    * @param timer     The timer being acted on
    * @return float    Time base period in nanoseconds
    */
-  float getBaseTick( const Handle_rPtr timer );
+  float getBaseTickPeriod( const Handle_rPtr timer );
 
   /**
    * @brief Sets the event generation rate of a timer
@@ -92,6 +92,14 @@ namespace Thor::LLD::TIMER
    * @return float    The event rate period in nanoseconds
    */
   float getEventRate( Handle_rPtr timer );
+
+  /**
+   * @brief Get's the value assigned to the TIMx_ARR register
+   *
+   * @param timer     Which timer to read from
+   * @return uint32_t
+   */
+  uint32_t getAutoReload( Handle_rPtr timer );
 
 }    // namespace Thor::LLD::TIMER
 

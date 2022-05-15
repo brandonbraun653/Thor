@@ -82,12 +82,36 @@ namespace Thor::LLD::TIMER
   HardwareType getHardwareType( const std::uintptr_t address );
 
   /**
+   * @brief Gets the max supported reload value for a timer
+   *
+   * @param instance    The peripheral instance ID
+   * @return uint32_t
+   */
+  uint32_t getMaxReload( const Chimera::Timer::Instance &instance );
+
+  /**
+   * @brief Gets the max number of channels on a timer
+   *
+   * @param instance    The peripheral instance ID
+   * @return uint32_t
+   */
+  uint32_t getMaxChannel( const Chimera::Timer::Instance &instance );
+
+  /**
    * @brief Translates a peripheral address into the appropriate hardware type
    *
    * @param instance    The peripheral instance ID
    * @return HardwareType
    */
   HardwareType getHardwareType( const Chimera::Timer::Instance &instance );
+
+  /**
+   * @brief Gets the memory mapped registers for a peripheral instance
+   *
+   * @param instance    The peripheral instance ID
+   * @return RegisterMap*
+   */
+  RegisterMap* getPeriphRegister( const Chimera::Timer::Instance &instance );
 
   /**
    * @brief Gets the driver associated with timer instance

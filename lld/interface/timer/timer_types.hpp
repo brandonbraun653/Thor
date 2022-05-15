@@ -62,12 +62,13 @@ namespace Thor::LLD::TIMER
   class Handle
   {
   public:
-    RegisterMap *mReg;          /**< Memory mapped registers */
-    HardwareType mType;         /**< Type of driver */
-    RIndex_t     mGlobalIndex;  /**< Global resource index for all timer peripherals */
-    RIndex_t     mTypeIndex;    /**< Resource index for specific timer type (General, Advanced, etc.) */
+    Chimera::Timer::Instance instance;    /**< Which timer instance this is */
+    RegisterMap             *registers;   /**< Memory mapped registers for the instance */
+    HardwareType             type;        /**< Type of driver */
+    RIndex_t                 globalIndex; /**< Global resource index for all timer peripherals */
+    RIndex_t                 typeIndex;   /**< Resource index for specific timer type (General, Advanced, etc.) */
 
-    Handle() : mReg( nullptr ), mType( TIMER_HW_INVALID )
+    Handle() : registers( nullptr ), type( TIMER_HW_INVALID )
     {
     }
   private:
