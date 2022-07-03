@@ -7,6 +7,7 @@ gen_static_lib_variants(
     hld_timer_chimera.cpp
     hld_timer_driver.cpp
     functions/hld_timer_pwm.cpp
+    functions/hld_timer_trigger.cpp
   PRV_LIBRARIES
     aurora_intf_inc
     chimera_intf_inc

@@ -175,7 +175,7 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     for ( size_t idx = 0; idx < NUM_ADC_CHANNELS_PER_PERIPH; idx++ )
     {
-      setSampleTime( static_cast<Chimera::ADC::Channel>( idx ), SampleTime::SMP_640P5 );
+      setSampleTime( static_cast<Chimera::ADC::Channel>( idx ), SampleTime::SMP_12P5 );
     }
 
     /*-------------------------------------------------------------------------
@@ -587,6 +587,7 @@ namespace Thor::LLD::ADC
 
       RT_HARD_ASSERT( mSeqCfg.trigChannel <= NUM_ADC_EXT_TRIG_CHANNELS );
       EXTSEL::set( mPeriph, ( mSeqCfg.trigChannel << CFGR_EXTSEL_Pos ) );
+      ADSTART::set( mPeriph, CR_ADSTART );
     }
     else
     {
