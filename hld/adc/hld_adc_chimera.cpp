@@ -179,10 +179,10 @@ namespace Chimera::ADC
     return static_cast<::HLD::Driver_rPtr>( mDriver )->nextSeqSample( ch, sample );
   }
 
-  void Driver::onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb )
+  void Driver::onInterrupt( const Chimera::ADC::Interrupt signal, Chimera::ADC::ISRCallback cb )
   {
     RT_HARD_ASSERT( mDriver );
-    static_cast<::HLD::Driver_rPtr>( mDriver )->onInterrupt( bmSignal, cb );
+    static_cast<::HLD::Driver_rPtr>( mDriver )->onInterrupt( signal, cb );
   }
 
 

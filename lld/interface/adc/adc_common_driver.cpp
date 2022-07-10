@@ -145,6 +145,22 @@ namespace Thor::LLD::ADC
     Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
+
+  void Driver::onInterrupt( const Chimera::ADC::Interrupt signal, Chimera::ADC::ISRCallback cb )
+  {
+    if( signal < Chimera::ADC::Interrupt::NUM_OPTIONS )
+    {
+      /*-----------------------------------------------------------------------
+      Globally disable interrupts while updating this structure. ADC ISR
+      handlers can span across many DMA/ADC interrupt events and it's not
+      practical to deduce which one is currently active.
+      -----------------------------------------------------------------------*/
+      auto mask = Thor::LLD::INT::disableInterrupts();
+      mCallbacks[ EnumValue( signal ) ] = cb;
+      Thor::LLD::INT::enableInterrupts( mask );
+    }
+  }
+
 }    // namespace Thor::LLD::ADC
 
 

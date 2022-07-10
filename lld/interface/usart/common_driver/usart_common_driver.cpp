@@ -319,7 +319,8 @@ namespace Thor::LLD::USART
     Configure the TX pipe
     -------------------------------------------------*/
     PipeConfig txCfg;
-    txCfg.alignment     = Alignment::BYTE;
+    txCfg.srcAlignment  = Alignment::BYTE;
+    txCfg.dstAlignment  = Alignment::BYTE;
     txCfg.direction     = Direction::MEMORY_TO_PERIPH;
     txCfg.mode          = Mode::DIRECT;
     txCfg.priority      = Priority::MEDIUM;
@@ -339,7 +340,8 @@ namespace Thor::LLD::USART
     Configure the RX pipe
     -------------------------------------------------*/
     PipeConfig rxCfg;
-    rxCfg.alignment     = Alignment::BYTE;
+    rxCfg.srcAlignment  = Alignment::BYTE;
+    rxCfg.dstAlignment  = Alignment::BYTE;
     rxCfg.direction     = Direction::PERIPH_TO_MEMORY;
     rxCfg.mode          = Mode::DIRECT;
     rxCfg.priority      = Priority::MEDIUM;

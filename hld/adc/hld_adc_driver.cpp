@@ -395,14 +395,9 @@ namespace Thor::ADC
     return num_good_retrievals;
   }
 
-  void Driver::onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb )
+  void Driver::onInterrupt( const Chimera::ADC::Interrupt signal, Chimera::ADC::ISRCallback cb )
   {
-    using namespace Chimera::ADC;
-
-    if( bmSignal < Interrupt::NUM_OPTIONS )
-    {
-      mCallbacks[ EnumValue( bmSignal ) ] = cb;
-    }
+    LLD::getDriver( mConfig.periph )->onInterrupt( signal, cb );
   }
 
 

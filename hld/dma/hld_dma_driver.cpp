@@ -306,24 +306,24 @@ namespace Thor::DMA
     {
       cfg.dstAddrIncr  = false;
       cfg.dstBurstSize = Chimera::DMA::BurstSize::NUM_OPTIONS;
-      cfg.dstAddrAlign = pipeCfg.alignment;
+      cfg.dstAddrAlign = pipeCfg.dstAlignment;
       tcb.dstAddress   = pipeCfg.periphAddr;
 
       cfg.srcAddrIncr  = true;
       cfg.srcBurstSize = pipeCfg.burstSize;
-      cfg.srcAddrAlign = pipeCfg.alignment;
+      cfg.srcAddrAlign = pipeCfg.srcAlignment;
       tcb.srcAddress   = transfer.addr;
     }
     else if ( pipeCfg.direction == Direction::PERIPH_TO_MEMORY )
     {
       cfg.dstAddrIncr  = true;
       cfg.dstBurstSize = pipeCfg.burstSize;
-      cfg.dstAddrAlign = pipeCfg.alignment;
+      cfg.dstAddrAlign = pipeCfg.dstAlignment;
       tcb.dstAddress   = transfer.addr;
 
       cfg.srcAddrIncr  = false;
       cfg.srcBurstSize = Chimera::DMA::BurstSize::NUM_OPTIONS;
-      cfg.srcAddrAlign = pipeCfg.alignment;
+      cfg.srcAddrAlign = pipeCfg.srcAlignment;
       tcb.srcAddress   = pipeCfg.periphAddr;
     }
     else
@@ -340,7 +340,7 @@ namespace Thor::DMA
     tcb.transferSize       = transfer.size;
     tcb.requestId          = s_rng();
     tcb.errorsToIgnore     = pipeCfg.errorsToIgnore;
-    tcb.elementSize        = pipeCfg.alignment;
+    tcb.elementSize        = pipeCfg.srcAlignment;
     tcb.persistent         = pipeCfg.persistent;
     tcb.wakeUserOnComplete = pipeCfg.wakeUserOnComplete;
     tcb.isrCallback        = transfer.isrCallback;

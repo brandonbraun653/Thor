@@ -119,6 +119,7 @@ namespace Thor::LLD::ADC
     void              clockDisable();
     void              disableInterrupts();
     void              enableInterrupts();
+    void              onInterrupt( const Chimera::ADC::Interrupt signal, Chimera::ADC::ISRCallback cb );
 
     /*-------------------------------------------------------------------------
     Driver Specific Layer
@@ -191,6 +192,9 @@ namespace Thor::LLD::ADC
      */
     void syncSequence();
 
+  protected:
+    void dma_isr_transfer_complete_callback( const Chimera::DMA::TransferStats &stats );
+
   private:
     friend Chimera::Thread::Lockable<Driver>;
 
@@ -203,11 +207,12 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------------------------------
     Driver attributes
     -------------------------------------------------------------------------*/
-    size_t                     mResourceIndex; /**< Hardware resource index for this peripheral */
-    float                      mCalcVdda;      /**< Calculated real VDDA voltage in system */
-    Chimera::ADC::DriverConfig mCfg;           /**< Basic driver configuration data */
-    Chimera::ADC::SequenceInit mSeqCfg;        /**< Sequence configuration */
-    Chimera::DMA::RequestId    mDMAPipeID;     /**< Unique ID for dedicated DMA pipe */
+    size_t                      mResourceIndex; /**< Hardware resource index for this peripheral */
+    float                       mCalcVdda;      /**< Calculated real VDDA voltage in system */
+    Chimera::ADC::DriverConfig  mCfg;           /**< Basic driver configuration data */
+    Chimera::ADC::SequenceInit  mSeqCfg;        /**< Sequence configuration */
+    Chimera::ADC::CallbackArray mCallbacks;     /**< Associated event callbacks */
+    Chimera::DMA::RequestId     mDMAPipeID;     /**< Unique ID for dedicated DMA pipe */
 
     /*-------------------------------------------------------------------------
     Sequence Data

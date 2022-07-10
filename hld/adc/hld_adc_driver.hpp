@@ -60,7 +60,7 @@ namespace Thor::ADC
     void                 stopSequence();
     bool                 nextSeqSample( const Chimera::ADC::Channel ch, Chimera::ADC::Sample &sample );
     size_t multiSeqSample( const Chimera::ADC::Channel *ch_arr, Chimera::ADC::Sample *sample_arr, const size_t size );
-    void   onInterrupt( const Chimera::ADC::Interrupt bmSignal, Chimera::ADC::ISRCallback cb );
+    void   onInterrupt( const Chimera::ADC::Interrupt signal, Chimera::ADC::ISRCallback cb );
     float  toVoltage( const Chimera::ADC::Sample sample );
 
     /*-------------------------------------------------------------------------
@@ -77,7 +77,6 @@ namespace Thor::ADC
 
     Chimera::ADC::Peripheral    mPeriph;    /**< Which peripheral is in use */
     Chimera::ADC::DriverConfig  mConfig;    /**< Driver configuration settings */
-    Chimera::ADC::CallbackArray mCallbacks; /**< Associated event callbacks */
     Chimera::ADC::SamplingMode  mSeqMode;   /**< Sequence sampling mode */
   };
 }    // namespace Thor::ADC

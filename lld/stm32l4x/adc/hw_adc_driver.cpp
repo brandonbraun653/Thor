@@ -211,7 +211,8 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     PipeConfig dmaCfg;
     dmaCfg.clear();
-    dmaCfg.alignment          = Alignment::HALF_WORD;
+    dmaCfg.dstAlignment       = Alignment::HALF_WORD;
+    dmaCfg.srcAlignment       = Alignment::WORD;
     dmaCfg.direction          = Direction::PERIPH_TO_MEMORY;
     dmaCfg.mode               = Mode::CIRCULAR;
     dmaCfg.periphAddr         = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
@@ -403,16 +404,6 @@ namespace Thor::LLD::ADC
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-#if defined( STM32L432xx )
-    /*-------------------------------------------------------------------------
-    Unfortunately, I've not been able to get continuous DMA based sampling
-    working on this chip. Extensive debug sessions showed that circular + cont
-    mode leads to corruption of data. Switching to one-shot mode or triggered
-    conversions allows regular channel sequences to convert with DMA just fine.
-    -------------------------------------------------------------------------*/
-    RT_HARD_ASSERT( sequence.seqMode != SamplingMode::CONTINUOUS );
-#endif /* STM32L432xx */
-
     /*-------------------------------------------------------------------------
     Wait for hardware to indicate it's free for a new transfer
     -------------------------------------------------------------------------*/
@@ -527,7 +518,7 @@ namespace Thor::LLD::ADC
       /*-----------------------------------------------------------------------
       Let the ADC know how many channels to sequence
       -----------------------------------------------------------------------*/
-      L::set( mPeriph, totalSize << SQR1_L_Pos );
+      L::set( mPeriph, ( totalSize - 1u ) << SQR1_L_Pos );
     }
     enableInterrupts();
 
@@ -549,20 +540,27 @@ namespace Thor::LLD::ADC
     }
 
     /*-------------------------------------------------------------------------
-    Configure the DMA transfer. Assumes each transfer is sized to a half-word.
+    Prime the DMA pipe to accept new transfer requests
     -------------------------------------------------------------------------*/
+    auto callback = Chimera::DMA::TransferCallback::create<Driver, &Driver::dma_isr_transfer_complete_callback>( *this );
+
     PipeTransfer cfg;
-    cfg.isrCallback = {};
     cfg.pipe        = mDMAPipeID;
-    cfg.size        = L::get( mPeriph ) >> SQR1_L_Pos;
+    cfg.size        = ( L::get( mPeriph ) >> SQR1_L_Pos ) + 1u;
     cfg.addr        = reinterpret_cast<std::uintptr_t>( mDMASampleBuffer.rawSamples.data() );
+    cfg.isrCallback = callback;
 
     /* Won't start the transfer b/c ADC is the controller, but does prime the DMA hw for the ADC */
     Thor::DMA::transfer( cfg );
-    DMAEN::set( mPeriph, CFGR_DMAEN );
 
     /*-------------------------------------------------------------------------
-    Start the transfer
+    Turn on the ADC peripheral DMA request hardware
+    -------------------------------------------------------------------------*/
+    DMACFG::set( mPeriph, CFGR_DMACFG );  /* Send new DMA txfr request on every conversion */
+    DMAEN::set( mPeriph, CFGR_DMAEN );    /* Turn on ADC DMA. Does NOT start the txfr yet. */
+
+    /*-------------------------------------------------------------------------
+    Select which trigger to use to start a new ADC sample
     -------------------------------------------------------------------------*/
     if ( mSeqCfg.seqMode == SamplingMode::TRIGGER )
     {
@@ -589,11 +587,15 @@ namespace Thor::LLD::ADC
       EXTSEL::set( mPeriph, ( mSeqCfg.trigChannel << CFGR_EXTSEL_Pos ) );
       ADSTART::set( mPeriph, CR_ADSTART );
     }
-    else
+    else  /* Software Trigger or Continuous */
     {
       EXTEN::clear( mPeriph, CFGR_EXTEN );
-      ADSTART::set( mPeriph, CR_ADSTART );
     }
+
+    /*-------------------------------------------------------------------------
+    Finally, start the transfer
+    -------------------------------------------------------------------------*/
+    ADSTART::set( mPeriph, CR_ADSTART );
   }
 
 
@@ -672,6 +674,23 @@ namespace Thor::LLD::ADC
     }
   }
 
+
+  void Driver::dma_isr_transfer_complete_callback( const Chimera::DMA::TransferStats &stats )
+  {
+    if( !stats.error && mCallbacks[ EnumValue( Chimera::ADC::Interrupt::EOC_SEQUENCE ) ] )
+    {
+      /* Populate the data for the ADC handler */
+      Chimera::ADC::InterruptDetail isrData;
+      isrData.clear();
+
+      isrData.isr = Chimera::ADC::Interrupt::EOC_SEQUENCE;
+      isrData.samples = mDMASampleBuffer.rawSamples.data();
+      isrData.num_samples = static_cast<uint16_t>( stats.size );
+
+      /* Invoke the user handler */
+      mCallbacks[ EnumValue( Chimera::ADC::Interrupt::EOC_SEQUENCE ) ]( isrData );
+    }
+  }
 }    // namespace Thor::LLD::ADC
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_ADC */
