@@ -5,10 +5,15 @@
  *  Description:
  *    DMA IRQ Functions
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-/* Thor Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
+#if defined( SEGGER_SYS_VIEW ) && defined( EMBEDDED )
+#include "SEGGER_SYSVIEW.h"
+#endif
 #include <Thor/lld/interface/inc/dma>
 
 using namespace Thor::LLD::DMA;
@@ -20,9 +25,11 @@ extern "C"
 
   void DMA1_Stream0_IRQHandler( void )
   {
+    SEGGER_SYSVIEW_RecordEnterISR();
     const uint8_t channel = CSELR_ALL::get( DMA1_PERIPH ) >> CSELR_C1S_Pos;
     const uint8_t status = ( ISR_ALL::get( DMA1_PERIPH ) >> ISR_GIF1_Pos ) & 0xFF;
     getStream( Controller::DMA_1, Streamer::STREAM_1 )->IRQHandler( channel, status );
+    SEGGER_SYSVIEW_RecordExitISR();
   }
 
   void DMA1_Stream1_IRQHandler( void )
