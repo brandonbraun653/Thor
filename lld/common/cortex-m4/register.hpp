@@ -27,6 +27,7 @@ Definitions from section 4.1 System Control Registers in the Cortex-M4 TRM
 #define SCB_REG_BFSR  ( ( volatile uint32_t * )0xE000ED29 ) /**< Bus Fault Status Register (sub register of CFSR) */
 #define SCB_REG_CFSR  ( ( volatile uint32_t * )0xE000ED28 ) /**< Configurable Fault Status Register */
 #define SCB_REG_CPUID ( ( volatile uint32_t * )0xE000ED00 ) /**< CPUID Base Register */
+#define SCB_REG_DEMCR ( ( volatile uint32_t * )0xE000EDFC ) /**< Debug Exception and Monitor Control Register */
 #define SCB_REG_DFSR  ( ( volatile uint32_t * )0xE000ED30 ) /**< Debug Fault Status Register */
 #define SCB_REG_DHCSR ( ( volatile uint32_t * )0xE000EDF0 ) /**< Debug Halting Control and Status Register */
 #define SCB_REG_HFSR  ( ( volatile uint32_t * )0xE000ED2C ) /**< Hard Fault Status Register */
@@ -35,6 +36,12 @@ Definitions from section 4.1 System Control Registers in the Cortex-M4 TRM
 #define SCB_REG_MMSR  ( ( volatile uint32_t * )0xE000ED28 ) /**< MemManage Fault Status Register (sub register of CFSR) */
 #define SCB_REG_STCSR ( ( volatile uint32_t * )0xE000E010 ) /**< SysTick Control and Status Register */
 #define SCB_REG_UFSR  ( ( volatile uint32_t * )0xE000ED2A ) /**< Usage Fault Status Register (sub register of CFSR) */
+
+/*-----------------------------------------------------------------------------
+Data Watchpoint and Trace
+-----------------------------------------------------------------------------*/
+#define DWT_CONTROL  ( ( volatile uint32_t * )0xE0001000 )  /**< */
+#define DWT_CYCCNT   ( ( volatile uint32_t * )0xE0001004 )  /**< */
 
 /*-------------------------------------------------------------------------------
 NVIC SYSTICK Register
