@@ -30,7 +30,7 @@ Structures
 /**
  * @brief Controller data
  */
-struct ControlBlock
+struct TriggerControlBlock
 {
   Thor::LLD::TIMER::Handle_rPtr timer;   /**< Handle to the timer */
 };
@@ -38,7 +38,7 @@ struct ControlBlock
 /*-----------------------------------------------------------------------------
 Static Data
 -----------------------------------------------------------------------------*/
-static Chimera::DeviceManager<ControlBlock, Chimera::Timer::Instance, EnumValue( Chimera::Timer::Instance::NUM_OPTIONS )>
+static Chimera::DeviceManager<TriggerControlBlock, Chimera::Timer::Instance, EnumValue( Chimera::Timer::Instance::NUM_OPTIONS )>
     s_timer_data;
 
 namespace Chimera::Timer::Trigger
@@ -69,7 +69,7 @@ namespace Chimera::Timer::Trigger
     /*-------------------------------------------------------------------------
     Grab the driver for this instance and register it with the class
     -------------------------------------------------------------------------*/
-    ControlBlock *cb = s_timer_data.getOrCreate( cfg.coreConfig.instance );
+    TriggerControlBlock *cb = s_timer_data.getOrCreate( cfg.coreConfig.instance );
     RT_HARD_ASSERT( cb );
 
     if ( !mTimerImpl )
@@ -118,7 +118,7 @@ namespace Chimera::Timer::Trigger
       return Chimera::Status::NOT_INITIALIZED;
     }
 
-    ControlBlock *cb = reinterpret_cast<ControlBlock *>( *mTimerImpl );
+    TriggerControlBlock *cb = reinterpret_cast<TriggerControlBlock *>( *mTimerImpl );
     Thor::LLD::TIMER::enableCounter( cb->timer );
     return Chimera::Status::OK;
   }
@@ -131,7 +131,7 @@ namespace Chimera::Timer::Trigger
       return Chimera::Status::NOT_INITIALIZED;
     }
 
-    ControlBlock *cb = reinterpret_cast<ControlBlock *>( *mTimerImpl );
+    TriggerControlBlock *cb = reinterpret_cast<TriggerControlBlock *>( *mTimerImpl );
     Thor::LLD::TIMER::disableCounter( cb->timer );
     return Chimera::Status::OK;
   }

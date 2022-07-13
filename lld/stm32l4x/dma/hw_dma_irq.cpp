@@ -15,114 +15,105 @@ Includes
 #include "SEGGER_SYSVIEW.h"
 #endif
 #include <Thor/lld/interface/inc/dma>
+#include <Thor/lld/common/macros.hpp>
 
 using namespace Thor::LLD::DMA;
 
+/*-----------------------------------------------------------------------------
+Macros
+-----------------------------------------------------------------------------*/
+/**
+ * @brief Shared ISR handler code for DMA streams
+ *
+ * @param P   DMA peripheral number (1-2)
+ * @param C   DMA channel number (1-7)
+ */
+#define CORE_ISR_HANDLER( P, C )                                                            \
+  static const Stream_rPtr stream = getStream( Controller::DMA_##P, Streamer::STREAM_##C ); \
+                                                                                            \
+  SEGGER_SYSVIEW_RecordEnterISR();                                                          \
+  const uint8_t channel = CSELR_ALL::get( DMA##P##_PERIPH ) >> CSELR_C##C##S_Pos;           \
+  const uint8_t status  = ( ISR_ALL::get( DMA##P##_PERIPH ) >> ISR_GIF##C##_Pos ) & 0xFF;   \
+                                                                                            \
+  stream->IRQHandler( channel, status );                                                    \
+  SEGGER_SYSVIEW_RecordExitISR();
+
+/*-----------------------------------------------------------------------------
+Public ISR Functions
+-----------------------------------------------------------------------------*/
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
   void DMA1_Stream0_IRQHandler( void )
   {
-    SEGGER_SYSVIEW_RecordEnterISR();
-    const uint8_t channel = CSELR_ALL::get( DMA1_PERIPH ) >> CSELR_C1S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA1_PERIPH ) >> ISR_GIF1_Pos ) & 0xFF;
-    getStream( Controller::DMA_1, Streamer::STREAM_1 )->IRQHandler( channel, status );
-    SEGGER_SYSVIEW_RecordExitISR();
+    CORE_ISR_HANDLER( 1, 1 );
   }
 
   void DMA1_Stream1_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA1_PERIPH ) >> CSELR_C2S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA1_PERIPH ) >> ISR_GIF2_Pos ) & 0xFF;
-    getStream( Controller::DMA_1, Streamer::STREAM_2 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 1, 2 );
   }
 
   void DMA1_Stream2_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA1_PERIPH ) >> CSELR_C3S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA1_PERIPH ) >> ISR_GIF3_Pos ) & 0xFF;
-    getStream( Controller::DMA_1, Streamer::STREAM_3 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 1, 3 );
   }
 
   void DMA1_Stream3_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA1_PERIPH ) >> CSELR_C4S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA1_PERIPH ) >> ISR_GIF4_Pos ) & 0xFF;
-    getStream( Controller::DMA_1, Streamer::STREAM_4 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 1, 4 );
   }
 
   void DMA1_Stream4_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA1_PERIPH ) >> CSELR_C5S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA1_PERIPH ) >> ISR_GIF5_Pos ) & 0xFF;
-    getStream( Controller::DMA_1, Streamer::STREAM_5 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 1, 5 );
   }
 
   void DMA1_Stream5_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA1_PERIPH ) >> CSELR_C6S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA1_PERIPH ) >> ISR_GIF6_Pos ) & 0xFF;
-    getStream( Controller::DMA_1, Streamer::STREAM_6 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 1, 6 );
   }
 
   void DMA1_Stream6_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA1_PERIPH ) >> CSELR_C7S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA1_PERIPH ) >> ISR_GIF7_Pos ) & 0xFF;
-    getStream( Controller::DMA_1, Streamer::STREAM_7 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 1, 7 );
   }
-
 
 
   void DMA2_Stream0_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA2_PERIPH ) >> CSELR_C1S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA2_PERIPH ) >> ISR_GIF1_Pos ) & 0xFF;
-    getStream( Controller::DMA_2, Streamer::STREAM_1 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 2, 1 );
   }
 
   void DMA2_Stream1_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA2_PERIPH ) >> CSELR_C2S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA2_PERIPH ) >> ISR_GIF2_Pos ) & 0xFF;
-    getStream( Controller::DMA_2, Streamer::STREAM_2 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 2, 2 );
   }
 
   void DMA2_Stream2_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA2_PERIPH ) >> CSELR_C3S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA2_PERIPH ) >> ISR_GIF3_Pos ) & 0xFF;
-    getStream( Controller::DMA_2, Streamer::STREAM_3 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 2, 3 );
   }
 
   void DMA2_Stream3_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA2_PERIPH ) >> CSELR_C4S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA2_PERIPH ) >> ISR_GIF4_Pos ) & 0xFF;
-    getStream( Controller::DMA_2, Streamer::STREAM_4 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 2, 4 );
   }
 
   void DMA2_Stream4_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA2_PERIPH ) >> CSELR_C5S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA2_PERIPH ) >> ISR_GIF5_Pos ) & 0xFF;
-    getStream( Controller::DMA_2, Streamer::STREAM_5 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 2, 5 );
   }
 
   void DMA2_Stream5_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA2_PERIPH ) >> CSELR_C6S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA2_PERIPH ) >> ISR_GIF6_Pos ) & 0xFF;
-    getStream( Controller::DMA_2, Streamer::STREAM_6 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 2, 6 );
   }
 
   void DMA2_Stream6_IRQHandler( void )
   {
-    const uint8_t channel = CSELR_ALL::get( DMA2_PERIPH ) >> CSELR_C7S_Pos;
-    const uint8_t status = ( ISR_ALL::get( DMA2_PERIPH ) >> ISR_GIF7_Pos ) & 0xFF;
-    getStream( Controller::DMA_2, Streamer::STREAM_7 )->IRQHandler( channel, status );
+    CORE_ISR_HANDLER( 2, 7 );
   }
 
 #ifdef __cplusplus

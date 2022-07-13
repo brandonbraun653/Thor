@@ -4,7 +4,7 @@
 *
 *   Description:
 *       Provides ISR routine function prototypes that are common between all STM32
-*       families. These actually need to be implemented in whichever driver is 
+*       families. These actually need to be implemented in whichever driver is
 *       used for Thor.
 *
 *   2019 | Brandon Braun | brandonbraun653@gmail.com
@@ -41,4 +41,4 @@ extern "C"
 }
 #endif
 
-#endif /* !THOR_DMA_INTERRUPT_VECTORS_HPP */ 
+#endif /* !THOR_DMA_INTERRUPT_VECTORS_HPP */

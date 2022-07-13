@@ -313,6 +313,7 @@ namespace Thor::LLD::DMA
 
     StreamMap *mStream;    /**< Stream's memory mapped registers */
     RegisterMap *mPeriph;  /**< Core controller memory mapped registers */
+    Streamer mStreamId;    /**< Which physical stream this is */
     size_t mRegisterIndex; /**< Register offset for the stream */
     size_t mResourceIndex; /**< Resource index for the stream */
     IRQn_Type mIRQn;       /**< Stream's IRQ number */

@@ -286,13 +286,16 @@ namespace Thor::LLD::RCC
     /*------------------------------------------------
     Adjust the flash read access latency (Section 3.3.3 of RM0394)
 
-    Note: Currently harcoded to assume a clock increase, but once
+    Note: Currently hardcoded to assume a clock increase, but once
     I have the processor brought up and have some free time, this
     needs to adjust for a decrease too. Can calculate the desired
     clock frequency from the registers in the config structure.
     ------------------------------------------------*/
     using namespace Thor::LLD::FLASH;
     LATENCY::set( FLASH_PERIPH, ACR_LATENCY_4WS );
+    DCEN::set( FLASH_PERIPH, ACR_DCEN );     /* Enable data cache */
+    ICEN::set( FLASH_PERIPH, ACR_ICEN );     /* Enable instruction cache */
+    PRFTEN::set( FLASH_PERIPH, ACR_PRFTEN ); /* Enable ART prefetch */
 
     /*------------------------------------------------
     Apply the clock selection setting, then wait for the

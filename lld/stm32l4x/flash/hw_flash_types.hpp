@@ -5,18 +5,18 @@
  *  Description:
  *    STM32L4 Types for the FLASH Peripheral
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_HW_FLASH_TYPES_HPP
 #define THOR_HW_FLASH_TYPES_HPP
 
-/* C++ Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <cstdint>
 #include <array>
-
-/* Driver Includes */
 #include <Thor/lld/common/registers/field_accessor.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
 
@@ -39,17 +39,15 @@ namespace Thor::LLD::FLASH
     volatile uint32_t WRP1BR;    /*!< FLASH bank1 WRP area B address register,  Address offset: 0x30 */
   };
 
-   using PeriphRegisterList = std::array<RegisterMap *, NUM_FLASH_PERIPHS>;
+  using PeriphRegisterList = std::array<RegisterMap *, NUM_FLASH_PERIPHS>;
 
-   /*------------------------------------------------
-   Auxiliary Control Register (ACR)
-   ------------------------------------------------*/
-   REG_ACCESSOR( RegisterMap, ACR, ACR_LATENCY_Msk, LATENCY, BIT_ACCESS_RW );
-
-   namespace Config::ACR
-   {
-    
-   }
+  /*------------------------------------------------
+  Auxiliary Control Register (ACR)
+  ------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, ACR, ACR_LATENCY_Msk, LATENCY, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, ACR, ACR_DCEN_Msk, DCEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, ACR, ACR_ICEN_Msk, ICEN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, ACR, ACR_PRFTEN_Msk, PRFTEN, BIT_ACCESS_RW );
 
 }    // namespace Thor::LLD::FLASH
 

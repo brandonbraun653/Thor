@@ -56,9 +56,10 @@ namespace Thor::LLD::DMA
     /*-------------------------------------------------
     Register the peripheral
     -------------------------------------------------*/
-    mStream = peripheral;
-    mPeriph = parent;
-    mIRQn   = Resource::IRQSignals[ mResourceIndex ];
+    mStream   = peripheral;
+    mPeriph   = parent;
+    mStreamId = getStream( reinterpret_cast<std::uintptr_t>( mStream ) );
+    mIRQn     = Resource::IRQSignals[ mResourceIndex ];
 
     /*-------------------------------------------------
     Configure the global interrupt priority
@@ -319,7 +320,7 @@ namespace Thor::LLD::DMA
   }
 
 
-  void Stream::IRQHandler( const uint8_t channel, const uint8_t status )
+  __attribute__ ((long_call, section (".thor_ram_code")))  void Stream::IRQHandler( const uint8_t channel, const uint8_t status )
   {
     /*-------------------------------------------------------------------------
     Local Namespaces
@@ -343,17 +344,14 @@ namespace Thor::LLD::DMA
 
     /*-------------------------------------------------------------------------
     Transfer Errors: Allow these to be ignored due to some quirks with the
-    hardware. USARTs will throw FIFO errors even though it doesn't use it.
+    hardware. USARTs will throw FIFO errors even though it doesn't use FIFOs.
     -------------------------------------------------------------------------*/
-    mTCB.fifoError       = false;
-    mTCB.directModeError = false;
-    mTCB.transferError   = ( status & TEIF ) && ( ( mTCB.errorsToIgnore & Errors::TRANSFER ) != Errors::TRANSFER );
-
-    if ( mTCB.transferError )
+    if ( ( status & TEIF ) && ( ( mTCB.errorsToIgnore & Errors::TRANSFER ) != Errors::TRANSFER ) )
     {
-      disableIsr     = true;
-      wakeUserThread = mTCB.wakeUserOnComplete;
-      mTCB.state     = StreamState::ERROR;
+      disableIsr         = true;
+      wakeUserThread     = mTCB.wakeUserOnComplete;
+      mTCB.state         = StreamState::ERROR;
+      mTCB.transferError = true;
     }
 
     /*-------------------------------------------------------------------------
@@ -386,7 +384,6 @@ namespace Thor::LLD::DMA
       if ( mTCB.isrCallback )
       {
         Chimera::DMA::TransferStats stats;
-        stats.clear();
         stats.error     = false;
         stats.requestId = mTCB.requestId;
         stats.size      = mTCB.elementsTransferred;
@@ -445,39 +442,21 @@ namespace Thor::LLD::DMA
 
   void Stream::reset_isr_flags()
   {
-    switch ( getStream( reinterpret_cast<std::uintptr_t>( mStream ) ) )
-    {
-      case Streamer::STREAM_1:
-        mPeriph->IFCR = IFCR_CTCIF1 | IFCR_CHTIF1 | IFCR_CTEIF1 | IFCR_CGIF1;
-        break;
+    /*-------------------------------------------------------------------------
+    Lookup table reduces execution time. Function may execute inside an ISR.
+    -------------------------------------------------------------------------*/
+    static const uint32_t ifcr_flag_table[ EnumValue( Streamer::NUM_OPTIONS ) ] = {
+      0,    // Stream 0 is unused on L4
+      IFCR_CTCIF1 | IFCR_CHTIF1 | IFCR_CTEIF1 | IFCR_CGIF1,
+      IFCR_CTCIF2 | IFCR_CHTIF2 | IFCR_CTEIF2 | IFCR_CGIF2,
+      IFCR_CTCIF3 | IFCR_CHTIF3 | IFCR_CTEIF3 | IFCR_CGIF3,
+      IFCR_CTCIF4 | IFCR_CHTIF4 | IFCR_CTEIF4 | IFCR_CGIF4,
+      IFCR_CTCIF5 | IFCR_CHTIF5 | IFCR_CTEIF5 | IFCR_CGIF5,
+      IFCR_CTCIF6 | IFCR_CHTIF6 | IFCR_CTEIF6 | IFCR_CGIF6,
+      IFCR_CTCIF7 | IFCR_CHTIF7 | IFCR_CTEIF7 | IFCR_CGIF7
+    };
 
-      case Streamer::STREAM_2:
-        mPeriph->IFCR = IFCR_CTCIF2 | IFCR_CHTIF2 | IFCR_CTEIF2 | IFCR_CGIF2;
-        break;
-
-      case Streamer::STREAM_3:
-        mPeriph->IFCR = IFCR_CTCIF3 | IFCR_CHTIF3 | IFCR_CTEIF3 | IFCR_CGIF3;
-        break;
-
-      case Streamer::STREAM_4:
-        mPeriph->IFCR = IFCR_CTCIF4 | IFCR_CHTIF4 | IFCR_CTEIF4 | IFCR_CGIF4;
-        break;
-
-      case Streamer::STREAM_5:
-        mPeriph->IFCR = IFCR_CTCIF5 | IFCR_CHTIF5 | IFCR_CTEIF5 | IFCR_CGIF5;
-        break;
-
-      case Streamer::STREAM_6:
-        mPeriph->IFCR = IFCR_CTCIF6 | IFCR_CHTIF6 | IFCR_CTEIF6 | IFCR_CGIF6;
-        break;
-
-      case Streamer::STREAM_7:
-        mPeriph->IFCR = IFCR_CTCIF7 | IFCR_CHTIF7 | IFCR_CTEIF7 | IFCR_CGIF7;
-        break;
-
-      default:
-        break;
-    }
+    mPeriph->IFCR = ifcr_flag_table[ EnumValue( mStreamId ) ];
   }
 
 
