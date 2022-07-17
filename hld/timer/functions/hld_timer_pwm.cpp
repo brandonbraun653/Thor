@@ -34,6 +34,7 @@ struct PWMControlBlock
 {
   Thor::LLD::TIMER::Handle_rPtr timer;   /**< Handle to the timer */
   Chimera::Timer::Channel       channel; /**< Which channel is in use */
+  Chimera::Timer::Output        output;  /**< Which output is in use */
 };
 
 /*-----------------------------------------------------------------------------
@@ -85,14 +86,15 @@ namespace Chimera::Timer::PWM
     RT_HARD_ASSERT( Chimera::Status::OK == allocate( cfg.coreCfg.instance ) );
 
     cb->timer   = Thor::LLD::TIMER::getHandle( cfg.coreCfg.instance );
-    cb->channel = cfg.outputChannel;
+    cb->channel = cfg.channel;
+    cb->output  = cfg.output;
 
     /*-------------------------------------------------------------------------
     Configure the timer for desired PWM operation.
     -------------------------------------------------------------------------*/
     auto result = Chimera::Status::OK;
     result |= Thor::LLD::TIMER::Master::initCore( cb->timer, cfg.coreCfg );
-    result |= Thor::LLD::TIMER::disableCCChannel( cb->timer, cfg.outputChannel );
+    result |= Thor::LLD::TIMER::disableCCOutput( cb->timer, cfg.output );
 
     result |= setPolarity( cfg.polarity );
     result |= setFrequency( cfg.frequency );
@@ -116,7 +118,7 @@ namespace Chimera::Timer::PWM
     Enable the output compare channel. Assumes the timer is running.
     -------------------------------------------------------------------------*/
     PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( *mTimerImpl );
-    return Thor::LLD::TIMER::enableCCChannel( cb->timer, cb->channel );
+    return Thor::LLD::TIMER::enableCCOutput( cb->timer, cb->output );
   }
 
 
@@ -126,7 +128,7 @@ namespace Chimera::Timer::PWM
     Disable the output compare channel, but don't stop the timer
     -------------------------------------------------------------------------*/
     PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( *mTimerImpl );
-    return Thor::LLD::TIMER::disableCCChannel( cb->timer, cb->channel );
+    return Thor::LLD::TIMER::disableCCOutput( cb->timer, cb->output );
   }
 
 
@@ -146,9 +148,9 @@ namespace Chimera::Timer::PWM
     Calculate the new reference based on a percentage of the current TIMx_ARR.
     -------------------------------------------------------------------------*/
     PWMControlBlock *cb          = reinterpret_cast<PWMControlBlock *>( *mTimerImpl );
-    float         dutyPercent = dutyCycle / 100.0f;
-    float         arr_val     = static_cast<float>( Thor::LLD::TIMER::getAutoReload( cb->timer ) );
-    uint32_t      new_ref     = static_cast<uint32_t>( roundf( arr_val * dutyPercent ) );
+    float            dutyPercent = dutyCycle / 100.0f;
+    float            arr_val     = static_cast<float>( Thor::LLD::TIMER::getAutoReload( cb->timer ) );
+    uint32_t         new_ref     = static_cast<uint32_t>( roundf( arr_val * dutyPercent ) );
 
     /*-------------------------------------------------------------------------
     Apply the new PWM reference
@@ -172,11 +174,11 @@ namespace Chimera::Timer::PWM
     switch ( polarity )
     {
       case Chimera::Timer::PWM::Polarity::ACTIVE_HIGH:
-        result |= Thor::LLD::TIMER::setCCPolarity( cb->timer, cb->channel, Thor::LLD::TIMER::CCPolarity::CCP_OUT_ACTIVE_HIGH );
+        result |= Thor::LLD::TIMER::setCCOutputPolarity( cb->timer, cb->output, Thor::LLD::TIMER::CCPolarity::CCP_OUT_ACTIVE_HIGH );
         break;
 
       case Chimera::Timer::PWM::Polarity::ACTIVE_LOW:
-        result |= Thor::LLD::TIMER::setCCPolarity( cb->timer, cb->channel, Thor::LLD::TIMER::CCPolarity::CCP_OUT_ACTIVE_LOW );
+        result |= Thor::LLD::TIMER::setCCOutputPolarity( cb->timer, cb->output, Thor::LLD::TIMER::CCPolarity::CCP_OUT_ACTIVE_LOW );
         break;
 
       default:

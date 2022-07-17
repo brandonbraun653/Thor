@@ -86,6 +86,7 @@ namespace Thor::LLD::TIMER
   /*---------------------------------------------------------------------------
   TIMx_CR2: Control Register 2
   ---------------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CR2, CR2_ALL, CR2, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR2, CR2_CCDS, CCDS, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR2, CR2_CCPC, CCPC, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR2, CR2_CCUS, CCUS, BIT_ACCESS_RW );
@@ -217,6 +218,7 @@ namespace Thor::LLD::TIMER
   /*---------------------------------------------------------------------------
   TIMx_CCER:  capture/compare enable register
   ---------------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CCER, CCER_ALL, CCER, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC1E, CC1E, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC1P, CC1P, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CCER, CCER_CC1NP, CC1NP, BIT_ACCESS_RW );

@@ -22,10 +22,6 @@ Includes
 
 namespace Thor::LLD::TIMER
 {
-  /*---------------------------------------------------------------------------
-  Public Methods
-  ---------------------------------------------------------------------------*/
-
   /*-------------------------------------------------------------------------
   Auto-Reload Buffering: CR1_ARPE
   -------------------------------------------------------------------------*/
@@ -117,6 +113,31 @@ namespace Thor::LLD::TIMER
     MMS::set( timer->registers, EnumValue( mode ) << CR2_MMS_Pos );
   }
 
+  enum class MasterMode2
+  {
+    RESET,
+    ENABLE,
+    UPDATE,
+    COMPARE_PULSE,
+    COMPARE_OC1REF,
+    COMPARE_OC2REF,
+    COMPARE_OC3REF,
+    COMPARE_OC4REF,
+    COMPARE_OC5REF,
+    COMPARE_OC6REF,
+    COMPARE_PULSE_OC4REF_RF,
+    COMPARE_PULSE_OC6REF_RF,
+    COMPARE_PULSE_OC4REF_OR_OC6REF_RISING,
+    COMPARE_PULSE_OC4REF_RISE_OR_OC6REF_FALL,
+    COMPARE_PULSE_OC5REF_OR_OC6REF_RISING,
+    COMPARE_PULSE_OC5REF_RISE_OR_OC6REF_FALL,
+  };
+
+  inline void setMasterMode2( Handle_rPtr timer, const MasterMode2 &mode )
+  {
+    MMS2::set( timer->registers, EnumValue( mode ) << CR2_MMS2_Pos );
+  }
+
 
   /*---------------------------------------------------------------------------
   Main Output Enable: BDTR
@@ -140,6 +161,25 @@ namespace Thor::LLD::TIMER
   inline void disableAllOutput( Handle_rPtr timer )
   {
     MOE::clear( timer->registers, BDTR_MOE );
+  }
+
+  /*---------------------------------------------------------------------------
+  Off State Selection: BDTR
+  ---------------------------------------------------------------------------*/
+  enum class OffStateMode
+  {
+    HI_Z,
+    TIMER_CONTROL
+  };
+
+  inline void setRunModeOffState( Handle_rPtr timer, const OffStateMode mode )
+  {
+    OSSR::set( timer->registers, EnumValue( mode ) << BDTR_OSSR_Pos );
+  }
+
+  inline void setIdleModeOffState( Handle_rPtr timer, const OffStateMode mode )
+  {
+    OSSI::set( timer->registers, EnumValue( mode ) << BDTR_OSSI_Pos );
   }
 }    // namespace Thor::LLD::TIMER
 

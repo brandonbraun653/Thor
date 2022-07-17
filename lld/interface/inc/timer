@@ -17,6 +17,7 @@
 #include <Thor/lld/interface/timer/timer_prv_data.hpp>
 #include <Thor/lld/interface/timer/timer_types.hpp>
 
+#include <Thor/lld/interface/timer/functions/lld_timer_break.hpp>
 #include <Thor/lld/interface/timer/functions/lld_timer_capture_compare.hpp>
 #include <Thor/lld/interface/timer/functions/lld_timer_common.hpp>
 #include <Thor/lld/interface/timer/functions/lld_timer_control.hpp>

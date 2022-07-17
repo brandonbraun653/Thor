@@ -18,137 +18,134 @@ Includes
 namespace Thor::LLD::TIMER
 {
   /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
+  /* clang-format off */
+  static const std::array<uint32_t, EnumValue( Chimera::Timer::Output::NUM_OPTIONS )> s_enable_flags = {
+    CCER_CC1E,  /* OUTPUT_1P */
+    CCER_CC1NE, /* OUTPUT_1N */
+    CCER_CC2E,
+    CCER_CC2NE,
+    CCER_CC3E,
+    CCER_CC3NE,
+    CCER_CC4E,
+    0,          /* OUTPUT_4N */
+    CCER_CC5E,
+    0,          /* OUTPUT_5N */
+    CCER_CC6E,
+    0           /* OUTPUT_6N */
+  };
+
+  static const std::array<uint32_t, EnumValue( Chimera::Timer::Output::NUM_OPTIONS )> s_polarity_flags = {
+    CCER_CC1P,  /* OUTPUT_1P */
+    CCER_CC1NP, /* OUTPUT_1N */
+    CCER_CC2P,
+    CCER_CC2NP,
+    CCER_CC3P,
+    CCER_CC3NP,
+    CCER_CC4P,
+    CCER_CC4NP,
+    CCER_CC5P,
+    0,          /* OUTPUT_5N */
+    CCER_CC6P,
+    0           /* OUTPUT_6N */
+  };
+
+  static const std::array<uint32_t, EnumValue( Chimera::Timer::Output::NUM_OPTIONS )> s_idle_flags = {
+    CR2_OIS1,   /* OUTPUT_1P */
+    CR2_OIS1N,  /* OUTPUT_1N */
+    CR2_OIS2,
+    CR2_OIS2N,
+    CR2_OIS3,
+    CR2_OIS3N,
+    CR2_OIS4,
+    0,          /* OUTPUT_4N */
+    CR2_OIS5,
+    0,          /* OUTPUT_5N */
+    CR2_OIS6,
+    0           /* OUTPUT_6N */
+  };
+  /* clang-format on */
+
+  /*---------------------------------------------------------------------------
   Public Functions
   ---------------------------------------------------------------------------*/
-  Chimera::Status_t disableCCChannel( Handle_rPtr timer, const Chimera::Timer::Channel ch )
+  void setOutputIdleState( Handle_rPtr timer, const Chimera::Timer::Output ch, const Chimera::GPIO::State state )
   {
-    switch ( ch )
+    if( state == Chimera::GPIO::State::HIGH )
     {
-      case Chimera::Timer::Channel::CHANNEL_1:
-        CC1E::clear( timer->registers, CCER_CC1E );
-        break;
-
-      case Chimera::Timer::Channel::CHANNEL_2:
-        CC2E::clear( timer->registers, CCER_CC2E );
-        break;
-
-      case Chimera::Timer::Channel::CHANNEL_3:
-        CC3E::clear( timer->registers, CCER_CC3E );
-        break;
-
-      case Chimera::Timer::Channel::CHANNEL_4:
-        CC4E::clear( timer->registers, CCER_CC4E );
-        break;
-
-      default:
-        return Chimera::Status::NOT_SUPPORTED;
-    };
-
-    return Chimera::Status::OK;
-  }
-
-
-  Chimera::Status_t enableCCChannel( Handle_rPtr timer, const Chimera::Timer::Channel ch )
-  {
-    switch ( ch )
-    {
-      case Chimera::Timer::Channel::CHANNEL_1:
-        CC1E::set( timer->registers, CCER_CC1E );
-        break;
-
-      case Chimera::Timer::Channel::CHANNEL_2:
-        CC2E::set( timer->registers, CCER_CC2E );
-        break;
-
-      case Chimera::Timer::Channel::CHANNEL_3:
-        CC3E::set( timer->registers, CCER_CC3E );
-        break;
-
-      case Chimera::Timer::Channel::CHANNEL_4:
-        CC4E::set( timer->registers, CCER_CC4E );
-        break;
-
-      default:
-        return Chimera::Status::NOT_SUPPORTED;
-    };
-
-    return Chimera::Status::OK;
-  }
-
-
-  Chimera::Status_t setCCPolarity( Handle_rPtr timer, const Chimera::Timer::Channel ch, const CCPolarity pol )
-  {
-    /*-------------------------------------------------------------------------
-    Decide the bit mask to be applied to the mode
-    -------------------------------------------------------------------------*/
-    const CCMode mode    = getCCMode( timer, ch );
-    uint32_t     reg_val = 0;
-
-    if ( mode == CCM_OUTPUT )
-    {
-      reg_val = pol;
+      CR2::set( timer->registers, s_idle_flags[ EnumValue( ch ) ] );
     }
     else
     {
-      switch ( pol )
-      {
-        case CCPolarity::CCP_IN_RISING_EDGE:
-          reg_val = 0;
-          break;
-
-        case CCPolarity::CCP_IN_FALLING_EDGE:
-          reg_val = 1;
-          break;
-
-        case CCPolarity::CCP_IN_BOTH_EDGE:
-          reg_val = 3;
-          break;
-
-        default:
-          return Chimera::Status::NOT_SUPPORTED;
-      };
+      CR2::clear( timer->registers, s_idle_flags[ EnumValue( ch ) ] );
     }
+  }
+
+
+  Chimera::Status_t disableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch )
+  {
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+#if defined( DEBUG )
+    if ( ch >= Chimera::Timer::Output::NUM_OPTIONS )
+    {
+      return Chimera::Status::NOT_SUPPORTED;
+    }
+#endif
 
     /*-------------------------------------------------------------------------
-    Apply the polarity configuration
+    Set the appropriate enable flag bit
     -------------------------------------------------------------------------*/
-    switch ( ch )
+    CCER::clear( timer->registers, s_enable_flags[ EnumValue( ch ) ] );
+    return Chimera::Status::OK;
+  }
+
+
+  Chimera::Status_t enableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch )
+  {
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+#if defined( DEBUG )
+    if ( ch >= Chimera::Timer::Output::NUM_OPTIONS )
     {
-      case Chimera::Timer::Channel::CHANNEL_1:
-        CC1P::set( timer->registers, ( reg_val & 0x1 ) << CCER_CC1P_Pos );
-        if ( reg_val == 3 )
-        {
-          CC1NP::set( timer->registers, 1u << CCER_CC1NP_Pos );
-        }
-        break;
+      return Chimera::Status::NOT_SUPPORTED;
+    }
+#endif
 
-      case Chimera::Timer::Channel::CHANNEL_2:
-        CC2P::set( timer->registers, ( reg_val & 0x1 ) << CCER_CC2P_Pos );
-        if ( reg_val == 3 )
-        {
-          CC2NP::set( timer->registers, 1u << CCER_CC2NP_Pos );
-        }
-        break;
+    /*-------------------------------------------------------------------------
+    Set the appropriate enable flag bit
+    -------------------------------------------------------------------------*/
+    CCER::setbit( timer->registers, s_enable_flags[ EnumValue( ch ) ] );
+    return Chimera::Status::OK;
+  }
 
-      case Chimera::Timer::Channel::CHANNEL_3:
-        CC3P::set( timer->registers, ( reg_val & 0x1 ) << CCER_CC3P_Pos );
-        if ( reg_val == 3 )
-        {
-          CC3NP::set( timer->registers, 1u << CCER_CC3NP_Pos );
-        }
-        break;
 
-      case Chimera::Timer::Channel::CHANNEL_4:
-        CC4P::set( timer->registers, ( reg_val & 0x1 ) << CCER_CC4P_Pos );
-        if ( reg_val == 3 )
-        {
-          CC4NP::set( timer->registers, 1u << CCER_CC4NP_Pos );
-        }
-        break;
+  Chimera::Status_t setCCOutputPolarity( Handle_rPtr timer, const Chimera::Timer::Output ch, const CCPolarity pol )
+  {
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+#if defined( DEBUG )
+    if ( ( ch >= Chimera::Timer::Output::NUM_OPTIONS ) || ( ( pol != CCP_OUT_ACTIVE_HIGH ) && ( pol != CCP_OUT_ACTIVE_LOW ) ) )
+    {
+      return Chimera::Status::NOT_SUPPORTED;
+    }
+#endif
 
-      default:
-        return Chimera::Status::NOT_SUPPORTED;
-    };
+    /*-------------------------------------------------------------------------
+    Set the appropriate enable flag bit
+    -------------------------------------------------------------------------*/
+    if( pol == CCP_OUT_ACTIVE_HIGH )
+    {
+      CCER::set( timer->registers, s_polarity_flags[ EnumValue( ch ) ] );
+    }
+    else
+    {
+      CCER::clear( timer->registers, s_polarity_flags[ EnumValue( ch ) ] );
+    }
 
     return Chimera::Status::OK;
   }

@@ -88,6 +88,7 @@ namespace Chimera::Timer::Trigger
     Configure the timer for desired operation
     -------------------------------------------------------------------------*/
     auto channel = Chimera::Timer::Channel::CHANNEL_1;
+    auto output = Chimera::Timer::Output::OUTPUT_1N;
     auto result = Chimera::Status::OK;
 
     /* Base timer setup */
@@ -100,12 +101,12 @@ namespace Chimera::Timer::Trigger
     setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
 
     /* Configure capture/compare behavior */
-    disableCCChannel( cb->timer, channel );
+    disableCCOutput( cb->timer, output );
     setCCMode( cb->timer, channel, CCMode::CCM_OUTPUT );
-    setCCPolarity( cb->timer, channel, CCPolarity::CCP_OUT_ACTIVE_HIGH );
+    setCCOutputPolarity( cb->timer, output, CCPolarity::CCP_OUT_ACTIVE_HIGH );
     setOCMode( cb->timer, channel, OCMode::OC_MODE_TOGGLE_MATCH );
     setOCReference( cb->timer, channel, 0 );
-    enableCCChannel( cb->timer, channel );
+    enableCCOutput( cb->timer, output );
 
     return result;
   }

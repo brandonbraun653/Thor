@@ -6,6 +6,7 @@ gen_static_lib_variants(
   SOURCES
     lld_timer_data.cpp
     lld_timer_intf.cpp
+    functions/lld_timer_break.cpp
     functions/lld_timer_capture_compare.cpp
     functions/lld_timer_common.cpp
     functions/lld_timer_helpers.cpp

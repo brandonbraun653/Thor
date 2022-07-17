@@ -57,6 +57,7 @@ namespace Thor::LLD::TIMER
   static constexpr uint32_t CR1_UIFREMAP     = CR1_UIFREMAP_Msk;
 
   /*******************  Bit definition for CR2 register  ********************/
+  static constexpr uint32_t CR2_ALL      = ( 0x00F57FFD );
   static constexpr uint32_t CR2_CCPC_Pos = ( 0U );
   static constexpr uint32_t CR2_CCPC_Msk = ( 0x1UL << CR2_CCPC_Pos );
   static constexpr uint32_t CR2_CCPC     = CR2_CCPC_Msk;
@@ -482,6 +483,8 @@ namespace Thor::LLD::TIMER
   static constexpr uint32_t CCMR3_OC6CE     = CCMR3_OC6CE_Msk;
 
   /*******************  Bit definition for CCER register  *******************/
+  static constexpr uint32_t CCER_ALL = ( 0x0033BFFF );
+
   static constexpr uint32_t CCER_CC1E_Pos  = ( 0U );
   static constexpr uint32_t CCER_CC1E_Msk  = ( 0x1UL << CCER_CC1E_Pos );
   static constexpr uint32_t CCER_CC1E      = CCER_CC1E_Msk;

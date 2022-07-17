@@ -16,6 +16,7 @@
 Includes
 -----------------------------------------------------------------------------*/
 #include <Chimera/common>
+#include <Chimera/gpio>
 #include <Chimera/timer>
 #include <Thor/lld/interface/timer/timer_types.hpp>
 #include <cstdint>
@@ -47,33 +48,52 @@ namespace Thor::LLD::TIMER
   /*---------------------------------------------------------------------------
   Public Functions
   ---------------------------------------------------------------------------*/
-  /**
-   * @brief Disables a capture compare channel
-   *
-   * @param timer   Which timer to act on
-   * @param ch      Which channel to disable
-   * @return Chimera::Status_t
-   */
-  Chimera::Status_t disableCCChannel( Handle_rPtr timer, const Chimera::Timer::Channel ch );
+  static inline void enableCCPreload( Handle_rPtr timer )
+  {
+    CCPC::set( timer->registers, CR2_CCPC );
+  }
+
+  static inline void disableCCPreload( Handle_rPtr timer )
+  {
+    CCPC::clear( timer->registers, CR2_CCPC );
+  }
 
   /**
-   * @brief Enables a capture compare channel
+   * @brief Sets the IO idling logic state
    *
    * @param timer   Which timer to act on
-   * @param ch      Which channel to enable
-   * @return Chimera::Status_t
+   * @param ch      Which output channel to configure
+   * @param state   Desired idling state
    */
-  Chimera::Status_t enableCCChannel( Handle_rPtr timer, const Chimera::Timer::Channel ch );
+  void setOutputIdleState( Handle_rPtr timer, const Chimera::Timer::Output ch, const Chimera::GPIO::State state );
 
   /**
-   * @brief Sets the capture/compare polarity of a channel
+   * @brief Disables a capture compare channel output
    *
    * @param timer   Which timer to act on
-   * @param ch      The channel to act on
+   * @param ch      Which output channel to disable
+   * @return Chimera::Status_t
+   */
+  Chimera::Status_t disableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch );
+
+  /**
+   * @brief Enables a capture compare channel output
+   *
+   * @param timer   Which timer to act on
+   * @param ch      Which output channel to enable
+   * @return Chimera::Status_t
+   */
+  Chimera::Status_t enableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch );
+
+  /**
+   * @brief Sets the capture/compare polarity of a channel output
+   *
+   * @param timer   Which timer to act on
+   * @param ch      The output channel to act on
    * @param pol     What polarity is being set
    * @return Chimera::Status_t
    */
-  Chimera::Status_t setCCPolarity( Handle_rPtr timer, const Chimera::Timer::Channel ch, const CCPolarity pol );
+  Chimera::Status_t setCCOutputPolarity( Handle_rPtr timer, const Chimera::Timer::Output ch, const CCPolarity pol );
 
   /**
    * @brief Sets the capture/compare mode behavior for a timer channel
