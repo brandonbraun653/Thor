@@ -128,7 +128,7 @@ namespace Thor::LLD::TIMER
     Check the desired rate can be achieved
     -------------------------------------------------------------------------*/
     const float res_ns = getBaseTickPeriod( timer );
-    if( rate_ns <= ( 2.0f * res_ns ) )
+    if( rate_ns < res_ns )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }

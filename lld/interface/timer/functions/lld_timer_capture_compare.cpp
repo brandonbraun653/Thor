@@ -140,11 +140,11 @@ namespace Thor::LLD::TIMER
     -------------------------------------------------------------------------*/
     if( pol == CCP_OUT_ACTIVE_HIGH )
     {
-      CCER::set( timer->registers, s_polarity_flags[ EnumValue( ch ) ] );
+      CCER::clear( timer->registers, s_polarity_flags[ EnumValue( ch ) ] );
     }
     else
     {
-      CCER::clear( timer->registers, s_polarity_flags[ EnumValue( ch ) ] );
+      CCER::setbit( timer->registers, s_polarity_flags[ EnumValue( ch ) ] );
     }
 
     return Chimera::Status::OK;

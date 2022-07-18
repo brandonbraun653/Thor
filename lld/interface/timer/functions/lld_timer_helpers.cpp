@@ -57,6 +57,7 @@ namespace Thor::LLD::TIMER
       TickConfig tick_cfg;
       tick_cfg.clock_src = ClockSource::INTERNAL;
       tick_cfg.rate_ns   = ( 1.0f / cfg.baseFreq ) * 1e9;
+      tick_cfg.tolerance = cfg.tolerance;
 
       return setBaseTickPeriod( timer, tick_cfg );
     }

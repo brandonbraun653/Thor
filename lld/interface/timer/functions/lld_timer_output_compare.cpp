@@ -41,6 +41,14 @@ namespace Thor::LLD::TIMER
         OC4PE::set( timer->registers, value << CCMR2_OC4PE_Pos );
         break;
 
+      case Chimera::Timer::Channel::CHANNEL_5:
+        OC5PE::set( timer->registers, value << CCMR3_OC5PE_Pos );
+        break;
+
+      case Chimera::Timer::Channel::CHANNEL_6:
+        OC6PE::set( timer->registers, value << CCMR3_OC6PE_Pos );
+        break;
+
       default:
         // Do nothing
         break;
@@ -68,6 +76,14 @@ namespace Thor::LLD::TIMER
         OC4M::set( timer->registers, mode << CCMR2_OC4M_Pos );
         break;
 
+      case Chimera::Timer::Channel::CHANNEL_5:
+        OC5M::set( timer->registers, mode << CCMR3_OC5M_Pos );
+        break;
+
+      case Chimera::Timer::Channel::CHANNEL_6:
+        OC6M::set( timer->registers, mode << CCMR3_OC6M_Pos );
+        break;
+
       default:
         return Chimera::Status::NOT_SUPPORTED;
     };
@@ -91,6 +107,12 @@ namespace Thor::LLD::TIMER
 
       case Chimera::Timer::Channel::CHANNEL_4:
         return static_cast<OCMode>( OC4PE::get( timer->registers) >> CCMR2_OC4PE_Pos );
+
+      case Chimera::Timer::Channel::CHANNEL_5:
+        return static_cast<OCMode>( OC5PE::get( timer->registers) >> CCMR3_OC5PE_Pos );
+
+      case Chimera::Timer::Channel::CHANNEL_6:
+        return static_cast<OCMode>( OC6PE::get( timer->registers) >> CCMR3_OC6PE_Pos );
 
       default:
         return OC_MODE_INVALID;
@@ -118,6 +140,14 @@ namespace Thor::LLD::TIMER
         CC4::set( timer->registers, ref );
         break;
 
+      case Chimera::Timer::Channel::CHANNEL_5:
+        CC5::set( timer->registers, ref );
+        break;
+
+      case Chimera::Timer::Channel::CHANNEL_6:
+        CC6::set( timer->registers, ref );
+        break;
+
       default:
         return Chimera::Status::NOT_SUPPORTED;
     };
@@ -141,6 +171,12 @@ namespace Thor::LLD::TIMER
 
       case Chimera::Timer::Channel::CHANNEL_4:
         return CC4::get( timer->registers );
+
+      case Chimera::Timer::Channel::CHANNEL_5:
+        return CC5::get( timer->registers );
+
+      case Chimera::Timer::Channel::CHANNEL_6:
+        return CC6::get( timer->registers );
 
       default:
         return 0;

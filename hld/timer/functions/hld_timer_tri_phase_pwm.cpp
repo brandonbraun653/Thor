@@ -120,6 +120,7 @@ namespace Chimera::Timer::Inverter
     setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_1, OCMode::OC_MODE_PWM_MODE_2 );
     setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_2, OCMode::OC_MODE_PWM_MODE_2 );
     setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_3, OCMode::OC_MODE_PWM_MODE_2 );
+    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_5, OCMode::OC_MODE_PWM_MODE_2 );
 
     /* Set output idle (safe) states. Assumes positive logic for the power stage drive signals. */
     setRunModeOffState( cb->timer, OffStateMode::TIMER_CONTROL );
@@ -131,17 +132,16 @@ namespace Chimera::Timer::Inverter
     setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_2N, Chimera::GPIO::State::LOW );
     setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_3P, Chimera::GPIO::State::LOW );
     setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_3N, Chimera::GPIO::State::LOW );
+    setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_5P, Chimera::GPIO::State::LOW );
 
     /* Assign dead-time during complementary output transitions */
     RT_HARD_ASSERT( setDeadTime( cb->timer, cfg.deadTimeNs ) );
-
-    /* Set the initial duty-cycles for each phase */
-    result |= setPhaseDutyCycle( 0.0f, 0.0f, 0.0f );
 
     /* Set capture/compare mode */
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_1, CCMode::CCM_OUTPUT );
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_2, CCMode::CCM_OUTPUT );
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_3, CCMode::CCM_OUTPUT );
+    setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_5, CCMode::CCM_OUTPUT );
 
     /* Set output polarity */
     setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_1P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
@@ -150,6 +150,7 @@ namespace Chimera::Timer::Inverter
     setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_2N, CCPolarity::CCP_OUT_ACTIVE_HIGH );
     setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_3P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
     setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_3N, CCPolarity::CCP_OUT_ACTIVE_HIGH );
+    setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_5P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
 
     /* Enable the outputs */
     enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_1P );
@@ -158,6 +159,10 @@ namespace Chimera::Timer::Inverter
     enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_2N );
     enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_3P );
     enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_3N );
+    enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_5P );
+
+    /* Set the initial duty-cycles for each phase */
+    result |= setPhaseDutyCycle( 0.0f, 0.0f, 0.0f );
 
     /*-------------------------------------------------------------------------
     ADC trigger configuration
@@ -235,6 +240,11 @@ namespace Chimera::Timer::Inverter
 
       result |= Thor::LLD::TIMER::setOCReference( cb->timer, phaseMap[ phase_idx ], new_ref );
     }
+
+    /*-------------------------------------------------------------------------
+    Update the reference for the ADC trigger
+    -------------------------------------------------------------------------*/
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_5, arr_val - 1 );
 
     return result;
   }
