@@ -110,7 +110,6 @@ namespace Chimera::Timer::Inverter
     setAlignment( cb->timer, AlignMode::CENTER_ALIGNED_3 );
 
     /* Buffer the phase PWM set-point updates for seamless transitions */
-    enableCCPreload( cb->timer );
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_1, true ); /* Output Phase A */
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_2, true ); /* Output Phase B */
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_3, true ); /* Output Phase C */

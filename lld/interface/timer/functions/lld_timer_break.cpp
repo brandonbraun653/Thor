@@ -118,7 +118,7 @@ namespace Thor::LLD::TIMER
   bool setDeadTime( Handle_rPtr timer, const float dt_ns )
   {
     // TODO BMB: Fill this out more intelligently. Need to just see if the timer works for now.
-    DTG::set( timer->registers, 0 );    // minimal dead-time
+    DTG::set( timer->registers, 0x05 );    // minimal dead-time
     return true;
   }
 
