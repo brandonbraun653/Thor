@@ -40,6 +40,17 @@ namespace Chimera::Timer::Inverter
   static Chimera::DeviceManager<ControlBlock, Chimera::Timer::Instance, EnumValue( Chimera::Timer::Instance::NUM_OPTIONS )>
       s_timer_data;
 
+
+  static uint32_t s_ccer_fwd_comm_table[ 6 ] = {
+    /* clang-format off */
+    ( Thor::LLD::TIMER::CCER_CC1E  | Thor::LLD::TIMER::CCER_CC2NE ),
+    ( Thor::LLD::TIMER::CCER_CC1E  | Thor::LLD::TIMER::CCER_CC3NE ),
+    ( Thor::LLD::TIMER::CCER_CC2E  | Thor::LLD::TIMER::CCER_CC3NE ),
+    ( Thor::LLD::TIMER::CCER_CC1NE | Thor::LLD::TIMER::CCER_CC2E  ),
+    ( Thor::LLD::TIMER::CCER_CC1NE | Thor::LLD::TIMER::CCER_CC3E  ),
+    ( Thor::LLD::TIMER::CCER_CC2NE | Thor::LLD::TIMER::CCER_CC3E  )
+  };/* clang-format on */
+
   /*---------------------------------------------------------------------------
   Class Implementation
   ---------------------------------------------------------------------------*/
@@ -116,9 +127,15 @@ namespace Chimera::Timer::Inverter
 
     /* Configure PWM mode */
     setCountDirection( cb->timer, CountDir::COUNT_UP );
-    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_1, OCMode::OC_MODE_PWM_MODE_2 );
-    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_2, OCMode::OC_MODE_PWM_MODE_2 );
-    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_3, OCMode::OC_MODE_PWM_MODE_2 );
+
+    // Use PWM mode 1 to logically line up duty cycle programming, which assumes high side
+    // on-time is equal to some percentage of the ARR. Mode 1 has the channel set to "active"
+    // while CNT < CCRx.
+    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_1, OCMode::OC_MODE_PWM_MODE_1 );
+    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_2, OCMode::OC_MODE_PWM_MODE_1 );
+    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_3, OCMode::OC_MODE_PWM_MODE_1 );
+
+    // Use PWM mode 2 here to set the rising edge once CNT > CCR5
     setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_5, OCMode::OC_MODE_PWM_MODE_2 );
 
     /* Set output idle (safe) states. Assumes positive logic for the power stage drive signals. */
@@ -249,9 +266,38 @@ namespace Chimera::Timer::Inverter
   }
 
 
-  Chimera::Status_t Driver::setSwitchGating( const SwitchStates &states )
+  Chimera::Status_t Driver::setForwardCommState( const uint8_t phase )
   {
-    // Enable/disable individual OC
+    using namespace Thor::LLD::TIMER;
+    static bool was_set = false;
+
+    ControlBlock *cb = reinterpret_cast<ControlBlock *>( *mTimerImpl );
+
+    // if( !was_set )
+    // {
+    //   was_set = true;
+
+    //   uint32_t tmp = cb->timer->registers->CCER;
+    //   tmp |= ( CCER_CC1E | CCER_CC1NE );
+    //   cb->timer->registers->CCER = tmp;
+    // }
+    // else
+    // {
+    //   was_set = false;
+
+    //   uint32_t tmp = cb->timer->registers->CCER;
+    //   tmp &= ~( CCER_CC1E | CCER_CC1NE );
+    //   cb->timer->registers->CCER = tmp;
+    // }
+
+    uint32_t tmp = cb->timer->registers->CCER;
+
+    tmp &= ~( CCER_CC1E | CCER_CC1NE | CCER_CC2E | CCER_CC2NE | CCER_CC3E | CCER_CC3NE );
+    tmp |= s_ccer_fwd_comm_table[ phase ];
+
+    cb->timer->registers->CCER = tmp;
+
+    return Chimera::Status::OK;
   }
 
 
