@@ -16,6 +16,7 @@ Includes
 #include <Chimera/peripheral>
 #include <Chimera/timer>
 #include <Thor/lld/interface/inc/timer>
+#include <Thor/lld/interface/inc/gpio>
 
 /*-----------------------------------------------------------------------------
 Constants
@@ -204,14 +205,25 @@ namespace Chimera::Timer::Inverter
   {
     using namespace Thor::LLD::TIMER;
 
-    // Reset anything that needs reset
-    // Set the IO to the safe state levels
-    // Start the timer back up and let the ISRs do the rest
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( *mTimerImpl );
 
+    /*-------------------------------------------------------------------------
+    Disable the counter
+    -------------------------------------------------------------------------*/
+    disableCounter( cb->timer );
+
+    /*-------------------------------------------------------------------------
+    Reset the timer to a known state
+    -------------------------------------------------------------------------*/
+    assignCounter( cb->timer, 0 );
+    setForwardCommState( 0 );
+
+    /*-------------------------------------------------------------------------
+    Enable the outputs
+    -------------------------------------------------------------------------*/
     enableAllOutput( cb->timer );
-    // Reset counter? Set pins to idle?
     enableCounter( cb->timer );
+
     return Chimera::Status::OK;
   }
 
@@ -269,26 +281,8 @@ namespace Chimera::Timer::Inverter
   Chimera::Status_t Driver::setForwardCommState( const uint8_t phase )
   {
     using namespace Thor::LLD::TIMER;
-    static bool was_set = false;
 
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( *mTimerImpl );
-
-    // if( !was_set )
-    // {
-    //   was_set = true;
-
-    //   uint32_t tmp = cb->timer->registers->CCER;
-    //   tmp |= ( CCER_CC1E | CCER_CC1NE );
-    //   cb->timer->registers->CCER = tmp;
-    // }
-    // else
-    // {
-    //   was_set = false;
-
-    //   uint32_t tmp = cb->timer->registers->CCER;
-    //   tmp &= ~( CCER_CC1E | CCER_CC1NE );
-    //   cb->timer->registers->CCER = tmp;
-    // }
 
     uint32_t tmp = cb->timer->registers->CCER;
 
@@ -305,6 +299,9 @@ namespace Chimera::Timer::Inverter
   {
     using namespace Thor::LLD::TIMER;
 
+    /*-------------------------------------------------------------------------
+    Hook into the break event to safely set the outputs to a known state
+    -------------------------------------------------------------------------*/
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( *mTimerImpl );
     generateBreakEvent( cb->timer, BreakChannel::BREAK_INPUT_1 );
 

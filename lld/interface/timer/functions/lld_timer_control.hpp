@@ -81,7 +81,7 @@ namespace Thor::LLD::TIMER
   }
 
   /*-------------------------------------------------------------------------
-  Counter Enable/Disable: CR1_CEN
+  Counter Enable/Disable/Assign: CR1_CEN
   -------------------------------------------------------------------------*/
   inline void enableCounter( Handle_rPtr timer )
   {
@@ -91,6 +91,11 @@ namespace Thor::LLD::TIMER
   inline void disableCounter( Handle_rPtr timer )
   {
     CEN::clear( timer->registers, CR1_CEN );
+  }
+
+  inline void assignCounter( Handle_rPtr timer, uint32_t value )
+  {
+    COUNT::set( timer->registers, value );
   }
 
   /*-------------------------------------------------------------------------
