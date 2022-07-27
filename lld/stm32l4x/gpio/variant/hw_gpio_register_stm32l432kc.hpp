@@ -45,6 +45,10 @@ namespace Thor::LLD::GPIO
   static constexpr uint8_t GPIOB_NUM_PINS = 7;
   static constexpr uint8_t GPIOC_NUM_PINS = 2;
 
+  static constexpr uint8_t GPIOA_START_PIN = 0;
+  static constexpr uint8_t GPIOB_START_PIN = 0;
+  static constexpr uint8_t GPIOC_START_PIN = 14;
+
   static constexpr uint8_t PRJ_MAX_PORTS         = NUM_GPIO_PERIPHS;
   static constexpr uint8_t PRJ_MAX_PINS          = NUM_GPIO_PINS;
   static constexpr uint8_t PRJ_MAX_PINS_PER_PORT = 16;

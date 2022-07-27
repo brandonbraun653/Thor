@@ -81,37 +81,37 @@ namespace Thor::LLD::GPIO
     Chimera::Status_t result = Chimera::Status::OK;
 
 #if defined( STM32_GPIOA_PERIPH_AVAILABLE )
-    result |= getLLDriver( Chimera::GPIO::Port::PORTA, 0 )->attach( GPIOA_PERIPH );
+    result |= getLLDriver( Chimera::GPIO::Port::PORTA, GPIOA_START_PIN )->attach( GPIOA_PERIPH );
 #endif
 #if defined( STM32_GPIOB_PERIPH_AVAILABLE )
-    result |= getLLDriver( Chimera::GPIO::Port::PORTB, 0 )->attach( GPIOB_PERIPH );
+    result |= getLLDriver( Chimera::GPIO::Port::PORTB, GPIOB_START_PIN )->attach( GPIOB_PERIPH );
 #endif
 #if defined( STM32_GPIOC_PERIPH_AVAILABLE )
-    result |= getLLDriver( Chimera::GPIO::Port::PORTC, 0 )->attach( GPIOC_PERIPH );
+    result |= getLLDriver( Chimera::GPIO::Port::PORTC, GPIOC_START_PIN )->attach( GPIOC_PERIPH );
 #endif
 #if defined( STM32_GPIOD_PERIPH_AVAILABLE )
-    result |= getLLDriver( Chimera::GPIO::Port::PORTD, 0 )->attach( GPIOD_PERIPH );
+    result |= getLLDriver( Chimera::GPIO::Port::PORTD, GPIOD_START_PIN )->attach( GPIOD_PERIPH );
 #endif
 #if defined( STM32_GPIOE_PERIPH_AVAILABLE )
-    result |= getLLDriver( Chimera::GPIO::Port::PORTE, 0 )->attach( GPIOE_PERIPH );
+    result |= getLLDriver( Chimera::GPIO::Port::PORTE, GPIOE_START_PIN )->attach( GPIOE_PERIPH );
 #endif
 #if defined( STM32_GPIOF_PERIPH_AVAILABLE )
-    result |= getLLDriver( Chimera::GPIO::Port::PORTF, 0 )->attach( GPIOF_PERIPH );
+    result |= getLLDriver( Chimera::GPIO::Port::PORTF, GPIOF_START_PIN )->attach( GPIOF_PERIPH );
 #endif
 #if defined( STM32_GPIOG_PERIPH_AVAILABLE )
-    result |= getLLDriver( Chimera::GPIO::Port::PORTG, 0 )->attach( GPIOG_PERIPH );
+    result |= getLLDriver( Chimera::GPIO::Port::PORTG, GPIOG_START_PIN )->attach( GPIOG_PERIPH );
 #endif
 #if defined( STM32_GPIOH_PERIPH_AVAILABLE )
-    result |= getLLDriver( Chimera::GPIO::Port::PORTH, 0 )->attach( GPIOH_PERIPH );
+    result |= getLLDriver( Chimera::GPIO::Port::PORTH, GPIOH_START_PIN )->attach( GPIOH_PERIPH );
 #endif
 #if defined( STM32_GPIOI_PERIPH_AVAILABLE )
-    result |= getLLDriver( Chimera::GPIO::Port::PORTI, 0 )->attach( GPIOI_PERIPH );
+    result |= getLLDriver( Chimera::GPIO::Port::PORTI, GPIOI_START_PIN )->attach( GPIOI_PERIPH );
 #endif
 #if defined( STM32_GPIOJ_PERIPH_AVAILABLE )
-    result |= getLLDriver( Chimera::GPIO::Port::PORTJ, 0 )->attach( GPIOJ_PERIPH );
+    result |= getLLDriver( Chimera::GPIO::Port::PORTJ, GPIOJ_START_PIN )->attach( GPIOJ_PERIPH );
 #endif
 #if defined( STM32_GPIOK_PERIPH_AVAILABLE )
-    result |= getLLDriver( Chimera::GPIO::Port::PORTK, 0 )->attach( GPIOK_PERIPH );
+    result |= getLLDriver( Chimera::GPIO::Port::PORTK, GPIOK_START_PIN )->attach( GPIOK_PERIPH );
 #endif
 
     RT_HARD_ASSERT( result == Chimera::Status::OK );
