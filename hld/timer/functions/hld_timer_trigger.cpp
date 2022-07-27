@@ -137,4 +137,16 @@ namespace Chimera::Timer::Trigger
     return Chimera::Status::OK;
   }
 
+
+  Chimera::Status_t Master::attachISR( Chimera::Function::Opaque func )
+  {
+    return Chimera::Status::NOT_READY;
+  }
+
+
+  void Master::detachISR()
+  {
+
+  }
+
 }    // namespace Chimera::Timer::Trigger
