@@ -16,6 +16,7 @@ Includes
 #include <Chimera/peripheral>
 #include <Chimera/timer>
 #include <Thor/lld/interface/inc/timer>
+#include <Thor/lld/interface/inc/interrupt>
 
 /*-----------------------------------------------------------------------------
 Constants

@@ -10,6 +10,7 @@ gen_static_lib_variants(
     functions/lld_timer_capture_compare.cpp
     functions/lld_timer_common.cpp
     functions/lld_timer_helpers.cpp
+    functions/lld_timer_isr.cpp
     functions/lld_timer_output_compare.cpp
     functions/lld_timer_time_base.cpp
   PRV_LIBRARIES

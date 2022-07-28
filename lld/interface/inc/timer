@@ -22,6 +22,7 @@
 #include <Thor/lld/interface/timer/functions/lld_timer_common.hpp>
 #include <Thor/lld/interface/timer/functions/lld_timer_control.hpp>
 #include <Thor/lld/interface/timer/functions/lld_timer_helpers.hpp>
+#include <Thor/lld/interface/timer/functions/lld_timer_isr.hpp>
 #include <Thor/lld/interface/timer/functions/lld_timer_output_compare.hpp>
 #include <Thor/lld/interface/timer/functions/lld_timer_time_base.hpp>
 
