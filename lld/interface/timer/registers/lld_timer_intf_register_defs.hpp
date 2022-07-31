@@ -118,6 +118,7 @@ namespace Thor::LLD::TIMER
   /*---------------------------------------------------------------------------
   TIMx_DIER:  DMA/interrupt enable register
   ---------------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, DIER, DIER_ALL_Msk, DIER_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, DIER, DIER_BIE, BIE, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, DIER, DIER_CC1DE, CC1DE, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, DIER, DIER_CC1IE, CC1IE, BIT_ACCESS_RW );

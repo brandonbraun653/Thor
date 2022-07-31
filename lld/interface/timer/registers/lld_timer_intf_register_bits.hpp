@@ -160,6 +160,8 @@ namespace Thor::LLD::TIMER
   static constexpr uint32_t SMCR_ETP     = SMCR_ETP_Msk;
 
   /*******************  Bit definition for DIER register  *******************/
+  static constexpr uint32_t DIER_ALL_Msk = ( 0x7FFF );
+
   static constexpr uint32_t DIER_UIE_Pos   = ( 0U );
   static constexpr uint32_t DIER_UIE_Msk   = ( 0x1UL << DIER_UIE_Pos );
   static constexpr uint32_t DIER_UIE       = DIER_UIE_Msk;

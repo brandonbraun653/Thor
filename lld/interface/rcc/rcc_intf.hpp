@@ -22,7 +22,6 @@
 #include <Chimera/system>
 
 /* Thor Includes */
-#include <Thor/clock>
 #include <Thor/lld/common/macros.hpp>
 #include <Thor/lld/interface/rcc/rcc_types.hpp>
 

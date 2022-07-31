@@ -88,7 +88,7 @@ namespace Thor::LLD::TIMER
     /*-------------------------------------------------------------------------
     Ensure the timer is being driven by an internal clock source
     -------------------------------------------------------------------------*/
-    if( SMS::get( timer->registers ) != 0 )
+    if ( SMS::get( timer->registers ) != 0 )
     {
       return RATE_UNKNOWN;
     }
@@ -96,7 +96,7 @@ namespace Thor::LLD::TIMER
     /*-------------------------------------------------------------------------
     Get the peripheral clock input period in nanoseconds
     -------------------------------------------------------------------------*/
-    auto  rcc = RCC::getCoreClockCtrl();
+    auto        rcc    = RCC::getCoreClockCtrl();
     const float finput = static_cast<float>(
         rcc->getPeriphClock( Chimera::Peripheral::Type::PERIPH_TIMER, reinterpret_cast<std::uintptr_t>( timer->registers ) ) );
 
@@ -119,7 +119,7 @@ namespace Thor::LLD::TIMER
     /*-------------------------------------------------------------------------
     Ensure the timer is being driven by an internal clock source
     -------------------------------------------------------------------------*/
-    if( SMS::get( timer->registers ) != 0 )
+    if ( SMS::get( timer->registers ) != 0 )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -128,7 +128,7 @@ namespace Thor::LLD::TIMER
     Check the desired rate can be achieved
     -------------------------------------------------------------------------*/
     const float res_ns = getBaseTickPeriod( timer );
-    if( rate_ns < res_ns )
+    if ( rate_ns < res_ns )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -138,7 +138,7 @@ namespace Thor::LLD::TIMER
     -------------------------------------------------------------------------*/
     const uint32_t reloadValue = static_cast<uint32_t>( roundf( rate_ns / res_ns ) );
 
-    if( reloadValue > getMaxReload( timer->instance ) )
+    if ( reloadValue > getMaxReload( timer->instance ) )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -148,7 +148,8 @@ namespace Thor::LLD::TIMER
     -------------------------------------------------------------------------*/
     ARPE::set( timer->registers, CR1_ARPE );                          /* Buffer the auto reload register updates */
     AUTO_RELOAD::set( timer->registers, reloadValue << ARR_ARR_Pos ); /* Set the reload value */
-    COUNT::set( timer->registers, reloadValue << CNT_CNT_Pos );       /* Reset counter to indicate a reset */
+    COUNT::set( timer->registers, 0 );                                /* Reset counter to indicate a reset */
+    UG::set( timer->registers, EGR_UG );                              /* Generate update event to refresh hardware registers */
 
     return Chimera::Status::OK;
   }
@@ -159,7 +160,7 @@ namespace Thor::LLD::TIMER
     /*-------------------------------------------------------------------------
     Ensure the timer is being driven by an internal clock source
     -------------------------------------------------------------------------*/
-    if( SMS::get( timer->registers ) != 0 )
+    if ( SMS::get( timer->registers ) != 0 )
     {
       return RATE_UNKNOWN;
     }
@@ -179,4 +180,4 @@ namespace Thor::LLD::TIMER
     return AUTO_RELOAD::get( timer->registers );
   }
 
-}  // namespace Thor::LLD::TIMER
+}    // namespace Thor::LLD::TIMER

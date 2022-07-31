@@ -32,7 +32,7 @@ Custom STM32F4 Driver
 
 #ifndef CORTEX_M4
 #define CORTEX_M4
-#endif 
+#endif
 
 #if !defined( STM32F446xx ) && !defined( _SIM ) // || !defined( <some_other_chip> )
 #error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)
@@ -47,7 +47,7 @@ Custom STM32L4 Driver
 
 #ifndef CORTEX_M4
 #define CORTEX_M4
-#endif 
+#endif
 
 #if !defined( STM32L432xx ) && !defined( _SIM ) // || !defined( <some_other_chip> )
 #error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)
@@ -57,14 +57,6 @@ Custom STM32L4 Driver
 
 #if !defined( TARGET_LLD_TEST ) && !defined( TARGET_LLD_MOCK ) && !defined( TARGET_STM32F4 ) && !defined( TARGET_STM32L4 ) && !defined( TARGET_STM32F7 )
 #error No detected STM32 device. Please add to your project build system.
-#endif
-
-/*-------------------------------------------
-Boost
--------------------------------------------*/
-#ifndef BOOST_NO_EXCEPTIONS
-/* Thor does not support exceptions due to cost overhead */
-#error Please define BOOST_NO_EXCEPTIONS in the compiler preprocessor
 #endif
 
 /*-------------------------------------------

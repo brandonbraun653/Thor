@@ -256,6 +256,9 @@ namespace Thor::LLD::TIMER
       case Chimera::Timer::Instance::TIMER16:
         return std::numeric_limits<uint16_t>::max();
 
+      case Chimera::Timer::Instance::TIMER2:
+        return std::numeric_limits<uint32_t>::max();
+
       default:
         RT_HARD_ASSERT( false ); // Missing a timer definition!
         return 0;

@@ -52,6 +52,7 @@ namespace Thor::LLD::TIMER
   Map peripheral instances at a channel level
   -----------------------------------------------------------------------------*/
   extern RegisterMap *const PeriphRegisterBlock[ EnumValue( Chimera::Timer::Instance::NUM_OPTIONS ) ];
+
 }    // namespace Thor::LLD::TIMER
 
 #endif /* !THOR_LLD_TIMER_DATA_HPP */
