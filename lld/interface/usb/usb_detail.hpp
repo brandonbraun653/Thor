@@ -25,7 +25,7 @@
 // #include <Thor/lld/stm32l4x/usb/hw_usb_prj.hpp>
 // #include <Thor/lld/stm32l4x/usb/hw_usb_types.hpp>
 #else
-#pragma message( "usb_detail.hpp: Unknown target for LLD" )
+//#pragma message( "usb_detail.hpp: Unknown target for LLD" )
 #endif
 
 #endif /* !THOR_LLD_USB_INTF_DETAIL_HPP */
