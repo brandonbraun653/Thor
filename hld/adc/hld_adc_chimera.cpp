@@ -133,62 +133,62 @@ namespace Chimera::ADC
 
   void Driver::close()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->close();
   }
 
 
   Chimera::Status_t Driver::setSampleTime( const Chimera::ADC::Channel ch, const size_t cycles )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->setSampleTime( ch, cycles );
   }
 
 
   Chimera::ADC::Sample Driver::sampleChannel( const Chimera::ADC::Channel ch )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->sampleChannel( ch );
   }
 
 
   Chimera::Status_t Driver::configSequence( const Chimera::ADC::SequenceInit &cfg )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->configSequence( cfg );
   }
 
 
   void Driver::startSequence()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->startSequence();
   }
 
 
   void Driver::stopSequence()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->stopSequence();
   }
 
 
   bool Driver::nextSeqSample( const Chimera::ADC::Channel ch, Chimera::ADC::Sample &sample )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->nextSeqSample( ch, sample );
   }
 
   void Driver::onInterrupt( const Chimera::ADC::Interrupt signal, Chimera::ADC::ISRCallback cb )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->onInterrupt( signal, cb );
   }
 
 
   float Driver::toVoltage( const Chimera::ADC::Sample sample )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->toVoltage( sample );
   }
 
@@ -198,35 +198,35 @@ namespace Chimera::ADC
   -------------------------------------------------*/
   void Driver::lock()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lock();
   }
 
 
   void Driver::lockFromISR()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lockFromISR();
   }
 
 
   bool Driver::try_lock_for( const size_t timeout )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->try_lock_for( timeout );
   }
 
 
   void Driver::unlock()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlock();
   }
 
 
   void Driver::unlockFromISR()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlockFromISR();
   }
 }    // namespace Chimera::ADC

@@ -167,7 +167,7 @@ namespace Chimera::Watchdog
   {
 #if defined( THOR_HLD_IWDG )
     mDriver = reinterpret_cast<void *>( ::HLD::getDriver( ch ) );
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
 
     if ( mDriver )
     {
@@ -186,7 +186,7 @@ namespace Chimera::Watchdog
   Status_t IndependentDriver::start()
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::IndependentDriver_rPtr>( mDriver )->start();
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -197,7 +197,7 @@ namespace Chimera::Watchdog
   Status_t IndependentDriver::stop()
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::IndependentDriver_rPtr>( mDriver )->stop();
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -208,7 +208,7 @@ namespace Chimera::Watchdog
   Status_t IndependentDriver::kick()
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::IndependentDriver_rPtr>( mDriver )->kick();
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -219,7 +219,7 @@ namespace Chimera::Watchdog
   Status_t IndependentDriver::pauseOnDebugHalt( const bool enable )
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::IndependentDriver_rPtr>( mDriver )->pauseOnDebugHalt( enable );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -229,7 +229,7 @@ namespace Chimera::Watchdog
   size_t IndependentDriver::getTimeout()
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::IndependentDriver_rPtr>( mDriver )->getTimeout();
 #else
     return 0;
@@ -240,7 +240,7 @@ namespace Chimera::Watchdog
   size_t IndependentDriver::maxTimeout()
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::IndependentDriver_rPtr>( mDriver )->maxTimeout();
 #else
     return 0;
@@ -251,7 +251,7 @@ namespace Chimera::Watchdog
   size_t IndependentDriver::minTimeout()
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::IndependentDriver_rPtr>( mDriver )->minTimeout();
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -265,7 +265,7 @@ namespace Chimera::Watchdog
   void IndependentDriver::lock()
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<HLD::IndependentDriver_rPtr>( mDriver )->lock();
 #endif
   }
@@ -274,7 +274,7 @@ namespace Chimera::Watchdog
   void IndependentDriver::lockFromISR()
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<HLD::IndependentDriver_rPtr>( mDriver )->lockFromISR();
 #endif
   }
@@ -283,7 +283,7 @@ namespace Chimera::Watchdog
   bool IndependentDriver::try_lock_for( const size_t timeout )
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::IndependentDriver_rPtr>( mDriver )->try_lock_for( timeout );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -294,7 +294,7 @@ namespace Chimera::Watchdog
   void IndependentDriver::unlock()
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<HLD::IndependentDriver_rPtr>( mDriver )->unlock();
 #endif
   }
@@ -303,7 +303,7 @@ namespace Chimera::Watchdog
   void IndependentDriver::unlockFromISR()
   {
 #if defined( THOR_HLD_IWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<HLD::IndependentDriver_rPtr>( mDriver )->unlockFromISR();
 #endif
   }
@@ -329,7 +329,7 @@ namespace Chimera::Watchdog
   {
 #if defined( THOR_HLD_WWDG )
     mDriver = reinterpret_cast<void *>( HLD::getDriver( ch ) );
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
 
     if ( mDriver )
     {
@@ -348,7 +348,7 @@ namespace Chimera::Watchdog
   Status_t WindowDriver::start()
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::WindowDriver_rPtr>( mDriver )->start();
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -359,7 +359,7 @@ namespace Chimera::Watchdog
   Status_t WindowDriver::stop()
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::WindowDriver_rPtr>( mDriver )->stop();
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -370,7 +370,7 @@ namespace Chimera::Watchdog
   Status_t WindowDriver::kick()
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::WindowDriver_rPtr>( mDriver )->kick();
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -381,7 +381,7 @@ namespace Chimera::Watchdog
   Status_t WindowDriver::pauseOnDebugHalt( const bool enable )
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::WindowDriver_rPtr>( mDriver )->pauseOnDebugHalt( enable );
 #else
     return Chimera::Status::NOT_SUPPORTED;
@@ -391,7 +391,7 @@ namespace Chimera::Watchdog
   size_t WindowDriver::getTimeout()
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::WindowDriver_rPtr>( mDriver )->getTimeout();
 #else
     return 0;
@@ -402,7 +402,7 @@ namespace Chimera::Watchdog
   size_t WindowDriver::maxTimeout()
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::WindowDriver_rPtr>( mDriver )->maxTimeout();
 #else
     return 0;
@@ -413,7 +413,7 @@ namespace Chimera::Watchdog
   size_t WindowDriver::minTimeout()
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::WindowDriver_rPtr>( mDriver )->minTimeout();
 #else
     return 0;
@@ -427,7 +427,7 @@ namespace Chimera::Watchdog
   void WindowDriver::lock()
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<HLD::WindowDriver_rPtr>( mDriver )->lock();
 #endif
   }
@@ -436,7 +436,7 @@ namespace Chimera::Watchdog
   void WindowDriver::lockFromISR()
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<HLD::WindowDriver_rPtr>( mDriver )->lockFromISR();
 #endif
   }
@@ -445,7 +445,7 @@ namespace Chimera::Watchdog
   bool WindowDriver::try_lock_for( const size_t timeout )
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<HLD::WindowDriver_rPtr>( mDriver )->try_lock_for( timeout );
 #else
     return false;
@@ -456,7 +456,7 @@ namespace Chimera::Watchdog
   void WindowDriver::unlock()
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<HLD::WindowDriver_rPtr>( mDriver )->unlock();
 #endif
   }
@@ -465,7 +465,7 @@ namespace Chimera::Watchdog
   void WindowDriver::unlockFromISR()
   {
 #if defined( THOR_HLD_WWDG )
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<HLD::WindowDriver_rPtr>( mDriver )->unlockFromISR();
 #endif
   }

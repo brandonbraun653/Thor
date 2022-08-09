@@ -126,42 +126,42 @@ namespace Chimera::I2C
 
   Chimera::Status_t Driver::close()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->close();
   }
 
 
   Chimera::Status_t Driver::read( const uint16_t address, void *const data, const size_t length )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->read( address, data, length );
   }
 
 
   Chimera::Status_t Driver::write( const uint16_t address, const void *const data, const size_t length )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->write( address, data, length );
   }
 
 
   Chimera::Status_t Driver::transfer( const uint16_t address, const void *const tx_data, void *const rx_data, const size_t length )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->transfer( address, tx_data, rx_data, length );
   }
 
 
   Chimera::Status_t Driver::stop()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->stop();
   }
 
 
   Chimera::Status_t Driver::start()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->start();
   }
 
@@ -172,14 +172,14 @@ namespace Chimera::I2C
   Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
                                               size_t &registrationID )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->registerListener( listener, timeout, registrationID );
   }
 
 
   Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->removeListener( registrationID, timeout );
   }
 
@@ -188,7 +188,7 @@ namespace Chimera::I2C
   ---------------------------------------------------------------------------*/
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->await( event, timeout );
   }
 
@@ -196,7 +196,7 @@ namespace Chimera::I2C
   Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
                                    const size_t timeout )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->await( event, notifier, timeout );
   }
 
@@ -206,35 +206,35 @@ namespace Chimera::I2C
   ---------------------------------------------------------------------------*/
   void Driver::lock()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lock();
   }
 
 
   void Driver::lockFromISR()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lockFromISR();
   }
 
 
   bool Driver::try_lock_for( const size_t timeout )
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->try_lock_for( timeout );
   }
 
 
   void Driver::unlock()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlock();
   }
 
 
   void Driver::unlockFromISR()
   {
-    RT_HARD_ASSERT( mDriver );
+    RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlockFromISR();
   }
 }    // namespace Chimera::I2C
