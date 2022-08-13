@@ -5,23 +5,21 @@
  *  Description:
  *    LLD interface functions that are processor independent
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-/* STL Includes */
-#include <algorithm>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
 #include <Chimera/utility>
-
-/* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/can/can_detail.hpp>
+#include <Thor/lld/interface/can/can_intf.hpp>
 #include <Thor/lld/interface/can/can_prv_data.hpp>
 #include <Thor/lld/interface/can/can_types.hpp>
-#include <Thor/lld/interface/can/can_intf.hpp>
+#include <etl/algorithm.h>
 
 #if defined( THOR_LLD_CAN )
 namespace Thor::LLD::CAN
@@ -141,7 +139,7 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------
     Sort away!
     -------------------------------------------------*/
-    std::sort( indexList, indexList + listSize, [filterList]( uint8_t a, uint8_t b ) {
+    etl::shell_sort( indexList, indexList + listSize, [ filterList ]( uint8_t a, uint8_t b ) {
       return filterSize( &filterList[ a ] ) > filterSize( &filterList[ b ] );
     } );
 

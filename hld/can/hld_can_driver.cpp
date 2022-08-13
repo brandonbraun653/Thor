@@ -303,13 +303,12 @@ namespace Thor::CAN
     }
 
     /*-------------------------------------------------------------------------
-    Allocate the appropriate amount of memory on the stack and initialize it
+    Allocate the appropriate amount of memory on the stack and initialize it.
+    Use memset instead of the clear() method to save memory. Doesn't matter in
+    this case that they have special init values.
     -------------------------------------------------------------------------*/
     ::LLD::MessageFilter hwFilters[ hwFilterLength ];
-    for ( size_t x = 0; x < hwFilterLength; x++ )
-    {
-      hwFilters[ x ].clear();
-    }
+    memset( hwFilters, 0, ARRAY_BYTES( hwFilters ) );
 
     /*-------------------------------------------------------------------------
     Convert the high level filter into a hardware filter

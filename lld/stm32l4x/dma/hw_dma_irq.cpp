@@ -11,9 +11,6 @@
 /*-----------------------------------------------------------------------------
 Includes
 -----------------------------------------------------------------------------*/
-#if defined( SEGGER_SYS_VIEW ) && defined( EMBEDDED )
-#include "SEGGER_SYSVIEW.h"
-#endif
 #include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/common/macros.hpp>
 
@@ -28,15 +25,12 @@ Macros
  * @param P   DMA peripheral number (1-2)
  * @param C   DMA channel number (1-7)
  */
-#define CORE_ISR_HANDLER( P, C )                                                            \
-  static const Stream_rPtr stream = getStream( Controller::DMA_##P, Streamer::STREAM_##C ); \
-                                                                                            \
-  SEGGER_SYSVIEW_RecordEnterISR();                                                          \
-  const uint8_t channel = CSELR_ALL::get( DMA##P##_PERIPH ) >> CSELR_C##C##S_Pos;           \
-  const uint8_t status  = ( ISR_ALL::get( DMA##P##_PERIPH ) >> ISR_GIF##C##_Pos ) & 0xFF;   \
-                                                                                            \
-  stream->IRQHandler( channel, status );                                                    \
-  SEGGER_SYSVIEW_RecordExitISR();
+#define CORE_ISR_HANDLER( P, C )                                                                     \
+  static const Stream_rPtr stream  = getStream( Controller::DMA_##P, Streamer::STREAM_##C );         \
+  const uint8_t            channel = CSELR_ALL::get( DMA##P##_PERIPH ) >> CSELR_C##C##S_Pos;         \
+  const uint8_t            status  = ( ISR_ALL::get( DMA##P##_PERIPH ) >> ISR_GIF##C##_Pos ) & 0xFF; \
+                                                                                                     \
+  stream->IRQHandler( channel, status );
 
 /*-----------------------------------------------------------------------------
 Public ISR Functions

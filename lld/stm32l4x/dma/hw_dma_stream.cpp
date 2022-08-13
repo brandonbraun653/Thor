@@ -153,47 +153,13 @@ namespace Thor::LLD::DMA
       /*------------------------------------------------
       Select the DMA channel request
       ------------------------------------------------*/
-      switch ( mResourceIndex )
-      {
-        case DMA1_STREAM1_RESOURCE_INDEX:
-        case DMA2_STREAM1_RESOURCE_INDEX:
-          CS1S::set( mPeriph, EnumValue( config->channel ) << CSELR_C1S_Pos );
-          break;
+      uint32_t pos = EnumValue( config->channel ) * 4;
+      uint32_t msk = 0xF << pos;
+      uint32_t tmp = mPeriph->CSELR;
 
-        case DMA1_STREAM2_RESOURCE_INDEX:
-        case DMA2_STREAM2_RESOURCE_INDEX:
-          CS2S::set( mPeriph, EnumValue( config->channel ) << CSELR_C2S_Pos );
-          break;
-
-        case DMA1_STREAM3_RESOURCE_INDEX:
-        case DMA2_STREAM3_RESOURCE_INDEX:
-          CS3S::set( mPeriph, EnumValue( config->channel ) << CSELR_C3S_Pos );
-          break;
-
-        case DMA1_STREAM4_RESOURCE_INDEX:
-        case DMA2_STREAM4_RESOURCE_INDEX:
-          CS4S::set( mPeriph, EnumValue( config->channel ) << CSELR_C4S_Pos );
-          break;
-
-        case DMA1_STREAM5_RESOURCE_INDEX:
-        case DMA2_STREAM5_RESOURCE_INDEX:
-          CS5S::set( mPeriph, EnumValue( config->channel ) << CSELR_C5S_Pos );
-          break;
-
-        case DMA1_STREAM6_RESOURCE_INDEX:
-        case DMA2_STREAM6_RESOURCE_INDEX:
-          CS6S::set( mPeriph, EnumValue( config->channel ) << CSELR_C6S_Pos );
-          break;
-
-        case DMA1_STREAM7_RESOURCE_INDEX:
-        case DMA2_STREAM7_RESOURCE_INDEX:
-          CS7S::set( mPeriph, EnumValue( config->channel ) << CSELR_C7S_Pos );
-          break;
-
-        default:
-          // Do nothing
-          break;
-      };
+      tmp &= ~msk;
+      tmp |= EnumValue( config->channel ) << pos;
+      mPeriph->CSELR = tmp;
 
       /*------------------------------------------------
       Set the DMA mode. This includes flow control and
@@ -208,28 +174,12 @@ namespace Thor::LLD::DMA
       /*------------------------------------------------
       Set the transfer priority
       ------------------------------------------------*/
-      switch ( config->priority )
-      {
-        case Chimera::DMA::Priority::LOW:
-          PL::set( mStream, 0x00 << CCR_PL_Pos );
-          break;
+      PL::set( mStream, EnumValue( config->priority ) << CCR_PL_Pos );
 
-        case Chimera::DMA::Priority::MEDIUM:
-          PL::set( mStream, 0x01 << CCR_PL_Pos );
-          break;
-
-        case Chimera::DMA::Priority::HIGH:
-          PL::set( mStream, 0x02 << CCR_PL_Pos );
-          break;
-
-        case Chimera::DMA::Priority::VERY_HIGH:
-          PL::set( mStream, 0x03 << CCR_PL_Pos );
-          break;
-
-        default:
-          RT_HARD_ASSERT( false );
-          break;
-      }
+      static_assert( EnumValue( Chimera::DMA::Priority::LOW ) == 0 );
+      static_assert( EnumValue( Chimera::DMA::Priority::MEDIUM ) == 1 );
+      static_assert( EnumValue( Chimera::DMA::Priority::HIGH ) == 2 );
+      static_assert( EnumValue( Chimera::DMA::Priority::VERY_HIGH ) == 3 );
 
       /*------------------------------------------------
       Data transfer direction
@@ -250,7 +200,7 @@ namespace Thor::LLD::DMA
         default:
           RT_HARD_ASSERT( false );
           break;
-      }
+      };
 
       /*-----------------------------------------------------------------------
       Interrupt Settings: If the user registers a callback, make sure the ISR
