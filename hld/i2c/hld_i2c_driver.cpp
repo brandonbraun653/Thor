@@ -5,7 +5,7 @@
  *  Description:
  *    HLD I2C driver
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -183,7 +183,10 @@ namespace Thor::I2C
     for( size_t cnt = 0; cnt < 30; cnt++ )
     {
       gpio->toggle();
+      Chimera::blockDelayMicroseconds( 10 );
     }
+
+    Chimera::blockDelayMicroseconds( 150 );
 
     /*-------------------------------------------------------------------------
     Configure the SCL/SDA GPIO for peripheral function
