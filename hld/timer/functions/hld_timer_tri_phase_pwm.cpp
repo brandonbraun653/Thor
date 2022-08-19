@@ -42,8 +42,9 @@ namespace Chimera::Timer::Inverter
       s_timer_data;
 
 
-  static uint32_t s_ccer_fwd_comm_table[ 6 ] = {
+  static uint32_t s_ccer_fwd_comm_table[ 7 ] = {
     /* clang-format off */
+    ( 0 ), // All off
     ( Thor::LLD::TIMER::CCER_CC1E  | Thor::LLD::TIMER::CCER_CC2NE ),
     ( Thor::LLD::TIMER::CCER_CC1E  | Thor::LLD::TIMER::CCER_CC3NE ),
     ( Thor::LLD::TIMER::CCER_CC2E  | Thor::LLD::TIMER::CCER_CC3NE ),
