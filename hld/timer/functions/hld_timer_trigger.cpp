@@ -46,10 +46,10 @@ static Chimera::DeviceManager<TriggerControlBlock, Chimera::Timer::Instance, Enu
 /*-----------------------------------------------------------------------------
 Static Functions
 -----------------------------------------------------------------------------*/
-static inline TriggerControlBlock *getControlBlock( std::shared_ptr<void *> &ptr )
+static inline TriggerControlBlock *getControlBlock( void * ptr )
 {
-  RT_DBG_ASSERT( ( ptr != nullptr ) && ( *ptr != nullptr ) );
-  return reinterpret_cast<TriggerControlBlock *>( *ptr );
+  RT_DBG_ASSERT( ptr != nullptr );
+  return reinterpret_cast<TriggerControlBlock *>( ptr );
 }
 
 /*-----------------------------------------------------------------------------
@@ -90,8 +90,7 @@ namespace Chimera::Timer::Trigger
 
     if ( !mTimerImpl )
     {
-      mTimerImpl  = std::make_shared<void *>();
-      *mTimerImpl = reinterpret_cast<void *>( cb );
+      mTimerImpl = reinterpret_cast<void *>( cb );
     }
 
     /*-------------------------------------------------------------------------

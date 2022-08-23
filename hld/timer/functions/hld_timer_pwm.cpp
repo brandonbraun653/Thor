@@ -76,8 +76,7 @@ namespace Chimera::Timer::PWM
 
     if ( !mTimerImpl )
     {
-      mTimerImpl  = std::make_shared<void *>();
-      *mTimerImpl = reinterpret_cast<void *>( cb );
+      mTimerImpl = reinterpret_cast<void *>( cb );
     }
 
     /*-------------------------------------------------------------------------
@@ -117,7 +116,7 @@ namespace Chimera::Timer::PWM
     /*-------------------------------------------------------------------------
     Enable the output compare channel. Assumes the timer is running.
     -------------------------------------------------------------------------*/
-    PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( *mTimerImpl );
+    PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( mTimerImpl );
     return Thor::LLD::TIMER::enableCCOutput( cb->timer, cb->output );
   }
 
@@ -127,7 +126,7 @@ namespace Chimera::Timer::PWM
     /*-------------------------------------------------------------------------
     Disable the output compare channel, but don't stop the timer
     -------------------------------------------------------------------------*/
-    PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( *mTimerImpl );
+    PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( mTimerImpl );
     return Thor::LLD::TIMER::disableCCOutput( cb->timer, cb->output );
   }
 
@@ -137,7 +136,7 @@ namespace Chimera::Timer::PWM
     /*-------------------------------------------------------------------------
     Set the PWM frequency by controlling the timer overflow rate
     -------------------------------------------------------------------------*/
-    PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( *mTimerImpl );
+    PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( mTimerImpl );
     return setEventRate( cb->timer, ( 1.0f / freq ) * 1e9f );
   }
 
@@ -147,7 +146,7 @@ namespace Chimera::Timer::PWM
     /*-------------------------------------------------------------------------
     Calculate the new reference based on a percentage of the current TIMx_ARR.
     -------------------------------------------------------------------------*/
-    PWMControlBlock *cb          = reinterpret_cast<PWMControlBlock *>( *mTimerImpl );
+    PWMControlBlock *cb          = reinterpret_cast<PWMControlBlock *>( mTimerImpl );
     float            dutyPercent = dutyCycle / 100.0f;
     float            arr_val     = static_cast<float>( Thor::LLD::TIMER::getAutoReload( cb->timer ) );
     uint32_t         new_ref     = static_cast<uint32_t>( roundf( arr_val * dutyPercent ) );
@@ -161,7 +160,7 @@ namespace Chimera::Timer::PWM
 
   Chimera::Status_t Driver::setPolarity( const Chimera::Timer::PWM::Polarity polarity )
   {
-    PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( *mTimerImpl );
+    PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( mTimerImpl );
 
     /*-------------------------------------------------------------------------
     On compare match, set the output to the desired active state

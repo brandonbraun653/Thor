@@ -85,8 +85,7 @@ namespace Chimera::Timer::Inverter
 
     if ( !mTimerImpl )
     {
-      mTimerImpl  = std::make_shared<void *>();
-      *mTimerImpl = reinterpret_cast<void *>( cb );
+      mTimerImpl = reinterpret_cast<void *>( cb );
     }
 
     /*-------------------------------------------------------------------------
@@ -206,7 +205,7 @@ namespace Chimera::Timer::Inverter
   {
     using namespace Thor::LLD::TIMER;
 
-    ControlBlock *cb = reinterpret_cast<ControlBlock *>( *mTimerImpl );
+    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
 
     /*-------------------------------------------------------------------------
     Disable the counter
@@ -240,7 +239,7 @@ namespace Chimera::Timer::Inverter
     /*-------------------------------------------------------------------------
     Set the PWM frequency by controlling the timer overflow rate
     -------------------------------------------------------------------------*/
-    ControlBlock *cb = reinterpret_cast<ControlBlock *>( *mTimerImpl );
+    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
     return setEventRate( cb->timer, ( 1.0f / freq ) * 1e9f );
   }
 
@@ -256,7 +255,7 @@ namespace Chimera::Timer::Inverter
     Set the output compare reference for each phase
     -------------------------------------------------------------------------*/
     Chimera::Status_t       result        = Chimera::Status::OK;
-    ControlBlock           *cb            = reinterpret_cast<ControlBlock *>( *mTimerImpl );
+    ControlBlock           *cb            = reinterpret_cast<ControlBlock *>( mTimerImpl );
     float                   arr_val       = static_cast<float>( Thor::LLD::TIMER::getAutoReload( cb->timer ) );
     float                   dutyIn[ 3 ]   = { a, b, c };
     Chimera::Timer::Channel phaseMap[ 3 ] = { Chimera::Timer::Channel::CHANNEL_1, Chimera::Timer::Channel::CHANNEL_2,
@@ -283,7 +282,7 @@ namespace Chimera::Timer::Inverter
   {
     using namespace Thor::LLD::TIMER;
 
-    ControlBlock *cb = reinterpret_cast<ControlBlock *>( *mTimerImpl );
+    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
 
     uint32_t tmp = cb->timer->registers->CCER;
 
@@ -303,7 +302,7 @@ namespace Chimera::Timer::Inverter
     /*-------------------------------------------------------------------------
     Hook into the break event to safely set the outputs to a known state
     -------------------------------------------------------------------------*/
-    ControlBlock *cb = reinterpret_cast<ControlBlock *>( *mTimerImpl );
+    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
     generateBreakEvent( cb->timer, BreakChannel::BREAK_INPUT_1 );
 
     return Chimera::Status::OK;
