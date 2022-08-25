@@ -80,7 +80,7 @@ namespace Thor::LLD::ADC
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
     for ( size_t ch = 0; ch < ARRAY_COUNT( ADC1_Queue ); ch++ )
     {
-      ADC1_Queue[ ch ] = std::make_shared<ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>>( adc1Lock, adc1Unlock );
+      ADC1_Queue[ ch ] = new ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>( adc1Lock, adc1Unlock );
     }
 #endif /* STM32_ADC1_PERIPH_AVAILABLE */
 

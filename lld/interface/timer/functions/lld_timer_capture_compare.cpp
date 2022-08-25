@@ -20,52 +20,6 @@ namespace Thor::LLD::TIMER
   /*---------------------------------------------------------------------------
   Static Data
   ---------------------------------------------------------------------------*/
-  /* clang-format off */
-  static const std::array<uint32_t, EnumValue( Chimera::Timer::Output::NUM_OPTIONS )> s_enable_flags = {
-    CCER_CC1E,  /* OUTPUT_1P */
-    CCER_CC1NE, /* OUTPUT_1N */
-    CCER_CC2E,
-    CCER_CC2NE,
-    CCER_CC3E,
-    CCER_CC3NE,
-    CCER_CC4E,
-    0,          /* OUTPUT_4N */
-    CCER_CC5E,
-    0,          /* OUTPUT_5N */
-    CCER_CC6E,
-    0           /* OUTPUT_6N */
-  };
-
-  static const std::array<uint32_t, EnumValue( Chimera::Timer::Output::NUM_OPTIONS )> s_polarity_flags = {
-    CCER_CC1P,  /* OUTPUT_1P */
-    CCER_CC1NP, /* OUTPUT_1N */
-    CCER_CC2P,
-    CCER_CC2NP,
-    CCER_CC3P,
-    CCER_CC3NP,
-    CCER_CC4P,
-    CCER_CC4NP,
-    CCER_CC5P,
-    0,          /* OUTPUT_5N */
-    CCER_CC6P,
-    0           /* OUTPUT_6N */
-  };
-
-  static const std::array<uint32_t, EnumValue( Chimera::Timer::Output::NUM_OPTIONS )> s_idle_flags = {
-    CR2_OIS1,   /* OUTPUT_1P */
-    CR2_OIS1N,  /* OUTPUT_1N */
-    CR2_OIS2,
-    CR2_OIS2N,
-    CR2_OIS3,
-    CR2_OIS3N,
-    CR2_OIS4,
-    0,          /* OUTPUT_4N */
-    CR2_OIS5,
-    0,          /* OUTPUT_5N */
-    CR2_OIS6,
-    0           /* OUTPUT_6N */
-  };
-  /* clang-format on */
 
   /*---------------------------------------------------------------------------
   Public Functions
@@ -74,80 +28,147 @@ namespace Thor::LLD::TIMER
   {
     if( state == Chimera::GPIO::State::HIGH )
     {
-      CR2::set( timer->registers, s_idle_flags[ EnumValue( ch ) ] );
+      CR2::set( timer->registers, IdleFlags[ EnumValue( ch ) ] );
     }
     else
     {
-      CR2::clear( timer->registers, s_idle_flags[ EnumValue( ch ) ] );
+      CR2::clear( timer->registers, IdleFlags[ EnumValue( ch ) ] );
     }
   }
 
 
-  Chimera::Status_t disableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch )
+  void setOutputIdleStateBulk( Handle_rPtr timer, const uint32_t bf, const Chimera::GPIO::State state )
   {
     /*-------------------------------------------------------------------------
-    Input Protection
+    Build up the bit mask
     -------------------------------------------------------------------------*/
-#if defined( DEBUG )
-    if ( ch >= Chimera::Timer::Output::NUM_OPTIONS )
+    uint32_t bitMask = 0;
+    for( size_t idx = 0; idx < IdleFlags.size(); idx++ )
     {
-      return Chimera::Status::NOT_SUPPORTED;
+      if( bf & ( 1u << idx ) )
+      {
+        bitMask |= IdleFlags[ idx ];
+      }
     }
-#endif
 
     /*-------------------------------------------------------------------------
-    Set the appropriate enable flag bit
+    Assign the new fields
     -------------------------------------------------------------------------*/
-    CCER::clear( timer->registers, s_enable_flags[ EnumValue( ch ) ] );
-    return Chimera::Status::OK;
+    if( state == Chimera::GPIO::State::HIGH )
+    {
+      CR2::set( timer->registers, bitMask );
+    }
+    else
+    {
+      CR2::clear( timer->registers, bitMask );
+    }
   }
 
 
-  Chimera::Status_t enableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch )
+  void disableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch )
   {
-    /*-------------------------------------------------------------------------
-    Input Protection
-    -------------------------------------------------------------------------*/
-#if defined( DEBUG )
-    if ( ch >= Chimera::Timer::Output::NUM_OPTIONS )
-    {
-      return Chimera::Status::NOT_SUPPORTED;
-    }
-#endif
-
-    /*-------------------------------------------------------------------------
-    Set the appropriate enable flag bit
-    -------------------------------------------------------------------------*/
-    CCER::setbit( timer->registers, s_enable_flags[ EnumValue( ch ) ] );
-    return Chimera::Status::OK;
+    RT_DBG_ASSERT( ch >= Chimera::Timer::Output::NUM_OPTIONS );
+    CCER::clear( timer->registers, EnableFlags[ EnumValue( ch ) ] );
   }
 
 
-  Chimera::Status_t setCCOutputPolarity( Handle_rPtr timer, const Chimera::Timer::Output ch, const CCPolarity pol )
+  void disableCCOutputBulk( Handle_rPtr timer, const uint32_t bf )
+  {
+    /*-------------------------------------------------------------------------
+    Build up the bit mask
+    -------------------------------------------------------------------------*/
+    uint32_t bitMask = 0;
+    for( size_t idx = 0; idx < EnableFlags.size(); idx++ )
+    {
+      if( bf & ( 1u << idx ) )
+      {
+        bitMask |= EnableFlags[ idx ];
+      }
+    }
+
+    /*-------------------------------------------------------------------------
+    Enable the outputs
+    -------------------------------------------------------------------------*/
+    CCER::clear( timer->registers, bitMask );
+  }
+
+
+  void enableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch )
+  {
+    RT_DBG_ASSERT( ch >= Chimera::Timer::Output::NUM_OPTIONS );
+    CCER::setbit( timer->registers, EnableFlags[ EnumValue( ch ) ] );
+  }
+
+
+  void enableCCOutputBulk( Handle_rPtr timer, const uint32_t bf )
+  {
+    /*-------------------------------------------------------------------------
+    Build up the bit mask
+    -------------------------------------------------------------------------*/
+    uint32_t bitMask = 0;
+    for( size_t idx = 0; idx < EnableFlags.size(); idx++ )
+    {
+      if( bf & ( 1u << idx ) )
+      {
+        bitMask |= EnableFlags[ idx ];
+      }
+    }
+
+    /*-------------------------------------------------------------------------
+    Enable the outputs
+    -------------------------------------------------------------------------*/
+    CCER::setbit( timer->registers, bitMask );
+  }
+
+
+  void setCCOutputPolarity( Handle_rPtr timer, const Chimera::Timer::Output ch, const CCPolarity pol )
   {
     /*-------------------------------------------------------------------------
     Input Protection
     -------------------------------------------------------------------------*/
-#if defined( DEBUG )
-    if ( ( ch >= Chimera::Timer::Output::NUM_OPTIONS ) || ( ( pol != CCP_OUT_ACTIVE_HIGH ) && ( pol != CCP_OUT_ACTIVE_LOW ) ) )
-    {
-      return Chimera::Status::NOT_SUPPORTED;
-    }
-#endif
+    RT_DBG_ASSERT( ( ch >= Chimera::Timer::Output::NUM_OPTIONS ) || ( ( pol != CCP_OUT_ACTIVE_HIGH ) && ( pol != CCP_OUT_ACTIVE_LOW ) ) );
 
     /*-------------------------------------------------------------------------
     Set the appropriate enable flag bit
     -------------------------------------------------------------------------*/
     if( pol == CCP_OUT_ACTIVE_HIGH )
     {
-      CCER::clear( timer->registers, s_polarity_flags[ EnumValue( ch ) ] );
+      CCER::clear( timer->registers, PolarityFlags[ EnumValue( ch ) ] );
     }
     else
     {
-      CCER::setbit( timer->registers, s_polarity_flags[ EnumValue( ch ) ] );
+      CCER::setbit( timer->registers, PolarityFlags[ EnumValue( ch ) ] );
+    }
+  }
+
+
+  void setCCOutputPolarityBulk( Handle_rPtr timer, const uint32_t bf, const CCPolarity pol )
+  {
+    RT_DBG_ASSERT( ( pol != CCP_OUT_ACTIVE_HIGH ) && ( pol != CCP_OUT_ACTIVE_LOW ) );
+
+    /*-------------------------------------------------------------------------
+    Build up the bit mask
+    -------------------------------------------------------------------------*/
+    uint32_t bitMask = 0;
+    for( size_t idx = 0; idx < PolarityFlags.size(); idx++ )
+    {
+      if( bf & ( 1u << idx ) )
+      {
+        bitMask |= PolarityFlags[ idx ];
+      }
     }
 
-    return Chimera::Status::OK;
+    /*-------------------------------------------------------------------------
+    Set the appropriate enable flag bits
+    -------------------------------------------------------------------------*/
+    if( pol == CCP_OUT_ACTIVE_HIGH )
+    {
+      CCER::clear( timer->registers, bitMask );
+    }
+    else
+    {
+      CCER::setbit( timer->registers, bitMask );
+    }
   }
 
 

@@ -23,8 +23,8 @@ namespace Chimera::Watchdog::Backend
 {
   Chimera::Status_t initialize();
   Chimera::Status_t reset();
-  Independent_sPtr getDriver( const IChannel channel );
-  Window_sPtr getDriver( const WChannel channel );
+  Independent_rPtr getDriver( const IChannel channel );
+  Window_rPtr getDriver( const WChannel channel );
 }    // namespace Chimera::Watchdog::Backend
 
 #endif /* !THOR_WATCHDOG_CHIMERA_HOOKS_HPP */

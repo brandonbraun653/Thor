@@ -49,7 +49,7 @@ namespace Thor::LLD::ADC
    * @brief Array of queues for each supported ADC hardware channel
    * Queue is indexed like myQueue[ channel ]->push/pop.
    */
-  using PeriphQueue = std::array<std::shared_ptr<ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>>, CHANNEL_QUEUE_SIZE>;
+  using PeriphQueue = std::array<ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>*, CHANNEL_QUEUE_SIZE>;
 
   /*-------------------------------------------------------------------------------
   Peripheral Instances:

@@ -27,6 +27,20 @@ static constexpr size_t REQ_HW_TIMER_TYPES = Thor::LLD::TIMER::HardwareType::TIM
 namespace Chimera::Timer::Inverter
 {
   /*---------------------------------------------------------------------------
+  Constants
+  ---------------------------------------------------------------------------*/
+  static constexpr uint32_t s_all_output_channel_bf = //::Thor::LLD::TIMER::EnableFlagGenerator<Chimera::Timer::Output::OUTPUT_1P>;
+    /* clang-format off */
+    ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_1P ) ) |
+    ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_1N ) ) |
+    ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_2P ) ) |
+    ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_2N ) ) |
+    ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_3P ) ) |
+    ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_3N ) ) |
+    ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_5P ) );
+    /* clang-format on */
+
+  /*---------------------------------------------------------------------------
   Structures
   ---------------------------------------------------------------------------*/
   struct ControlBlock
@@ -143,13 +157,15 @@ namespace Chimera::Timer::Inverter
     setRunModeOffState( cb->timer, OffStateMode::TIMER_CONTROL );
     setIdleModeOffState( cb->timer, OffStateMode::TIMER_CONTROL );
 
-    setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_1P, Chimera::GPIO::State::LOW );
-    setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_1N, Chimera::GPIO::State::LOW );
-    setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_2P, Chimera::GPIO::State::LOW );
-    setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_2N, Chimera::GPIO::State::LOW );
-    setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_3P, Chimera::GPIO::State::LOW );
-    setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_3N, Chimera::GPIO::State::LOW );
-    setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_5P, Chimera::GPIO::State::LOW );
+    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_1P, Chimera::GPIO::State::LOW );
+    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_1N, Chimera::GPIO::State::LOW );
+    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_2P, Chimera::GPIO::State::LOW );
+    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_2N, Chimera::GPIO::State::LOW );
+    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_3P, Chimera::GPIO::State::LOW );
+    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_3N, Chimera::GPIO::State::LOW );
+    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_5P, Chimera::GPIO::State::LOW );
+    setOutputIdleStateBulk( cb->timer, s_all_output_channel_bf, Chimera::GPIO::State::LOW );
+
 
     /* Assign dead-time during complementary output transitions */
     RT_HARD_ASSERT( setDeadTime( cb->timer, cfg.deadTimeNs ) );
@@ -161,22 +177,26 @@ namespace Chimera::Timer::Inverter
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_5, CCMode::CCM_OUTPUT );
 
     /* Set output polarity */
-    setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_1P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_1N, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_2P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_2N, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_3P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_3N, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_5P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
+    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_1P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
+    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_1N, CCPolarity::CCP_OUT_ACTIVE_HIGH );
+    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_2P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
+    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_2N, CCPolarity::CCP_OUT_ACTIVE_HIGH );
+    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_3P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
+    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_3N, CCPolarity::CCP_OUT_ACTIVE_HIGH );
+    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_5P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
+
+    setCCOutputPolarityBulk( cb->timer, s_all_output_channel_bf, CCPolarity::CCP_OUT_ACTIVE_HIGH );
 
     /* Enable the outputs */
-    enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_1P );
-    enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_1N );
-    enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_2P );
-    enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_2N );
-    enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_3P );
-    enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_3N );
-    enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_5P );
+    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_1P );
+    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_1N );
+    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_2P );
+    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_2N );
+    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_3P );
+    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_3N );
+    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_5P );
+
+    enableCCOutputBulk( cb->timer, s_all_output_channel_bf );
 
     /* Set the initial duty-cycles for each phase */
     result |= setPhaseDutyCycle( 0.0f, 0.0f, 0.0f );

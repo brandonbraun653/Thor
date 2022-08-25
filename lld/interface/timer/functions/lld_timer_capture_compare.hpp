@@ -46,8 +46,66 @@ namespace Thor::LLD::TIMER
   };
 
   /*---------------------------------------------------------------------------
+  Public Data
+  ---------------------------------------------------------------------------*/
+  /* clang-format off */
+  static constexpr std::array<uint32_t, EnumValue( Chimera::Timer::Output::NUM_OPTIONS )> EnableFlags = {
+    CCER_CC1E,  /* OUTPUT_1P */
+    CCER_CC1NE, /* OUTPUT_1N */
+    CCER_CC2E,
+    CCER_CC2NE,
+    CCER_CC3E,
+    CCER_CC3NE,
+    CCER_CC4E,
+    0,          /* OUTPUT_4N */
+    CCER_CC5E,
+    0,          /* OUTPUT_5N */
+    CCER_CC6E,
+    0           /* OUTPUT_6N */
+  };
+
+  static constexpr std::array<uint32_t, EnumValue( Chimera::Timer::Output::NUM_OPTIONS )> PolarityFlags = {
+    CCER_CC1P,  /* OUTPUT_1P */
+    CCER_CC1NP, /* OUTPUT_1N */
+    CCER_CC2P,
+    CCER_CC2NP,
+    CCER_CC3P,
+    CCER_CC3NP,
+    CCER_CC4P,
+    CCER_CC4NP,
+    CCER_CC5P,
+    0,          /* OUTPUT_5N */
+    CCER_CC6P,
+    0           /* OUTPUT_6N */
+  };
+
+  static constexpr std::array<uint32_t, EnumValue( Chimera::Timer::Output::NUM_OPTIONS )> IdleFlags = {
+    CR2_OIS1,   /* OUTPUT_1P */
+    CR2_OIS1N,  /* OUTPUT_1N */
+    CR2_OIS2,
+    CR2_OIS2N,
+    CR2_OIS3,
+    CR2_OIS3N,
+    CR2_OIS4,
+    0,          /* OUTPUT_4N */
+    CR2_OIS5,
+    0,          /* OUTPUT_5N */
+    CR2_OIS6,
+    0           /* OUTPUT_6N */
+  };
+  /* clang-format on */
+
+  /*---------------------------------------------------------------------------
   Public Functions
   ---------------------------------------------------------------------------*/
+  template<typename... Args>
+  static constexpr uint32_t EnableFlagGenerator( Args&&... args )
+  {
+    //return ( EnableFlags[ EnumValue( args ) ], | ... );
+    return 0;
+  }
+
+
   static inline void enableCCPreload( Handle_rPtr timer )
   {
     CCPC::set( timer->registers, CR2_CCPC );
@@ -68,22 +126,45 @@ namespace Thor::LLD::TIMER
   void setOutputIdleState( Handle_rPtr timer, const Chimera::Timer::Output ch, const Chimera::GPIO::State state );
 
   /**
+   * @brief Sets the idle state of multiple channels at once
+   *
+   * @param timer   Which timer to act on
+   * @param bf      Bit field of timer output channels
+   * @param state   Desired idling state
+   */
+  void setOutputIdleStateBulk( Handle_rPtr timer, const uint32_t bf, const Chimera::GPIO::State state );
+
+  /**
    * @brief Disables a capture compare channel output
    *
    * @param timer   Which timer to act on
    * @param ch      Which output channel to disable
-   * @return Chimera::Status_t
    */
-  Chimera::Status_t disableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch );
+  void disableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch );
+
+  /**
+   * @brief Disables capture compare channel outputs in bulk
+   *
+   * @param timer   Which timer to act on
+   * @param bf      Bitfield of the channels to act on
+   */
+  void disableCCOutputBulk( Handle_rPtr timer, const uint32_t bf );
 
   /**
    * @brief Enables a capture compare channel output
    *
    * @param timer   Which timer to act on
    * @param ch      Which output channel to enable
-   * @return Chimera::Status_t
    */
-  Chimera::Status_t enableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch );
+  void enableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch );
+
+  /**
+   * @brief Enables capture compare channel outputs in bulk
+   *
+   * @param timer   Which timer to act on
+   * @param bf      Bitfield of the channels to act on
+   */
+  void enableCCOutputBulk( Handle_rPtr timer, const uint32_t bf );
 
   /**
    * @brief Sets the capture/compare polarity of a channel output
@@ -91,9 +172,17 @@ namespace Thor::LLD::TIMER
    * @param timer   Which timer to act on
    * @param ch      The output channel to act on
    * @param pol     What polarity is being set
-   * @return Chimera::Status_t
    */
-  Chimera::Status_t setCCOutputPolarity( Handle_rPtr timer, const Chimera::Timer::Output ch, const CCPolarity pol );
+  void setCCOutputPolarity( Handle_rPtr timer, const Chimera::Timer::Output ch, const CCPolarity pol );
+
+  /**
+   * @brief Sets the capture/compare polarity of a multiple channel outputs at once
+   *
+   * @param timer   Which timer to act on
+   * @param bf      A bitfield of the output channels to act on
+   * @param pol     What polarity is being set
+   */
+  void setCCOutputPolarityBulk( Handle_rPtr timer, const uint32_t bf, const CCPolarity pol );
 
   /**
    * @brief Sets the capture/compare mode behavior for a timer channel

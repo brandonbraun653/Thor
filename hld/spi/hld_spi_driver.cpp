@@ -253,10 +253,6 @@ namespace Thor::SPI
     {
       driver->attachISRWakeup( &s_user_isr_signal[ lldResourceIndex ] );
 
-      std::array<char, 10> tmp;
-      tmp.fill( 0 );
-      snprintf( tmp.data(), tmp.size(), "PP_SPI%d", lldResourceIndex );
-
       Task thread;
       TaskConfig cfg;
 
@@ -265,7 +261,7 @@ namespace Thor::SPI
       cfg.priority   = Priority::MAXIMUM;
       cfg.stackWords = STACK_BYTES( 512 );
       cfg.type       = TaskInitType::DYNAMIC;
-      cfg.name       = tmp.data();
+      cfg.name       = "PP_SPIx";
 
       thread.create( cfg );
       thread.start();

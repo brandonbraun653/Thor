@@ -80,14 +80,14 @@ namespace Chimera::Watchdog::Backend
   }
 
 
-  Chimera::Watchdog::Independent_sPtr getDriver( const IChannel channel )
+  Chimera::Watchdog::Independent_rPtr getDriver( const IChannel channel )
   {
 #if defined( THOR_HLD_IWDG )
     auto idx = ::Thor::LLD::Watchdog::getResourceIndex( channel );
 
     if ( idx < NUM_IDRIVERS )
     {
-      return Chimera::Watchdog::Independent_sPtr( &s_raw_Idriver[ idx ] );
+      return Chimera::Watchdog::Independent_rPtr( &s_raw_Idriver[ idx ] );
     }
     else
     {
@@ -99,14 +99,14 @@ namespace Chimera::Watchdog::Backend
   }
 
 
-  Chimera::Watchdog::Window_sPtr getDriver( const WChannel channel )
+  Chimera::Watchdog::Window_rPtr getDriver( const WChannel channel )
   {
 #if defined( THOR_HLD_WWDG )
     auto idx = ::Thor::LLD::Watchdog::getResourceIndex( channel );
 
     if ( idx < NUM_WDRIVERS )
     {
-      return Chimera::Watchdog::Window_sPtr( &s_raw_Wdriver[ idx ] );
+      return Chimera::Watchdog::Window_rPtr( &s_raw_Wdriver[ idx ] );
     }
     else
     {

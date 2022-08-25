@@ -93,7 +93,7 @@ namespace Chimera::Timer::PWM
     -------------------------------------------------------------------------*/
     auto result = Chimera::Status::OK;
     result |= Thor::LLD::TIMER::Master::initCore( cb->timer, cfg.coreCfg );
-    result |= Thor::LLD::TIMER::disableCCOutput( cb->timer, cfg.output );
+    Thor::LLD::TIMER::disableCCOutput( cb->timer, cfg.output );
 
     result |= setPolarity( cfg.polarity );
     result |= setFrequency( cfg.frequency );
@@ -117,7 +117,8 @@ namespace Chimera::Timer::PWM
     Enable the output compare channel. Assumes the timer is running.
     -------------------------------------------------------------------------*/
     PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( mTimerImpl );
-    return Thor::LLD::TIMER::enableCCOutput( cb->timer, cb->output );
+    Thor::LLD::TIMER::enableCCOutput( cb->timer, cb->output );
+    return Chimera::Status::OK;
   }
 
 
@@ -127,7 +128,8 @@ namespace Chimera::Timer::PWM
     Disable the output compare channel, but don't stop the timer
     -------------------------------------------------------------------------*/
     PWMControlBlock *cb = reinterpret_cast<PWMControlBlock *>( mTimerImpl );
-    return Thor::LLD::TIMER::disableCCOutput( cb->timer, cb->output );
+    Thor::LLD::TIMER::disableCCOutput( cb->timer, cb->output );
+    return Chimera::Status::OK;
   }
 
 
@@ -173,11 +175,11 @@ namespace Chimera::Timer::PWM
     switch ( polarity )
     {
       case Chimera::Timer::PWM::Polarity::ACTIVE_HIGH:
-        result |= Thor::LLD::TIMER::setCCOutputPolarity( cb->timer, cb->output, Thor::LLD::TIMER::CCPolarity::CCP_OUT_ACTIVE_HIGH );
+        Thor::LLD::TIMER::setCCOutputPolarity( cb->timer, cb->output, Thor::LLD::TIMER::CCPolarity::CCP_OUT_ACTIVE_HIGH );
         break;
 
       case Chimera::Timer::PWM::Polarity::ACTIVE_LOW:
-        result |= Thor::LLD::TIMER::setCCOutputPolarity( cb->timer, cb->output, Thor::LLD::TIMER::CCPolarity::CCP_OUT_ACTIVE_LOW );
+        Thor::LLD::TIMER::setCCOutputPolarity( cb->timer, cb->output, Thor::LLD::TIMER::CCPolarity::CCP_OUT_ACTIVE_LOW );
         break;
 
       default:
