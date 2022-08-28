@@ -95,7 +95,7 @@ namespace Chimera::ADC
       -----------------------------------------------------------------------*/
       if ( msg & ITCMsg::TSK_MSG_ISR_DATA_READY )
       {
-        for ( size_t index = 0; index < NUM_DRIVERS; index++ )
+        for ( size_t index = 0; index < ARRAY_COUNT( s_impl_driver ); index++ )
         {
           s_impl_driver[ index ].postISRProcessing();
         }

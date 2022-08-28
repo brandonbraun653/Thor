@@ -4,7 +4,6 @@ gen_static_lib_variants(
   TARGET
     thor_hld_can
   SOURCES
-    hld_can_chimera.cpp
     hld_can_driver.cpp
   PRV_LIBRARIES
     aurora_intf_inc

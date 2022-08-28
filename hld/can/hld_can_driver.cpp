@@ -8,48 +8,78 @@
  *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* C++ Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
+#include <Aurora/constants>
+#include <Chimera/can>
+#include <Chimera/event>
+#include <Chimera/thread>
+#include <Thor/cfg>
+#include <Thor/hld/can/hld_can_types.hpp>
+#include <Thor/lld/interface/inc/can>
+#include <Thor/lld/interface/inc/interrupt>
 #include <array>
 #include <cstring>
 #include <limits>
 
-/* Aurora Includes */
-#include <Aurora/constants>
-
-/* Chimera Includes */
-#include <Chimera/can>
-#include <Chimera/thread>
-#include <Chimera/event>
-
-/* Thor Includes */
-#include <Thor/cfg>
-#include <Thor/can>
-#include <Thor/lld/interface/inc/can>
-#include <Thor/lld/interface/inc/interrupt>
-
 #if defined( THOR_CAN )
-/*-----------------------------------------------------------------------------
-Aliases
------------------------------------------------------------------------------*/
-namespace HLD = ::Thor::CAN;
-namespace LLD = ::Thor::LLD::CAN;
-
-/*-----------------------------------------------------------------------------
-Constants
------------------------------------------------------------------------------*/
-static constexpr size_t NUM_DRIVERS = LLD::NUM_CAN_PERIPHS;
-static constexpr size_t NUM_ISR_SIG = LLD::NUM_CAN_IRQ_HANDLERS;
-
-/*-----------------------------------------------------------------------------
-Static Variables
------------------------------------------------------------------------------*/
-static size_t s_driver_initialized;
-static HLD::Driver hld_driver[ NUM_DRIVERS ];
-
-
-namespace Thor::CAN
+namespace Chimera::CAN
 {
   using namespace Chimera::Thread;
+
+  /*---------------------------------------------------------------------------
+  Aliases
+  ---------------------------------------------------------------------------*/
+  namespace LLD = ::Thor::LLD::CAN;
+
+  /*---------------------------------------------------------------------------
+  Constants
+  ---------------------------------------------------------------------------*/
+  static constexpr size_t NUM_DRIVERS = LLD::NUM_CAN_PERIPHS;
+  static constexpr size_t NUM_ISR_SIG = LLD::NUM_CAN_IRQ_HANDLERS;
+
+  /*---------------------------------------------------------------------------
+  Structures
+  ---------------------------------------------------------------------------*/
+  struct ThorImpl
+  {
+    LLD::Driver_rPtr               lldriver;
+    Chimera::CAN::DriverConfig     mConfig;
+    Chimera::Event::ActionableList eventListeners;
+
+
+    void postISRProcessing()
+    {
+    }
+
+
+    void ProcessISREvent_TX()
+    {
+    }
+
+
+    void ProcessISREvent_RX()
+    {
+    }
+
+
+    void ProcessISREvent_Error()
+    {
+    }
+
+
+    void ProcessISREvent_StatusChange()
+    {
+    }
+  };
+
+  /*---------------------------------------------------------------------------
+  Static Variables
+  ---------------------------------------------------------------------------*/
+  static size_t               s_driver_initialized;
+  static Chimera::CAN::Driver s_raw_driver[ NUM_DRIVERS ];
+  static ThorImpl             s_impl_driver[ NUM_DRIVERS ];
 
   /*---------------------------------------------------------------------------
   Static Functions
@@ -117,18 +147,15 @@ namespace Thor::CAN
       /*-----------------------------------------------------------------------
       Handle every ISR. Don't know which triggered this
       -----------------------------------------------------------------------*/
-      for ( size_t index = 0; index < NUM_DRIVERS; index++ )
+      for ( size_t index = 0; index < ARRAY_COUNT( s_impl_driver ); index++ )
       {
-        hld_driver[ index ].postISRProcessing();
+        s_impl_driver[ index ].postISRProcessing();
       }
     }
   }
 
 
-  /*---------------------------------------------------------------------------
-  Public Functions
-  ---------------------------------------------------------------------------*/
-  Chimera::Status_t initialize()
+  static Chimera::Status_t impl_initialize()
   {
     /*-------------------------------------------------------------------------
     Prevent multiple initializations (need reset first)
@@ -141,7 +168,7 @@ namespace Thor::CAN
     /*-------------------------------------------------------------------------
     Register the ISR post processor thread
     -------------------------------------------------------------------------*/
-    Task userThread;
+    Task       userThread;
     TaskConfig cfg;
 
     cfg.arg        = nullptr;
@@ -152,30 +179,29 @@ namespace Thor::CAN
     cfg.name       = "PP_CANx";
 
     userThread.create( cfg );
-    LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_CAN, userThread.start() );
+    Thor::LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_CAN, userThread.start() );
 
     /*-------------------------------------------------------------------------
     Initialize the low level driver
     -------------------------------------------------------------------------*/
-    auto result = ::LLD::initialize();
+    auto result = LLD::initialize();
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return result;
   }
 
 
-  Chimera::Status_t reset()
+  static Chimera::Status_t impl_reset()
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::OK;
   }
 
 
-  Driver_rPtr getDriver( const Chimera::CAN::Channel channel )
+  static Driver_rPtr impl_getDriver( const Chimera::CAN::Channel channel )
   {
-    auto idx = ::LLD::getResourceIndex( channel );
-    if ( ( idx != ::Thor::LLD::INVALID_RESOURCE_INDEX ) && ( idx < NUM_DRIVERS ) )
+    if ( auto idx = LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
-      return &hld_driver[ idx ];
+      return &s_raw_driver[ idx ];
     }
     else
     {
@@ -187,9 +213,8 @@ namespace Thor::CAN
   /*-------------------------------------------------------------------------------
   Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver()
+  Driver::Driver() : mImpl( nullptr )
   {
-    mConfig.clear();
   }
 
 
@@ -203,28 +228,29 @@ namespace Thor::CAN
     /*-------------------------------------------------------------------------
     Input Protection
     -------------------------------------------------------------------------*/
-    if ( !validateCfg( cfg ) )
-    {
-      return Chimera::Status::INVAL_FUNC_PARAM;
-    }
-
-    auto lld = ::LLD::getDriver( cfg.HWInit.channel );
-    if ( !lld )
+    auto idx = LLD::getResourceIndex( cfg.HWInit.channel );
+    if ( !validateCfg( cfg ) && ( idx != ::Thor::LLD::INVALID_RESOURCE_INDEX ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
     /*-------------------------------------------------------------------------
+    Configure local implementation details
+    -------------------------------------------------------------------------*/
+    s_impl_driver[ idx ].lldriver = LLD::getDriver( cfg.HWInit.channel );
+    s_impl_driver[ idx ].mConfig  = cfg;
+
+    mImpl = &s_impl_driver[ idx ];
+
+    /*-------------------------------------------------------------------------
     Initialize the low level driver
     -------------------------------------------------------------------------*/
+    auto lld = reinterpret_cast<ThorImpl *>( mImpl )->lldriver;
+
     lld->enableClock();
     if ( auto sts = lld->configure( cfg ); sts != Chimera::Status::OK )
     {
       return sts;
-    }
-    else
-    {
-      mConfig = cfg;
     }
 
     /*-------------------------------------------------------------------------
@@ -244,7 +270,7 @@ namespace Thor::CAN
     /*-------------------------------------------------------------------------
     Turn off all ISRs to prevent interruption
     -------------------------------------------------------------------------*/
-    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
+    auto lld = reinterpret_cast<ThorImpl *>( mImpl )->lldriver;
     for ( size_t isr = 0; isr < static_cast<size_t>( InterruptType::NUM_OPTIONS ); isr++ )
     {
       lld->disableISRSignal( static_cast<InterruptType>( isr ) );
@@ -272,7 +298,7 @@ namespace Thor::CAN
     /*-------------------------------------------------
     Ensure we are listening to events, then enqueue TX
     -------------------------------------------------*/
-    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
+    auto lld = reinterpret_cast<ThorImpl *>( mImpl )->lldriver;
     lld->enableISRSignal( Chimera::CAN::InterruptType::TX_ISR );
     lld->enableISRSignal( Chimera::CAN::InterruptType::RX_ISR );
     lld->enableISRSignal( Chimera::CAN::InterruptType::ERR_ISR );
@@ -282,7 +308,7 @@ namespace Thor::CAN
 
   Chimera::Status_t Driver::receive( Chimera::CAN::BasicFrame &frame )
   {
-    return ::LLD::getDriver( mConfig.HWInit.channel )->receive( frame );
+    return reinterpret_cast<ThorImpl *>( mImpl )->lldriver->receive( frame );
   }
 
 
@@ -292,7 +318,7 @@ namespace Thor::CAN
     Limit the filters to 32-bit mask mode for now and expand to more when
     needed. This still gives around 14 filters, which is a lot.
     -------------------------------------------------------------------------*/
-    constexpr size_t hwFilterLength = ::LLD::NUM_CAN_MAX_32BIT_MASK_FILTERS;
+    constexpr size_t hwFilterLength = LLD::NUM_CAN_MAX_32BIT_MASK_FILTERS;
 
     /*-------------------------------------------------------------------------
     Input protection
@@ -307,13 +333,13 @@ namespace Thor::CAN
     Use memset instead of the clear() method to save memory. Doesn't matter in
     this case that they have special init values.
     -------------------------------------------------------------------------*/
-    ::LLD::MessageFilter hwFilters[ hwFilterLength ];
+    LLD::MessageFilter hwFilters[ hwFilterLength ];
     memset( hwFilters, 0, ARRAY_BYTES( hwFilters ) );
 
     /*-------------------------------------------------------------------------
     Convert the high level filter into a hardware filter
     -------------------------------------------------------------------------*/
-    ::LLD::Mailbox lastBox = ::LLD::Mailbox::RX_MAILBOX_1;
+    LLD::Mailbox lastBox = LLD::Mailbox::RX_MAILBOX_1;
 
     for ( size_t x = 0; x < size; x++ )
     {
@@ -340,27 +366,27 @@ namespace Thor::CAN
       /*-----------------------------------------------------------------------
       Swap which mailbox will be assigned next. Helps to load balance HW FIFOs.
       -----------------------------------------------------------------------*/
-      if ( lastBox == ::LLD::Mailbox::RX_MAILBOX_1 )
+      if ( lastBox == LLD::Mailbox::RX_MAILBOX_1 )
       {
-        lastBox = ::LLD::Mailbox::RX_MAILBOX_2;
+        lastBox = LLD::Mailbox::RX_MAILBOX_2;
       }
       else
       {
-        lastBox = ::LLD::Mailbox::RX_MAILBOX_1;
+        lastBox = LLD::Mailbox::RX_MAILBOX_1;
       }
     }
 
     /*-------------------------------------------------------------------------
     Apply the filter configuration
     -------------------------------------------------------------------------*/
-    return ::LLD::getDriver( mConfig.HWInit.channel )->applyFilters( hwFilters, hwFilterLength );
+    return reinterpret_cast<ThorImpl *>( mImpl )->lldriver->applyFilters( hwFilters, hwFilterLength );
   }
 
 
   Chimera::Status_t Driver::flush( Chimera::CAN::BufferType buffer )
   {
     using namespace Chimera::CAN;
-    auto lld = ::LLD::getDriver( mConfig.HWInit.channel );
+    auto lld = reinterpret_cast<ThorImpl *>( mImpl )->lldriver;
 
     switch ( buffer )
     {
@@ -383,35 +409,22 @@ namespace Thor::CAN
 
   size_t Driver::available()
   {
-    return ::LLD::getDriver( mConfig.HWInit.channel )->available();
+    return reinterpret_cast<ThorImpl *>( mImpl )->lldriver->available();
   }
 
+}    // namespace Chimera::CAN
 
-  void Driver::postISRProcessing()
+
+namespace Chimera::CAN::Backend
+{
+  Chimera::Status_t registerDriver( Chimera::CAN::Backend::DriverConfig &registry )
   {
-
+    registry.isSupported = true;
+    registry.getDriver   = impl_getDriver;
+    registry.initialize  = impl_initialize;
+    registry.reset       = impl_reset;
+    return Chimera::Status::OK;
   }
+}    // namespace Chimera::CAN::Backend
 
-
-  void Driver::ProcessISREvent_TX()
-  {
-  }
-
-
-  void Driver::ProcessISREvent_RX()
-  {
-  }
-
-
-  void Driver::ProcessISREvent_Error()
-  {
-  }
-
-
-  void Driver::ProcessISREvent_StatusChange()
-  {
-  }
-
-}    // namespace Thor::CAN
-
-#endif /* THOR_HLD_CAN */
+#endif /* THOR_CAN */
