@@ -17,7 +17,7 @@ Includes
 #include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/i2c>
 
-#if defined( THOR_LLD_I2C )
+#if defined( THOR_I2C )
 namespace Thor::LLD::I2C
 {
   /*---------------------------------------------------------------------------

@@ -29,7 +29,7 @@
 #include <Thor/lld/interface/spi/spi_intf.hpp>
 #include <Thor/lld/interface/spi/spi_types.hpp>
 
-#if defined( THOR_HLD_SPI )
+#if defined( THOR_SPI )
 
 /*-------------------------------------------------------------------------------
 Aliases

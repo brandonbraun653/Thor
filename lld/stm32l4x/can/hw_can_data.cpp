@@ -19,7 +19,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/interface/can/can_prv_data.hpp>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_CAN )
+#if defined( TARGET_STM32L4 ) && defined( THOR_CAN )
 
 namespace Thor::LLD::CAN
 {

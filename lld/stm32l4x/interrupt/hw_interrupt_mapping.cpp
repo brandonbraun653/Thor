@@ -16,7 +16,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/stm32l4x/interrupt/hw_interrupt_mapping.hpp>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_IT )
+#if defined( TARGET_STM32L4 ) && defined( THOR_IT )
 
 namespace Thor::LLD::INT
 {

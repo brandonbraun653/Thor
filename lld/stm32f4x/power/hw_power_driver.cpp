@@ -18,7 +18,7 @@
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prv.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_PWR )
+#if defined( TARGET_STM32F4 ) && defined( THOR_PWR )
 
 namespace Thor::LLD::PWR
 {

@@ -21,7 +21,7 @@ Includes
 #include <Thor/lld/interface/can/can_types.hpp>
 #include <etl/algorithm.h>
 
-#if defined( THOR_LLD_CAN )
+#if defined( THOR_CAN )
 namespace Thor::LLD::CAN
 {
   /*-------------------------------------------------------------------------------

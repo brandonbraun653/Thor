@@ -18,7 +18,7 @@
 #include <Thor/lld/interface/exti/exti_intf.hpp>
 #include <Thor/lld/interface/exti/exti_detail.hpp>
 
-#if defined( THOR_HLD_EXTI )
+#if defined( THOR_EXTI )
 
 namespace Thor::EXTI
 {

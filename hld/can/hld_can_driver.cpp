@@ -27,7 +27,7 @@
 #include <Thor/lld/interface/inc/can>
 #include <Thor/lld/interface/inc/interrupt>
 
-#if defined( THOR_HLD_CAN )
+#if defined( THOR_CAN )
 /*-----------------------------------------------------------------------------
 Aliases
 -----------------------------------------------------------------------------*/

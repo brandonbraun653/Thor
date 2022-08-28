@@ -28,14 +28,14 @@ namespace Thor::LLD::Watchdog
   -------------------------------------------------------------------------------*/
   RIndex_t getResourceIndex( const std::uintptr_t address )
   {
-#if defined( STM32_IWDG1_PERIPH_AVAILABLE ) && defined( THOR_LLD_IWDG )
+#if defined( STM32_IWDG1_PERIPH_AVAILABLE ) && defined( THOR_IWDG )
     if ( address == reinterpret_cast<std::uintptr_t>( IWDG1_PERIPH ) )
     {
       return IWDG::IWDG1_RESOURCE_INDEX;
     }
 #endif
 
-#if defined( STM32_WWDG1_PERIPH_AVAILABLE ) && defined( THOR_LLD_WWDG )
+#if defined( STM32_WWDG1_PERIPH_AVAILABLE ) && defined( THOR_WWDG )
     if ( address == reinterpret_cast<std::uintptr_t>( WWDG1_PERIPH ) )
     {
       return WWDG::WWDG1_RESOURCE_INDEX;
@@ -46,7 +46,7 @@ namespace Thor::LLD::Watchdog
   }
 
 
-#if defined( THOR_LLD_IWDG )
+#if defined( THOR_IWDG )
 
   bool isSupported( const Chimera::Watchdog::IChannel channel )
   {
@@ -121,7 +121,7 @@ namespace Thor::LLD::Watchdog
 #endif  /* THOR_LLD_IWDG */
 
 
-#if defined( THOR_LLD_WWDG )
+#if defined( THOR_WWDG )
   bool isSupported( const Chimera::Watchdog::WChannel channel )
   {
     switch ( channel )

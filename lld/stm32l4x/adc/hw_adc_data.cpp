@@ -18,7 +18,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/interface/adc/adc_prv_data.hpp>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_ADC )
+#if defined( TARGET_STM32L4 ) && defined( THOR_ADC )
 
 namespace Thor::LLD::ADC
 {

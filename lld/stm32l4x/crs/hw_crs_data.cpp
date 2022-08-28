@@ -15,7 +15,7 @@
 #include <Thor/lld/stm32l4x/crs/hw_crs_types.hpp>
 #include <Thor/lld/stm32l4x/crs/hw_crs_prv_data.hpp>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_CRS )
+#if defined( TARGET_STM32L4 ) && defined( THOR_CRS )
 
 namespace Thor::LLD::CRS
 {

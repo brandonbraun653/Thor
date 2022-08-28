@@ -30,14 +30,14 @@ namespace LLD = ::Thor::LLD::GPIO;
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
 static constexpr size_t NUM_DRIVERS = ::LLD::NUM_GPIO_PINS;
 #endif
 
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
 static Chimera::GPIO::Driver s_raw_driver[ NUM_DRIVERS ];
 #endif
 
@@ -46,7 +46,7 @@ namespace Chimera::GPIO::Backend
 /*-------------------------------------------------------------------------------
 Public Functions
 -------------------------------------------------------------------------------*/
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
   Chimera::Status_t initialize()
   {
     return Thor::GPIO::initialize();
@@ -76,7 +76,7 @@ Public Functions
 
   Chimera::Status_t registerDriver( Chimera::GPIO::Backend::DriverConfig &registry )
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     registry.isSupported = true;
     registry.getDriver   = getDriver;
     registry.initialize  = initialize;
@@ -111,7 +111,7 @@ namespace Chimera::GPIO
   -------------------------------------------------*/
   Chimera::Status_t Driver::init( const Chimera::GPIO::PinInit &pinInit )
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     mDriver = ::HLD::getDriver( pinInit.port, pinInit.pin );
 
     RT_DBG_ASSERT( mDriver );
@@ -124,7 +124,7 @@ namespace Chimera::GPIO
 
   Chimera::Status_t Driver::init( const Chimera::GPIO::Port port, const uint8_t pin )
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     mDriver = ::HLD::getDriver( port, pin );
 
     RT_DBG_ASSERT( mDriver );
@@ -137,7 +137,7 @@ namespace Chimera::GPIO
 
   Chimera::Status_t Driver::setMode( const Chimera::GPIO::Drive drive, const Chimera::GPIO::Pull pull )
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->setMode( drive, pull );
 #else
@@ -148,7 +148,7 @@ namespace Chimera::GPIO
 
   Chimera::Status_t Driver::setState( const Chimera::GPIO::State state )
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->setState( state );
 #else
@@ -159,7 +159,7 @@ namespace Chimera::GPIO
 
   Chimera::Status_t Driver::getState( Chimera::GPIO::State &state )
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->getState( state );
 #else
@@ -170,7 +170,7 @@ namespace Chimera::GPIO
 
   Chimera::Status_t Driver::toggle()
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->toggle();
 #else
@@ -181,7 +181,7 @@ namespace Chimera::GPIO
 
   Chimera::Status_t Driver::attachInterrupt( Chimera::Function::vGeneric &func, const Chimera::EXTI::EdgeTrigger trigger )
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->attachInterrupt( func, trigger );
 #else
@@ -192,7 +192,7 @@ namespace Chimera::GPIO
 
   void Driver::detachInterrupt()
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->detachInterrupt();
 #endif
@@ -201,7 +201,7 @@ namespace Chimera::GPIO
 
   Chimera::EXTI::EventLine_t Driver::getInterruptLine()
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->getInterruptLine();
 #else
@@ -214,7 +214,7 @@ namespace Chimera::GPIO
   -------------------------------------------------*/
   void Driver::lock()
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lock();
 #endif
@@ -223,7 +223,7 @@ namespace Chimera::GPIO
 
   void Driver::lockFromISR()
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->lockFromISR();
 #endif
@@ -232,7 +232,7 @@ namespace Chimera::GPIO
 
   bool Driver::try_lock_for( const size_t timeout )
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     return static_cast<::HLD::Driver_rPtr>( mDriver )->try_lock_for( timeout );
 #else
@@ -243,7 +243,7 @@ namespace Chimera::GPIO
 
   void Driver::unlock()
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlock();
 #endif
@@ -252,7 +252,7 @@ namespace Chimera::GPIO
 
   void Driver::unlockFromISR()
   {
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
     RT_DBG_ASSERT( mDriver );
     static_cast<::HLD::Driver_rPtr>( mDriver )->unlockFromISR();
 #endif

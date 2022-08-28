@@ -22,7 +22,7 @@
 #include <Thor/lld/common/cortex-m4/system_time.hpp>
 
 
-#if defined( EMBEDDED ) && defined( THOR_LLD_RCC )
+#if defined( EMBEDDED ) && defined( THOR_RCC )
 
 void SystemInit()
 {

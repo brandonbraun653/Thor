@@ -18,7 +18,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/flash>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_FLASH )
+#if defined( TARGET_STM32F4 ) && defined( THOR_FLASH )
 
 namespace Thor::LLD::FLASH
 {

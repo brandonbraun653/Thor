@@ -30,14 +30,14 @@ namespace LLD = ::Thor::LLD::CAN;
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
-#if defined( THOR_HLD_CAN )
+#if defined( THOR_CAN )
 static constexpr size_t NUM_DRIVERS = ::LLD::NUM_CAN_PERIPHS;
 #endif  /* THOR_HLD_CAN */
 
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
-#if defined( THOR_HLD_CAN )
+#if defined( THOR_CAN )
 static Chimera::CAN::Driver s_raw_driver[ NUM_DRIVERS ];
 #endif  /* THOR_HLD_CAN */
 
@@ -46,7 +46,7 @@ namespace Chimera::CAN::Backend
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
-#if defined( THOR_HLD_CAN )
+#if defined( THOR_CAN )
   Chimera::Status_t initialize()
   {
     return Thor::CAN::initialize();
@@ -75,7 +75,7 @@ namespace Chimera::CAN::Backend
 
   Chimera::Status_t registerDriver( Chimera::CAN::Backend::DriverConfig &registry )
   {
-#if defined( THOR_HLD_CAN )
+#if defined( THOR_CAN )
     registry.isSupported = true;
     registry.getDriver   = getDriver;
     registry.initialize  = initialize;

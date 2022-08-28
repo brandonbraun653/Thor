@@ -16,7 +16,7 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/inc/spi>
 
-#if defined( THOR_LLD_SPI )
+#if defined( THOR_SPI )
 namespace Thor::LLD::SPI
 {
   /*-------------------------------------------------------------------------------

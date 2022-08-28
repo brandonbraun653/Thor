@@ -21,7 +21,7 @@ namespace Chimera::Interrupt::Backend
 /*-------------------------------------------------------------------------------
 Public Functions
 -------------------------------------------------------------------------------*/
-#if defined( THOR_HLD_INT )
+#if defined( THOR_INT )
   Chimera::Status_t initialize()
   {
     return Thor::Interrupt::initialize();
@@ -44,7 +44,7 @@ Public Functions
 
   Chimera::Status_t registerDriver( Chimera::Interrupt::Backend::DriverConfig &registry )
   {
-#if defined( THOR_HLD_INT )
+#if defined( THOR_INT )
     registry.isSupported        = true;
     registry.initialize         = initialize;
     registry.reset              = reset;

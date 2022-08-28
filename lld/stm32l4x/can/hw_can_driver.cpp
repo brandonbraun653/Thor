@@ -31,7 +31,7 @@ Includes
 #include <limits>
 
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_CAN )
+#if defined( TARGET_STM32L4 ) && defined( THOR_CAN )
 namespace Thor::LLD::CAN
 {
   /*---------------------------------------------------------------------------

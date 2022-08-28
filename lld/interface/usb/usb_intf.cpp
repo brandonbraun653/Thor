@@ -19,7 +19,7 @@
 #include <Thor/lld/interface/usb/usb_types.hpp>
 #include <Thor/lld/interface/usb/usb_intf.hpp>
 
-#if defined( THOR_LLD_USB )
+#if defined( THOR_USB )
 namespace Thor::LLD::USB
 {
   /*-------------------------------------------------------------------------------

@@ -19,7 +19,7 @@
 #include <Thor/lld/interface/power/power_detail.hpp>
 #include <Thor/lld/interface/power/power_prv_data.hpp>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_PWR )
+#if defined( TARGET_STM32L4 ) && defined( THOR_PWR )
 
 namespace Thor::LLD::PWR
 {

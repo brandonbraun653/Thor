@@ -44,7 +44,7 @@ static constexpr size_t NUM_WDRIVERS = WLLD::NUM_WWDG_PERIPHS;
 
 namespace Thor::Watchdog
 {
-#if defined( THOR_HLD_IWDG ) || defined( THOR_HLD_WWDG )
+#if defined( THOR_IWDG ) || defined( THOR_HLD_WWDG )
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ namespace Thor::Watchdog
 #endif /* THOR_HLD_IWDG || THOR_HLD_WWDG */
 
 
-#if defined( THOR_HLD_WWDG )
+#if defined( THOR_WWDG )
   static size_t s_wwdg_driver_initialized;                     /**< Tracks the module level initialization state */
   static ::HLD::WindowDriver hld_wdriver[ NUM_WDRIVERS ];      /**< Driver objects */
   static ::HLD::WindowDriver_rPtr hld_wshared[ NUM_WDRIVERS ]; /**< Shared references to driver objects */
@@ -80,7 +80,7 @@ namespace Thor::Watchdog
     s_wwdg_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
     for ( size_t x = 0; x < NUM_WDRIVERS; x++ )
     {
-#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_WWDG )
+#if defined( THOR_TEST ) || defined( THOR_HLD_TEST_WWDG )
       hld_wshared[ x ] = ::HLD::WindowDriver_rPtr( new HLD::Window() );
 #else
       hld_wshared[ x ] = ::HLD::WindowDriver_rPtr( &hld_wdriver[ x ] );
@@ -233,7 +233,7 @@ namespace Thor::Watchdog
 #endif /* THOR_HLD_WWDG */
 
 
-#if defined( THOR_HLD_IWDG )
+#if defined( THOR_IWDG )
   static size_t s_iwdg_driver_initialized;                          /**< Tracks the module level initialization state */
   static ::HLD::IndependentDriver hld_idriver[ NUM_IDRIVERS ];      /**< Driver objects */
   static ::HLD::IndependentDriver_rPtr hld_ishared[ NUM_IDRIVERS ]; /**< Shared references to driver objects */
@@ -257,7 +257,7 @@ namespace Thor::Watchdog
     s_iwdg_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
     for ( size_t x = 0; x < NUM_IDRIVERS; x++ )
     {
-#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_IWDG )
+#if defined( THOR_TEST ) || defined( THOR_HLD_TEST_IWDG )
       hld_ishared[ x ] = ::HLD::IndependentDriver_rPtr( new HLD::Independent() );
 #else
       hld_ishared[ x ] = ::HLD::IndependentDriver_rPtr( &hld_idriver[ x ] );

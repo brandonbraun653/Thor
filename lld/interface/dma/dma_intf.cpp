@@ -13,7 +13,7 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/inc/dma>
 
-#if defined( THOR_LLD_DMA )
+#if defined( THOR_DMA )
 namespace Thor::LLD::DMA
 {
   /*-------------------------------------------------------------------------------

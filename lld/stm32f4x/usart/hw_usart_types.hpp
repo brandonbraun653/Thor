@@ -25,7 +25,7 @@
 #include <Thor/lld/stm32f4x/interrupt/hw_interrupt_prj.hpp>
 #include <Thor/lld/stm32f4x/usart/hw_usart_prj.hpp>
 
-#if defined( THOR_LLD_USART )
+#if defined( THOR_USART )
 
 namespace Thor::LLD::USART
 {

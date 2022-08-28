@@ -22,7 +22,7 @@
 #include <Thor/lld/interface/uart/uart_intf.hpp>
 #include <Thor/lld/interface/uart/uart_types.hpp>
 
-#if defined( THOR_HLD_UART )
+#if defined( THOR_UART )
 
 /*-------------------------------------------------------------------------------
 Aliases

@@ -53,7 +53,7 @@ namespace Chimera::DMA::Backend
 
   Chimera::Status_t registerDriver( Chimera::DMA::Backend::DriverConfig &registry )
   {
-#if defined( THOR_HLD_DMA )
+#if defined( THOR_DMA )
     registry.isSupported   = true;
     registry.initialize    = initialize;
     registry.reset         = reset;

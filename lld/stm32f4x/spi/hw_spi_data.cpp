@@ -20,7 +20,7 @@
 #include <Thor/lld/interface/inc/spi>
 #include <Thor/lld/interface/inc/dma>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_SPI )
+#if defined( TARGET_STM32F4 ) && defined( THOR_SPI )
 
 namespace Thor::LLD::SPI
 {

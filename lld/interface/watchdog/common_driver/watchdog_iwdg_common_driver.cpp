@@ -22,7 +22,7 @@
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/watchdog>
 
-#if defined( THOR_LLD_IWDG ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
+#if defined( THOR_IWDG ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
 
 namespace Thor::LLD::Watchdog
 {

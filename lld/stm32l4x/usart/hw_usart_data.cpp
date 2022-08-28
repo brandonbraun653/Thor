@@ -16,7 +16,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/usart>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_USART )
+#if defined( TARGET_STM32L4 ) && defined( THOR_USART )
 
 namespace Thor::LLD::USART
 {
@@ -59,7 +59,7 @@ namespace Thor::LLD::USART
   namespace Resource
   { /* clang-format off */
 
-#if defined( THOR_LLD_DMA )
+#if defined( THOR_DMA )
     LLD_CONST DMA::Source RXDMASignals[ NUM_USART_PERIPHS ] = {
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
       Thor::LLD::DMA::Source::USART1_RX,

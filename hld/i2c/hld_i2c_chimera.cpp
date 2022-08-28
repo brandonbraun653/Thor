@@ -30,14 +30,14 @@ namespace LLD = ::Thor::LLD::I2C;
 /*-----------------------------------------------------------------------------
 Constants
 -----------------------------------------------------------------------------*/
-#if defined( THOR_HLD_I2C )
+#if defined( THOR_I2C )
 static constexpr size_t NUM_DRIVERS = ::LLD::NUM_I2C_PERIPHS;
 #endif  /* THOR_HLD_I2C */
 
 /*-----------------------------------------------------------------------------
 Variables
 -----------------------------------------------------------------------------*/
-#if defined( THOR_HLD_I2C )
+#if defined( THOR_I2C )
 static Chimera::I2C::Driver s_raw_driver[ NUM_DRIVERS ];
 #endif  /* THOR_HLD_I2C */
 
@@ -46,7 +46,7 @@ namespace Chimera::I2C::Backend
   /*---------------------------------------------------------------------------
   Public Functions
   ---------------------------------------------------------------------------*/
-  #if defined( THOR_HLD_I2C )
+  #if defined( THOR_I2C )
   Chimera::Status_t initialize()
   {
     return Thor::I2C::initialize();
@@ -75,7 +75,7 @@ namespace Chimera::I2C::Backend
 
   Chimera::Status_t registerDriver( Chimera::I2C::Backend::DriverConfig &registry )
   {
-#if defined( THOR_HLD_I2C )
+#if defined( THOR_I2C )
     registry.isSupported = true;
     registry.getDriver   = getDriver;
     registry.initialize  = initialize;

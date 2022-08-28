@@ -19,7 +19,7 @@ Includes
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
 
-#if defined( THOR_LLD_I2C ) && defined( TARGET_STM32L4 )
+#if defined( THOR_I2C ) && defined( TARGET_STM32L4 )
 namespace Thor::LLD::I2C
 {
   /*---------------------------------------------------------------------------

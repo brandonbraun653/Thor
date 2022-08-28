@@ -28,7 +28,7 @@ Includes
 #include <limits>
 
 
-#if defined( THOR_LLD_I2C )
+#if defined( THOR_I2C )
 namespace Thor::LLD::I2C
 {
   /*---------------------------------------------------------------------------

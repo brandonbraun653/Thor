@@ -172,7 +172,7 @@ namespace Chimera::System::Backend
 
   Chimera::Status_t registerDriver( DriverConfig &registry )
   {
-#if defined( THOR_HLD_SYSTEM )
+#if defined( THOR_SYSTEM )
     registry.isSupported            = true;
     registry.disableInterrupts      = disableInterrupts;
     registry.enableInterrupts       = enableInterrupts;

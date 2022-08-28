@@ -72,7 +72,7 @@ namespace Chimera::EXTI::Backend
 
   Chimera::Status_t registerDriver( Chimera::EXTI::Backend::DriverConfig &registry )
   {
-#if defined( THOR_HLD_EXTI )
+#if defined( THOR_EXTI )
     registry.isSupported       = true;
     registry.attach            = attach;
     registry.close             = close;

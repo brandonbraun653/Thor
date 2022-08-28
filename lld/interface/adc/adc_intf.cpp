@@ -17,7 +17,7 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/inc/adc>
 
-#if defined( THOR_LLD_ADC )
+#if defined( THOR_ADC )
 
 namespace Thor::LLD::ADC
 {

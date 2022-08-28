@@ -18,7 +18,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/interface/watchdog/watchdog_prv_data.hpp>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_IWDG )
+#if defined( TARGET_STM32L4 ) && defined( THOR_IWDG )
 
 namespace Thor::LLD::Watchdog
 {

@@ -24,7 +24,7 @@
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/usb>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_USB )
+#if defined( TARGET_STM32F4 ) && defined( THOR_USB )
 
 namespace Thor::LLD::USB
 {

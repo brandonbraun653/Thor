@@ -19,7 +19,7 @@
 #include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/adc>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_ADC )
+#if defined( TARGET_STM32F4 ) && defined( THOR_ADC )
 
 namespace Thor::LLD::ADC
 {

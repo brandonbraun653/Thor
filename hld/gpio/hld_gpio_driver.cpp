@@ -21,7 +21,7 @@ Includes
 #include <Thor/lld/interface/inc/gpio>
 #include <cstring>
 
-#if defined( THOR_HLD_GPIO )
+#if defined( THOR_GPIO )
 namespace Thor::GPIO
 {
   /*---------------------------------------------------------------------------

@@ -27,7 +27,7 @@
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 #include <Thor/lld/interface/uart/uart_detail.hpp>
 
-#if defined( THOR_LLD_HAS_UART )
+#if defined( THOR_HAS_UART )
 
 namespace Thor::LLD::UART
 {

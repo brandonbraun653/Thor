@@ -16,7 +16,7 @@
 #include <Thor/lld/interface/inc/usart>
 #include <Thor/lld/interface/usart/common_driver/usart_common_intf.hpp>
 
-#if defined( THOR_LLD_USART )
+#if defined( THOR_USART )
 
 namespace Thor::LLD::USART
 {

@@ -27,7 +27,7 @@
 #include <Thor/lld/interface/inc/timer>
 
 
-#if defined( THOR_LLD_ADC ) && defined( TARGET_STM32L4 )
+#if defined( THOR_ADC ) && defined( TARGET_STM32L4 )
 /*-----------------------------------------------------------------------------
 This driver expects some project side constants to be defined for helping with
 a few calculations.

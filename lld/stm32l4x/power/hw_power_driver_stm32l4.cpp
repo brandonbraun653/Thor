@@ -17,7 +17,7 @@
 #include <Thor/lld/stm32l4x/power/hw_power_prj.hpp>
 #include <Thor/lld/stm32l4x/power/hw_power_types.hpp>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_PWR )
+#if defined( TARGET_STM32L4 ) && defined( THOR_PWR )
 
 namespace Thor::LLD::PWR
 {

@@ -24,7 +24,7 @@ namespace Thor::Interrupt
 /*-------------------------------------------------------------------------------
 Public Functions
 -------------------------------------------------------------------------------*/
-#if defined( THOR_HLD_INT )
+#if defined( THOR_INT )
   Chimera::Status_t initialize()
   {
     return Thor::LLD::INT::initialize();

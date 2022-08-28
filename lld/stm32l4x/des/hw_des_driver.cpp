@@ -23,7 +23,7 @@
 #include <Thor/lld/stm32l4x/des/hw_des_types.hpp>
 
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_DES ) && defined( STM32L432xx )
+#if defined( TARGET_STM32L4 ) && defined( THOR_DES ) && defined( STM32L432xx )
 
 namespace Thor::LLD::DES
 {

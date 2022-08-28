@@ -22,7 +22,7 @@
 #include <Thor/lld/interface/watchdog/watchdog_intf.hpp>
 #include <Thor/lld/interface/watchdog/watchdog_prv_data.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_WWDG )
+#if defined( TARGET_STM32F4 ) && defined( THOR_WWDG )
 
 namespace Thor::LLD::Watchdog
 {

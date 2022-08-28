@@ -25,7 +25,7 @@
 #include <Thor/lld/interface/usb/usb_intf.hpp>
 #include <Thor/lld/interface/usb/usb_detail.hpp>
 
-#if defined( THOR_HLD_USB )
+#if defined( THOR_USB )
 
 namespace Thor::USB
 {
@@ -67,7 +67,7 @@ namespace Thor::USB
 //     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
 //     for ( size_t x = 0; x < NUM_DRIVERS; x++ )
 //     {
-// #if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_USB )
+// #if defined( THOR_TEST ) || defined( THOR_HLD_TEST_USB )
 //       hld_shared[ x ] = HLD::Driver_rPtr( new HLD::Driver() );
 // #else
 //       hld_shared[ x ] = HLD::Driver_rPtr( &hld_driver[ x ] );
@@ -89,7 +89,7 @@ namespace Thor::USB
     /*------------------------------------------------
     Only allow clearing of local data during testing
     ------------------------------------------------*/
-#if defined( THOR_HLD_TEST ) || defined( THOR_HLD_TEST_USB )
+#if defined( THOR_TEST ) || defined( THOR_HLD_TEST_USB )
     s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
 
     for ( auto x = 0; x < NUM_DRIVERS; x++ )

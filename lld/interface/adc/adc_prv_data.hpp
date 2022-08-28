@@ -31,7 +31,7 @@
 #include <Thor/lld/interface/dma/dma_types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
-#if defined( THOR_LLD_ADC )
+#if defined( THOR_ADC )
 
 namespace Thor::LLD::ADC
 {

@@ -25,7 +25,7 @@
 #include <Thor/lld/interface/inc/usart>
 #include <Thor/lld/interface/usart/common_driver/usart_common_intf.hpp>
 
-#if defined( THOR_LLD_USART ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
+#if defined( THOR_USART ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
 
 namespace Thor::LLD::USART
 {
@@ -312,7 +312,7 @@ namespace Thor::LLD::USART
     using namespace Chimera::DMA;
     using namespace Chimera::Peripheral;
 
-    #if !defined( THOR_LLD_DMA )
+    #if !defined( THOR_DMA )
     return Chimera::Status::NOT_SUPPORTED;
     #else
     /*-------------------------------------------------
@@ -403,7 +403,7 @@ namespace Thor::LLD::USART
     using namespace Chimera::DMA;
     using namespace Chimera::Hardware;
 
-    #if !defined( THOR_LLD_DMA )
+    #if !defined( THOR_DMA )
     return Chimera::Status::NOT_SUPPORTED;
     #else
     /*-------------------------------------------------
@@ -469,7 +469,7 @@ namespace Thor::LLD::USART
     using namespace Chimera::DMA;
     using namespace Chimera::Hardware;
 
-    #if !defined( THOR_LLD_DMA )
+    #if !defined( THOR_DMA )
     return Chimera::Status::NOT_SUPPORTED;
     #else
     /*-------------------------------------------------
@@ -800,7 +800,7 @@ namespace Thor::LLD::USART
         /*-------------------------------------------------
         Disable the DMA transfer if ongoing
         -------------------------------------------------*/
-        #if defined( THOR_LLD_DMA )
+        #if defined( THOR_DMA )
         if( mRXTCB.mode == PeripheralMode::DMA )
         {
           RIndex_t dmaIdx = Thor::LLD::DMA::getResourceIndex( Resource::RXDMASignals[ this->mResourceIndex ] );
@@ -941,7 +941,7 @@ namespace Thor::LLD::USART
 
   void Driver::onDMARXComplete( const Chimera::DMA::TransferStats &stats )
   {
-    #if defined( THOR_LLD_DMA )
+    #if defined( THOR_DMA )
     /*-------------------------------------------------
     Per DMA RX instructions, disable USART DMA at the
     end of the DMA interrupt.

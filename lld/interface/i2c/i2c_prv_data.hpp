@@ -27,7 +27,7 @@
 #include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
-#if defined( THOR_LLD_I2C )
+#if defined( THOR_I2C )
 namespace Thor::LLD::I2C
 {
   /*-------------------------------------------------------------------------------

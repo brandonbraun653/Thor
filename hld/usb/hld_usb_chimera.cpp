@@ -30,14 +30,14 @@ namespace LLD = ::Thor::LLD::USB;
 /*-------------------------------------------------------------------------------
 Constants
 -------------------------------------------------------------------------------*/
-#if defined( THOR_HLD_USB )
+#if defined( THOR_USB )
 static constexpr size_t NUM_DRIVERS = ::LLD::NUM_USB_PERIPHS;
 #endif
 
 /*-------------------------------------------------------------------------------
 Variables
 -------------------------------------------------------------------------------*/
-#if defined( THOR_HLD_USB )
+#if defined( THOR_USB )
 static Chimera::USB::Driver s_raw_driver[ NUM_DRIVERS ];
 #endif
 
@@ -47,7 +47,7 @@ namespace Chimera::USB::Backend
   /*-------------------------------------------------------------------------------
   Public Functions
   -------------------------------------------------------------------------------*/
-#if defined( THOR_HLD_USB )
+#if defined( THOR_USB )
   Chimera::Status_t initialize()
   {
     return Thor::USB::initialize();
@@ -76,7 +76,7 @@ namespace Chimera::USB::Backend
 
   Chimera::Status_t registerDriver( Chimera::USB::Backend::DriverConfig &registry )
   {
-#if defined( THOR_HLD_USB )
+#if defined( THOR_USB )
     registry.isSupported = true;
     registry.getDriver   = getDriver;
     registry.initialize  = initialize;

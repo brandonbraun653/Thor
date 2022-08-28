@@ -19,7 +19,7 @@
 #include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/rcc>
 
-#if defined( THOR_LLD_DMA )
+#if defined( THOR_DMA )
 namespace Thor::LLD::DMA
 {
   /*-------------------------------------------------------------------------------

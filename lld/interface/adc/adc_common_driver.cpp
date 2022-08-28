@@ -29,7 +29,7 @@
 #include <Thor/lld/interface/inc/timer>
 
 
-#if defined( THOR_LLD_ADC ) && ( defined( TARGET_STM32F4 ) || defined( TARGET_STM32L4 ) )
+#if defined( THOR_ADC ) && ( defined( TARGET_STM32F4 ) || defined( TARGET_STM32L4 ) )
 
 namespace Thor::LLD::ADC
 {

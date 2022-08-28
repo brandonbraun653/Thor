@@ -18,7 +18,7 @@
 #include <Thor/lld/stm32l4x/flash/hw_flash_prj.hpp>
 #include <Thor/lld/stm32l4x/flash/hw_flash_types.hpp>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_FLASH )
+#if defined( TARGET_STM32L4 ) && defined( THOR_FLASH )
 
 namespace Thor::LLD::FLASH
 {

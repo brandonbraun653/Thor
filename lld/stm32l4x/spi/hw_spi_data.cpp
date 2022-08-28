@@ -19,7 +19,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/interface/spi/spi_prv_data.hpp>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_SPI )
+#if defined( TARGET_STM32L4 ) && defined( THOR_SPI )
 
 namespace Thor::LLD::SPI
 {

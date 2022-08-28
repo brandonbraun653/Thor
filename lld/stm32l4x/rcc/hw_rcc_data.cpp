@@ -27,14 +27,14 @@
 #include <Thor/lld/interface/inc/watchdog>
 
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_RCC )
+#if defined( TARGET_STM32L4 ) && defined( THOR_RCC )
 
 namespace Thor::LLD::RCC
 {
   /*-------------------------------------------------------------------------------
   Peripheral Register Mappings
   -------------------------------------------------------------------------------*/
-#if defined( THOR_LLD_ADC )
+#if defined( THOR_ADC )
   /* clang-format off */
   static const RegisterConfig ADC_ClockConfig[ ADC::NUM_ADC_PERIPHS ]      = {
     { .mask = AHB2ENR_ADCEN, .reg  = &RCC1_PERIPH->AHB2ENR }
@@ -50,7 +50,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_ADC */
 
-#if defined( THOR_LLD_CAN )
+#if defined( THOR_CAN )
   /* clang-format off */
   static const RegisterConfig CAN_ClockConfig[ CAN::NUM_CAN_PERIPHS ]      = {
     { .mask = APB1ENR1_CAN1EN, .reg  = &RCC1_PERIPH->APB1ENR1 }
@@ -66,7 +66,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_CAN */
 
-#if defined( THOR_LLD_CRS )
+#if defined( THOR_CRS )
   /* clang-format off */
   static const RegisterConfig CRS_ClockConfig[ CRS::NUM_CRS_PERIPHS ]      = {
     { .mask = APB1ENR1_CRSEN, .reg  = &RCC1_PERIPH->APB1ENR1 }
@@ -82,7 +82,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_CRS */
 
-#if defined( THOR_LLD_DMA )
+#if defined( THOR_DMA )
   /* clang-format off */
   static const RegisterConfig DMA_ClockConfig[ DMA::NUM_DMA_PERIPHS ]      = {
     { .mask = AHB1ENR_DMA1EN, .reg  = &RCC1_PERIPH->AHB1ENR },
@@ -101,7 +101,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_DMA */
 
-#if defined( THOR_LLD_FLASH )
+#if defined( THOR_FLASH )
   /* clang-format off */
   static const RegisterConfig FLASH_ClockConfig[ FLASH::NUM_FLASH_PERIPHS ]      = {
     { .mask = AHB1ENR_FLASHEN, .reg  = &RCC1_PERIPH->AHB1ENR }
@@ -117,7 +117,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_FLASH */
 
-#if defined( THOR_LLD_GPIO )
+#if defined( THOR_GPIO )
   /* clang-format off */
   static const RegisterConfig GPIO_ClockConfig[ GPIO::NUM_GPIO_PERIPHS ]      = {
     #if defined( STM32_GPIOA_PERIPH_AVAILABLE )
@@ -163,7 +163,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_GPIO */
 
-#if defined( THOR_LLD_I2C )
+#if defined( THOR_I2C )
   /* clang-format off */
   static const RegisterConfig I2C_ClockConfig[ I2C::NUM_I2C_PERIPHS ]      = {
     #if defined( STM32_I2C1_PERIPH_AVAILABLE )
@@ -209,7 +209,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif  /* THOR_LLD_I2C */
 
-#if defined( THOR_LLD_PWR )
+#if defined( THOR_PWR )
   /* clang-format off */
   static const RegisterConfig PWR_ClockConfig[ PWR::NUM_PWR_PERIPHS ]      = {
     { .mask = APB1ENR1_PWREN, .reg  = &RCC1_PERIPH->AHB1ENR }
@@ -225,7 +225,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_PWR */
 
-#if defined( THOR_LLD_SPI )
+#if defined( THOR_SPI )
   /* clang-format off */
   static const RegisterConfig SPI_ClockConfig[ SPI::NUM_SPI_PERIPHS ]      = {
     #if defined( STM32_SPI1_PERIPH_AVAILABLE )
@@ -271,7 +271,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_SPI */
 
-#if defined( THOR_LLD_SYSCFG )
+#if defined( THOR_SYSCFG )
   /* clang-format off */
   static const RegisterConfig SYSCFG_ClockConfig[ SYS::NUM_SYSCFG_PERIPHS ]      = {
     { .mask = APB2ENR_SYSCFGEN, .reg  = &RCC1_PERIPH->APB2ENR }
@@ -288,7 +288,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_SYSCFG */
 
-#if defined( THOR_LLD_TIMER )
+#if defined( THOR_TIMER )
   /* clang-format off */
   static const RegisterConfig TIMER_ClockConfig[ TIMER::NUM_TIMER_PERIPHS ] = {
     #if defined( STM32_TIMER1_PERIPH_AVAILABLE )
@@ -370,7 +370,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_TIMER */
 
-#if defined( THOR_LLD_USART )
+#if defined( THOR_USART )
   /* clang-format off */
   static const RegisterConfig USART_ClockConfig[ USART::NUM_USART_PERIPHS ]      = {
     #if defined( STM32_USART1_PERIPH_AVAILABLE )
@@ -416,7 +416,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_USART */
 
-#if defined( THOR_LLD_USB )
+#if defined( THOR_USB )
   /* clang-format off */
   static const RegisterConfig USB_ClockConfig[ USB::NUM_USB_PERIPHS ]      = {
     { .mask = APB1ENR1_USBFSEN, .reg  = &RCC1_PERIPH->APB1ENR1 }
@@ -432,7 +432,7 @@ namespace Thor::LLD::RCC
   /* clang-format on */
 #endif /* THOR_LLD_USB */
 
-#if defined( THOR_LLD_WWDG )
+#if defined( THOR_WWDG )
   /* clang-format off */
   static const RegisterConfig WWDG_ClockConfig[ WWDG::NUM_WWDG_PERIPHS ]      = {
     { .mask = APB1ENR1_WWDGEN, .reg  = &RCC1_PERIPH->APB1ENR1 }
@@ -454,7 +454,7 @@ namespace Thor::LLD::RCC
   -------------------------------------------------------------------------------*/
   static const PCC sReg[] = {
 /* clang-format off */
-    #if defined( THOR_LLD_ADC )
+    #if defined( THOR_ADC )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_ADC ),
       .elements         = ADC::NUM_ADC_PERIPHS,
@@ -468,7 +468,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_ADC */
 
-    #if defined( THOR_LLD_CAN )
+    #if defined( THOR_CAN )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_CAN ),
       .elements         = CAN::NUM_CAN_PERIPHS,
@@ -482,7 +482,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_CAN */
 
-    #if defined( THOR_LLD_CRS )
+    #if defined( THOR_CRS )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_CRS ),
       .elements         = CRS::NUM_CRS_PERIPHS,
@@ -496,7 +496,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_CRS */
 
-    #if defined( THOR_LLD_DMA )
+    #if defined( THOR_DMA )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_DMA ),
       .elements         = DMA::NUM_DMA_PERIPHS,
@@ -510,7 +510,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_DMA */
 
-    #if defined( THOR_LLD_FLASH )
+    #if defined( THOR_FLASH )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_FLASH ),
       .elements         = FLASH::NUM_FLASH_PERIPHS,
@@ -524,7 +524,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_FLASH */
 
-    #if defined( THOR_LLD_GPIO )
+    #if defined( THOR_GPIO )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_GPIO ),
       .elements         = GPIO::NUM_GPIO_PERIPHS,
@@ -538,7 +538,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_GPIO */
 
-    #if defined( THOR_LLD_I2C )
+    #if defined( THOR_I2C )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_I2C ),
       .elements         = I2C::NUM_I2C_PERIPHS,
@@ -552,7 +552,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_I2C */
 
-    #if defined( THOR_LLD_PWR )
+    #if defined( THOR_PWR )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_PWR ),
       .elements         = PWR::NUM_PWR_PERIPHS,
@@ -566,7 +566,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_PWR */
 
-    #if defined( THOR_LLD_SPI )
+    #if defined( THOR_SPI )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_SPI ),
       .elements         = SPI::NUM_SPI_PERIPHS,
@@ -580,7 +580,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_SPI */
 
-    #if defined( THOR_LLD_SYSCFG )
+    #if defined( THOR_SYSCFG )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_SYSCFG ),
       .elements         = SYS::NUM_SYSCFG_PERIPHS,
@@ -594,7 +594,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_SYSCFG */
 
-    #if defined( THOR_LLD_TIMER )
+    #if defined( THOR_TIMER )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_TIMER ),
       .elements         = TIMER::NUM_TIMER_PERIPHS,
@@ -608,7 +608,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_TIMER */
 
-    #if defined( THOR_LLD_USART )
+    #if defined( THOR_USART )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_USART ),
       .elements         = USART::NUM_USART_PERIPHS,
@@ -622,7 +622,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_USART */
 
-    #if defined( THOR_LLD_USB )
+    #if defined( THOR_USB )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_USB ),
       .elements         = USB::NUM_USB_PERIPHS,
@@ -636,7 +636,7 @@ namespace Thor::LLD::RCC
     },
     #endif /* THOR_LLD_USB */
 
-    #if defined( THOR_LLD_WWDG )
+    #if defined( THOR_WWDG )
     {
       .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_WWDG ),
       .elements         = WWDG::NUM_WWDG_PERIPHS,

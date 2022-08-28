@@ -20,7 +20,7 @@
 #include <Thor/lld/interface/inc/exti>
 #include <Thor/lld/interface/inc/sys>
 
-#if defined( THOR_LLD_GPIO ) && ( defined( TARGET_STM32F4 ) || defined( TARGET_STM32L4 ) )
+#if defined( THOR_GPIO ) && ( defined( TARGET_STM32F4 ) || defined( TARGET_STM32L4 ) )
 
 namespace Thor::LLD::GPIO
 {

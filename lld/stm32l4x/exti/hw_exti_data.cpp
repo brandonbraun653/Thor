@@ -16,7 +16,7 @@
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 #include <Thor/lld/stm32l4x/exti/hw_exti_types.hpp>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_EXTI )
+#if defined( TARGET_STM32L4 ) && defined( THOR_EXTI )
 
 namespace Thor::LLD::EXTI
 {

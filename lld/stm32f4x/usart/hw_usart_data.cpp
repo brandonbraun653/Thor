@@ -18,7 +18,7 @@
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/usart>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_USART )
+#if defined( TARGET_STM32F4 ) && defined( THOR_USART )
 
 namespace Thor::LLD::USART
 {

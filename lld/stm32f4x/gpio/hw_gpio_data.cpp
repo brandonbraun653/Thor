@@ -19,7 +19,7 @@
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/gpio>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_GPIO )
+#if defined( TARGET_STM32F4 ) && defined( THOR_GPIO )
 
 namespace Thor::LLD::GPIO
 {

@@ -13,7 +13,7 @@
 #include <Thor/lld/interface/inc/gpio>
 #include <Thor/lld/interface/inc/rcc>
 
-#if defined( STM32F446xx ) && defined( THOR_LLD_GPIO )
+#if defined( STM32F446xx ) && defined( THOR_GPIO )
 
 namespace Thor::LLD::GPIO
 {

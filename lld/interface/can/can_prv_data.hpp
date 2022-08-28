@@ -26,7 +26,7 @@
 #include <Thor/lld/interface/can/can_types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
-#if defined( THOR_LLD_CAN )
+#if defined( THOR_CAN )
 namespace Thor::LLD::CAN
 {
   /*-------------------------------------------------------------------------------

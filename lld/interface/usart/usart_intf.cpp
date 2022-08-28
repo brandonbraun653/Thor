@@ -16,7 +16,7 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/inc/usart>
 
-#if defined( THOR_LLD_USART )
+#if defined( THOR_USART )
 namespace Thor::LLD::USART
 {
   /*-------------------------------------------------------------------------------

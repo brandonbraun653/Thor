@@ -48,7 +48,7 @@ namespace Thor::LLD::INT
   /*-------------------------------------------------
   Peripheral Callback Storage
   -------------------------------------------------*/
-#if defined( THOR_LLD_USART )
+#if defined( THOR_USART )
   static Chimera::Interrupt::SignalCallback USARTHandlers[ Chimera::Serial::SIG_NUM_OPTIONS ];
 #endif
 
@@ -57,7 +57,7 @@ namespace Thor::LLD::INT
    */
   static const HandlerRegistry SignalHandlers[] = {
 
-#if defined( THOR_LLD_USART )
+#if defined( THOR_USART )
     { Chimera::Peripheral::Type::PERIPH_USART, USARTHandlers, ARRAY_COUNT( USARTHandlers ) },
 #endif
   };

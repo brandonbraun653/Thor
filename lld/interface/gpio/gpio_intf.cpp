@@ -19,13 +19,13 @@ Includes
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/inc/gpio>
 
-#if defined( THOR_LLD_GPIO )
+#if defined( THOR_GPIO )
 namespace Thor::LLD::GPIO
 {
   /*---------------------------------------------------------------------------
   Constants
   ---------------------------------------------------------------------------*/
-#if defined( THOR_LLD_GPIO )
+#if defined( THOR_GPIO )
   /* clang-format off */
   static const uint8_t portIndex[ DRIVER_MAX_PORTS ] = {
     GPIOA_RESOURCE_INDEX,

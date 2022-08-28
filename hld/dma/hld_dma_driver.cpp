@@ -34,7 +34,7 @@
 #include <Thor/lld/interface/inc/interrupt>
 
 
-#if defined( THOR_HLD_DMA )
+#if defined( THOR_DMA )
 
 /*-------------------------------------------------------------------------------
 Configuration Constants

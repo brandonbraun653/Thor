@@ -26,7 +26,7 @@
 #include <Thor/lld/interface/gpio/gpio_detail.hpp>
 #include <Thor/lld/interface/gpio/gpio_types.hpp>
 
-#if defined( THOR_LLD_GPIO )
+#if defined( THOR_GPIO )
 namespace Thor::LLD::GPIO
 {
   /*-------------------------------------------------------------------------------

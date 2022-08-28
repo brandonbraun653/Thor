@@ -28,7 +28,7 @@
 #include <Thor/lld/interface/inc/can>
 #include <Thor/lld/interface/inc/rcc>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_CAN )
+#if defined( TARGET_STM32L4 ) && defined( THOR_CAN )
 
 namespace Thor::LLD::CAN
 {

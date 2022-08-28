@@ -34,7 +34,7 @@
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/timer>
 
-#if defined( THOR_LLD_ADC ) && defined( TARGET_STM32F4 )
+#if defined( THOR_ADC ) && defined( TARGET_STM32F4 )
 
 /*-------------------------------------------------
 This driver expects some project side constants to

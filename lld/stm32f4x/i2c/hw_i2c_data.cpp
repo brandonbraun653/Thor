@@ -17,7 +17,7 @@ Includes
 #include <Thor/lld/interface/inc/i2c>
 #include <limits>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_I2C )
+#if defined( TARGET_STM32F4 ) && defined( THOR_I2C )
 namespace Thor::LLD::I2C
 {
 /*---------------------------------------------------------------------------

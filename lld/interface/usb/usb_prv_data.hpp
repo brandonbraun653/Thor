@@ -26,7 +26,7 @@
 #include <Thor/lld/interface/usb/usb_detail.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
-#if defined( THOR_LLD_USB )
+#if defined( THOR_USB )
 namespace Thor::LLD::USB
 {
   /*-------------------------------------------------------------------------------

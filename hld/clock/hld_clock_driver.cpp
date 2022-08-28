@@ -24,7 +24,7 @@
 #include <Thor/lld/interface/rcc/rcc_intf.hpp>
 #include <Thor/lld/interface/rcc/rcc_detail.hpp>
 
-#if defined( THOR_HLD_CLK )
+#if defined( THOR_CLK )
 
 namespace Thor::Clock
 {

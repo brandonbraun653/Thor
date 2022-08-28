@@ -27,7 +27,7 @@
 #include <Thor/lld/interface/spi/spi_detail.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
-#if defined( THOR_LLD_SPI )
+#if defined( THOR_SPI )
 namespace Thor::LLD::SPI
 {
   /*-------------------------------------------------------------------------------

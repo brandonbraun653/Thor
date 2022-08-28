@@ -17,7 +17,7 @@ Includes
 /*-----------------------------------------------------------------------------
 IRQ Handlers
 -----------------------------------------------------------------------------*/
-#if defined( THOR_LLD_I2C )
+#if defined( THOR_I2C )
 using namespace Thor::LLD::I2C;
 
 #if defined( STM32_I2C1_PERIPH_AVAILABLE )

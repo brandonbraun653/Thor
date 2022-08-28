@@ -59,7 +59,7 @@ namespace Chimera::Clock::Backend
 
   Chimera::Status_t registerDriver( Chimera::Clock::Backend::DriverConfig &registry )
   {
-#if defined( THOR_HLD_CLK )
+#if defined( THOR_CLK )
     registry.isSupported           = true;
     registry.disableClock          = disableClock;
     registry.enableClock           = enableClock;

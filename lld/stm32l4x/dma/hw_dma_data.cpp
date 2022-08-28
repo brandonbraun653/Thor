@@ -16,7 +16,7 @@
 #include <Thor/lld/interface/inc/dma>
 
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_DMA )
+#if defined( TARGET_STM32L4 ) && defined( THOR_DMA )
 namespace Thor::LLD::DMA
 {
   /*-------------------------------------------------------------------------------

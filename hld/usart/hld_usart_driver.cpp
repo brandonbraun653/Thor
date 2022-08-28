@@ -33,7 +33,7 @@
 #include <Thor/lld/interface/inc/usart>
 
 
-#if defined( THOR_HLD_USART )
+#if defined( THOR_USART )
 
 /*-------------------------------------------------------------------------------
 Aliases

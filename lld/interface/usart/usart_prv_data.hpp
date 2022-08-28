@@ -27,7 +27,7 @@
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 #include <Thor/lld/interface/usart/usart_detail.hpp>
 
-#if defined( THOR_LLD_USART )
+#if defined( THOR_USART )
 namespace Thor::LLD::USART
 {
   /*-------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ namespace Thor::LLD::USART
   -------------------------------------------------------------------------------*/
   namespace Resource
   {
-    #if defined( THOR_LLD_DMA )
+    #if defined( THOR_DMA )
     extern LLD_CONST DMA::Source RXDMASignals[ NUM_USART_PERIPHS ];
     extern LLD_CONST DMA::Source TXDMASignals[ NUM_USART_PERIPHS ];
     #endif

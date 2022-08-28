@@ -29,7 +29,7 @@
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 
 
-#if defined( THOR_LLD_DMA )
+#if defined( THOR_DMA )
 namespace Thor::LLD::DMA
 {
   /*-------------------------------------------------------------------------------

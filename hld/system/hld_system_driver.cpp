@@ -67,7 +67,7 @@ namespace Thor::System
     ------------------------------------------------*/
     Thor::LLD::INT::setPriorityGrouping( Thor::LLD::INT::SYSTEM_NVIC_PRIORITY_GROUPING );
 
-#if defined( THOR_LLD_DES )
+#if defined( THOR_DES )
     Thor::LLD::DES::initialize();
 #endif
 

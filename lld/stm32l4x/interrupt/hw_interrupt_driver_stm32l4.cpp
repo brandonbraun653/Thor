@@ -15,7 +15,7 @@
 /* Driver Includes */
 #include <Thor/cfg>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_LLD_IT )
+#if defined( TARGET_STM32L4 ) && defined( THOR_IT )
 
 namespace Thor::LLD::INT
 {

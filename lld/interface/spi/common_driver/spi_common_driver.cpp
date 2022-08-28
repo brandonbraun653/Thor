@@ -25,7 +25,7 @@
 #include <Thor/lld/interface/spi/common_driver/spi_common_intf.hpp>
 
 
-#if defined( THOR_LLD_SPI ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
+#if defined( THOR_SPI ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
 
 namespace Thor::LLD::SPI
 {

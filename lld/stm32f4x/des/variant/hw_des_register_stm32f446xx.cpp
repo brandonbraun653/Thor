@@ -14,7 +14,7 @@
 #include <Thor/lld/stm32f4x/des/hw_des_prj.hpp>
 #include <Thor/lld/stm32f4x/des/hw_des_types.hpp>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_DES ) && defined( STM32F446xx )
+#if defined( TARGET_STM32F4 ) && defined( THOR_DES ) && defined( STM32F446xx )
 
 namespace Thor::LLD::DES
 {

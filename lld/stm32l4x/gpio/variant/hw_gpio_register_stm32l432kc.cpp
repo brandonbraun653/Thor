@@ -17,7 +17,7 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/inc/gpio>
 
-#if defined( STM32L432xx ) && defined( THOR_LLD_GPIO )
+#if defined( STM32L432xx ) && defined( THOR_GPIO )
 
 namespace Thor::LLD::GPIO
 {

@@ -103,7 +103,7 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-#if defined( THOR_LLD_ADC )
+#if defined( THOR_ADC )
   class Driver : public Chimera::Thread::Lockable<Driver>
   {
   public:

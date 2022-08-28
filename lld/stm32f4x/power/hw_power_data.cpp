@@ -17,7 +17,7 @@
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/power>
 
-#if defined( TARGET_STM32F4 ) && defined( THOR_LLD_PWR )
+#if defined( TARGET_STM32F4 ) && defined( THOR_PWR )
 
 namespace Thor::LLD::PWR
 {
