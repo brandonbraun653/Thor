@@ -26,7 +26,7 @@
 #include <Chimera/usart>
 
 /* Thor Includes */
-#include <Thor/gpio>
+#include <Chimera/gpio>
 #include <Thor/hld/usart/hld_usart_types.hpp>
 
 namespace Thor::USART

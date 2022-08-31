@@ -25,7 +25,7 @@
 #include <Chimera/uart>
 
 /* Thor Includes */
-#include <Thor/gpio>
+#include <Chimera/gpio>
 
 namespace Thor::UART
 {

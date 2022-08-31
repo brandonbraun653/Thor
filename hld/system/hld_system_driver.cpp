@@ -11,12 +11,12 @@
 /* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/system>
+#include <Chimera/gpio>
 
 /* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/interrupt>
 #include <Thor/dma>
-#include <Thor/gpio>
 #include <Thor/spi>
 #include <Thor/uart>
 #include <Thor/usart>

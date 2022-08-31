@@ -17,13 +17,13 @@
 #include <Aurora/constants>
 
 /* Chimera Includes */
+#include <Chimera/gpio>
 #include <Chimera/spi>
 #include <Chimera/thread>
 #include <Chimera/event>
 
 /* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/gpio>
 #include <Thor/spi>
 #include <Thor/lld/interface/spi/spi_detail.hpp>
 #include <Thor/lld/interface/spi/spi_intf.hpp>
