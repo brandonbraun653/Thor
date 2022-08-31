@@ -4,7 +4,6 @@ gen_static_lib_variants(
   TARGET
     thor_hld_dma
   SOURCES
-    hld_dma_chimera.cpp
     hld_dma_driver.cpp
   PRV_LIBRARIES
     aurora_intf_inc

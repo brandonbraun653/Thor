@@ -5,34 +5,23 @@
  *  Description:
  *    Thor implementation of the DMA driver
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_DMA_HPP
 #define THOR_DMA_HPP
 
-/* Chimera Includes */
-#include <Chimera/thread>
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/dma>
 
 namespace Thor::DMA
 {
-  /*-------------------------------------------------------------------------------
+  /*-----------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
-  /*-------------------------------------------------
-  Chimera Interface Requirements
-  -------------------------------------------------*/
-  Chimera::Status_t initialize();
-  Chimera::Status_t reset();
-  Chimera::DMA::RequestId constructPipe( const Chimera::DMA::PipeConfig &config );
-  Chimera::DMA::RequestId transfer( const Chimera::DMA::MemTransfer &transfer );
-  Chimera::DMA::RequestId transfer( const Chimera::DMA::PipeTransfer &transfer );
-
-  /*-------------------------------------------------
-  Thor Interface (Additional)
-  -------------------------------------------------*/
+  -----------------------------------------------------------------------------*/
   /**
    * @brief Get the Pipe Config object mapped to the request ID
    *

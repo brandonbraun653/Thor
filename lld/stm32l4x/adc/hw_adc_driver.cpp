@@ -223,7 +223,7 @@ namespace Thor::LLD::ADC
     dmaCfg.persistent         = true;
     dmaCfg.wakeUserOnComplete = false;
 
-    mDMAPipeID = Thor::DMA::constructPipe( dmaCfg );
+    mDMAPipeID = Chimera::DMA::constructPipe( dmaCfg );
 
     /*-------------------------------------------------------------------------
     Enable the ADC
@@ -551,7 +551,7 @@ namespace Thor::LLD::ADC
     cfg.isrCallback = callback;
 
     /* Won't start the transfer b/c ADC is the controller, but does prime the DMA hw for the ADC */
-    Thor::DMA::transfer( cfg );
+    Chimera::DMA::transfer( cfg );
 
     /*-------------------------------------------------------------------------
     Turn on the ADC peripheral DMA request hardware

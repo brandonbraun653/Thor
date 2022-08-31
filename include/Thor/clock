@@ -1,18 +1,17 @@
 /********************************************************************************
  *  File Name:
  *    clock
- * 
+ *
  *  Description:
- *    Thor CLOCK Includes
- * 
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *    Thor HLD Clock Includes
+ *
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_CLOCK_INCLUDES
 #define THOR_CLOCK_INCLUDES
 
-#include <Thor/hld/clock/hld_clock_driver.hpp>
 #include <Thor/hld/clock/hld_clock_types.hpp>
 
 #endif /* !THOR_CLOCK_INCLUDES */

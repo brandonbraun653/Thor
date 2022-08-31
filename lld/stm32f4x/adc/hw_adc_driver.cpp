@@ -186,7 +186,7 @@ namespace Thor::LLD::ADC
     dmaCfg.channel       = static_cast<size_t>( Thor::LLD::DMA::getChannel( Resource::DMASignals[ mResourceIndex ] ) );
     dmaCfg.threshold     = FifoThreshold::NONE;
 
-    mDMAPipeID = Thor::DMA::constructPipe( dmaCfg );
+    mDMAPipeID = Chimera::DMA::constructPipe( dmaCfg );
 
     /*-------------------------------------------------
     Enable ISRs
@@ -512,7 +512,7 @@ namespace Thor::LLD::ADC
     cfg.addr     = reinterpret_cast<std::uintptr_t>( mDMASampleBuffer.rawSamples.data() );
 
     /* Won't start the transfer, but does prime the DMA hw for the ADC */
-    Thor::DMA::transfer( cfg );
+    Chimera::DMA::transfer( cfg );
 
     /*-------------------------------------------------
     Enable the DMA functionality on the ADC peripheral

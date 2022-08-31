@@ -5,94 +5,79 @@
  *  Description:
  *    Implements the HLD clock driver for Thor
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-/* STL Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <limits>
-
-/* Aurora Includes */
 #include <Aurora/constants>
-
-/* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/clock>
-
-/* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/clock>
-#include <Thor/lld/interface/rcc/rcc_intf.hpp>
-#include <Thor/lld/interface/rcc/rcc_detail.hpp>
+#include <Thor/lld/interface/inc/rcc>
 
 #if defined( THOR_CLK )
-
-namespace Thor::Clock
+namespace Chimera::Clock::Backend
 {
-  // Tracks if the module data has been initialized correctly
-  static size_t s_driver_initialized;
-
-  /*------------------------------------------------
-  High Level Driver Free Functions
-  ------------------------------------------------*/
-  Chimera::Status_t initialize()
+  /*---------------------------------------------------------------------------
+  Static Functions
+  ---------------------------------------------------------------------------*/
+  static Chimera::Status_t initialize()
   {
-    /*------------------------------------------------
-    Prevent re-initialization from occurring
-    ------------------------------------------------*/
-    auto result = Chimera::Status::OK;
-    if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
-    {
-      return result;
-    }
-
-    /*------------------------------------------------
-    Initialize local memory
-    ------------------------------------------------*/
-    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
-
-
-    /*------------------------------------------------
-    Make sure we can't be initialized again, then exit
-    ------------------------------------------------*/
-    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
-    return result;
+    return Chimera::Status::OK;
   }
 
-  Chimera::Status_t periphEnable( const Chimera::Peripheral::Type periph )
+  static Chimera::Status_t periphEnable( const Chimera::Peripheral::Type periph )
   {
     return Chimera::Status::NOT_AVAILABLE;
   }
 
-  Chimera::Status_t periphDisable( const Chimera::Peripheral::Type periph )
+  static Chimera::Status_t periphDisable( const Chimera::Peripheral::Type periph )
   {
     return Chimera::Status::NOT_AVAILABLE;
   }
 
-  Chimera::Status_t enableClock( const Chimera::Clock::Bus bus )
+  static Chimera::Status_t enableClock( const Chimera::Clock::Bus bus )
   {
     return Chimera::Status::NOT_AVAILABLE;
   }
 
-  Chimera::Status_t disableClock( const Chimera::Clock::Bus bus )
+  static Chimera::Status_t disableClock( const Chimera::Clock::Bus bus )
   {
     return Chimera::Status::NOT_AVAILABLE;
   }
 
-  bool isEnabled( const Chimera::Clock::Bus bus )
+  static bool isEnabled( const Chimera::Clock::Bus bus )
   {
     return false;
   }
 
-  size_t getFrequency( const Chimera::Clock::Bus bus )
+  static size_t getFrequency( const Chimera::Clock::Bus bus )
   {
     return Thor::LLD::RCC::getBusFrequency( bus );
   }
 
-  Chimera::Status_t setFrequency( const Chimera::Clock::Bus bus, const size_t freq )
+  static Chimera::Status_t setFrequency( const Chimera::Clock::Bus bus, const size_t freq )
   {
     return Chimera::Status::NOT_AVAILABLE;
   }
 
+  Chimera::Status_t registerDriver( Chimera::Clock::Backend::DriverConfig &registry )
+  {
+    registry.isSupported           = true;
+    registry.disableClock          = disableClock;
+    registry.enableClock           = enableClock;
+    registry.getFrequency          = getFrequency;
+    registry.initialize            = initialize;
+    registry.isEnabled             = isEnabled;
+    registry.periphDisable         = periphDisable;
+    registry.periphEnable          = periphEnable;
+    registry.setFrequency          = setFrequency;
+    return Chimera::Status::OK;
+  }
 }    // namespace Thor::Clock
 
-#endif /* THOR_HLD_CLK */
+#endif /* THOR_CLK */

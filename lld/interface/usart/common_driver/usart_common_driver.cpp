@@ -367,8 +367,8 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------
     Construct the pipe and make a note of it's UUID
     -------------------------------------------------*/
-    mTXDMARequestId = Thor::DMA::constructPipe( txCfg );
-    mRXDMARequestId = Thor::DMA::constructPipe( rxCfg );
+    mTXDMARequestId = Chimera::DMA::constructPipe( txCfg );
+    mRXDMARequestId = Chimera::DMA::constructPipe( rxCfg );
 
     /*-------------------------------------------------
     Configure the peripheral interrupts
@@ -455,7 +455,7 @@ namespace Thor::LLD::USART
       mTXTCB.state     = StateMachine::TX::TX_ONGOING;
       mTXTCB.mode      = PeripheralMode::DMA;
 
-      Thor::DMA::transfer( cfg );
+      Chimera::DMA::transfer( cfg );
     }
     enableUSARTInterrupts();
 
@@ -524,7 +524,7 @@ namespace Thor::LLD::USART
       mRXTCB.mode      = PeripheralMode::DMA;
 
 
-      Thor::DMA::transfer( cfg );
+      Chimera::DMA::transfer( cfg );
 
       /*------------------------------------------------
       Turn on the RX hardware to begin listening for data
