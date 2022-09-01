@@ -14,7 +14,6 @@ Includes
 #include <Chimera/common>
 #include <Chimera/i2c>
 #include <Thor/cfg>
-#include <Thor/i2c>
 #include <Thor/lld/interface/inc/i2c>
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
