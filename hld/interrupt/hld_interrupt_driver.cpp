@@ -5,43 +5,31 @@
  *  Description:
  *    High level interrupt driver implementation
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
 #include <Chimera/interrupt>
-
-/* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/interrupt>
-#include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
-#include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
-#include <Thor/lld/interface/interrupt/interrupt_types.hpp>
+#include <Thor/lld/interface/inc/interrupt>
 
-namespace Thor::Interrupt
-{
-/*-------------------------------------------------------------------------------
-Public Functions
--------------------------------------------------------------------------------*/
 #if defined( THOR_INT )
-  Chimera::Status_t initialize()
+namespace Chimera::Interrupt::Backend
+{
+  /*---------------------------------------------------------------------------
+  Public Functions
+  ---------------------------------------------------------------------------*/
+  Chimera::Status_t registerDriver( Chimera::Interrupt::Backend::DriverConfig &registry )
   {
-    return Thor::LLD::INT::initialize();
+    registry.isSupported        = true;
+    registry.initialize         = Thor::LLD::INT::initialize;
+    registry.reset              = Thor::LLD::INT::reset;
+    registry.registerISRHandler = Thor::LLD::INT::registerISRHandler;
+    return Chimera::Status::OK;
   }
-
-
-  Chimera::Status_t reset()
-  {
-    return Thor::LLD::INT::reset();
-  }
-
-
-  Chimera::Status_t registerISRHandler( const Chimera::Peripheral::Type type, const Chimera::Interrupt::Signal_t signal,
-                                        const Chimera::Interrupt::SignalCallback &callback )
-  {
-    return Thor::LLD::INT::registerISRHandler( type, signal, callback );
-  }
-#endif  /* THOR_HLD_INT */
 
 }  // namespace Thor::Interrupt
+#endif  /* THOR_HLD_INT */

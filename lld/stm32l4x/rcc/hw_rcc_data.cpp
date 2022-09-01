@@ -23,7 +23,6 @@
 #include <Thor/lld/interface/inc/timer>
 #include <Thor/lld/interface/inc/uart>
 #include <Thor/lld/interface/inc/usart>
-#include <Thor/lld/interface/inc/usb>
 #include <Thor/lld/interface/inc/watchdog>
 
 

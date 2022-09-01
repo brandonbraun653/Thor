@@ -15,7 +15,6 @@ add_subdirectory("spi")
 add_subdirectory("system")
 add_subdirectory("timer")
 add_subdirectory("usart")
-add_subdirectory("usb")
 add_subdirectory("watchdog")
 
 # ====================================================

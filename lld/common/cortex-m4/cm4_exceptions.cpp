@@ -10,7 +10,6 @@
 
 /* Thor Includes */
 #include <Thor/cfg>
-#include <Thor/system>
 
 #if defined( CORTEX_M4 ) && defined( EMBEDDED )
 

@@ -5,33 +5,30 @@
  *  Description:
  *    Implements system interface functions for Thor
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
-#include <Chimera/system>
 #include <Chimera/gpio>
-
-/* Thor Includes */
+#include <Chimera/system>
 #include <Thor/cfg>
-#include <Thor/interrupt>
 #include <Thor/dma>
-#include <Thor/spi>
-#include <Thor/uart>
-#include <Thor/usart>
-#include <Thor/watchdog>
-
-/* Driver Includes */
 #include <Thor/lld/common/interrupts/nvic_detail.hpp>
 #include <Thor/lld/interface/inc/des>
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/startup>
 #include <Thor/lld/interface/inc/sys>
+#include <Thor/spi>
+#include <Thor/uart>
+#include <Thor/usart>
+#include <Thor/watchdog>
 
 
-namespace Thor::System
+namespace Chimera::System::Backend
 {
   /*-------------------------------------------------------------------------------
   Static Data
@@ -39,22 +36,22 @@ namespace Thor::System
   static Chimera::System::Information s_system_info;
 
   /*-------------------------------------------------------------------------------
-  Public Functions
+  Static Functions
   -------------------------------------------------------------------------------*/
-  Chimera::Status_t initialize()
+  static Chimera::Status_t initialize()
   {
     s_system_info = {};
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t reset()
+  static Chimera::Status_t reset()
   {
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t systemStartup()
+  static Chimera::Status_t systemStartup()
   {
     /*------------------------------------------------
     Initialize the system clocks
@@ -75,31 +72,13 @@ namespace Thor::System
   }
 
 
-  Chimera::System::InterruptMask disableInterrupts()
-  {
-    return Thor::LLD::INT::disableInterrupts();
-  }
-
-
-  void enableInterrupts( Chimera::System::InterruptMask &interruptMask )
-  {
-    Thor::LLD::INT::enableInterrupts( interruptMask );
-  }
-
-
-  int maxConcurrentThreads()
+  static int maxConcurrentThreads()
   {
     return 1;
   }
 
 
-  Chimera::System::ResetEvent getResetReason()
-  {
-    return Thor::LLD::RCC::getResetReason();
-  }
-
-
-  void getSystemInformation( Chimera::System::Information *&info )
+  static void getSystemInformation( Chimera::System::Information *&info )
   {
     /*------------------------------------------------
     Update the static data fields
@@ -115,21 +94,79 @@ namespace Thor::System
   }
 
 
-  bool inISR()
+  namespace Version
   {
-    return Thor::LLD::SYS::inISR();
-  }
+    static std::string_view asString()
+    {
+      return Thor::HLD::VersionString;
+    }
 
 
-  void softwareReset()
+    static size_t major()
+    {
+      return Thor::HLD::VersionMajor;
+    }
+
+
+    static size_t minor()
+    {
+      return Thor::HLD::VersionMinor;
+    }
+
+
+    static size_t patch()
+    {
+      return Thor::HLD::VersionPatch;
+    }
+  }    // namespace Version
+
+
+  namespace Description
   {
-    return Thor::LLD::SYS::softwareReset();
-  }
+    static std::string_view about()
+    {
+      return "Thor is a hardware abstraction layer focused on STM32 chips.";
+    }
 
 
-  bool isDebuggerAttached()
+    static std::string_view backendDriverName()
+    {
+      return "Thor";
+    }
+
+
+    static std::string_view documentationLink()
+    {
+      return "N/A";
+    }
+  }    // namespace Description
+
+
+  /*---------------------------------------------------------------------------
+  Public Functions
+  ---------------------------------------------------------------------------*/
+  Chimera::Status_t registerDriver( DriverConfig &registry )
   {
-    return Thor::LLD::SYS::isDebuggerAttached();
+    registry.isSupported            = true;
+    registry.disableInterrupts      = Thor::LLD::INT::disableInterrupts;
+    registry.enableInterrupts       = Thor::LLD::INT::enableInterrupts;
+    registry.getResetReason         = Thor::LLD::RCC::getResetReason;
+    registry.getSystemInformation   = Chimera::System::Backend::getSystemInformation;
+    registry.initialize             = Chimera::System::Backend::initialize;
+    registry.maxConcurrentThreads   = Chimera::System::Backend::maxConcurrentThreads;
+    registry.reset                  = Chimera::System::Backend::reset;
+    registry.systemStartup          = Chimera::System::Backend::systemStartup;
+    registry.inISR                  = Thor::LLD::SYS::inISR;
+    registry.softwareReset          = Thor::LLD::SYS::softwareReset;
+    registry.isDebuggerAttached     = Thor::LLD::SYS::isDebuggerAttached;
+    registry.desc_About             = Description::about;
+    registry.desc_BackendDriverName = Description::backendDriverName;
+    registry.desc_DocumentationLink = Description::documentationLink;
+    registry.version_AsString       = Version::asString;
+    registry.version_Major          = Version::major;
+    registry.version_Minor          = Version::minor;
+    registry.version_Patch          = Version::patch;
+    return Chimera::Status::OK;
   }
 
 }    // namespace Thor::System
