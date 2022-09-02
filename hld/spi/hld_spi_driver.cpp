@@ -5,152 +5,114 @@
  *  Description:
  *    SPI driver for Thor
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* C++ Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
+#include <Aurora/constants>
+#include <Chimera/event>
+#include <Chimera/gpio>
+#include <Chimera/spi>
+#include <Chimera/thread>
+#include <Thor/cfg>
+#include <Thor/lld/interface/inc/interrupt>
+#include <Thor/lld/interface/inc/spi>
 #include <array>
 #include <cstring>
 #include <limits>
 
-/* Aurora Includes */
-#include <Aurora/constants>
-
-/* Chimera Includes */
-#include <Chimera/gpio>
-#include <Chimera/spi>
-#include <Chimera/thread>
-#include <Chimera/event>
-
-/* Thor Includes */
-#include <Thor/cfg>
-#include <Thor/spi>
-#include <Thor/lld/interface/spi/spi_detail.hpp>
-#include <Thor/lld/interface/spi/spi_intf.hpp>
-#include <Thor/lld/interface/spi/spi_types.hpp>
 
 #if defined( THOR_SPI )
+namespace Chimera::SPI
+{ /*---------------------------------------------------------------------------
+   Aliases
+   ---------------------------------------------------------------------------*/
+  namespace LLD = ::Thor::LLD::SPI;
 
-/*-------------------------------------------------------------------------------
-Aliases
--------------------------------------------------------------------------------*/
-namespace HLD = ::Thor::SPI;
-namespace LLD = ::Thor::LLD::SPI;
+  /*---------------------------------------------------------------------------
+  Constants
+  ---------------------------------------------------------------------------*/
+  static constexpr size_t NUM_DRIVERS = LLD::NUM_SPI_PERIPHS;
 
-using ThreadHandle = Chimera::Thread::detail::native_thread_handle_type;
-using BinarySemphr = Chimera::Thread::BinarySemaphore;
-using ThreadFunctn = Chimera::Function::void_func_void_ptr;
-
-/*-------------------------------------------------------------------------------
-Constants
--------------------------------------------------------------------------------*/
-static constexpr size_t NUM_DRIVERS = LLD::NUM_SPI_PERIPHS;
-
-/*-------------------------------------------------------------------------------
-Variables
--------------------------------------------------------------------------------*/
-static size_t s_driver_initialized;                        /**< Tracks the module level initialization state */
-static HLD::Driver hld_driver[ NUM_DRIVERS ];              /**< Driver objects */
-static ThreadHandle s_user_isr_handle[ NUM_DRIVERS ];      /**< Handle to the ISR post processing thread */
-static BinarySemphr s_user_isr_signal[ NUM_DRIVERS ];      /**< Lock for each ISR post processing thread */
-static ThreadFunctn s_user_isr_thread_func[ NUM_DRIVERS ]; /**< RTOS aware function to execute at end of ISR */
-static bool s_thread_created[ NUM_DRIVERS ];
-
-/*-------------------------------------------------------------------------------
-Private Function Declarations
--------------------------------------------------------------------------------*/
-#if defined( STM32_SPI1_PERIPH_AVAILABLE )
-static void SPI1ISRPostProcessorThread( void *argument );
-#endif
-#if defined( STM32_SPI2_PERIPH_AVAILABLE )
-static void SPI2ISRPostProcessorThread( void *argument );
-#endif
-#if defined( STM32_SPI3_PERIPH_AVAILABLE )
-static void SPI3ISRPostProcessorThread( void *argument );
-#endif
-#if defined( STM32_SPI4_PERIPH_AVAILABLE )
-static void SPI4ISRPostProcessorThread( void *argument );
-#endif
-
-namespace Thor::SPI
-{
-  using namespace Chimera::Thread;
-
-  /*-------------------------------------------------------------------------------
-  Public Functions
-  -------------------------------------------------------------------------------*/
-  Chimera::Status_t initialize()
+  /*---------------------------------------------------------------------------
+  Structures
+  ---------------------------------------------------------------------------*/
+  struct ThorImpl
   {
-    /*------------------------------------------------
-    Prevent multiple initializations (need reset first)
-    ------------------------------------------------*/
-    if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
+    LLD::Driver_rPtr               lldriver;
+    Chimera::SPI::Driver_rPtr      hldriver;
+    Chimera::SPI::DriverConfig     config;
+    Chimera::GPIO::Driver_rPtr     csPin;
+
+    void postISRProcessing()
     {
-      return Chimera::Status::OK;
+      // TODO: Add logic for listener invocation, error handling, CS toggling, and multiple transfers.
+
+      /*------------------------------------------------
+      Decide chip select behavior
+      ------------------------------------------------*/
+      if ( config.HWInit.csMode == Chimera::SPI::CSMode::AUTO_AFTER_TRANSFER )
+      {
+        hldriver->setChipSelect( Chimera::GPIO::State::HIGH );
+      }
+
+      /*------------------------------------------------
+      Notify threads waiting on the transfer complete signal
+      ------------------------------------------------*/
+      hldriver->signalAIO( Chimera::Event::Trigger::TRIGGER_TRANSFER_COMPLETE );
     }
+  };
 
-    /*------------------------------------------------
-    Initialize the low level driver
-    ------------------------------------------------*/
-    ::LLD::initialize();
+  /*---------------------------------------------------------------------------
+  Variables
+  ---------------------------------------------------------------------------*/
+  static DeviceManager<Driver, Channel, NUM_DRIVERS>   s_raw_drivers;
+  static DeviceManager<ThorImpl, Channel, NUM_DRIVERS> s_impl_drivers;
 
-    /*------------------------------------------------
-    Initialize ISR post-processing routines
-    ------------------------------------------------*/
-#if defined( STM32_SPI1_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[::LLD::SPI1_RESOURCE_INDEX ] = SPI1ISRPostProcessorThread;
-#endif
-#if defined( STM32_SPI2_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[::LLD::SPI2_RESOURCE_INDEX ] = SPI2ISRPostProcessorThread;
-#endif
-#if defined( STM32_SPI3_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[::LLD::SPI3_RESOURCE_INDEX ] = SPI3ISRPostProcessorThread;
-#endif
-#if defined( STM32_SPI4_PERIPH_AVAILABLE )
-    s_user_isr_thread_func[::LLD::SPI4_RESOURCE_INDEX ] = SPI4ISRPostProcessorThread;
-#endif
-
-    /*-------------------------------------------------
-    Initialize Memory
-    -------------------------------------------------*/
-    for( size_t x=0; x < ARRAY_COUNT( s_thread_created ); x++)
-    {
-      s_thread_created[ x ] = false;
-    }
-
-    /*-------------------------------------------------
-    Lock the init sequence and exit
-    -------------------------------------------------*/
-    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
-    return Chimera::Status::OK;
-  }
-
-
-  Chimera::Status_t reset()
+  /*---------------------------------------------------------------------------
+  Static Functions
+  ---------------------------------------------------------------------------*/
+  /**
+   * @brief Common thread for handling SPI interrupts in userspace
+   *
+   * @param arg   Unused
+   */
+  static void SPIxISRUserThread( void *arg )
   {
-    return Chimera::Status::OK;
-  }
+    using namespace Chimera::Thread;
 
+    Chimera::SPI::Channel instance_list[ EnumValue( Chimera::SPI::Channel::NUM_OPTIONS ) ];
 
-  Driver_rPtr getDriver( const Chimera::SPI::Channel channel )
-  {
-    if ( auto idx = ::LLD::getResourceIndex( channel ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    while ( 1 )
     {
-      return &hld_driver[ idx ];
-    }
-    else
-    {
-      return nullptr;
+      /*-----------------------------------------------------------------------
+      Wait for something to wake this thread directly
+      -----------------------------------------------------------------------*/
+      if ( !this_thread::pendTaskMsg( ITCMsg::TSK_MSG_ISR_HANDLER ) )
+      {
+        continue;
+      }
+
+      /*-----------------------------------------------------------------------
+      Handle every ISR. Don't know which triggered this.
+      -----------------------------------------------------------------------*/
+      const size_t count = s_impl_drivers.registeredInstances( instance_list, ARRAY_COUNT( instance_list ) );
+      for ( size_t idx = 0; idx < count; idx++ )
+      {
+        auto impl = s_impl_drivers.get( instance_list[ idx ] );
+        impl->postISRProcessing();
+      }
     }
   }
 
 
-  /*-------------------------------------------------------------------------------
-  Driver Implementation
-  -------------------------------------------------------------------------------*/
-  Driver::Driver() : SCK( nullptr ), MOSI( nullptr ), MISO( nullptr ), CS( nullptr )
+  /*---------------------------------------------------------------------------
+  Classes
+  ---------------------------------------------------------------------------*/
+  Driver::Driver()
   {
-    config.clear();
   }
 
 
@@ -159,61 +121,40 @@ namespace Thor::SPI
   }
 
 
-  void Driver::postISRProcessing()
-  {
-    // TODO: Add logic for listener invocation, error handling, CS toggling, and multiple transfers.
-
-    /*------------------------------------------------
-    Decide chip select behavior
-    ------------------------------------------------*/
-    if ( config.HWInit.csMode == Chimera::SPI::CSMode::AUTO_AFTER_TRANSFER )
-    {
-      setChipSelect( Chimera::GPIO::State::HIGH );
-    }
-
-    /*------------------------------------------------
-    Notify threads waiting on the transfer complete signal
-    ------------------------------------------------*/
-    awaitTransferComplete.release();
-  }
-
-  /*------------------------------------------------
-  HW Interface
-  ------------------------------------------------*/
   Chimera::Status_t Driver::init( const Chimera::SPI::DriverConfig &setupStruct )
   {
     using namespace Chimera::Thread;
     auto result = Chimera::Status::OK;
 
-    /*------------------------------------------------
-    Should we even bother creating this?
-    ------------------------------------------------*/
-    if ( !::LLD::isSupported( setupStruct.HWInit.hwChannel ) )
+    /*-------------------------------------------------------------------------
+    Is the driver supported?
+    -------------------------------------------------------------------------*/
+    if ( !LLD::isSupported( setupStruct.HWInit.hwChannel ) )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
 
-    /*------------------------------------------------
-    First register the driver and initialize class vars
-    ------------------------------------------------*/
-    auto lldResourceIndex = ::LLD::getResourceIndex( setupStruct.HWInit.hwChannel );
-    if ( lldResourceIndex == ::Thor::LLD::INVALID_RESOURCE_INDEX )
-    {
-      return Chimera::Status::NOT_SUPPORTED;
-    }
+    /*-------------------------------------------------------------------------
+    Allocate the drivers
+    -------------------------------------------------------------------------*/
+    auto impl      = s_impl_drivers.getOrCreate( setupStruct.HWInit.hwChannel );
+    impl->lldriver = LLD::getDriver( setupStruct.HWInit.hwChannel );
+    RT_DBG_ASSERT( impl && impl->lldriver );
 
-    /*------------------------------------------------
+    mImpl          = reinterpret_cast<void *>( impl );
+    impl->hldriver = this;
+    impl->config  = setupStruct;
+
+    /*-------------------------------------------------------------------------
     Configure the GPIO
-    ------------------------------------------------*/
-    config = setupStruct;
+    -------------------------------------------------------------------------*/
+    auto SCK  = Chimera::GPIO::getDriver( impl->config.SCKInit.port, impl->config.SCKInit.pin );
+    auto MOSI = Chimera::GPIO::getDriver( impl->config.MOSIInit.port, impl->config.MOSIInit.pin );
+    auto MISO = Chimera::GPIO::getDriver( impl->config.MISOInit.port, impl->config.MISOInit.pin );
 
-    SCK  = Chimera::GPIO::getDriver( config.SCKInit.port, config.SCKInit.pin );
-    MOSI = Chimera::GPIO::getDriver( config.MOSIInit.port, config.MOSIInit.pin );
-    MISO = Chimera::GPIO::getDriver( config.MISOInit.port, config.MISOInit.pin );
-
-    result |= SCK->init( config.SCKInit );
-    result |= MOSI->init( config.MOSIInit );
-    result |= MISO->init( config.MISOInit );
+    result |= SCK->init( impl->config.SCKInit );
+    result |= MOSI->init( impl->config.MOSIInit );
+    result |= MISO->init( impl->config.MISOInit );
 
     /* Does the driver take control of the CS pin? */
     if ( setupStruct.externalCS )
@@ -222,8 +163,8 @@ namespace Thor::SPI
     }
     else
     {
-      CS = Chimera::GPIO::getDriver( config.CSInit.port, config.CSInit.pin );
-      result |= CS->init( config.CSInit );
+      impl->csPin = Chimera::GPIO::getDriver( impl->config.CSInit.port, impl->config.CSInit.pin );
+      result |= impl->csPin->init( impl->config.CSInit );
     }
 
     if ( result != Chimera::Status::OK )
@@ -234,39 +175,15 @@ namespace Thor::SPI
     /* Make sure we aren't selecting a device by accident */
     setChipSelect( Chimera::GPIO::State::HIGH );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the SPI hardware
-    ------------------------------------------------*/
-    auto driver = ::LLD::getDriver( config.HWInit.hwChannel );
-    result |= driver->configure( config );
-    result |= driver->registerConfig( &config );
+    -------------------------------------------------------------------------*/
+    result |= impl->lldriver->configure( impl->config );
+    result |= impl->lldriver->registerConfig( &impl->config );
 
     if ( result != Chimera::Status::OK )
     {
-      config.validity = false;
-    }
-
-    /*------------------------------------------------
-    Register the ISR post processor thread
-    ------------------------------------------------*/
-    if ( s_user_isr_thread_func[ lldResourceIndex ] && !s_thread_created[ lldResourceIndex ] )
-    {
-      driver->attachISRWakeup( &s_user_isr_signal[ lldResourceIndex ] );
-
-      Task thread;
-      TaskConfig cfg;
-
-      cfg.arg        = nullptr;
-      cfg.function   = s_user_isr_thread_func[ lldResourceIndex ];
-      cfg.priority   = Priority::MAXIMUM;
-      cfg.stackWords = STACK_BYTES( 512 );
-      cfg.type       = TaskInitType::DYNAMIC;
-      cfg.name       = "PP_SPIx";
-
-      thread.create( cfg );
-      thread.start();
-      s_user_isr_handle[ lldResourceIndex ] = thread.native_handle();
-      s_thread_created[ lldResourceIndex ] = true;
+      impl->config.validity = false;
     }
 
     return result;
@@ -275,7 +192,10 @@ namespace Thor::SPI
 
   Chimera::SPI::DriverConfig Driver::getInit()
   {
-    return config;
+    RT_DBG_ASSERT( mImpl );
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+
+    return impl->config;
   }
 
 
@@ -287,13 +207,12 @@ namespace Thor::SPI
 
   Chimera::Status_t Driver::setChipSelect( const Chimera::GPIO::State value )
   {
-    /*-------------------------------------------------
-    Setting a chip select is only valid if we've been
-    configured to have control of one.
-    -------------------------------------------------*/
-    if ( CS )
+    RT_DBG_ASSERT( mImpl );
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+
+    if ( impl->csPin )
     {
-      return CS->setState( value );
+      return impl->csPin->setState( value );
     }
 
     return Chimera::Status::NOT_SUPPORTED;
@@ -302,12 +221,15 @@ namespace Thor::SPI
 
   Chimera::Status_t Driver::setChipSelectControlMode( const Chimera::SPI::CSMode mode )
   {
-    /*------------------------------------------------
+    RT_DBG_ASSERT( mImpl );
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+
+    /*-------------------------------------------------------------------------
     Only valid if the SPI driver has control of the chip select
-    ------------------------------------------------*/
-    if ( !config.externalCS )
+    -------------------------------------------------------------------------*/
+    if ( !impl->config.externalCS )
     {
-      config.HWInit.csMode = mode;
+      impl->config.HWInit.csMode = mode;
     }
 
     return Chimera::Status::OK;
@@ -328,207 +250,186 @@ namespace Thor::SPI
 
   Chimera::Status_t Driver::readWriteBytes( const void *const txBuffer, void *const rxBuffer, const size_t length )
   {
+    RT_DBG_ASSERT( mImpl );
+    auto impl   = reinterpret_cast<ThorImpl *>( mImpl );
     auto result = Chimera::Status::OK;
-    auto driver = ::LLD::getDriver( config.HWInit.hwChannel );
 
-    /*------------------------------------------------
-    Input protection & resource acquisition
-    ------------------------------------------------*/
-    if ( ( !txBuffer && !rxBuffer ) || !length || !driver )
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if ( ( !txBuffer && !rxBuffer ) || !length )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Handle the chip select controller behavior
-    ------------------------------------------------*/
-    if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
+    -------------------------------------------------------------------------*/
+    if ( impl->config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
     {
-      setChipSelect( Chimera::GPIO::State::LOW );
+      result |= setChipSelect( Chimera::GPIO::State::LOW );
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Call the proper transfer method
-    ------------------------------------------------*/
-    switch ( config.HWInit.txfrMode )
+    -------------------------------------------------------------------------*/
+    switch ( impl->config.HWInit.txfrMode )
     {
       case Chimera::SPI::TransferMode::BLOCKING:
-        /*-------------------------------------------------
-        Perform the transfer and optionaly disengage CS pin
-        -------------------------------------------------*/
-        result = driver->transfer( txBuffer, rxBuffer, length );
+        result |= impl->lldriver->transfer( txBuffer, rxBuffer, length );
 
-        if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
+        /*---------------------------------------------------------------------
+        Disengage the CS line if required
+        ---------------------------------------------------------------------*/
+        if ( impl->config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
         {
-          setChipSelect( Chimera::GPIO::State::HIGH );
+          result |= setChipSelect( Chimera::GPIO::State::HIGH );
         }
 
-        /*-------------------------------------------------
-        Transfer is complete at this point. Awaken any
-        threads that are blocking on this signal.
-        -------------------------------------------------*/
-        awaitTransferComplete.release();
+        /*---------------------------------------------------------------------
+        Transfer is done. Awaken any threads that are blocking on this signal.
+        ---------------------------------------------------------------------*/
+        signalAIO( Chimera::Event::Trigger::TRIGGER_TRANSFER_COMPLETE );
 
         return result;
         break;
 
       case Chimera::SPI::TransferMode::INTERRUPT:
-        return driver->transferIT( txBuffer, rxBuffer, length );
+        result |= impl->lldriver->transferIT( txBuffer, rxBuffer, length );
         break;
 
       case Chimera::SPI::TransferMode::DMA:
-        return driver->transferDMA( txBuffer, rxBuffer, length );
+        result |= impl->lldriver->transferDMA( txBuffer, rxBuffer, length );
         break;
 
       default:
-        /*------------------------------------------------
+        /*---------------------------------------------------------------------
         Disable the chip select for anything other than manual control
-        ------------------------------------------------*/
-        if ( config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
+        ---------------------------------------------------------------------*/
+        if ( impl->config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
         {
-          CS->setState( Chimera::GPIO::State::HIGH );
+          impl->csPin->setState( Chimera::GPIO::State::HIGH );
         }
 
-        return Chimera::Status::FAIL;
+        result = Chimera::Status::FAIL;
         break;
-    }
-  }
-
-
-  Chimera::Status_t Driver::setPeripheralMode( const Chimera::Hardware::PeripheralMode mode )
-  {
-    config.HWInit.txfrMode = mode;
-    return Chimera::Status::OK;
-  }
-
-
-  Chimera::Status_t Driver::setClockFrequency( const size_t freq, const size_t tolerance )
-  {
-    /*------------------------------------------------
-    Input protection
-    ------------------------------------------------*/
-    auto driver = ::LLD::getDriver( config.HWInit.hwChannel );
-    if ( !driver || !freq )
-    {
-      return Chimera::Status::NOT_INITIALIZED;
-    }
-
-    /*------------------------------------------------
-    Assign the new clock frequency and re-initialize the driver
-    ------------------------------------------------*/
-    config.HWInit.clockFreq = freq;
-    return driver->configure( config );
-  }
-
-
-  size_t Driver::getClockFrequency()
-  {
-    return config.HWInit.clockFreq;
-  }
-
-
-  /*------------------------------------------------
-  Async IO Interface
-  ------------------------------------------------*/
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, const size_t timeout )
-  {
-    if ( event != Chimera::Event::Trigger::TRIGGER_TRANSFER_COMPLETE )
-    {
-      return Chimera::Status::NOT_SUPPORTED;
-    }
-    else if ( !awaitTransferComplete.try_acquire_for( timeout ) )
-    {
-      return Chimera::Status::TIMEOUT;
-    }
-    else
-    {
-      return Chimera::Status::OK;
-    }
-  }
-
-
-  Chimera::Status_t Driver::await( const Chimera::Event::Trigger event, Chimera::Thread::BinarySemaphore &notifier,
-                                   const size_t timeout )
-  {
-    auto result = await( event, timeout );
-
-    if ( result == Chimera::Status::OK )
-    {
-      notifier.release();
     }
 
     return result;
   }
 
 
-  /*------------------------------------------------
-  Listener Interface
-  ------------------------------------------------*/
-  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
-                                              size_t &registrationID )
+  Chimera::Status_t Driver::setPeripheralMode( const Chimera::Hardware::PeripheralMode mode )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    RT_DBG_ASSERT( mImpl );
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+
+    impl->config.HWInit.txfrMode = mode;
+    return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
+  Chimera::Status_t Driver::setClockFrequency( const size_t freq, const size_t tolerance )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    RT_DBG_ASSERT( mImpl );
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+
+    /*-------------------------------------------------------------------------
+    Assign the new clock frequency and re-initialize the driver
+    -------------------------------------------------------------------------*/
+    impl->config.HWInit.clockFreq = freq;
+    return impl->lldriver->configure( impl->config );
   }
 
-}    // namespace Thor::SPI
 
+  size_t Driver::getClockFrequency()
+  {
+    RT_DBG_ASSERT( mImpl );
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
-#if defined( STM32_SPI1_PERIPH_AVAILABLE )
-static void SPI1ISRPostProcessorThread( void *argument )
+    return impl->config.HWInit.clockFreq;
+  }
+
+}    // namespace Chimera::SPI
+
+namespace Chimera::SPI::Backend
 {
-  constexpr auto index = ::LLD::SPI1_RESOURCE_INDEX;
+  /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
+  static size_t s_driver_initialized;
 
-  while ( 1 )
+  /*---------------------------------------------------------------------------
+  Static Functions
+  ---------------------------------------------------------------------------*/
+  Chimera::Status_t initialize()
   {
-    s_user_isr_signal[ index ].acquire();
-    hld_driver[ index ].postISRProcessing();
+    using namespace Chimera::Thread;
+
+    /*-------------------------------------------------------------------------
+    Prevent multiple initializations
+    -------------------------------------------------------------------------*/
+    if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
+    {
+      return Chimera::Status::OK;
+    }
+
+    /*-------------------------------------------------------------------------
+    Register the ISR post-processor thread
+    -------------------------------------------------------------------------*/
+    Task       userThread;
+    TaskConfig cfg;
+
+    cfg.arg        = nullptr;
+    cfg.function   = SPIxISRUserThread;
+    cfg.priority   = Priority::MAXIMUM;
+    cfg.stackWords = STACK_BYTES( 512 );
+    cfg.type       = TaskInitType::DYNAMIC;
+    cfg.name       = "PP_SPIx";
+
+    userThread.create( cfg );
+    ::Thor::LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_SPI, userThread.start() );
+
+    /*-------------------------------------------------------------------------
+    Initialize the low level driver
+    -------------------------------------------------------------------------*/
+    LLD::initialize();
+
+    /*-------------------------------------------------------------------------
+    Lock the init sequence and exit
+    -------------------------------------------------------------------------*/
+    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return Chimera::Status::OK;
   }
-}
-#endif
 
-#if defined( STM32_SPI2_PERIPH_AVAILABLE )
-static void SPI2ISRPostProcessorThread( void *argument )
-{
-  constexpr auto index = ::LLD::SPI2_RESOURCE_INDEX;
 
-  while ( 1 )
+  Chimera::Status_t reset()
   {
-    s_user_isr_signal[ index ].acquire();
-    hld_driver[ index ].postISRProcessing();
+    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return Chimera::Status::OK;
   }
-}
-#endif
 
-#if defined( STM32_SPI3_PERIPH_AVAILABLE )
-static void SPI3ISRPostProcessorThread( void *argument )
-{
-  constexpr auto index = ::LLD::SPI3_RESOURCE_INDEX;
 
-  while ( 1 )
+  Driver_rPtr getDriver( const Chimera::SPI::Channel channel )
   {
-    s_user_isr_signal[ index ].acquire();
-    hld_driver[ index ].postISRProcessing();
+    if ( !LLD::isSupported( channel ) )
+    {
+      return nullptr;
+    }
+
+    return s_raw_drivers.getOrCreate( channel );
   }
-}
-#endif
 
-#if defined( STM32_SPI4_PERIPH_AVAILABLE )
-static void SPI4ISRPostProcessorThread( void *argument )
-{
-  constexpr auto index = ::LLD::SPI4_RESOURCE_INDEX;
 
-  while ( 1 )
+  Chimera::Status_t registerDriver( Chimera::SPI::Backend::DriverConfig &registry )
   {
-    s_user_isr_signal[ index ].acquire();
-    hld_driver[ index ].postISRProcessing();
+    registry.isSupported = true;
+    registry.getDriver   = ::Chimera::SPI::Backend::getDriver;
+    registry.initialize  = ::Chimera::SPI::Backend::initialize;
+    registry.reset       = ::Chimera::SPI::Backend::reset;
+    return Chimera::Status::OK;
   }
-}
-#endif
 
-#endif /* THOR_HLD_SPI */
+}    // namespace Chimera::SPI::Backend
+
+#endif /* THOR_SPI */

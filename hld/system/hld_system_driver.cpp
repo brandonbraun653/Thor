@@ -22,7 +22,6 @@ Includes
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/startup>
 #include <Thor/lld/interface/inc/sys>
-#include <Thor/spi>
 #include <Thor/watchdog>
 
 
