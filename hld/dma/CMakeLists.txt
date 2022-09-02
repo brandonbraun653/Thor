@@ -11,5 +11,5 @@ gen_static_lib_variants(
     lld_common_inc
     thor_intf_inc
   EXPORT_DIR
-    "${PROJECT_BINARY_DIR}/Chimera/src/dma"
+    "${PROJECT_BINARY_DIR}/Thor/hld"
 )

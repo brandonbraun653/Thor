@@ -16,18 +16,19 @@ Includes
 #include <Thor/cfg>
 #include <Thor/hld/common/types.hpp>
 #include <Thor/lld/interface/inc/timer>
-#include <Thor/timer>
 
 
-namespace Thor::TIMER
+namespace Chimera::Timer::Backend
 {
-  // Tracks if the module data has been initialized correctly
+  /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
   static size_t s_driver_initialized;
 
   /*---------------------------------------------------------------------------
-  Public Functions
+  Static Functions
   ---------------------------------------------------------------------------*/
-  Chimera::Status_t initializeModule()
+  static Chimera::Status_t initializeModule()
   {
     /*-------------------------------------------------------------------------
     Prevent re-initialization from occurring
@@ -47,38 +48,27 @@ namespace Thor::TIMER
     return result;
   }
 
-  Chimera::Status_t resetModule()
+  static Chimera::Status_t resetModule()
   {
     return Chimera::Status::OK;
   }
 
-  size_t millis()
-  {
-    return Thor::LLD::TIMER::millis();
-  }
 
-  size_t micros()
+  /*---------------------------------------------------------------------------
+  Public Functions
+  ---------------------------------------------------------------------------*/
+  Chimera::Status_t registerDriver( Chimera::Timer::Backend::DriverConfig &registry )
   {
-    return Thor::LLD::TIMER::micros();
-  }
+    registry.isSupported            = true;
+    registry.initialize             = Chimera::Timer::Backend::initializeModule;
+    registry.reset                  = Chimera::Timer::Backend::resetModule;
+    registry.delayMicroseconds      = Thor::LLD::TIMER::delayMicroseconds;
+    registry.delayMilliseconds      = Thor::LLD::TIMER::delayMilliseconds;
+    registry.millis                 = Thor::LLD::TIMER::millis;
+    registry.micros                 = Thor::LLD::TIMER::micros;
+    registry.blockDelayMicroseconds = Thor::LLD::TIMER::blockDelayMicros;
+    registry.blockDelayMilliseconds = Thor::LLD::TIMER::blockDelayMillis;
 
-  void delayMilliseconds( const size_t ms )
-  {
-    Thor::LLD::TIMER::delayMilliseconds( ms );
+    return Chimera::Status::OK;
   }
-
-  void delayMicroseconds( const size_t us )
-  {
-    Thor::LLD::TIMER::delayMicroseconds( us );
-  }
-
-  void blockDelayMillis( const size_t ms )
-  {
-    Thor::LLD::TIMER::blockDelayMillis( ms );
-  }
-
-  void blockDelayMicros( const size_t us )
-  {
-    Thor::LLD::TIMER::blockDelayMicros( us );
-  }
-}    // namespace Thor::TIMER
+}    // namespace Chimera::Timer::Backend

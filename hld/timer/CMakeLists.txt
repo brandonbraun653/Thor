@@ -4,7 +4,6 @@ gen_static_lib_variants(
   TARGET
     thor_hld_timer
   SOURCES
-    hld_timer_chimera.cpp
     hld_timer_driver.cpp
     functions/hld_timer_pwm.cpp
     functions/hld_timer_tri_phase_pwm.cpp

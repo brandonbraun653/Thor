@@ -23,8 +23,6 @@ Includes
 #include <Thor/lld/interface/inc/startup>
 #include <Thor/lld/interface/inc/sys>
 #include <Thor/spi>
-#include <Thor/uart>
-#include <Thor/usart>
 #include <Thor/watchdog>
 
 
