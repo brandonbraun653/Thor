@@ -12,10 +12,12 @@
 /*-----------------------------------------------------------------------------
 Includes
 -----------------------------------------------------------------------------*/
-#include <limits>
 #include <Chimera/can>
 #include <Thor/cfg>
+#include <Thor/lld/interface/can/bx_can/bx_can_register.hpp>
+#include <Thor/lld/interface/can/bx_can/bx_can_types.hpp>
 #include <Thor/lld/interface/inc/can>
+#include <limits>
 
 #if defined( THOR_CAN ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
 namespace Thor::LLD::CAN

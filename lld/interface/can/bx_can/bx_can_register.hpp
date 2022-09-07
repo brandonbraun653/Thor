@@ -1,44 +1,40 @@
 /********************************************************************************
  *  File Name:
- *    hw_can_register_stm32l4xxxx.hpp
+ *    bx_can_register.hpp
  *
  *  Description:
- *    CAN register definitions for the STM32L4xxxx series chips.
+ *    bxCAN register definitions
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
-#ifndef THOR_HW_CAN_REGISTER_STM32L4XXXX_HPP
-#define THOR_HW_CAN_REGISTER_STM32L4XXXX_HPP
+#ifndef THOR_BX_CAN_REGISTER_STM32L4XXXX_HPP
+#define THOR_BX_CAN_REGISTER_STM32L4XXXX_HPP
 
-/* C++ Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <cstdint>
-
-/* Chimera Includes */
 #include <Chimera/common>
-
-/* Driver Includes */
-#include <Thor/lld/stm32l4x/system/variant/sys_memory_map_stm32l432kc.hpp>
-
+#include <Thor/lld/interface/system/sys_detail.hpp>
+#include <Thor/lld/interface/can/can_detail.hpp>
 
 namespace Thor::LLD::CAN
 {
-  /**
-   *  Initializes the LLD register resources and memory
-   *
-   *  @return void
-   */
-
-
-  /*-------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Instance Memory Map Base
-  -------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
+  #if defined( STM32_CAN1_PERIPH_AVAILABLE )
   static constexpr uint32_t CAN1_BASE_ADDR = Thor::System::MemoryMap::CAN1_PERIPH_START_ADDRESS;
+  #endif
+  #if defined( STM32_CAN2_PERIPH_AVAILABLE )
+  static constexpr uint32_t CAN2_BASE_ADDR = Thor::System::MemoryMap::CAN2_PERIPH_START_ADDRESS;
+  #endif
 
-  /*-------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Register Definitions
-  -------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /*******************  Bit definition for MCR register  ********************/
   static constexpr Reg32_t MCR_Msk = 0x000180FF;
   static constexpr Reg32_t MCR_Rst = 0x00010002;

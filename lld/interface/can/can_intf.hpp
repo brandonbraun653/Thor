@@ -1,11 +1,11 @@
 /********************************************************************************
- * File Name:
- *   can_intf.hpp
+ *  File Name:
+ *    can_intf.hpp
  *
- * Description:
- *   STM32 LLD CAN Interface Spec
+ *  Description:
+ *    STM32 LLD CAN Interface Spec
  *
- * 2020-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -19,6 +19,7 @@ Includes
 #include <Chimera/can>
 #include <Chimera/common>
 #include <Chimera/gpio>
+#include <Thor/cfg>
 #include <Thor/lld/common/interrupts/can_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/can/can_detail.hpp>

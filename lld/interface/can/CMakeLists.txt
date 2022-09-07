@@ -13,3 +13,19 @@ gen_static_lib_variants(
   EXPORT_DIR
     "${PROJECT_BINARY_DIR}/Thor/lld_intf"
 )
+
+gen_static_lib_variants(
+  TARGET
+    thor_lld_intf_bx_can
+  SOURCES
+    bx_can/bx_can_data.cpp
+    bx_can/bx_can_driver.cpp
+    bx_can/bx_can_prv_driver.cpp
+  PRV_LIBRARIES
+    aurora_intf_inc
+    chimera_intf_inc
+    thor_intf_inc
+    lld_common_inc
+  EXPORT_DIR
+    "${PROJECT_BINARY_DIR}/Thor/lld_intf"
+)

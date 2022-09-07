@@ -19,15 +19,11 @@
 #include <Thor/lld/interface/can/sim/can_sim_variant.hpp>
 #include <Thor/lld/interface/can/sim/can_sim_types.hpp>
 #elif defined( TARGET_STM32F4 )
-// Curently no CAN support
-// #include <Thor/lld/stm32f4x/can/hw_can_driver.hpp>
-// #include <Thor/lld/stm32f4x/can/hw_can_mapping.hpp>
-// #include <Thor/lld/stm32f4x/can/hw_can_prj.hpp>
-// #include <Thor/lld/stm32f4x/can/hw_can_types.hpp>
+#include <Thor/lld/stm32f4x/can/hw_can_prj.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/can/hw_can_prj.hpp>
 #else
 #pragma message( "can_detail.hpp: Unknown target for LLD" )
 #endif
 
-#endif  /* !THOR_LLD_CAN_INTF_DETAIL_HPP */
+#endif /* !THOR_LLD_CAN_INTF_DETAIL_HPP */

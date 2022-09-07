@@ -16,6 +16,9 @@ Includes
 #include <Chimera/common>
 #include <Chimera/utility>
 #include <Thor/cfg>
+#include <Thor/lld/interface/can/bx_can/bx_can_prv_driver.hpp>
+#include <Thor/lld/interface/can/bx_can/bx_can_register.hpp>
+#include <Thor/lld/interface/can/bx_can/bx_can_types.hpp>
 #include <Thor/lld/interface/inc/can>
 #include <Thor/lld/interface/inc/rcc>
 #include <cmath>

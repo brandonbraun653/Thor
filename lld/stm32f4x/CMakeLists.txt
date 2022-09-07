@@ -4,7 +4,7 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 # Add the projects for all the supported drivers
 # ====================================================
 add_subdirectory("adc")
-# add_subdirectory("can")
+add_subdirectory("can")
 add_subdirectory("des")
 add_subdirectory("dma")
 add_subdirectory("exti")
@@ -31,7 +31,7 @@ gen_intf_lib_variants(
     thor_lld_stm32f4
   LIBRARIES
     thor_lld_stm32f4_adc
-    # thor_lld_stm32f4_can
+    thor_lld_stm32f4_can
     thor_lld_stm32f4_des
     thor_lld_stm32f4_dma
     thor_lld_stm32f4_exti

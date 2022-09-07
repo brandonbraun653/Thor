@@ -17,6 +17,7 @@ Includes
 -----------------------------------------------------------------------------*/
 #include <Chimera/can>
 #include <Thor/hld/can/hld_can_types.hpp>
+#include <Thor/lld/interface/can/can_detail.hpp>
 #include <cstdint>
 #include <type_traits>
 
@@ -136,6 +137,68 @@ namespace Thor::LLD::CAN
     }
   };
 
+
+  /**
+   *  Describes information about what happened in a CAN ISR. There are
+   *  multiple kinds of events and all of them are captured here.
+   */
+  struct ISREventContext
+  {
+    uint16_t isrPending; /**< Bit-field indicating ISR events needing handled */
+
+    /**
+     *  Union holding possible event contexts, interpreted by
+     *  the isrPending variable above. These describe what actually
+     *  happened in the last ISR event.
+     */
+    union _EventData
+    {
+      /*-------------------------------------------------
+      Transmit Interrupt
+      -------------------------------------------------*/
+      struct _Transmit
+      {
+        bool txError; /**< A transmit error occurred */
+        bool arbLost; /**< Arbitration was lost */
+        bool txOk;    /**< Transmit was ok */
+      } tx[ NUM_CAN_TX_MAILBOX ];
+
+      /*-------------------------------------------------
+      Receive Interrupt
+      -------------------------------------------------*/
+      struct _Receive
+      {
+        bool hwFull;          /**< Hardware FIFO is full */
+        bool hwOverrun;       /**< Hardware FIFO overrun */
+        bool frameLostBuffer; /**< A frame was lost because the software buffer was full */
+        uint8_t hwMsgPending; /**< Number of hardware messages that were available */
+        uint8_t swMsgPending; /**< Number of hardware messages pushed to the software buffer */
+      } rx[ NUM_CAN_RX_MAILBOX ];
+
+      /*-------------------------------------------------
+      Status Change Interrupt
+      -------------------------------------------------*/
+      struct _StatusChange
+      {
+        bool sleepAck; /**< Device has gone to sleep */
+        bool wakeup;   /**< Device has woken up */
+      } sts;
+
+      /*-------------------------------------------------
+      Data associated with Error Interrupts
+      -------------------------------------------------*/
+      struct _Error
+      {
+        uint8_t rxErrorCount;    /**< Last receive error count */
+        uint8_t txErrorCount;    /**< Last transmit error count */
+        ErrorCode lastErrorCode; /**< Last general error code */
+        bool busOff;             /**< Bus has been disabled */
+        bool passive;            /**< Bus has gone to passive state */
+        bool warning;            /**< Bus has hit warning threshold for transceiver */
+      } err;
+
+    } event;
+  };
 
 }    // namespace Thor::LLD::CAN
 
