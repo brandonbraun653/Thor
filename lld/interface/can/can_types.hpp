@@ -5,50 +5,44 @@
  *  Description:
  *    Common LLD CAN Types
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_CAN_DRIVER_TYPES_HPP
 #define THOR_LLD_CAN_DRIVER_TYPES_HPP
 
-/* STL Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
+#include <Chimera/can>
+#include <Thor/hld/can/hld_can_types.hpp>
 #include <cstdint>
 #include <type_traits>
-
-/* Chimera Includes */
-#include <Chimera/can>
-
-/* Thor Includes */
-#include <Thor/hld/can/hld_can_types.hpp>
 
 
 namespace Thor::LLD::CAN
 {
-  /*-------------------------------------------------------------------------------
-  Foward Declarations
-  -------------------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------------
+  Forward Declarations
+  ---------------------------------------------------------------------------*/
   class Driver;
   struct RegisterMap;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Aliases
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   using Driver_rPtr = Driver *;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Constants
-  -------------------------------------------------------------------------------*/
-  /*-------------------------------------------------
-  Magic numbers that are used to indicate a filter
-  has been reset. Generated from random.org.
-  -------------------------------------------------*/
-  static constexpr Reg32_t FLTR_RST_1 = 0x2083d26f;
-  static constexpr Reg32_t FLTR_RST_2 = 0xbde27d78;
+  ---------------------------------------------------------------------------*/
+  static constexpr Reg32_t FLTR_RST_1 = 0x2083d26f; /**< Generated from random.org */
+  static constexpr Reg32_t FLTR_RST_2 = 0xbde27d78; /**< Generated from random.org */
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Enumerations
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   enum class Mailbox : uint8_t
   {
     TX_MAILBOX_1,
@@ -109,24 +103,24 @@ namespace Thor::LLD::CAN
     UNKNOWN
   };
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Structures
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /**
    *  Filter description on a message ID that can be *almost*
    *  directly applied to hardware.
    */
   struct MessageFilter
   {
-    bool valid;                        /**< Should this filter configuration even be trusted as valid? */
-    bool active;                       /**< Should this filter be active? */
-    uint32_t identifier;               /**< Determines dominant/recessive bit level for the matching identifier */
-    uint32_t mask;                     /**< Optional: If mask mode, determines bits used for id comparison. Typically 0 is don't care. */
-    Mailbox fifoBank;                  /**< Which filter bank this message should be placed in */
-    Thor::CAN::FilterType filterType;  /**< Hardware filtering mode */
-    Chimera::CAN::FrameType frameType; /**< What kind of framing should the filter use? */
-    Chimera::CAN::IdType idType;       /**< Standard or extended filter ID? */
-    uint8_t hwFMI;                     /**< Read only. Contains the filter's match index once assigned to a hw filter bank */
+    bool     valid;      /**< Should this filter configuration even be trusted as valid? */
+    bool     active;     /**< Should this filter be active? */
+    uint32_t identifier; /**< Determines dominant/recessive bit level for the matching identifier */
+    uint32_t mask;       /**< Optional: If mask mode, determines bits used for id comparison. Typically 0 is don't care. */
+    Mailbox  fifoBank;   /**< Which filter bank this message should be placed in */
+    Thor::CAN::FilterType   filterType; /**< Hardware filtering mode */
+    Chimera::CAN::FrameType frameType;  /**< What kind of framing should the filter use? */
+    Chimera::CAN::IdType    idType;     /**< Standard or extended filter ID? */
+    uint8_t                 hwFMI;      /**< Read only. Contains the filter's match index once assigned to a hw filter bank */
 
     void clear()
     {

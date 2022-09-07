@@ -1,15 +1,15 @@
 /********************************************************************************
  *  File Name:
- *    hw_can_driver.cpp
+ *    bx_can_driver.cpp
  *
  *  Description:
- *    Implements the LLD interface to the STM32L4 series CAN hardware. The CAN
- *    bus driver is a bit unique compared to other communication peripherals in
- *    the STM32L4 drivers because it handles the communication buffers. Typically
- *    this is done by the HLD, but due to the networked nature of CAN, a high
- *    volume of traffic could be present. Responsiveness is important, so data
- *    transfers are handled in the ISRs. The STM32L4 has no DMA on the CAN periph
- *    so only an interrupt based controller is implemented.
+ *    Implements the LLD interface to the bxCAN hardware. The driver is a bit
+ *    unique compared to other communication peripherals in the Thor driver
+ *    set because it handles the communication buffers. Typically this is done
+ *    by the HLD, but due to the networked nature of CAN, a high volume of traffic
+ *    could be present. Responsiveness is important, so data transfers are handled
+ *    in the ISRs. The bxCAN peripheral has no DMA so only an interrupt based
+ *    controller is implemented.
  *
  *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
@@ -31,7 +31,7 @@ Includes
 #include <limits>
 
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_CAN )
+#if defined( THOR_CAN ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
 namespace Thor::LLD::CAN
 {
   /*---------------------------------------------------------------------------
@@ -99,8 +99,7 @@ namespace Thor::LLD::CAN
     {
       Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
       Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ] );
-      Thor::LLD::INT::setPriority( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ],
-                                  INT::CAN_IT_PREEMPT_PRIORITY, 0u );
+      Thor::LLD::INT::setPriority( Resource::IRQSignals[ mResourceIndex ][ handlerIdx ], INT::CAN_IT_PREEMPT_PRIORITY, 0u );
     }
 
     /*-------------------------------------------------------------------------
@@ -244,18 +243,18 @@ namespace Thor::LLD::CAN
     /*-------------------------------------------------------------------------
     Attempt to place each filter in the filter banks
     -------------------------------------------------------------------------*/
-    bool bankConfigured       = false;      // Tracks if the current bank has been configured already
-    size_t bankIdx            = 0;          // Which hardware filter bank currently being processed
-    size_t userIdx            = 0;          // Which user filter currently being processed
-    size_t filterIdx            = 0;          // Generic index tracking progress of filter processing
-    size_t numValidFilters    = 0;          // Number of valid filter configurations attempted to be placed
-    size_t numPlacedFilters   = 0;          // Number of filters that were successfully placed
-    uint8_t fifo0FMI_current  = 0;          // Current filter match index for FIFO0
-    uint8_t fifo1FMI_current  = 0;          // Current filter match index for FIFO1
-    uint8_t fifo0FMI_toAssign = 0;          // Remaining match indices to assign on the current filter bank
-    uint8_t fifo1FMI_toAssign = 0;          // Remaining match indices to assign on the current filter bank
-    MessageFilter *filter     = nullptr;    // Pointer to the current user filter
-    volatile FilterReg *bank  = nullptr;    // Current bank being processed
+    bool                bankConfigured    = false;      // Tracks if the current bank has been configured already
+    size_t              bankIdx           = 0;          // Which hardware filter bank currently being processed
+    size_t              userIdx           = 0;          // Which user filter currently being processed
+    size_t              filterIdx         = 0;          // Generic index tracking progress of filter processing
+    size_t              numValidFilters   = 0;          // Number of valid filter configurations attempted to be placed
+    size_t              numPlacedFilters  = 0;          // Number of filters that were successfully placed
+    uint8_t             fifo0FMI_current  = 0;          // Current filter match index for FIFO0
+    uint8_t             fifo1FMI_current  = 0;          // Current filter match index for FIFO1
+    uint8_t             fifo0FMI_toAssign = 0;          // Remaining match indices to assign on the current filter bank
+    uint8_t             fifo1FMI_toAssign = 0;          // Remaining match indices to assign on the current filter bank
+    MessageFilter      *filter            = nullptr;    // Pointer to the current user filter
+    volatile FilterReg *bank              = nullptr;    // Current bank being processed
 
     do
     {
@@ -926,7 +925,7 @@ namespace Thor::LLD::CAN
    *  If any messages are pending in the software transmit queue, it will also
    *  attempt to fill the hardware tx mailboxes.
    */
-  void Driver::CAN1_TX_IRQHandler()
+  void Driver::CAN_TX_IRQHandler()
   {
     using namespace Chimera::Thread;
     using namespace Chimera::Peripheral;
@@ -1018,7 +1017,7 @@ namespace Thor::LLD::CAN
    *  If any new messages have arrived, will try to place them in the software
    *  receive queue. Otherwise, it will notify that a packet has been lost.
    */
-  void Driver::CAN1_FIFO0_IRQHandler()
+  void Driver::CAN_FIFO0_IRQHandler()
   {
     using namespace Chimera::CAN;
     using namespace Chimera::Thread;
@@ -1163,7 +1162,7 @@ namespace Thor::LLD::CAN
    *  If any new messages have arrived, will try to place them in the software
    *  receive queue. Otherwise, it will notify that a packet has been lost.
    */
-  void Driver::CAN1_FIFO1_IRQHandler()
+  void Driver::CAN_FIFO1_IRQHandler()
   {
     using namespace Chimera::CAN;
     using namespace Chimera::Thread;
@@ -1309,7 +1308,7 @@ namespace Thor::LLD::CAN
    *  and cache it for the high level driver to handle. Don't want to assume too
    *  much about how to handle the event.
    */
-  void Driver::CAN1_ERR_STS_CHG_IRQHandler()
+  void Driver::CAN_ERR_STS_CHG_IRQHandler()
   {
     using namespace Chimera::Thread;
     using namespace Chimera::Peripheral;
@@ -1335,8 +1334,8 @@ namespace Thor::LLD::CAN
     -------------------------------------------------*/
     if ( ( IER & IER_EN_STS ) || ( MSR & EVENT_STS ) )
     {
-      constexpr size_t sigIdx = CAN_STS_ISR_SIGNAL_INDEX;
-      bool hpThreadShouldWake = false;
+      constexpr size_t sigIdx             = CAN_STS_ISR_SIGNAL_INDEX;
+      bool             hpThreadShouldWake = false;
 
       /*-------------------------------------------------
       Parse Sleep Event
@@ -1386,8 +1385,8 @@ namespace Thor::LLD::CAN
     -------------------------------------------------*/
     if ( ( IER & IER_EN_ERR_ALL ) || ( IER & IER_EN_ERR ) || ( ESR & EVENT_ERR ) )
     {
-      constexpr size_t sigIdx = CAN_ERR_ISR_SIGNAL_INDEX;
-      bool hpThreadShouldWake = false;
+      constexpr size_t sigIdx             = CAN_ERR_ISR_SIGNAL_INDEX;
+      bool             hpThreadShouldWake = false;
 
       /*-------------------------------------------------
       Acknowledge that we hit the error ISR. This is done
@@ -1514,26 +1513,50 @@ Interrupt Vectors
 void CAN1_TX_IRQHandler()
 {
   using namespace Thor::LLD::CAN;
-  s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN1_TX_IRQHandler();
+  s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN_TX_IRQHandler();
 }
 
 void CAN1_RX0_IRQHandler()
 {
   using namespace Thor::LLD::CAN;
-  s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN1_FIFO0_IRQHandler();
+  s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN_FIFO0_IRQHandler();
 }
 
 void CAN1_RX1_IRQHandler()
 {
   using namespace Thor::LLD::CAN;
-  s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN1_FIFO1_IRQHandler();
+  s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN_FIFO1_IRQHandler();
 }
 
 void CAN1_SCE_IRQHandler()
 {
   using namespace Thor::LLD::CAN;
-  s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN1_ERR_STS_CHG_IRQHandler();
+  s_can_drivers[ CAN1_RESOURCE_INDEX ].CAN_ERR_STS_CHG_IRQHandler();
 }
-#endif  /* STM32_CAN1_PERIPH_AVAILABLE */
+#endif /* STM32_CAN1_PERIPH_AVAILABLE */
+#if defined( STM32_CAN2_PERIPH_AVAILABLE )
+void CAN2_TX_IRQHandler()
+{
+  using namespace Thor::LLD::CAN;
+  s_can_drivers[ CAN2_RESOURCE_INDEX ].CAN_TX_IRQHandler();
+}
 
-#endif /* TARGET_STM32L4 & THOR_LLD_CAN */
+void CAN2_RX0_IRQHandler()
+{
+  using namespace Thor::LLD::CAN;
+  s_can_drivers[ CAN2_RESOURCE_INDEX ].CAN_FIFO0_IRQHandler();
+}
+
+void CAN2_RX1_IRQHandler()
+{
+  using namespace Thor::LLD::CAN;
+  s_can_drivers[ CAN2_RESOURCE_INDEX ].CAN_FIFO1_IRQHandler();
+}
+
+void CAN2_SCE_IRQHandler()
+{
+  using namespace Thor::LLD::CAN;
+  s_can_drivers[ CAN2_RESOURCE_INDEX ].CAN_ERR_STS_CHG_IRQHandler();
+}
+#endif /* STM32_CAN2_PERIPH_AVAILABLE */
+#endif /* THOR_LLD_CAN */

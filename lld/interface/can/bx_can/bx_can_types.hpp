@@ -1,11 +1,11 @@
 /********************************************************************************
  *  File Name:
- *    hw_can_types.hpp
+ *    bx_can_types.hpp
  *
  *  Description:
- *    STM32L4 types for the CAN peripheral
+ *    bxCAN types
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once

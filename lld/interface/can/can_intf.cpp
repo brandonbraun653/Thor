@@ -24,14 +24,14 @@ Includes
 #if defined( THOR_CAN )
 namespace Thor::LLD::CAN
 {
-  /*-------------------------------------------------------------------------------
-  Static Function Declarations
-  -------------------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------------
+  Static Functions
+  ---------------------------------------------------------------------------*/
   static uint8_t filterSize( const MessageFilter *const filter );
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   bool isSupported( const Chimera::CAN::Channel channel )
   {
     switch ( channel )
@@ -39,12 +39,14 @@ namespace Thor::LLD::CAN
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
       case Chimera::CAN::Channel::CAN0:
         return true;
-        break;
+#endif
+#if defined( STM32_CAN2_PERIPH_AVAILABLE )
+      case Chimera::CAN::Channel::CAN1:
+        return true;
 #endif
 
       default:
         return false;
-        break;
     };
   }
 
@@ -55,6 +57,12 @@ namespace Thor::LLD::CAN
     if ( address == reinterpret_cast<std::uintptr_t>( CAN1_PERIPH ) )
     {
       return CAN1_RESOURCE_INDEX;
+    }
+#endif
+#if defined( STM32_CAN2_PERIPH_AVAILABLE )
+    if ( address == reinterpret_cast<std::uintptr_t>( CAN2_PERIPH ) )
+    {
+      return CAN2_RESOURCE_INDEX;
     }
 #endif
 
@@ -69,12 +77,14 @@ namespace Thor::LLD::CAN
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
       case Chimera::CAN::Channel::CAN0:
         return CAN1_RESOURCE_INDEX;
-        break;
+#endif
+#if defined( STM32_CAN2_PERIPH_AVAILABLE )
+      case Chimera::CAN::Channel::CAN1:
+        return CAN2_RESOURCE_INDEX;
 #endif
 
       default:
         return INVALID_RESOURCE_INDEX;
-        break;
     };
   }
 
@@ -87,6 +97,12 @@ namespace Thor::LLD::CAN
       return Chimera::CAN::Channel::CAN0;
     }
 #endif
+#if defined( STM32_CAN2_PERIPH_AVAILABLE )
+    if ( address == reinterpret_cast<std::uintptr_t>( CAN2_PERIPH ) )
+    {
+      return Chimera::CAN::Channel::CAN1;
+    }
+#endif
 
     return Chimera::CAN::Channel::UNKNOWN;
   }
@@ -94,22 +110,24 @@ namespace Thor::LLD::CAN
 
   bool attachDriverInstances( Driver *const driverList, const size_t numDrivers )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Reject bad inputs
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !driverList || !numDrivers || ( numDrivers != NUM_CAN_PERIPHS ) )
     {
       return false;
     }
 
-    /*-------------------------------------------------
-    Attach the drivers. The architecture of the LLD
-    ensures the ordering and number is correct.
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Attach the drivers
+    -------------------------------------------------------------------------*/
     Chimera::Status_t result = Chimera::Status::OK;
 
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
     driverList[ CAN1_RESOURCE_INDEX ].attach( CAN1_PERIPH );
+#endif
+#if defined( STM32_CAN2_PERIPH_AVAILABLE )
+    driverList[ CAN2_RESOURCE_INDEX ].attach( CAN2_PERIPH );
 #endif
 
     return result == Chimera::Status::OK;
@@ -120,25 +138,25 @@ namespace Thor::LLD::CAN
   {
     using namespace Chimera::CAN;
 
-    /*-------------------------------------------------
-    Input protection
-    -------------------------------------------------*/
-    if( !filterList || !listSize || !indexList )
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if ( !filterList || !listSize || !indexList )
     {
       return false;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Initialize the algorithm
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     for ( uint8_t idx = 0; idx < listSize; idx++ )
     {
-      indexList[ idx ]  = idx;
+      indexList[ idx ] = idx;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Sort away!
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     etl::shell_sort( indexList, indexList + listSize, [ filterList ]( uint8_t a, uint8_t b ) {
       return filterSize( &filterList[ a ] ) > filterSize( &filterList[ b ] );
     } );
@@ -147,22 +165,22 @@ namespace Thor::LLD::CAN
   }
 
 
-  /*-------------------------------------------------------------------------------
-  Static Function Definitions
-  -------------------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------------
+  Static Functions
+  ---------------------------------------------------------------------------*/
   static uint8_t filterSize( const MessageFilter *const filter )
   {
     using namespace Chimera::CAN;
 
-    /*-------------------------------------------------
-    Protect against bad inputs
-    -------------------------------------------------*/
-    if( !filter || !filter->valid )
+    /*-------------------------------------------------------------------------
+    Reject bad inputs
+    -------------------------------------------------------------------------*/
+    if ( !filter || !filter->valid )
     {
       return 0;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Assign a size metric to each filter. Essentially
     there are four possible choices based on the scale
     and mode registers (CAN_FSCx & CAN_FMBx).
@@ -175,21 +193,21 @@ namespace Thor::LLD::CAN
     |     1     |     1    |         4        | Two 32-bit filters per bank (List Mode)  |
 
     Taken from RM0394 (Rev 4) Fig. 484
-    -------------------------------------------------*/
-    if ( filter->filterType == Thor::CAN::FilterType::MODE_32BIT_MASK  )
+    -------------------------------------------------------------------------*/
+    if ( filter->filterType == Thor::CAN::FilterType::MODE_32BIT_MASK )
     {
       return 8;
     }
-    else if( filter->filterType == Thor::CAN::FilterType::MODE_32BIT_LIST )
+    else if ( filter->filterType == Thor::CAN::FilterType::MODE_32BIT_LIST )
     {
       // 32-bit filters have priority over 16-bit, so make its "size" just a little larger
       return 5;
     }
-    else if( filter->filterType == Thor::CAN::FilterType::MODE_16BIT_MASK )
+    else if ( filter->filterType == Thor::CAN::FilterType::MODE_16BIT_MASK )
     {
       return 4;
     }
-    else if( filter->filterType == Thor::CAN::FilterType::MODE_16BIT_LIST )
+    else if ( filter->filterType == Thor::CAN::FilterType::MODE_16BIT_LIST )
     {
       return 2;
     }

@@ -1,38 +1,38 @@
 /********************************************************************************
  *  File Name:
- *    hw_can_data.cpp
+ *    bx_can_data.cpp
  *
  *  Description:
  *    Provides structures for conversion and mapping between data types for fast
  *    runtime performance of driver code.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-/* STL Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <limits>
-
-/* Chimera Includes */
 #include <Chimera/can>
-
-/* Driver Includes */
 #include <Thor/cfg>
-#include <Thor/lld/interface/can/can_prv_data.hpp>
+#include <Thor/lld/interface/inc/can>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_CAN )
-
+#if defined( THOR_CAN ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
 namespace Thor::LLD::CAN
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Memory Maps
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
   RegisterMap *CAN1_PERIPH = reinterpret_cast<RegisterMap *>( CAN1_BASE_ADDR );
 #endif
+#if defined( STM32_CAN2_PERIPH_AVAILABLE )
+  RegisterMap *CAN2_PERIPH = reinterpret_cast<RegisterMap *>( CAN2_BASE_ADDR );
+#endif
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Configuration Maps
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace ConfigMap
   { /* clang-format off */
     // Definitions correspond with the CAN_BTR register
@@ -57,14 +57,17 @@ namespace Thor::LLD::CAN
 
   } /* clang-format on */
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Resources
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace Resource
   { /* clang-format off */
     LLD_CONST IRQn_Type IRQSignals[ NUM_CAN_PERIPHS ][ NUM_CAN_IRQ_HANDLERS ] = {
 #if defined( STM32_CAN1_PERIPH_AVAILABLE )
       { CAN1_TX_IRQn, CAN1_RX0_IRQn, CAN1_RX1_IRQn, CAN1_SCE_IRQn },
+#endif
+#if defined( STM32_CAN2_PERIPH_AVAILABLE )
+      { CAN2_TX_IRQn, CAN2_RX0_IRQn, CAN2_RX1_IRQn, CAN2_SCE_IRQn },
 #endif
     };
   } /* clang-format on */

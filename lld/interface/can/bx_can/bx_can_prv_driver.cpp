@@ -1,35 +1,30 @@
 /********************************************************************************
  *  File Name:
- *    hw_can_driver.cpp
+ *    bx_can_driver.cpp
  *
  *  Description:
- *    Implements internal private functions for the STM32L4 LLD CAN driver
+ *    Implements internal private functions for the bxCAN driver
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* STL Includes */
-#include <cmath>
-#include <cstdint>
-#include <cstddef>
-#include <cstring>
-#include <limits>
-
-/* Aurora Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Aurora/math>
-
-/* Chimera Includes */
 #include <Chimera/algorithm>
 #include <Chimera/common>
 #include <Chimera/utility>
-
-/* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/can>
 #include <Thor/lld/interface/inc/rcc>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <limits>
 
-#if defined( TARGET_STM32L4 ) && defined( THOR_CAN )
-
+#if defined( THOR_CAN ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
 namespace Thor::LLD::CAN
 {
   /*-------------------------------------------------------------------------------

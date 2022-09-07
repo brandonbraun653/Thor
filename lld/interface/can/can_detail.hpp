@@ -5,7 +5,7 @@
  *  Description:
  *    Includes the LLD specific headers for chip implementation details
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
@@ -26,8 +26,6 @@
 // #include <Thor/lld/stm32f4x/can/hw_can_types.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/can/hw_can_prj.hpp>
-#include <Thor/lld/stm32l4x/can/hw_can_types.hpp>
-#include <Thor/lld/stm32l4x/can/hw_can_prv_driver.hpp>
 #else
 #pragma message( "can_detail.hpp: Unknown target for LLD" )
 #endif
