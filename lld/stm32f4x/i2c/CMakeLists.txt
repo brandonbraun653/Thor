@@ -5,7 +5,6 @@ gen_static_lib_variants(
     thor_lld_stm32f4_i2c
   SOURCES
     hw_i2c_driver.cpp
-    hw_i2c_data.cpp
   PRV_LIBRARIES
     aurora_intf_inc
     chimera_intf_inc

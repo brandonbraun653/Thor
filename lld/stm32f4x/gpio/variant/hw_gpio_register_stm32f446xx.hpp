@@ -5,23 +5,24 @@
  *  Description:
  *    GPIO register definitions for the STM32F446xx series chips.
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_HW_GPIO_REGISTER_HPP
 #define THOR_HW_GPIO_REGISTER_HPP
 
-/* C++ Includes */
-#include <cstdint>
-#include <cstddef>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/gpio>
+#include <Thor/lld/common/types.hpp>
+#include <cstddef>
+#include <cstdint>
 
-/*-------------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------
 Macros
--------------------------------------------------------------------------------*/
+-----------------------------------------------------------------------------*/
 #define STM32_GPIOA_PERIPH_AVAILABLE
 #define STM32_GPIOB_PERIPH_AVAILABLE
 #define STM32_GPIOC_PERIPH_AVAILABLE
@@ -33,11 +34,11 @@ Macros
 
 namespace Thor::LLD::GPIO
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Constants
-  -------------------------------------------------------------------------------*/
-  static constexpr size_t NUM_GPIO_PERIPHS = 8;   /**< Supported GPIO peripherals */
-  static constexpr size_t NUM_GPIO_PINS    = 114;  /**< Max available pins to be configured as GPIO */
+  ---------------------------------------------------------------------------*/
+  static constexpr size_t NUM_GPIO_PERIPHS = 8;
+  static constexpr size_t NUM_GPIO_PINS    = 114;
 
   static constexpr uint32_t GPIOA_RESOURCE_INDEX = 0u;
   static constexpr uint32_t GPIOB_RESOURCE_INDEX = 1u;
@@ -56,6 +57,15 @@ namespace Thor::LLD::GPIO
   static constexpr uint32_t GPIOF_NUM_PINS = 16u;
   static constexpr uint32_t GPIOG_NUM_PINS = 16u;
   static constexpr uint32_t GPIOH_NUM_PINS = 2u;
+
+  static constexpr uint32_t GPIOA_START_PIN = 0;
+  static constexpr uint32_t GPIOB_START_PIN = 0;
+  static constexpr uint32_t GPIOC_START_PIN = 0;
+  static constexpr uint32_t GPIOD_START_PIN = 0;
+  static constexpr uint32_t GPIOE_START_PIN = 0;
+  static constexpr uint32_t GPIOF_START_PIN = 0;
+  static constexpr uint32_t GPIOG_START_PIN = 0;
+  static constexpr uint32_t GPIOH_START_PIN = 0;
 
   static constexpr uint8_t PRJ_MAX_PORTS         = NUM_GPIO_PERIPHS;
   static constexpr uint8_t PRJ_MAX_PINS          = NUM_GPIO_PINS;

@@ -22,7 +22,7 @@
 #elif defined( TARGET_LLD_TEST )
 #include <Thor/lld/interface/timer/sim/timer_sim_variant.hpp>
 #elif defined( TARGET_STM32F4 )
-#include <Thor/lld/stm32f4x/timer/hw_timer_driver.hpp>
+#include <Thor/lld/stm32f4x/timer/hw_timer_prj.hpp>
 #elif defined( TARGET_STM32L4 )
 #include <Thor/lld/stm32l4x/timer/hw_timer_prj.hpp>
 #else

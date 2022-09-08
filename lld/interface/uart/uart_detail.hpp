@@ -6,7 +6,7 @@
  *    Common header for Thor UART that configures the driver based on which
  *    chip family is being compiled against.
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
@@ -17,8 +17,7 @@
 #include <Thor/lld/interface/uart/mock/uart_mock.hpp>
 #include <Thor/lld/interface/uart/mock/uart_mock_variant.hpp>
 #elif defined( TARGET_STM32F4 )
-#include <Thor/lld/stm32f4x/uart/hw_uart_prj.hpp>
-#include <Thor/lld/stm32f4x/uart/hw_uart_types.hpp>
+// No UARTs on this device are supported yet
 #elif defined( TARGET_STM32L4 )
 // No UARTs on this device except Low Power, which currently isn't supported.
 #else

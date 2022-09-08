@@ -5,37 +5,35 @@
  *  Description:
  *    GPIO definitions for the STM32L432KC series chips.
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_HW_GPIO_REGISTER_STM32L432KC_HPP
 #define THOR_HW_GPIO_REGISTER_STM32L432KC_HPP
 
-/* C++ Includes */
-#include <cstdint>
-#include <cstddef>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/gpio>
-
-/* Thor Includes */
 #include <Thor/lld/common/types.hpp>
+#include <cstddef>
+#include <cstdint>
 
-/*-------------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------
 Macros
--------------------------------------------------------------------------------*/
+-----------------------------------------------------------------------------*/
 #define STM32_GPIOA_PERIPH_AVAILABLE
 #define STM32_GPIOB_PERIPH_AVAILABLE
 #define STM32_GPIOC_PERIPH_AVAILABLE
 
 namespace Thor::LLD::GPIO
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Constants
-  -------------------------------------------------------------------------------*/
-  static constexpr size_t NUM_GPIO_PERIPHS = 3;   /**< Supported GPIO peripherals */
-  static constexpr size_t NUM_GPIO_PINS    = 25;  /**< Max available pins to be configured as GPIO */
+  ---------------------------------------------------------------------------*/
+  static constexpr size_t NUM_GPIO_PERIPHS = 3;
+  static constexpr size_t NUM_GPIO_PINS    = 25;
 
   static constexpr RIndex_t GPIOA_RESOURCE_INDEX = 0;
   static constexpr RIndex_t GPIOB_RESOURCE_INDEX = 1;

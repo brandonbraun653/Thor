@@ -17,7 +17,7 @@ Includes
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/uart>
 
-#if defined( THOR_UART )
+//#if defined( THOR_UART )
 namespace Chimera::UART
 {
   /*-------------------------------------------------------------------------------
@@ -142,4 +142,4 @@ namespace Chimera::UART::Backend
     return Chimera::Status::NOT_SUPPORTED;
   }
 }
-#endif /* THOR_UART */
+// #endif /* THOR_UART */

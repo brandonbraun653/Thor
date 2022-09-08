@@ -49,7 +49,9 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() : mPeriph( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX ), mSequenceIdx( 0 )
+  Driver::Driver() :
+      mPeriph( nullptr ), mCommon( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX ), mCalcVdda( 0.0f ), mCfg( {} ),
+      mSeqCfg( {} ), mDMAPipeID( 0 )
   {
   }
 
@@ -177,14 +179,18 @@ namespace Thor::LLD::ADC
     Configure the ADC DMA pipe
     -------------------------------------------------*/
     PipeConfig dmaCfg;
-    dmaCfg.alignment     = Alignment::HALF_WORD;
-    dmaCfg.direction     = Direction::PERIPH_TO_MEMORY;
-    dmaCfg.mode          = Mode::DIRECT;
-    dmaCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
-    dmaCfg.priority      = Priority::MEDIUM;
-    dmaCfg.resourceIndex = Thor::LLD::DMA::getResourceIndex( Resource::DMASignals[ mResourceIndex ] );
-    dmaCfg.channel       = static_cast<size_t>( Thor::LLD::DMA::getChannel( Resource::DMASignals[ mResourceIndex ] ) );
-    dmaCfg.threshold     = FifoThreshold::NONE;
+    dmaCfg.clear();
+    dmaCfg.dstAlignment       = Alignment::HALF_WORD;
+    dmaCfg.srcAlignment       = Alignment::WORD;
+    dmaCfg.direction          = Direction::PERIPH_TO_MEMORY;
+    dmaCfg.mode               = Mode::CIRCULAR;
+    dmaCfg.periphAddr         = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
+    dmaCfg.priority           = Priority::VERY_HIGH;
+    dmaCfg.resourceIndex      = Thor::LLD::DMA::getResourceIndex( Resource::DMASignals[ mResourceIndex ] );
+    dmaCfg.channel            = static_cast<size_t>( Thor::LLD::DMA::getChannel( Resource::DMASignals[ mResourceIndex ] ) );
+    dmaCfg.threshold          = FifoThreshold::NONE;
+    dmaCfg.persistent         = true;
+    dmaCfg.wakeUserOnComplete = false;
 
     mDMAPipeID = Chimera::DMA::constructPipe( dmaCfg );
 
@@ -274,7 +280,7 @@ namespace Thor::LLD::ADC
       /*-------------------------------------------------
       Continuous or polling conversion?
       -------------------------------------------------*/
-      switch ( sequence.mode )
+      switch ( sequence.seqMode )
       {
         case SamplingMode::ONE_SHOT:
           CONT::clear( mPeriph, CR2_CONT );
@@ -506,10 +512,10 @@ namespace Thor::LLD::ADC
     is sized to a half-word.
     -------------------------------------------------*/
     PipeTransfer cfg;
-    cfg.callback = TransferCallback::create<Driver, &Driver::onDMAComplete>( *this );
-    cfg.pipe     = mDMAPipeID;
-    cfg.size     = L::get( mPeriph ) >> SQR1_L_Pos;
-    cfg.addr     = reinterpret_cast<std::uintptr_t>( mDMASampleBuffer.rawSamples.data() );
+    cfg.isrCallback = TransferCallback::create<Driver, &Driver::dma_isr_transfer_complete_callback>( *this );
+    cfg.pipe        = mDMAPipeID;
+    cfg.size        = L::get( mPeriph ) >> SQR1_L_Pos;
+    cfg.addr        = reinterpret_cast<std::uintptr_t>( mDMASampleBuffer.rawSamples.data() );
 
     /* Won't start the transfer, but does prime the DMA hw for the ADC */
     Chimera::DMA::transfer( cfg );
@@ -543,7 +549,53 @@ namespace Thor::LLD::ADC
   }
 
 
-  void Driver::onDMAComplete( const Chimera::DMA::TransferStats &stats )
+  void Driver::syncSequence()
+  {
+    /*-------------------------------------------------------------------------
+    Select the queue associated with this instance
+    -------------------------------------------------------------------------*/
+    Thor::LLD::ADC::PeriphQueue *queue = nullptr;
+    switch ( getChannel( reinterpret_cast<std::uintptr_t>( mPeriph ) ) )
+    {
+      case Chimera::ADC::Peripheral::ADC_0:
+        queue = &Thor::LLD::ADC::ADC1_Queue;
+        break;
+
+      default:
+        RT_HARD_ASSERT( false );
+        break;
+    }
+
+    /*-------------------------------------------------------------------------
+    Fill the queue with all the sample data
+    -------------------------------------------------------------------------*/
+    for ( size_t idx = 0; idx < mDMASampleBuffer.channelSequence.size(); idx++ )
+    {
+      /*---------------------------------------------------------------------
+      Is the current sequence channel valid?
+      ---------------------------------------------------------------------*/
+      auto channel = mDMASampleBuffer.channelSequence[ idx ];
+      if ( channel == Chimera::ADC::Channel::UNKNOWN )
+      {
+        break;
+      }
+
+      /*---------------------------------------------------------------------
+      Move data into the queue for this channel
+      ---------------------------------------------------------------------*/
+      if ( !( ( *queue )[ EnumValue( channel ) ]->full() ) )
+      {
+        Chimera::ADC::Sample sample;
+        sample.us     = Chimera::micros();
+        sample.counts = mDMASampleBuffer.rawSamples[ idx ];
+
+        ( *queue )[ EnumValue( channel ) ]->push( sample );
+      }
+    }
+  }
+
+
+  void Driver::dma_isr_transfer_complete_callback( const Chimera::DMA::TransferStats &stats )
   {
     using namespace Chimera::Thread;
     using namespace Chimera::Peripheral;
@@ -625,106 +677,106 @@ namespace Thor::LLD::ADC
   }
 
 
-  void Driver::IRQHandler()
-  {
-    using namespace Chimera::ADC;
-    using namespace Chimera::Interrupt;
-    using namespace Chimera::Peripheral;
-    using namespace Chimera::Thread;
+  // void Driver::IRQHandler()
+  // {
+  //   using namespace Chimera::ADC;
+  //   using namespace Chimera::Interrupt;
+  //   using namespace Chimera::Peripheral;
+  //   using namespace Chimera::Thread;
 
-    bool wakeUserTask = false;
-    TaskMsg tskMsg = ITCMsg::TSK_MSG_NOP;
+  //   bool wakeUserTask = false;
+  //   TaskMsg tskMsg = ITCMsg::TSK_MSG_NOP;
 
-    /*-------------------------------------------------
-    Data Available?
-    -------------------------------------------------*/
-    if( EOC::get( mPeriph ) )
-    {
-      /*-------------------------------------------------
-      Get which channel is currently being measured
-      -------------------------------------------------*/
-      uint32_t channel = 0;
-      uint32_t offset = 0;
-      uint32_t maxIdx = L::get( mPeriph ) >> SQR1_L_Pos;
+  //   /*-------------------------------------------------
+  //   Data Available?
+  //   -------------------------------------------------*/
+  //   if( EOC::get( mPeriph ) )
+  //   {
+  //     /*-------------------------------------------------
+  //     Get which channel is currently being measured
+  //     -------------------------------------------------*/
+  //     uint32_t channel = 0;
+  //     uint32_t offset = 0;
+  //     uint32_t maxIdx = L::get( mPeriph ) >> SQR1_L_Pos;
 
-      if( mSequenceIdx < 6 )
-      {
-        offset = ( mSequenceIdx - 0 ) * SQR1_BIT_Wid;
-        channel = ( SQR3_ALL::get( mPeriph ) >> offset ) & SQR1_BIT_Msk;
-      }
-      else if( mSequenceIdx < 12 )
-      {
-        offset = ( mSequenceIdx - 6 ) * SQR1_BIT_Wid;
-        channel = ( SQR2_ALL::get( mPeriph ) >> offset ) & SQR1_BIT_Msk;
-      }
-      else if( mSequenceIdx < 16 )
-      {
-        offset = ( mSequenceIdx - 12 ) * SQR1_BIT_Wid;
-        channel = ( SQR1_ALL::get( mPeriph ) >> offset ) & SQR1_BIT_Msk;
-      }
+  //     if( mSequenceIdx < 6 )
+  //     {
+  //       offset = ( mSequenceIdx - 0 ) * SQR1_BIT_Wid;
+  //       channel = ( SQR3_ALL::get( mPeriph ) >> offset ) & SQR1_BIT_Msk;
+  //     }
+  //     else if( mSequenceIdx < 12 )
+  //     {
+  //       offset = ( mSequenceIdx - 6 ) * SQR1_BIT_Wid;
+  //       channel = ( SQR2_ALL::get( mPeriph ) >> offset ) & SQR1_BIT_Msk;
+  //     }
+  //     else if( mSequenceIdx < 16 )
+  //     {
+  //       offset = ( mSequenceIdx - 12 ) * SQR1_BIT_Wid;
+  //       channel = ( SQR1_ALL::get( mPeriph ) >> offset ) & SQR1_BIT_Msk;
+  //     }
 
-      /*-------------------------------------------------
-      Pre-emptively update counters to indicate current
-      sequence index.
-      -------------------------------------------------*/
-      mSequenceIdx++;
-      if( mSequenceIdx >= maxIdx )
-      {
-        mSequenceIdx = 0;
-      }
+  //     /*-------------------------------------------------
+  //     Pre-emptively update counters to indicate current
+  //     sequence index.
+  //     -------------------------------------------------*/
+  //     mSequenceIdx++;
+  //     if( mSequenceIdx >= maxIdx )
+  //     {
+  //       mSequenceIdx = 0;
+  //     }
 
-      /*-------------------------------------------------
-      Pull out the raw data from the register. This will
-      immediately clear the EOC flag, starting the next
-      conversion cycle.
-      -------------------------------------------------*/
-      Sample measurement;
-      measurement.us = Chimera::micros();
-      measurement.counts = DATA::get( mPeriph );
+  //     /*-------------------------------------------------
+  //     Pull out the raw data from the register. This will
+  //     immediately clear the EOC flag, starting the next
+  //     conversion cycle.
+  //     -------------------------------------------------*/
+  //     Sample measurement;
+  //     measurement.us = Chimera::micros();
+  //     measurement.counts = DATA::get( mPeriph );
 
-      /*-------------------------------------------------
-      Push the data into the queue
-      -------------------------------------------------*/
-      if( ( channel < ADC1_Queue.size() ) && ADC1_Queue[ channel ]->available_from_unlocked() )
-      {
-        ADC1_Queue[ channel ]->push_from_unlocked( measurement );
-      }
+  //     /*-------------------------------------------------
+  //     Push the data into the queue
+  //     -------------------------------------------------*/
+  //     if( ( channel < ADC1_Queue.size() ) && ADC1_Queue[ channel ]->available_from_unlocked() )
+  //     {
+  //       ADC1_Queue[ channel ]->push_from_unlocked( measurement );
+  //     }
 
-      wakeUserTask = true;
-      tskMsg |= ITCMsg::TSK_MSG_ISR_DATA_READY;
-    }
+  //     wakeUserTask = true;
+  //     tskMsg |= ITCMsg::TSK_MSG_ISR_DATA_READY;
+  //   }
 
-    /*-------------------------------------------------
-    Overrun error?
-    -------------------------------------------------*/
-    if( OVR::get( mPeriph ) )
-    {
-      OVR::clear( mPeriph, SR_OVR );
+  //   /*-------------------------------------------------
+  //   Overrun error?
+  //   -------------------------------------------------*/
+  //   if( OVR::get( mPeriph ) )
+  //   {
+  //     OVR::clear( mPeriph, SR_OVR );
 
-      /*-------------------------------------------------
-      If not using DMA transfers, the conversion can run
-      faster than software can process. Simply re-trigger
-      the ADC to continue where it left off. (RM 13.8.2)
-      -------------------------------------------------*/
-      if( !DMA::get( mPeriph ) && EOCS::get( mPeriph ) )
-      {
-        SWSTART::set( mPeriph, CR2_SWSTART );
-      }
-      else
-      {
-        wakeUserTask = true;
-        tskMsg |= ITCMsg::TSK_MSG_ISR_ERROR;
-      }
-    }
+  //     /*-------------------------------------------------
+  //     If not using DMA transfers, the conversion can run
+  //     faster than software can process. Simply re-trigger
+  //     the ADC to continue where it left off. (RM 13.8.2)
+  //     -------------------------------------------------*/
+  //     if( !DMA::get( mPeriph ) && EOCS::get( mPeriph ) )
+  //     {
+  //       SWSTART::set( mPeriph, CR2_SWSTART );
+  //     }
+  //     else
+  //     {
+  //       wakeUserTask = true;
+  //       tskMsg |= ITCMsg::TSK_MSG_ISR_ERROR;
+  //     }
+  //   }
 
-    /*-------------------------------------------------
-    Wake up the user thread
-    -------------------------------------------------*/
-    if( wakeUserTask )
-    {
-      sendTaskMsg( INT::getUserTaskId( Type::PERIPH_ADC ), tskMsg, TIMEOUT_DONT_WAIT );
-    }
-  }
+  //   /*-------------------------------------------------
+  //   Wake up the user thread
+  //   -------------------------------------------------*/
+  //   if( wakeUserTask )
+  //   {
+  //     sendTaskMsg( INT::getUserTaskId( Type::PERIPH_ADC ), tskMsg, TIMEOUT_DONT_WAIT );
+  //   }
+  // }
 }    // namespace Thor::LLD::ADC
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_ADC */

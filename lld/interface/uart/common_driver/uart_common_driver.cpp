@@ -24,7 +24,6 @@
 #include <Thor/lld/interface/uart/common_driver/uart_common_intf.hpp>
 
 #if defined( THOR_UART ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
-
 namespace Thor::LLD::UART
 {
   /*-------------------------------------------------------------------------------

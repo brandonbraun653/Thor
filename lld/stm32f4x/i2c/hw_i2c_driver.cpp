@@ -5,7 +5,7 @@
  *  Description:
  *    I2C driver for STM32F4
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -14,7 +14,6 @@ Includes
 #include <Chimera/common>
 #include <Chimera/i2c>
 #include <Thor/cfg>
-#include <Thor/i2c>
 #include <Thor/lld/interface/inc/i2c>
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
@@ -92,7 +91,7 @@ namespace Thor::LLD::I2C
     /*-------------------------------------------------------------------------
     Local Constants
     -------------------------------------------------------------------------*/
-    static constexpr auto pType         = Chimera::Peripheral::Type::PERIPH_I2C;
+    static constexpr auto  pType        = Chimera::Peripheral::Type::PERIPH_I2C;
     static constexpr float period100khz = 10000.0f;
     static constexpr float maxrt100khz  = 1000.0f;
     static constexpr float period400khz = 2500.0f;
@@ -203,14 +202,6 @@ namespace Thor::LLD::I2C
   Chimera::Status_t Driver::read( const uint16_t address, void *const data, const size_t length )
   {
     /*-------------------------------------------------------------------------
-    Input Protection
-    -------------------------------------------------------------------------*/
-    if ( !data || !length )
-    {
-      return Chimera::Status::INVAL_FUNC_PARAM;
-    }
-
-    /*-------------------------------------------------------------------------
     Modify the address to indicate a read
     -------------------------------------------------------------------------*/
     uint16_t readAddress = ( ( address << 1u ) | 0x1 ) & 0xFF;
@@ -220,14 +211,6 @@ namespace Thor::LLD::I2C
 
   Chimera::Status_t Driver::write( const uint16_t address, const void *const data, const size_t length )
   {
-    /*-------------------------------------------------------------------------
-    Input Protection
-    -------------------------------------------------------------------------*/
-    if ( !data || !length )
-    {
-      return Chimera::Status::INVAL_FUNC_PARAM;
-    }
-
     /*-------------------------------------------------------------------------
     Modify the address to indicate a write
     -------------------------------------------------------------------------*/
@@ -240,34 +223,23 @@ namespace Thor::LLD::I2C
                                       const size_t length )
   {
     /*-------------------------------------------------------------------------
-    Input Protections
+    For now, only an interrupt based transfer is allowed
     -------------------------------------------------------------------------*/
-    if ( ( !tx_data && !rx_data ) || !length )
-    {
-      return Chimera::Status::INVAL_FUNC_PARAM;
-    }
-
-    /*-------------------------------------------------------------------------
-    Select the correct method of transaction
-    -------------------------------------------------------------------------*/
-    // if ( length < DMA_TRANS_POINT )
-    // {
     return transferIT( address, tx_data, rx_data, length );
-    // }
-    // else
-    // {
-    //   return transferDMA( address, tx_data, rx_data, length );
-    // }
   }
 
 
-  TxfrCB *Driver::whatHappened()
+  TxfrCB Driver::whatHappened()
   {
     /*-------------------------------------------------------------------------
-    No need to protect this data. Can't guarantee the caller context will be
-    safe from ISR modification after return.
+    Another transfer could be on-going, so copy out what happened last time.
+    Protected from ISRs to prevent updating mid-copy.
     -------------------------------------------------------------------------*/
-    return &mTransfer;
+    enterCriticalSection();
+    auto tmp = mTransferCache;
+    exitCriticalSection();
+
+    return tmp;
   }
 
 
@@ -307,15 +279,14 @@ namespace Thor::LLD::I2C
     /*-------------------------------------------------------------------------
     Set up the transfer
     -------------------------------------------------------------------------*/
-    /* Update the transfer control block */
     mTransfer.clear();
-    mTransfer.inProgress = true;
-    mTransfer.address    = address;
-    mTransfer.txData     = tx_data;
-    mTransfer.rxData     = rx_data;
-    mTransfer.length     = length;
-    mTransfer.state      = TxfrState::ADDRESS;
-    mTransfer.mode       = Chimera::Peripheral::TransferMode::INTERRUPT;
+    mTransfer.inProgress    = true;
+    mTransfer.slave_address = address;
+    mTransfer.txData        = reinterpret_cast<const uint8_t *>( tx_data );
+    mTransfer.rxData        = reinterpret_cast<uint8_t *>( rx_data );
+    mTransfer.bytes_left    = length;
+    mTransfer.state         = TxfrState::ADDRESS;
+    mTransfer.txfrMode      = Chimera::Peripheral::TransferMode::INTERRUPT;
 
     /* Ensure the expected interrupts are enabled */
     enableISRSignal( bSB );
@@ -332,8 +303,6 @@ namespace Thor::LLD::I2C
   Chimera::Status_t Driver::transferDMA( const uint16_t address, const void *const tx_data, void *const rx_data,
                                          const size_t length )
   {
-    // Probably don't need to setup a DMA callback. The peripheral should generate a
-    // transfer complete event once everything is finished.
     return Chimera::Status::NOT_SUPPORTED;
   }
 
@@ -352,7 +321,7 @@ namespace Thor::LLD::I2C
     /*-------------------------------------------------------------------------
     NACK? This is the most common issue.
     -------------------------------------------------------------------------*/
-    if( sr1 & SR1_AF )
+    if ( sr1 & SR1_AF )
     {
       mTransfer.errorBF |= ( 1u << TxfrError::ERR_NACK );
       AF::set( mPeriph, 0 );
@@ -374,25 +343,25 @@ namespace Thor::LLD::I2C
     /*-------------------------------------------------------------------------
     Local Variables
     -------------------------------------------------------------------------*/
-    const uint32_t sr1 = SR1::get( mPeriph );
-    const uint32_t sr2 = SR2::get( mPeriph );
-    uint32_t data_reg = 0;
-    uint8_t *rx_data_ptr = nullptr;
+    const uint32_t sr1         = SR1::get( mPeriph );
+    const uint32_t sr2         = SR2::get( mPeriph );
+    uint32_t       data_reg    = 0;
+    uint8_t       *rx_data_ptr = nullptr;
     const uint8_t *tx_data_ptr = nullptr;
 
     /*-------------------------------------------------------------------------
     Handle an on-going transfer in Interrupt mode
     -------------------------------------------------------------------------*/
-    if( mTransfer.inProgress && ( mTransfer.mode == Chimera::Peripheral::TransferMode::INTERRUPT ) )
+    if ( mTransfer.inProgress && ( mTransfer.txfrMode == Chimera::Peripheral::TransferMode::INTERRUPT ) )
     {
-      switch( mTransfer.state )
+      switch ( mTransfer.state )
       {
         case TxfrState::ADDRESS:
-          if( sr1 & SR1_SB )
+          if ( sr1 & SR1_SB )
           {
-            DR::set( mPeriph, mTransfer.address << DR_DR_Pos );
-            mTransfer.index = 0;
-            mTransfer.state = TxfrState::DATA;
+            DR::set( mPeriph, mTransfer.slave_address << DR_DR_Pos );
+            mTransfer.offset = 0;
+            mTransfer.state  = TxfrState::DATA;
           }
           break;
 
@@ -402,9 +371,9 @@ namespace Thor::LLD::I2C
           -------------------------------------------------------------------*/
           if ( ( sr1 & SR1_RXNE ) && mTransfer.rxData )
           {
-            data_reg                       = DR::get( mPeriph );
-            rx_data_ptr                    = reinterpret_cast<uint8_t *>( mTransfer.rxData );
-            rx_data_ptr[ mTransfer.index ] = static_cast<uint8_t>( data_reg );
+            data_reg                        = DR::get( mPeriph );
+            rx_data_ptr                     = reinterpret_cast<uint8_t *>( mTransfer.rxData );
+            rx_data_ptr[ mTransfer.offset ] = static_cast<uint8_t>( data_reg );
           }
 
           /*-------------------------------------------------------------------
@@ -413,14 +382,14 @@ namespace Thor::LLD::I2C
           if ( ( sr1 & SR1_TXE ) && mTransfer.txData )
           {
             tx_data_ptr = reinterpret_cast<const uint8_t *>( mTransfer.txData );
-            DR::set( mPeriph, tx_data_ptr[ mTransfer.index ] );
+            DR::set( mPeriph, tx_data_ptr[ mTransfer.offset ] );
           }
 
           /*-------------------------------------------------------------------
           Update the tracking data
           -------------------------------------------------------------------*/
-          mTransfer.index++;
-          if( mTransfer.index < mTransfer.length )
+          mTransfer.offset++;
+          if ( mTransfer.offset < mTransfer.bytes_left )
           {
             mTransfer.state = TxfrState::COMPLETE;
           }

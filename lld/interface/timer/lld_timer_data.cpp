@@ -27,11 +27,38 @@ namespace Thor::LLD::TIMER
 #if defined( STM32_TIMER3_PERIPH_AVAILABLE )
   RegisterMap *TIMER3_PERIPH = reinterpret_cast<RegisterMap *>( TIMER3_BASE_ADDR );
 #endif
+#if defined( STM32_TIMER4_PERIPH_AVAILABLE )
+  RegisterMap *TIMER4_PERIPH = reinterpret_cast<RegisterMap *>( TIMER4_BASE_ADDR );
+#endif
+#if defined( STM32_TIMER5_PERIPH_AVAILABLE )
+  RegisterMap *TIMER5_PERIPH = reinterpret_cast<RegisterMap *>( TIMER5_BASE_ADDR );
+#endif
 #if defined( STM32_TIMER6_PERIPH_AVAILABLE )
   RegisterMap *TIMER6_PERIPH = reinterpret_cast<RegisterMap *>( TIMER6_BASE_ADDR );
 #endif
 #if defined( STM32_TIMER7_PERIPH_AVAILABLE )
   RegisterMap *TIMER7_PERIPH = reinterpret_cast<RegisterMap *>( TIMER7_BASE_ADDR );
+#endif
+#if defined( STM32_TIMER8_PERIPH_AVAILABLE )
+  RegisterMap *TIMER8_PERIPH = reinterpret_cast<RegisterMap *>( TIMER8_BASE_ADDR );
+#endif
+#if defined( STM32_TIMER9_PERIPH_AVAILABLE )
+  RegisterMap *TIMER9_PERIPH = reinterpret_cast<RegisterMap *>( TIMER9_BASE_ADDR );
+#endif
+#if defined( STM32_TIMER10_PERIPH_AVAILABLE )
+  RegisterMap *TIMER10_PERIPH = reinterpret_cast<RegisterMap *>( TIMER10_BASE_ADDR );
+#endif
+#if defined( STM32_TIMER11_PERIPH_AVAILABLE )
+  RegisterMap *TIMER11_PERIPH = reinterpret_cast<RegisterMap *>( TIMER11_BASE_ADDR );
+#endif
+#if defined( STM32_TIMER12_PERIPH_AVAILABLE )
+  RegisterMap *TIMER12_PERIPH = reinterpret_cast<RegisterMap *>( TIMER12_BASE_ADDR );
+#endif
+#if defined( STM32_TIMER13_PERIPH_AVAILABLE )
+  RegisterMap *TIMER13_PERIPH = reinterpret_cast<RegisterMap *>( TIMER13_BASE_ADDR );
+#endif
+#if defined( STM32_TIMER14_PERIPH_AVAILABLE )
+  RegisterMap *TIMER14_PERIPH = reinterpret_cast<RegisterMap *>( TIMER14_BASE_ADDR );
 #endif
 #if defined( STM32_TIMER15_PERIPH_AVAILABLE )
   RegisterMap *TIMER15_PERIPH = reinterpret_cast<RegisterMap *>( TIMER15_BASE_ADDR );

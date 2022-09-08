@@ -66,6 +66,9 @@ namespace Thor::LLD::DMA
   static constexpr size_t DMA2_STREAM7_RESOURCE_INDEX = 15u;
   static constexpr size_t DMA_MAX_RESOURCE_IDX        = 16u;
 
+  static constexpr size_t DMA1_FIRST_STREAM_RESOURCE_INDEX = DMA1_STREAM1_RESOURCE_INDEX;
+  static constexpr size_t DMA2_FIRST_STREAM_RESOURCE_INDEX = DMA2_STREAM1_RESOURCE_INDEX;
+
 }    // namespace Thor::LLD::DMA
 
 #endif /* !THOR_HW_DMA_REGISTER_STM32F446XX_HPP */
