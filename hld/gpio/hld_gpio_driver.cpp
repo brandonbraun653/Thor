@@ -100,15 +100,15 @@ namespace Chimera::GPIO
       imp->lldriver->clockEnable();
 
       /*-----------------------------------------------------------------------
+      Update the implementation pointer, needed for the following calls.
+      -----------------------------------------------------------------------*/
+      mImpl = reinterpret_cast<void *>( imp );
+
+      /*-----------------------------------------------------------------------
       Configure the basic IO mode settings
       -----------------------------------------------------------------------*/
       result |= setMode( pinInit.drive, pinInit.pull );
       result |= setState( pinInit.state );
-
-      /*-----------------------------------------------------------------------
-      Update the implementation pointer
-      -----------------------------------------------------------------------*/
-      mImpl = reinterpret_cast<void *>( imp );
     }
 
     return result;
