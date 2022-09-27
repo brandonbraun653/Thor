@@ -61,12 +61,6 @@ namespace Chimera::USART
     size_t                   mResourceIndex; /**< Lookup table index for USART resources */
 
     /*-------------------------------------------------
-    Signals the user may wait on for notifications
-    -------------------------------------------------*/
-    Chimera::Thread::BinarySemaphore mAwaitRXComplete;
-    Chimera::Thread::BinarySemaphore mAwaitTXComplete;
-
-    /*-------------------------------------------------
     Internal locks for protecting the data buffers
     -------------------------------------------------*/
     Chimera::Thread::RecursiveMutex  mRxLock;
@@ -85,8 +79,7 @@ namespace Chimera::USART
     Chimera::Hardware::PeripheralMode mRxMode;
 
     ThorImpl() :
-        mEnabled( false ), mChannel( Chimera::Serial::Channel::NOT_SUPPORTED ), mResourceIndex( 0 ), mAwaitRXComplete( 1 ),
-        mAwaitTXComplete( 1 ), mTxLock( 1 )
+        mEnabled( false ), mChannel( Chimera::Serial::Channel::NOT_SUPPORTED ), mResourceIndex( 0 ), mTxLock( 1 )
     {
     }
 
@@ -173,7 +166,6 @@ namespace Chimera::USART
       ------------------------------------------------*/
       if ( mTxLock.try_acquire() )
       {
-        mAwaitTXComplete.try_acquire();
         error = lldriver->transmitIT( buffer, length );
       }
       else
@@ -202,7 +194,6 @@ namespace Chimera::USART
       ------------------------------------------------*/
       if ( mTxLock.try_acquire() )
       {
-        mAwaitTXComplete.try_acquire();
         error = lldriver->transmitDMA( buffer, length );
       }
       else
@@ -313,10 +304,9 @@ namespace Chimera::USART
     auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
     /*-------------------------------------------------------------------------
-    Ensure the internal event signals are reset
+    Initialize AsyncIO for user notification of events
     -------------------------------------------------------------------------*/
-    impl->mAwaitRXComplete.try_acquire();
-    impl->mAwaitTXComplete.try_acquire();
+    this->initAIO();
 
     /*-------------------------------------------------------------------------
     Initialize to the desired TX/RX modes
@@ -537,8 +527,8 @@ namespace Chimera::USART
       /*------------------------------------------------
       Notify those waiting on the TX occurrance
       ------------------------------------------------*/
-      impl->mAwaitTXComplete.release();
       impl->mTxLock.release();
+      impl->hldriver->signalAIO( Chimera::Event::Trigger::TRIGGER_WRITE_COMPLETE );
 
       /*-------------------------------------------------
       Handle any user-space callback that was registered
@@ -577,9 +567,9 @@ namespace Chimera::USART
       impl->mRxLock.unlock();
 
       /*------------------------------------------------
-      Notify those waiting on the RX occurrance
+      Notify those waiting on an RX occurrence
       ------------------------------------------------*/
-      impl->mAwaitRXComplete.release();
+      impl->hldriver->signalAIO( Chimera::Event::Trigger::TRIGGER_READ_COMPLETE );
 
       /*-------------------------------------------------
       Handle any user-space callback that was registered
