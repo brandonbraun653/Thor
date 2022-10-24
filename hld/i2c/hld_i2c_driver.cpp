@@ -256,19 +256,6 @@ namespace Chimera::I2C
     return Chimera::Status::NOT_SUPPORTED;
   }
 
-
-  Chimera::Status_t Driver::registerListener( Chimera::Event::Actionable &listener, const size_t timeout,
-                                              size_t &registrationID )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::removeListener( const size_t registrationID, const size_t timeout )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
 }    // namespace Chimera::I2C
 
 
