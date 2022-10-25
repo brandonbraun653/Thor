@@ -255,10 +255,10 @@ namespace Thor::LLD::SPI
     /* Configure CR2 */
     SSOE::set( mPeriph, CR2_SSOE );
 
-    /* Set up the transfer width */
-    #if defined( TARGET_STM32L4 )
+/* Set up the transfer width */
+#if defined( TARGET_STM32L4 )
     prjConfigureTransferWidth( mPeriph, periphConfig->HWInit.dataSize );
-    #endif
+#endif
 
     /*-------------------------------------------------
     Enable the SPI peripheral
@@ -283,12 +283,12 @@ namespace Thor::LLD::SPI
 
   Chimera::Status_t Driver::transfer( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
   {
-    uint16_t txData                  = 0u;
-    uint16_t rxData                  = 0u;
-    size_t bytesTransfered           = 0u;
-    size_t bytesPerTransfer          = 0u;
-    const uint8_t *const txBufferPtr = reinterpret_cast<const uint8_t *const>( txBuffer );
-    uint8_t *const rxBufferPtr       = reinterpret_cast<uint8_t *const>( rxBuffer );
+    uint16_t             txData           = 0u;
+    uint16_t             rxData           = 0u;
+    size_t               bytesTransfered  = 0u;
+    size_t               bytesPerTransfer = 0u;
+    const uint8_t *const txBufferPtr      = reinterpret_cast<const uint8_t *const>( txBuffer );
+    uint8_t *const       rxBufferPtr      = reinterpret_cast<uint8_t *const>( rxBuffer );
 
     /*------------------------------------------------
     Runtime configuration
@@ -461,9 +461,9 @@ namespace Thor::LLD::SPI
     ------------------------------------------------*/
     auto dr = reinterpret_cast<volatile uint8_t *>( &mPeriph->DR );
 
-    #if defined( TARGET_STM32L4 )
+#if defined( TARGET_STM32L4 )
     prjConfigureTransferWidth( mPeriph, Chimera::SPI::DataSize::SZ_8BIT );
-    #endif
+#endif
 
     /*------------------------------------------------
     Start the transfer
@@ -487,12 +487,6 @@ namespace Thor::LLD::SPI
   Chimera::Status_t Driver::killTransfer()
   {
     return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  void Driver::attachISRWakeup( Chimera::Thread::BinarySemaphore *const wakeup )
-  {
-    ISRWakeup_external = wakeup;
   }
 
 
@@ -523,6 +517,9 @@ namespace Thor::LLD::SPI
 
   void Driver::IRQHandler()
   {
+    using namespace Chimera::Thread;
+    using namespace Chimera::Peripheral;
+
     /*------------------------------------------------
     Save critical register information
     ------------------------------------------------*/
@@ -613,10 +610,9 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Detect the end of transfer and wake up the post processor thread
     ------------------------------------------------*/
-    if ( ISRWakeup_external && ( ( txfr.status == Chimera::SPI::Status::TRANSFER_COMPLETE ) ||
-                                 ( txfr.status == Chimera::SPI::Status::TRANSFER_ERROR ) ) )
+    if ( ( txfr.status == Chimera::SPI::Status::TRANSFER_COMPLETE ) || ( txfr.status == Chimera::SPI::Status::TRANSFER_ERROR ) )
     {
-      ISRWakeup_external->releaseFromISR();
+      sendTaskMsg( INT::getUserTaskId( Type::PERIPH_SPI ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
     }
   }
 }    // namespace Thor::LLD::SPI
