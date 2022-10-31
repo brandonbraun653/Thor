@@ -175,8 +175,8 @@ namespace Thor::LLD::SPI
     void clockDisable();
     size_t getErrorFlags();
     size_t getStatusFlags();
-    Chimera::Status_t configure( const Chimera::SPI::DriverConfig &setup );
-    Chimera::Status_t registerConfig( Chimera::SPI::DriverConfig *config );
+    Chimera::Status_t configure( const Chimera::SPI::HardwareInit &setup );
+    Chimera::Status_t registerConfig( Chimera::SPI::HardwareInit *config );
     Chimera::Status_t transfer( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize );
     Chimera::Status_t transferIT( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize );
     Chimera::Status_t transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize );
@@ -198,7 +198,7 @@ namespace Thor::LLD::SPI
 
     RegisterMap *mPeriph;
     size_t resourceIndex;
-    Chimera::SPI::DriverConfig *periphConfig;
+    Chimera::SPI::HardwareInit *periphConfig;
 
     /*------------------------------------------------
     Asynchronous Event Listeners

@@ -160,7 +160,7 @@ namespace Thor::LLD::SPI
   }
 
 
-  Chimera::Status_t Driver::configure( const Chimera::SPI::DriverConfig &setup )
+  Chimera::Status_t Driver::configure( const Chimera::SPI::HardwareInit &setup )
   {
     using namespace Chimera::Algorithm::RegisterOptimization;
 
@@ -185,7 +185,7 @@ namespace Thor::LLD::SPI
     cfg.actVals      = Configuration::ClockDivisor::valOptions.data();
     cfg.regVals      = Configuration::ClockDivisor::regOptions.data();
     cfg.numOptions   = Configuration::ClockDivisor::NUM_OPTIONS;
-    cfg.desiredValue = setup.HWInit.clockFreq;
+    cfg.desiredValue = setup.clockFreq;
     cfg.optimizer    = calculate_clock_performance;
 
     Reg32_t clockDivisor = findOptimalSetting( cfg, Configuration::ClockDivisor::DIV_32, &clockFreq );
@@ -193,7 +193,7 @@ namespace Thor::LLD::SPI
     /*------------------------------------------------
     Stop the config if there are any invalid config options
     ------------------------------------------------*/
-    if ( setup.HWInit.csMode == Chimera::SPI::CSMode::AUTO_BETWEEN_TRANSFER )
+    if ( setup.csMode == Chimera::SPI::CSMode::AUTO_BETWEEN_TRANSFER )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
@@ -211,22 +211,22 @@ namespace Thor::LLD::SPI
     this->reset();
 
     /* Bit Transfer Order */
-    LSBFIRST::set( mPeriph, ConfigMap::BitOrderToRegConfig[ static_cast<size_t>( setup.HWInit.bitOrder ) ] );
+    LSBFIRST::set( mPeriph, ConfigMap::BitOrderToRegConfig[ static_cast<size_t>( setup.bitOrder ) ] );
 
     /* Transfer Bit Width */
-    DS::set( mPeriph, ConfigMap::DataSizeToRegConfig[ static_cast<size_t>( setup.HWInit.dataSize ) ] );
+    DS::set( mPeriph, ConfigMap::DataSizeToRegConfig[ static_cast<size_t>( setup.dataSize ) ] );
 
     /* Peripheral Clock Divisor */
     BR::set( mPeriph, clockDivisor );
 
     /* Master/Slave Control Mode */
-    MSTR::set( mPeriph, ConfigMap::ControlModeToRegConfig[ static_cast<size_t>( setup.HWInit.controlMode ) ] );
+    MSTR::set( mPeriph, ConfigMap::ControlModeToRegConfig[ static_cast<size_t>( setup.controlMode ) ] );
 
     SSM::set( mPeriph, CR1_SSM );
     SSI::set( mPeriph, CR1_SSI );
 
     /* Clock Phase and Polarity */
-    switch ( setup.HWInit.clockMode )
+    switch ( setup.clockMode )
     {
       case Chimera::SPI::ClockMode::MODE0:
         CPOL::set( mPeriph, 0u );
@@ -257,7 +257,7 @@ namespace Thor::LLD::SPI
 
 /* Set up the transfer width */
 #if defined( TARGET_STM32L4 )
-    prjConfigureTransferWidth( mPeriph, periphConfig->HWInit.dataSize );
+    prjConfigureTransferWidth( mPeriph, periphConfig->dataSize );
 #endif
 
     /*-------------------------------------------------
@@ -269,7 +269,7 @@ namespace Thor::LLD::SPI
   }
 
 
-  Chimera::Status_t Driver::registerConfig( Chimera::SPI::DriverConfig *config )
+  Chimera::Status_t Driver::registerConfig( Chimera::SPI::HardwareInit *config )
   {
     if ( !config )
     {
@@ -298,7 +298,7 @@ namespace Thor::LLD::SPI
       return Chimera::Status::NOT_INITIALIZED;
     }
 
-    switch ( periphConfig->HWInit.dataSize )
+    switch ( periphConfig->dataSize )
     {
       case Chimera::SPI::DataSize::SZ_8BIT:
         bytesPerTransfer = 1u;

@@ -41,10 +41,10 @@ namespace Chimera::SPI
   ---------------------------------------------------------------------------*/
   struct ThorImpl
   {
-    LLD::Driver_rPtr               lldriver;
-    Chimera::SPI::Driver_rPtr      hldriver;
-    Chimera::SPI::DriverConfig     config;
-    Chimera::GPIO::Driver_rPtr     csPin;
+    LLD::Driver_rPtr           pLLDriver; /**< Low level SPI driver */
+    Chimera::SPI::Driver_rPtr  pHLDriver; /**< High level SPI driver */
+    Chimera::GPIO::Driver_rPtr pCSDriver; /**< Current chip select line driver */
+    Chimera::SPI::HardwareInit hwConfig;  /**< Hardware configuration of the driver */
 
     void postISRProcessing()
     {
@@ -53,15 +53,23 @@ namespace Chimera::SPI
       /*------------------------------------------------
       Decide chip select behavior
       ------------------------------------------------*/
-      if ( config.HWInit.csMode == Chimera::SPI::CSMode::AUTO_AFTER_TRANSFER )
+      if ( hwConfig.csMode == Chimera::SPI::CSMode::AUTO_AFTER_TRANSFER )
       {
-        hldriver->setChipSelect( Chimera::GPIO::State::HIGH );
+        pHLDriver->setChipSelect( Chimera::GPIO::State::HIGH );
       }
 
       /*------------------------------------------------
       Notify threads waiting on the transfer complete signal
       ------------------------------------------------*/
-      hldriver->signalAIO( Chimera::Event::Trigger::TRIGGER_TRANSFER_COMPLETE );
+      pHLDriver->signalAIO( Chimera::Event::Trigger::TRIGGER_TRANSFER_COMPLETE );
+    }
+
+    void clear()
+    {
+      pLLDriver = nullptr;
+      pHLDriver = nullptr;
+      pCSDriver = nullptr;
+      hwConfig.clear();
     }
   };
 
@@ -137,34 +145,29 @@ namespace Chimera::SPI
     /*-------------------------------------------------------------------------
     Allocate the drivers
     -------------------------------------------------------------------------*/
-    auto impl      = s_impl_drivers.getOrCreate( setupStruct.HWInit.hwChannel );
-    impl->lldriver = LLD::getDriver( setupStruct.HWInit.hwChannel );
-    RT_DBG_ASSERT( impl && impl->lldriver );
+    auto impl       = s_impl_drivers.getOrCreate( setupStruct.HWInit.hwChannel );
+    impl->pLLDriver = LLD::getDriver( setupStruct.HWInit.hwChannel );
+    RT_DBG_ASSERT( impl && impl->pLLDriver );
 
-    mImpl          = reinterpret_cast<void *>( impl );
-    impl->hldriver = this;
-    impl->config  = setupStruct;
+    mImpl           = reinterpret_cast<void *>( impl );
+    impl->pHLDriver = this;
+    impl->hwConfig  = setupStruct.HWInit;
 
     /*-------------------------------------------------------------------------
     Configure the GPIO
     -------------------------------------------------------------------------*/
-    auto SCK  = Chimera::GPIO::getDriver( impl->config.SCKInit.port, impl->config.SCKInit.pin );
-    auto MOSI = Chimera::GPIO::getDriver( impl->config.MOSIInit.port, impl->config.MOSIInit.pin );
-    auto MISO = Chimera::GPIO::getDriver( impl->config.MISOInit.port, impl->config.MISOInit.pin );
+    auto SCK  = Chimera::GPIO::getDriver( setupStruct.SCKInit.port, setupStruct.SCKInit.pin );
+    auto MOSI = Chimera::GPIO::getDriver( setupStruct.MOSIInit.port, setupStruct.MOSIInit.pin );
+    auto MISO = Chimera::GPIO::getDriver( setupStruct.MISOInit.port, setupStruct.MISOInit.pin );
 
-    result |= SCK->init( impl->config.SCKInit );
-    result |= MOSI->init( impl->config.MOSIInit );
-    result |= MISO->init( impl->config.MISOInit );
+    result |= SCK->init( setupStruct.SCKInit );
+    result |= MOSI->init( setupStruct.MOSIInit );
+    result |= MISO->init( setupStruct.MISOInit );
 
-    /* Does the driver take control of the CS pin? */
-    if ( setupStruct.externalCS )
+    if ( setupStruct.CSInit.validity )
     {
-      setChipSelectControlMode( Chimera::SPI::CSMode::MANUAL );
-    }
-    else
-    {
-      impl->csPin = Chimera::GPIO::getDriver( impl->config.CSInit.port, impl->config.CSInit.pin );
-      result |= impl->csPin->init( impl->config.CSInit );
+      impl->pCSDriver = Chimera::GPIO::getDriver( setupStruct.CSInit.port, setupStruct.CSInit.pin );
+      result |= impl->pCSDriver->init( setupStruct.CSInit );
     }
 
     if ( result != Chimera::Status::OK )
@@ -178,24 +181,19 @@ namespace Chimera::SPI
     /*-------------------------------------------------------------------------
     Configure the SPI hardware
     -------------------------------------------------------------------------*/
-    result |= impl->lldriver->configure( impl->config );
-    result |= impl->lldriver->registerConfig( &impl->config );
-
-    if ( result != Chimera::Status::OK )
-    {
-      impl->config.validity = false;
-    }
+    result |= impl->pLLDriver->configure( impl->hwConfig );
+    result |= impl->pLLDriver->registerConfig( &impl->hwConfig );
 
     return result;
   }
 
 
-  Chimera::SPI::DriverConfig Driver::getInit()
+  Chimera::SPI::HardwareInit Driver::getInit()
   {
     RT_DBG_ASSERT( mImpl );
     auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
-    return impl->config;
+    return impl->hwConfig;
   }
 
 
@@ -204,34 +202,34 @@ namespace Chimera::SPI
     return Chimera::Status::NOT_SUPPORTED;
   }
 
+  Chimera::Status_t Driver::assignChipSelect( const Chimera::GPIO::Driver_rPtr cs )
+  {
+    RT_DBG_ASSERT( mImpl );
+    auto impl       = reinterpret_cast<ThorImpl *>( mImpl );
+    impl->pCSDriver = cs;
+    return Chimera::Status::OK;
+  }
+
 
   Chimera::Status_t Driver::setChipSelect( const Chimera::GPIO::State value )
   {
     RT_DBG_ASSERT( mImpl );
     auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
-    if ( impl->csPin )
+    if ( impl->pCSDriver )
     {
-      return impl->csPin->setState( value );
+      return impl->pCSDriver->setState( value );
     }
 
-    return Chimera::Status::NOT_SUPPORTED;
+    return Chimera::Status::NOT_AVAILABLE;
   }
 
 
   Chimera::Status_t Driver::setChipSelectControlMode( const Chimera::SPI::CSMode mode )
   {
     RT_DBG_ASSERT( mImpl );
-    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
-
-    /*-------------------------------------------------------------------------
-    Only valid if the SPI driver has control of the chip select
-    -------------------------------------------------------------------------*/
-    if ( !impl->config.externalCS )
-    {
-      impl->config.HWInit.csMode = mode;
-    }
-
+    auto impl             = reinterpret_cast<ThorImpl *>( mImpl );
+    impl->hwConfig.csMode = mode;
     return Chimera::Status::OK;
   }
 
@@ -265,7 +263,7 @@ namespace Chimera::SPI
     /*-------------------------------------------------------------------------
     Handle the chip select controller behavior
     -------------------------------------------------------------------------*/
-    if ( impl->config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
+    if ( impl->hwConfig.csMode != Chimera::SPI::CSMode::MANUAL )
     {
       result |= setChipSelect( Chimera::GPIO::State::LOW );
     }
@@ -273,15 +271,15 @@ namespace Chimera::SPI
     /*-------------------------------------------------------------------------
     Call the proper transfer method
     -------------------------------------------------------------------------*/
-    switch ( impl->config.HWInit.txfrMode )
+    switch ( impl->hwConfig.txfrMode )
     {
       case Chimera::SPI::TransferMode::BLOCKING:
-        result |= impl->lldriver->transfer( txBuffer, rxBuffer, length );
+        result |= impl->pLLDriver->transfer( txBuffer, rxBuffer, length );
 
         /*---------------------------------------------------------------------
         Disengage the CS line if required
         ---------------------------------------------------------------------*/
-        if ( impl->config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
+        if ( impl->hwConfig.csMode != Chimera::SPI::CSMode::MANUAL )
         {
           result |= setChipSelect( Chimera::GPIO::State::HIGH );
         }
@@ -295,20 +293,20 @@ namespace Chimera::SPI
         break;
 
       case Chimera::SPI::TransferMode::INTERRUPT:
-        result |= impl->lldriver->transferIT( txBuffer, rxBuffer, length );
+        result |= impl->pLLDriver->transferIT( txBuffer, rxBuffer, length );
         break;
 
       case Chimera::SPI::TransferMode::DMA:
-        result |= impl->lldriver->transferDMA( txBuffer, rxBuffer, length );
+        result |= impl->pLLDriver->transferDMA( txBuffer, rxBuffer, length );
         break;
 
       default:
         /*---------------------------------------------------------------------
         Disable the chip select for anything other than manual control
         ---------------------------------------------------------------------*/
-        if ( impl->config.HWInit.csMode != Chimera::SPI::CSMode::MANUAL )
+        if ( impl->hwConfig.csMode != Chimera::SPI::CSMode::MANUAL )
         {
-          impl->csPin->setState( Chimera::GPIO::State::HIGH );
+          setChipSelect( Chimera::GPIO::State::HIGH );
         }
 
         result = Chimera::Status::FAIL;
@@ -324,7 +322,7 @@ namespace Chimera::SPI
     RT_DBG_ASSERT( mImpl );
     auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
-    impl->config.HWInit.txfrMode = mode;
+    impl->hwConfig.txfrMode = mode;
     return Chimera::Status::OK;
   }
 
@@ -337,8 +335,8 @@ namespace Chimera::SPI
     /*-------------------------------------------------------------------------
     Assign the new clock frequency and re-initialize the driver
     -------------------------------------------------------------------------*/
-    impl->config.HWInit.clockFreq = freq;
-    return impl->lldriver->configure( impl->config );
+    impl->hwConfig.clockFreq = freq;
+    return impl->pLLDriver->configure( impl->hwConfig );
   }
 
 
@@ -347,7 +345,7 @@ namespace Chimera::SPI
     RT_DBG_ASSERT( mImpl );
     auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
-    return impl->config.HWInit.clockFreq;
+    return impl->hwConfig.clockFreq;
   }
 
 }    // namespace Chimera::SPI
