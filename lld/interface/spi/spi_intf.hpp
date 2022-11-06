@@ -5,19 +5,19 @@
  *  Description:
  *    STM32 LLD SPI Interface Spec
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_SPI_DRIVER_INTERFACE_HPP
 #define THOR_LLD_SPI_DRIVER_INTERFACE_HPP
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
 #include <Chimera/spi>
 #include <Chimera/thread>
-
-/* Thor Includes */
 #include <Thor/lld/common/interrupts/spi_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/spi/spi_types.hpp>
@@ -90,79 +90,6 @@ namespace Thor::LLD::SPI
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  /*-------------------------------------------------
-  Virtual class that defines the expected interface.
-  Useful for mocking purposes.
-  -------------------------------------------------*/
-  class IDriver
-  {
-  public:
-    virtual ~IDriver() = default;
-
-    /**
-     *  Attaches a peripheral instance to the interaction model
-     *
-     *  @param[in]  peripheral    Memory mapped struct of the desired SPI peripheral
-     *  @return void
-     */
-    virtual Chimera::Status_t attach( RegisterMap *const peripheral ) = 0;
-
-    /**
-     *  Resets the hardware registers back to boot-up values
-     *
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t reset() = 0;
-
-    /**
-     *  Enables the peripheral clock
-     *
-     *  @return void
-     */
-    virtual void clockEnable() = 0;
-
-    /**
-     *  Disables the peripheral clock
-     *
-     *  @return void
-     */
-    virtual void clockDisable() = 0;
-
-    /**
-     *  Gets any error flags (bitfield) that might be set
-     *
-     *  @return ErrorFlags_t
-     */
-    virtual size_t getErrorFlags() = 0;
-
-    /**
-     *  Gets any status flags (bitfield) that might be set
-     *
-     *  @return StatusFlags_t
-     */
-    virtual size_t getStatusFlags() = 0;
-
-    virtual Chimera::Status_t configure( const Chimera::SPI::DriverConfig &setup ) = 0;
-
-    virtual Chimera::Status_t registerConfig( Chimera::SPI::DriverConfig *config ) = 0;
-
-    virtual Chimera::Status_t transfer( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) = 0;
-
-    virtual Chimera::Status_t transferIT( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) = 0;
-
-    virtual Chimera::Status_t transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize ) = 0;
-
-    virtual Chimera::Status_t killTransfer() = 0;
-
-    virtual HWTransfer getTransferBlock() = 0;
-  };
-
-
-  /*-------------------------------------------------
-  Concrete driver declaration. Implements the interface
-  of the virtual class, but doesn't inherit due to the
-  memory penalties. Definition is done project side.
-  -------------------------------------------------*/
   class Driver
   {
   public:
@@ -171,17 +98,13 @@ namespace Thor::LLD::SPI
 
     Chimera::Status_t attach( RegisterMap *const peripheral );
     Chimera::Status_t reset();
-    void clockEnable();
-    void clockDisable();
-    size_t getErrorFlags();
-    size_t getStatusFlags();
+    void              clockEnable();
+    void              clockDisable();
     Chimera::Status_t configure( const Chimera::SPI::HardwareInit &setup );
     Chimera::Status_t registerConfig( Chimera::SPI::HardwareInit *config );
-    Chimera::Status_t transfer( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize );
-    Chimera::Status_t transferIT( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize );
-    Chimera::Status_t transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize );
-    Chimera::Status_t killTransfer();
-    HWTransfer getTransferBlock();
+    Chimera::Status_t transfer( const void *txBuffer, void *rxBuffer, const size_t bufferSize );
+    Chimera::Status_t transferIT( const void *txBuffer, void *rxBuffer, const size_t bufferSize );
+    Chimera::Status_t transferDMA( const void *txBuffer, void *rxBuffer, const size_t bufferSize );
 
   protected:
     void IRQHandler();
@@ -189,26 +112,17 @@ namespace Thor::LLD::SPI
     void exitCriticalSection();
 
   private:
-    friend void(::SPI1_IRQHandler )();
-    friend void(::SPI2_IRQHandler )();
-    friend void(::SPI3_IRQHandler )();
-    friend void(::SPI4_IRQHandler )();
-    friend void(::SPI5_IRQHandler )();
-    friend void(::SPI6_IRQHandler )();
+    friend void( ::SPI1_IRQHandler )();
+    friend void( ::SPI2_IRQHandler )();
+    friend void( ::SPI3_IRQHandler )();
+    friend void( ::SPI4_IRQHandler )();
+    friend void( ::SPI5_IRQHandler )();
+    friend void( ::SPI6_IRQHandler )();
 
-    RegisterMap *mPeriph;
-    size_t resourceIndex;
-    Chimera::SPI::HardwareInit *periphConfig;
-
-    /*------------------------------------------------
-    Asynchronous Event Listeners
-    ------------------------------------------------*/
-    Chimera::Thread::BinarySemaphore *ISRWakeup_external;
-
-    /*------------------------------------------------
-    Transfer Control Blocks
-    ------------------------------------------------*/
-    HWTransfer txfr;
+    RegisterMap                *mPeriph;       /**< Mapped hardware peripheral */
+    size_t                      resourceIndex; /**< Lookup index for mPeriph */
+    Chimera::SPI::HardwareInit *periphConfig;  /**< Hardware configuration data */
+    volatile HWTransfer         txfr;          /**< Control block for transfers */
   };
 
 }    // namespace Thor::LLD::SPI

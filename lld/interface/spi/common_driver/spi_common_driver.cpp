@@ -39,13 +39,13 @@ namespace Thor::LLD::SPI
   -------------------------------------------------------------------------------*/
   static float calculate_clock_performance( const size_t goal, const size_t actVal, void *const data )
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Input checks:
       data    --  System's currently configured peripheral source clock
       actVal  --  Peripheral clock divider under consideration
 
     If either are null, permanently indicate worst case performance.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !data || !actVal )
     {
       return std::numeric_limits<float>::max();
@@ -95,12 +95,17 @@ namespace Thor::LLD::SPI
   /*-------------------------------------------------------------------------------
   Low Level Driver Implementation
   -------------------------------------------------------------------------------*/
-  Driver::Driver() :
-      mPeriph( nullptr ), resourceIndex( std::numeric_limits<size_t>::max() ), periphConfig( nullptr ),
-      ISRWakeup_external( nullptr )
+  Driver::Driver() : mPeriph( nullptr ), resourceIndex( std::numeric_limits<size_t>::max() ), periphConfig( nullptr )
   {
-    memset( &txfr, 0, sizeof( txfr ) );
-    txfr.status = Chimera::SPI::Status::TRANSFER_COMPLETE;
+    txfr.txBuffer        = nullptr;
+    txfr.txTransferCount = 0;
+    txfr.txTransferSize  = 0;
+    txfr.rxBuffer        = nullptr;
+    txfr.rxTransferCount = 0;
+    txfr.rxTransferSize  = 0;
+    txfr.waitingOnTX     = false;
+    txfr.waitingOnRX     = false;
+    txfr.status          = Chimera::SPI::Status::TRANSFER_COMPLETE;
   }
 
   Driver::~Driver()
@@ -110,15 +115,15 @@ namespace Thor::LLD::SPI
 
   Chimera::Status_t Driver::attach( RegisterMap *const peripheral )
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Get peripheral descriptor settings
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     mPeriph       = peripheral;
     resourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Handle the ISR configuration
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     INT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
     INT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
     INT::setPriority( Resource::IRQSignals[ resourceIndex ], INT::SPI_IT_PREEMPT_PRIORITY, 0u );
@@ -148,30 +153,18 @@ namespace Thor::LLD::SPI
   }
 
 
-  size_t Driver::getErrorFlags()
-  {
-    return 0;
-  }
-
-
-  size_t Driver::getStatusFlags()
-  {
-    return 0;
-  }
-
-
   Chimera::Status_t Driver::configure( const Chimera::SPI::HardwareInit &setup )
   {
     using namespace Chimera::Algorithm::RegisterOptimization;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the clocks
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     clockEnable();
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Find the best clock divisor need to achieve the desired clock frequency
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto systemClock = Thor::LLD::RCC::getCoreClockCtrl();
     auto periphAddr  = reinterpret_cast<std::uintptr_t>( mPeriph );
     auto clockFreq   = systemClock->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SPI, periphAddr );
@@ -190,17 +183,17 @@ namespace Thor::LLD::SPI
 
     Reg32_t clockDivisor = findOptimalSetting( cfg, Configuration::ClockDivisor::DIV_32, &clockFreq );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Stop the config if there are any invalid config options
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( setup.csMode == Chimera::SPI::CSMode::AUTO_BETWEEN_TRANSFER )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Follow the configuration sequence from RM0390
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     /* Clear any faults */
     if ( MODF::get( mPeriph ) )
     {
@@ -281,60 +274,50 @@ namespace Thor::LLD::SPI
   }
 
 
-  Chimera::Status_t Driver::transfer( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
+  Chimera::Status_t Driver::transfer( const void *txBuffer, void *rxBuffer, const size_t bufferSize )
   {
-    uint16_t             txData           = 0u;
-    uint16_t             rxData           = 0u;
-    size_t               bytesTransfered  = 0u;
-    size_t               bytesPerTransfer = 0u;
-    const uint8_t *const txBufferPtr      = reinterpret_cast<const uint8_t *const>( txBuffer );
-    uint8_t *const       rxBufferPtr      = reinterpret_cast<uint8_t *const>( rxBuffer );
-
-    /*------------------------------------------------
-    Runtime configuration
-    ------------------------------------------------*/
-    if ( !periphConfig )
+    /*-------------------------------------------------------------------------
+    Make sure the transfer can begin
+    -------------------------------------------------------------------------*/
+    if ( BSY::get( mPeriph ) || ( txfr.status != Chimera::SPI::Status::TRANSFER_COMPLETE ) )
     {
-      return Chimera::Status::NOT_INITIALIZED;
+      return Chimera::Status::BUSY;
     }
 
-    switch ( periphConfig->dataSize )
-    {
-      case Chimera::SPI::DataSize::SZ_8BIT:
-        bytesPerTransfer = 1u;
-        break;
-
-      case Chimera::SPI::DataSize::SZ_9BIT:
-      case Chimera::SPI::DataSize::SZ_10BIT:
-      case Chimera::SPI::DataSize::SZ_11BIT:
-      case Chimera::SPI::DataSize::SZ_12BIT:
-      case Chimera::SPI::DataSize::SZ_13BIT:
-      case Chimera::SPI::DataSize::SZ_14BIT:
-      case Chimera::SPI::DataSize::SZ_15BIT:
-      case Chimera::SPI::DataSize::SZ_16BIT:
-        bytesPerTransfer = 2u;
-        break;
-
-      default:
-        return Chimera::Status::NOT_SUPPORTED;
-        break;
-    }
-
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Disable all SPI interrupts for this peripheral
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
     CR2_ALL::clear( mPeriph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
+    Queue up the transfer
+    -------------------------------------------------------------------------*/
+    txfr.txBuffer        = reinterpret_cast<const uint8_t *>( txBuffer );
+    txfr.txTransferCount = 0u;
+    txfr.txTransferSize  = bufferSize;
+    txfr.rxBuffer        = reinterpret_cast<uint8_t *>( rxBuffer );
+    txfr.rxTransferCount = 0u;
+    txfr.rxTransferSize  = bufferSize;
+    txfr.status          = Chimera::SPI::Status::TRANSFER_IN_PROGRESS;
+
+    /*-------------------------------------------------------------------------
+    Data transfers must have 8-bit or 16-bit aligned access. Force 8-bit.
+    -------------------------------------------------------------------------*/
+    auto dr = reinterpret_cast<volatile uint8_t *>( &mPeriph->DR );
+    prjConfigureTransferWidth( mPeriph, Chimera::SPI::DataSize::SZ_8BIT );
+
+    /*-------------------------------------------------------------------------
     Write the data in a blocking fashion
-    ------------------------------------------------*/
-    while ( bytesTransfered < bufferSize )
+    -------------------------------------------------------------------------*/
+    size_t bytesTransferred = 0;
+    uint8_t tmpRxData = 0;
+
+    while ( bytesTransferred < bufferSize )
     {
-      /*------------------------------------------------
-      Wait for the hw transmit buffer to be empty, then
-      assign the next set of data to be transfered
-      ------------------------------------------------*/
+      /*-----------------------------------------------------------------------
+      Wait for an empty hw transmit buffer
+      -----------------------------------------------------------------------*/
 #if defined( EMBEDDED )
       while ( !TXE::get( mPeriph ) && BSY::get( mPeriph ) )
       {
@@ -342,78 +325,50 @@ namespace Thor::LLD::SPI
       }
 #endif
 
-      txData = 0u;
-      if ( txBufferPtr )
+      /*-----------------------------------------------------------------------
+      Inject the next byte into the TX FIFO
+      -----------------------------------------------------------------------*/
+      if ( txfr.txBuffer )
       {
-        if ( ( bytesTransfered + 1u ) == bufferSize )
-        {
-          memcpy( &txData, txBufferPtr + bytesTransfered, 1u );
-        }
-        else
-        {
-          memcpy( &txData, txBufferPtr + bytesTransfered, bytesPerTransfer );
-        }
-      }
-
-      /*------------------------------------------------
-      Most STM32 SPI FIFOs implement data packing, so
-      even though the bit width has been set, the DR has
-      to be accessed appropriately, else unwanted data
-      will be transmitted.
-      ------------------------------------------------*/
-      if ( bytesPerTransfer == 1 )
-      {
-        auto *dr = reinterpret_cast<volatile uint8_t *>( &mPeriph->DR );
-        *dr      = txData;
+        *dr = txfr.txBuffer[ txfr.txTransferCount++ ];
       }
       else
       {
-        auto *dr = reinterpret_cast<volatile uint16_t *>( &mPeriph->DR );
-        *dr      = txData;
+        *dr = 0xFF;
       }
 
-      /*-------------------------------------------------
-      Always read the data register to prevent overruns.
-      Every TX generates an RX.
-      -------------------------------------------------*/
-#if defined( EMBEDDED )
-      /*-------------------------------------------------
-      You can get stuck here in the debugger if single
-      stepping and register auto-refresh is occurring.
+      /*-----------------------------------------------------------------------
+      Wait for the RX FIFO to indicate it's ready. You can get stuck here in
+      the debugger if single stepping and register auto-refresh is occurring.
       That will read the DR and clear RXNE.
-      -------------------------------------------------*/
+      -----------------------------------------------------------------------*/
+#if defined( EMBEDDED )
       while ( !RXNE::get( mPeriph ) )
       {
         continue;
       }
 #endif
-      rxData = mPeriph->DR;
 
-      /*------------------------------------------------
-      Copy in the data to the user, if they care
-      ------------------------------------------------*/
-      if ( rxBufferPtr )
+      /*-----------------------------------------------------------------------
+      Read out the data
+      -----------------------------------------------------------------------*/
+      tmpRxData = mPeriph->DR;
+
+      if ( txfr.rxBuffer )
       {
-        if ( ( bytesTransfered + 1u ) == bufferSize )
-        {
-          memcpy( rxBufferPtr + bytesTransfered, &rxData, 1u );
-        }
-        else
-        {
-          memcpy( rxBufferPtr + bytesTransfered, &rxData, bytesPerTransfer );
-        }
+        txfr.rxBuffer[ txfr.rxTransferCount++ ] = tmpRxData;
       }
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Update the loop counters
-      ------------------------------------------------*/
-      bytesTransfered += bytesPerTransfer;
+      -----------------------------------------------------------------------*/
+      bytesTransferred++;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Don't exit this blocking function before all the
     TX FIFO transfers are finished.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
 #if defined( EMBEDDED )
     while ( BSY::get( mPeriph ) )
     {
@@ -421,54 +376,57 @@ namespace Thor::LLD::SPI
     }
 #endif
 
+    txfr.status = Chimera::SPI::Status::TRANSFER_COMPLETE;
     return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t Driver::transferIT( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
+  Chimera::Status_t Driver::transferIT( const void *txBuffer, void *rxBuffer, const size_t bufferSize )
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Make sure the transfer can begin
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( BSY::get( mPeriph ) || ( txfr.status != Chimera::SPI::Status::TRANSFER_COMPLETE ) )
     {
       return Chimera::Status::BUSY;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the interrupts
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
     enterCriticalSection();
     CR2_ALL::set( mPeriph, ( CR2_TXEIE | CR2_RXNEIE | CR2_ERRIE ) );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Queue up the transfer
-    ------------------------------------------------*/
-    txfr.txBuffer        = reinterpret_cast<uint8_t *>( const_cast<void *>( txBuffer ) );
+    -------------------------------------------------------------------------*/
+    txfr.txBuffer        = reinterpret_cast<const uint8_t *>( txBuffer );
     txfr.txTransferCount = 0u;
     txfr.txTransferSize  = bufferSize;
-
-    txfr.rxBuffer        = reinterpret_cast<uint8_t *>( const_cast<void *>( rxBuffer ) );
+    txfr.rxBuffer        = reinterpret_cast<uint8_t *>( rxBuffer );
     txfr.rxTransferCount = 0u;
     txfr.rxTransferSize  = bufferSize;
+    txfr.status          = Chimera::SPI::Status::TRANSFER_IN_PROGRESS;
 
-    txfr.status = Chimera::SPI::Status::TRANSFER_IN_PROGRESS;
-
-    /*------------------------------------------------
-    Data transfers must have 8-bit or 16-bit aligned access.
-    Currently hardcoded to 8 for development...
-    ------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Data transfers must have 8-bit or 16-bit aligned access. Force 8-bit.
+    -------------------------------------------------------------------------*/
     auto dr = reinterpret_cast<volatile uint8_t *>( &mPeriph->DR );
-
-#if defined( TARGET_STM32L4 )
     prjConfigureTransferWidth( mPeriph, Chimera::SPI::DataSize::SZ_8BIT );
-#endif
 
-    /*------------------------------------------------
-    Start the transfer
-    ------------------------------------------------*/
-    *dr              = txfr.txBuffer[ txfr.txTransferCount ];
+    /*-------------------------------------------------------------------------
+    Start the transfer by writing the first byte
+    -------------------------------------------------------------------------*/
+    if ( txfr.txBuffer )
+    {
+      *dr = txfr.txBuffer[ txfr.txTransferCount ];
+    }
+    else
+    {
+      *dr = 0xFF;
+    }
+
     txfr.waitingOnTX = false;
     txfr.waitingOnRX = true;
     txfr.txTransferCount++;
@@ -478,28 +436,9 @@ namespace Thor::LLD::SPI
   }
 
 
-  Chimera::Status_t Driver::transferDMA( const void *const txBuffer, void *const rxBuffer, const size_t bufferSize )
+  Chimera::Status_t Driver::transferDMA( const void *txBuffer, void *rxBuffer, const size_t bufferSize )
   {
     return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::killTransfer()
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  HWTransfer Driver::getTransferBlock()
-  {
-    HWTransfer copy;
-    memset( &copy, 0, sizeof( HWTransfer ) );
-
-    enterCriticalSection();
-    memcpy( &copy, &txfr, sizeof( HWTransfer ) );
-    exitCriticalSection();
-
-    return copy;
   }
 
 
@@ -520,21 +459,21 @@ namespace Thor::LLD::SPI
     using namespace Chimera::Thread;
     using namespace Chimera::Peripheral;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Save critical register information
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     const volatile Reg32_t SR  = SR_ALL::get( mPeriph );
     const volatile Reg32_t CR2 = CR2_ALL::get( mPeriph );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Data transfers must have 8-bit or 16-bit aligned access.
     Currently hardcoded to 8 for development...
-    ------------------------------------------------*/
-    auto dr = reinterpret_cast<volatile uint8_t *>( &mPeriph->DR );
+    -------------------------------------------------------------------------*/
+    auto dr_8t = reinterpret_cast<volatile uint8_t *>( &mPeriph->DR );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     HW TX Buffer Empty (Next frame can be buffered)
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( txfr.waitingOnTX && ( CR2 & CR2_TXEIE ) && ( SR & SR_TXE ) )
     {
       txfr.waitingOnTX = false;
@@ -542,25 +481,31 @@ namespace Thor::LLD::SPI
 
       if ( txfr.txTransferCount < txfr.txTransferSize )
       {
-        /*------------------------------------------------
+        /*---------------------------------------------------------------------
         Still more data to TX...
-        ------------------------------------------------*/
-        *dr = txfr.txBuffer[ txfr.txTransferCount ];
+        ---------------------------------------------------------------------*/
+        if ( txfr.txBuffer )
+        {
+          *dr_8t = txfr.txBuffer[ txfr.txTransferCount ];
+        }
+        else
+        {
+          *dr_8t = 0xFF;
+        }
+
         txfr.txTransferCount++;
       }
       else
       {
-        /*------------------------------------------------
-        The TX half of the transfer is complete. Disable the
-        TX FIFO empty ISR signal.
-        ------------------------------------------------*/
+        /*---------------------------------------------------------------------
+        The TX half of the transfer is complete. Disable the TX FIFO empty ISR.
+        ---------------------------------------------------------------------*/
         TXEIE::set( mPeriph, ~CR2_TXEIE );
 
-        /*------------------------------------------------
-        The user could have also requested a TX only transfer
-        and not cared about received data. In this case, the
-        entire transfer is now complete.
-        ------------------------------------------------*/
+        /*---------------------------------------------------------------------
+        The user could have also requested a TX only transfer and not cared
+        about received data. In this case, the entire transfer is now complete.
+        ---------------------------------------------------------------------*/
         if ( !txfr.rxBuffer )
         {
           RXNEIE::set( mPeriph, ~CR2_RXNEIE );
@@ -569,9 +514,9 @@ namespace Thor::LLD::SPI
       }
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     HW RX Buffer Full (Data is ready to be copied out)
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( txfr.waitingOnRX && ( CR2 & CR2_RXNEIE ) && ( SR & SR_RXNE ) )
     {
       txfr.waitingOnTX = true;
@@ -579,7 +524,7 @@ namespace Thor::LLD::SPI
 
       if ( txfr.rxTransferCount < txfr.rxTransferSize )
       {
-        txfr.rxBuffer[ txfr.rxTransferCount ] = *dr;
+        txfr.rxBuffer[ txfr.rxTransferCount ] = *dr_8t;
         txfr.rxTransferCount++;
       }
 
@@ -599,17 +544,17 @@ namespace Thor::LLD::SPI
       txfr.waitingOnRX = false;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Handle Any Errors
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( ( CR2 & CR2_ERRIE ) && ( SR & ( SR_CRCERR | SR_FRE | SR_MODF | SR_OVR ) ) )
     {
       txfr.status = Chimera::SPI::Status::TRANSFER_ERROR;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Detect the end of transfer and wake up the post processor thread
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( ( txfr.status == Chimera::SPI::Status::TRANSFER_COMPLETE ) || ( txfr.status == Chimera::SPI::Status::TRANSFER_ERROR ) )
     {
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_SPI ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
