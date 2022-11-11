@@ -79,8 +79,9 @@ namespace Chimera::USART
     Chimera::Hardware::PeripheralMode mRxMode;
 
     ThorImpl() :
-        mEnabled( false ), mChannel( Chimera::Serial::Channel::NOT_SUPPORTED ), mResourceIndex( 0 ), mTxLock( 1 )
+        mEnabled( false ), mChannel( Chimera::Serial::Channel::NOT_SUPPORTED ), mResourceIndex( 0 )
     {
+      mTxLock.release();
     }
 
     Chimera::Status_t readBlocking( void *const buffer, const size_t length )
@@ -307,6 +308,11 @@ namespace Chimera::USART
     Initialize AsyncIO for user notification of events
     -------------------------------------------------------------------------*/
     this->initAIO();
+
+    /*-------------------------------------------------------------------------
+    Ensure the semaphore signaling is free
+    -------------------------------------------------------------------------*/
+
 
     /*-------------------------------------------------------------------------
     Initialize to the desired TX/RX modes
