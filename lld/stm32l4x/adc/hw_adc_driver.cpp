@@ -175,7 +175,7 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     for ( size_t idx = 0; idx < NUM_ADC_CHANNELS_PER_PERIPH; idx++ )
     {
-      setSampleTime( static_cast<Chimera::ADC::Channel>( idx ), SampleTime::SMP_12P5 );
+      setSampleTime( static_cast<Chimera::ADC::Channel>( idx ), SampleTime::SMP_640P5 );
     }
 
     /*-------------------------------------------------------------------------
@@ -199,6 +199,14 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     JQDIS::set( mPeriph, CFGR_JQDIS );      // Allow injected transactions to start via SW
     JAUTO::clear( mPeriph, CFGR_JAUTO );    // Auto injected group conversion OFF
+
+    /*-------------------------------------------------------------------------
+    Configure oversampling by default
+    -------------------------------------------------------------------------*/
+    OVSR::set( mPeriph, CFGR2_OVSR_0 );    // 4x Oversampling
+    OVSS::set( mPeriph, CFGR2_OVSS_1 );    // 2-bit shift
+    JOVSE::set( mPeriph, CFGR2_JOVSE );    // Injected oversampling enable
+    ROVSE::set( mPeriph, CFGR2_ROVSE );    // Regular oversampling enable
 
     /*-------------------------------------------------------------------------
     Configure the DMA transfers from the ADC's perspective
@@ -309,40 +317,43 @@ namespace Thor::LLD::ADC
   }
 
 
-  float Driver::toVoltage( const Chimera::ADC::Sample sample )
+  float Driver::resolution() const
   {
-    /*-------------------------------------------------------------------------
-    Get the current configured resolution
-    -------------------------------------------------------------------------*/
     Reg32_t resolution = RES::get( mPeriph ) >> CFGR_RES_Pos;
-    float   fRes       = 0.0;
-
     switch ( resolution )
     {
       case 0:    // 12-bit
-        fRes = 4096.0f;
-        break;
+        return 4096.0f;
 
       case 1:    // 10-bit
-        fRes = 1024.0f;
-        break;
+        return 1024.0f;
 
       case 2:    // 8-bit
-        fRes = 256.0f;
-        break;
+        return 256.0f;
 
       case 3:    // 6-bit
-        fRes = 64.0f;
-        break;
+        return 64.0f;
 
       default:
         return 0.0f;
-        break;
     }
+  }
 
-    /*-------------------------------------------------------------------------
-    Calculate the output voltage
-    -------------------------------------------------------------------------*/
+
+  float Driver::analogReference() const
+  {
+    return mCalcVdda;
+  }
+
+
+  float Driver::toVoltage( const Chimera::ADC::Sample sample )
+  {
+    /*-----------------------------------------------------------------------
+    Use the current resolution to interpret the ADC sample
+    -----------------------------------------------------------------------*/
+    float fRes = resolution();
+    RT_DBG_ASSERT( fRes != 0.0f );
+
     return ( mCalcVdda * static_cast<float>( sample.counts ) ) / fRes;
   }
 
@@ -556,8 +567,8 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------------------------------
     Turn on the ADC peripheral DMA request hardware
     -------------------------------------------------------------------------*/
-    DMACFG::set( mPeriph, CFGR_DMACFG );  /* Send new DMA txfr request on every conversion */
-    DMAEN::set( mPeriph, CFGR_DMAEN );    /* Turn on ADC DMA. Does NOT start the txfr yet. */
+    DMACFG::set( mPeriph, CFGR_DMACFG ); /* Send new DMA txfr request on every conversion */
+    DMAEN::set( mPeriph, CFGR_DMAEN );   /* Turn on ADC DMA. Does NOT start the txfr yet. */
 
     /*-------------------------------------------------------------------------
     Select which trigger to use to start a new ADC sample
@@ -587,7 +598,7 @@ namespace Thor::LLD::ADC
       EXTSEL::set( mPeriph, ( mSeqCfg.trigChannel << CFGR_EXTSEL_Pos ) );
       ADSTART::set( mPeriph, CR_ADSTART );
     }
-    else  /* Software Trigger or Continuous */
+    else /* Software Trigger or Continuous */
     {
       EXTEN::clear( mPeriph, CFGR_EXTEN );
     }
@@ -677,15 +688,17 @@ namespace Thor::LLD::ADC
 
   void Driver::dma_isr_transfer_complete_callback( const Chimera::DMA::TransferStats &stats )
   {
-    if( !stats.error && mCallbacks[ EnumValue( Chimera::ADC::Interrupt::EOC_SEQUENCE ) ] )
+    if ( !stats.error && mCallbacks[ EnumValue( Chimera::ADC::Interrupt::EOC_SEQUENCE ) ] )
     {
       /* Populate the data for the ADC handler */
       Chimera::ADC::InterruptDetail isrData;
       isrData.clear();
 
-      isrData.isr = Chimera::ADC::Interrupt::EOC_SEQUENCE;
-      isrData.samples = mDMASampleBuffer.rawSamples.data();
+      isrData.isr         = Chimera::ADC::Interrupt::EOC_SEQUENCE;
+      isrData.samples     = mDMASampleBuffer.rawSamples.data();
       isrData.num_samples = static_cast<uint16_t>( stats.size );
+      isrData.resolution  = this->resolution();
+      isrData.vref        = this->analogReference();
 
       /* Invoke the user handler */
       mCallbacks[ EnumValue( Chimera::ADC::Interrupt::EOC_SEQUENCE ) ]( isrData );

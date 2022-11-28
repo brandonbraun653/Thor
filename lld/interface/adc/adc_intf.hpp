@@ -167,6 +167,18 @@ namespace Thor::LLD::ADC
     Chimera::ADC::Sample sampleChannel( const Chimera::ADC::Channel channel );
 
     /**
+     * @brief Gets the currently configured ADC resolution
+     * @return float
+     */
+    float resolution() const;
+
+    /**
+     * @brief Gets the analog reference voltage for conversions
+     * @return float
+     */
+    float analogReference() const;
+
+    /**
      *  Converts a raw sample to the equivalent voltage
      *
      *  @param[in]  sample        The raw sample value to convert
