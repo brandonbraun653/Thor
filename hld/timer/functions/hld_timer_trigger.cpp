@@ -119,6 +119,8 @@ namespace Chimera::Timer::Trigger
 
     /* Base timer setup */
     result |= Thor::LLD::TIMER::Master::initCore( cb->timer, cfg.coreConfig );
+    setAlignment( cb->timer, AlignMode::EDGE_ALIGNED );
+    setCountDirection( cb->timer, CountDir::COUNT_UP );
 
     /* Trigger event rate set by overflow rate */
     result |= setEventRate( cb->timer, ( 1.0f / cfg.trigFreq ) * 1e9f );

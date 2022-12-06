@@ -118,8 +118,12 @@ namespace Chimera::Timer::Inverter
     /* Power on the timer core */
     result |= Thor::LLD::TIMER::Master::initCore( cb->timer, cfg.coreCfg );
 
-    /* Set the pwm output frequency that drives the IO pins */
-    result |= setCarrierFrequency( cfg.pwmFrequency );
+    /* Center-aligned up/down counting with output compare flags set on both count directions */
+    setAlignment( cb->timer, AlignMode::CENTER_ALIGNED_3 );
+
+    /* Set the pwm output frequency that drives the IO pins. Divide by two b/c of the
+       center aligned counting mode, whose period is defined by BOTH up/down cycles. */
+    result |= setCarrierFrequency( cfg.pwmFrequency / 2.0f );
 
     /*-------------------------------------------------------------------------
     Break signal(s) configuration to control emergency shutdowns
@@ -132,9 +136,6 @@ namespace Chimera::Timer::Inverter
     /*-------------------------------------------------------------------------
     3-Phase configuration
     -------------------------------------------------------------------------*/
-    /* Center-aligned up/down counting with output compare flags set on both count directions */
-    setAlignment( cb->timer, AlignMode::CENTER_ALIGNED_3 );
-
     /* Buffer the phase PWM set-point updates for seamless transitions */
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_1, true ); /* Output Phase A */
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_2, true ); /* Output Phase B */
@@ -156,14 +157,6 @@ namespace Chimera::Timer::Inverter
     /* Set output idle (safe) states. Assumes positive logic for the power stage drive signals. */
     setRunModeOffState( cb->timer, OffStateMode::TIMER_CONTROL );
     setIdleModeOffState( cb->timer, OffStateMode::TIMER_CONTROL );
-
-    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_1P, Chimera::GPIO::State::LOW );
-    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_1N, Chimera::GPIO::State::LOW );
-    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_2P, Chimera::GPIO::State::LOW );
-    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_2N, Chimera::GPIO::State::LOW );
-    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_3P, Chimera::GPIO::State::LOW );
-    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_3N, Chimera::GPIO::State::LOW );
-    // setOutputIdleState( cb->timer, Chimera::Timer::Output::OUTPUT_5P, Chimera::GPIO::State::LOW );
     setOutputIdleStateBulk( cb->timer, s_all_output_channel_bf, Chimera::GPIO::State::LOW );
 
 
@@ -177,25 +170,9 @@ namespace Chimera::Timer::Inverter
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_5, CCMode::CCM_OUTPUT );
 
     /* Set output polarity */
-    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_1P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_1N, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_2P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_2N, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_3P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_3N, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    // setCCOutputPolarity( cb->timer, Chimera::Timer::Output::OUTPUT_5P, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-
     setCCOutputPolarityBulk( cb->timer, s_all_output_channel_bf, CCPolarity::CCP_OUT_ACTIVE_HIGH );
 
     /* Enable the outputs */
-    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_1P );
-    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_1N );
-    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_2P );
-    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_2N );
-    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_3P );
-    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_3N );
-    // enableCCOutput( cb->timer, Chimera::Timer::Output::OUTPUT_5P );
-
     enableCCOutputBulk( cb->timer, s_all_output_channel_bf );
 
     /* Set the initial duty-cycles for each phase */
