@@ -130,6 +130,10 @@ namespace Thor::LLD::RCC
     #if defined( STM32_GPIOC_PERIPH_AVAILABLE )
     { .mask = AHB2ENR_GPIOCEN, .reg  = &RCC1_PERIPH->AHB2ENR },
     #endif
+
+    #if defined( STM32_GPIOH_PERIPH_AVAILABLE )
+    { .mask = AHB2ENR_GPIOHEN, .reg  = &RCC1_PERIPH->AHB2ENR },
+    #endif
   };
 
   static const RegisterConfig GPIO_ResetConfig[ GPIO::NUM_GPIO_PERIPHS ]      = {
@@ -144,6 +148,10 @@ namespace Thor::LLD::RCC
     #if defined( STM32_GPIOC_PERIPH_AVAILABLE )
     { .mask = AHB2RSTR_GPIOCRST, .reg = &RCC1_PERIPH->AHB2RSTR },
     #endif
+
+    #if defined( STM32_GPIOH_PERIPH_AVAILABLE )
+    { .mask = AHB2RSTR_GPIOHRST, .reg = &RCC1_PERIPH->AHB2RSTR },
+    #endif
   };
 
   static const Chimera::Clock::Bus GPIO_SourceClock[ GPIO::NUM_GPIO_PERIPHS ] = {
@@ -156,6 +164,10 @@ namespace Thor::LLD::RCC
     #endif
 
     #if defined( STM32_GPIOC_PERIPH_AVAILABLE )
+    Chimera::Clock::Bus::PCLK2,
+    #endif
+
+    #if defined( STM32_GPIOH_PERIPH_AVAILABLE )
     Chimera::Clock::Bus::PCLK2,
     #endif
   };

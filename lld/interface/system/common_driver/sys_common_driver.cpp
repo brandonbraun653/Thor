@@ -26,13 +26,11 @@ namespace Thor::LLD::SYS
   -------------------------------------------------------------------------------*/
   void configureExtiSource( const Chimera::GPIO::Port port, const uint8_t pin )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Input Protection
-    -------------------------------------------------*/
-    if ( !( port < GPIO::PRJ_LAST_PORT ) || !( pin < GPIO::PRJ_MAX_PINS_PER_PORT ) )
-    {
-      return;
-    }
+    -------------------------------------------------------------------------*/
+    RT_DBG_ASSERT( port <= GPIO::PRJ_LAST_PORT );
+    RT_DBG_ASSERT( pin < GPIO::PRJ_MAX_PINS_PER_PORT );
 
     /*-------------------------------------------------
     Enable the system config register clock
@@ -46,12 +44,7 @@ namespace Thor::LLD::SYS
     -------------------------------------------------*/
     const uint32_t PinsPerRegister = 4;
     const uint32_t cfgRegIdx       = pin / PinsPerRegister;
-
-    if ( !( cfgRegIdx < ARRAY_COUNT( RegisterMap::EXTICR ) ) )
-    {
-      Chimera::insert_debug_breakpoint();
-      return;
-    }
+    RT_DBG_ASSERT( cfgRegIdx < ARRAY_COUNT( RegisterMap::EXTICR ) );
 
     /*-------------------------------------------------
     Select the value to write in the register. This

@@ -316,13 +316,28 @@ namespace Thor::LLD::GPIO
     static const AlternateFunc port_c15_alt_func[] = {
       { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc  = Chimera::GPIO::Alternate::EVENTOUT }
     };
-
     /*-------------------------------------------------
     Pin Attributes Array
     -------------------------------------------------*/
     static const PinAttributes port_c_pin_attributes[ GPIOC_NUM_PINS ] = {
       { .pinID = 14, .afListSize = ARRAY_COUNT( port_c14_alt_func ), .altFunc = port_c14_alt_func },
-      { .pinID = 15, .afListSize = ARRAY_COUNT( port_c15_alt_func ), .altFunc = port_c15_alt_func }
+      { .pinID = 15, .afListSize = ARRAY_COUNT( port_c15_alt_func ), .altFunc = port_c15_alt_func },
+    };
+
+    /*-------------------------------------------------------------------------------
+    PORT H CONFIGURATION
+    -------------------------------------------------------------------------------*/
+    /*-------------------------------------------------
+    Alternate Function Array
+    -------------------------------------------------*/
+    static const AlternateFunc port_h3_alt_func[] = {
+      { .registerAltFunc = AF15_EVENTOUT, .chimeraAltFunc  = Chimera::GPIO::Alternate::EVENTOUT }
+    };
+    /*-------------------------------------------------
+    Pin Attributes Array
+    -------------------------------------------------*/
+    static const PinAttributes port_h_pin_attributes[ GPIOH_NUM_PINS ] = {
+      { .pinID = 3, .afListSize = ARRAY_COUNT( port_h3_alt_func ), .altFunc = port_h3_alt_func }
     };
     /* clang-format on */
   }    // namespace Internal
@@ -347,6 +362,13 @@ namespace Thor::LLD::GPIO
       .portID      = Chimera::GPIO::Port::PORTC,
       .pinListSize = GPIOC_NUM_PINS,
       .pins        = Internal::port_c_pin_attributes
+    },
+
+    // GPIO H
+    {
+      .portID      = Chimera::GPIO::Port::PORTH,
+      .pinListSize = GPIOH_NUM_PINS,
+      .pins        = Internal::port_h_pin_attributes
     }
   };
 
@@ -354,12 +376,14 @@ namespace Thor::LLD::GPIO
   static_assert( GPIOA_NUM_PINS == ARRAY_COUNT( Internal::port_a_pin_attributes ) );
   static_assert( GPIOB_NUM_PINS == ARRAY_COUNT( Internal::port_b_pin_attributes ) );
   static_assert( GPIOC_NUM_PINS == ARRAY_COUNT( Internal::port_c_pin_attributes ) );
+  static_assert( GPIOH_NUM_PINS == ARRAY_COUNT( Internal::port_h_pin_attributes ) );
 
 
   extern const std::uintptr_t prjPortAddress[ NUM_GPIO_PERIPHS ] = {
     reinterpret_cast<std::uintptr_t>( GPIOA_PERIPH ),
     reinterpret_cast<std::uintptr_t>( GPIOB_PERIPH ),
-    reinterpret_cast<std::uintptr_t>( GPIOC_PERIPH )
+    reinterpret_cast<std::uintptr_t>( GPIOC_PERIPH ),
+    reinterpret_cast<std::uintptr_t>( GPIOH_PERIPH )
   };
 
 }    // namespace Thor::LLD::GPIO
