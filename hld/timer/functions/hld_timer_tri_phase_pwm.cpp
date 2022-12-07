@@ -121,9 +121,9 @@ namespace Chimera::Timer::Inverter
     /* Center-aligned up/down counting with output compare flags set on both count directions */
     setAlignment( cb->timer, AlignMode::CENTER_ALIGNED_3 );
 
-    /* Set the pwm output frequency that drives the IO pins. Divide by two b/c of the
+    /* Set the pwm output frequency that drives the IO pins. Multiply by two b/c of the
        center aligned counting mode, whose period is defined by BOTH up/down cycles. */
-    result |= setCarrierFrequency( cfg.pwmFrequency / 2.0f );
+    result |= setCarrierFrequency( cfg.pwmFrequency * 2.0f );
 
     /*-------------------------------------------------------------------------
     Break signal(s) configuration to control emergency shutdowns
