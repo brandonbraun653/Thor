@@ -6,27 +6,23 @@
  *    Implements the LLD interface to the ADC hardware. All functionality here is
  *    either completely independent of a specific device or is common to all.
  *
- *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* STL Includes */
-#include <cstring>
-#include <limits>
-
-/* ETL Includes */
-#include <etl/function.h>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/algorithm>
 #include <Chimera/common>
 #include <Chimera/utility>
-
-/* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/adc>
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/timer>
+#include <cstring>
+#include <etl/function.h>
+#include <limits>
 
 
 #if defined( THOR_ADC ) && ( defined( TARGET_STM32F4 ) || defined( TARGET_STM32L4 ) )

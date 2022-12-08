@@ -8,16 +8,12 @@
  *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  ********************************************************************************/
 
-/* STL Includes */
-#include <cstring>
-#include <limits>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/algorithm>
 #include <Chimera/common>
 #include <Chimera/utility>
-
-/* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/dma>
 #include <Thor/lld/interface/inc/adc>
@@ -25,6 +21,8 @@
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/timer>
+#include <cstring>
+#include <limits>
 
 
 #if defined( THOR_ADC ) && defined( TARGET_STM32L4 )
@@ -357,6 +355,10 @@ namespace Thor::LLD::ADC
     return ( mCalcVdda * static_cast<float>( sample.counts ) ) / fRes;
   }
 
+  Chimera::Status_t Driver::monitorChannel( const Chimera::ADC::WatchdogConfig &cfg )
+  {
+
+  }
 
   Chimera::Status_t Driver::setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time )
   {

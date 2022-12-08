@@ -417,6 +417,12 @@ namespace Chimera::ADC
     return reinterpret_cast<ThorImpl *>( mImpl )->lldriver->toVoltage( sample );
   }
 
+
+  Chimera::Status_t Driver::monitorChannel( const Chimera::ADC::WatchdogConfig &cfg )
+  {
+    return reinterpret_cast<ThorImpl *>( mImpl )->lldriver->monitorChannel( cfg );
+  }
+
 }    // namespace Chimera::ADC
 
 

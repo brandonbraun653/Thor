@@ -187,6 +187,14 @@ namespace Thor::LLD::ADC
     float toVoltage( const Chimera::ADC::Sample sample );
 
     /**
+     * @brief Configures the Analog Watchdog to monitor a channel
+     *
+     * @param cfg   Configuration to use
+     * @return Chimera::Status_t
+     */
+    Chimera::Status_t monitorChannel( const Chimera::ADC::WatchdogConfig &cfg );
+
+    /**
      * @brief (Re)starts the sequence conversions
      */
     void startSequence();
