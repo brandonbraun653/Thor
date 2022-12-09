@@ -397,6 +397,8 @@ namespace Thor::LLD::ADC
   static constexpr Reg32_t SMPR2_SMP18_2   = ( 0x4UL << SMPR2_SMP18_Pos );
 
   /********************  Bit definition for TR1 register  *******************/
+  static constexpr Reg32_t TR1_ALL_Msk = 0x0FFF0FFF;
+
   static constexpr Reg32_t TR1_LT1_Pos = ( 0U );
   static constexpr Reg32_t TR1_LT1_Msk = ( 0xFFFUL << TR1_LT1_Pos );
   static constexpr Reg32_t TR1_LT1     = TR1_LT1_Msk;
@@ -430,6 +432,8 @@ namespace Thor::LLD::ADC
   static constexpr Reg32_t TR1_HT1_11  = ( 0x800UL << TR1_HT1_Pos );
 
   /********************  Bit definition for TR2 register  *******************/
+  static constexpr Reg32_t TR2_ALL_Msk = 0x00FF00FF;
+
   static constexpr Reg32_t TR2_LT2_Pos = ( 0U );
   static constexpr Reg32_t TR2_LT2_Msk = ( 0xFFUL << TR2_LT2_Pos );
   static constexpr Reg32_t TR2_LT2     = TR2_LT2_Msk;
@@ -455,6 +459,8 @@ namespace Thor::LLD::ADC
   static constexpr Reg32_t TR2_HT2_7   = ( 0x80UL << TR2_HT2_Pos );
 
   /********************  Bit definition for TR3 register  *******************/
+  static constexpr Reg32_t TR3_ALL_Msk = 0x00FF00FF;
+
   static constexpr Reg32_t TR3_LT3_Pos = ( 0U );
   static constexpr Reg32_t TR3_LT3_Msk = ( 0xFFUL << TR3_LT3_Pos );
   static constexpr Reg32_t TR3_LT3     = TR3_LT3_Msk;

@@ -176,6 +176,13 @@ namespace Thor::LLD::ADC
   REG_ACCESSOR( RegisterMap, SMPR1, SMPR1_ALL_Msk, SMPR1_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, SMPR2, SMPR2_ALL_Msk, SMPR2_ALL, BIT_ACCESS_RW );
 
+  /*---------------------------------------------------------------------------
+  Watchdog Threshold Registers
+  ---------------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, TR1, TR1_ALL_Msk, TR1_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, TR2, TR2_ALL_Msk, TR2_ALL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, TR3, TR3_ALL_Msk, TR3_ALL, BIT_ACCESS_RW );
+
   /*-------------------------------------------------
   Regular Sequence Register (SQR)
   -------------------------------------------------*/
@@ -206,6 +213,12 @@ namespace Thor::LLD::ADC
   REG_ACCESSOR( RegisterMap, JDR2, JDR2_JDATA_Msk, JDATA2, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, JDR3, JDR3_JDATA_Msk, JDATA3, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, JDR4, JDR4_JDATA_Msk, JDATA4, BIT_ACCESS_R );
+
+  /*---------------------------------------------------------------------------
+  Analog Watchdog Configuration Registers
+  ---------------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, AWD2CR, AWD2CR_AWD2CH_Msk, AWD2CH, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, AWD3CR, AWD3CR_AWD3CH_Msk, AWD3CH, BIT_ACCESS_RW );
 
   /*-------------------------------------------------
   Differential Mode Selection Register (DIFSEL)

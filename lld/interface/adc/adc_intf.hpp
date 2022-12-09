@@ -212,6 +212,11 @@ namespace Thor::LLD::ADC
      */
     void syncSequence();
 
+    /**
+     * @brief ISRHandler shared between all enabled interrupts
+     */
+    void ISRHandler();
+
   protected:
     void dma_isr_transfer_complete_callback( const Chimera::DMA::TransferStats &stats );
 

@@ -87,8 +87,7 @@ namespace Thor::LLD::ADC
     mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
 
     /*-------------------------------------------------------------------------
-    Handle the ISR configuration. Not actually used, but it puts the system in
-    a known and controlled state.
+    Set up the ISR
     -------------------------------------------------------------------------*/
     Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
     Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
@@ -357,7 +356,38 @@ namespace Thor::LLD::ADC
 
   Chimera::Status_t Driver::monitorChannel( const Chimera::ADC::WatchdogConfig &cfg )
   {
+    using namespace Chimera::ADC;
 
+    /*---------------------------------------------------------------------------
+    Input Protections
+    ---------------------------------------------------------------------------*/
+    if( cfg.wdgChannel == Chimera::ADC::Watchdog::ANALOG_0 )
+    {
+      return Chimera::Status::NOT_SUPPORTED;
+    }
+
+    /*-------------------------------------------------------------------------
+    Register the ISR handler
+    -------------------------------------------------------------------------*/
+    onInterrupt( Interrupt::ANALOG_WD, cfg.callback );
+
+    /*-------------------------------------------------------------------------
+    Enable the desired channel for monitoring
+    -------------------------------------------------------------------------*/
+    uint32_t hi_lo_data = ( ( cfg.highThreshold & 0xFF ) << 16u ) | ( cfg.lowThreshold & 0xFF );
+
+    if( cfg.wdgChannel == Chimera::ADC::Watchdog::ANALOG_1 )
+    {
+      AWD2CH::setbit( mPeriph, ( 1u << EnumValue( cfg.adcChannel ) ) );
+      TR2_ALL::set( mPeriph, hi_lo_data );
+      AWD2IE::setbit( mPeriph, IER_AWD2IE );
+    }
+    else if( cfg.wdgChannel == Chimera::ADC::Watchdog::ANALOG_2 )
+    {
+      AWD3CH::setbit( mPeriph, ( 1u << EnumValue( cfg.adcChannel ) ) );
+      TR3_ALL::set( mPeriph, hi_lo_data );
+      AWD3IE::setbit( mPeriph, IER_AWD3IE );
+    }
   }
 
   Chimera::Status_t Driver::setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time )
@@ -684,6 +714,38 @@ namespace Thor::LLD::ADC
 
         ( *queue )[ EnumValue( channel ) ]->push( sample );
       }
+    }
+  }
+
+
+  void Driver::ISRHandler()
+  {
+    /*-------------------------------------------------------------------------
+    Local Constants
+    -------------------------------------------------------------------------*/
+    constexpr uint32_t ANY_WDG_TRIP = 0x380;
+
+    /*-------------------------------------------------------------------------
+    Get the status/enablement registers at time of ISR firing
+    -------------------------------------------------------------------------*/
+    const uint32_t ISR = ISR_ALL::get( mPeriph );
+    const uint32_t IER = IER_ALL::get( mPeriph );
+
+    /*-------------------------------------------------------------------------
+    Did any of the watchdog monitors trip?
+    -------------------------------------------------------------------------*/
+    if ( ( ISR & ANY_WDG_TRIP ) && mCallbacks[ EnumValue( Chimera::ADC::Interrupt::ANALOG_WD ) ] )
+    {
+      /* Populate the data for the ADC handler */
+      Chimera::ADC::InterruptDetail isrData;
+      isrData.clear();
+      isrData.isr = Chimera::ADC::Interrupt::ANALOG_WD;
+
+      /* Invoke the user handler */
+      mCallbacks[ EnumValue( Chimera::ADC::Interrupt::ANALOG_WD ) ]( isrData );
+
+      /* ACK the event, only writing the specific bits to clear */
+      ISR_ALL::set( mPeriph, ANY_WDG_TRIP );
     }
   }
 

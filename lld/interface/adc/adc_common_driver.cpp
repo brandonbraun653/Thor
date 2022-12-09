@@ -163,7 +163,8 @@ namespace Thor::LLD::ADC
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
 void ADC_IRQHandler()
 {
-  // Don't actually use interrupts for ADC. DMA is the way.
+  using namespace Thor::LLD::ADC;
+  s_adc_drivers[ ADC1_RESOURCE_INDEX ].ISRHandler();
 }
 #endif
 
