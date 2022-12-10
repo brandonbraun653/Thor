@@ -108,15 +108,16 @@ namespace Thor::LLD
 }    // namespace Thor::LLD
 
 /**
- *  Helper macro to declare a class that directly interacts with bits inside
- *  a hardware peripheral register. This is to help clean up some of the code
- *  readability as well as prevent read/write access mistakes.
+ * Helper macro to declare a class that directly interacts with bits inside
+ * a hardware peripheral register. This is to help clean up some of the code
+ * readability as well as prevent read/write access mistakes.
  *
- *  @param[in]  MEM_MAP_TYPE    Memory mapped struct type that defines the peripheral
- *  @param[in]  REGISTER        The actual register name to be interacted with
- *  @param[in]  MASK            Bit mask to ensure the proper bits are accessed
- *  @param[in]  NAME            User friendly name of the class
- *  @param[in]  ACCESS          Access level of the bits (r/w/rw)
+ *
+ * @param MEM_MAP_TYPE    Memory mapped struct type that defines the peripheral
+ * @param REGISTER        The actual register name to be interacted with
+ * @param MASK            Bit mask to ensure the proper bits are accessed
+ * @param NAME            User friendly name of the class
+ * @param ACCESS          Access level of the bits (r/w/rw)
  */
 #define REG_ACCESSOR( MEM_MAP_TYPE, REGISTER, MASK, NAME, ACCESS )             \
   class NAME                                                                   \

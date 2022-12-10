@@ -423,6 +423,12 @@ namespace Chimera::ADC
     return reinterpret_cast<ThorImpl *>( mImpl )->lldriver->monitorChannel( cfg );
   }
 
+
+  float Driver::analogReference() const
+  {
+    return reinterpret_cast<ThorImpl *>( mImpl )->lldriver->analogReference();
+  }
+
 }    // namespace Chimera::ADC
 
 

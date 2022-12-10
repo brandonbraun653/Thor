@@ -63,6 +63,106 @@ namespace Thor::LLD::ADC
   static Driver s_adc_drivers[ NUM_ADC_PERIPHS ];
 
   /*---------------------------------------------------------------------------
+  Static Functions
+  ---------------------------------------------------------------------------*/
+  static void configure_oversampling( Thor::LLD::ADC::RegisterMap *const periph, const Chimera::ADC::OverSampler rate,
+                                      const Chimera::ADC::OverSampleShift shift )
+  {
+    using namespace Chimera::ADC;
+
+    /*-------------------------------------------------------------------------
+    Input Protections
+    -------------------------------------------------------------------------*/
+    if( !periph || ( rate < OverSampler::OS_2X ) || ( rate >= OverSampler::NUM_OPTIONS ) )
+    {
+      return;
+    }
+
+    /*-------------------------------------------------------------------------
+    Decide field for OVSR register
+    -------------------------------------------------------------------------*/
+    uint32_t ovsr_field = 0;
+    switch( rate )
+    {
+      case OverSampler::OS_2X:
+      default:
+        ovsr_field = 0;
+        break;
+
+      case OverSampler::OS_4X:
+        ovsr_field = CFGR2_OVSR_0;
+        break;
+
+      case OverSampler::OS_8X:
+        ovsr_field = CFGR2_OVSR_1;
+        break;
+
+      case OverSampler::OS_16X:
+        ovsr_field = CFGR2_OVSR_1 | CFGR2_OVSR_0;
+        break;
+
+      case OverSampler::OS_32X:
+        ovsr_field = CFGR2_OVSR_2;
+        break;
+
+      case OverSampler::OS_64X:
+        ovsr_field = CFGR2_OVSR_2 | CFGR2_OVSR_0;
+        break;
+
+      case OverSampler::OS_128X:
+        ovsr_field = CFGR2_OVSR_2 | CFGR2_OVSR_1;
+        break;
+
+      case OverSampler::OS_256X:
+        ovsr_field = CFGR2_OVSR_2 | CFGR2_OVSR_1 | CFGR2_OVSR_0;
+        break;
+    }
+
+    /*-------------------------------------------------------------------------
+    Decide field for OVSS register
+    -------------------------------------------------------------------------*/
+    uint32_t ovss_field = 0;
+    switch( shift )
+    {
+      case OverSampleShift::OS_NONE:
+        ovss_field = 0;
+        break;
+      case OverSampleShift::OS_1_BIT:
+        ovss_field = CFGR2_OVSS_0;
+        break;
+      case OverSampleShift::OS_2_BIT:
+        ovss_field = CFGR2_OVSS_1;
+        break;
+      case OverSampleShift::OS_3_BIT:
+        ovss_field = CFGR2_OVSS_1 | CFGR2_OVSS_0;
+        break;
+      case OverSampleShift::OS_4_BIT:
+        ovss_field = CFGR2_OVSS_2;
+        break;
+      case OverSampleShift::OS_5_BIT:
+        ovss_field = CFGR2_OVSS_2 | CFGR2_OVSS_0;
+        break;
+      case OverSampleShift::OS_6_BIT:
+        ovss_field = CFGR2_OVSS_2 | CFGR2_OVSS_1;
+        break;
+      case OverSampleShift::OS_7_BIT:
+        ovss_field = CFGR2_OVSS_2 | CFGR2_OVSS_1 | CFGR2_OVSS_0;
+        break;
+      case OverSampleShift::OS_8_BIT:
+        ovss_field = CFGR2_OVSS_3;
+        break;
+    }
+
+    /*-------------------------------------------------------------------------
+    Apply the fields and enable oversampling for injected and regular channels
+    -------------------------------------------------------------------------*/
+    OVSR::set( periph, ovsr_field );
+    OVSS::set( periph, ovss_field );
+    JOVSE::set( periph, CFGR2_JOVSE );    // Injected oversampling enable
+    ROVSE::set( periph, CFGR2_ROVSE );    // Regular oversampling enable
+  }
+
+  /*---------------------------------------------------------------------------
   Driver Implementation
   ---------------------------------------------------------------------------*/
   Driver::Driver() :
@@ -99,6 +199,7 @@ namespace Thor::LLD::ADC
 
   Chimera::Status_t Driver::initialize( const Chimera::ADC::DriverConfig &cfg )
   {
+    using namespace Chimera::ADC;
     using namespace Chimera::DMA;
     using namespace Chimera::Peripheral;
     using namespace Thor::LLD::RCC;
@@ -198,12 +299,9 @@ namespace Thor::LLD::ADC
     JAUTO::clear( mPeriph, CFGR_JAUTO );    // Auto injected group conversion OFF
 
     /*-------------------------------------------------------------------------
-    Configure oversampling by default
+    Configure oversampling if needed
     -------------------------------------------------------------------------*/
-    OVSR::set( mPeriph, CFGR2_OVSR_0 );    // 4x Oversampling
-    OVSS::set( mPeriph, CFGR2_OVSS_1 );    // 2-bit shift
-    JOVSE::set( mPeriph, CFGR2_JOVSE );    // Injected oversampling enable
-    ROVSE::set( mPeriph, CFGR2_ROVSE );    // Regular oversampling enable
+    configure_oversampling( mPeriph, cfg.overSampleRate, cfg.overSampleShift );
 
     /*-------------------------------------------------------------------------
     Configure the DMA transfers from the ADC's perspective
@@ -354,6 +452,7 @@ namespace Thor::LLD::ADC
     return ( mCalcVdda * static_cast<float>( sample.counts ) ) / fRes;
   }
 
+
   Chimera::Status_t Driver::monitorChannel( const Chimera::ADC::WatchdogConfig &cfg )
   {
     using namespace Chimera::ADC;
@@ -388,7 +487,10 @@ namespace Thor::LLD::ADC
       TR3_ALL::set( mPeriph, hi_lo_data );
       AWD3IE::setbit( mPeriph, IER_AWD3IE );
     }
+
+    return Chimera::Status::OK;
   }
+
 
   Chimera::Status_t Driver::setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time )
   {
