@@ -667,7 +667,7 @@ namespace Chimera::USART
 
 
   Chimera::Status_t Driver::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
-                                             Chimera::Serial::CircularBuffer &userBuffer, uint8_t *const hwBuffer,
+                                             Chimera::Serial::BipBuffer &userBuffer, uint8_t *const hwBuffer,
                                              const size_t hwBufferSize )
   {
     RT_DBG_ASSERT( mImpl );

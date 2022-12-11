@@ -51,6 +51,14 @@ namespace Thor::LLD::Serial
   Structures
   -------------------------------------------------------------------------------*/
   /**
+   * @brief Abstraction interface for UART/USART hardware differences
+   */
+  struct HwInterface
+  {
+
+  };
+
+  /**
    *  Transfer control block that handles data which should
    *  never be modified during a transfer.
    *
