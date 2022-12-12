@@ -30,6 +30,55 @@
 namespace Thor::LLD::USART
 {
   /*-------------------------------------------------------------------------------
+  Static Data
+  -------------------------------------------------------------------------------*/
+  static Driver s_usart_drivers[ NUM_USART_PERIPHS ];
+
+
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
+  Chimera::Status_t initialize()
+  {
+    /*-------------------------------------------------
+    Attach all the expected peripherals to the drivers
+    -------------------------------------------------*/
+    if ( attachDriverInstances( s_usart_drivers, ARRAY_COUNT( s_usart_drivers ) ) )
+    {
+      return Chimera::Status::OK;
+    }
+    else
+    {
+      return Chimera::Status::FAIL;
+    }
+  }
+
+
+  bool isChannelSupported( const Chimera::Serial::Channel channel )
+  {
+    if ( channel < Chimera::Serial::Channel::NUM_OPTIONS )
+    {
+      return ( getResourceIndex( channel ) != INVALID_RESOURCE_INDEX );
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+
+  Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
+  {
+    if ( isChannelSupported( channel ) )
+    {
+      return &s_usart_drivers[ static_cast<size_t>( channel ) ];
+    }
+
+    return nullptr;
+  }
+
+
+  /*-------------------------------------------------------------------------------
   Public Methods
   -------------------------------------------------------------------------------*/
   Driver::Driver() : mPeriph( nullptr )
@@ -58,7 +107,7 @@ namespace Thor::LLD::USART
   }
 
 
-  Chimera::Status_t Driver::init( const Thor::LLD::Serial::Config &cfg )
+  Chimera::Status_t Driver::init( const Thor::LLD::Serial::RegConfig &cfg )
   {
     /*------------------------------------------------
     Initialize driver memory
@@ -137,17 +186,198 @@ namespace Thor::LLD::USART
   }
 
 
-  Chimera::Status_t Driver::transmit( const void *const data, const size_t size )
+  int Driver::transmit( const Chimera::Serial::TxfrMode mode, const void *const data, const size_t size )
   {
-    // TODO: Add this back
-    return Chimera::Status::NOT_SUPPORTED;
+    using namespace Chimera::Serial;
+
+    auto result = Chimera::Status::OK;
+    switch( mode )
+    {
+      case TxfrMode::BLOCKING:
+        result = this->txBlocking( data, size );
+        break;
+
+      case TxfrMode::INTERRUPT:
+        result = this->txInterrupt( data, size );
+        break;
+
+      case TxfrMode::DMA:
+        result = this->txDMA( data, size );
+        break;
+
+      default:
+        return -1;
+    }
+
+    return ( result == Chimera::Status::OK ) ? size : -1;
+  }
+
+  Chimera::Status_t Driver::txBlocking( const void *const data, const size_t size )
+  {
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if ( !data || !size )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
+    /*-------------------------------------------------------------------------
+    Pump the data as the transmit FIFO indicates it can hold more data
+    -------------------------------------------------------------------------*/
+    prjEnableTransmitter( mPeriph );
+
+    auto dataPtr = reinterpret_cast<const uint8_t *const>( data );
+    for ( size_t idx = 0; idx < size; idx++ )
+    {
+      while ( TXE::get( mPeriph ) == 0 )
+      {
+        continue;
+      }
+
+      prjWriteDataRegister( mPeriph, dataPtr[ idx ] );
+    }
+
+    /*-------------------------------------------------------------------------
+    Wait for the last byte to finish transferring
+    -------------------------------------------------------------------------*/
+    while ( TC::get( mPeriph ) == 0 )
+    {
+      continue;
+    }
+    prjDisableTransmitter( mPeriph );
+    return Chimera::Status::OK;
   }
 
 
-  Chimera::Status_t Driver::receive( void *const data, const size_t size )
+  Chimera::Status_t Driver::txInterrupt( const void *const data, const size_t size )
+  {
+    using namespace Chimera::Hardware;
+
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if ( !data || !size )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
+    /*-------------------------------------------------------------------------
+    Ensure the previous transfer has completed
+    -------------------------------------------------------------------------*/
+    auto status = txTransferStatus();
+    if ( ( status != StateMachine::TX::TX_COMPLETE ) && ( status != StateMachine::TX::TX_READY ) )
+    {
+      return Chimera::Status::BUSY;
+    }
+    else    // No on-going transfers
+    {
+      auto transferData = reinterpret_cast<const uint8_t *const>( data );
+
+      /*-----------------------------------------------------------------------
+      Prep the transfer control block for the first TDR empty ISR event
+      -----------------------------------------------------------------------*/
+      disableUSARTInterrupts();
+
+      mTXTCB.buffer    = const_cast<uint8_t *>( transferData );
+      mTXTCB.offset    = 1;
+      mTXTCB.remaining = size - 1u;
+      mTXTCB.expected  = size;
+      mTXTCB.state     = StateMachine::TX::TX_ONGOING;
+      mTXTCB.mode      = PeripheralMode::INTERRUPT;
+
+      /*-----------------------------------------------------------------------
+      Shove the first byte into the transmit data register
+      -----------------------------------------------------------------------*/
+      prjWriteDataRegister( mPeriph, transferData[ 0 ] );
+
+      /*-----------------------------------------------------------------------
+      Turn on the TDR empty interrupt so we know when to store the next byte
+      -----------------------------------------------------------------------*/
+      prjEnableISRSignal( mPeriph, ISRSignal::TRANSMIT_DATA_REG_EMPTY );
+      enableIT( Chimera::Hardware::SubPeripheral::TX );
+      enableUSARTInterrupts();
+
+      /*-----------------------------------------------------------------------
+      Start the transfer
+      -----------------------------------------------------------------------*/
+      prjEnableTransmitter( mPeriph );
+    }
+
+    return Chimera::Status::OK;
+  }
+
+
+  Chimera::Status_t Driver::txDMA( const void *const data, const size_t size )
+  {
+    using namespace Chimera::DMA;
+    using namespace Chimera::Hardware;
+
+    #if !defined( THOR_DMA )
+    return Chimera::Status::NOT_SUPPORTED;
+    #else
+    /*-------------------------------------------------
+    Input protection
+    -------------------------------------------------*/
+    if ( !data || !size )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
+    /*-------------------------------------------------
+    Ensure the previous transfer has completed
+    -------------------------------------------------*/
+    auto status = txTransferStatus();
+    if ( ( status != StateMachine::TX::TX_COMPLETE ) && ( status != StateMachine::TX::TX_READY ) )
+    {
+      return Chimera::Status::BUSY;
+    }
+
+    initDMA();
+
+    disableUSARTInterrupts();
+    {
+      /* Instruct the USART to use DMA mode */
+      DMAT::set( mPeriph, CR3_DMAT );
+
+      /* Clear the transfer complete bit */
+      #if defined( STM32F446xx )
+      TC::clear( mPeriph, SR_TC );
+      #elif defined( STM32L432xx )
+      TC::clear( mPeriph, ISR_TC );
+      #endif
+
+      /* Enable the USART completion interrupts */
+      prjEnableTransmitter( mPeriph );
+      prjEnableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
+
+      /* Configure the DMA transfer */
+      PipeTransfer cfg;
+      cfg.userCallback = TransferCallback::create<Driver, &Driver::onDMATXComplete>( *this );
+      cfg.pipe     = mTXDMARequestId;
+      cfg.size     = size;
+      cfg.addr     = reinterpret_cast<std::uintptr_t>( data );
+
+      /* Configure the USART transfer control block */
+      mTXTCB.buffer    = nullptr;
+      mTXTCB.expected  = size;
+      mTXTCB.remaining = size;
+      mTXTCB.state     = StateMachine::TX::TX_ONGOING;
+      mTXTCB.mode      = PeripheralMode::DMA;
+
+      Chimera::DMA::transfer( cfg );
+    }
+    enableUSARTInterrupts();
+
+    return Chimera::Status::OK;
+    #endif  /* THOR_LLD_DMA */
+  }
+
+
+  int Driver::receive( const Chimera::Serial::TxfrMode mode, void *const data, const size_t size )
   {
     // TODO: Add this back
-    return Chimera::Status::NOT_SUPPORTED;
+    return 0;
   }
 
 
@@ -198,62 +428,6 @@ namespace Thor::LLD::USART
     enableUSARTInterrupts();
 
     return result;
-  }
-
-
-  Chimera::Status_t Driver::transmitIT( const void *const data, const size_t size )
-  {
-    using namespace Chimera::Hardware;
-
-    /*-------------------------------------------------
-    Input protection
-    -------------------------------------------------*/
-    if ( !data || !size )
-    {
-      return Chimera::Status::INVAL_FUNC_PARAM;
-    }
-
-    /*-------------------------------------------------
-    Ensure the previous transfer has completed
-    -------------------------------------------------*/
-    auto status = txTransferStatus();
-    if ( ( status != StateMachine::TX::TX_COMPLETE ) && ( status != StateMachine::TX::TX_READY ) )
-    {
-      return Chimera::Status::BUSY;
-    }
-    else    // No on-going transfers
-    {
-      auto transferData = reinterpret_cast<const uint8_t *const>( data );
-
-      /*------------------------------------------------
-      Prep the transfer control block
-      ------------------------------------------------*/
-      disableUSARTInterrupts();
-
-      mTXTCB.buffer    = &transferData[ 1 ]; /* Point to the next byte */
-      mTXTCB.expected  = size;
-      mTXTCB.remaining = size - 1u; /* Pre-decrement to account for this first byte TX */
-      mTXTCB.state     = StateMachine::TX::TX_ONGOING;
-      mTXTCB.mode      = PeripheralMode::DMA;
-
-      /*------------------------------------------------
-      Shove the byte into the transmit data register,
-      kicking off the transfer.
-      ------------------------------------------------*/
-      prjWriteDataRegister( mPeriph, transferData[ 0 ] );
-
-      /*------------------------------------------------
-      Turn on the transmitter & enable TDR interrupt so
-      we know when to stage the next byte.
-      ------------------------------------------------*/
-      prjEnableTransmitter( mPeriph );
-      prjEnableISRSignal( mPeriph, ISRSignal::TRANSMIT_DATA_REG_EMPTY );
-      enableIT( Chimera::Hardware::SubPeripheral::TX );
-
-      enableUSARTInterrupts();
-    }
-
-    return Chimera::Status::OK;
   }
 
 
@@ -398,72 +572,6 @@ namespace Thor::LLD::USART
   }
 
 
-  Chimera::Status_t Driver::transmitDMA( const void *const data, const size_t size )
-  {
-    using namespace Chimera::DMA;
-    using namespace Chimera::Hardware;
-
-    #if !defined( THOR_DMA )
-    return Chimera::Status::NOT_SUPPORTED;
-    #else
-    /*-------------------------------------------------
-    Input protection
-    -------------------------------------------------*/
-    if ( !data || !size )
-    {
-      return Chimera::Status::INVAL_FUNC_PARAM;
-    }
-
-    /*-------------------------------------------------
-    Ensure the previous transfer has completed
-    -------------------------------------------------*/
-    auto status = txTransferStatus();
-    if ( ( status != StateMachine::TX::TX_COMPLETE ) && ( status != StateMachine::TX::TX_READY ) )
-    {
-      return Chimera::Status::BUSY;
-    }
-
-    initDMA();
-
-    disableUSARTInterrupts();
-    {
-      /* Instruct the USART to use DMA mode */
-      DMAT::set( mPeriph, CR3_DMAT );
-
-      /* Clear the transfer complete bit */
-      #if defined( STM32F446xx )
-      TC::clear( mPeriph, SR_TC );
-      #elif defined( STM32L432xx )
-      TC::clear( mPeriph, ISR_TC );
-      #endif
-
-      /* Enable the USART completion interrupts */
-      prjEnableTransmitter( mPeriph );
-      prjEnableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
-
-      /* Configure the DMA transfer */
-      PipeTransfer cfg;
-      cfg.userCallback = TransferCallback::create<Driver, &Driver::onDMATXComplete>( *this );
-      cfg.pipe     = mTXDMARequestId;
-      cfg.size     = size;
-      cfg.addr     = reinterpret_cast<std::uintptr_t>( data );
-
-      /* Configure the USART transfer control block */
-      mTXTCB.buffer    = nullptr;
-      mTXTCB.expected  = size;
-      mTXTCB.remaining = size;
-      mTXTCB.state     = StateMachine::TX::TX_ONGOING;
-      mTXTCB.mode      = PeripheralMode::DMA;
-
-      Chimera::DMA::transfer( cfg );
-    }
-    enableUSARTInterrupts();
-
-    return Chimera::Status::OK;
-    #endif  /* THOR_LLD_DMA */
-  }
-
-
   Chimera::Status_t Driver::receiveDMA( void *const data, const size_t size )
   {
     using namespace Chimera::DMA;
@@ -540,13 +648,7 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::txTransferStatus()
   {
-    Chimera::Status_t cacheStatus = Chimera::Status::UNKNOWN_ERROR;
-
-    disableUSARTInterrupts();
-    cacheStatus = mTXTCB.state;
-    enableUSARTInterrupts();
-
-    return cacheStatus;
+    return mTXTCB.state;
   }
 
 
@@ -576,69 +678,40 @@ namespace Thor::LLD::USART
   }
 
 
-  void Driver::killTransmit()
+  void Driver::killTransfer( Chimera::Hardware::SubPeripheral periph )
   {
+    using namespace Chimera::Hardware;
+
     disableUSARTInterrupts();
 
-    disableIT( Chimera::Hardware::SubPeripheral::TX );
-    disableDMA_IT( Chimera::Hardware::SubPeripheral::TX );
-    mTXTCB.reset();
+    if ( periph == SubPeripheral::RX || ( periph == SubPeripheral::TXRX ) )
+    {
+      disableIT( Chimera::Hardware::SubPeripheral::RX );
+      disableDMA_IT( Chimera::Hardware::SubPeripheral::RX );
+      mRXTCB.reset();
+    }
+
+    if ( periph == SubPeripheral::TX || ( periph == SubPeripheral::TXRX ) )
+    {
+      disableIT( Chimera::Hardware::SubPeripheral::TX );
+      disableDMA_IT( Chimera::Hardware::SubPeripheral::TX );
+      mTXTCB.reset();
+    }
 
     enableUSARTInterrupts();
   }
 
 
-  void Driver::killReceive()
+  Thor::LLD::Serial::CDTCB *Driver::getTCB_TX()
   {
-    disableUSARTInterrupts();
-
-    disableIT( Chimera::Hardware::SubPeripheral::RX );
-    disableDMA_IT( Chimera::Hardware::SubPeripheral::RX );
-    mRXTCB.reset();
-
-    enableUSARTInterrupts();
+    return &mTXTCB;
   }
 
 
-  Thor::LLD::Serial::CDTCB Driver::getTCB_TX()
+  Thor::LLD::Serial::MDTCB *Driver::getTCB_RX()
   {
-    Thor::LLD::Serial::CDTCB temp;
-
-    disableUSARTInterrupts();
-    temp = mTXTCB;
-    enableUSARTInterrupts();
-
-    return temp;
+    return &mRXTCB;
   }
-
-
-  Thor::LLD::Serial::MDTCB Driver::getTCB_RX()
-  {
-    Thor::LLD::Serial::MDTCB temp;
-
-    disableUSARTInterrupts();
-    temp = mRXTCB;
-    enableUSARTInterrupts();
-
-    return temp;
-  }
-
-
-  Thor::LLD::Serial::Config Driver::getConfiguration()
-  {
-    Thor::LLD::Serial::Config cfg;
-    memset( &cfg, 0, sizeof( cfg ) );
-
-    cfg.BaudRate     = 0;
-    cfg.Mode         = TE::get( mPeriph ) | RE::get( mPeriph );
-    cfg.OverSampling = OVER8::get( mPeriph );
-    cfg.Parity       = PCE::get( mPeriph ) | PS::get( mPeriph );
-    cfg.StopBits     = STOP::get( mPeriph );
-    cfg.WordLength   = M0::get( mPeriph );
-
-    return cfg;
-  }
-
 
   /*-------------------------------------------------------------------------------
   Protected Methods
@@ -652,61 +725,61 @@ namespace Thor::LLD::USART
     using namespace Chimera::Thread;
     using namespace Configuration::Flags;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Cache the current state of the registers
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     const uint32_t ISRCache = ISR::get( mPeriph );
     const uint32_t CR1Cache = CR1::get( mPeriph );
     bool signalHLD          = false;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Figure out which interrupt flags have been set
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     uint32_t txFlags    = ISRCache & ( FLAG_TC | FLAG_TXE );
     uint32_t rxFlags    = ISRCache & ( FLAG_RXNE | FLAG_IDLE );
     uint32_t errorFlags = ISRCache & ( FLAG_ORE | FLAG_PE | FLAG_NF | FLAG_FE );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     TX Related Handler
-    ------------------------------------------------*/
-    if ( txFlags && ( ( CR1Cache & CR1_TXEIE ) || ( CR1Cache & CR1_TCIE ) ) )
+    -------------------------------------------------------------------------*/
+    if ( txFlags && ( mTXTCB.mode == TxfrMode::INTERRUPT ) && ( ( CR1Cache & CR1_TXEIE ) || ( CR1Cache & CR1_TCIE ) ) )
     {
-      /*------------------------------------------------
-      If no transfer is ongoing, clear out the flags and
-      disable TX related interrupts. This is an invalid state.
-      ------------------------------------------------*/
+      /*-----------------------------------------------------------------------
+      No txfr ongoing? Invalid state. Clear TX related ISR flags.
+      -----------------------------------------------------------------------*/
       if ( mTXTCB.state == StateMachine::TX::TX_READY )
       {
+        txFlags = 0;
         prjClrISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
         prjDisableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
         prjDisableISRSignal( mPeriph, ISRSignal::TRANSMIT_DATA_REG_EMPTY );
       }
 
-      /*------------------------------------------------
-      TDR Empty Interrupt
-      ------------------------------------------------*/
+      /*-----------------------------------------------------------------------
+      Transmit Data Register Empty Interrupt
+      -----------------------------------------------------------------------*/
       if ( ( txFlags & FLAG_TXE ) && ( mTXTCB.state == StateMachine::TX::TX_ONGOING ) )
       {
         if ( mTXTCB.remaining )    // Data left to be transmitted
         {
-          /*------------------------------------------------
+          /*-------------------------------------------------------------------
           Make sure the TX complete interrupt cannot fire
-          ------------------------------------------------*/
+          -------------------------------------------------------------------*/
           prjDisableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
 
-          /*------------------------------------------------
+          /*-------------------------------------------------------------------
           Transfer the byte and prep for the next character
-          ------------------------------------------------*/
-          prjWriteDataRegister( mPeriph, *mTXTCB.buffer );
-          mTXTCB.buffer++;
+          -------------------------------------------------------------------*/
+          prjWriteDataRegister( mPeriph, mTXTCB.buffer[ mTXTCB.offset ] );
+          mTXTCB.offset++;
           mTXTCB.remaining--;
         }
-        else    // All data has been transmitted
+        else    // All data has been transmitted to TX FIFO
         {
-          /*------------------------------------------------
-          We finished pushing the last character into the TDR, so
-          now we can listen for the TX complete interrupt.
-          ------------------------------------------------*/
+          /*-------------------------------------------------------------------
+          We finished pushing the last character into the TDR, so now we can
+          listen for the TX complete interrupt.
+          -------------------------------------------------------------------*/
           prjDisableISRSignal( mPeriph, ISRSignal::TRANSMIT_DATA_REG_EMPTY );
           prjEnableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
 
@@ -714,24 +787,24 @@ namespace Thor::LLD::USART
         }
       }
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Transfer Complete Interrupt
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       if ( ( txFlags & FLAG_TC ) && ( mTXTCB.state == StateMachine::TX::TX_COMPLETE ) )
       {
-        /*-------------------------------------------------
+        signalHLD = true;
+        mRuntimeFlags |= Runtime::Flag::TX_COMPLETE;
+
+        /*---------------------------------------------------------------------
         Exit the TX ISR by disabling related interrupts
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         prjClrISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
         prjDisableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
         prjDisableISRSignal( mPeriph, ISRSignal::TRANSMIT_DATA_REG_EMPTY );
 
-        mRuntimeFlags |= Runtime::Flag::TX_COMPLETE;
-
-        /*------------------------------------------------
+        /*---------------------------------------------------------------------
         Invoke a user callback if registered
-        ------------------------------------------------*/
-        signalHLD                            = true;
+        ---------------------------------------------------------------------*/
         const SignalCallback *const callback = INT::getISRHandler( Type::PERIPH_USART, SIG_TX_COMPLETE );
         if ( callback->isrCallback )
         {
@@ -743,7 +816,7 @@ namespace Thor::LLD::USART
     /*------------------------------------------------
     RX Related Handler
     ------------------------------------------------*/
-    if ( rxFlags )
+    if ( rxFlags && ( mTXTCB.mode == TxfrMode::INTERRUPT ) )
     {
       /*------------------------------------------------
       RX register not empty, aka a new byte has arrived!
@@ -837,20 +910,17 @@ namespace Thor::LLD::USART
       }
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Error Related Handler
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( errorFlags )
     {
-      /*-------------------------------------------------
-      Clear all the error flags
-      -------------------------------------------------*/
+      signalHLD = true;
       mRuntimeFlags |= errorFlags;
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Invoke a user callback if registered
-      ------------------------------------------------*/
-      signalHLD                            = true;
+      -----------------------------------------------------------------------*/
       const SignalCallback *const callback = INT::getISRHandler( Type::PERIPH_USART, SIG_ERROR );
       if ( callback->isrCallback )
       {
@@ -858,9 +928,9 @@ namespace Thor::LLD::USART
       }
     }
 
-    /*-------------------------------------------------
-    Post an event to wake up the user-space handler
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Post an event to wake up the post processor thread
+    -------------------------------------------------------------------------*/
     if ( signalHLD )
     {
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_USART ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
@@ -877,24 +947,23 @@ namespace Thor::LLD::USART
     size_t calculatedBRR = 0u;
     auto periphAddress   = reinterpret_cast<std::uintptr_t>( mPeriph );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Figure out the frequency of the clock that drives the USART
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto rccSys = Thor::LLD::RCC::getCoreClockCtrl();
     periphClock = rccSys->getPeriphClock( Chimera::Peripheral::Type::PERIPH_USART, periphAddress );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Protect from div0 conditions in the math below
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !desiredBaud || !periphClock )
     {
       return 0u;
     }
 
-    /*------------------------------------------------
-    Calculate the BRR value. Mostly this was taken directly from
-    the STM32 HAL Macros.
-    ------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Calculate the BRR value. This was taken directly from the STM32 HAL macros.
+    -------------------------------------------------------------------------*/
     size_t over8Compensator = 2u;
 
     if ( OVER8::get( mPeriph ) )
@@ -953,5 +1022,34 @@ namespace Thor::LLD::USART
   }
 
 }    // namespace Thor::LLD::USART
+
+/*-------------------------------------------------------------------------------
+IRQ Handlers
+-------------------------------------------------------------------------------*/
+#if defined( STM32_USART1_PERIPH_AVAILABLE )
+void USART1_IRQHandler( void )
+{
+  using namespace Thor::LLD::USART;
+  s_usart_drivers[ USART1_RESOURCE_INDEX ].IRQHandler();
+}
+#endif /* STM32_USART1_PERIPH_AVAILABLE */
+
+
+#if defined( STM32_USART2_PERIPH_AVAILABLE )
+void USART2_IRQHandler( void )
+{
+  using namespace Thor::LLD::USART;
+  s_usart_drivers[ USART2_RESOURCE_INDEX ].IRQHandler();
+}
+#endif /* STM32_USART2_PERIPH_AVAILABLE */
+
+
+#if defined( STM32_USART3_PERIPH_AVAILABLE )
+void USART3_IRQHandler( void )
+{
+  using namespace Thor::LLD::USART;
+  s_usart_drivers[ USART3_RESOURCE_INDEX ].IRQHandler();
+}
+#endif /* STM32_USART3_PERIPH_AVAILABLE */
 
 #endif /* TARGET_STM32L4 && THOR_DRIVER_USART */

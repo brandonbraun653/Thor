@@ -22,8 +22,8 @@
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_intf.hpp>
-#include <Thor/lld/interface/serial/serial_intf.hpp>
-#include <Thor/lld/interface/serial/serial_types.hpp>
+#include <Thor/lld/interface/serial/lld_intf_serial.hpp>
+#include <Thor/lld/interface/serial/lld_intf_serial_types.hpp>
 #include <Thor/lld/interface/uart/uart_types.hpp>
 
 namespace Thor::LLD::UART
@@ -119,20 +119,20 @@ namespace Thor::LLD::UART
      *  @return void
      */
     Chimera::Status_t attach( RegisterMap *const peripheral );
-    Chimera::Status_t init( const Thor::LLD::Serial::Config &cfg );
+    Chimera::Status_t init( const Thor::LLD::Serial::RegConfig &cfg );
     Chimera::Status_t deinit();
     Chimera::Status_t reset();
     Chimera::Status_t transmit( const void *const data, const size_t size );
     Chimera::Status_t receive( void *const data, const size_t size );
     Chimera::Status_t enableIT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t disableIT( const Chimera::Hardware::SubPeripheral periph );
-    Chimera::Status_t transmitIT( const void *const data, const size_t size );
+    Chimera::Status_t txInterrupt( const void *const data, const size_t size );
     Chimera::Status_t receiveIT( void *const data, const size_t size );
     Chimera::Status_t initDMA();
     Chimera::Status_t deinitDMA();
     Chimera::Status_t enableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t disableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
-    Chimera::Status_t transmitDMA( const void *const data, const size_t size );
+    Chimera::Status_t txDMA( const void *const data, const size_t size );
     Chimera::Status_t receiveDMA( void *const data, const size_t size );
     Chimera::Status_t txTransferStatus();
     Chimera::Status_t rxTransferStatus();
@@ -142,7 +142,7 @@ namespace Thor::LLD::UART
     void killReceive();
     Thor::LLD::Serial::CDTCB getTCB_TX();
     Thor::LLD::Serial::MDTCB getTCB_RX();
-    Thor::LLD::Serial::Config getConfiguration();
+    Thor::LLD::Serial::RegConfig getConfiguration();
 
   protected:
     friend void( ::UART4_IRQHandler )();

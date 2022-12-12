@@ -27,6 +27,55 @@
 namespace Thor::LLD::UART
 {
   /*-------------------------------------------------------------------------------
+  Static Data
+  -------------------------------------------------------------------------------*/
+  static Driver s_uart_drivers[ NUM_UART_PERIPHS ];
+
+
+  /*-------------------------------------------------------------------------------
+  Public Functions
+  -------------------------------------------------------------------------------*/
+  Chimera::Status_t initialize()
+  {
+    /*-------------------------------------------------
+    Attach all the expected peripherals to the drivers
+    -------------------------------------------------*/
+    if ( attachDriverInstances( s_uart_drivers, ARRAY_COUNT( s_uart_drivers ) ) )
+    {
+      return Chimera::Status::OK;
+    }
+    else
+    {
+      return Chimera::Status::FAIL;
+    }
+  }
+
+
+  bool isChannelSupported( const Chimera::Serial::Channel channel )
+  {
+    if ( channel < Chimera::Serial::Channel::NUM_OPTIONS )
+    {
+      return ( getResourceIndex( channel ) != INVALID_RESOURCE_INDEX );
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+
+  Driver_rPtr getDriver( const Chimera::Serial::Channel channel )
+  {
+    if ( isChannelSupported( channel ) )
+    {
+      return &s_uart_drivers[ static_cast<size_t>( channel ) ];
+    }
+
+    return nullptr;
+  }
+
+
+  /*-------------------------------------------------------------------------------
   Public Methods
   -------------------------------------------------------------------------------*/
   Driver::Driver() : periph( nullptr )
@@ -199,7 +248,7 @@ namespace Thor::LLD::UART
   }
 
 
-  Chimera::Status_t Driver::transmitIT( const void *const data, const size_t size )
+  Chimera::Status_t Driver::txInterrupt( const void *const data, const size_t size )
   {
     /*-------------------------------------------------
     Input protection
@@ -323,7 +372,7 @@ namespace Thor::LLD::UART
   }
 
 
-  Chimera::Status_t Driver::transmitDMA( const void *const data, const size_t size )
+  Chimera::Status_t Driver::txDMA( const void *const data, const size_t size )
   {
     return Chimera::Status::NOT_SUPPORTED;
   }

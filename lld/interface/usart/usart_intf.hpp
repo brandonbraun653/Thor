@@ -5,23 +5,23 @@
  *  Description:
  *    LLD interface to the USART module
  *
- *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
 #pragma once
 #ifndef LLD_USART_INTERFACE_HPP
 #define LLD_USART_INTERFACE_HPP
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
 #include <Chimera/dma>
 #include <Chimera/thread>
 #include <Chimera/usart>
-
-/* Thor Includes */
 #include <Thor/lld/common/interrupts/usart_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
-#include <Thor/lld/interface/serial/serial_types.hpp>
+#include <Thor/lld/interface/serial/lld_intf_serial_types.hpp>
 #include <Thor/lld/interface/usart/usart_types.hpp>
 
 namespace Thor::LLD::USART
@@ -98,13 +98,13 @@ namespace Thor::LLD::USART
    *  @param[in]  callback      Callback data to register
    *  @return Chimera::Status_t
    */
-  Chimera::Status_t registerHandler( const Chimera::Interrupt::Signal_t signal,
+  Chimera::Status_t registerHandler( const Chimera::Interrupt::Signal_t        signal,
                                      const Chimera::Interrupt::SignalCallback &callback );
 
   /*-------------------------------------------------------------------------------
   Classes
   -------------------------------------------------------------------------------*/
-  class Driver
+  class Driver : public virtual Thor::LLD::Serial::HwInterface
   {
   public:
     Driver();
@@ -117,36 +117,46 @@ namespace Thor::LLD::USART
      *  @return void
      */
     Chimera::Status_t attach( RegisterMap *const peripheral );
-    Chimera::Status_t init( const Thor::LLD::Serial::Config &cfg );
-    Chimera::Status_t deinit();
     Chimera::Status_t reset();
-    Chimera::Status_t transmit( const void *const data, const size_t size );
-    Chimera::Status_t receive( void *const data, const size_t size );
     Chimera::Status_t enableIT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t disableIT( const Chimera::Hardware::SubPeripheral periph );
-    Chimera::Status_t transmitIT( const void *const data, const size_t size );
+    Chimera::Status_t txInterrupt( const void *const data, const size_t size );
     Chimera::Status_t receiveIT( void *const data, const size_t size );
     Chimera::Status_t initDMA();
     Chimera::Status_t deinitDMA();
     Chimera::Status_t enableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t disableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
-    Chimera::Status_t transmitDMA( const void *const data, const size_t size );
+    Chimera::Status_t txDMA( const void *const data, const size_t size );
     Chimera::Status_t receiveDMA( void *const data, const size_t size );
-    Chimera::Status_t txTransferStatus();
-    Chimera::Status_t rxTransferStatus();
-    uint32_t getFlags();
-    void clearFlags( const uint32_t flagBits );
-    void killTransmit();
-    void killReceive();
-    Thor::LLD::Serial::CDTCB getTCB_TX();
-    Thor::LLD::Serial::MDTCB getTCB_RX();
-    Thor::LLD::Serial::Config getConfiguration();
+
+    /*-------------------------------------------------------------------------
+    Virtual Interface
+    -------------------------------------------------------------------------*/
+    Chimera::Peripheral::Type periphType() final override
+    {
+      return Chimera::Peripheral::Type::PERIPH_USART;
+    }
+
+    Chimera::Status_t init( const Thor::LLD::Serial::RegConfig &cfg ) final override;
+    Chimera::Status_t deinit() final override;
+    int transmit( const Chimera::Serial::TxfrMode mode, const void *const data, const size_t size ) final override;
+    int receive( const Chimera::Serial::TxfrMode mode, void *const data, const size_t size ) final override;
+    Chimera::Status_t         txTransferStatus() final override;
+    Chimera::Status_t         rxTransferStatus() final override;
+    uint32_t                  getFlags() final override;
+    void                      clearFlags( const uint32_t flagBits ) final override;
+    Thor::LLD::Serial::CDTCB *getTCB_TX() final override;
+    Thor::LLD::Serial::MDTCB *getTCB_RX() final override;
+    void                      killTransfer( Chimera::Hardware::SubPeripheral periph ) final override;
+
 
   protected:
     friend void( ::USART1_IRQHandler )();
     friend void( ::USART2_IRQHandler )();
     friend void( ::USART3_IRQHandler )();
     friend void( ::USART6_IRQHandler )();
+
+    Chimera::Status_t txBlocking( const void *const data, const size_t size );
 
     /**
      *  Generic interrupt handler for all USART specific ISR signals
@@ -159,9 +169,9 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------
     Misc Driver State Variables
     -------------------------------------------------*/
-    RegisterMap *mPeriph;                    /**< Points to the hardware registers for this instance */
-    size_t mResourceIndex;                   /**< Derived lookup table index for resource access */
-    volatile Reg32_t mRuntimeFlags;          /**< Error/process flags set at runtime to indicate state */
+    RegisterMap            *mPeriph;         /**< Points to the hardware registers for this instance */
+    size_t                  mResourceIndex;  /**< Derived lookup table index for resource access */
+    volatile Reg32_t        mRuntimeFlags;   /**< Error/process flags set at runtime to indicate state */
     Chimera::DMA::RequestId mTXDMARequestId; /**< Request id of the TX DMA pipe for the driver */
     Chimera::DMA::RequestId mRXDMARequestId; /**< Request id of the RX DMA pipe for the driver */
 
@@ -180,21 +190,10 @@ namespace Thor::LLD::USART
      */
     uint32_t calculateBRR( const size_t desiredBaud );
 
-    /**
-     *  Disables the USART interrupts
-     *  @return void
-     */
     inline void disableUSARTInterrupts();
-
-    /**
-     *  Enables the USART interrupts
-     *  @return void
-     */
     inline void enableUSARTInterrupts();
-
-
-    void onDMATXComplete( const Chimera::DMA::TransferStats &stats );
-    void onDMARXComplete( const Chimera::DMA::TransferStats &stats );
+    void        onDMATXComplete( const Chimera::DMA::TransferStats &stats );
+    void        onDMARXComplete( const Chimera::DMA::TransferStats &stats );
   };
 }    // namespace Thor::LLD::USART
 

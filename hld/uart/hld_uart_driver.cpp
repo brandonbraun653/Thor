@@ -33,96 +33,27 @@ namespace Chimera::UART
   }
 
 
-  Chimera::Status_t Driver::assignHW( const Chimera::Serial::Channel channel, const Chimera::Serial::IOPins &pins )
+  Chimera::Status_t Driver::open( const Chimera::Serial::Config &config )
   {
     return Chimera::Status::NOT_SUPPORTED;
   }
 
 
-  Chimera::Status_t Driver::begin( const Chimera::Hardware::PeripheralMode txMode,
-                                   const Chimera::Hardware::PeripheralMode rxMode )
+  Chimera::Status_t Driver::close()
   {
     return Chimera::Status::NOT_SUPPORTED;
   }
 
 
-  Chimera::Status_t Driver::end()
+  int Driver::write( const void *const buffer, const size_t length )
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    return 0;
   }
 
 
-  Chimera::Status_t Driver::configure( const Chimera::Serial::Config &config )
+  int Driver::read( void *const buffer, const size_t length )
   {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::setBaud( const uint32_t baud )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::setMode( const Chimera::Hardware::SubPeripheral  periph,
-                                     const Chimera::Hardware::PeripheralMode mode )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::write( const void *const buffer, const size_t length )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::read( void *const buffer, const size_t length )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::flush( const Chimera::Hardware::SubPeripheral periph )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  void Driver::postISRProcessing()
-  {
-  }
-
-
-  Chimera::Status_t Driver::toggleAsyncListening( const bool state )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::readAsync( uint8_t *const buffer, const size_t len )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::enableBuffering( const Chimera::Hardware::SubPeripheral periph,
-                                             Chimera::Serial::BipBuffer &userBuffer, uint8_t *const hwBuffer,
-                                             const size_t hwBufferSize )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  Chimera::Status_t Driver::disableBuffering( const Chimera::Hardware::SubPeripheral periph )
-  {
-    return Chimera::Status::NOT_SUPPORTED;
-  }
-
-
-  bool Driver::available( size_t *const bytes )
-  {
-    return false;
+    return 0;
   }
 }
 

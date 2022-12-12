@@ -11,6 +11,7 @@ add_subdirectory("gpio")
 add_subdirectory("i2c")
 add_subdirectory("interrupt")
 add_subdirectory("rcc")
+add_subdirectory("serial")
 add_subdirectory("spi")
 add_subdirectory("system")
 add_subdirectory("timer")
@@ -33,6 +34,7 @@ gen_intf_lib_variants(
     thor_lld_intf_i2c
     thor_lld_intf_interrupt
     thor_lld_intf_rcc
+    thor_lld_intf_serial
     thor_lld_intf_spi
     thor_lld_intf_sys
     thor_lld_intf_timer

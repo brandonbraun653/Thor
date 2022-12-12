@@ -5,15 +5,16 @@
  *  Description:
  *    LLD interface functions that are processor independent
  *
- *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
  *******************************************************************************/
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
-
-/* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/types.hpp>
+#include <Thor/lld/interface/inc/serial>
 #include <Thor/lld/interface/inc/usart>
 
 #if defined( THOR_USART )
@@ -150,31 +151,47 @@ namespace Thor::LLD::USART
 
   bool attachDriverInstances( Driver *const driverList, const size_t numDrivers )
   {
-    /*-------------------------------------------------
-    Reject bad inputs
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
     if ( !driverList || !numDrivers || ( numDrivers != NUM_USART_PERIPHS ) )
     {
       return false;
     }
 
-    /*-------------------------------------------------
-    Attach the drivers. The architecture of the LLD
-    ensures the ordering and number is correct.
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Attach the drivers
+    -------------------------------------------------------------------------*/
     Chimera::Status_t result = Chimera::Status::OK;
 
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
     result |= driverList[ USART1_RESOURCE_INDEX ].attach( USART1_PERIPH );
+
+    Thor::LLD::Serial::registerInterface(
+        getChannel( reinterpret_cast<std::uintptr_t>( USART1_PERIPH ) ),
+        dynamic_cast<Thor::LLD::Serial::HwInterface*>( &driverList[ USART1_RESOURCE_INDEX ] ) );
+
 #endif
 #if defined( STM32_USART2_PERIPH_AVAILABLE )
     result |= driverList[ USART2_RESOURCE_INDEX ].attach( USART2_PERIPH );
+
+    Thor::LLD::Serial::registerInterface(
+        getChannel( reinterpret_cast<std::uintptr_t>( USART2_PERIPH ) ),
+        dynamic_cast<Thor::LLD::Serial::HwInterface*>( &driverList[ USART2_RESOURCE_INDEX ] ) );
 #endif
 #if defined( STM32_USART3_PERIPH_AVAILABLE )
     result |= driverList[ USART3_RESOURCE_INDEX ].attach( USART3_PERIPH );
+
+    Thor::LLD::Serial::registerInterface(
+        getChannel( reinterpret_cast<std::uintptr_t>( USART3_PERIPH ) ),
+        dynamic_cast<Thor::LLD::Serial::HwInterface*>( &driverList[ USART3_RESOURCE_INDEX ] ) );
 #endif
 #if defined( STM32_USART6_PERIPH_AVAILABLE )
     result |= driverList[ USART6_RESOURCE_INDEX ].attach( USART6_PERIPH );
+
+    Thor::LLD::Serial::registerInterface(
+        getChannel( reinterpret_cast<std::uintptr_t>( USART6_PERIPH ) ),
+        dynamic_cast<Thor::LLD::Serial::HwInterface*>( &driverList[ USART6_RESOURCE_INDEX ] ) );
 #endif
 
     return result == Chimera::Status::OK;
