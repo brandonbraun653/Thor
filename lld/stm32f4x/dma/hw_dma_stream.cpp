@@ -47,8 +47,8 @@ namespace Thor::LLD::DMA
     /*-------------------------------------------------
     Grab the resource index for the stream
     -------------------------------------------------*/
-    mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
-    if ( mResourceIndex == INVALID_RESOURCE_INDEX )
+    mStreamResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
+    if ( mStreamResourceIndex == INVALID_RESOURCE_INDEX )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -58,18 +58,18 @@ namespace Thor::LLD::DMA
     -------------------------------------------------*/
     mStream = peripheral;
     mPeriph = parent;
-    mIRQn   = Resource::IRQSignals[ mResourceIndex ];
+    mStreamIRQn   = Resource::IRQSignals[ mStreamResourceIndex ];
 
     /*-------------------------------------------------
     Configure the global interrupt priority
     -------------------------------------------------*/
-    INT::setPriority( mIRQn, INT::DMA_STREAM_PREEMPT_PRIORITY, 0u );
-    INT::enableIRQ( mIRQn );
+    INT::setPriority( mStreamIRQn, INT::DMA_STREAM_PREEMPT_PRIORITY, 0u );
+    INT::enableIRQ( mStreamIRQn );
 
     /*-------------------------------------------------
     Initialize the transfer control block
     -------------------------------------------------*/
-    mTCB.state = StreamState::TRANSFER_IDLE;
+    mStreamTCB.state = StreamState::TRANSFER_IDLE;
 
     return Chimera::Status::OK;
   }
@@ -93,7 +93,7 @@ namespace Thor::LLD::DMA
       /*-------------------------------------------------
       Check to see if a transfer is currently going
       -------------------------------------------------*/
-      if ( mTCB.state != StreamState::TRANSFER_IDLE )
+      if ( mStreamTCB.state != StreamState::TRANSFER_IDLE )
       {
         enableInterrupts();
         return Chimera::Status::BUSY;
@@ -102,11 +102,11 @@ namespace Thor::LLD::DMA
       /*-------------------------------------------------
       Pull in the user's TCB and reset it's state
       -------------------------------------------------*/
-      memcpy( &mTCB, cb, sizeof( TCB ) );
+      memcpy( &mStreamTCB, cb, sizeof( TCB ) );
 
-      mTCB.state               = StreamState::TRANSFER_IDLE;
-      mTCB.elementsTransferred = 0;
-      mTCB.resourceIndex       = mResourceIndex;
+      mStreamTCB.state               = StreamState::TRANSFER_IDLE;
+      mStreamTCB.elementsTransferred = 0;
+      mStreamTCB.resourceIndex       = mStreamResourceIndex;
 
       /*-------------------------------------------------
       Disable the stream and clear out the LISR/HISR
@@ -252,10 +252,10 @@ namespace Thor::LLD::DMA
       /*-------------------------------------------------
       Configure the global interrupt priority
       -------------------------------------------------*/
-      INT::setPriority( mIRQn, INT::DMA_STREAM_PREEMPT_PRIORITY, 0u );
-      INT::enableIRQ( mIRQn );
+      INT::setPriority( mStreamIRQn, INT::DMA_STREAM_PREEMPT_PRIORITY, 0u );
+      INT::enableIRQ( mStreamIRQn );
 
-      mTCB.state = StreamState::TRANSFER_CONFIGURED;
+      mStreamTCB.state = StreamState::TRANSFER_CONFIGURED;
     }
     enableInterrupts();
 
@@ -270,13 +270,13 @@ namespace Thor::LLD::DMA
       /*-------------------------------------------------
       Make sure the hardware is in the correct state
       -------------------------------------------------*/
-      if ( mTCB.state != StreamState::TRANSFER_CONFIGURED )
+      if ( mStreamTCB.state != StreamState::TRANSFER_CONFIGURED )
       {
         enableInterrupts();
         return Chimera::Status::FAIL;
       }
 
-      mTCB.state = StreamState::TRANSFER_IN_PROGRESS;
+      mStreamTCB.state = StreamState::TRANSFER_IN_PROGRESS;
     }
     enableInterrupts();
 
@@ -325,14 +325,14 @@ namespace Thor::LLD::DMA
     some quirks with the hardware. USARTs will throw
     FIFO errors even though it doesn't use the FIFO.
     ------------------------------------------------*/
-    mTCB.fifoError       = ( status & FEIF ) && ( ( mTCB.errorsToIgnore & Errors::FIFO ) != Errors::FIFO );
-    mTCB.transferError   = ( status & TEIF ) && ( ( mTCB.errorsToIgnore & Errors::TRANSFER ) != Errors::TRANSFER );
-    mTCB.directModeError = ( status & DMEIF ) && ( ( mTCB.errorsToIgnore & Errors::DIRECT ) != Errors::DIRECT );
+    mStreamTCB.fifoError       = ( status & FEIF ) && ( ( mStreamTCB.errorsToIgnore & Errors::FIFO ) != Errors::FIFO );
+    mStreamTCB.transferError   = ( status & TEIF ) && ( ( mStreamTCB.errorsToIgnore & Errors::TRANSFER ) != Errors::TRANSFER );
+    mStreamTCB.directModeError = ( status & DMEIF ) && ( ( mStreamTCB.errorsToIgnore & Errors::DIRECT ) != Errors::DIRECT );
 
-    if ( mTCB.fifoError || mTCB.transferError || mTCB.directModeError )
+    if ( mStreamTCB.fifoError || mStreamTCB.transferError || mStreamTCB.directModeError )
     {
       disableIsr = true;
-      mTCB.state = StreamState::ERROR;
+      mStreamTCB.state = StreamState::ERROR;
     }
 
     /*------------------------------------------------
@@ -350,9 +350,9 @@ namespace Thor::LLD::DMA
       /*------------------------------------------------
       Update control block with the event information
       ------------------------------------------------*/
-      mTCB.selectedChannel     = channel;
-      mTCB.elementsTransferred = mTCB.transferSize - NDT::get( mStream );
-      mTCB.state               = StreamState::TRANSFER_COMPLETE;
+      mStreamTCB.selectedChannel     = channel;
+      mStreamTCB.elementsTransferred = mStreamTCB.transferSize - NDT::get( mStream );
+      mStreamTCB.state               = StreamState::TRANSFER_COMPLETE;
     }
 
     /*------------------------------------------------
@@ -378,7 +378,7 @@ namespace Thor::LLD::DMA
       /*-------------------------------------------------
       Wake up the HLD thread to handle the events
       -------------------------------------------------*/
-      Resource::ISRQueue.push( mTCB );
+      Resource::ISRQueue.push( mStreamTCB );
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_DMA ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
     }
   }
@@ -387,20 +387,20 @@ namespace Thor::LLD::DMA
   void Stream::ackTransfer()
   {
     disableInterrupts();
-    mTCB.state = StreamState::TRANSFER_IDLE;
+    mStreamTCB.state = StreamState::TRANSFER_IDLE;
     enableInterrupts();
   }
 
 
   void Stream::disableInterrupts()
   {
-    Thor::LLD::INT::disableIRQ( mIRQn );
+    Thor::LLD::INT::disableIRQ( mStreamIRQn );
   }
 
 
   void Stream::enableInterrupts()
   {
-    Thor::LLD::INT::enableIRQ( mIRQn );
+    Thor::LLD::INT::enableIRQ( mStreamIRQn );
   }
 
 

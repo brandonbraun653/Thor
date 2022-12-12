@@ -1,40 +1,37 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    dma_intf.hpp
  *
  *  Description:
  *    STM32 Driver DMA Model
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_DRIVER_MODEL_DMA_HPP
 #define THOR_DRIVER_MODEL_DMA_HPP
 
-/* C++ Includes */
-#include <cstdint>
-#include <cstdlib>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
 #include <Chimera/dma>
 #include <Chimera/thread>
-
-/* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/interrupts/dma_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/dma/dma_types.hpp>
 #include <Thor/lld/interface/interrupt/interrupt_detail.hpp>
-
+#include <cstdint>
+#include <cstdlib>
 
 #if defined( THOR_DMA )
 namespace Thor::LLD::DMA
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions (Implemented by the driver)
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /**
    *  Initialize the driver
    *
@@ -77,9 +74,9 @@ namespace Thor::LLD::DMA
   StreamMap *streamView( RegisterMap *const periph, const Streamer streamNum );
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions (Implemented at the interface layer)
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /**
    *  Checks if the given hardware channel is supported on this device.
    *
@@ -147,9 +144,9 @@ namespace Thor::LLD::DMA
    */
   bool attachDriverInstances( Driver *const driverList, const size_t numDrivers );
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Driver Interface
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   class IDriver
   {
   public:
@@ -203,18 +200,18 @@ namespace Thor::LLD::DMA
 
     Chimera::Status_t attach( RegisterMap *const peripheral );
     Chimera::Status_t init();
-    void clockEnable();
-    void clockDisable();
-    void reset();
+    void              clockEnable();
+    void              clockDisable();
+    void              reset();
 
   private:
     RegisterMap *mPeriph;
   };
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Stream Interface
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /**
    *  Models the interface to a DMA controller stream
    */
@@ -277,9 +274,9 @@ namespace Thor::LLD::DMA
     Chimera::Status_t configure( StreamConfig *const config, TCB *const controlBlock );
     Chimera::Status_t start();
     Chimera::Status_t abort();
-    void ackTransfer();
-    void enableInterrupts();
-    void disableInterrupts();
+    void              ackTransfer();
+    void              enableInterrupts();
+    void              disableInterrupts();
 
   protected:
     friend void( ::DMA1_Stream0_IRQHandler )();
@@ -311,14 +308,13 @@ namespace Thor::LLD::DMA
   private:
     friend Chimera::Thread::Lockable<Stream>;
 
-    StreamMap *mStream;    /**< Stream's memory mapped registers */
-    RegisterMap *mPeriph;  /**< Core controller memory mapped registers */
-    Streamer mStreamId;    /**< Which physical stream this is */
-    size_t mRegisterIndex; /**< Register offset for the stream */
-    size_t mResourceIndex; /**< Resource index for the stream */
-    IRQn_Type mIRQn;       /**< Stream's IRQ number */
-    TCB mTCB;              /**< Control block for current transfer */
-    StreamConfig mCfg;     /**< Transfer config */
+    StreamMap   *mStream;              /**< Stream's memory mapped registers */
+    RegisterMap *mPeriph;              /**< Core controller memory mapped registers */
+    Streamer     mStreamPhysicalId;    /**< Which physical stream this is */
+    size_t       mStreamRegisterIndex; /**< Register offset for the stream */
+    size_t       mStreamResourceIndex; /**< Resource index for the stream */
+    IRQn_Type    mStreamIRQn;          /**< Stream's IRQ number */
+    TCB          mStreamTCB;           /**< Control block for current transfer */
 
     /**
      * @brief Resets the LISR/HISR registers for the configured stream

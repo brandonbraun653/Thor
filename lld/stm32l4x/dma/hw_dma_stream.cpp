@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_dma_stream.cpp
  *
@@ -6,15 +6,15 @@
  *    DMA Stream Implementation
  *
  *  2022 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/interrupt>
 #include <Chimera/thread>
-
-/* Thor Includes */
 #include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
@@ -47,8 +47,8 @@ namespace Thor::LLD::DMA
     /*-------------------------------------------------
     Grab the resource index for the stream
     -------------------------------------------------*/
-    mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
-    if ( mResourceIndex == INVALID_RESOURCE_INDEX )
+    mStreamResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
+    if ( mStreamResourceIndex == INVALID_RESOURCE_INDEX )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -56,21 +56,21 @@ namespace Thor::LLD::DMA
     /*-------------------------------------------------
     Register the peripheral
     -------------------------------------------------*/
-    mStream   = peripheral;
-    mPeriph   = parent;
-    mStreamId = getStream( reinterpret_cast<std::uintptr_t>( mStream ) );
-    mIRQn     = Resource::IRQSignals[ mResourceIndex ];
+    mStream           = peripheral;
+    mPeriph           = parent;
+    mStreamPhysicalId = getStream( reinterpret_cast<std::uintptr_t>( mStream ) );
+    mStreamIRQn       = Resource::IRQSignals[ mStreamResourceIndex ];
 
     /*-------------------------------------------------
     Configure the global interrupt priority
     -------------------------------------------------*/
-    INT::setPriority( mIRQn, INT::DMA_STREAM_PREEMPT_PRIORITY, 0u );
-    INT::enableIRQ( mIRQn );
+    INT::setPriority( mStreamIRQn, INT::DMA_STREAM_PREEMPT_PRIORITY, 0u );
+    INT::enableIRQ( mStreamIRQn );
 
     /*-------------------------------------------------
     Initialize the transfer control block
     -------------------------------------------------*/
-    mTCB.state = StreamState::TRANSFER_IDLE;
+    mStreamTCB.state = StreamState::TRANSFER_IDLE;
 
     return Chimera::Status::OK;
   }
@@ -94,7 +94,7 @@ namespace Thor::LLD::DMA
       /*-------------------------------------------------
       Check to see if a transfer is currently going
       -------------------------------------------------*/
-      if ( mTCB.state != StreamState::TRANSFER_IDLE )
+      if ( mStreamTCB.state != StreamState::TRANSFER_IDLE )
       {
         enableInterrupts();
         return Chimera::Status::BUSY;
@@ -103,11 +103,11 @@ namespace Thor::LLD::DMA
       /*-------------------------------------------------
       Pull in the user's TCB and reset it's state
       -------------------------------------------------*/
-      memcpy( &mTCB, cb, sizeof( TCB ) );
+      memcpy( &mStreamTCB, cb, sizeof( TCB ) );
 
-      mTCB.state               = StreamState::TRANSFER_IDLE;
-      mTCB.elementsTransferred = 0;
-      mTCB.resourceIndex       = mResourceIndex;
+      mStreamTCB.state               = StreamState::TRANSFER_IDLE;
+      mStreamTCB.elementsTransferred = 0;
+      mStreamTCB.resourceIndex       = mStreamResourceIndex;
 
       /*-------------------------------------------------
       Disable the stream and clear out the LISR/HISR
@@ -153,7 +153,7 @@ namespace Thor::LLD::DMA
       /*------------------------------------------------
       Select the DMA channel request
       ------------------------------------------------*/
-      uint32_t pos = EnumValue( config->channel ) * 4;
+      uint32_t pos = mStreamResourceIndex * 4;
       uint32_t msk = 0xF << pos;
       uint32_t tmp = mPeriph->CSELR;
 
@@ -184,21 +184,24 @@ namespace Thor::LLD::DMA
       /*------------------------------------------------
       Data transfer direction
       ------------------------------------------------*/
+      MEM2MEM::clear( mStream, CCR_MEM2MEM );
+      DIR::clear( mStream, CCR_DIR );
+
       switch ( config->direction )
       {
-        case Chimera::DMA::Direction::PERIPH_TO_MEMORY:
-          DIR::set( mStream, 0x00 << CCR_DIR_Pos );
-          MEM2MEM::set( mStream, 0 );
-          break;
-
         case Chimera::DMA::Direction::MEMORY_TO_PERIPH:
         case Chimera::DMA::Direction::MEMORY_TO_MEMORY:
-          DIR::set( mStream, 0x01 << CCR_DIR_Pos );
-          MEM2MEM::set( mStream, CCR_MEM2MEM );
+          DIR::set( mStream, CCR_DIR );
+
+          if ( config->direction == Chimera::DMA::Direction::MEMORY_TO_MEMORY )
+          {
+            MEM2MEM::set( mStream, CCR_MEM2MEM );
+          }
           break;
 
+        case Chimera::DMA::Direction::PERIPH_TO_MEMORY:
         default:
-          RT_HARD_ASSERT( false );
+          // Do nothing
           break;
       };
 
@@ -209,7 +212,7 @@ namespace Thor::LLD::DMA
       -----------------------------------------------------------------------*/
       mStream->CCR |= CCR_TEIE;
 
-      if( mTCB.isrCallback )
+      if ( mStreamTCB.isrCallback )
       {
         mStream->CCR |= CCR_TCIE;
       }
@@ -221,11 +224,10 @@ namespace Thor::LLD::DMA
       /*-----------------------------------------------------------------------
       Configure the global interrupt priority
       -----------------------------------------------------------------------*/
-      INT::setPriority( mIRQn, INT::DMA_STREAM_PREEMPT_PRIORITY, 0u );
-      INT::enableIRQ( mIRQn );
+      INT::setPriority( mStreamIRQn, INT::DMA_STREAM_PREEMPT_PRIORITY, 0u );
+      INT::enableIRQ( mStreamIRQn );
 
-      mTCB.state = StreamState::TRANSFER_CONFIGURED;
-      mCfg       = *config;
+      mStreamTCB.state = StreamState::TRANSFER_CONFIGURED;
     }
     enableInterrupts();
 
@@ -240,13 +242,13 @@ namespace Thor::LLD::DMA
       /*-------------------------------------------------
       Make sure the hardware is in the correct state
       -------------------------------------------------*/
-      if ( mTCB.state != StreamState::TRANSFER_CONFIGURED )
+      if ( mStreamTCB.state != StreamState::TRANSFER_CONFIGURED )
       {
         enableInterrupts();
         return Chimera::Status::FAIL;
       }
 
-      mTCB.state = StreamState::TRANSFER_IN_PROGRESS;
+      mStreamTCB.state = StreamState::TRANSFER_IN_PROGRESS;
     }
     enableInterrupts();
 
@@ -270,7 +272,8 @@ namespace Thor::LLD::DMA
   }
 
 
-  __attribute__ ((long_call, section (".thor_ram_code")))  void Stream::IRQHandler( const uint8_t channel, const uint8_t status )
+  __attribute__( ( long_call, section( ".thor_ram_code" ) ) ) void Stream::IRQHandler( const uint8_t channel,
+                                                                                       const uint8_t status )
   {
     /*-------------------------------------------------------------------------
     Local Namespaces
@@ -296,12 +299,12 @@ namespace Thor::LLD::DMA
     Transfer Errors: Allow these to be ignored due to some quirks with the
     hardware. USARTs will throw FIFO errors even though it doesn't use FIFOs.
     -------------------------------------------------------------------------*/
-    if ( ( status & TEIF ) && ( ( mTCB.errorsToIgnore & Errors::TRANSFER ) != Errors::TRANSFER ) )
+    if ( ( status & TEIF ) && ( ( mStreamTCB.errorsToIgnore & Errors::TRANSFER ) != Errors::TRANSFER ) )
     {
-      disableIsr         = true;
-      wakeUserThread     = mTCB.wakeUserOnComplete;
-      mTCB.state         = StreamState::ERROR;
-      mTCB.transferError = true;
+      disableIsr               = true;
+      wakeUserThread           = mStreamTCB.wakeUserOnComplete;
+      mStreamTCB.state         = StreamState::ERROR;
+      mStreamTCB.transferError = true;
     }
 
     /*-------------------------------------------------------------------------
@@ -309,17 +312,17 @@ namespace Thor::LLD::DMA
     -------------------------------------------------------------------------*/
     if ( ( status & TCIF ) && TCIE::get( mStream ) )
     {
-      mTCB.selectedChannel     = channel;
-      mTCB.elementsTransferred = mTCB.transferSize - NDT::get( mStream );
-      mTCB.state               = StreamState::TRANSFER_COMPLETE;
+      mStreamTCB.selectedChannel     = channel;
+      mStreamTCB.elementsTransferred = mStreamTCB.transferSize - NDT::get( mStream );
+      mStreamTCB.state               = StreamState::TRANSFER_COMPLETE;
 
       /*-----------------------------------------------------------------------
       Only disable DMA if requested
       -----------------------------------------------------------------------*/
-      if ( !mTCB.persistent )
+      if ( !mStreamTCB.persistent )
       {
         disableIsr     = true;
-        wakeUserThread = mTCB.wakeUserOnComplete;
+        wakeUserThread = mStreamTCB.wakeUserOnComplete;
         EN::clear( mStream, CCR_EN );
       }
 
@@ -331,14 +334,14 @@ namespace Thor::LLD::DMA
       /*-----------------------------------------------------------------------
       Invoke the ISR callback should one exist
       -----------------------------------------------------------------------*/
-      if ( mTCB.isrCallback )
+      if ( mStreamTCB.isrCallback )
       {
         Chimera::DMA::TransferStats stats;
         stats.error     = false;
-        stats.requestId = mTCB.requestId;
-        stats.size      = mTCB.elementsTransferred;
+        stats.requestId = mStreamTCB.requestId;
+        stats.size      = mStreamTCB.elementsTransferred;
 
-        mTCB.isrCallback( stats );
+        mStreamTCB.isrCallback( stats );
       }
     }
 
@@ -364,7 +367,7 @@ namespace Thor::LLD::DMA
     -------------------------------------------------------------------------*/
     if ( wakeUserThread )
     {
-      Resource::ISRQueue.push( mTCB );
+      Resource::ISRQueue.push( mStreamTCB );
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_DMA ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
     }
   }
@@ -373,20 +376,20 @@ namespace Thor::LLD::DMA
   void Stream::ackTransfer()
   {
     disableInterrupts();
-    mTCB.state = StreamState::TRANSFER_IDLE;
+    mStreamTCB.state = StreamState::TRANSFER_IDLE;
     enableInterrupts();
   }
 
 
   void Stream::disableInterrupts()
   {
-    Thor::LLD::INT::disableIRQ( mIRQn );
+    Thor::LLD::INT::disableIRQ( mStreamIRQn );
   }
 
 
   void Stream::enableInterrupts()
   {
-    Thor::LLD::INT::enableIRQ( mIRQn );
+    Thor::LLD::INT::enableIRQ( mStreamIRQn );
   }
 
 
@@ -406,7 +409,7 @@ namespace Thor::LLD::DMA
       IFCR_CTCIF7 | IFCR_CHTIF7 | IFCR_CTEIF7 | IFCR_CGIF7
     };
 
-    mPeriph->IFCR = ifcr_flag_table[ EnumValue( mStreamId ) ];
+    mPeriph->IFCR = ifcr_flag_table[ EnumValue( mStreamPhysicalId ) ];
   }
 
 

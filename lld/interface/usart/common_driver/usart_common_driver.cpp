@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    usart_common_driver.cpp
  *
@@ -6,16 +6,16 @@
  *    Shared low level driver for the USART peripheral. This focuses on very
  *    basic functionality, like reading and writing byte streams.
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *****************************************************************************/
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
 #include <Chimera/interrupt>
 #include <Chimera/serial>
 #include <Chimera/thread>
-
-/* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/dma>
 #include <Thor/lld/common/types.hpp>
@@ -26,23 +26,19 @@
 #include <Thor/lld/interface/usart/common_driver/usart_common_intf.hpp>
 
 #if defined( THOR_USART ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
-
 namespace Thor::LLD::USART
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Static Data
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static Driver s_usart_drivers[ NUM_USART_PERIPHS ];
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    /*-------------------------------------------------
-    Attach all the expected peripherals to the drivers
-    -------------------------------------------------*/
     if ( attachDriverInstances( s_usart_drivers, ARRAY_COUNT( s_usart_drivers ) ) )
     {
       return Chimera::Status::OK;
@@ -78,9 +74,9 @@ namespace Thor::LLD::USART
   }
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Methods
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   Driver::Driver() : mPeriph( nullptr )
   {
   }
@@ -158,6 +154,10 @@ namespace Thor::LLD::USART
     /* Select the desired baud rate */
     BRR::set( mPeriph, calculateBRR( cfg.BaudRate ) );
 
+    /* Clear DMA request lines */
+    DMAR::clear( mPeriph, CR3_DMAR );
+    DMAT::clear( mPeriph, CR3_DMAT );
+
     /* Enable the USART by writing the UE bit to 1 */
     UE::set( mPeriph, CR1_UE );
 
@@ -191,7 +191,7 @@ namespace Thor::LLD::USART
     using namespace Chimera::Serial;
 
     auto result = Chimera::Status::OK;
-    switch( mode )
+    switch ( mode )
     {
       case TxfrMode::BLOCKING:
         result = this->txBlocking( data, size );
@@ -313,64 +313,69 @@ namespace Thor::LLD::USART
     using namespace Chimera::DMA;
     using namespace Chimera::Hardware;
 
-    #if !defined( THOR_DMA )
+#if !defined( THOR_DMA )
     return Chimera::Status::NOT_SUPPORTED;
-    #else
-    /*-------------------------------------------------
-    Input protection
-    -------------------------------------------------*/
+#else
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
     if ( !data || !size )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Ensure the previous transfer has completed
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto status = txTransferStatus();
     if ( ( status != StateMachine::TX::TX_COMPLETE ) && ( status != StateMachine::TX::TX_READY ) )
     {
       return Chimera::Status::BUSY;
     }
 
+    /*-------------------------------------------------------------------------
+    Configure the DMA pipe for the transaction
+    -------------------------------------------------------------------------*/
     initDMA();
-
     disableUSARTInterrupts();
     {
-      /* Instruct the USART to use DMA mode */
-      DMAT::set( mPeriph, CR3_DMAT );
+      /* Clear any previous DMA request */
+      DMAT::clear( mPeriph, CR3_DMAT );
 
       /* Clear the transfer complete bit */
-      #if defined( STM32F446xx )
+#if defined( STM32F446xx )
       TC::clear( mPeriph, SR_TC );
-      #elif defined( STM32L432xx )
+#elif defined( STM32L432xx )
       TC::clear( mPeriph, ISR_TC );
-      #endif
+#endif
 
-      /* Enable the USART completion interrupts */
+      /* Ensure the transmitter is turned on */
       prjEnableTransmitter( mPeriph );
-      prjEnableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
 
       /* Configure the DMA transfer */
       PipeTransfer cfg;
-      cfg.userCallback = TransferCallback::create<Driver, &Driver::onDMATXComplete>( *this );
-      cfg.pipe     = mTXDMARequestId;
-      cfg.size     = size;
-      cfg.addr     = reinterpret_cast<std::uintptr_t>( data );
+      cfg.isrCallback  = TransferCallback::create<Driver, &Driver::onDMATXComplete>( *this );
+      cfg.pipe         = mTXDMARequestId;
+      cfg.size         = size;
+      cfg.addr         = reinterpret_cast<std::uintptr_t>( data );
+      Chimera::DMA::transfer( cfg );
 
       /* Configure the USART transfer control block */
-      mTXTCB.buffer    = nullptr;
+      mTXTCB.buffer    = const_cast<uint8_t *>( reinterpret_cast<const uint8_t *const>( data ) );
       mTXTCB.expected  = size;
       mTXTCB.remaining = size;
       mTXTCB.state     = StateMachine::TX::TX_ONGOING;
       mTXTCB.mode      = PeripheralMode::DMA;
 
-      Chimera::DMA::transfer( cfg );
     }
     enableUSARTInterrupts();
 
+    /*-------------------------------------------------------------------------
+    Start the transfer. The USART is the transaction controller.
+    -------------------------------------------------------------------------*/
+    DMAT::set( mPeriph, CR3_DMAT );
     return Chimera::Status::OK;
-    #endif  /* THOR_LLD_DMA */
+#endif /* THOR_LLD_DMA */
   }
 
 
@@ -383,10 +388,10 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::enableIT( const Chimera::Hardware::SubPeripheral subPeriph )
   {
-    /*-------------------------------------------------------------------------------
-    Configure and enable the global interrupt, ignoring the subperiph argument as the
-    transmit and receive functions called by the user handle them appropriately.
-    -------------------------------------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Configure and enable the global interrupt, ignoring the subPeriph argument
+    as the RTX functions called by the user handle them appropriately.
+    -------------------------------------------------------------------------*/
     INT::setPriority( Resource::IRQSignals[ mResourceIndex ], INT::USART_IT_PREEMPT_PRIORITY, 0u );
     INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
 
@@ -398,16 +403,16 @@ namespace Thor::LLD::USART
   {
     using namespace Chimera::Hardware;
 
-    Chimera::Status_t result = Chimera::Status::OK;
-
-    /*-------------------------------------------------
-    Disable system level interrupts to prevent glitches
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Disable peripheral level interrupts to prevent glitches
+    -------------------------------------------------------------------------*/
     disableUSARTInterrupts();
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Disable interrupt event generation inside the peripheral
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
+    Chimera::Status_t result = Chimera::Status::OK;
+
     if ( ( subPeriph == SubPeripheral::TX ) || ( subPeriph == SubPeripheral::TXRX ) )
     {
       prjDisableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
@@ -422,11 +427,10 @@ namespace Thor::LLD::USART
       result = Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*-------------------------------------------------
-    Re-enable the system level interrupts so other events can get through
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    Re-enable the peripheral level interrupts so other events can get through
+    -------------------------------------------------------------------------*/
     enableUSARTInterrupts();
-
     return result;
   }
 
@@ -486,12 +490,12 @@ namespace Thor::LLD::USART
     using namespace Chimera::DMA;
     using namespace Chimera::Peripheral;
 
-    #if !defined( THOR_DMA )
+#if !defined( THOR_DMA )
     return Chimera::Status::NOT_SUPPORTED;
-    #else
-    /*-------------------------------------------------
+#else
+    /*-------------------------------------------------------------------------
     Configure the TX pipe
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     PipeConfig txCfg;
     txCfg.srcAlignment  = Alignment::BYTE;
     txCfg.dstAlignment  = Alignment::BYTE;
@@ -502,17 +506,17 @@ namespace Thor::LLD::USART
     txCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::TXDMASignals[ mResourceIndex ] ) );
     txCfg.threshold     = FifoThreshold::NONE;
 
-    #if defined( TARGET_STM32F4 )
+#if defined( TARGET_STM32F4 )
     txCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
-    #elif defined( TARGET_STM32L4 )
-    txCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->TDR );
-    #else
-    #error Need to fill this out
-    #endif
+#elif defined( TARGET_STM32L4 )
+    txCfg.periphAddr = reinterpret_cast<std::uintptr_t>( &mPeriph->TDR );
+#else
+#error Need to fill this out
+#endif
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the RX pipe
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     PipeConfig rxCfg;
     rxCfg.srcAlignment  = Alignment::BYTE;
     rxCfg.dstAlignment  = Alignment::BYTE;
@@ -523,34 +527,33 @@ namespace Thor::LLD::USART
     rxCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::RXDMASignals[ mResourceIndex ] ) );
     rxCfg.threshold     = FifoThreshold::NONE;
 
-    #if defined( TARGET_STM32F4 )
+#if defined( TARGET_STM32F4 )
     rxCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
-    #elif defined( TARGET_STM32L4 )
-    rxCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->RDR );
-    #else
-    #error Need to fill this out
-    #endif
+#elif defined( TARGET_STM32L4 )
+    rxCfg.periphAddr = reinterpret_cast<std::uintptr_t>( &mPeriph->RDR );
+#else
+#error Need to fill this out
+#endif
 
-    /*-------------------------------------------------
-    FIFO errors are thrown even though we don't use it.
-    Doesn't seem to affect TX operations.
-    -------------------------------------------------*/
+    /*-------------------------------------------------------------------------
+    FIFO errors are thrown even though we don't use it. Doesn't affect TX-ing.
+    -------------------------------------------------------------------------*/
     txCfg.errorsToIgnore = Errors::FIFO;
     rxCfg.errorsToIgnore = Errors::FIFO;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Construct the pipe and make a note of it's UUID
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     mTXDMARequestId = Chimera::DMA::constructPipe( txCfg );
     mRXDMARequestId = Chimera::DMA::constructPipe( rxCfg );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the peripheral interrupts
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     enableIT( Chimera::Hardware::SubPeripheral::TXRX );
 
     return Chimera::Status::OK;
-    #endif  /* !THOR_LLD_DMA */
+#endif /* !THOR_LLD_DMA */
   }
 
 
@@ -577,9 +580,9 @@ namespace Thor::LLD::USART
     using namespace Chimera::DMA;
     using namespace Chimera::Hardware;
 
-    #if !defined( THOR_DMA )
+#if !defined( THOR_DMA )
     return Chimera::Status::NOT_SUPPORTED;
-    #else
+#else
     /*-------------------------------------------------
     Input protection
     -------------------------------------------------*/
@@ -620,9 +623,9 @@ namespace Thor::LLD::USART
       /* Configure the DMA transfer */
       PipeTransfer cfg;
       cfg.userCallback = TransferCallback::create<Driver, &Driver::onDMARXComplete>( *this );
-      cfg.pipe     = mRXDMARequestId;
-      cfg.size     = size;
-      cfg.addr     = reinterpret_cast<std::uintptr_t>( data );
+      cfg.pipe         = mRXDMARequestId;
+      cfg.size         = size;
+      cfg.addr         = reinterpret_cast<std::uintptr_t>( data );
 
       /* Configure the USART transfer control block */
       mRXTCB.buffer    = reinterpret_cast<uint8_t *const>( data );
@@ -642,7 +645,7 @@ namespace Thor::LLD::USART
     }
 
     return Chimera::Status::OK;
-    #endif  /* THOR_LLD_DMA */
+#endif /* THOR_LLD_DMA */
   }
 
 
@@ -728,9 +731,9 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------------------------------
     Cache the current state of the registers
     -------------------------------------------------------------------------*/
-    const uint32_t ISRCache = ISR::get( mPeriph );
-    const uint32_t CR1Cache = CR1::get( mPeriph );
-    bool signalHLD          = false;
+    const uint32_t ISRCache  = ISR::get( mPeriph );
+    const uint32_t CR1Cache  = CR1::get( mPeriph );
+    bool           signalHLD = false;
 
     /*-------------------------------------------------------------------------
     Figure out which interrupt flags have been set
@@ -742,7 +745,7 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------------------------------
     TX Related Handler
     -------------------------------------------------------------------------*/
-    if ( txFlags && ( mTXTCB.mode == TxfrMode::INTERRUPT ) && ( ( CR1Cache & CR1_TXEIE ) || ( CR1Cache & CR1_TCIE ) ) )
+    if ( txFlags && ( ( CR1Cache & CR1_TXEIE ) || ( CR1Cache & CR1_TCIE ) ) )
     {
       /*-----------------------------------------------------------------------
       No txfr ongoing? Invalid state. Clear TX related ISR flags.
@@ -816,7 +819,7 @@ namespace Thor::LLD::USART
     /*------------------------------------------------
     RX Related Handler
     ------------------------------------------------*/
-    if ( rxFlags && ( mTXTCB.mode == TxfrMode::INTERRUPT ) )
+    if ( rxFlags )
     {
       /*------------------------------------------------
       RX register not empty, aka a new byte has arrived!
@@ -870,21 +873,21 @@ namespace Thor::LLD::USART
         mRXTCB.state = StateMachine::RX::RX_ABORTED;
         mRuntimeFlags |= Runtime::Flag::RX_LINE_IDLE_ABORT;
 
-        /*-------------------------------------------------
-        Disable the DMA transfer if ongoing
-        -------------------------------------------------*/
-        #if defined( THOR_DMA )
-        if( mRXTCB.mode == PeripheralMode::DMA )
+/*-------------------------------------------------
+Disable the DMA transfer if ongoing
+-------------------------------------------------*/
+#if defined( THOR_DMA )
+        if ( mRXTCB.mode == PeripheralMode::DMA )
         {
-          RIndex_t dmaIdx = Thor::LLD::DMA::getResourceIndex( Resource::RXDMASignals[ this->mResourceIndex ] );
-          auto dmaStream = Thor::LLD::DMA::getStream( dmaIdx );
+          RIndex_t dmaIdx    = Thor::LLD::DMA::getResourceIndex( Resource::RXDMASignals[ this->mResourceIndex ] );
+          auto     dmaStream = Thor::LLD::DMA::getStream( dmaIdx );
 
-          if( dmaStream )
+          if ( dmaStream )
           {
             dmaStream->abort();
           }
         }
-        #endif  /* THOR_LLD_DMA */
+#endif /* THOR_LLD_DMA */
       }
 
       /*------------------------------------------------
@@ -945,7 +948,7 @@ namespace Thor::LLD::USART
   {
     size_t periphClock   = 0u;
     size_t calculatedBRR = 0u;
-    auto periphAddress   = reinterpret_cast<std::uintptr_t>( mPeriph );
+    auto   periphAddress = reinterpret_cast<std::uintptr_t>( mPeriph );
 
     /*-------------------------------------------------------------------------
     Figure out the frequency of the clock that drives the USART
@@ -994,15 +997,23 @@ namespace Thor::LLD::USART
 
   void Driver::onDMATXComplete( const Chimera::DMA::TransferStats &stats )
   {
-    if( stats.error )
+    if ( stats.error )
     {
       // Anything to do?
     }
     else
     {
-      mTXTCB.state = StateMachine::TX::TX_COMPLETE;
+      /*-----------------------------------------------------------------------
+      Prepare the ISR handler for the proper control flow
+      -----------------------------------------------------------------------*/
+      mTXTCB.state     = StateMachine::TX::TX_COMPLETE;
       mTXTCB.remaining = mTXTCB.expected - stats.size;
 
+      /*-----------------------------------------------------------------------
+      Use the default ISR handler to manage the transfer complete behavior
+      -----------------------------------------------------------------------*/
+      DMAT::clear( mPeriph, CR3_DMAT );
+      prjEnableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
       IRQHandler();
     }
   }
@@ -1010,7 +1021,7 @@ namespace Thor::LLD::USART
 
   void Driver::onDMARXComplete( const Chimera::DMA::TransferStats &stats )
   {
-    #if defined( THOR_DMA )
+#if defined( THOR_DMA )
     /*-------------------------------------------------
     Per DMA RX instructions, disable USART DMA at the
     end of the DMA interrupt.
@@ -1018,14 +1029,14 @@ namespace Thor::LLD::USART
     DMAR::clear( mPeriph, CR3_DMAR );
 
     Chimera::insert_debug_breakpoint();
-    #endif
+#endif
   }
 
 }    // namespace Thor::LLD::USART
 
-/*-------------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------
 IRQ Handlers
--------------------------------------------------------------------------------*/
+-----------------------------------------------------------------------------*/
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
 void USART1_IRQHandler( void )
 {
