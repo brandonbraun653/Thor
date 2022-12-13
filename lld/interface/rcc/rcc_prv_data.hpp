@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    rcc_prv_data.hpp
  *
@@ -7,7 +7,7 @@
  *    shared among all possible drivers.
  *
  *  2021 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_RCC_DATA_HPP
@@ -23,30 +23,30 @@
 
 namespace Thor::LLD::RCC
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Instances:
     Memory mapped structures that allow direct access to peripheral registers
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
 #if defined( STM32_RCC1_PERIPH_AVAILABLE )
   extern RegisterMap *RCC1_PERIPH;
   extern const PCC * PeripheralControlRegistry[ static_cast<size_t>( Chimera::Peripheral::Type::NUM_OPTIONS ) ];
 #endif
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Configuration Maps:
     These convert high level configuration options into low level register config
     options. The idea is to allow the user to specify some general options, then
     convert that over to what the peripheral understands during config/init steps.
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace ConfigMap
   {
   }    // namespace ConfigMap
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Resources
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace Resource
   {
   }    // namespace ResourceMap

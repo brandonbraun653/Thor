@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_des_types.hpp
  *
@@ -6,7 +6,7 @@
  *    Types used in the LLD DES implementation
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_DES_TYPES_HPP
@@ -49,10 +49,10 @@ namespace Thor::LLD::DES
   {
     volatile Reg32_t FSDR;
   };
-  
+
   static_assert( offsetof( FSRegisterMap, FSDR ) == 0x00 );
   REG_ACCESSOR( FSRegisterMap, FSDR, FSDR_Msk, FS, BIT_ACCESS_R );
-  
+
   /**
    *  Memory mapped struct for the Package data register
    */
@@ -65,4 +65,4 @@ namespace Thor::LLD::DES
   REG_ACCESSOR( PDRegisterMap, PDR, PDR_Msk, PD, BIT_ACCESS_R );
 }
 
-#endif  /* !THOR_LLD_DES_TYPES_HPP */ 
+#endif  /* !THOR_LLD_DES_TYPES_HPP */

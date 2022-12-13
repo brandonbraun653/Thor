@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hld_can_driver.cpp
  *
@@ -6,7 +6,7 @@
  *    CAN driver for Thor
  *
  *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
 Includes
@@ -93,32 +93,32 @@ namespace Chimera::CAN
    */
   static bool validateCfg( const Chimera::CAN::DriverConfig &cfg )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     At a bare minimum, if the user didn't set the actual
     validity flag, it's going to mark all these checks
     as invalid.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     bool result = cfg.validity;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     User needs to validate the pin configs too
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     result = result && cfg.RXInit.validity;
     result = result && cfg.TXInit.validity;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     The buffers must be pre-allocated as these drivers
     do not use dynamic memory. If dynamic memory is
     desired, it must be allocated externally.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     result = result && ( cfg.HWInit.rxBuffer != nullptr );
     result = result && ( cfg.HWInit.txBuffer != nullptr );
     result = result && ( cfg.HWInit.rxElements != 0 );
     result = result && ( cfg.HWInit.txElements != 0 );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Last but not least, does the channel even exist?
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     result = result && ( cfg.HWInit.channel < Chimera::CAN::Channel::NUM_OPTIONS );
 
     return result;
@@ -210,9 +210,9 @@ namespace Chimera::CAN
   }
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Driver Implementation
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   Driver::Driver() : mImpl( nullptr )
   {
   }
@@ -295,9 +295,9 @@ namespace Chimera::CAN
 
   Chimera::Status_t Driver::send( const Chimera::CAN::BasicFrame &frame )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Ensure we are listening to events, then enqueue TX
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto lld = reinterpret_cast<ThorImpl *>( mImpl )->lldriver;
     lld->enableISRSignal( Chimera::CAN::InterruptType::TX_ISR );
     lld->enableISRSignal( Chimera::CAN::InterruptType::RX_ISR );

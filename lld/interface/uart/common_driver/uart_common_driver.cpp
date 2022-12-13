@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    uart_common_driver.cpp
  *
@@ -6,7 +6,7 @@
  *    Shared low level driver for STM32 UART peripherals
  *
  *  2021 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -26,20 +26,20 @@
 #if defined( THOR_UART ) && ( defined( TARGET_STM32L4 ) || defined( TARGET_STM32F4 ) )
 namespace Thor::LLD::UART
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Static Data
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static Driver s_uart_drivers[ NUM_UART_PERIPHS ];
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   Chimera::Status_t initialize()
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Attach all the expected peripherals to the drivers
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( attachDriverInstances( s_uart_drivers, ARRAY_COUNT( s_uart_drivers ) ) )
     {
       return Chimera::Status::OK;
@@ -75,9 +75,9 @@ namespace Thor::LLD::UART
   }
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Methods
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   Driver::Driver() : periph( nullptr )
   {
   }
@@ -106,24 +106,24 @@ namespace Thor::LLD::UART
 
   Chimera::Status_t Driver::init( const Thor::LLD::Serial::Config &cfg )
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Initialize driver memory
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     runtimeFlags = static_cast<Runtime::Flag_t>( 0 );
     txTCB.reset();
     rxTCB.reset();
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Enable the peripheral clock and reset the hardware
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto rccPeriph = Thor::LLD::RCC::getPeriphClockCtrl();
     rccPeriph->enableClock( Chimera::Peripheral::Type::PERIPH_UART, resourceIndex );
     rccPeriph->reset( Chimera::Peripheral::Type::PERIPH_UART, resourceIndex );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Follow the initialization sequence as defined in
     RM0394 Rev 4, pg.1202
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     /* Disable the UART by writing the UE bit to 0 */
     UE::set( periph, 0 );
 
@@ -164,9 +164,9 @@ namespace Thor::LLD::UART
 
   Chimera::Status_t Driver::deinit()
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Use the RCC's ability to reset whole peripherals back to default states
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     rcc->enableClock( Chimera::Peripheral::Type::PERIPH_UART, resourceIndex );
     rcc->reset( Chimera::Peripheral::Type::PERIPH_UART, resourceIndex );
@@ -199,10 +199,10 @@ namespace Thor::LLD::UART
 
   Chimera::Status_t Driver::enableIT( const Chimera::Hardware::SubPeripheral subPeriph )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Ignore the subperiph argument as the actual transmit
     and receive functions called by the user handle that.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     INT::setPriority( Resource::IRQSignals[ resourceIndex ], INT::UART_IT_PREEMPT_PRIORITY, 0u );
     INT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
 
@@ -216,15 +216,15 @@ namespace Thor::LLD::UART
 
     Chimera::Status_t result = Chimera::Status::OK;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Disable system level interrupt from peripheral, to prevent glitching
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     INT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
     INT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Disable interrupt event generation inside the peripheral
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( ( subPeriph == SubPeripheral::TX ) || ( subPeriph == SubPeripheral::TXRX ) )
     {
       prjDisableISRSignal( periph, ISRSignal::TRANSMIT_COMPLETE );
@@ -239,9 +239,9 @@ namespace Thor::LLD::UART
       result = Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Re-enable the system level interrupts so other events can get through
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Thor::LLD::INT::enableIRQ( Resource::IRQSignals[ resourceIndex ] );
 
     return result;
@@ -250,17 +250,17 @@ namespace Thor::LLD::UART
 
   Chimera::Status_t Driver::txInterrupt( const void *const data, const size_t size )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Input protection
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !data || !size )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Ensure the previous transfer has completed
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto status = txTransferStatus();
     if ( ( status != StateMachine::TX::TX_COMPLETE ) && ( status != StateMachine::TX::TX_READY ) )
     {
@@ -270,9 +270,9 @@ namespace Thor::LLD::UART
     {
       auto transferData = reinterpret_cast<const uint8_t *const>( data );
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Prep the transfer control block
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       enterCriticalSection();
 
       txTCB.buffer    = &transferData[ 1 ]; /* Point to the next byte */
@@ -280,16 +280,16 @@ namespace Thor::LLD::UART
       txTCB.remaining = size - 1u; /* Pre-decrement to account for this first byte TX */
       txTCB.state     = StateMachine::TX::TX_ONGOING;
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Shove the byte into the transmit data register,
       kicking off the transfer.
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       prjWriteDataRegister( periph, transferData[ 0 ] );
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Turn on the transmitter & enable TDR interrupt so
       we know when to stage the next byte.
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       prjEnableTransmitter( periph );
       prjEnableISRSignal( periph, ISRSignal::TRANSMIT_DATA_REG_EMPTY );
       enableIT( Chimera::Hardware::SubPeripheral::TX );
@@ -303,17 +303,17 @@ namespace Thor::LLD::UART
 
   Chimera::Status_t Driver::receiveIT( void *const data, const size_t size )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Input protection
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !data || !size )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Ensure that the ISR has processed all data in the FIFO
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto status = rxTransferStatus();
     if ( ( status != StateMachine::RX::RX_COMPLETE ) && ( status != StateMachine::RX::RX_READY ) )
     {
@@ -324,22 +324,22 @@ namespace Thor::LLD::UART
       enterCriticalSection();
       enableIT( Chimera::Hardware::SubPeripheral::RX );
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Only turn on RXNE so as to detect when the first byte arrives
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       prjEnableISRSignal( periph, ISRSignal::RECEIVED_DATA_READY );
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Prep the transfer control block to receive data
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       rxTCB.buffer    = reinterpret_cast<uint8_t *const>( data );
       rxTCB.expected  = size;
       rxTCB.remaining = size;
       rxTCB.state     = StateMachine::RX::RX_ONGOING;
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Turn on the RX hardware to begin listening for data
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       prjEnableReceiver( periph );
       exitCriticalSection();
     }
@@ -486,9 +486,9 @@ namespace Thor::LLD::UART
   }
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Protected Methods
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   void Driver::IRQHandler()
   {
     using namespace Chimera::Interrupt;
@@ -497,29 +497,29 @@ namespace Thor::LLD::UART
     using namespace Chimera::Thread;
     using namespace Configuration::Flags;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Cache the current state of the registers
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     const uint32_t ISRCache = ISR::get( periph );
     const uint32_t CR1Cache = CR1::get( periph );
     bool signalHLD          = false;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Figure out which interrupt flags have been set
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     uint32_t txFlags    = ISRCache & ( FLAG_TC | FLAG_TXE );
     uint32_t rxFlags    = ISRCache & ( FLAG_RXNE | FLAG_IDLE );
     uint32_t errorFlags = ISRCache & ( FLAG_ORE | FLAG_PE | FLAG_NF | FLAG_FE );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     TX Related Handler
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( txFlags && ( ( CR1Cache & CR1_TXEIE ) || ( CR1Cache & CR1_TCIE ) ) )
     {
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       If no transfer is ongoing, clear out the flags and
       disable TX related interrupts. This is an invalid state.
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       if ( txTCB.state == StateMachine::TX::TX_READY )
       {
         prjClrISRSignal( periph, ISRSignal::TRANSMIT_COMPLETE );
@@ -527,31 +527,31 @@ namespace Thor::LLD::UART
         prjDisableISRSignal( periph, ISRSignal::TRANSMIT_DATA_REG_EMPTY );
       }
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       TDR Empty Interrupt
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       if ( ( txFlags & FLAG_TXE ) && ( txTCB.state == StateMachine::TX::TX_ONGOING ) )
       {
         if ( txTCB.remaining )    // Data left to be transmitted
         {
-          /*------------------------------------------------
+          /*---------------------------------------------------------------------
           Make sure the TX complete interrupt cannot fire
-          ------------------------------------------------*/
+          ---------------------------------------------------------------------*/
           prjDisableISRSignal( periph, ISRSignal::TRANSMIT_COMPLETE );
 
-          /*------------------------------------------------
+          /*---------------------------------------------------------------------
           Transfer the byte and prep for the next character
-          ------------------------------------------------*/
+          ---------------------------------------------------------------------*/
           prjWriteDataRegister( periph, *txTCB.buffer );
           txTCB.buffer++;
           txTCB.remaining--;
         }
         else    // All data has been transmitted
         {
-          /*------------------------------------------------
+          /*---------------------------------------------------------------------
           We finished pushing the last character into the TDR, so
           now we can listen for the TX complete interrupt.
-          ------------------------------------------------*/
+          ---------------------------------------------------------------------*/
           prjDisableISRSignal( periph, ISRSignal::TRANSMIT_DATA_REG_EMPTY );
           prjEnableISRSignal( periph, ISRSignal::TRANSMIT_COMPLETE );
 
@@ -559,23 +559,23 @@ namespace Thor::LLD::UART
         }
       }
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Transfer Complete Interrupt
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       if ( ( txFlags & FLAG_TC ) && ( txTCB.state == StateMachine::TX::TX_COMPLETE ) )
       {
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Exit the TX ISR by disabling related interrupts
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         prjClrISRSignal( periph, ISRSignal::TRANSMIT_COMPLETE );
         prjDisableISRSignal( periph, ISRSignal::TRANSMIT_COMPLETE );
         prjDisableISRSignal( periph, ISRSignal::TRANSMIT_DATA_REG_EMPTY );
 
         runtimeFlags |= Runtime::Flag::TX_COMPLETE;
 
-        /*------------------------------------------------
+        /*---------------------------------------------------------------------
         Invoke a user callback if registered
-        ------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         signalHLD                            = true;
         const SignalCallback *const callback = INT::getISRHandler( Type::PERIPH_UART, SIG_TX_COMPLETE );
         if ( callback->isrCallback )
@@ -585,34 +585,34 @@ namespace Thor::LLD::UART
       }
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     RX Related Handler
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( rxFlags )
     {
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       RX register not empty, aka a new byte has arrived!
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       if ( ( rxFlags & FLAG_RXNE ) && ( CR1Cache & CR1_RXNEIE ) && ( rxTCB.state == StateMachine::RX::RX_ONGOING ) )
       {
-        /*------------------------------------------------
+        /*---------------------------------------------------------------------
         Make sure line idle ISR is enabled. Regardless of
         if there is data left to RX, the sender might just
         suddenly stop, and that needs detection.
-        ------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         prjEnableISRSignal( periph, ISRSignal::LINE_IDLE );
         prjClrISRSignal( periph, ISRSignal::LINE_IDLE );
 
-        /*------------------------------------------------
+        /*---------------------------------------------------------------------
         Read out current byte and prep for next transfer
-        ------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         *rxTCB.buffer = static_cast<uint8_t>( prjReadDataRegister( periph ) );
         rxTCB.buffer++;
         rxTCB.remaining--;
 
-        /*------------------------------------------------
+        /*---------------------------------------------------------------------
         If no more bytes left to receive, stop listening
-        ------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         if ( !rxTCB.remaining )
         {
           prjDisableISRSignal( periph, ISRSignal::LINE_IDLE );
@@ -623,40 +623,40 @@ namespace Thor::LLD::UART
         }
       }
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Line Idle: We were in the middle of a transfer and
       then suddenly they just stopped sending data.
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       if ( ( rxFlags & FLAG_IDLE ) && ( CR1Cache & CR1_IDLEIE ) && ( rxTCB.state == StateMachine::RX::RX_ONGOING ) )
       {
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Clear the appropriate flags
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         prjDisableISRSignal( periph, ISRSignal::LINE_IDLE );
         prjClrISRSignal( periph, ISRSignal::LINE_IDLE );
         prjDisableReceiver( periph );
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Update the system state variables
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         rxTCB.state = StateMachine::RX::RX_ABORTED;
         runtimeFlags |= Runtime::Flag::RX_LINE_IDLE_ABORT;
       }
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Unblock the higher level driver
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       if ( ( rxTCB.state == StateMachine::RX::RX_ABORTED || rxTCB.state == StateMachine::RX_COMPLETE ) )
       {
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Regardless of the state this entered in, the
         transfer is complete now
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         rxTCB.state = StateMachine::RX_COMPLETE;
 
-        /*------------------------------------------------
+        /*---------------------------------------------------------------------
         Invoke a user callback if registered
-        ------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         signalHLD                            = true;
         const SignalCallback *const callback = INT::getISRHandler( Type::PERIPH_UART, SIG_RX_COMPLETE );
         if ( callback->isrCallback )
@@ -666,9 +666,9 @@ namespace Thor::LLD::UART
       }
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Error Related Handler
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( errorFlags )
     {
       /*-------------------------------------------------
@@ -677,9 +677,9 @@ namespace Thor::LLD::UART
       Chimera::insert_debug_breakpoint();
       runtimeFlags |= errorFlags;
 
-      /*------------------------------------------------
+      /*-----------------------------------------------------------------------
       Invoke a user callback if registered
-      ------------------------------------------------*/
+      -----------------------------------------------------------------------*/
       signalHLD                            = true;
       const SignalCallback *const callback = INT::getISRHandler( Type::PERIPH_UART, SIG_ERROR );
       if ( callback->isrCallback )
@@ -688,9 +688,9 @@ namespace Thor::LLD::UART
       }
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Post an event to wake up the user-space handler
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( signalHLD )
     {
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_UART ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
@@ -698,33 +698,33 @@ namespace Thor::LLD::UART
   }
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Private Methods
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   uint32_t Driver::calculateBRR( const size_t desiredBaud )
   {
     size_t periphClock   = 0u;
     size_t calculatedBRR = 0u;
     auto periphAddress   = reinterpret_cast<std::uintptr_t>( periph );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Figure out the frequency of the clock that drives the UART
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto rccSys = Thor::LLD::RCC::getCoreClockCtrl();
     periphClock = rccSys->getPeriphClock( Chimera::Peripheral::Type::PERIPH_UART, periphAddress );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Protect from div0 conditions in the math below
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !desiredBaud || !periphClock )
     {
       return 0u;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Calculate the BRR value. Mostly this was taken directly from
     the STM32 HAL Macros.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     size_t over8Compensator = 2u;
 
     if ( OVER8::get( periph ) )

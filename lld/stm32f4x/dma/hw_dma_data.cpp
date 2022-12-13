@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_dma_data.hpp
  *
@@ -6,7 +6,7 @@
  *    STM32 Mappings for the DMA Peripheral
  *
  *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 /* Chimera Includes */
 #include <Chimera/dma>
@@ -20,9 +20,9 @@
 
 namespace Thor::LLD::DMA
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Memory Maps
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   RegisterMap *DMA1_PERIPH = reinterpret_cast<RegisterMap *>( DMA1_BASE_ADDR );
   StreamMap *DMA1_STREAM0    = reinterpret_cast<StreamMap *>( DMA1_STREAM0_BASE_ADDR );
   StreamMap *DMA1_STREAM1    = reinterpret_cast<StreamMap *>( DMA1_STREAM1_BASE_ADDR );
@@ -43,9 +43,9 @@ namespace Thor::LLD::DMA
   StreamMap *DMA2_STREAM6    = reinterpret_cast<StreamMap *>( DMA2_STREAM6_BASE_ADDR );
   StreamMap *DMA2_STREAM7    = reinterpret_cast<StreamMap *>( DMA2_STREAM7_BASE_ADDR );
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Configuration Maps
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace Config
   {
     extern LLD_CONST uint32_t TransferMap[ EnumValue( Chimera::DMA::Direction::NUM_OPTIONS ) ] = {
@@ -260,9 +260,9 @@ namespace Thor::LLD::DMA
   }    // namespace Config
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Resource Maps
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace Resource
   {
     extern LLD_CONST IRQn_Type IRQSignals[ NUM_DMA_STREAMS_TOTAL ] = {

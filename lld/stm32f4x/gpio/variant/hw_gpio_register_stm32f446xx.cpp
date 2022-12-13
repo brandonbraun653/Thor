@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_gpio_register_stm32f446xx.cpp
  *
@@ -6,7 +6,7 @@
  *    Explicit STM32F446xx GPIO data and routines
  *
  *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 /* Driver Includes */
 #include <Thor/cfg>
@@ -17,17 +17,17 @@
 
 namespace Thor::LLD::GPIO
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Pin Alternate Configuration Mapping
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace Internal
   { /* clang-format off */
     /*-------------------------------------------------------------------------------
     PORT A CONFIGURATION
     -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Alternate Function Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const AlternateFunc port_a0_alt_func[] = {
       { .registerAltFunc = AF1_TIM2,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM2_CH1    },
       { .registerAltFunc = AF2_TIM5,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM5_CH1    },
@@ -168,9 +168,9 @@ namespace Thor::LLD::GPIO
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Pin Attributes Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const PinAttributes port_a_pin_attributes[ GPIOA_NUM_PINS ] = {
       { .pinID = 0,  .afListSize = ARRAY_COUNT( port_a0_alt_func ),  .altFunc = port_a0_alt_func  },
       { .pinID = 1,  .afListSize = ARRAY_COUNT( port_a1_alt_func ),  .altFunc = port_a1_alt_func  },
@@ -193,9 +193,9 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------------------------------------
     PORT B CONFIGURATION
     -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Alternate Function Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const AlternateFunc port_b0_alt_func[] = {
       { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_CH2N   },
       { .registerAltFunc = AF2_TIM3,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM3_CH3    },
@@ -362,9 +362,9 @@ namespace Thor::LLD::GPIO
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Pin Attributes Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const PinAttributes port_b_pin_attributes[ GPIOB_NUM_PINS ] = {
       { .pinID = 0,  .afListSize = ARRAY_COUNT( port_b0_alt_func ),  .altFunc = port_b0_alt_func  },
       { .pinID = 1,  .afListSize = ARRAY_COUNT( port_b1_alt_func ),  .altFunc = port_b1_alt_func  },
@@ -387,9 +387,9 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------------------------------------
     PORT C CONFIGURATION
     -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Alternate Function Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const AlternateFunc port_c0_alt_func[] = {
       { .registerAltFunc = AF6_SAI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SAI1_MCLK_B },
       { .registerAltFunc = AF10_OTG_HS,       .chimeraAltFunc = Chimera::GPIO::Alternate::OTG_HS_ULPI_STP },
@@ -522,9 +522,9 @@ namespace Thor::LLD::GPIO
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Pin Attributes Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const PinAttributes port_c_pin_attributes[ GPIOC_NUM_PINS ] = {
       { .pinID = 0,  .afListSize = ARRAY_COUNT( port_c0_alt_func ),  .altFunc = port_c0_alt_func  },
       { .pinID = 1,  .afListSize = ARRAY_COUNT( port_c1_alt_func ),  .altFunc = port_c1_alt_func  },
@@ -547,9 +547,9 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------------------------------------
     PORT D CONFIGURATION
     -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Alternate Function Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const AlternateFunc port_d0_alt_func[] = {
       { .registerAltFunc = AF5_SPI4,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI4_MISO   },
       { .registerAltFunc = AF6_SPI3,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI3_MOSI   },
@@ -673,9 +673,9 @@ namespace Thor::LLD::GPIO
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Pin Attributes Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const PinAttributes port_d_pin_attributes[ GPIOD_NUM_PINS ] = {
       { .pinID = 0,  .afListSize = ARRAY_COUNT( port_d0_alt_func ),  .altFunc = port_d0_alt_func  },
       { .pinID = 1,  .afListSize = ARRAY_COUNT( port_d1_alt_func ),  .altFunc = port_d1_alt_func  },
@@ -698,9 +698,9 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------------------------------------
     PORT E CONFIGURATION
     -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Alternate Function Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const AlternateFunc port_e0_alt_func[] = {
       { .registerAltFunc = AF2_TIM4,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM4_ETR    },
       { .registerAltFunc = AF10_SAI2,         .chimeraAltFunc = Chimera::GPIO::Alternate::SAI2_MCLK_A },
@@ -828,9 +828,9 @@ namespace Thor::LLD::GPIO
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Pin Attributes Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const PinAttributes port_e_pin_attributes[ GPIOE_NUM_PINS ] = {
       { .pinID = 0,  .afListSize = ARRAY_COUNT( port_e0_alt_func ),  .altFunc = port_e0_alt_func  },
       { .pinID = 1,  .afListSize = ARRAY_COUNT( port_e1_alt_func ),  .altFunc = port_e1_alt_func  },
@@ -853,9 +853,9 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------------------------------------
     PORT F CONFIGURATION
     -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Alternate Function Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const AlternateFunc port_f0_alt_func[] = {
       { .registerAltFunc = AF4_I2C2,          .chimeraAltFunc = Chimera::GPIO::Alternate::I2C2_SDA    },
       { .registerAltFunc = AF12_FMC,          .chimeraAltFunc = Chimera::GPIO::Alternate::FMC_A0      },
@@ -952,9 +952,9 @@ namespace Thor::LLD::GPIO
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Pin Attributes Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const PinAttributes port_f_pin_attributes[ GPIOF_NUM_PINS ] = {
       { .pinID = 0,  .afListSize = ARRAY_COUNT( port_f0_alt_func ),  .altFunc = port_f0_alt_func  },
       { .pinID = 1,  .afListSize = ARRAY_COUNT( port_f1_alt_func ),  .altFunc = port_f1_alt_func  },
@@ -977,9 +977,9 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------------------------------------
     PORT G CONFIGURATION
     -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Alternate Function Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const AlternateFunc port_g0_alt_func[] = {
       { .registerAltFunc = AF12_FMC,          .chimeraAltFunc = Chimera::GPIO::Alternate::FMC_A10     },
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
@@ -1086,9 +1086,9 @@ namespace Thor::LLD::GPIO
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Pin Attributes Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const PinAttributes port_g_pin_attributes[ GPIOG_NUM_PINS ] = {
       { .pinID = 0,  .afListSize = ARRAY_COUNT( port_g0_alt_func ),  .altFunc = port_g0_alt_func  },
       { .pinID = 1,  .afListSize = ARRAY_COUNT( port_g1_alt_func ),  .altFunc = port_g1_alt_func  },
@@ -1111,9 +1111,9 @@ namespace Thor::LLD::GPIO
     /*-------------------------------------------------------------------------------
     PORT H CONFIGURATION
     -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Alternate Function Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const AlternateFunc port_h0_alt_func[] = {
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
@@ -1122,18 +1122,18 @@ namespace Thor::LLD::GPIO
       { .registerAltFunc = AF15_EVENTOUT,     .chimeraAltFunc = Chimera::GPIO::Alternate::EVENTOUT    },
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Pin Attributes Array
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     static const PinAttributes port_h_pin_attributes[ GPIOH_NUM_PINS ] = {
       { .pinID = 0,  .afListSize = ARRAY_COUNT( port_h0_alt_func ),  .altFunc = port_h0_alt_func  },
       { .pinID = 1,  .afListSize = ARRAY_COUNT( port_h1_alt_func ),  .altFunc = port_h1_alt_func  }
     };
   } /* clang-format on */
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Attribute Mapping
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   extern const PortAttributes prjPortAttributes[ NUM_GPIO_PERIPHS ] = {
     // GPIO A
     {

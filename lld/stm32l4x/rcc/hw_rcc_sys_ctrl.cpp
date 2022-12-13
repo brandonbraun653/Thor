@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_rcc_sys_ctrl.cpp
  *
@@ -6,7 +6,7 @@
  *    System clock controller implementation
  *
  *  2021 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -23,20 +23,20 @@
 
 namespace Thor::LLD::RCC
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Static Data
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static SystemClock s_system_clock;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Data
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   OscillatorSettings sOscillatorSettings;
   DerivedClockSettings sDerivedClockSettings;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   SystemClock Class Implementation
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   SystemClock *getCoreClockCtrl()
   {
     return &s_system_clock;
@@ -166,19 +166,19 @@ namespace Thor::LLD::RCC
   {
     using namespace Thor::LLD::PWR;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Turn on the clock to the power controller peripheral and
     set the voltage scaling to allow us to achieve max clock
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     PWREN::set( RCC1_PERIPH, APB1ENR1_PWREN );
     VOS::set( PWR_PERIPH, CR1::VOS_SCALE_1 );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the source clocks (oscillators)
       PLL P: off
       PLL Q: 40 MHz
       PLL R: 80 MHz
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     sOscillatorSettings = {};
 
     /* Disable configuration of the unnecessary clocks */
@@ -201,9 +201,9 @@ namespace Thor::LLD::RCC
 
     sOscillatorSettings.valid = true;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the derived clocks
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     sDerivedClockSettings = {};
 
     sDerivedClockSettings.HCLKConfig.configure      = true;
@@ -215,9 +215,9 @@ namespace Thor::LLD::RCC
 
     sDerivedClockSettings.valid = true;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Apply the settings
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( configureOscillators( sOscillatorSettings ) && configureClocks( sDerivedClockSettings ) )
     {
       setCoreClockSource( Chimera::Clock::Bus::PLLP );
@@ -234,17 +234,17 @@ namespace Thor::LLD::RCC
 
   Chimera::Status_t SystemClock::setCoreClockSource( const Chimera::Clock::Bus src )
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Prevent the clock selection update from being interrupted
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto itMask = Thor::LLD::INT::disableInterrupts();
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Figure out the configuration bits that should be set. Go
     ahead and update the SystemCoreClock value. If the update
     fails, we'll be stuck in the while loop anyways and it won't
     matter that the variable has been set to a bad value.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Reg32_t cfgOption = 0;
     Reg32_t expStatus = 0;
 
@@ -283,33 +283,33 @@ namespace Thor::LLD::RCC
         break;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Adjust the flash read access latency (Section 3.3.3 of RM0394)
 
     Note: Currently hardcoded to assume a clock increase, but once
     I have the processor brought up and have some free time, this
     needs to adjust for a decrease too. Can calculate the desired
     clock frequency from the registers in the config structure.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     using namespace Thor::LLD::FLASH;
     LATENCY::set( FLASH_PERIPH, ACR_LATENCY_4WS );
     DCEN::set( FLASH_PERIPH, ACR_DCEN );     /* Enable data cache */
     ICEN::set( FLASH_PERIPH, ACR_ICEN );     /* Enable instruction cache */
     PRFTEN::set( FLASH_PERIPH, ACR_PRFTEN ); /* Enable ART prefetch */
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Apply the clock selection setting, then wait for the
     hardware to indicate it has stabilized.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     SW::set( RCC1_PERIPH, cfgOption );
     while ( ( SWS::get( RCC1_PERIPH ) & expStatus ) != expStatus )
     {
       ;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     The clock is stable now, allow normal program execution
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Thor::LLD::INT::enableInterrupts( itMask );
     return Chimera::Status::OK;
   }
@@ -394,18 +394,18 @@ namespace Thor::LLD::RCC
 
   size_t SystemClock::getPeriphClock( const Chimera::Peripheral::Type periph, const std::uintptr_t address )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Input protection
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto registry = getPCCRegistry( periph );
     if ( !registry || !registry->clockSource || !registry->getResourceIndex )
     {
       return INVALID_CLOCK;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Perform the lookup
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     size_t idx = registry->getResourceIndex( address );
     if( idx == INVALID_RESOURCE_INDEX )
     {

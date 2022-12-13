@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_usart_register_stm32f446xx.hpp
  *
@@ -8,7 +8,7 @@
  *    UART and USART registers, so the definitions for both are combined here.
  *
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_HW_USART_REGISTER_HPP
@@ -34,9 +34,9 @@ Macros
 
 namespace Thor::LLD::USART
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Constants
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr Reg32_t USART1_BASE_ADDR = Thor::System::MemoryMap::USART1_PERIPH_START_ADDRESS;
   static constexpr Reg32_t USART2_BASE_ADDR = Thor::System::MemoryMap::USART2_PERIPH_START_ADDRESS;
   static constexpr Reg32_t USART3_BASE_ADDR = Thor::System::MemoryMap::USART3_PERIPH_START_ADDRESS;

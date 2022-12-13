@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_rcc_pll.cpp
  *
@@ -6,7 +6,7 @@
  *    Functions for configuring the device PLLs
  *
  *  2021 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 /* STL Includes */
 #include <cmath>
@@ -21,9 +21,9 @@
 
 namespace Thor::LLD::RCC
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Constants
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /*-------------------------------------------------
   CORE PLL operating ranges from register spec
   -------------------------------------------------*/
@@ -43,19 +43,19 @@ namespace Thor::LLD::RCC
   static constexpr size_t PLL_CORE_VCO_OUT_FMAX = 432000000;    // 432 MHz
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Driver Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   bool configureCorePLL( ClockTreeInit &cfg )
   {
     using namespace Chimera::Clock;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Double check input parameters. If the VCO control
     params are out of bounds, reject the config. Else
     if the divisors are out of bounds, simply set them
     to the max division possible to reduce clock rate.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( ( cfg.PLLCore.M < PLL_CORE_M_MIN ) || ( cfg.PLLCore.M > PLL_CORE_M_MAX ) || ( cfg.PLLCore.N < PLL_CORE_N_MIN ) ||
          ( cfg.PLLCore.N > PLL_CORE_N_MAX ) )
     {
@@ -77,14 +77,14 @@ namespace Thor::LLD::RCC
       cfg.PLLCore.R = PLL_CORE_R_MAX;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Block all other code from execution
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto isrMask = Chimera::System::disableInterrupts();
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Switch core clock to HSI if currently using PLL
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto clk_src          = SW::get( RCC1_PERIPH );
     bool hsi_prev_enabled = false;
     bool source_switched  = false;
@@ -95,18 +95,18 @@ namespace Thor::LLD::RCC
       select_system_clock_source( Chimera::Clock::Bus::HSI16 );
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Disable the PLL
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     PLLON::clear( RCC1_PERIPH, CR_PLLON );
     while ( PLLRDY::get( RCC1_PERIPH ) )
     {
       continue;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Remap the P setting to the register value
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     switch( cfg.PLLCore.P )
     {
       case 2:
@@ -130,9 +130,9 @@ namespace Thor::LLD::RCC
         break;
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the desired settings
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     PLLM::set( RCC1_PERIPH, cfg.PLLCore.M << PLLCFGR_PLLM_Pos );
     PLLN::set( RCC1_PERIPH, cfg.PLLCore.N << PLLCFGR_PLLN_Pos );
     PLLP::set( RCC1_PERIPH, cfg.PLLCore.P << PLLCFGR_PLLP_Pos );
@@ -151,18 +151,18 @@ namespace Thor::LLD::RCC
         break;
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Enable the PLL
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     PLLON::set( RCC1_PERIPH, CR_PLLON );
     while ( !PLLRDY::get( RCC1_PERIPH ) )
     {
       continue;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Switch back to the PLL source if used before
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( source_switched && !hsi_prev_enabled )
     {
       disableHSI();
@@ -173,9 +173,9 @@ namespace Thor::LLD::RCC
       select_system_clock_source( cfg.mux.sys );
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Re-enable interrupts
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Chimera::System::enableInterrupts( isrMask );
     return true;
   }
@@ -194,17 +194,17 @@ namespace Thor::LLD::RCC
      */
     constexpr int _target_vco_in = PLL_CORE_VCO_IN_FMAX;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Input protection
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !inFreq || ( outFreq < PLL_CORE_VCO_OUT_FMIN ) || ( outFreq > PLL_CORE_VCO_OUT_FMAX ) )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Calculate the PLL input divisor: M
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     int error      = 0;
     size_t vco_in  = 0;
     uint32_t calcM = 0;
@@ -229,9 +229,9 @@ namespace Thor::LLD::RCC
     // Double check the VCO input range assumption
     RT_HARD_ASSERT( ( vco_in >= PLL_CORE_VCO_IN_FMIN ) && ( vco_in <= PLL_CORE_VCO_IN_FMAX ) );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Calculate the VCO input multiplier: N
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     size_t vco_out      = 0;                                       // Loop var for VCO calculation
     uint32_t calcN      = 0;                                       // Tracks best found multiplier value
     uint32_t lowestErr  = std::numeric_limits<uint32_t>::max();    // Error tracker
@@ -252,11 +252,11 @@ namespace Thor::LLD::RCC
       }
       else
       {
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Early stop condition. Due to initialization value
         of error tracker and linear VCO equation, any error
         increase means an inflection point was reached.
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         break;
       }
     }
@@ -264,10 +264,10 @@ namespace Thor::LLD::RCC
     // Double check the VCO output range assumption
     RT_HARD_ASSERT( ( vco_out >= PLL_CORE_VCO_OUT_FMIN ) && ( vco_out <= PLL_CORE_VCO_OUT_FMAX ) );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Getting here means things are within spec. Assign
     the config data to the user data.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     config.PLLCore.M = calcM;
     config.PLLCore.N = calcN;
     return Chimera::Status::OK;
@@ -277,17 +277,17 @@ namespace Thor::LLD::RCC
   Chimera::Status_t calculatePLLOuputOscillator( const PLLOut channel, const size_t inFreq, const size_t outFreq,
                                                  ClockTreeInit &config )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Input protection
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( ( inFreq < PLL_CORE_VCO_OUT_FMIN ) || ( inFreq > PLL_CORE_VCO_OUT_FMAX ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Calculate the output divisors
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     size_t X_out        = 0;                                       // Loop var for VCO calculation
     uint32_t calcX      = 0;                                       // Tracks best found multiplier value
     uint32_t lowestErr  = std::numeric_limits<uint32_t>::max();    // Error tracker
@@ -339,19 +339,19 @@ namespace Thor::LLD::RCC
       }
       else
       {
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Early stop condition. Due to initialization value
         of error tracker and linear VCO equation, any error
         increase means an inflection point was reached.
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         X_out = inFreq / calcX;
         break;
       }
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Verify the calculated settings
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( channel == PLLOut::P )
     {
       // Drives the core, but can't exceed 180 MHz
@@ -363,9 +363,9 @@ namespace Thor::LLD::RCC
       RT_HARD_ASSERT( X_out == 48000000 );
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Throw error if the clock deviates more than 5%
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     float exp = static_cast<float>( outFreq );
     float act = static_cast<float>( X_out );
 
@@ -374,9 +374,9 @@ namespace Thor::LLD::RCC
       return Chimera::Status::FAIL;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Otherwise, update the config with the new data
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     switch ( channel )
     {
       case PLLOut::P:

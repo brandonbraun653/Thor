@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_rcc_register_stm32l432xx.hpp
  *
@@ -6,7 +6,7 @@
  *    RCC register definitions for the STM32L432xx series chips
  *
  *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_RCC_REGISTER_HPP
@@ -29,11 +29,11 @@ namespace Thor::LLD::RCC
   static constexpr uint8_t RCC1_RESOURCE_INDEX = 0u;
   static constexpr Reg32_t RCC1_BASE_ADDR      = Thor::System::MemoryMap::RCC_PERIPH_START_ADDRESS;
 
-  /******************************************************************************/
+  /******************************************************************************
   /*                                                                            */
   /*                         Reset and Clock Control                            */
   /*                                                                            */
-  /******************************************************************************/
+  /******************************************************************************
   /*
    * @brief Specific device feature definitions  = (not present on all devices in the STM32L4 serie);
    */

@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    dma_intf.cpp
  *
@@ -6,7 +6,7 @@
  *    LLD interface functions that are processor independent
  *
  *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 /* Thor Includes */
 #include <Thor/cfg>
@@ -16,9 +16,9 @@
 #if defined( THOR_DMA )
 namespace Thor::LLD::DMA
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Static Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static uint8_t find_signal_attributes( const Source signal )
   {
     for( size_t idx = 0; idx < ARRAY_COUNT( Config::RequestMap ); idx++ )
@@ -32,9 +32,9 @@ namespace Thor::LLD::DMA
     return 0;
   }
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   bool isSupported( const Controller channel, const Streamer stream )
   {
 #if defined( STM32_DMA1_PERIPH_AVAILABLE )
@@ -170,18 +170,18 @@ namespace Thor::LLD::DMA
 
   RIndex_t getResourceIndex( const Source dmaSignal )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Find the entry in the DMA signal map
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto attr = find_signal_attributes( dmaSignal );
     if( !attr )
     {
       return INVALID_RESOURCE_INDEX;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Convert the packed bit fields and look up the index
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Controller ctrl = ( ( attr & ON_DMA1 ) == ON_DMA1 ) ? Controller::DMA_1 : Controller::DMA_2;
     Streamer stream = static_cast<Streamer>( ( attr & ON_STREAM_MSK ) >> ON_STREAM_POS );
 
@@ -191,18 +191,18 @@ namespace Thor::LLD::DMA
 
   Channel getChannel( const Source dmaSignal )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Find the entry in the DMA signal map
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto attr = find_signal_attributes( dmaSignal );
     if( !attr )
     {
       return Channel::INVALID;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Convert the packed bit field in to the channel id
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     return static_cast<Channel>( ( attr & ON_CHANNEL_MSK ) >> ON_CHANNEL_POS );
   }
 
@@ -726,18 +726,18 @@ namespace Thor::LLD::DMA
 
   bool attachDriverInstances( Driver *const driverList, const size_t numDrivers )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Reject bad inputs
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !driverList || !numDrivers || ( numDrivers != NUM_DMA_PERIPHS ) )
     {
       return false;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Attach the drivers. The architecture of the LLD
     ensures the ordering and number is correct.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Chimera::Status_t result = Chimera::Status::OK;
 
 #if defined( STM32_DMA1_PERIPH_AVAILABLE )

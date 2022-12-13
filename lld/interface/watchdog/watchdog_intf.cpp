@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    watchdog_intf.cpp
  *
@@ -6,7 +6,7 @@
  *    Common watchdog interface function implementation
  *
  *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 /* STL Includes */
 #include <cmath>
@@ -23,9 +23,9 @@
 
 namespace Thor::LLD::Watchdog
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   RIndex_t getResourceIndex( const std::uintptr_t address )
   {
 #if defined( STM32_IWDG1_PERIPH_AVAILABLE ) && defined( THOR_IWDG )
@@ -97,18 +97,18 @@ namespace Thor::LLD::Watchdog
 
   bool attachDriverInstances( IndependentDriver *const driverList, const size_t numDrivers )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Reject bad inputs
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !driverList || !numDrivers || ( numDrivers != IWDG::NUM_IWDG_PERIPHS ) )
     {
       return false;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Attach the drivers. The architecture of the LLD
     ensures the ordering and number is correct.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Chimera::Status_t result = Chimera::Status::OK;
 
 #if defined( STM32_IWDG1_PERIPH_AVAILABLE )
@@ -171,18 +171,18 @@ namespace Thor::LLD::Watchdog
 
   bool attachDriverInstances( WindowDriver *const driverList, const size_t numDrivers )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Reject bad inputs
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !driverList || !numDrivers || ( numDrivers != WWDG::NUM_WWDG_PERIPHS ) )
     {
       return false;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Attach the drivers. The architecture of the LLD
     ensures the ordering and number is correct.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Chimera::Status_t result = Chimera::Status::OK;
 
 #if defined( STM32_WWDG1_PERIPH_AVAILABLE )
@@ -199,24 +199,24 @@ namespace Thor::LLD::Watchdog
   uint8_t calculatePrescaler( const size_t ms, const size_t clock, const size_t minCount, const size_t maxCount,
                               const uint32_t *const actVal, const Reg32_t *const regVal, const size_t len )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Input Protection
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !ms || !clock || !maxCount || !actVal || !regVal || !len )
     {
       return 0;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Initialize algorithm variables
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     float rawClockPeriod_ms = ( 1000.0f / static_cast<float>( clock ) );
     uint8_t bestIdx         = 0;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     The desired prescaler is found when the max watchdog
     expiration period drops below the desired timeout.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     for ( uint8_t i = 0; i < len; i++ )
     {
       float prescaledClkPeriod_ms = rawClockPeriod_ms * static_cast<float>( actVal[ i ] );
@@ -237,27 +237,27 @@ namespace Thor::LLD::Watchdog
   Reg32_t calculateReload( const size_t ms, const size_t clock, const size_t minCount, const size_t maxCount,
                            const size_t prescaler )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Input Protection
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !ms || !clock || !prescaler || ( minCount >= maxCount ) )
     {
       return 0;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Initialize algorithm variables
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     float lowestError    = std::numeric_limits<float>::max();
     float calcTimeout_mS = std::numeric_limits<float>::max();
     float absError       = std::numeric_limits<float>::max();
     float clockPeriod_mS = ( 1000.0f / static_cast<float>( clock ) ) * static_cast<float>( prescaler );
     uint32_t reloadVal   = 0;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Iterate through all counter values to figure out
     which one produces the closest timeout.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     size_t countRange = maxCount - minCount;
 
     for ( size_t testVal = 0; testVal <= countRange; testVal++ )

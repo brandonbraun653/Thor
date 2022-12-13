@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_rcc_driver_stm32l4.cpp
  *
@@ -6,7 +6,7 @@
  *    RCC Low Level driver for the STM32L4 series chips
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 /* C++ Includes */
 #include <array>
@@ -33,9 +33,9 @@
 
 namespace Thor::LLD::RCC
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   void initialize()
   {
     using namespace Chimera::Peripheral;
@@ -85,19 +85,19 @@ namespace Thor::LLD::RCC
 
   Chimera::System::ResetEvent getResetReason()
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Read out the flag bits and then clear them to ensure we
     get an accurate read the next time this function is called.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Reg32_t flags = RCC1_PERIPH->CSR & CSR_ResetFlags_Msk;
     clearResetReason();
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     When debugging and powering on the board for the first time, usually there
     are two reset flags set. One is the brown out, the other is the pin reset.
     If more than just the brown out flag has been set, it's safe to mask it away
     as a false positive. This is known to happen on the STM32 development boards.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( ( flags & ResetFlags::BROWN_OUT ) && ( flags != ResetFlags::BROWN_OUT ) )
     {
       flags &= ~ResetFlags::BROWN_OUT;
@@ -188,10 +188,10 @@ namespace Thor::LLD::RCC
   {
     const Reg32_t msi_range_select = MSIRGSEL::get( RCC1_PERIPH );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     On powerup or reset, the MSI clock speed is configured
     from the RCC_CSR register instead of the RCC_CR register.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Reg32_t msiConfig = std::numeric_limits<Reg32_t>::max();
     if ( msi_range_select == CR_MSIRGSEL )
     {
@@ -204,9 +204,9 @@ namespace Thor::LLD::RCC
       msiConfig = MSIRANGE2::get( RCC1_PERIPH );
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Given the configured option, return the clock to the user.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     using namespace Config;
 
     switch ( msiConfig )
@@ -269,11 +269,11 @@ namespace Thor::LLD::RCC
   {
     size_t outputClock = INVALID_CLOCK;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     The system PLL clock is driven by PLL R. Make sure
     it's been turned on before going through all the math
     to figure out how it's been configured.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     bool pllMainOn    = static_cast<bool>( PLLON::get( RCC1_PERIPH ) );
     bool pllR_Enabled = static_cast<bool>( PLLREN::get( RCC1_PERIPH ) );
 
@@ -282,9 +282,9 @@ namespace Thor::LLD::RCC
       return outputClock;
     }
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Get the PLL source clock input frequency
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     size_t entryClock = 0;
     Reg32_t pllSrc    = PLLSRC::get( RCC1_PERIPH );
 
@@ -307,18 +307,18 @@ namespace Thor::LLD::RCC
         break;
     };
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Cacluate the VCO frequency:
       VCO = PLL_Src_Clock * (PLLN / PLLM)
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Reg32_t pdivM = ( PLLM::get( RCC1_PERIPH ) >> PLLCFGR_PLLM_Pos ) + 1;
     Reg32_t pdivN = PLLN::get( RCC1_PERIPH ) >> PLLCFGR_PLLN_Pos;
 
     Reg32_t VCO = entryClock * ( pdivN / pdivM );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Calculate the output PLL clock
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     // PLL P divisor. Only two options are available, 17 or 7
     Reg32_t pdivP = PLLP::get( RCC1_PERIPH ) ? 17 : 7;
 
@@ -356,10 +356,10 @@ namespace Thor::LLD::RCC
 
   size_t getSysClockFreq()
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     From the clock tree diagram in RM0394 Fig. 13, there are
     only four possible clock sources for the System Clock.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     switch ( SWS::get( RCC1_PERIPH ) )
     {
       case Config::SystemClockStatus::SYSCLK_HSE:
@@ -440,10 +440,10 @@ namespace Thor::LLD::RCC
 
   size_t getPCLK1Freq()
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     According to the clock tree diagram, PCLK1 is derived
     from HCLK bus using the APB1 divisor.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     size_t pclk1Div               = 1;
     size_t hclkFreq               = getHCLKFreq();
     size_t apbPrescalerConfigBits = PPRE1::get( RCC1_PERIPH );
@@ -481,10 +481,10 @@ namespace Thor::LLD::RCC
 
   size_t getPCLK2Freq()
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     According to the clock tree diagram, PCLK1 is derived
     from HCLK bus using the APB1 divisor.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     size_t pclk2Div               = 1;
     size_t hclkFreq               = getHCLKFreq();
     size_t apbPrescalerConfigBits = PPRE2::get( RCC1_PERIPH );

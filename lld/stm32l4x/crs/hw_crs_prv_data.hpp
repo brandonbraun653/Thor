@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_crs_prv_data.hpp
  *
@@ -7,7 +7,7 @@
  *    shared among all possible drivers.
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_CRS_DATA_HPP
@@ -24,20 +24,20 @@
 
 namespace Thor::LLD::CRS
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Instances:
     Memory mapped structures that allow direct access to peripheral registers
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
 #if defined( STM32_CRS1_PERIPH_AVAILABLE )
   extern RegisterMap *CRS1_PERIPH;
 #endif
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Configuration Maps:
     These convert high level configuration options into low level register config
     options. The idea is to allow the user to specify some general options, then
     convert that over to what the peripheral understands during config/init steps.
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace ConfigMap
   {
     extern LLD_CONST Reg32_t SyncSourceMap[ static_cast<size_t>( SyncSource::NUM_OPTIONS ) ];

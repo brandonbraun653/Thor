@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_dma_register_stm32l4xxxx.hpp
  *
@@ -6,7 +6,7 @@
  *    DMA register definitions for the STM32F4xxxx series chips
  *
  *  2022 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_HW_DMA_REGISTER_STM32L4XXX_HPP
@@ -21,16 +21,16 @@
 
 namespace Thor::LLD::DMA
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Constants
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr size_t NUM_DMA_STREAMS_TOTAL         = NUM_DMA_PERIPHS * NUM_DMA_STREAMS_PER_PERIPH;
   static constexpr size_t NUM_DMA_CHANNELS_TOTAL        = NUM_DMA_PERIPHS * NUM_DMA_CHANNELS_PER_STREAM;
   static constexpr size_t NUM_DMA_REQUEST_SIGNALS_TOTAL = NUM_DMA_STREAMS_PER_PERIPH * NUM_DMA_CHANNELS_PER_STREAM;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Instance Memory Map
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr Reg32_t DMA1_BASE_ADDR         = Thor::System::MemoryMap::DMA1_PERIPH_START_ADDRESS;
   static constexpr Reg32_t DMA1_STREAM1_BASE_ADDR = DMA1_BASE_ADDR + 0x008u;
   static constexpr Reg32_t DMA1_STREAM2_BASE_ADDR = DMA1_BASE_ADDR + 0x01Cu;
@@ -49,9 +49,9 @@ namespace Thor::LLD::DMA
   static constexpr Reg32_t DMA2_STREAM6_BASE_ADDR = DMA2_BASE_ADDR + 0x06Cu;
   static constexpr Reg32_t DMA2_STREAM7_BASE_ADDR = DMA2_BASE_ADDR + 0x080u;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Register Definitions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /*---------------------------------------------------------------------------
   Interrupt Status Register
   ---------------------------------------------------------------------------*/

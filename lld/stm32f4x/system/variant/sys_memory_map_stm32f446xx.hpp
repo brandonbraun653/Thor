@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    sys_memory_map_stm32f446xx.hpp
  *
@@ -6,7 +6,7 @@
  *    System level memory map definitions for the STM32F446xx series chips
  *
  *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_SYSTEM_MEMORY_MAP_HPP
@@ -20,21 +20,21 @@
 
 namespace Thor::System::MemoryMap
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   AHB3
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr uint32_t FMC_PERIPH_START_ADDRESS     = AHB3_RGN_START_ADDR;
   static constexpr uint32_t QUADSPI_PERIPH_START_ADDRESS = AHB3_RGN_START_ADDR + 0x1000;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   AHB2
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr uint32_t DCMI_PERIPH_START_ADDRESS = AHB2_RGN_START_ADDR + 0x00050000;
   static constexpr uint32_t USB_OTG_FS_START_ADDRESS  = AHB2_RGN_START_ADDR;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   AHB1
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr uint32_t USB_OTG_HS_START_ADDRESS   = 0x40040000;
   static constexpr uint32_t DMA2_PERIPH_START_ADDRESS  = AHB1_RGN_START_ADDR + 0x6400;
   static constexpr uint32_t DMA1_PERIPH_START_ADDRESS  = AHB1_RGN_START_ADDR + 0x6000;
@@ -50,9 +50,9 @@ namespace Thor::System::MemoryMap
   static constexpr uint32_t GPIOB_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDR + 0x0400;
   static constexpr uint32_t GPIOA_PERIPH_START_ADDRESS = AHB1_RGN_START_ADDR + 0x0000;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   APB2
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr uint32_t SAI2_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x5C00;
   static constexpr uint32_t SAI1_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x5800;
   static constexpr uint32_t TIM11_PERIPH_START_ADDRESS  = APB2_RGN_START_ADDR + 0x4800;
@@ -72,9 +72,9 @@ namespace Thor::System::MemoryMap
   static constexpr uint32_t TIM8_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x0400;
   static constexpr uint32_t TIM1_PERIPH_START_ADDRESS   = APB2_RGN_START_ADDR + 0x0000;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   APB1
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr uint32_t DAC_PERIPH_START_ADDRESS       = APB1_RGN_START_ADDR + 0x7400;
   static constexpr uint32_t PWR_PERIPH_START_ADDRESS       = APB1_RGN_START_ADDR + 0x7000;
   static constexpr uint32_t HDMI_PERIPH_START_ADDRESS      = APB1_RGN_START_ADDR + 0x6C00;

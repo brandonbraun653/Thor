@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_adc_driver.cpp
  *
@@ -9,7 +9,7 @@
  *    This driver does not support injected channel conversions.
  *
  *  2021 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 /* STL Includes */
 #include <cstring>
@@ -46,9 +46,9 @@ be defined for helping with a few calculations.
 
 namespace Thor::LLD::ADC
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Low Level Driver Implementation
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   Driver::Driver() :
       mPeriph( nullptr ), mCommon( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX ), mCalcVdda( 0.0f ), mCfg( {} ),
       mSeqCfg( {} ), mDMAPipeID( 0 )
@@ -67,31 +67,31 @@ namespace Thor::LLD::ADC
   {
     using namespace Chimera::ADC;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Get peripheral descriptor settings
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     mPeriph        = peripheral;
     mCommon        = ADC_COMMON;
     mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Handle the ISR configuration
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Thor::LLD::INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
     Thor::LLD::INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
     Thor::LLD::INT::setPriority( Resource::IRQSignals[ mResourceIndex ], Thor::LLD::INT::ADC_IT_PREEMPT_PRIORITY, 0u );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Reset the channel sample times to defaults
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     for ( size_t idx = 0; idx < NUM_ADC_CHANNELS_PER_PERIPH; idx++ )
     {
       setSampleTime( static_cast<Channel>( idx ), SampleTime::SMP_28 );
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Initialize the DMA memory
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     mDMASampleBuffer.rawSamples.fill( 0 );
     mDMASampleBuffer.channelSequence.fill( Chimera::ADC::Channel::UNKNOWN );
 
@@ -105,16 +105,16 @@ namespace Thor::LLD::ADC
     using namespace Chimera::Peripheral;
     using namespace Thor::LLD::RCC;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Reset the device back to default register values
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     this->clockEnable();
     this->reset();
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Select the clock prescaler. On the F4, the ADC is
     driven directly from the APB2 clock. (RM Fig.13)
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     switch ( cfg.clockPrescale )
     {
       case Chimera::ADC::Prescaler::DIV_2:
@@ -135,14 +135,14 @@ namespace Thor::LLD::ADC
         break;
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Enable the temperature sensor and internal VRef
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     TSVREFE::set( ADC_COMMON, CCR_TSVREFE );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Assign the ADC resolution
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     switch ( cfg.resolution )
     {
       case Chimera::ADC::Resolution::BIT_12:
@@ -163,21 +163,21 @@ namespace Thor::LLD::ADC
         break;
     };
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Select the EOC interrupt to occur at the end of
     each regular conversion.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     EOCS::set( mPeriph, CR2_EOCS );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure DMA transfers
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     DDS::clear( mPeriph, CR2_DDS );
     DMA::clear( mPeriph, CR2_DMA );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the ADC DMA pipe
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     PipeConfig dmaCfg;
     dmaCfg.clear();
     dmaCfg.dstAlignment       = Alignment::HALF_WORD;
@@ -194,14 +194,14 @@ namespace Thor::LLD::ADC
 
     mDMAPipeID = Chimera::DMA::constructPipe( dmaCfg );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Enable ISRs
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     // EOCIE::set( mPeriph, CR1_EOCIE ); /* End of conversion interrupt */
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Bring the ADC out of power down mode
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     ADON::set( mPeriph, CR2_ADON );
 
     return Chimera::Status::OK;
@@ -212,17 +212,17 @@ namespace Thor::LLD::ADC
   {
     using namespace Chimera::ADC;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Input Protection
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !( EnumValue( ch ) < NUM_ADC_CHANNELS_PER_PERIPH ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Apply sample times to the registers
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     size_t chNum = static_cast<size_t>( ch );
 
     if ( ch < Channel::ADC_CH_10 )
@@ -257,18 +257,18 @@ namespace Thor::LLD::ADC
   {
     using namespace Chimera::ADC;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Input protections
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !sequence.channels || !sequence.numChannels )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Wait for the hardware to indicate it's free for a
     new transfer.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     stopSequence();
     while ( STRT::get( mPeriph ) || EOC::get( mPeriph ) )
     {
@@ -317,9 +317,9 @@ namespace Thor::LLD::ADC
       {
         Channel next = ( *sequence.channels )[ idx ];
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Maximum of 16 channels may be sampled in sequence
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         if ( idx >= 16 || !( next < Channel::NUM_OPTIONS ) )
         {
           break;
@@ -329,14 +329,14 @@ namespace Thor::LLD::ADC
           totalSize++;
         }
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Fill the DMA control buffers with the sequence
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         mDMASampleBuffer.channelSequence[ idx ] = next;
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Configure the appropriate register
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         Reg32_t chNum = EnumValue( next );
         if ( idx <= 5 )
         {
@@ -396,7 +396,7 @@ namespace Thor::LLD::ADC
   {
     using namespace Chimera::ADC;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Wait for the hardware to indicate it's free for a
     new transfer.
 
@@ -404,32 +404,32 @@ namespace Thor::LLD::ADC
     running in the background. Access to these bits are
     not atomic, so stopping an existing conversion may
     be necessary in the future.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     while ( STRT::get( mPeriph ) || EOC::get( mPeriph ) )
     {
       continue;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Set single conversion mode.
     Set EOC flag to be set at end of single conversion
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     CONT::clear( mPeriph, CR2_CONT );
     EOCS::set( mPeriph, CR2_EOCS );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the channel to be measured
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     L::set( mPeriph, 1u << SQR1_L_Pos );
     SQ1::set( mPeriph, EnumValue( channel ) << SQR3_SQ1_Pos );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Perform the conversion. Debuggers beware! Stepping
     through this section may cause your debugger to
     read the DATA register behind the scenes, clearing
     the EOC bit and causing this while loop to become
     infinite!
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Sample measurement;
 
     disableInterrupts();
@@ -461,9 +461,9 @@ namespace Thor::LLD::ADC
 
   float Driver::toVoltage( const Chimera::ADC::Sample sample )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Get the current configured resolution
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Reg32_t resolution = RES::get( mPeriph ) >> CR1_RES_Pos;
     float fRes         = 0.0;
 
@@ -490,9 +490,9 @@ namespace Thor::LLD::ADC
         break;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Calculate the output voltage
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     float vSense = ( static_cast<float>( PRJ_ADC_VREF ) * static_cast<float>( sample.counts ) ) / fRes;
     return vSense;
   }
@@ -502,15 +502,15 @@ namespace Thor::LLD::ADC
   {
     using namespace Chimera::DMA;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Reset the DMA buffer data
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     mDMASampleBuffer.rawSamples.fill( 0 );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the DMA transfer. Assumes each transfer
     is sized to a half-word.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     PipeTransfer cfg;
     cfg.isrCallback = TransferCallback::create<Driver, &Driver::dma_isr_transfer_complete_callback>( *this );
     cfg.pipe        = mDMAPipeID;
@@ -520,14 +520,14 @@ namespace Thor::LLD::ADC
     /* Won't start the transfer, but does prime the DMA hw for the ADC */
     Chimera::DMA::transfer( cfg );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Enable the DMA functionality on the ADC peripheral
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     DMA::set( mPeriph, CR2_DMA );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Set the start bit, then wait for HW to clear it
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     SWSTART::set( mPeriph, CR2_SWSTART );
     while ( SWSTART::get( mPeriph ) )
     {
@@ -539,10 +539,10 @@ namespace Thor::LLD::ADC
 
   void Driver::stopSequence()
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     You can't stop a single in-progress conversion, but
     the ADC can be prevented from continuous conversion.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     CONT::clear( mPeriph, CR2_CONT );
     STRT::clear( mPeriph, SR_STRT );
     DMA::clear( mPeriph, CR2_DMA );
@@ -600,25 +600,25 @@ namespace Thor::LLD::ADC
     using namespace Chimera::Thread;
     using namespace Chimera::Peripheral;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Disable the DMA on the ADC to force the user to
     set up a new transfer.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     DMA::clear( mPeriph, CR2_DMA );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Overrun error? RM 13.8.1 states to re-initialize
     the DMA after clearing this bit. This will happen
     automatically at the start of next transfer.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if( OVR::get( mPeriph ) )
     {
       OVR::clear( mPeriph, SR_OVR );
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Wake up the HLD to process the new data
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( stats.error )
     {
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_ADC ), ITCMsg::TSK_MSG_ISR_ERROR, TIMEOUT_DONT_WAIT );
@@ -650,18 +650,18 @@ namespace Thor::LLD::ADC
       -------------------------------------------------*/
       for( size_t idx = 0; idx < mDMASampleBuffer.channelSequence.size(); idx++ )
       {
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Is the current sequence channel valid?
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         auto channel = mDMASampleBuffer.channelSequence[ idx ];
         if ( channel == Chimera::ADC::Channel::UNKNOWN )
         {
           break;
         }
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Move data into the queue for this channel
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         if( !( ( *queue )[ EnumValue( channel ) ]->full() ) )
         {
           Chimera::ADC::Sample sample;

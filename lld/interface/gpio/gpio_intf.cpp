@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    gpio_intf.cpp
  *
@@ -6,7 +6,7 @@
  *    LLD interface functions that are processor independent
  *
  *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
 Includes
@@ -136,10 +136,10 @@ namespace Thor::LLD::GPIO
 
   bool isSupported( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Walk the configuration tree to find the desired
     alternate function configuration
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     bool pin_is_supported = false;
 
     for ( size_t portIdx = 0; portIdx < PRJ_MAX_PORTS; portIdx++ )
@@ -157,17 +157,17 @@ namespace Thor::LLD::GPIO
       -------------------------------------------------*/
       for ( size_t pinIdx = 0; pinIdx < prjPortAttributes[ portIdx ].pinListSize; pinIdx++ )
       {
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         *sigh...still nothing.
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         if ( prjPortAttributes[ portIdx ].pins[ pinIdx ].pinID != pin )
         {
           continue;
         }
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Found the right pin, don't search further!
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         pin_is_supported = true;
         break;
       }
@@ -184,10 +184,10 @@ namespace Thor::LLD::GPIO
 
   RIndex_t getResourceIndex( const std::uintptr_t address )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Look through all the registered port addresses and
     see if the given address parameter matches.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     for ( size_t idx = 0; idx < ARRAY_COUNT( prjPortAddress ); idx++ )
     {
       if ( address != prjPortAddress[ idx ] )
@@ -342,17 +342,17 @@ namespace Thor::LLD::GPIO
   {
     auto retVal = INVALID_RESOURCE_INDEX;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Boundary check against the project's description
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( !isSupported( port, pin ) )
     {
       return retVal;
     }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Compute the resource index
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     // Base offset from a port perspective
     const size_t offset = pinOffset[ static_cast<uint8_t>( port ) ];
 
@@ -379,18 +379,18 @@ namespace Thor::LLD::GPIO
   Reg32_t findAlternateFunction( const Chimera::GPIO::Port port, const Chimera::GPIO::Pin pin,
                                  const Chimera::GPIO::Alternate alt )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Design Note:
     Don't bother verifying the arguments because the
     function which performs that behavior also walks
     the tree in the same manner as below. There is no
     sense in doing that twice.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Walk the configuration tree to find the desired
     alternate function configuration
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Reg32_t altFunctionConfig = BAD_ALT_FUNC;
 
     for ( size_t portIdx = 0; portIdx < PRJ_MAX_PORTS; portIdx++ )
@@ -408,17 +408,17 @@ namespace Thor::LLD::GPIO
       -------------------------------------------------*/
       for ( size_t pinIdx = 0; pinIdx < prjPortAttributes[ portIdx ].pinListSize; pinIdx++ )
       {
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         *sigh...still nothing.
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         if ( prjPortAttributes[ portIdx ].pins[ pinIdx ].pinID != pin )
         {
           continue;
         }
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Found the pin! Check if it supports the alternate function
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         for ( size_t altIdx = 0; altIdx < prjPortAttributes[ portIdx ].pins[ pinIdx ].afListSize; altIdx++ )
         {
           /*-------------------------------------------------
@@ -436,9 +436,9 @@ namespace Thor::LLD::GPIO
           break;
         }
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Found the right pin, don't search further!
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         break;
       }
 
@@ -491,17 +491,17 @@ namespace Thor::LLD::GPIO
       -------------------------------------------------*/
       for ( size_t pinIdx = 0; pinIdx < prjPortAttributes[ portIdx ].pinListSize; pinIdx++ )
       {
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         *sigh...still nothing.
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         if ( prjPortAttributes[ portIdx ].pins[ pinIdx ].pinID != pin )
         {
           continue;
         }
 
-        /*-------------------------------------------------
+        /*---------------------------------------------------------------------
         Found the right pin, don't search further!
-        -------------------------------------------------*/
+        ---------------------------------------------------------------------*/
         return &prjPortAttributes[ portIdx ].pins[ pinIdx ];
       }
 
@@ -517,10 +517,10 @@ namespace Thor::LLD::GPIO
 
   Chimera::GPIO::Port getPort( const std::uintptr_t address )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Look through all the registered port addresses and
     see if the given address parameter matches.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     for ( size_t idx = 0; idx < ARRAY_COUNT( prjPortAddress ); idx++ )
     {
       if ( address != prjPortAddress[ idx ] )
@@ -609,10 +609,10 @@ namespace Thor::LLD::GPIO
   {
     static_assert( sizeof( Chimera::EXTI::EventLine_t ) == sizeof( Chimera::GPIO::Pin ) );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Luckily ST seems to have made this simple. Each pin
     is directly mapped to a line of the same value.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
 #if defined( STM32L432xx ) || defined( STM32F446xx )
     return static_cast<Chimera::EXTI::EventLine_t>( pin );
 #else

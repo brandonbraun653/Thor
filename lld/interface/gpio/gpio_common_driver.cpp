@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    gpio_common_driver.cpp
  *
@@ -7,7 +7,7 @@
  *    share the same core hardware interface.
  *
  *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 /* Chimera Includes */
 #include <Chimera/common>
@@ -67,12 +67,12 @@ namespace Thor::LLD::GPIO
     Reg32_t const shift_val = pin * MODER_CFG_X_WID;
     Reg32_t tmp = 0;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     1. Read the current state of the register
     2. Clear the appropriate bits using a shifted mask
     3. Assign bits from (2) with new value, masked appropriately
     4. Push into the device register
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     tmp = mPeriph->MODER;
     tmp &= ~( MODER_CFG_X_MSK << shift_val );
     tmp |= ( ConfigMap::ModeMap[ static_cast<size_t>( drive ) ] & MODER_CFG_X_MSK ) << shift_val;
@@ -109,12 +109,12 @@ namespace Thor::LLD::GPIO
     /* Determine how far to shift into the register based on the config bit width */
     Reg32_t const shift_val = pin * OSPEEDR_CFG_X_WID;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     1. Read the current state of the register
     2. Clear the appropriate bits using a shifted mask
     3. Assign bits from (2) with new value, masked appropriately
     4. Push into the device register
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Reg32_t tmp = mPeriph->OSPEEDR;
     tmp &= ~( OSPEEDR_CFG_X_MSK << shift_val );
     tmp |= ( ConfigMap::SpeedMap[ static_cast<size_t>( speed ) ] & OSPEEDR_CFG_X_MSK ) << shift_val;
@@ -129,12 +129,12 @@ namespace Thor::LLD::GPIO
     /* Determine how far to shift into the register based on the config bit width */
     Reg32_t const shift_val = pin * PUPDR_CFG_X_WID;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     1. Read the current state of the register
     2. Clear the appropriate bits using a shifted mask
     3. Assign bits from (2) with new value, masked appropriately
     4. Push into the device register
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Reg32_t tmp = mPeriph->PUPDR;
     tmp &= ~( PUPDR_CFG_X_MSK << shift_val );
     tmp |= ( ConfigMap::PullMap[ static_cast<size_t>( pull ) ] & PUPDR_CFG_X_MSK ) << shift_val;
@@ -146,9 +146,9 @@ namespace Thor::LLD::GPIO
 
   Chimera::Status_t Driver::write( const uint8_t pin, const Chimera::GPIO::State state )
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Atomically set/clr the appropriate bit
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( static_cast<bool>( state ) )
     {
       /* The lower 16 bits control the "set" functionality */
@@ -167,23 +167,23 @@ namespace Thor::LLD::GPIO
 
   Chimera::Status_t Driver::alternateFunctionSet( const uint8_t pin, const Chimera::GPIO::Alternate val )
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Initialize some working variables
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     const auto port       = getPort( reinterpret_cast<std::uintptr_t>( mPeriph ) );
     uint64_t temp         = 0u;
     const uint64_t offset = pin * AFR_CFG_X_WID;
     const uint64_t mask   = AFR_CFG_X_MSK;
     const uint64_t AFcfg  = static_cast<uint64_t>( findAlternateFunction( port, pin, val ) );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Check to make sure the AF was found
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     RT_HARD_ASSERT( AFcfg != BAD_ALT_FUNC );
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     64-bit wide read-modify-write sequence to AFRL & AFRH
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     temp = mPeriph->AFR;
     temp &= ~( mask << offset );
     temp |= ( AFcfg & mask ) << offset;
@@ -218,10 +218,10 @@ namespace Thor::LLD::GPIO
     /* Read the current configuration value and shift it to the zero-th bit*/
     Reg32_t cfg_setting = ( mPeriph->MODER & shifted_mask ) >> shift_val;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Iterate over the possible configuration options and return the
     first one that matches. Otherwise we don't know what this is.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     for ( const auto &cfg_option : ConfigMap::ModeMap )
     {
       if ( cfg_option == cfg_setting )
@@ -243,10 +243,10 @@ namespace Thor::LLD::GPIO
     /* Read the current configuration value and shift it to the zero-th bit*/
     Reg32_t cfg_setting = ( mPeriph->OSPEEDR & shifted_mask ) >> shift_val;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Iterate over the possible configuration options and return the
     first one that matches. Otherwise we don't know what this is.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     for ( const auto &cfg_option : ConfigMap::SpeedMap )
     {
       if ( cfg_option == cfg_setting )
@@ -268,10 +268,10 @@ namespace Thor::LLD::GPIO
     /* Read the current configuration value and shift it to the zero-th bit*/
     Reg32_t cfg_setting = ( mPeriph->PUPDR & shifted_mask ) >> shift_val;
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Iterate over the possible configuration options and return the
     first one that matches. Otherwise we don't know what this is.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     for ( const auto &cfg_option : ConfigMap::PullMap )
     {
       if ( cfg_option == cfg_setting )
@@ -294,20 +294,20 @@ namespace Thor::LLD::GPIO
   Chimera::Status_t Driver::attachInterrupt( const uint8_t pin, Chimera::Function::vGeneric &func,
                                              const Chimera::EXTI::EdgeTrigger trigger )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Derive the GPIO port and EXTI line being used
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto port = getPort( reinterpret_cast<std::uintptr_t>( mPeriph ) );
     auto line = findEventLine( port, pin );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Select the proper source for the interrupt line
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     SYS::configureExtiSource( port, pin );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the EXTI hardware to enable the interrupt
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     return EXTI::attach( line, trigger, func );
   }
 

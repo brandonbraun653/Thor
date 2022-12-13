@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    watchdog.hpp
  *
@@ -6,7 +6,7 @@
  *    Thor interface to the STM32 watchdog hardware.
  *
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 /* C++ Includes */
 #include <cstdint>
@@ -21,9 +21,9 @@
 
 namespace Thor::Watchdog
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   Chimera::Status_t reset();
   WindowDriver_rPtr getDriver( const Chimera::Watchdog::WChannel channel );
   IndependentDriver_rPtr getDriver( const Chimera::Watchdog::IChannel channel );
@@ -43,9 +43,9 @@ namespace Thor::Watchdog
   Chimera::Status_t initializeIWDG();
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Classes
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /**
    *   A high resolution Watchdog peripheral driven by PCLK1 off the AHB bus. This
    *   watchdog is intended to protect against software faults and has more advanced

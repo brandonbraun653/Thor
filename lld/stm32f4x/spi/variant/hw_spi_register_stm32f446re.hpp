@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_spi_register_stm32f446re.hpp
  *
@@ -6,7 +6,7 @@
  *    Device specific definitions
  *
  *  2021 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_SPI_REGISTERS_STM32F446RE_HPP
@@ -25,9 +25,9 @@
 
 namespace Thor::LLD::SPI
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Constants
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr Reg32_t SPI1_BASE_ADDR = Thor::System::MemoryMap::SPI1_PERIPH_START_ADDRESS;
   static constexpr Reg32_t SPI2_BASE_ADDR = Thor::System::MemoryMap::SPI2_I2S2_PERIPH_START_ADDRESS;
   static constexpr Reg32_t SPI3_BASE_ADDR = Thor::System::MemoryMap::SPI3_I2S3_PERIPH_START_ADDRESS;

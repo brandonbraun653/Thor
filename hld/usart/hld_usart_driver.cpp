@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    thor_custom_usart.cpp
  *
@@ -6,7 +6,7 @@
  *    Implements the custom driver variant of the Thor USART interface.
  *
  *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
 Includes
@@ -52,22 +52,22 @@ namespace Chimera::USART
     LLD::Driver_rPtr            lldriver;
     Chimera::USART::Driver_rPtr hldriver;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Misc state variables
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     bool                     mEnabled;       /**< Has the peripheral been enabled */
     Chimera::Serial::Channel mChannel;       /**< Hardware channel associated with this driver */
     size_t                   mResourceIndex; /**< Lookup table index for USART resources */
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Internal locks for protecting the data buffers
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Chimera::Thread::RecursiveMutex  mRxLock;
     Chimera::Thread::BinarySemaphore mTxLock;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Selects the HW mode each data line operates in
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Chimera::Hardware::PeripheralMode mTxMode;
     Chimera::Hardware::PeripheralMode mRxMode;
 
@@ -207,9 +207,9 @@ namespace Chimera::USART
   static DeviceManager<Driver, Chimera::Serial::Channel, NUM_DRIVERS>   s_raw_drivers;
   static DeviceManager<ThorImpl, Chimera::Serial::Channel, NUM_DRIVERS> s_impl_drivers;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Driver Implementation
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   Driver::Driver()
   {
   }

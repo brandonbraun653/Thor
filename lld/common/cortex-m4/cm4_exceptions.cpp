@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    thor_exceptions.cpp
  *
@@ -6,7 +6,7 @@
  *    Thor exception handling implementations
  *
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 /* Thor Includes */
 #include <Thor/cfg>
@@ -68,9 +68,9 @@ extern "C"
    */
   void HardFault_HandlerC( unsigned long *hardfault_args )
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Common Registers Between Cortex M4 & M7
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     volatile unsigned long stacked_r0;            /* General Purpose Register */
     volatile unsigned long stacked_r1;            /* General Purpose Register */
     volatile unsigned long stacked_r2;            /* General Purpose Register */
@@ -102,9 +102,9 @@ extern "C"
     /*-------------------------------------------------------------------------------
     Configurable Fault Status Register
     -------------------------------------------------------------------------------*/
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Bus Fault Status Register
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     /* Bus Fault Address Register has valid contents */
     volatile bool BFAR_VALID = static_cast<bool>( _BFSR & BFSR_BFARVALID );
 
@@ -115,9 +115,9 @@ extern "C"
     volatile bool BFSR_PRECISE = static_cast<bool>( _BFSR & BFSR_PRECISERR );
 
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Usage Fault Status Register
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     /* A divide by zero has occurred */
     volatile bool DIV_ZERO = static_cast<bool>( _UFSR & UFSR_DIVBYZERO );
 

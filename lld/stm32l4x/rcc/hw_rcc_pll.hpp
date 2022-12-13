@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_rcc_pll.hpp
  *
@@ -6,7 +6,7 @@
  *    Utilities for helping configure the PLLs on an STM32L4 chip
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_HW_RCC_PLL_HPP
@@ -21,7 +21,7 @@ namespace Thor::LLD::RCC
    *
    *  @note Assumes interrupts are disabled and the PLL is not configured
    *        as the source clock for the system or peripheral
-   *  
+   *
    *  @param[in]  config    The current configuration settings
    *  @return bool
    */

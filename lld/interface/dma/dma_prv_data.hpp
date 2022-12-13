@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    dma_prv_data.hpp
  *
@@ -7,7 +7,7 @@
  *    shared among all possible drivers.
  *
  *  2021 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_DMA_PRV_DATA_HPP
@@ -27,10 +27,10 @@
 
 namespace Thor::LLD::DMA
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Instances:
     Memory mapped structures that allow direct access to peripheral registers
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /*------------------------------------------------
   DMA1 Register and Stream Memory Mappings
   ------------------------------------------------*/
@@ -112,12 +112,12 @@ namespace Thor::LLD::DMA
 #endif /* STM32_DMA2_PERIPH_AVAILABLE */
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Configuration Maps:
     These convert high level configuration options into low level register config
     options. The idea is to allow the user to specify some general options, then
     convert that over to what the peripheral understands during config/init steps.
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace Config
   {
     extern LLD_CONST uint32_t TransferMap[ EnumValue( Chimera::DMA::Direction::NUM_OPTIONS ) ];
@@ -127,9 +127,9 @@ namespace Thor::LLD::DMA
   }    // namespace Config
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Resources
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace Resource
   {
     extern ISREventQueue ISRQueue;

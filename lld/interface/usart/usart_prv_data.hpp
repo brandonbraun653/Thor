@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    usart_prv_data.hpp
  *
@@ -7,7 +7,7 @@
  *    shared among all possible drivers.
  *
  *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_USART_DATA_HPP
@@ -30,10 +30,10 @@
 #if defined( THOR_USART )
 namespace Thor::LLD::USART
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Instances:
     Memory mapped structs that allow direct access to the registers of a peripheral
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
 #if defined( STM32_USART1_PERIPH_AVAILABLE )
   extern RegisterMap *USART1_PERIPH;
 #endif
@@ -48,12 +48,12 @@ namespace Thor::LLD::USART
 #endif
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Configuration Maps:
     These convert high level configuration options into low level register config
     options. The idea is to allow the user to specify some general options, then
     convert that over to what the peripheral understands during config/init steps.
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace ConfigMap
   {
     extern LLD_CONST Reg32_t CharWidth[ static_cast<size_t>( Chimera::Serial::CharWid::NUM_OPTIONS ) ];
@@ -62,13 +62,13 @@ namespace Thor::LLD::USART
   }    // namespace ConfigMap
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Resources:
     These objects define critical resources used in the low level driver. The goal
     is to minimize memory consumption, so these arrays only hold enough information
     for the currently configured number of peripherals. They are intended to be
     accessed directly via the _ResourceIndex_ attribute of the ConfigMap namespace.
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace Resource
   {
     #if defined( THOR_DMA )

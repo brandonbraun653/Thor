@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    adc_prv_data.hpp
  *
@@ -7,7 +7,7 @@
  *    shared among all possible drivers.
  *
  *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_ADC_DATA
@@ -35,54 +35,54 @@
 
 namespace Thor::LLD::ADC
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Constants
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr size_t DRIVER_MAX_PERIPHS         = static_cast<size_t>( Chimera::ADC::Channel::NUM_OPTIONS );
   static constexpr size_t CHANNEL_QUEUE_SAMPLE_DEPTH = 8;
   static constexpr size_t CHANNEL_QUEUE_SIZE         = EnumValue( Chimera::ADC::Channel::NUM_OPTIONS );
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Aliases
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /**
    * @brief Array of queues for each supported ADC hardware channel
    * Queue is indexed like myQueue[ channel ]->push/pop.
    */
   using PeriphQueue = std::array<ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>*, CHANNEL_QUEUE_SIZE>;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Instances:
     Memory mapped structures that allow direct access to peripheral registers
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   extern CommonRegisterMap *ADC_COMMON;
 
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
   extern RegisterMap *ADC1_PERIPH;
 #endif
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Shared Data
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
   extern PeriphQueue ADC1_Queue;
 #endif
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Configuration Maps:
     These convert high level configuration options into low level register config
     options. The idea is to allow the user to specify some general options, then
     convert that over to what the peripheral understands during config/init steps.
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace ConfigMap
   {
     extern LLD_CONST Chimera::ADC::Channel SensorToChannel[ static_cast<size_t>( Chimera::ADC::Sensor::NUM_OPTIONS ) ];
   }    // namespace ConfigMap
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Resources
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace Resource
   {
     extern LLD_CONST Thor::LLD::DMA::Source DMASignals[ NUM_ADC_PERIPHS ];

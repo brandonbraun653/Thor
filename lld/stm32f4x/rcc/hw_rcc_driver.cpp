@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_rcc_driver.cpp
  *
@@ -6,7 +6,7 @@
  *    Implements the low level driver for the Reset and Clock Control peripheral
  *
  *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 /* C++ Includes */
 #include <array>
@@ -29,9 +29,9 @@
 
 namespace Thor::LLD::RCC
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   void initialize()
   {
     using namespace Chimera::Peripheral;
@@ -55,19 +55,19 @@ namespace Thor::LLD::RCC
 
   Chimera::System::ResetEvent getResetReason()
   {
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Read out the flag bits and then clear them to ensure we
     get an accurate read the next time this function is called.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Reg32_t flags = RCC1_PERIPH->CSR & CSR_ResetFlags_Msk;
     clearResetReason();
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     When debugging and powering on the board for the first time, usually there
     are two reset flags set. One is the brown out, the other is the pin reset.
     If more than just the brown out flag has been set, it's safe to mask it away
     as a false positive. This is known to happen on the STM32 development boards.
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     if ( ( flags & ResetFlags::BROWN_OUT ) && ( flags != ResetFlags::BROWN_OUT ) )
     {
       flags &= ~ResetFlags::BROWN_OUT;
@@ -155,14 +155,14 @@ namespace Thor::LLD::RCC
   {
     bool result = true;
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Disable interrupts during reconfiguration
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     auto isrMask = Chimera::System::disableInterrupts();
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the oscillator sources
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     result |= configureHSE( config );
     result |= configureHSI( config );
     result |= configureLSE( config );
@@ -178,10 +178,10 @@ namespace Thor::LLD::RCC
     //   result |= configureSAIPLL( config );
     // }
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the source mux's that aren't tied to
     oscillator inputs.
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     result |= setSourceSYS( config );
     result |= setSourceSDIO( config );
     result |= setSourceRTC( config );
@@ -189,16 +189,16 @@ namespace Thor::LLD::RCC
     result |= setSourceI2S( config );
     result |= setSourceSAI( config );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Configure the system prescalers
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     result |= setPrescaleAHB( config );
     result |= setPrescaleAPB1( config );
     result |= setPrescaleAPB2( config );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Re-enable interrupts now that configuration is done
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Chimera::System::enableInterrupts( isrMask );
 
     return result;

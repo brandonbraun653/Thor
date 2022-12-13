@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    hw_des_mapping.hpp
  *
@@ -6,7 +6,7 @@
  *    Defines structures used to map various resources needed in the DES driver
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_DES_MAPPING_HPP
@@ -24,7 +24,7 @@ namespace Thor::LLD::DES
 
   #if defined( STM32_FS_AVAILABLE )
   extern FSRegisterMap * FSDR;
-  #endif 
+  #endif
 
   #if defined( STM32_PD_AVAILABLE )
   extern PDRegisterMap * PDR;

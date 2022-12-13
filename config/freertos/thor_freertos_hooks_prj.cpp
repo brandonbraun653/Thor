@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    freertos_hooks_prj.cpp
  *
@@ -6,7 +6,7 @@
  *    Implements Thor hooks into common FreeRTOS callback functions
  *
  *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
- ********************************************************************************/
+ *****************************************************************************/
 
 /* Aurora Logging */
 #include <Aurora/logging>
@@ -26,15 +26,15 @@ namespace Chimera::Thread::FreeRTOS
 {
   void ApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Pull some task information
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     TaskStatus_t xTaskDetails;
     vTaskGetTaskInfo( xTask, &xTaskDetails, pdTRUE, eInvalid );
 
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Alert the debugger if connected, else reset
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Chimera::insert_debug_breakpoint();
     Chimera::System::softwareReset();
     while ( 1 ) {}
@@ -42,9 +42,9 @@ namespace Chimera::Thread::FreeRTOS
 
   void ApplicationTickHook()
   {
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Calculate the update rate for the SYSTick
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     constexpr size_t sysTickPeriodMS = 1000 / configTICK_RATE_HZ;
     static_assert( ( 1000 % configTICK_RATE_HZ ) == 0, "FreeRTOS tick rate must yield whole number tick intervals" );
 

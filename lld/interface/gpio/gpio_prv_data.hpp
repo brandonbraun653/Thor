@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    gpio_prv_data.hpp
  *
@@ -7,7 +7,7 @@
  *    shared among all possible drivers.
  *
  *  2020 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_GPIO_DATA_HPP
@@ -29,16 +29,16 @@
 #if defined( THOR_GPIO )
 namespace Thor::LLD::GPIO
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Constants
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   static constexpr size_t DRIVER_MAX_PORTS         = static_cast<size_t>( Chimera::GPIO::Port::NUM_OPTIONS );
   static constexpr size_t DRIVER_MAX_PINS_PER_PORT = 16;
   static constexpr size_t DRIVER_MAX_PINS          = DRIVER_MAX_PORTS * DRIVER_MAX_PINS_PER_PORT;
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Project Defined Constants
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /*-------------------------------------------------
   These allow the project to describe available GPIOs
   in a highly configurable way.
@@ -51,10 +51,10 @@ namespace Thor::LLD::GPIO
   -------------------------------------------------*/
   extern const std::uintptr_t prjPortAddress[ NUM_GPIO_PERIPHS ];
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Peripheral Instances:
     Memory mapped structures that allow direct access to peripheral registers
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
 #if defined( STM32_GPIOA_PERIPH_AVAILABLE )
   extern RegisterMap *GPIOA_PERIPH;
 #endif
@@ -90,12 +90,12 @@ namespace Thor::LLD::GPIO
 #endif
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Configuration Maps:
     These convert high level configuration options into low level register config
     options. The idea is to allow the user to specify some general options, then
     convert that over to what the peripheral understands during config/init steps.
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   namespace ConfigMap
   {
     extern LLD_CONST Reg32_t PullMap[ static_cast<size_t>( Chimera::GPIO::Pull::NUM_OPTIONS ) ];

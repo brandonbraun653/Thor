@@ -1,4 +1,4 @@
-/********************************************************************************
+/******************************************************************************
  *  File Name:
  *    usart_intf.hpp
  *
@@ -6,7 +6,7 @@
  *    LLD interface to the USART module
  *
  *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
- *******************************************************************************/
+ *****************************************************************************/
 
 #pragma once
 #ifndef LLD_USART_INTERFACE_HPP
@@ -26,9 +26,9 @@ Includes
 
 namespace Thor::LLD::USART
 {
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions (Implemented by the project)
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /**
    *  Initializes the low level driver
    *
@@ -45,9 +45,9 @@ namespace Thor::LLD::USART
   Driver_rPtr getDriver( const Chimera::Serial::Channel channel );
 
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Public Functions (Implemented by the interface layer)
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   /**
    *  Checks if the given hardware channel is supported on this device.
    *
@@ -101,9 +101,9 @@ namespace Thor::LLD::USART
   Chimera::Status_t registerHandler( const Chimera::Interrupt::Signal_t        signal,
                                      const Chimera::Interrupt::SignalCallback &callback );
 
-  /*-------------------------------------------------------------------------------
+  /*---------------------------------------------------------------------------
   Classes
-  -------------------------------------------------------------------------------*/
+  ---------------------------------------------------------------------------*/
   class Driver : public virtual Thor::LLD::Serial::HwInterface
   {
   public:
@@ -166,18 +166,18 @@ namespace Thor::LLD::USART
     void IRQHandler();
 
   private:
-    /*-------------------------------------------------
+    /*-------------------------------------------------------------------------
     Misc Driver State Variables
-    -------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     RegisterMap            *mPeriph;         /**< Points to the hardware registers for this instance */
     size_t                  mResourceIndex;  /**< Derived lookup table index for resource access */
     volatile Reg32_t        mRuntimeFlags;   /**< Error/process flags set at runtime to indicate state */
     Chimera::DMA::RequestId mTXDMARequestId; /**< Request id of the TX DMA pipe for the driver */
     Chimera::DMA::RequestId mRXDMARequestId; /**< Request id of the RX DMA pipe for the driver */
 
-    /*------------------------------------------------
+    /*-------------------------------------------------------------------------
     Transfer Control Blocks
-    ------------------------------------------------*/
+    -------------------------------------------------------------------------*/
     Thor::LLD::Serial::CDTCB mTXTCB;
     Thor::LLD::Serial::MDTCB mRXTCB;
 
