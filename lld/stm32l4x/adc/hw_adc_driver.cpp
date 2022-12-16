@@ -125,6 +125,7 @@ namespace Thor::LLD::ADC
     switch( shift )
     {
       case OverSampleShift::OS_NONE:
+      default:
         ovss_field = 0;
         break;
       case OverSampleShift::OS_1_BIT:
@@ -831,7 +832,6 @@ namespace Thor::LLD::ADC
     Get the status/enablement registers at time of ISR firing
     -------------------------------------------------------------------------*/
     const uint32_t ISR = ISR_ALL::get( mPeriph );
-    const uint32_t IER = IER_ALL::get( mPeriph );
 
     /*-------------------------------------------------------------------------
     Did any of the watchdog monitors trip?

@@ -174,6 +174,7 @@ namespace Thor::LLD::USART
     volatile Reg32_t        mRuntimeFlags;   /**< Error/process flags set at runtime to indicate state */
     Chimera::DMA::RequestId mTXDMARequestId; /**< Request id of the TX DMA pipe for the driver */
     Chimera::DMA::RequestId mRXDMARequestId; /**< Request id of the RX DMA pipe for the driver */
+    bool                    mDMAPipesReady;  /**< Track if the DMA pipes have been established */
 
     /*-------------------------------------------------------------------------
     Transfer Control Blocks

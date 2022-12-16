@@ -108,7 +108,8 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------------------------------
     Initialize driver memory
     -------------------------------------------------------------------------*/
-    mRuntimeFlags = static_cast<Runtime::Flag_t>( 0 );
+    mRuntimeFlags  = static_cast<Runtime::Flag_t>( 0 );
+    mDMAPipesReady = false;
     mTXTCB.reset();
     mRXTCB.reset();
 
@@ -336,7 +337,11 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------------------------------
     Configure the DMA pipe for the transaction
     -------------------------------------------------------------------------*/
-    initDMA();
+    if( !mDMAPipesReady )
+    {
+      initDMA();
+    }
+
     disableUSARTInterrupts();
     {
       /* Clear any previous DMA request */
@@ -546,6 +551,7 @@ namespace Thor::LLD::USART
     -------------------------------------------------------------------------*/
     mTXDMARequestId = Chimera::DMA::constructPipe( txCfg );
     mRXDMARequestId = Chimera::DMA::constructPipe( rxCfg );
+    mDMAPipesReady  = ( mTXDMARequestId != INVALID_REQUEST ) && ( mRXDMARequestId != INVALID_REQUEST );
 
     /*-------------------------------------------------------------------------
     Configure the peripheral interrupts
@@ -559,7 +565,8 @@ namespace Thor::LLD::USART
 
   Chimera::Status_t Driver::deinitDMA()
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    mDMAPipesReady = false;
+    return Chimera::Status::OK;
   }
 
 

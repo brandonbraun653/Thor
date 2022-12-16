@@ -29,14 +29,6 @@ namespace Thor::LLD::RCC
   static constexpr uint8_t RCC1_RESOURCE_INDEX = 0u;
   static constexpr Reg32_t RCC1_BASE_ADDR      = Thor::System::MemoryMap::RCC_PERIPH_START_ADDRESS;
 
-  /******************************************************************************
-  /*                                                                            */
-  /*                         Reset and Clock Control                            */
-  /*                                                                            */
-  /******************************************************************************
-  /*
-   * @brief Specific device feature definitions  = (not present on all devices in the STM32L4 serie);
-   */
   static constexpr bool AHB1ENRPLLSAI1_SUPPORT = true;
   static constexpr bool PLLP_SUPPORT           = true;
   static constexpr bool HSI48_SUPPORT          = true;
