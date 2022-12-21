@@ -262,7 +262,7 @@ namespace Chimera::Serial
         ---------------------------------------------------------------------*/
         auto   read_span    = thorImpl->pTxBuffer->read_reserve( length );
         size_t lldWriteSize = thorImpl->pLLDriver->write( thorImpl->mTxfrMode, read_span.data(), read_span.max_size() );
-        RT_DBG_ASSERT( writeSize == lldWriteSize );
+        RT_DBG_ASSERT( read_span.max_size() == lldWriteSize );
 
         /*---------------------------------------------------------------------
         Finalize blocking type writes immediately
