@@ -291,7 +291,7 @@ namespace Chimera::Serial
         for the hardware transfer. This cleanly supports DMA.
         ---------------------------------------------------------------------*/
         auto   read_span    = thorImpl->pTxBuffer->read_reserve( length );
-        size_t lldWriteSize = thorImpl->pLLDriver->write( thorImpl->mTxfrMode, read_span.data(), read_span.max_size() );
+        size_t lldWriteSize = thorImpl->pLLDriver->write( thorImpl->mTxfrMode, read_span );
         RT_DBG_ASSERT( read_span.max_size() == lldWriteSize );
 
         /*---------------------------------------------------------------------
@@ -364,8 +364,7 @@ namespace Chimera::Serial
       /*-----------------------------------------------------------------------
       Indicate we've consumed the read span
       -----------------------------------------------------------------------*/
-      const etl::span<uint8_t> tmp( tcb->buffer, tcb->expected );
-      pTxBuffer->read_commit( tmp );
+      pTxBuffer->read_commit( tcb->buffer );
 
       /*-----------------------------------------------------------------------
       Notify those waiting on the TX complete
@@ -380,7 +379,7 @@ namespace Chimera::Serial
       {
         Chimera::Thread::LockGuard _lck( *pHLDriver );
         auto read_span = pTxBuffer->read_reserve( pTxBuffer->size() );
-        pLLDriver->write( mTxfrMode, read_span.data(), read_span.size() );
+        pLLDriver->write( mTxfrMode, read_span );
       }
     }
 
@@ -419,7 +418,7 @@ namespace Chimera::Serial
     if ( state )
     {
       auto write_span = pRxBuffer->write_reserve( pRxBuffer->available() );
-      pLLDriver->read( mTxfrMode, write_span.data(), write_span.size() );
+      pLLDriver->read( mTxfrMode, write_span );
     }
     else
     {

@@ -20,6 +20,7 @@ Includes
 #include <Thor/lld/interface/serial/lld_intf_serial_types.hpp>
 #include <cstdint>
 #include <cstdlib>
+#include <etl/span.h>
 
 
 namespace Thor::LLD::Serial
@@ -73,8 +74,8 @@ namespace Thor::LLD::Serial
     ~Driver();
     Chimera::Status_t open( const Chimera::Serial::Config &config );
     Chimera::Status_t close();
-    int write( const Chimera::Serial::TxfrMode mode, const void *const buffer, const size_t length );
-    int read( const Chimera::Serial::TxfrMode mode, void *const buffer, const size_t length );
+    int write( const Chimera::Serial::TxfrMode mode, etl::span<uint8_t> &buffer );
+    int read( const Chimera::Serial::TxfrMode mode, etl::span<uint8_t> &buffer );
     Chimera::Status_t txStatus();
     Chimera::Status_t rxStatus();
     Flag_t getFlags();

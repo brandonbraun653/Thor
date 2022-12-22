@@ -21,6 +21,7 @@ Includes
 #include <Thor/lld/interface/uart/uart_detail.hpp>
 #include <Thor/lld/interface/usart/usart_detail.hpp>
 #include <cstdint>
+#include <etl/span.h>
 
 namespace Thor::LLD::Serial
 {
@@ -91,7 +92,7 @@ namespace Thor::LLD::Serial
    */
   struct CDTCB
   {
-    uint8_t                          *buffer;    /**< Data buffer to transfer out of */
+    etl::span<uint8_t>                buffer;    /**< Data buffer to transfer out of */
     size_t                            offset;    /**< Current offset into the buffer */
     size_t                            remaining; /**< How many bytes are left to transfer */
     size_t                            expected;  /**< How many bytes were expected to receive */
@@ -100,7 +101,7 @@ namespace Thor::LLD::Serial
 
     inline void reset()
     {
-      buffer    = nullptr;
+      buffer    = {};
       offset    = 0;
       remaining = 0;
       expected  = 0;
@@ -117,7 +118,7 @@ namespace Thor::LLD::Serial
    */
   struct MDTCB
   {
-    uint8_t                          *buffer;    /**< Data buffer to transfer into */
+    etl::span<uint8_t>                buffer;    /**< Data buffer to transfer into */
     size_t                            remaining; /**< How many bytes are left to transfer */
     size_t                            expected;  /**< How many bytes were expected to receive */
     Chimera::Status_t                 state;     /**< Current state of the transfer */
@@ -125,7 +126,7 @@ namespace Thor::LLD::Serial
 
     inline void reset()
     {
-      buffer    = nullptr;
+      buffer    = {};
       remaining = 0;
       expected  = 0;
       state     = StateMachine::RX::RX_READY;
@@ -213,18 +214,18 @@ namespace Thor::LLD::Serial
   class HwInterface
   {
   public:
-    virtual Chimera::Peripheral::Type periphType()                                                                        = 0;
-    virtual Chimera::Status_t         init( const RegConfig &cfg )                                                        = 0;
-    virtual Chimera::Status_t         deinit()                                                                            = 0;
-    virtual int               transmit( const Chimera::Serial::TxfrMode mode, const void *const data, const size_t size ) = 0;
-    virtual int               receive( const Chimera::Serial::TxfrMode mode, void *const data, const size_t size )        = 0;
-    virtual Chimera::Status_t txTransferStatus()                                                                          = 0;
-    virtual Chimera::Status_t rxTransferStatus()                                                                          = 0;
-    virtual uint32_t          getFlags()                                                                                  = 0;
-    virtual void              clearFlags( const uint32_t flagBits )                                                       = 0;
-    virtual Thor::LLD::Serial::CDTCB *getTCB_TX()                                                                         = 0;
-    virtual Thor::LLD::Serial::MDTCB *getTCB_RX()                                                                         = 0;
-    virtual void                      killTransfer( Chimera::Hardware::SubPeripheral periph )                             = 0;
+    virtual Chimera::Peripheral::Type periphType()                                                                 = 0;
+    virtual Chimera::Status_t         init( const RegConfig &cfg )                                                 = 0;
+    virtual Chimera::Status_t         deinit()                                                                     = 0;
+    virtual int                       transmit( const Chimera::Serial::TxfrMode mode, etl::span<uint8_t> &buffer ) = 0;
+    virtual int                       receive( const Chimera::Serial::TxfrMode mode, etl::span<uint8_t> &buffer )  = 0;
+    virtual Chimera::Status_t         txTransferStatus()                                                           = 0;
+    virtual Chimera::Status_t         rxTransferStatus()                                                           = 0;
+    virtual uint32_t                  getFlags()                                                                   = 0;
+    virtual void                      clearFlags( const uint32_t flagBits )                                        = 0;
+    virtual Thor::LLD::Serial::CDTCB *getTCB_TX()                                                                  = 0;
+    virtual Thor::LLD::Serial::MDTCB *getTCB_RX()                                                                  = 0;
+    virtual void                      killTransfer( Chimera::Hardware::SubPeripheral periph )                      = 0;
 
   protected:
     ~HwInterface() = default;

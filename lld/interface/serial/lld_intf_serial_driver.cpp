@@ -24,21 +24,10 @@ namespace Thor::LLD::Serial
   static constexpr size_t NUM_DRIVERS = Thor::LLD::Serial::NUM_SERIAL_PERIPHS;
 
   /*---------------------------------------------------------------------------
-  Structures
-  ---------------------------------------------------------------------------*/
-  // class ThorImpl
-  // {
-  // public:
-  //   Driver_rPtr pIntfDriver;
-  //   HwInterface hwIntf;
-  // };
-
-  /*---------------------------------------------------------------------------
   Static Data
   ---------------------------------------------------------------------------*/
   static size_t                                                                s_driver_initialized;
   static Chimera::DeviceManager<Driver, Chimera::Serial::Channel, NUM_DRIVERS> s_raw_drivers;
-  // static Chimera::DeviceManager<ThorImpl, Chimera::Serial::Channel, NUM_DRIVERS> s_impl_drivers;
 
   /*---------------------------------------------------------------------------
   Public Functions
@@ -53,15 +42,15 @@ namespace Thor::LLD::Serial
       return Chimera::Status::OK;
     }
 
-    /*-------------------------------------------------------------------------
-    Initialize the low level drivers
-    -------------------------------------------------------------------------*/
-    #if defined( THOR_USART )
+/*-------------------------------------------------------------------------
+Initialize the low level drivers
+-------------------------------------------------------------------------*/
+#if defined( THOR_USART )
     RT_HARD_ASSERT( Chimera::Status::OK == Thor::LLD::USART::initialize() );
-    #endif
-    #if defined( THOR_UART )
+#endif
+#if defined( THOR_UART )
     RT_HARD_ASSERT( Chimera::Status::OK == Thor::LLD::UART::initialize() );
-    #endif
+#endif
 
     s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::Status::OK;
@@ -73,7 +62,7 @@ namespace Thor::LLD::Serial
     /*-------------------------------------------------------------------------
     Input Protections
     -------------------------------------------------------------------------*/
-    if( ( channel >= Chimera::Serial::Channel::NUM_OPTIONS ) || ( intf == nullptr ) )
+    if ( ( channel >= Chimera::Serial::Channel::NUM_OPTIONS ) || ( intf == nullptr ) )
     {
       return;
     }
@@ -114,9 +103,9 @@ namespace Thor::LLD::Serial
   Chimera::Status_t Driver::open( const Chimera::Serial::Config &config )
   {
     RegConfig regCfg;
-    regCfg.BaudRate   = static_cast<uint32_t>( config.baud );
+    regCfg.BaudRate = static_cast<uint32_t>( config.baud );
 
-    if( mHWIntf->periphType() == Chimera::Peripheral::Type::PERIPH_USART )
+    if ( mHWIntf->periphType() == Chimera::Peripheral::Type::PERIPH_USART )
     {
       regCfg.Mode       = Thor::LLD::USART::Configuration::Modes::TX_RX;
       regCfg.Parity     = Thor::LLD::USART::ConfigMap::Parity[ EnumValue( config.parity ) ];
@@ -134,15 +123,15 @@ namespace Thor::LLD::Serial
   }
 
 
-  int Driver::write( const Chimera::Serial::TxfrMode mode, const void *const buffer, const size_t length )
+  int Driver::write( const Chimera::Serial::TxfrMode mode, etl::span<uint8_t> &buffer )
   {
-    return mHWIntf->transmit( mode, buffer, length );
+    return mHWIntf->transmit( mode, buffer );
   }
 
 
-  int Driver::read( const Chimera::Serial::TxfrMode mode, void *const buffer, const size_t length )
+  int Driver::read( const Chimera::Serial::TxfrMode mode, etl::span<uint8_t> &buffer )
   {
-    return mHWIntf->receive( mode, buffer, length );
+    return mHWIntf->receive( mode, buffer );
   }
 
 

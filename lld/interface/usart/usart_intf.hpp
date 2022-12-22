@@ -120,14 +120,14 @@ namespace Thor::LLD::USART
     Chimera::Status_t reset();
     Chimera::Status_t enableIT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t disableIT( const Chimera::Hardware::SubPeripheral periph );
-    Chimera::Status_t txInterrupt( const void *const data, const size_t size );
-    Chimera::Status_t receiveIT( void *const data, const size_t size );
+    Chimera::Status_t txInterrupt( etl::span<uint8_t> &buffer );
+    Chimera::Status_t receiveIT( etl::span<uint8_t> &buffer );
     Chimera::Status_t initDMA();
     Chimera::Status_t deinitDMA();
     Chimera::Status_t enableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t disableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
-    Chimera::Status_t txDMA( const void *const data, const size_t size );
-    Chimera::Status_t receiveDMA( void *const data, const size_t size );
+    Chimera::Status_t txDMA( etl::span<uint8_t> &buffer );
+    Chimera::Status_t receiveDMA( etl::span<uint8_t> &buffer );
 
     /*-------------------------------------------------------------------------
     Virtual Interface
@@ -139,8 +139,8 @@ namespace Thor::LLD::USART
 
     Chimera::Status_t init( const Thor::LLD::Serial::RegConfig &cfg ) final override;
     Chimera::Status_t deinit() final override;
-    int transmit( const Chimera::Serial::TxfrMode mode, const void *const data, const size_t size ) final override;
-    int receive( const Chimera::Serial::TxfrMode mode, void *const data, const size_t size ) final override;
+    int transmit( const Chimera::Serial::TxfrMode mode, etl::span<uint8_t> &buffer ) final override;
+    int receive( const Chimera::Serial::TxfrMode mode, etl::span<uint8_t> &buffer ) final override;
     Chimera::Status_t         txTransferStatus() final override;
     Chimera::Status_t         rxTransferStatus() final override;
     uint32_t                  getFlags() final override;
@@ -156,7 +156,7 @@ namespace Thor::LLD::USART
     friend void( ::USART3_IRQHandler )();
     friend void( ::USART6_IRQHandler )();
 
-    Chimera::Status_t txBlocking( const void *const data, const size_t size );
+    Chimera::Status_t txBlocking( etl::span<uint8_t> &buffer );
 
     /**
      *  Generic interrupt handler for all USART specific ISR signals
