@@ -838,6 +838,9 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     if ( ( ISR & ANY_WDG_TRIP ) && mCallbacks[ EnumValue( Chimera::ADC::Interrupt::ANALOG_WD ) ] )
     {
+      /* ACK the event, only writing the specific bits to clear */
+      ISR_ALL::set( mPeriph, ANY_WDG_TRIP );
+
       /* Populate the data for the ADC handler */
       Chimera::ADC::InterruptDetail isrData;
       isrData.clear();
@@ -845,9 +848,6 @@ namespace Thor::LLD::ADC
 
       /* Invoke the user handler */
       mCallbacks[ EnumValue( Chimera::ADC::Interrupt::ANALOG_WD ) ]( isrData );
-
-      /* ACK the event, only writing the specific bits to clear */
-      ISR_ALL::set( mPeriph, ANY_WDG_TRIP );
     }
   }
 

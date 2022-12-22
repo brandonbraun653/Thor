@@ -228,24 +228,48 @@ namespace Chimera::Serial
   }
 
 
-  int Driver::write( const void *const buffer, const size_t length )
+  int Driver::write( const void *const buffer, const size_t length, const size_t timeout )
   {
     using namespace Chimera::Thread;
     using namespace Chimera::Event;
 
     Chimera::Thread::LockGuard _lck( *this );
+    RT_DBG_ASSERT( mImpl );
+    auto   thorImpl     = reinterpret_cast<ThorImpl *>( mImpl );
+    size_t elapsed_time = 0;
+    size_t write_size = 0;
+
+    /*-------------------------------------------------------------------------
+    Wait for a previous transaction to have completed
+    -------------------------------------------------------------------------*/
+    if( timeout != TIMEOUT_DONT_WAIT )
+    {
+      size_t start_time = Chimera::millis();
+      bool   expired    = false;
+
+      while ( !expired && ( thorImpl->pLLDriver->txStatus() != Status::TX_READY ) )
+      {
+        Chimera::Thread::this_thread::yield();
+        elapsed_time = Chimera::millis() - start_time;
+        expired      = elapsed_time < timeout;
+      }
+
+      if ( expired )
+      {
+        return write_size;
+      }
+    }
 
     /*-------------------------------------------------------------------------
     Determine how much data can actually be written
     -------------------------------------------------------------------------*/
-    RT_DBG_ASSERT( mImpl );
-    auto   thorImpl  = reinterpret_cast<ThorImpl *>( mImpl );
-    size_t writeSize = std::min<size_t>( thorImpl->pTxBuffer->available(), length );
+    write_size = std::min<size_t>( thorImpl->pTxBuffer->available(), length );
 
-    if ( writeSize > 0 )
+    if ( write_size > 0 )
     {
       /*-----------------------------------------------------------------------
-      Commit the data to the buffer
+      Commit the data to the buffer. If HW is not immediately available for
+      transfer, it will be scheduled at the end of the current transmission.
       -----------------------------------------------------------------------*/
       auto write_span = thorImpl->pTxBuffer->write_reserve( length );
       memcpy( write_span.data(), buffer, length );
@@ -256,6 +280,12 @@ namespace Chimera::Serial
       -----------------------------------------------------------------------*/
       if( thorImpl->pLLDriver->txStatus() == Status::TX_READY )
       {
+        /*---------------------------------------------------------------------
+        Reset the AIO signals to ensure callers will be get notified of this
+        transaction and not a previously cached event.
+        ---------------------------------------------------------------------*/
+        this->resetAIO();
+
         /*---------------------------------------------------------------------
         Reserve a contiguous block of memory for the transaction, then use that
         for the hardware transfer. This cleanly supports DMA.
@@ -273,13 +303,21 @@ namespace Chimera::Serial
           this->signalAIO( Trigger::TRIGGER_WRITE_COMPLETE );
         }
       }
+
+      /*-----------------------------------------------------------------------
+      Use the remaining timeout window to wait for completion
+      -----------------------------------------------------------------------*/
+      if( ( timeout != TIMEOUT_DONT_WAIT ) && ( elapsed_time < timeout ) )
+      {
+        this->await( Trigger::TRIGGER_WRITE_COMPLETE, ( timeout - elapsed_time ) );
+      }
     }
 
-    return writeSize;
+    return write_size;
   }
 
 
-  int Driver::read( void *const buffer, const size_t length )
+  int Driver::read( void *const buffer, const size_t length, const size_t timeout )
   {
     RT_DBG_ASSERT( mImpl );
     auto   thorImpl = reinterpret_cast<ThorImpl *>( mImpl );
@@ -316,6 +354,7 @@ namespace Chimera::Serial
     if ( flags & Thor::LLD::Serial::Flag::TX_COMPLETE )
     {
       auto tcb = pLLDriver->getTCB_TX();
+
       /*-----------------------------------------------------------------------
       Clear the flags which got us here
       -----------------------------------------------------------------------*/
@@ -329,19 +368,20 @@ namespace Chimera::Serial
       pTxBuffer->read_commit( tmp );
 
       /*-----------------------------------------------------------------------
+      Notify those waiting on the TX complete
+      -----------------------------------------------------------------------*/
+      pHLDriver->signalAIO( Chimera::Event::Trigger::TRIGGER_WRITE_COMPLETE );
+
+      /*-----------------------------------------------------------------------
       If more data is waiting in the TX buffer, transmit it. This will only
       execute if the driver has been configured for IT/DMA based transfers.
       -----------------------------------------------------------------------*/
       if( pTxBuffer->size() )
       {
+        Chimera::Thread::LockGuard _lck( *pHLDriver );
         auto read_span = pTxBuffer->read_reserve( pTxBuffer->size() );
         pLLDriver->write( mTxfrMode, read_span.data(), read_span.size() );
       }
-
-      /*-----------------------------------------------------------------------
-      Notify those waiting on the TX complete
-      -----------------------------------------------------------------------*/
-      pHLDriver->signalAIO( Chimera::Event::Trigger::TRIGGER_WRITE_COMPLETE );
     }
 
     /*-------------------------------------------------------------------------------
