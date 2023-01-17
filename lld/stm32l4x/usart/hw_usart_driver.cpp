@@ -3,15 +3,15 @@
  *    hw_usart_driver.cpp
  *
  *  Description:
- *    Common driver interface implementation
+ *    Common driver interface implementation for STM32L4 chips
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/assert>
-
-/* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/usart>
 #include <Thor/lld/interface/usart/common_driver/usart_common_intf.hpp>
@@ -23,7 +23,7 @@ namespace Thor::LLD::USART
   ---------------------------------------------------------------------------*/
   void prjEnableTransmitter( RegisterMap *const periph )
   {
-    if( !UE::get( periph ) )
+    if ( !UE::get( periph ) )
     {
       UE::set( periph, CR1_UE );
     }
@@ -40,7 +40,7 @@ namespace Thor::LLD::USART
 
   void prjEnableReceiver( RegisterMap *const periph )
   {
-    if( !UE::get( periph ) )
+    if ( !UE::get( periph ) )
     {
       UE::set( periph, CR1_UE );
     }
@@ -69,7 +69,7 @@ namespace Thor::LLD::USART
 
   void prjEnableISRSignal( RegisterMap *const periph, const ISRSignal signal )
   {
-    switch( signal )
+    switch ( signal )
     {
       case ISRSignal::PARITY_ERROR:
         PEIE::set( periph, CR1_PEIE );
@@ -100,7 +100,7 @@ namespace Thor::LLD::USART
 
   void prjDisableISRSignal( RegisterMap *const periph, const ISRSignal signal )
   {
-    switch( signal )
+    switch ( signal )
     {
       case ISRSignal::PARITY_ERROR:
         PEIE::clear( periph, CR1_PEIE );
@@ -131,7 +131,7 @@ namespace Thor::LLD::USART
 
   bool prjGetISRSignal( RegisterMap *const periph, const ISRSignal signal )
   {
-    switch( signal )
+    switch ( signal )
     {
       case ISRSignal::PARITY_ERROR:
         return PE::get( periph );
@@ -163,7 +163,7 @@ namespace Thor::LLD::USART
 
   void prjSetISRSignal( RegisterMap *const periph, const ISRSignal signal )
   {
-    switch( signal )
+    switch ( signal )
     {
       case ISRSignal::PARITY_ERROR:
       case ISRSignal::TRANSMIT_DATA_REG_EMPTY:
@@ -182,22 +182,30 @@ namespace Thor::LLD::USART
 
   void prjClrISRSignal( RegisterMap *const periph, const ISRSignal signal )
   {
-    switch( signal )
+    switch ( signal )
     {
       case ISRSignal::PARITY_ERROR:
+        PECF::set( periph, ICR_PECF );
+        break;
+
       case ISRSignal::LINE_IDLE:
-        // Can only be cleared by reading SR, then read/write access to DR
-        return;
+        while( IDLE::get( periph ) == ISR_IDLE )
+        {
+          IDLECF::set( periph, ICR_IDLECF );
+        }
         break;
 
       case ISRSignal::RECEIVED_DATA_READY:
       case ISRSignal::TRANSMIT_DATA_REG_EMPTY:
         // Can only be cleared via read/write to data register
-        return;
         break;
 
       case ISRSignal::TRANSMIT_COMPLETE:
         TC::set( periph, 0 );
+        break;
+
+      case ISRSignal::OVERRUN_ERROR:
+        ORECF::set( periph, ICR_ORECF );
         break;
 
       default:

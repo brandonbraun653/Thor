@@ -95,7 +95,7 @@ namespace Chimera::USART
       // if ( length <= mRxBuffers.linearSize() )
       // {
       //   memset( mRxBuffers.linearBuffer(), 0, mRxBuffers.linearSize() );
-      //   error = lldriver->receiveIT( mRxBuffers.linearBuffer(), length );
+      //   error = lldriver->rxInterrupt( mRxBuffers.linearBuffer(), length );
 
       //   if ( error == Chimera::Status::OK )
       //   {
@@ -123,7 +123,7 @@ namespace Chimera::USART
       // if ( length <= mRxBuffers.linearSize() )
       // {
       //   memset( mRxBuffers.linearBuffer(), 0, mRxBuffers.linearSize() );
-      //   error = lldriver->receiveDMA( mRxBuffers.linearBuffer(), length );
+      //   error = lldriver->rxDMA( mRxBuffers.linearBuffer(), length );
 
       //   if ( error == Chimera::Status::OK )
       //   {

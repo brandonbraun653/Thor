@@ -5,7 +5,7 @@
  *  Description:
  *    Serial (UART) driver interface for STM32 UART/USART peripherals
  *
- *  2022 | Brandon Braun | brandonbraun653@protonmail.com
+ *  2022-2023 | Brandon Braun | brandonbraun653@protonmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -31,11 +31,11 @@ namespace Chimera::Serial
   class ThorImpl
   {
   public:
-    Thor::LLD::Serial::Driver_rPtr    pLLDriver;
-    Chimera::Serial::Driver_rPtr      pHLDriver;
-    Chimera::Serial::BipBuffer       *pTxBuffer;
-    Chimera::Serial::BipBuffer       *pRxBuffer;
-    Chimera::Serial::TxfrMode         mTxfrMode;
+    Thor::LLD::Serial::Driver_rPtr pLLDriver;
+    Chimera::Serial::Driver_rPtr   pHLDriver;
+    Chimera::Serial::BipBuffer    *pTxBuffer;
+    Chimera::Serial::BipBuffer    *pRxBuffer;
+    Chimera::Serial::TxfrMode      mTxfrMode;
 
     ThorImpl();
     void postISRProcessing();
@@ -47,7 +47,7 @@ namespace Chimera::Serial
   Static Data
   ---------------------------------------------------------------------------*/
   static size_t                                                         s_driver_initialized;
-  static uint32_t                                                       s_serX_thread_stack[ STACK_BYTES( 640 ) ];
+  static uint32_t                                                       s_serX_thread_stack[ STACK_BYTES( 1024 ) ];
   static DeviceManager<Driver, Chimera::Serial::Channel, NUM_DRIVERS>   s_raw_drivers;
   static DeviceManager<ThorImpl, Chimera::Serial::Channel, NUM_DRIVERS> s_impl_drivers;
 
@@ -213,14 +213,24 @@ namespace Chimera::Serial
     /*-------------------------------------------------------------------------
     Initialize the low level driver
     -------------------------------------------------------------------------*/
-    return impl->pLLDriver->open( config );
+    auto open_result = impl->pLLDriver->open( config );
+
+    /*-------------------------------------------------------------------------
+    Start listening on the bus for data
+    -------------------------------------------------------------------------*/
+    if ( open_result == Chimera::Status::OK )
+    {
+      impl->toggleAsyncListening( true );
+    }
+
+    return open_result;
   }
 
 
   Chimera::Status_t Driver::close()
   {
     RT_DBG_ASSERT( mImpl );
-    auto   thorImpl  = reinterpret_cast<ThorImpl *>( mImpl );
+    auto thorImpl = reinterpret_cast<ThorImpl *>( mImpl );
 
     thorImpl->pTxBuffer->clear();
     thorImpl->pRxBuffer->clear();
@@ -237,12 +247,12 @@ namespace Chimera::Serial
     RT_DBG_ASSERT( mImpl );
     auto   thorImpl     = reinterpret_cast<ThorImpl *>( mImpl );
     size_t elapsed_time = 0;
-    size_t write_size = 0;
+    size_t write_size   = 0;
 
     /*-------------------------------------------------------------------------
     Wait for a previous transaction to have completed
     -------------------------------------------------------------------------*/
-    if( timeout != TIMEOUT_DONT_WAIT )
+    if ( timeout != TIMEOUT_DONT_WAIT )
     {
       size_t start_time = Chimera::millis();
       bool   expired    = false;
@@ -278,7 +288,7 @@ namespace Chimera::Serial
       /*-----------------------------------------------------------------------
       If possible, attempt to start the transfer now
       -----------------------------------------------------------------------*/
-      if( thorImpl->pLLDriver->txStatus() == Status::TX_READY )
+      if ( thorImpl->pLLDriver->txStatus() == Status::TX_READY )
       {
         /*---------------------------------------------------------------------
         Reset the AIO signals to ensure callers will be get notified of this
@@ -307,7 +317,7 @@ namespace Chimera::Serial
       /*-----------------------------------------------------------------------
       Use the remaining timeout window to wait for completion
       -----------------------------------------------------------------------*/
-      if( ( timeout != TIMEOUT_DONT_WAIT ) && ( elapsed_time < timeout ) )
+      if ( ( timeout != TIMEOUT_DONT_WAIT ) && ( elapsed_time < timeout ) )
       {
         this->await( Trigger::TRIGGER_WRITE_COMPLETE, ( timeout - elapsed_time ) );
       }
@@ -319,17 +329,47 @@ namespace Chimera::Serial
 
   int Driver::read( void *const buffer, const size_t length, const size_t timeout )
   {
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if ( ( buffer == nullptr ) || ( length == 0 ) )
+    {
+      return -1;
+    }
+
+    /*-------------------------------------------------------------------------
+    Wait for the appropriate amount of data to arrive
+    -------------------------------------------------------------------------*/
     RT_DBG_ASSERT( mImpl );
     auto   thorImpl = reinterpret_cast<ThorImpl *>( mImpl );
     size_t readSize = std::min<size_t>( thorImpl->pRxBuffer->size(), length );
 
-    if ( ( buffer != nullptr ) && ( readSize > 0 ) )
+    if ( readSize == 0 )
+    {
+      if ( timeout == 0 )
+      {
+        return readSize;
+      }
+
+      this->await( Chimera::Event::Trigger::TRIGGER_READ_COMPLETE, timeout );
+      readSize = std::min<size_t>( thorImpl->pRxBuffer->size(), length );
+    }
+
+    /*-------------------------------------------------------------------------
+    Read the data out
+    -------------------------------------------------------------------------*/
+    if ( readSize > 0 )
     {
       auto read_span = thorImpl->pRxBuffer->read_reserve( readSize );
       memcpy( buffer, read_span.data(), readSize );
       thorImpl->pRxBuffer->read_commit( read_span );
     }
 
+    /*-------------------------------------------------------------------------
+    Ensure we're always listening at the end of a read to ensure we don't miss
+    any new data that might be coming on the bus.
+    -------------------------------------------------------------------------*/
+    thorImpl->toggleAsyncListening( true );
     return readSize;
   }
 
@@ -340,6 +380,7 @@ namespace Chimera::Serial
   ThorImpl::ThorImpl() : pLLDriver( nullptr ), pHLDriver( nullptr )
   {
   }
+
 
   void ThorImpl::postISRProcessing()
   {
@@ -375,10 +416,10 @@ namespace Chimera::Serial
       If more data is waiting in the TX buffer, transmit it. This will only
       execute if the driver has been configured for IT/DMA based transfers.
       -----------------------------------------------------------------------*/
-      if( pTxBuffer->size() )
+      if ( pTxBuffer->size() )
       {
         Chimera::Thread::LockGuard _lck( *pHLDriver );
-        auto read_span = pTxBuffer->read_reserve( pTxBuffer->size() );
+        auto                       read_span = pTxBuffer->read_reserve( pTxBuffer->size() );
         pLLDriver->write( mTxfrMode, read_span );
       }
     }
@@ -388,14 +429,19 @@ namespace Chimera::Serial
     -------------------------------------------------------------------------------*/
     if ( ( flags & Thor::LLD::Serial::Flag::RX_COMPLETE ) || ( flags & Thor::LLD::Serial::Flag::RX_LINE_IDLE_ABORT ) )
     {
+      auto tcb = pLLDriver->getTCB_RX();
+
       /*-----------------------------------------------------------------------
       Clear the flags which got us here
       -----------------------------------------------------------------------*/
       pLLDriver->clearFlags( Thor::LLD::Serial::Flag::RX_COMPLETE );
       pLLDriver->clearFlags( Thor::LLD::Serial::Flag::RX_LINE_IDLE_ABORT );
 
-
-      // TODO BMB: Get the TCB and commit the write span
+      /*-----------------------------------------------------------------------
+      Indicate we've consumed the allocated write span, up to the amount RX'd
+      -----------------------------------------------------------------------*/
+      const size_t rx_txfr_act_size  = tcb->expected - tcb->remaining;
+      pRxBuffer->write_commit( tcb->buffer.subspan( 0, rx_txfr_act_size ) );
 
       /*-----------------------------------------------------------------------
       Finally, start listening once more for more data
@@ -403,7 +449,7 @@ namespace Chimera::Serial
       this->toggleAsyncListening( true );
 
       /*-----------------------------------------------------------------------
-      Notify those waiting on the RX complete
+      Notify those waiting on RX complete
       -----------------------------------------------------------------------*/
       pHLDriver->signalAIO( Chimera::Event::Trigger::TRIGGER_READ_COMPLETE );
     }
@@ -412,15 +458,19 @@ namespace Chimera::Serial
 
   void ThorImpl::toggleAsyncListening( const bool state )
   {
+    using namespace Thor::LLD::Serial;
+
     /*-------------------------------------------------------------------------
     Start listening if requested, else kill ongoing
     -------------------------------------------------------------------------*/
-    if ( state )
+    auto rx_status = pLLDriver->rxStatus();
+    if ( state && ( ( rx_status == StateMachine::RX::RX_COMPLETE ) || ( rx_status == StateMachine::RX::RX_READY ) ) )
     {
-      auto write_span = pRxBuffer->write_reserve( pRxBuffer->available() );
+      auto free_space = pRxBuffer->available();
+      auto write_span = pRxBuffer->write_reserve( free_space );
       pLLDriver->read( mTxfrMode, write_span );
     }
-    else
+    else if( !state )
     {
       pLLDriver->mHWIntf->killTransfer( Chimera::Hardware::SubPeripheral::RX );
     }

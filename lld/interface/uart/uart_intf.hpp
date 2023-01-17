@@ -127,13 +127,13 @@ namespace Thor::LLD::UART
     Chimera::Status_t enableIT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t disableIT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t txInterrupt( const void *const data, const size_t size );
-    Chimera::Status_t receiveIT( void *const data, const size_t size );
+    Chimera::Status_t rxInterrupt( void *const data, const size_t size );
     Chimera::Status_t initDMA();
     Chimera::Status_t deinitDMA();
     Chimera::Status_t enableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t disableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t txDMA( const void *const data, const size_t size );
-    Chimera::Status_t receiveDMA( void *const data, const size_t size );
+    Chimera::Status_t rxDMA( void *const data, const size_t size );
     Chimera::Status_t txTransferStatus();
     Chimera::Status_t rxTransferStatus();
     uint32_t getFlags();

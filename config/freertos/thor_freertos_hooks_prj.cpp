@@ -5,18 +5,16 @@
  *  Description:
  *    Implements Thor hooks into common FreeRTOS callback functions
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
-/* Aurora Logging */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Aurora/logging>
-
-/* Chimera Includes */
 #include <Chimera/common>
 #include <Chimera/thread>
 #include <Chimera/system>
-
-/* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/cortex-m4/system_time.hpp>
 
@@ -65,6 +63,15 @@ namespace Chimera::Thread::FreeRTOS
 
   void ApplicationIdleHook()
   {
+    /*-------------------------------------------------------------------------
+    Put the processor into a low power state until something happens
+    -------------------------------------------------------------------------*/
+#if defined( CORTEX_M4 )
+    __asm volatile( "dsb" );  /* Ensure memory transactions complete */
+    __asm volatile( "wfi" );  /* Sleep */
+    __asm volatile( "isb" );  /* Force the wfi execution before anything else */
+#endif
+
   }
 
 }    // namespace Chimera::Thread::FreeRTOS

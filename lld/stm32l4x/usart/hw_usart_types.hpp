@@ -117,10 +117,6 @@ namespace Thor::LLD::USART
       static constexpr Flag_t TX_DR_EMPTY       = Configuration::Flags::FLAG_TXE;
       static constexpr Flag_t RX_LINE_IN_BREAK  = Configuration::Flags::FLAG_LBD;
       static constexpr Flag_t CTL_CLEAR_TO_SEND = Configuration::Flags::FLAG_CTS;
-
-      /* Use the remaining 6 bits for other signals */
-      static constexpr Flag_t RX_LINE_IDLE_ABORT = ( 1u << 26 );
-      static constexpr Flag_t RX_COMPLETE        = ( 1u << 27 );
     }    // namespace Flag
   }      // namespace Runtime
 

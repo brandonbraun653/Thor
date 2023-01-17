@@ -262,11 +262,11 @@ namespace Thor::LLD::DMA
 
   Chimera::Status_t Stream::abort()
   {
-    /*-------------------------------------------------------------------------
-    Should abruptly disable the hardware and fire an
-    ISR if there is an ongoing transfer
-    -------------------------------------------------------------------------*/
-    EN::clear( mStream, CCR_EN );
+    disableInterrupts();
+    {
+      EN::clear( mStream, CCR_EN );
+    }
+    enableInterrupts();
     return Chimera::Status::OK;
   }
 

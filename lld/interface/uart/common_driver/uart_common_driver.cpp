@@ -301,7 +301,7 @@ namespace Thor::LLD::UART
   }
 
 
-  Chimera::Status_t Driver::receiveIT( void *const data, const size_t size )
+  Chimera::Status_t Driver::rxInterrupt( void *const data, const size_t size )
   {
     /*-------------------------------------------------------------------------
     Input protection
@@ -378,7 +378,7 @@ namespace Thor::LLD::UART
   }
 
 
-  Chimera::Status_t Driver::receiveDMA( void *const data, const size_t size )
+  Chimera::Status_t Driver::rxDMA( void *const data, const size_t size )
   {
     return Chimera::Status::NOT_SUPPORTED;
   }

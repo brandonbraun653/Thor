@@ -60,10 +60,11 @@ struct StreamStatus
 /*-------------------------------------------------------------------------------
 Static Data
 -------------------------------------------------------------------------------*/
-static PipeCfgMap                            s_pipe_map;      /**< Local storage of all configured pipes */
-static etl::random_xorshift                  s_rng;           /**< RNG for request Ids */
-static Chimera::Thread::RecursiveMutex       s_dma_lock;      /**< Module lock */
-static std::array<StreamStatus, NUM_DRIVERS> s_stream_status; /**< Current state of a stream */
+static PipeCfgMap                            s_pipe_map;          /**< Local storage of all configured pipes */
+static uint32_t                              s_dma_pipe_uuid;     /**< Unique IDs for pipe registration */
+static uint32_t                              s_dma_request_uuid;  /**< Unique IDs for request generation */
+static Chimera::Thread::RecursiveMutex       s_dma_lock;          /**< Module lock */
+static std::array<StreamStatus, NUM_DRIVERS> s_stream_status;     /**< Current state of a stream */
 
 namespace Thor::DMA
 {
@@ -196,7 +197,8 @@ namespace Chimera::DMA::Backend
     LockGuard lck( s_dma_lock );
 
     s_pipe_map.clear();
-    s_rng.initialise( Chimera::millis() );
+    s_dma_pipe_uuid    = 0;
+    s_dma_request_uuid = 0;
 
     return Chimera::Status::OK;
   }
@@ -277,10 +279,10 @@ namespace Chimera::DMA::Backend
     /*-------------------------------------------------------------------------
     New request pipe
     -------------------------------------------------------------------------*/
-    Chimera::DMA::RequestId id = s_rng();
+    Chimera::DMA::RequestId id = s_dma_pipe_uuid++;
     s_pipe_map.insert( { id, config } );
 
-    return id;
+    return s_dma_pipe_uuid - 1u;
   }
 
 
@@ -326,7 +328,7 @@ namespace Chimera::DMA::Backend
     tcb.srcAddress         = transfer.src;
     tcb.dstAddress         = transfer.dst;
     tcb.transferSize       = transfer.size;
-    tcb.requestId          = s_rng();
+    tcb.requestId          = s_dma_request_uuid++;
     tcb.elementSize        = transfer.alignment;
     tcb.persistent         = false;
     tcb.wakeUserOnComplete = true;
@@ -417,7 +419,7 @@ namespace Chimera::DMA::Backend
     cfg.direction          = pipeCfg.direction;
     cfg.priority           = pipeCfg.priority;
     tcb.transferSize       = transfer.size;
-    tcb.requestId          = s_rng();
+    tcb.requestId          = s_dma_request_uuid++;
     tcb.errorsToIgnore     = pipeCfg.errorsToIgnore;
     tcb.elementSize        = pipeCfg.srcAlignment;
     tcb.persistent         = pipeCfg.persistent;

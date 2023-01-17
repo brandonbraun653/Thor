@@ -120,14 +120,10 @@ namespace Thor::LLD::USART
     Chimera::Status_t reset();
     Chimera::Status_t enableIT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t disableIT( const Chimera::Hardware::SubPeripheral periph );
-    Chimera::Status_t txInterrupt( etl::span<uint8_t> &buffer );
-    Chimera::Status_t receiveIT( etl::span<uint8_t> &buffer );
     Chimera::Status_t initDMA();
     Chimera::Status_t deinitDMA();
     Chimera::Status_t enableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
     Chimera::Status_t disableDMA_IT( const Chimera::Hardware::SubPeripheral periph );
-    Chimera::Status_t txDMA( etl::span<uint8_t> &buffer );
-    Chimera::Status_t receiveDMA( etl::span<uint8_t> &buffer );
 
     /*-------------------------------------------------------------------------
     Virtual Interface
@@ -157,6 +153,11 @@ namespace Thor::LLD::USART
     friend void( ::USART6_IRQHandler )();
 
     Chimera::Status_t txBlocking( etl::span<uint8_t> &buffer );
+    Chimera::Status_t rxBlocking( etl::span<uint8_t> &buffer );
+    Chimera::Status_t txInterrupt( etl::span<uint8_t> &buffer );
+    Chimera::Status_t rxInterrupt( etl::span<uint8_t> &buffer );
+    Chimera::Status_t txDMA( etl::span<uint8_t> &buffer );
+    Chimera::Status_t rxDMA( etl::span<uint8_t> &buffer );
 
     /**
      *  Generic interrupt handler for all USART specific ISR signals
@@ -171,7 +172,7 @@ namespace Thor::LLD::USART
     -------------------------------------------------------------------------*/
     RegisterMap            *mPeriph;         /**< Points to the hardware registers for this instance */
     size_t                  mResourceIndex;  /**< Derived lookup table index for resource access */
-    volatile Reg32_t        mRuntimeFlags;   /**< Error/process flags set at runtime to indicate state */
+    volatile Reg32_t        mSerialFlags;   /**< Error/process flags set at runtime to indicate state */
     Chimera::DMA::RequestId mTXDMARequestId; /**< Request id of the TX DMA pipe for the driver */
     Chimera::DMA::RequestId mRXDMARequestId; /**< Request id of the RX DMA pipe for the driver */
     bool                    mDMAPipesReady;  /**< Track if the DMA pipes have been established */
