@@ -334,7 +334,7 @@ namespace Thor::LLD::USART
 
       /* Configure the DMA transfer */
       PipeTransfer cfg;
-      cfg.userCallback = TransferCallback::create<Driver, &Driver::onDMATXComplete>( *this );
+      cfg.isrCallback = TransferCallback::create<Driver, &Driver::onDMATXComplete>( *this );
       cfg.pipe        = mTXDMARequestId;
       cfg.size        = buffer.size();
       cfg.addr        = reinterpret_cast<std::uintptr_t>( buffer.data() );
@@ -1053,6 +1053,7 @@ namespace Thor::LLD::USART
       }
 
       /* Wake the user thread to perform more complex actions */
+      mSerialFlags |= Serial::Flag::TX_COMPLETE;
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_USART ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
     }
   }
