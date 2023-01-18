@@ -5,7 +5,7 @@
  *  Description:
  *    DMA Stream Implementation
  *
- *  2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2022-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -260,14 +260,42 @@ namespace Thor::LLD::DMA
   }
 
 
-  Chimera::Status_t Stream::abort()
+  void Stream::abort()
   {
-    disableInterrupts();
+    using namespace Chimera::Peripheral;
+    using namespace Chimera::Thread;
+
+    /*-------------------------------------------------------------------------
+    Disable interrupts and the stream
+    -------------------------------------------------------------------------*/
+    mStream->CCR &= ~( CCR_TCIE | CCR_HTIE | CCR_TEIE );
+    EN::clear( mStream, CCR_EN );
+    reset_isr_flags();
+    mStreamTCB.state               = StreamState::TRANSFER_IDLE;
+    mStreamTCB.transferError       = false;
+    mStreamTCB.elementsTransferred = mStreamTCB.transferSize - NDT::get( mStream );
+
+    /*-------------------------------------------------------------------------
+    If an ISR callback was registered, invoke it now
+    -------------------------------------------------------------------------*/
+    if ( mStreamTCB.isrCallback )
     {
-      EN::clear( mStream, CCR_EN );
+      Chimera::DMA::TransferStats stats;
+      stats.error     = mStreamTCB.transferError;
+      stats.requestId = mStreamTCB.requestId;
+      stats.size      = mStreamTCB.elementsTransferred;
+
+      mStreamTCB.isrCallback( stats );
     }
-    enableInterrupts();
-    return Chimera::Status::OK;
+
+    /*-------------------------------------------------------------------------
+    Let the user thread handle acknowledging the result and associated callback
+    -------------------------------------------------------------------------*/
+    if( mStreamTCB.wakeUserOnComplete )
+    {
+      Resource::ISRQueue.push( mStreamTCB );
+      sendTaskMsg( INT::getUserTaskId( Type::PERIPH_DMA ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
+    }
   }
 
 
@@ -302,7 +330,7 @@ namespace Thor::LLD::DMA
     {
       disableIsr               = true;
       wakeUserThread           = mStreamTCB.wakeUserOnComplete;
-      mStreamTCB.state         = StreamState::ERROR;
+      mStreamTCB.state         = StreamState::TRANSFER_IDLE;
       mStreamTCB.transferError = true;
     }
 
@@ -313,7 +341,8 @@ namespace Thor::LLD::DMA
     {
       mStreamTCB.selectedChannel     = channel;
       mStreamTCB.elementsTransferred = mStreamTCB.transferSize - NDT::get( mStream );
-      mStreamTCB.state               = StreamState::TRANSFER_COMPLETE;
+      mStreamTCB.state               = StreamState::TRANSFER_IDLE;
+      mStreamTCB.transferError       = false;
 
       /*-----------------------------------------------------------------------
       Only disable DMA if requested
@@ -369,14 +398,6 @@ namespace Thor::LLD::DMA
       Resource::ISRQueue.push( mStreamTCB );
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_DMA ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
     }
-  }
-
-
-  void Stream::ackTransfer()
-  {
-    disableInterrupts();
-    mStreamTCB.state = StreamState::TRANSFER_IDLE;
-    enableInterrupts();
   }
 
 

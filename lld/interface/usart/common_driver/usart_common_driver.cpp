@@ -108,7 +108,7 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------------------------------
     Initialize driver memory
     -------------------------------------------------------------------------*/
-    mSerialFlags  = static_cast<Serial::Flag_t>( 0 );
+    mSerialFlags   = static_cast<Serial::Flag_t>( 0 );
     mDMAPipesReady = false;
     mTXTCB.reset();
     mRXTCB.reset();
@@ -312,7 +312,7 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------------------------------
     Configure the DMA pipe for the transaction
     -------------------------------------------------------------------------*/
-    if( !mDMAPipesReady )
+    if ( !mDMAPipesReady )
     {
       initDMA();
     }
@@ -334,10 +334,10 @@ namespace Thor::LLD::USART
 
       /* Configure the DMA transfer */
       PipeTransfer cfg;
-      cfg.isrCallback  = TransferCallback::create<Driver, &Driver::onDMATXComplete>( *this );
-      cfg.pipe         = mTXDMARequestId;
-      cfg.size         = buffer.size();
-      cfg.addr         = reinterpret_cast<std::uintptr_t>( buffer.data() );
+      cfg.userCallback = TransferCallback::create<Driver, &Driver::onDMATXComplete>( *this );
+      cfg.pipe        = mTXDMARequestId;
+      cfg.size        = buffer.size();
+      cfg.addr        = reinterpret_cast<std::uintptr_t>( buffer.data() );
 
       auto setup_result = Chimera::DMA::transfer( cfg );
       RT_HARD_ASSERT( setup_result != Chimera::DMA::INVALID_REQUEST );
@@ -462,23 +462,22 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------------------------------
     Configure the DMA pipe for the transaction
     -------------------------------------------------------------------------*/
-    if( !mDMAPipesReady )
+    if ( !mDMAPipesReady )
     {
       initDMA();
     }
 
     disableUSARTInterrupts();
     {
-
       /*-----------------------------------------------------------------------
       Prep the transfer control block to receive data
       -----------------------------------------------------------------------*/
       /* Configure the DMA transfer */
       PipeTransfer cfg;
-      cfg.isrCallback  = TransferCallback::create<Driver, &Driver::onDMARXComplete>( *this );
-      cfg.pipe         = mRXDMARequestId;
-      cfg.size         = buffer.size();
-      cfg.addr         = reinterpret_cast<std::uintptr_t>( buffer.data() );
+      cfg.isrCallback = TransferCallback::create<Driver, &Driver::onDMARXComplete>( *this );
+      cfg.pipe        = mRXDMARequestId;
+      cfg.size        = buffer.size();
+      cfg.addr        = reinterpret_cast<std::uintptr_t>( buffer.data() );
 
       auto setup_result = Chimera::DMA::transfer( cfg );
       RT_HARD_ASSERT( setup_result != Chimera::DMA::INVALID_REQUEST );
@@ -499,18 +498,17 @@ namespace Thor::LLD::USART
       Turn on the RX hardware to begin listening for data
       -----------------------------------------------------------------------*/
       prjEnableReceiver( mPeriph );
+      while( IDLE::get( mPeriph ) != ISR_IDLE )
+      {
+        continue;
+      }
 
       /*-----------------------------------------------------------------------
-      Disable unused RX interrupt signals
+      Use only the RXNE flag at first to detect reception start. Enabling the
+      line-idle monitor now results in an immediate timeout.
       -----------------------------------------------------------------------*/
-      prjDisableISRSignal( mPeriph, ISRSignal::RECEIVED_DATA_READY );
       prjClrISRSignal( mPeriph, ISRSignal::OVERRUN_ERROR );
       prjClrISRSignal( mPeriph, ISRSignal::RECEIVED_DATA_READY );
-
-      /*-----------------------------------------------------------------------
-      Make sure line idle ISR is enabled. This will be used to stop the DMA
-      transfer from the ISR handler if not all expected bytes are received.
-      -----------------------------------------------------------------------*/
       prjClrISRSignal( mPeriph, ISRSignal::LINE_IDLE );
       prjEnableISRSignal( mPeriph, ISRSignal::LINE_IDLE );
     }
@@ -582,15 +580,15 @@ namespace Thor::LLD::USART
     Configure the TX pipe
     -------------------------------------------------------------------------*/
     PipeConfig txCfg;
-    txCfg.srcAlignment  = Alignment::BYTE;
-    txCfg.dstAlignment  = Alignment::BYTE;
-    txCfg.direction     = Direction::MEMORY_TO_PERIPH;
-    txCfg.mode          = Mode::DIRECT;
-    txCfg.priority      = Priority::MEDIUM;
-    txCfg.resourceIndex = DMA::getResourceIndex( Resource::TXDMASignals[ mResourceIndex ] );
-    txCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::TXDMASignals[ mResourceIndex ] ) );
-    txCfg.threshold     = FifoThreshold::NONE;
-    txCfg.persistent    = true;
+    txCfg.srcAlignment       = Alignment::BYTE;
+    txCfg.dstAlignment       = Alignment::BYTE;
+    txCfg.direction          = Direction::MEMORY_TO_PERIPH;
+    txCfg.mode               = Mode::DIRECT;
+    txCfg.priority           = Priority::MEDIUM;
+    txCfg.resourceIndex      = DMA::getResourceIndex( Resource::TXDMASignals[ mResourceIndex ] );
+    txCfg.channel            = static_cast<size_t>( DMA::getChannel( Resource::TXDMASignals[ mResourceIndex ] ) );
+    txCfg.threshold          = FifoThreshold::NONE;
+    txCfg.persistent         = true;
 
 #if defined( TARGET_STM32F4 )
     txCfg.periphAddr    = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
@@ -843,22 +841,28 @@ namespace Thor::LLD::USART
         prjEnableISRSignal( mPeriph, ISRSignal::LINE_IDLE );
 
         /*---------------------------------------------------------------------
-        Read out current byte
+        Handle reading the data byte by byte for interrupt mode
         ---------------------------------------------------------------------*/
-        size_t offset = mRXTCB.expected - mRXTCB.remaining;
-        mRXTCB.buffer[ offset ] = static_cast<uint8_t>( prjReadDataRegister( mPeriph ) );
-        mRXTCB.remaining--;
-
-        /*---------------------------------------------------------------------
-        If no more bytes left to receive, stop listening
-        ---------------------------------------------------------------------*/
-        if ( !mRXTCB.remaining )
+        if ( mRXTCB.mode == TxfrMode::INTERRUPT )
         {
-          prjDisableISRSignal( mPeriph, ISRSignal::LINE_IDLE );
-          prjDisableReceiver( mPeriph );
+          /*-------------------------------------------------------------------
+          Read out current byte
+          -------------------------------------------------------------------*/
+          size_t offset           = mRXTCB.expected - mRXTCB.remaining;
+          mRXTCB.buffer[ offset ] = static_cast<uint8_t>( prjReadDataRegister( mPeriph ) );
+          mRXTCB.remaining--;
 
-          mRXTCB.state = StateMachine::RX::RX_COMPLETE;
-          mSerialFlags |= Serial::Flag::RX_COMPLETE;
+          /*-------------------------------------------------------------------
+          If no more bytes left to receive, stop listening
+          -------------------------------------------------------------------*/
+          if ( !mRXTCB.remaining )
+          {
+            prjDisableISRSignal( mPeriph, ISRSignal::LINE_IDLE );
+            prjDisableReceiver( mPeriph );
+
+            mRXTCB.state = StateMachine::RX::RX_COMPLETE;
+            mSerialFlags |= Serial::Flag::RX_COMPLETE;
+          }
         }
       }
 
@@ -872,6 +876,12 @@ namespace Thor::LLD::USART
         ---------------------------------------------------------------------*/
         mRXTCB.state = StateMachine::RX::RX_ABORTED;
         mSerialFlags |= Serial::Flag::RX_LINE_IDLE_ABORT;
+
+        /*---------------------------------------------------------------------
+        Reset the line idle signal
+        ---------------------------------------------------------------------*/
+        prjDisableISRSignal( mPeriph, ISRSignal::LINE_IDLE );
+        prjClrISRSignal( mPeriph, ISRSignal::LINE_IDLE );
 
         /*---------------------------------------------------------------------
         Disable the DMA transfer if ongoing. This will generate an ISR event
@@ -894,14 +904,13 @@ namespace Thor::LLD::USART
       /*-----------------------------------------------------------------------
       Handle exit conditions due to RX abort or complete
       -----------------------------------------------------------------------*/
-      if ( ( mRXTCB.state == StateMachine::RX::RX_ABORTED ) || ( mRXTCB.state == StateMachine::RX_COMPLETE ) )
+      if ( ( mRXTCB.mode == TxfrMode::INTERRUPT ) && ( mRXTCB.state == StateMachine::RX::RX_ABORTED ) ||
+           ( mRXTCB.state == StateMachine::RX_COMPLETE ) )
       {
         /*---------------------------------------------------------------------
         Tear down the RX receiver and ISR signals
         ---------------------------------------------------------------------*/
         prjDisableReceiver( mPeriph );
-        prjDisableISRSignal( mPeriph, ISRSignal::LINE_IDLE );
-        prjClrISRSignal( mPeriph, ISRSignal::LINE_IDLE );
         prjDisableISRSignal( mPeriph, ISRSignal::RECEIVED_DATA_READY );
         prjClrISRSignal( mPeriph, ISRSignal::RECEIVED_DATA_READY );
 
@@ -909,17 +918,14 @@ namespace Thor::LLD::USART
         Finalize the transfer only for interrupt mode. DMA will complete in its
         own transfer complete callback.
         ---------------------------------------------------------------------*/
-        // if( mRXTCB.mode == TxfrMode::INTERRUPT )
-        // {
-          signalHLD    = true;
-          mRXTCB.state = StateMachine::RX_COMPLETE;
+        signalHLD    = true;
+        mRXTCB.state = StateMachine::RX_COMPLETE;
 
-          const SignalCallback *const callback = INT::getISRHandler( Type::PERIPH_USART, SIG_RX_COMPLETE );
-          if ( callback->isrCallback )
-          {
-            callback->isrCallback();
-          }
-        // }
+        const SignalCallback *const callback = INT::getISRHandler( Type::PERIPH_USART, SIG_RX_COMPLETE );
+        if ( callback->isrCallback )
+        {
+          callback->isrCallback();
+        }
       }
     }
 
@@ -1007,6 +1013,11 @@ namespace Thor::LLD::USART
 
   void Driver::onDMATXComplete( const Chimera::DMA::TransferStats &stats )
   {
+    using namespace Chimera::Interrupt;
+    using namespace Chimera::Peripheral;
+    using namespace Chimera::Serial;
+    using namespace Chimera::Thread;
+
     if ( stats.error )
     {
       // Anything to do?
@@ -1022,9 +1033,27 @@ namespace Thor::LLD::USART
       /*-----------------------------------------------------------------------
       Use the default ISR handler to manage the transfer complete behavior
       -----------------------------------------------------------------------*/
+      //prjEnableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
+      while( TC::get( mPeriph ) != ISR_TC )
+      {
+        continue;
+      }
+
+
+      prjDisableTransmitter( mPeriph );
+
+      /* Per DMA RX instructions, disable USART DMA at the end of the DMA interrupt */
       DMAT::clear( mPeriph, CR3_DMAT );
-      prjEnableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
-      IRQHandler();
+
+      /* Invoke the user callback if registered */
+      const SignalCallback *const callback = INT::getISRHandler( Type::PERIPH_USART, SIG_TX_COMPLETE );
+      if ( callback->isrCallback )
+      {
+        callback->isrCallback();
+      }
+
+      /* Wake the user thread to perform more complex actions */
+      sendTaskMsg( INT::getUserTaskId( Type::PERIPH_USART ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
     }
   }
 
@@ -1039,8 +1068,13 @@ namespace Thor::LLD::USART
     /*-------------------------------------------------------------------------
     Finalize the transfer
     -------------------------------------------------------------------------*/
-    mRXTCB.state = StateMachine::RX_COMPLETE;
-    mRXTCB.remaining = mTXTCB.expected - stats.size;
+    mRXTCB.state     = StateMachine::RX_COMPLETE;
+    mRXTCB.remaining = mRXTCB.expected - stats.size;
+
+    /*-------------------------------------------------------------------------
+    Tear down the RX receiver and ISR signals
+    -------------------------------------------------------------------------*/
+    prjDisableReceiver( mPeriph );
 
     /* Per DMA RX instructions, disable USART DMA at the end of the DMA interrupt */
     DMAR::clear( mPeriph, CR3_DMAR );

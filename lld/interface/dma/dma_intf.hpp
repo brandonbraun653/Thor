@@ -273,8 +273,7 @@ namespace Thor::LLD::DMA
     Chimera::Status_t attach( StreamMap *const peripheral, RegisterMap *const parent );
     Chimera::Status_t configure( StreamConfig *const config, TCB *const controlBlock );
     Chimera::Status_t start();
-    Chimera::Status_t abort();
-    void              ackTransfer();
+    void              abort();
     void              enableInterrupts();
     void              disableInterrupts();
 

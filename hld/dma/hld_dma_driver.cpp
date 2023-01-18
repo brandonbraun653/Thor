@@ -157,16 +157,6 @@ namespace Thor::DMA
         s_stream_status[ tcb.resourceIndex ].state = ::LLD::StreamState::TRANSFER_IDLE;
 
         /*---------------------------------------------------------------------
-        Acknowledge the ISR was handled, allowing another transfer to take
-        place on this stream.
-        ---------------------------------------------------------------------*/
-        auto stream = ::LLD::getStream( tcb.resourceIndex );
-        if ( stream )
-        {
-          stream->ackTransfer();
-        }
-
-        /*---------------------------------------------------------------------
         User has a callback?
         ---------------------------------------------------------------------*/
         if ( s_stream_status[ tcb.resourceIndex ].callback )
@@ -174,7 +164,7 @@ namespace Thor::DMA
           TransferStats stats;
           stats.size      = tcb.elementsTransferred;
           stats.requestId = tcb.requestId;
-          stats.error     = ( tcb.state != ::LLD::StreamState::TRANSFER_COMPLETE );
+          stats.error     = tcb.transferError;
 
           s_stream_status[ tcb.resourceIndex ].callback( stats );
         }
