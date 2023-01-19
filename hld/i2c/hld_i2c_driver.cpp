@@ -86,6 +86,7 @@ namespace Chimera::I2C
   ---------------------------------------------------------------------------*/
   static DeviceManager<Driver, Channel, NUM_DRIVERS>   s_raw_drivers;
   static DeviceManager<ThorImpl, Channel, NUM_DRIVERS> s_impl_drivers;
+  static uint32_t                                      s_i2cX_thread_stack[ STACK_BYTES( 512 ) ];
 
   /*---------------------------------------------------------------------------
   Static Functions
@@ -287,12 +288,14 @@ namespace Chimera::I2C::Backend
     Task       userThread;
     TaskConfig cfg;
 
-    cfg.arg        = nullptr;
-    cfg.function   = I2CxISRUserThread;
-    cfg.priority   = Priority::MAXIMUM;
-    cfg.stackWords = STACK_BYTES( 512 );
-    cfg.type       = TaskInitType::DYNAMIC;
-    cfg.name       = "PP_I2Cx";
+    cfg.name                                  = "PP_I2Cx";
+    cfg.arg                                   = nullptr;
+    cfg.function                              = I2CxISRUserThread;
+    cfg.priority                              = Priority::MAXIMUM;
+    cfg.stackWords                            = STACK_BYTES( sizeof( s_i2cX_thread_stack ) );
+    cfg.type                                  = TaskInitType::STATIC;
+    cfg.specialization.staticTask.stackBuffer = s_i2cX_thread_stack;
+    cfg.specialization.staticTask.stackSize   = sizeof( s_i2cX_thread_stack );
 
     userThread.create( cfg );
     ::Thor::LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_I2C, userThread.start() );

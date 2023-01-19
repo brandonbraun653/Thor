@@ -80,6 +80,7 @@ namespace Chimera::CAN
   static size_t               s_driver_initialized;
   static Chimera::CAN::Driver s_raw_driver[ NUM_DRIVERS ];
   static ThorImpl             s_impl_driver[ NUM_DRIVERS ];
+  static uint32_t             s_canX_thread_stack[ STACK_BYTES( 256 ) ];
 
   /*---------------------------------------------------------------------------
   Static Functions
@@ -171,12 +172,14 @@ namespace Chimera::CAN
     Task       userThread;
     TaskConfig cfg;
 
-    cfg.arg        = nullptr;
-    cfg.function   = CANxISRUserThread;
-    cfg.priority   = Priority::MAXIMUM;
-    cfg.stackWords = STACK_BYTES( 512 );
-    cfg.type       = TaskInitType::DYNAMIC;
-    cfg.name       = "PP_CANx";
+    cfg.name                                  = "PP_CANx";
+    cfg.arg                                   = nullptr;
+    cfg.function                              = CANxISRUserThread;
+    cfg.priority                              = Priority::MAXIMUM;
+    cfg.stackWords                            = STACK_BYTES( sizeof( s_canX_thread_stack ) );
+    cfg.type                                  = TaskInitType::STATIC;
+    cfg.specialization.staticTask.stackBuffer = s_canX_thread_stack;
+    cfg.specialization.staticTask.stackSize   = sizeof( s_canX_thread_stack );
 
     userThread.create( cfg );
     Thor::LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_CAN, userThread.start() );

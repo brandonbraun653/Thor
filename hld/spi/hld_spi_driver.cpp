@@ -78,6 +78,7 @@ namespace Chimera::SPI
   ---------------------------------------------------------------------------*/
   static DeviceManager<Driver, Channel, NUM_DRIVERS>   s_raw_drivers;
   static DeviceManager<ThorImpl, Channel, NUM_DRIVERS> s_impl_drivers;
+  static uint32_t                                      s_spiX_thread_stack[ STACK_BYTES( 256 ) ];
 
   /*---------------------------------------------------------------------------
   Static Functions
@@ -383,12 +384,14 @@ namespace Chimera::SPI::Backend
     Task       userThread;
     TaskConfig cfg;
 
-    cfg.arg        = nullptr;
-    cfg.function   = SPIxISRUserThread;
-    cfg.priority   = Priority::MAXIMUM;
-    cfg.stackWords = STACK_BYTES( 512 );
-    cfg.type       = TaskInitType::DYNAMIC;
-    cfg.name       = "PP_SPIx";
+    cfg.name                                  = "PP_SPIx";
+    cfg.arg                                   = nullptr;
+    cfg.function                              = SPIxISRUserThread;
+    cfg.priority                              = Priority::MAXIMUM;
+    cfg.stackWords                            = STACK_BYTES( sizeof( s_spiX_thread_stack ) );
+    cfg.type                                  = TaskInitType::STATIC;
+    cfg.specialization.staticTask.stackBuffer = s_spiX_thread_stack;
+    cfg.specialization.staticTask.stackSize   = sizeof( s_spiX_thread_stack );
 
     userThread.create( cfg );
     ::Thor::LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_SPI, userThread.start() );

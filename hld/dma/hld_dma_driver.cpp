@@ -65,6 +65,7 @@ static uint32_t                              s_dma_pipe_uuid;     /**< Unique ID
 static uint32_t                              s_dma_request_uuid;  /**< Unique IDs for request generation */
 static Chimera::Thread::RecursiveMutex       s_dma_lock;          /**< Module lock */
 static std::array<StreamStatus, NUM_DRIVERS> s_stream_status;     /**< Current state of a stream */
+static uint32_t                              s_dmaX_thread_stack[ STACK_BYTES( 256 ) ];
 
 namespace Thor::DMA
 {
@@ -214,12 +215,14 @@ namespace Chimera::DMA::Backend
     Task       userThread;
     TaskConfig cfg;
 
-    cfg.arg        = nullptr;
-    cfg.function   = Thor::DMA::DMAxStreamxISRUserThread;
-    cfg.priority   = Chimera::Thread::Priority::MAXIMUM;
-    cfg.stackWords = STACK_BYTES( 1024 );
-    cfg.type       = TaskInitType::DYNAMIC;
-    cfg.name       = "PP_DMAx";
+    cfg.name                                  = "PP_DMAx";
+    cfg.arg                                   = nullptr;
+    cfg.function                              = Thor::DMA::DMAxStreamxISRUserThread;
+    cfg.priority                              = Chimera::Thread::Priority::MAXIMUM;
+    cfg.stackWords                            = STACK_BYTES( sizeof( s_dmaX_thread_stack ) );
+    cfg.type                                  = TaskInitType::STATIC;
+    cfg.specialization.staticTask.stackBuffer = s_dmaX_thread_stack;
+    cfg.specialization.staticTask.stackSize   = sizeof( s_dmaX_thread_stack );
 
     userThread.create( cfg );
     Thor::LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_DMA, userThread.start() );

@@ -31,7 +31,7 @@ if(Toolchain::REQUIRES_FREERTOS_THREADS)
     freertos_inc
     freertos_port
     freertos_cfg
-    project_inc
+    project_intf_inc
   )
 endif()
 export(TARGETS ${EXT_INCLUDES} FILE "${PROJECT_BINARY_DIR}/Thor/lld/${EXT_INCLUDES}.cmake")

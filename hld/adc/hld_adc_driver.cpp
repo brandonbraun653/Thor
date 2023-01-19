@@ -62,6 +62,7 @@ namespace Chimera::ADC
   static size_t               s_driver_initialized;        /**< Tracks the module level initialization state */
   static Chimera::ADC::Driver s_raw_driver[ NUM_DRIVERS ]; /**< Driver objects */
   static ThorImpl             s_impl_driver[ NUM_DRIVERS ];
+  static uint32_t             s_adcX_thread_stack[ STACK_BYTES( 256 ) ];
 
 
   /*---------------------------------------------------------------------------
@@ -131,12 +132,14 @@ namespace Chimera::ADC
     Task       userThread;
     TaskConfig cfg;
 
-    cfg.arg        = nullptr;
-    cfg.function   = ADCxISRUserThread;
-    cfg.priority   = Priority::MAXIMUM;
-    cfg.stackWords = STACK_BYTES( 4096 );
-    cfg.type       = TaskInitType::DYNAMIC;
-    cfg.name       = "PP_ADCx";
+    cfg.name                                  = "PP_ADCx";
+    cfg.arg                                   = nullptr;
+    cfg.function                              = ADCxISRUserThread;
+    cfg.priority                              = Priority::MAXIMUM;
+    cfg.stackWords                            = STACK_BYTES( sizeof( s_adcX_thread_stack ) );
+    cfg.type                                  = TaskInitType::STATIC;
+    cfg.specialization.staticTask.stackBuffer = s_adcX_thread_stack;
+    cfg.specialization.staticTask.stackSize   = sizeof( s_adcX_thread_stack );
 
     userThread.create( cfg );
     Thor::LLD::INT::setUserTaskId( Chimera::Peripheral::Type::PERIPH_ADC, userThread.start() );
