@@ -62,7 +62,7 @@ namespace Chimera::ADC
   static size_t               s_driver_initialized;        /**< Tracks the module level initialization state */
   static Chimera::ADC::Driver s_raw_driver[ NUM_DRIVERS ]; /**< Driver objects */
   static ThorImpl             s_impl_driver[ NUM_DRIVERS ];
-  static uint32_t             s_adcX_thread_stack[ STACK_BYTES( 256 ) ];
+  static uint32_t             s_adcX_thread_stack[ STACK_BYTES( 256 ) ] __attribute__((section(".app_stack")));
 
 
   /*---------------------------------------------------------------------------

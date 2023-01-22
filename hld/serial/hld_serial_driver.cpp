@@ -47,7 +47,7 @@ namespace Chimera::Serial
   Static Data
   ---------------------------------------------------------------------------*/
   static size_t                                                         s_driver_initialized;
-  static uint32_t                                                       s_serX_thread_stack[ STACK_BYTES( 1024 ) ];
+  static uint32_t                                                       s_serX_thread_stack[ STACK_BYTES( 1024 ) ] __attribute__((section(".app_stack")));
   static DeviceManager<Driver, Chimera::Serial::Channel, NUM_DRIVERS>   s_raw_drivers;
   static DeviceManager<ThorImpl, Chimera::Serial::Channel, NUM_DRIVERS> s_impl_drivers;
 

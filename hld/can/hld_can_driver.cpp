@@ -80,7 +80,7 @@ namespace Chimera::CAN
   static size_t               s_driver_initialized;
   static Chimera::CAN::Driver s_raw_driver[ NUM_DRIVERS ];
   static ThorImpl             s_impl_driver[ NUM_DRIVERS ];
-  static uint32_t             s_canX_thread_stack[ STACK_BYTES( 256 ) ];
+  static uint32_t             s_canX_thread_stack[ STACK_BYTES( 256 ) ] __attribute__((section(".app_stack")));
 
   /*---------------------------------------------------------------------------
   Static Functions

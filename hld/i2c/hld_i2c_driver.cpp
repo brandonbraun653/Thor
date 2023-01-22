@@ -86,7 +86,7 @@ namespace Chimera::I2C
   ---------------------------------------------------------------------------*/
   static DeviceManager<Driver, Channel, NUM_DRIVERS>   s_raw_drivers;
   static DeviceManager<ThorImpl, Channel, NUM_DRIVERS> s_impl_drivers;
-  static uint32_t                                      s_i2cX_thread_stack[ STACK_BYTES( 512 ) ];
+  static uint32_t                                      s_i2cX_thread_stack[ STACK_BYTES( 512 ) ] __attribute__((section(".app_stack")));
 
   /*---------------------------------------------------------------------------
   Static Functions
