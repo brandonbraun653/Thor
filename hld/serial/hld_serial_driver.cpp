@@ -205,6 +205,9 @@ namespace Chimera::Serial
     impl->pRxBuffer = config.rxBuffer;
     impl->mTxfrMode = config.txfrMode;
 
+    impl->pTxBuffer->clear();
+    impl->pRxBuffer->clear();
+
     /*-------------------------------------------------------------------------
     Initialize AsyncIO for user notification of events
     -------------------------------------------------------------------------*/
@@ -281,8 +284,8 @@ namespace Chimera::Serial
       Commit the data to the buffer. If HW is not immediately available for
       transfer, it will be scheduled at the end of the current transmission.
       -----------------------------------------------------------------------*/
-      auto write_span = thorImpl->pTxBuffer->write_reserve( length );
-      memcpy( write_span.data(), buffer, length );
+      auto write_span = thorImpl->pTxBuffer->write_reserve( write_size );
+      memcpy( write_span.data(), buffer, write_size );
       thorImpl->pTxBuffer->write_commit( write_span );
 
       /*-----------------------------------------------------------------------
@@ -300,7 +303,7 @@ namespace Chimera::Serial
         Reserve a contiguous block of memory for the transaction, then use that
         for the hardware transfer. This cleanly supports DMA.
         ---------------------------------------------------------------------*/
-        auto   read_span    = thorImpl->pTxBuffer->read_reserve( length );
+        auto   read_span    = thorImpl->pTxBuffer->read_reserve( write_size );
         size_t lldWriteSize = thorImpl->pLLDriver->write( thorImpl->mTxfrMode, read_span );
         RT_DBG_ASSERT( read_span.max_size() == lldWriteSize );
 
@@ -342,7 +345,8 @@ namespace Chimera::Serial
     -------------------------------------------------------------------------*/
     RT_DBG_ASSERT( mImpl );
     auto   thorImpl = reinterpret_cast<ThorImpl *>( mImpl );
-    size_t readSize = std::min<size_t>( thorImpl->pRxBuffer->size(), length );
+    size_t available = thorImpl->pRxBuffer->size();
+    size_t readSize = std::min<size_t>( available, length );
 
     if ( readSize == 0 )
     {
