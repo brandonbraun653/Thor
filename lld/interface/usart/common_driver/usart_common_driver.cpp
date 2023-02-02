@@ -904,8 +904,8 @@ namespace Thor::LLD::USART
       /*-----------------------------------------------------------------------
       Handle exit conditions due to RX abort or complete
       -----------------------------------------------------------------------*/
-      if ( ( mRXTCB.mode == TxfrMode::INTERRUPT ) && ( mRXTCB.state == StateMachine::RX::RX_ABORTED ) ||
-           ( mRXTCB.state == StateMachine::RX_COMPLETE ) )
+      if ( ( mRXTCB.mode == TxfrMode::INTERRUPT ) &&
+           ( ( mRXTCB.state == StateMachine::RX::RX_ABORTED ) || ( mRXTCB.state == StateMachine::RX_COMPLETE ) ) )
       {
         /*---------------------------------------------------------------------
         Tear down the RX receiver and ISR signals
