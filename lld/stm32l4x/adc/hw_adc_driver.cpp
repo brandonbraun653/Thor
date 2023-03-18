@@ -73,7 +73,7 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------------------------------
     Input Protections
     -------------------------------------------------------------------------*/
-    if( !periph || ( rate < OverSampler::OS_2X ) || ( rate >= OverSampler::NUM_OPTIONS ) )
+    if ( !periph || ( rate < OverSampler::OS_2X ) || ( rate >= OverSampler::NUM_OPTIONS ) )
     {
       return;
     }
@@ -82,7 +82,7 @@ namespace Thor::LLD::ADC
     Decide field for OVSR register
     -------------------------------------------------------------------------*/
     uint32_t ovsr_field = 0;
-    switch( rate )
+    switch ( rate )
     {
       case OverSampler::OS_2X:
       default:
@@ -122,7 +122,7 @@ namespace Thor::LLD::ADC
     Decide field for OVSS register
     -------------------------------------------------------------------------*/
     uint32_t ovss_field = 0;
-    switch( shift )
+    switch ( shift )
     {
       case OverSampleShift::OS_NONE:
       default:
@@ -345,11 +345,21 @@ namespace Thor::LLD::ADC
     Sample the internal voltage reference to calculate the real VDDA+ present
     on the MCU pin. This will always be present on Channel 0.
     -------------------------------------------------------------------------*/
-    Chimera::ADC::Sample vref_sample  = sampleChannel( Chimera::ADC::Channel::ADC_CH_0 );
-    const float          vrefint_data = static_cast<float>( vref_sample.counts );
-    const float          vrefint_cal  = static_cast<float>( *VREFINT_CAL_ADDR );
+    size_t startTime  = Chimera::millis();
+    float  numSamples = 0.0f;
+    mCalcVdda = 0.0f;
 
-    mCalcVdda = ( VREFINT_CAL_VREF_MV * ( vrefint_cal / vrefint_data ) ) / 1000.0f;
+    while ( Chimera::millis() - startTime < Chimera::Thread::TIMEOUT_100MS )
+    {
+      Chimera::ADC::Sample vref_sample  = sampleChannel( Chimera::ADC::Channel::ADC_CH_0 );
+      const float          vrefint_data = static_cast<float>( vref_sample.counts );
+      const float          vrefint_cal  = static_cast<float>( *VREFINT_CAL_ADDR );
+
+      mCalcVdda += ( VREFINT_CAL_VREF_MV * ( vrefint_cal / vrefint_data ) ) / 1000.0f;
+      numSamples++;
+    }
+
+    mCalcVdda /= numSamples;
 
     return Chimera::Status::OK;
   }
@@ -461,7 +471,7 @@ namespace Thor::LLD::ADC
     /*---------------------------------------------------------------------------
     Input Protections
     ---------------------------------------------------------------------------*/
-    if( cfg.wdgChannel == Chimera::ADC::Watchdog::ANALOG_0 )
+    if ( cfg.wdgChannel == Chimera::ADC::Watchdog::ANALOG_0 )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -476,13 +486,13 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     uint32_t hi_lo_data = ( ( cfg.highThreshold & 0xFF ) << 16u ) | ( cfg.lowThreshold & 0xFF );
 
-    if( cfg.wdgChannel == Chimera::ADC::Watchdog::ANALOG_1 )
+    if ( cfg.wdgChannel == Chimera::ADC::Watchdog::ANALOG_1 )
     {
       AWD2CH::setbit( mPeriph, ( 1u << EnumValue( cfg.adcChannel ) ) );
       TR2_ALL::set( mPeriph, hi_lo_data );
       AWD2IE::setbit( mPeriph, IER_AWD2IE );
     }
-    else if( cfg.wdgChannel == Chimera::ADC::Watchdog::ANALOG_2 )
+    else if ( cfg.wdgChannel == Chimera::ADC::Watchdog::ANALOG_2 )
     {
       AWD3CH::setbit( mPeriph, ( 1u << EnumValue( cfg.adcChannel ) ) );
       TR3_ALL::set( mPeriph, hi_lo_data );
