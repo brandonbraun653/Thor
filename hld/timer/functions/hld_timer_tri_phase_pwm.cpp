@@ -58,13 +58,13 @@ namespace Chimera::Timer::Inverter
 
   static uint32_t s_ccer_fwd_comm_table[ 7 ] = {
     /* clang-format off */
+    ( Thor::LLD::TIMER::CCER_CC1E  | Thor::LLD::TIMER::CCER_CC2NE ),  /* STATE_0 */
+    ( Thor::LLD::TIMER::CCER_CC1E  | Thor::LLD::TIMER::CCER_CC3NE ),  /* STATE_1 */
+    ( Thor::LLD::TIMER::CCER_CC2E  | Thor::LLD::TIMER::CCER_CC3NE ),  /* STATE_2 */
+    ( Thor::LLD::TIMER::CCER_CC1NE | Thor::LLD::TIMER::CCER_CC2E  ),  /* STATE_3 */
+    ( Thor::LLD::TIMER::CCER_CC1NE | Thor::LLD::TIMER::CCER_CC3E  ),  /* STATE_4 */
+    ( Thor::LLD::TIMER::CCER_CC2NE | Thor::LLD::TIMER::CCER_CC3E  ),  /* STATE_5 */
     ( 0 ), // All off
-    ( Thor::LLD::TIMER::CCER_CC1E  | Thor::LLD::TIMER::CCER_CC2NE ),
-    ( Thor::LLD::TIMER::CCER_CC1E  | Thor::LLD::TIMER::CCER_CC3NE ),
-    ( Thor::LLD::TIMER::CCER_CC2E  | Thor::LLD::TIMER::CCER_CC3NE ),
-    ( Thor::LLD::TIMER::CCER_CC1NE | Thor::LLD::TIMER::CCER_CC2E  ),
-    ( Thor::LLD::TIMER::CCER_CC1NE | Thor::LLD::TIMER::CCER_CC3E  ),
-    ( Thor::LLD::TIMER::CCER_CC2NE | Thor::LLD::TIMER::CCER_CC3E  )
   };/* clang-format on */
 
   /*---------------------------------------------------------------------------
@@ -159,7 +159,6 @@ namespace Chimera::Timer::Inverter
     setIdleModeOffState( cb->timer, OffStateMode::TIMER_CONTROL );
     setOutputIdleStateBulk( cb->timer, s_all_output_channel_bf, Chimera::GPIO::State::LOW );
 
-
     /* Assign dead-time during complementary output transitions */
     RT_HARD_ASSERT( setDeadTime( cb->timer, cfg.deadTimeNs ) );
 
@@ -213,7 +212,7 @@ namespace Chimera::Timer::Inverter
     Reset the timer to a known state
     -------------------------------------------------------------------------*/
     assignCounter( cb->timer, 0 );
-    setForwardCommState( 0 );
+    setForwardCommState( STATE_OFF );
 
     /*-------------------------------------------------------------------------
     Enable the outputs
@@ -267,7 +266,8 @@ namespace Chimera::Timer::Inverter
     }
 
     /*-------------------------------------------------------------------------
-    Update the reference for the ADC trigger
+    Update the reference for the ADC trigger. This will cause the timer to
+    trigger the ADC at the peak of the center-aligned PWM counter.
     -------------------------------------------------------------------------*/
     setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_5, arr_val - 1 );
 
@@ -275,16 +275,18 @@ namespace Chimera::Timer::Inverter
   }
 
 
-  Chimera::Status_t Driver::setForwardCommState( const uint8_t phase )
+  Chimera::Status_t Driver::setForwardCommState( const CommutationState state )
   {
     using namespace Thor::LLD::TIMER;
+    RT_DBG_ASSERT( state < CommutationState::NUM_STATES );
+    RT_DBG_ASSERT( state < ARRAY_COUNT( s_ccer_fwd_comm_table ) );
 
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
 
     uint32_t tmp = cb->timer->registers->CCER;
 
     tmp &= ~( CCER_CC1E | CCER_CC1NE | CCER_CC2E | CCER_CC2NE | CCER_CC3E | CCER_CC3NE );
-    tmp |= s_ccer_fwd_comm_table[ phase ];
+    tmp |= s_ccer_fwd_comm_table[ state ];
 
     cb->timer->registers->CCER = tmp;
 
