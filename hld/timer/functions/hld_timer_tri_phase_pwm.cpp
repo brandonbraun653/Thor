@@ -253,7 +253,8 @@ namespace Chimera::Timer::Inverter
     -------------------------------------------------------------------------*/
     Chimera::Status_t       result        = Chimera::Status::OK;
     ControlBlock           *cb            = reinterpret_cast<ControlBlock *>( mTimerImpl );
-    float                   arr_val       = static_cast<float>( Thor::LLD::TIMER::getAutoReload( cb->timer ) );
+    uint32_t                arr_val       = Thor::LLD::TIMER::getAutoReload( cb->timer );
+    float                   arr_val_f     = static_cast<float>( arr_val );
     float                   dutyIn[ 3 ]   = { a, b, c };
     Chimera::Timer::Channel phaseMap[ 3 ] = { Chimera::Timer::Channel::CHANNEL_1, Chimera::Timer::Channel::CHANNEL_2,
                                               Chimera::Timer::Channel::CHANNEL_3 };
@@ -261,7 +262,7 @@ namespace Chimera::Timer::Inverter
     for ( size_t phase_idx = 0; phase_idx < 3; phase_idx++ )
     {
       float    dutyPercent = dutyIn[ phase_idx ] / 100.0f;
-      uint32_t new_ref     = static_cast<uint32_t>( roundf( arr_val * dutyPercent ) );
+      uint32_t new_ref     = static_cast<uint32_t>( roundf( arr_val_f * dutyPercent ) );
 
       result |= Thor::LLD::TIMER::setOCReference( cb->timer, phaseMap[ phase_idx ], new_ref );
     }
@@ -270,7 +271,8 @@ namespace Chimera::Timer::Inverter
     Update the reference for the ADC trigger. This will cause the timer to
     trigger the ADC at the peak of the center-aligned PWM counter.
     -------------------------------------------------------------------------*/
-    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_5, arr_val - 1 );
+    uint32_t adc_trigger_ref = arr_val - arr_val / 2;
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_5, adc_trigger_ref );
 
     return result;
   }
