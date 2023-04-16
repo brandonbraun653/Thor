@@ -142,6 +142,7 @@ namespace Chimera::Timer::Inverter
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_3, true ); /* Output Phase C */
 
     /* Configure PWM mode */
+    // TODO: Do I need this? DIR field has comment in datasheet about it being ignored in center-aligned mode
     setCountDirection( cb->timer, CountDir::COUNT_UP );
 
     // Use PWM mode 1 to logically line up duty cycle programming, which assumes high side
@@ -166,7 +167,6 @@ namespace Chimera::Timer::Inverter
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_1, CCMode::CCM_OUTPUT );
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_2, CCMode::CCM_OUTPUT );
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_3, CCMode::CCM_OUTPUT );
-    setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_5, CCMode::CCM_OUTPUT );
 
     /* Set output polarity */
     setCCOutputPolarityBulk( cb->timer, s_all_output_channel_bf, CCPolarity::CCP_OUT_ACTIVE_HIGH );
@@ -184,6 +184,7 @@ namespace Chimera::Timer::Inverter
     Thor::LLD::TIMER::useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_5, true );
 
     /* Configure the TRGO2 signal to match the OC channel */
+    // TODO: Should this be compare pulse variant?
     setMasterMode2( cb->timer, MasterMode2::COMPARE_OC5REF );
 
     /*-------------------------------------------------------------------------
