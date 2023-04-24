@@ -271,7 +271,7 @@ namespace Chimera::Timer::Inverter
     Update the reference for the ADC trigger. This will cause the timer to
     trigger the ADC at the peak of the center-aligned PWM counter.
     -------------------------------------------------------------------------*/
-    uint32_t adc_trigger_ref = arr_val - arr_val / 2;
+    uint32_t adc_trigger_ref = 25;
     setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_5, adc_trigger_ref );
 
     return result;
