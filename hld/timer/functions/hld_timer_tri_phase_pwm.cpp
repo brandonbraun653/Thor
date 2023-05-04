@@ -29,8 +29,9 @@ namespace Chimera::Timer::Inverter
   /*---------------------------------------------------------------------------
   Constants
   ---------------------------------------------------------------------------*/
-  static constexpr uint32_t s_all_output_channel_bf = //::Thor::LLD::TIMER::EnableFlagGenerator<Chimera::Timer::Output::OUTPUT_1P>;
-    /* clang-format off */
+  static constexpr uint32_t
+      s_all_output_channel_bf =    //::Thor::LLD::TIMER::EnableFlagGenerator<Chimera::Timer::Output::OUTPUT_1P>;
+      /* clang-format off */
     ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_1P ) ) |
     ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_1N ) ) |
     ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_2P ) ) |
@@ -38,7 +39,7 @@ namespace Chimera::Timer::Inverter
     ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_3P ) ) |
     ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_3N ) ) |
     ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_5P ) );
-    /* clang-format on */
+  /* clang-format on */
 
   /*---------------------------------------------------------------------------
   Structures
@@ -107,7 +108,7 @@ namespace Chimera::Timer::Inverter
     -------------------------------------------------------------------------*/
     RT_HARD_ASSERT( Chimera::Status::OK == allocate( cfg.coreCfg.instance ) );
 
-    cb->timer  = Thor::LLD::TIMER::getHandle( cfg.coreCfg.instance );
+    cb->timer = Thor::LLD::TIMER::getHandle( cfg.coreCfg.instance );
     memcpy( cb->pinMap, cfg.pinMap, sizeof( cb->pinMap ) );
 
     /*-------------------------------------------------------------------------
@@ -128,8 +129,10 @@ namespace Chimera::Timer::Inverter
     /*-------------------------------------------------------------------------
     Break signal(s) configuration to control emergency shutdowns
     -------------------------------------------------------------------------*/
-    setBreakPolarity( cb->timer, BreakSource::BREAK_SOURCE_INTERNAL, BreakChannel::BREAK_INPUT_1, BreakPolarity::BREAK_ACTIVE_HIGH );
-    setBreakPolarity( cb->timer, BreakSource::BREAK_SOURCE_INTERNAL, BreakChannel::BREAK_INPUT_2, BreakPolarity::BREAK_ACTIVE_HIGH );
+    setBreakPolarity( cb->timer, BreakSource::BREAK_SOURCE_INTERNAL, BreakChannel::BREAK_INPUT_1,
+                      BreakPolarity::BREAK_ACTIVE_HIGH );
+    setBreakPolarity( cb->timer, BreakSource::BREAK_SOURCE_INTERNAL, BreakChannel::BREAK_INPUT_2,
+                      BreakPolarity::BREAK_ACTIVE_HIGH );
     breakEnable( cb->timer, BreakSource::BREAK_SOURCE_INTERNAL, BreakChannel::BREAK_INPUT_1 );
     breakEnable( cb->timer, BreakSource::BREAK_SOURCE_INTERNAL, BreakChannel::BREAK_INPUT_2 );
 
@@ -244,34 +247,35 @@ namespace Chimera::Timer::Inverter
   Chimera::Status_t Driver::setPhaseDutyCycle( const float a, const float b, const float c )
   {
     /*-------------------------------------------------------------------------
-    Input Protection
-    -------------------------------------------------------------------------*/
-    // Bound the floating point inputs
-
-    /*-------------------------------------------------------------------------
     Set the output compare reference for each phase
     -------------------------------------------------------------------------*/
-    Chimera::Status_t       result        = Chimera::Status::OK;
-    ControlBlock           *cb            = reinterpret_cast<ControlBlock *>( mTimerImpl );
-    uint32_t                arr_val       = Thor::LLD::TIMER::getAutoReload( cb->timer );
-    float                   arr_val_f     = static_cast<float>( arr_val );
-    float                   dutyIn[ 3 ]   = { a, b, c };
-    Chimera::Timer::Channel phaseMap[ 3 ] = { Chimera::Timer::Channel::CHANNEL_1, Chimera::Timer::Channel::CHANNEL_2,
-                                              Chimera::Timer::Channel::CHANNEL_3 };
-
-    for ( size_t phase_idx = 0; phase_idx < 3; phase_idx++ )
-    {
-      float    dutyPercent = dutyIn[ phase_idx ] / 100.0f;
-      uint32_t new_ref     = static_cast<uint32_t>( roundf( arr_val_f * dutyPercent ) );
-
-      result |= Thor::LLD::TIMER::setOCReference( cb->timer, phaseMap[ phase_idx ], new_ref );
-    }
+    Chimera::Status_t         result    = Chimera::Status::OK;
+    const ControlBlock *const cb        = reinterpret_cast<ControlBlock *>( mTimerImpl );
+    const uint32_t            arr_val   = Thor::LLD::TIMER::getAutoReload( cb->timer );
+    const float               arr_val_f = static_cast<float>( arr_val );
 
     /*-------------------------------------------------------------------------
-    Update the reference for the ADC trigger. This will cause the timer to
-    trigger the ADC at the peak of the center-aligned PWM counter.
+    Phase A
     -------------------------------------------------------------------------*/
-    uint32_t adc_trigger_ref = 25;
+    auto phase_a_ref = static_cast<uint32_t>( arr_val_f * a );
+    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, phase_a_ref );
+
+    /*-------------------------------------------------------------------------
+    Phase B
+    -------------------------------------------------------------------------*/
+    auto phase_b_ref = static_cast<uint32_t>( arr_val_f * b );
+    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2, phase_b_ref );
+
+    /*-------------------------------------------------------------------------
+    Phase C
+    -------------------------------------------------------------------------*/
+    auto phase_c_ref = static_cast<uint32_t>( arr_val_f * c );
+    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, phase_c_ref );
+
+    /*-------------------------------------------------------------------------
+    Update the reference for the ADC trigger
+    -------------------------------------------------------------------------*/
+    uint32_t adc_trigger_ref = 25; // TODO: Figure out why this works. I was expecting arr_val...
     setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_5, adc_trigger_ref );
 
     return result;
