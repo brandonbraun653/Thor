@@ -140,13 +140,9 @@ namespace Chimera::Timer::Inverter
     3-Phase configuration
     -------------------------------------------------------------------------*/
     /* Buffer the phase PWM set-point updates for seamless transitions */
-    useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_1, true ); /* Output Phase A */
-    useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_2, true ); /* Output Phase B */
-    useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_3, true ); /* Output Phase C */
-
-    /* Configure PWM mode */
-    // TODO: Do I need this? DIR field has comment in datasheet about it being ignored in center-aligned mode
-    setCountDirection( cb->timer, CountDir::COUNT_UP );
+    useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_1, true );
+    useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_2, true );
+    useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_3, true );
 
     // Use PWM mode 1 to logically line up duty cycle programming, which assumes high side
     // on-time is equal to some percentage of the ARR. Mode 1 has the channel set to "active"
@@ -187,8 +183,11 @@ namespace Chimera::Timer::Inverter
     Thor::LLD::TIMER::useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_5, true );
 
     /* Configure the TRGO2 signal to match the OC channel */
-    // TODO: Should this be compare pulse variant?
     setMasterMode2( cb->timer, MasterMode2::COMPARE_OC5REF );
+
+    /* Set the trigger timing to be in the center of the low-side (complementary output) ON sequence */
+    const uint32_t arr_val = Thor::LLD::TIMER::getAutoReload( cb->timer );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_5, 25 );
 
     /*-------------------------------------------------------------------------
     Lock out the core timer configuration settings to prevent dangerous changes
@@ -272,17 +271,32 @@ namespace Chimera::Timer::Inverter
     auto phase_c_ref = static_cast<uint32_t>( arr_val_f * c );
     result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, phase_c_ref );
 
+    return result;
+  }
+
+
+  Chimera::Status_t Driver::setPhaseDutyCycle( const uint32_t a, const uint32_t b, const uint32_t c )
+  {
     /*-------------------------------------------------------------------------
-    Update the reference for the ADC trigger
+    Set the output compare reference for each phase
     -------------------------------------------------------------------------*/
-    uint32_t adc_trigger_ref = 25; // TODO: Figure out why this works. I was expecting arr_val...
-    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_5, adc_trigger_ref );
+    Chimera::Status_t         result  = Chimera::Status::OK;
+    const ControlBlock *const cb      = reinterpret_cast<ControlBlock *>( mTimerImpl );
+    const uint32_t            arr_val = Thor::LLD::TIMER::getAutoReload( cb->timer );
+
+    RT_DBG_ASSERT( a <= arr_val );
+    RT_DBG_ASSERT( b <= arr_val );
+    RT_DBG_ASSERT( c <= arr_val );
+
+    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, a );
+    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2, b );
+    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, c );
 
     return result;
   }
 
 
-  Chimera::Status_t Driver::setForwardCommState( const CommutationState state )
+  Chimera::Status_t Driver::setForwardCommState( const int state )
   {
     using namespace Thor::LLD::TIMER;
     RT_DBG_ASSERT( state < CommutationState::NUM_STATES );
@@ -312,6 +326,12 @@ namespace Chimera::Timer::Inverter
     generateBreakEvent( cb->timer, BreakChannel::BREAK_INPUT_1 );
 
     return Chimera::Status::OK;
+  }
+
+
+  uint32_t Driver::getAutoReloadValue() const
+  {
+    return reinterpret_cast<ControlBlock *>( mTimerImpl )->timer->registers->ARR;
   }
 
 }    // namespace Chimera::Timer::Inverter
