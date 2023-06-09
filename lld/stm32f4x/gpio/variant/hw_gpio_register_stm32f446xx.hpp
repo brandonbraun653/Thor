@@ -48,6 +48,10 @@ namespace Thor::LLD::GPIO
   static constexpr uint32_t GPIOF_RESOURCE_INDEX = 5u;
   static constexpr uint32_t GPIOG_RESOURCE_INDEX = 6u;
   static constexpr uint32_t GPIOH_RESOURCE_INDEX = 7u;
+  static constexpr RIndex_t GPIOI_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
+  static constexpr RIndex_t GPIOJ_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
+  static constexpr RIndex_t GPIOK_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
+  static constexpr RIndex_t GPIOL_RESOURCE_INDEX = INVALID_RESOURCE_INDEX;
 
   static constexpr uint32_t GPIOA_NUM_PINS = 16u;
   static constexpr uint32_t GPIOB_NUM_PINS = 16u;
@@ -73,6 +77,18 @@ namespace Thor::LLD::GPIO
 
   static constexpr Chimera::GPIO::Port PRJ_LAST_PORT = Chimera::GPIO::Port::PORTH;
 
+  static constexpr size_t GPIOA_PIN_RINDEX_OFFSET = 0;
+  static constexpr size_t GPIOB_PIN_RINDEX_OFFSET = GPIOA_PIN_RINDEX_OFFSET + GPIOA_NUM_PINS;
+  static constexpr size_t GPIOC_PIN_RINDEX_OFFSET = GPIOB_PIN_RINDEX_OFFSET + GPIOB_NUM_PINS;
+  static constexpr size_t GPIOD_PIN_RINDEX_OFFSET = GPIOC_PIN_RINDEX_OFFSET + GPIOC_NUM_PINS;
+  static constexpr size_t GPIOE_PIN_RINDEX_OFFSET = GPIOD_PIN_RINDEX_OFFSET + GPIOD_NUM_PINS;
+  static constexpr size_t GPIOF_PIN_RINDEX_OFFSET = GPIOE_PIN_RINDEX_OFFSET + GPIOE_NUM_PINS;
+  static constexpr size_t GPIOG_PIN_RINDEX_OFFSET = GPIOF_PIN_RINDEX_OFFSET + GPIOF_NUM_PINS;
+  static constexpr size_t GPIOH_PIN_RINDEX_OFFSET = GPIOG_PIN_RINDEX_OFFSET + GPIOG_NUM_PINS;
+  static constexpr size_t GPIOI_PIN_RINDEX_OFFSET = INVALID_RESOURCE_INDEX;
+  static constexpr size_t GPIOJ_PIN_RINDEX_OFFSET = INVALID_RESOURCE_INDEX;
+  static constexpr size_t GPIOK_PIN_RINDEX_OFFSET = INVALID_RESOURCE_INDEX;
+  static constexpr size_t GPIOL_PIN_RINDEX_OFFSET = INVALID_RESOURCE_INDEX;
 }    // namespace Thor::LLD::GPIO
 
 #endif /* !THOR_HW_GPIO_REGISTER_HPP */

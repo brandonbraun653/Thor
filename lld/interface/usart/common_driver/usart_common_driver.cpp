@@ -498,7 +498,11 @@ namespace Thor::LLD::USART
       Turn on the RX hardware to begin listening for data
       -----------------------------------------------------------------------*/
       prjEnableReceiver( mPeriph );
+      #if defined( STM32L432xx )
       while( IDLE::get( mPeriph ) != ISR_IDLE )
+      #elif defined( STM32F446xx )
+      while( IDLE::get( mPeriph ) != SR_IDLE )
+      #endif
       {
         continue;
       }
@@ -1033,8 +1037,12 @@ namespace Thor::LLD::USART
       /*-----------------------------------------------------------------------
       Use the default ISR handler to manage the transfer complete behavior
       -----------------------------------------------------------------------*/
-      //prjEnableISRSignal( mPeriph, ISRSignal::TRANSMIT_COMPLETE );
+      
+      #if defined( STM32L432xx )
       while( TC::get( mPeriph ) != ISR_TC )
+      #elif defined( STM32F446xx )
+      while( TC::get( mPeriph ) != SR_TC )
+      #endif
       {
         continue;
       }
@@ -1122,4 +1130,12 @@ void USART3_IRQHandler( void )
 }
 #endif /* STM32_USART3_PERIPH_AVAILABLE */
 
-#endif /* TARGET_STM32L4 && THOR_DRIVER_USART */
+#if defined( STM32_USART6_PERIPH_AVAILABLE )
+void USART6_IRQHandler( void )
+{
+  using namespace Thor::LLD::USART;
+  s_usart_drivers[ USART6_RESOURCE_INDEX ].IRQHandler();
+}
+#endif /* STM32_USART6_PERIPH_AVAILABLE */
+
+#endif /* THOR_DRIVER_USART */

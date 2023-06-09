@@ -289,14 +289,13 @@ namespace Thor::LLD::DMA
   }
 
 
-  Chimera::Status_t Stream::abort()
+  void Stream::abort()
   {
     /*-------------------------------------------------------------------------
     Should abruptly disable the hardware and fire an
     ISR if there is an ongoing transfer
     -------------------------------------------------------------------------*/
     EN::clear( mStream, SxCR_EN );
-    return Chimera::Status::OK;
   }
 
 
@@ -381,14 +380,6 @@ namespace Thor::LLD::DMA
       Resource::ISRQueue.push( mStreamTCB );
       sendTaskMsg( INT::getUserTaskId( Type::PERIPH_DMA ), ITCMsg::TSK_MSG_ISR_HANDLER, TIMEOUT_DONT_WAIT );
     }
-  }
-
-
-  void Stream::ackTransfer()
-  {
-    disableInterrupts();
-    mStreamTCB.state = StreamState::TRANSFER_IDLE;
-    enableInterrupts();
   }
 
 
