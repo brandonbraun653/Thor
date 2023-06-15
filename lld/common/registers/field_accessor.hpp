@@ -27,12 +27,14 @@ namespace Thor::LLD
   /**
    *  Software can only read this bit
    */
-  static constexpr size_t BIT_ACCESS_R = ( 1u << 0 );
+  static constexpr size_t BIT_ACCESS_R  = ( 1u << 0 );
+  static constexpr size_t BIT_ACCESS_RO = BIT_ACCESS_R;
 
   /**
    *  Software can only write this bit
    */
   static constexpr size_t BIT_ACCESS_W = ( 1u << 1 );
+  static constexpr size_t BIT_ACCESS_WO = BIT_ACCESS_W;
 
   /**
    *  Software can read and write this bit
@@ -96,8 +98,8 @@ namespace Thor::LLD
    *  All bits that allow some kind of read functionality
    */
   static constexpr size_t BIT_ACCESS_ALL_READ =
-      ( BIT_ACCESS_R | BIT_ACCESS_RW | BIT_ACCESS_RCR | BIT_ACCESS_RSR | BIT_ACCESS_RCW0 | BIT_ACCESS_RCW1 | BIT_ACCESS_RS |
-        BIT_ACCESS_RW_ONCE | BIT_ACCESS_RTW1 );
+      ( BIT_ACCESS_R | BIT_ACCESS_RO | BIT_ACCESS_RW | BIT_ACCESS_RCR | BIT_ACCESS_RSR | BIT_ACCESS_RCW0 | BIT_ACCESS_RCW1 |
+        BIT_ACCESS_RS | BIT_ACCESS_RW_ONCE | BIT_ACCESS_RTW1 );
 
   /**
    *  All bits that allow some kind of write functionality
@@ -126,9 +128,10 @@ namespace Thor::LLD
     static inline Reg32_t get( const MEM_MAP_TYPE *const periph )              \
     {                                                                          \
       using namespace Thor::LLD;                                               \
-      if constexpr ( static_cast<bool>( ( ACCESS )&BIT_ACCESS_ALL_READ ) )     \
+      if constexpr ( ACCESS == ( ( ACCESS )&BIT_ACCESS_ALL_READ ) )     \
       {                                                                        \
-        return periph->REGISTER & ( MASK );                                    \
+        const Reg32_t tmp = periph->REGISTER;                                  \
+        return tmp & ( MASK );                                                 \
       }                                                                        \
       else                                                                     \
       {                                                                        \
@@ -138,7 +141,7 @@ namespace Thor::LLD
                                                                                \
     static inline void set( MEM_MAP_TYPE *const periph, const Reg32_t val )    \
     {                                                                          \
-      if constexpr ( static_cast<bool>( ( ACCESS )&BIT_ACCESS_ALL_WRITE ) )    \
+      if constexpr ( ACCESS == ( ( ACCESS )&BIT_ACCESS_ALL_WRITE ) )    \
       {                                                                        \
         Reg32_t tmp = periph->REGISTER;                                        \
         tmp &= ~( MASK );                                                      \
@@ -149,7 +152,7 @@ namespace Thor::LLD
                                                                                \
     static inline void setbit( MEM_MAP_TYPE *const periph, const Reg32_t val ) \
     {                                                                          \
-      if constexpr ( static_cast<bool>( ( ACCESS )&BIT_ACCESS_ALL_WRITE ) )    \
+      if constexpr ( ACCESS == ( ( ACCESS )&BIT_ACCESS_ALL_WRITE ) )    \
       {                                                                        \
         Reg32_t tmp = periph->REGISTER;                                        \
         tmp |= val & ( MASK );                                                 \
@@ -159,7 +162,7 @@ namespace Thor::LLD
                                                                                \
     static inline void clear( MEM_MAP_TYPE *const periph, const Reg32_t val )  \
     {                                                                          \
-      if constexpr ( static_cast<bool>( ( ACCESS )&BIT_ACCESS_ALL_WRITE ) )    \
+      if constexpr ( ACCESS == ( ( ACCESS )&BIT_ACCESS_ALL_WRITE ) )    \
       {                                                                        \
         Reg32_t tmp = periph->REGISTER;                                        \
         tmp &= ~( val & MASK );                                                \
