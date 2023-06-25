@@ -599,6 +599,11 @@ namespace Thor::LLD::ADC
     }
   }
 
+  
+  void Driver::ISRHandler()
+  {
+    
+  }
 
   void Driver::dma_isr_transfer_complete_callback( const Chimera::DMA::TransferStats &stats )
   {

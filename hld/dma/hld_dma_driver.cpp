@@ -41,6 +41,15 @@ Number of pipe configurations to remember
 #define THOR_HLD_DMA_MAX_PIPE_CONFIGURATIONS ( 5 )
 #endif
 
+/*-------------------------------------------------------------------
+Stack size for the interrupt handler thread
+-------------------------------------------------------------------*/
+#if defined( STM32L432xx )
+#define THREAD_SIZE ( 256 )
+#elif defined( STM32F446xx )
+#define THREAD_SIZE ( 512 )
+#endif 
+
 /*-------------------------------------------------------------------------------
 Aliases
 -------------------------------------------------------------------------------*/
@@ -65,7 +74,7 @@ static uint32_t                              s_dma_pipe_uuid;     /**< Unique ID
 static uint32_t                              s_dma_request_uuid;  /**< Unique IDs for request generation */
 static Chimera::Thread::RecursiveMutex       s_dma_lock;          /**< Module lock */
 static std::array<StreamStatus, NUM_DRIVERS> s_stream_status;     /**< Current state of a stream */
-static uint32_t                              s_dmaX_thread_stack[ STACK_BYTES( 256 ) ] __attribute__((section(".app_stack")));
+static uint32_t                              s_dmaX_thread_stack[ STACK_BYTES( THREAD_SIZE ) ] __attribute__((section(".app_stack")));
 
 namespace Thor::DMA
 {

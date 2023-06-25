@@ -5,7 +5,7 @@
  *  Description:
  *    SPI driver for Thor
  *
- *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -35,6 +35,15 @@ namespace Chimera::SPI
   Constants
   ---------------------------------------------------------------------------*/
   static constexpr size_t NUM_DRIVERS = LLD::NUM_SPI_PERIPHS;
+
+  /*-------------------------------------------------------------------
+  Stack size for the interrupt handler thread
+  -------------------------------------------------------------------*/
+  #if defined( STM32L432xx )
+  #define THREAD_SIZE ( 256 )
+  #elif defined( STM32F446xx )
+  #define THREAD_SIZE ( 512 )
+  #endif 
 
   /*---------------------------------------------------------------------------
   Structures
@@ -78,7 +87,7 @@ namespace Chimera::SPI
   ---------------------------------------------------------------------------*/
   static DeviceManager<Driver, Channel, NUM_DRIVERS>   s_raw_drivers;
   static DeviceManager<ThorImpl, Channel, NUM_DRIVERS> s_impl_drivers;
-  static uint32_t                                      s_spiX_thread_stack[ STACK_BYTES( 256 ) ] __attribute__((section(".app_stack")));
+  static uint32_t                                      s_spiX_thread_stack[ STACK_BYTES( THREAD_SIZE ) ] __attribute__((section(".app_stack")));
 
   /*---------------------------------------------------------------------------
   Static Functions
