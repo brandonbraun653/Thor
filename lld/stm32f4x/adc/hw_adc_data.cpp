@@ -31,6 +31,12 @@ namespace Thor::LLD::ADC
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
   RegisterMap *ADC1_PERIPH = reinterpret_cast<RegisterMap *>( ADC1_BASE_ADDR );
 #endif
+#if defined( STM32_ADC2_PERIPH_AVAILABLE )
+  RegisterMap *ADC2_PERIPH = reinterpret_cast<RegisterMap *>( ADC2_BASE_ADDR );
+#endif
+#if defined( STM32_ADC3_PERIPH_AVAILABLE )
+  RegisterMap *ADC3_PERIPH = reinterpret_cast<RegisterMap *>( ADC3_BASE_ADDR );
+#endif
 
   /*---------------------------------------------------------------------------
   Configuration Maps
@@ -58,12 +64,16 @@ namespace Thor::LLD::ADC
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
       Thor::LLD::DMA::Source::ADC1,
 #endif
+#if defined( STM32_ADC2_PERIPH_AVAILABLE )
+      Thor::LLD::DMA::Source::ADC2,
+#endif
+#if defined( STM32_ADC3_PERIPH_AVAILABLE )
+      Thor::LLD::DMA::Source::ADC3,
+#endif
     };
 
-    LLD_CONST IRQn_Type IRQSignals[ NUM_ADC_PERIPHS ] = {
-#if defined( STM32_ADC1_PERIPH_AVAILABLE )
-      ADC_IRQn,
-#endif
+    LLD_CONST IRQn_Type IRQSignals[ NUM_ADC_IRQ_HANDLERS ] = {
+      ADC_IRQn
     };
   } /* clang-format on */
 }    // namespace Thor::LLD::ADC

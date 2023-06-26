@@ -95,7 +95,7 @@ namespace Thor::LLD::GPIO
     };
 
     static const AlternateFunc port_a7_alt_func[] = {
-      { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_CH1    },
+      { .registerAltFunc = AF1_TIM1,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM1_CH1N   },
       { .registerAltFunc = AF2_TIM3,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM3_CH2    },
       { .registerAltFunc = AF3_TIM8,          .chimeraAltFunc = Chimera::GPIO::Alternate::TIM8_CH1N   },
       { .registerAltFunc = AF5_SPI1,          .chimeraAltFunc = Chimera::GPIO::Alternate::SPI1_MOSI   },

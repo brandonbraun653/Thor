@@ -149,6 +149,7 @@ namespace Thor::LLD::ADC
   /*-------------------------------------------------
   Injected Sequence Register
   -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, JSQR, JSQR_ALL_Msk, JSQR_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, JSQR, JSQR_JL_Msk, JL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, JSQR, JSQR_JSQ4_Msk, JSQ4, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, JSQR, JSQR_JSQ3_Msk, JSQ3, BIT_ACCESS_RW );

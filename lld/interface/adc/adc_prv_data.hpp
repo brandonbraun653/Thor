@@ -60,12 +60,24 @@ namespace Thor::LLD::ADC
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
   extern RegisterMap *ADC1_PERIPH;
 #endif
+#if defined( STM32_ADC2_PERIPH_AVAILABLE )
+  extern RegisterMap *ADC2_PERIPH;
+#endif
+#if defined( STM32_ADC3_PERIPH_AVAILABLE )
+  extern RegisterMap *ADC3_PERIPH;
+#endif
 
   /*---------------------------------------------------------------------------
   Shared Data
   ---------------------------------------------------------------------------*/
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
   extern PeriphQueue ADC1_Queue;
+#endif
+#if defined( STM32_ADC2_PERIPH_AVAILABLE )
+  extern PeriphQueue ADC2_Queue;
+#endif
+#if defined( STM32_ADC3_PERIPH_AVAILABLE )
+  extern PeriphQueue ADC3_Queue;
 #endif
 
   /*---------------------------------------------------------------------------
@@ -86,7 +98,7 @@ namespace Thor::LLD::ADC
   namespace Resource
   {
     extern LLD_CONST Thor::LLD::DMA::Source DMASignals[ NUM_ADC_PERIPHS ];
-    extern LLD_CONST IRQn_Type IRQSignals[ NUM_ADC_PERIPHS ];
+    extern LLD_CONST IRQn_Type IRQSignals[ NUM_ADC_IRQ_HANDLERS ];
   }    // namespace Resource
 }    // namespace Thor::LLD::ADC
 

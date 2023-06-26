@@ -1,12 +1,12 @@
 /******************************************************************************
  *  File Name:
- *    hw_adc_driver.cpp
+ *    adc_common_driver.cpp
  *
  *  Description:
- *    Implements the LLD interface to the ADC hardware. All functionality here is
+ *    Implements the LLD interface to the ADC hardware. All functionality is
  *    either completely independent of a specific device or is common to all.
  *
- *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -39,11 +39,18 @@ namespace Thor::LLD::ADC
   ---------------------------------------------------------------------------*/
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
   PeriphQueue ADC1_Queue;
-#endif /* STM32_ADC1_PERIPH_AVAILABLE */
+#endif
+#if defined( STM32_ADC2_PERIPH_AVAILABLE )
+  PeriphQueue ADC2_Queue;
+#endif
+#if defined( STM32_ADC3_PERIPH_AVAILABLE )
+  PeriphQueue ADC3_Queue;
+#endif
 
   /*---------------------------------------------------------------------------
   Static Functions
   ---------------------------------------------------------------------------*/
+#if defined( STM32_ADC1_PERIPH_AVAILABLE )
   static void lockADC1()
   {
     s_adc_drivers[ ADC1_RESOURCE_INDEX ].disableInterrupts();
@@ -54,8 +61,39 @@ namespace Thor::LLD::ADC
     s_adc_drivers[ ADC1_RESOURCE_INDEX ].enableInterrupts();
   }
 
-  static etl::function_fv<lockADC1> adc1Lock;
+  static etl::function_fv<lockADC1>   adc1Lock;
   static etl::function_fv<unlockADC1> adc1Unlock;
+#endif /* STM32_ADC1_PERIPH_AVAILABLE */
+
+#if defined( STM32_ADC2_PERIPH_AVAILABLE )
+  static void lockADC2()
+  {
+    s_adc_drivers[ ADC2_RESOURCE_INDEX ].disableInterrupts();
+  }
+
+  static void unlockADC2()
+  {
+    s_adc_drivers[ ADC2_RESOURCE_INDEX ].enableInterrupts();
+  }
+
+  static etl::function_fv<lockADC2>   adc2Lock;
+  static etl::function_fv<unlockADC2> adc2Unlock;
+#endif /* STM32_ADC2_PERIPH_AVAILABLE */
+
+#if defined( STM32_ADC3_PERIPH_AVAILABLE )
+  static void lockADC3()
+  {
+    s_adc_drivers[ ADC3_RESOURCE_INDEX ].disableInterrupts();
+  }
+
+  static void unlockADC3()
+  {
+    s_adc_drivers[ ADC3_RESOURCE_INDEX ].enableInterrupts();
+  }
+
+  static etl::function_fv<lockADC3>   adc3Lock;
+  static etl::function_fv<unlockADC3> adc3Unlock;
+#endif /* STM32_ADC3_PERIPH_AVAILABLE */
 
   /*---------------------------------------------------------------------------
   Public Functions
@@ -71,14 +109,26 @@ namespace Thor::LLD::ADC
     }
 
     /*-------------------------------------------------------------------------
-    Initialize ADC1 channel queues
+    Initialize ADC channel queues
     -------------------------------------------------------------------------*/
 #if defined( STM32_ADC1_PERIPH_AVAILABLE )
     for ( size_t ch = 0; ch < ARRAY_COUNT( ADC1_Queue ); ch++ )
     {
       ADC1_Queue[ ch ] = new ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>( adc1Lock, adc1Unlock );
     }
-#endif /* STM32_ADC1_PERIPH_AVAILABLE */
+#endif
+#if defined( STM32_ADC2_PERIPH_AVAILABLE )
+    for ( size_t ch = 0; ch < ARRAY_COUNT( ADC2_Queue ); ch++ )
+    {
+      ADC2_Queue[ ch ] = new ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>( adc2Lock, adc2Unlock );
+    }
+#endif
+#if defined( STM32_ADC3_PERIPH_AVAILABLE )
+    for ( size_t ch = 0; ch < ARRAY_COUNT( ADC3_Queue ); ch++ )
+    {
+      ADC3_Queue[ ch ] = new ChannelQueue<CHANNEL_QUEUE_SAMPLE_DEPTH>( adc3Lock, adc3Unlock );
+    }
+#endif
 
     return Chimera::Status::OK;
   }
@@ -109,12 +159,13 @@ namespace Thor::LLD::ADC
   Chimera::Status_t Driver::reset()
   {
     /*-------------------------------------------------------------------------
-    Use the RCC peripheral to invoke the reset. The
-    clock must be enabled first or else this won't work.
+    Use the RCC peripheral to invoke the reset. The clock must be enabled first
+    or else this won't work.
     -------------------------------------------------------------------------*/
     auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();
     return rcc->reset( Chimera::Peripheral::Type::PERIPH_ADC, mResourceIndex );
   }
+
 
   void Driver::clockEnable()
   {
@@ -144,14 +195,14 @@ namespace Thor::LLD::ADC
 
   void Driver::onInterrupt( const Chimera::ADC::Interrupt signal, Chimera::ADC::ISRCallback cb )
   {
-    if( signal < Chimera::ADC::Interrupt::NUM_OPTIONS )
+    if ( signal < Chimera::ADC::Interrupt::NUM_OPTIONS )
     {
       /*-----------------------------------------------------------------------
       Globally disable interrupts while updating this structure. ADC ISR
       handlers can span across many DMA/ADC interrupt events and it's not
       practical to deduce which one is currently active.
       -----------------------------------------------------------------------*/
-      auto mask = Thor::LLD::INT::disableInterrupts();
+      auto mask                         = Thor::LLD::INT::disableInterrupts();
       mCallbacks[ EnumValue( signal ) ] = cb;
       Thor::LLD::INT::enableInterrupts( mask );
     }
@@ -160,12 +211,19 @@ namespace Thor::LLD::ADC
 }    // namespace Thor::LLD::ADC
 
 
-#if defined( STM32_ADC1_PERIPH_AVAILABLE )
 void ADC_IRQHandler()
 {
   using namespace Thor::LLD::ADC;
-  s_adc_drivers[ ADC1_RESOURCE_INDEX ].ISRHandler();
-}
-#endif
 
-#endif /* TARGET_STM32L4 && THOR_DRIVER_ADC */
+#if defined( STM32_ADC1_PERIPH_AVAILABLE )
+  s_adc_drivers[ ADC1_RESOURCE_INDEX ].ISRHandler();
+#endif
+#if defined( STM32_ADC2_PERIPH_AVAILABLE )
+  s_adc_drivers[ ADC2_RESOURCE_INDEX ].ISRHandler();
+#endif
+#if defined( STM32_ADC3_PERIPH_AVAILABLE )
+  s_adc_drivers[ ADC3_RESOURCE_INDEX ].ISRHandler();
+#endif
+}
+
+#endif /* THOR_ADC */

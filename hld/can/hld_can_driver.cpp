@@ -5,7 +5,7 @@
  *  Description:
  *    CAN driver for Thor
  *
- *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -38,6 +38,15 @@ namespace Chimera::CAN
   ---------------------------------------------------------------------------*/
   static constexpr size_t NUM_DRIVERS = LLD::NUM_CAN_PERIPHS;
   static constexpr size_t NUM_ISR_SIG = LLD::NUM_CAN_IRQ_HANDLERS;
+
+  /*-------------------------------------------------------------------
+  Stack size for the interrupt handler thread
+  -------------------------------------------------------------------*/
+  #if defined( STM32L432xx )
+  #define THREAD_SIZE ( 256 )
+  #elif defined( STM32F446xx )
+  #define THREAD_SIZE ( 512 )
+  #endif
 
   /*---------------------------------------------------------------------------
   Structures
@@ -80,7 +89,7 @@ namespace Chimera::CAN
   static size_t               s_driver_initialized;
   static Chimera::CAN::Driver s_raw_driver[ NUM_DRIVERS ];
   static ThorImpl             s_impl_driver[ NUM_DRIVERS ];
-  static uint32_t             s_canX_thread_stack[ STACK_BYTES( 256 ) ] __attribute__((section(".app_stack")));
+  static uint32_t             s_canX_thread_stack[ STACK_BYTES( THREAD_SIZE ) ] __attribute__((section(".app_stack")));
 
   /*---------------------------------------------------------------------------
   Static Functions

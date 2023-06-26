@@ -5,7 +5,7 @@
  *  Description:
  *    Implements the LLD interface to the ADC hardware.
  *
- *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -56,11 +56,6 @@ namespace Thor::LLD::ADC
    */
   static constexpr float VREFINT_CAL_VREF_MV = 3000.0f;
 
-
-  /*---------------------------------------------------------------------------
-  Static Variables
-  ---------------------------------------------------------------------------*/
-  static Driver s_adc_drivers[ NUM_ADC_PERIPHS ];
 
   /*---------------------------------------------------------------------------
   Static Functions
@@ -735,13 +730,12 @@ namespace Thor::LLD::ADC
           break;
 
         default:
-          RT_HARD_ASSERT( false );    // Bad configuration
+          RT_HARD_ASSERT( false );
           break;
       };
 
       RT_HARD_ASSERT( mSeqCfg.trigChannel <= NUM_ADC_EXT_TRIG_CHANNELS );
       EXTSEL::set( mPeriph, ( mSeqCfg.trigChannel << CFGR_EXTSEL_Pos ) );
-      ADSTART::set( mPeriph, CR_ADSTART );
     }
     else /* Software Trigger or Continuous */
     {

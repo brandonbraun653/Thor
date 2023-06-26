@@ -472,6 +472,8 @@ namespace Thor::LLD::ADC
   static constexpr uint32_t SQR3_SQ6_4   = ( 0x10UL << SQR3_SQ6_Pos );
 
   /*******************  Bit definition for JSQR register  *******************/
+  static constexpr Reg32_t JSQR_ALL_Msk = 0x003fffff;
+
   static constexpr uint32_t JSQR_JSQ1_Pos = ( 0U );
   static constexpr uint32_t JSQR_JSQ1_Msk = ( 0x1FUL << JSQR_JSQ1_Pos );
   static constexpr uint32_t JSQR_JSQ1     = JSQR_JSQ1_Msk;

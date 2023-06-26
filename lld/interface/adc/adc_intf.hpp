@@ -233,7 +233,6 @@ namespace Thor::LLD::ADC
     Driver attributes
     -------------------------------------------------------------------------*/
     size_t                      mResourceIndex; /**< Hardware resource index for this peripheral */
-    float                       mCalcVdda;      /**< Calculated real VDDA voltage in system */
     Chimera::ADC::DriverConfig  mCfg;           /**< Basic driver configuration data */
     Chimera::ADC::SequenceInit  mSeqCfg;        /**< Sequence configuration */
     Chimera::ADC::CallbackArray mCallbacks;     /**< Associated event callbacks */

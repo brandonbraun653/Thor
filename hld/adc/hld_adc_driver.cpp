@@ -3,9 +3,9 @@
  *    hld_adc_driver.cpp
  *
  *  Description:
- *    Implements the custom driver variant of the Thor ADC interface.
+ *    ADC driver for Thor
  *
- *  2020-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -38,6 +38,15 @@ namespace Chimera::ADC
   static constexpr size_t NUM_DRIVERS = LLD::NUM_ADC_PERIPHS;
   static constexpr size_t NUM_ISR_SIG = LLD::NUM_ADC_IRQ_HANDLERS;
 
+  /*-------------------------------------------------------------------
+  Stack size for the interrupt handler thread
+  -------------------------------------------------------------------*/
+  #if defined( STM32L432xx )
+  #define THREAD_SIZE ( 256 )
+  #elif defined( STM32F446xx )
+  #define THREAD_SIZE ( 512 )
+  #endif
+
   /*---------------------------------------------------------------------------
   Structures
   ---------------------------------------------------------------------------*/
@@ -62,7 +71,7 @@ namespace Chimera::ADC
   static size_t               s_driver_initialized;        /**< Tracks the module level initialization state */
   static Chimera::ADC::Driver s_raw_driver[ NUM_DRIVERS ]; /**< Driver objects */
   static ThorImpl             s_impl_driver[ NUM_DRIVERS ];
-  static uint32_t             s_adcX_thread_stack[ STACK_BYTES( 256 ) ] __attribute__((section(".app_stack")));
+  static uint32_t             s_adcX_thread_stack[ STACK_BYTES( THREAD_SIZE ) ] __attribute__((section(".app_stack")));
 
 
   /*---------------------------------------------------------------------------
