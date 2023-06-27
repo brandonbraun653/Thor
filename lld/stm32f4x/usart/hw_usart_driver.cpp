@@ -5,19 +5,18 @@
  *  Description:
  *    Common driver interface implementation
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/assert>
-
-/* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/usart>
 #include <Thor/lld/interface/usart/common_driver/usart_common_intf.hpp>
 
 #if defined( THOR_USART )
-
 namespace Thor::LLD::USART
 {
   /*---------------------------------------------------------------------------
@@ -25,7 +24,7 @@ namespace Thor::LLD::USART
   ---------------------------------------------------------------------------*/
   void prjEnableTransmitter( RegisterMap *const periph )
   {
-    if( !UE::get( periph ) )
+    if ( !UE::get( periph ) )
     {
       UE::set( periph, CR1_UE );
     }
@@ -42,7 +41,7 @@ namespace Thor::LLD::USART
 
   void prjEnableReceiver( RegisterMap *const periph )
   {
-    if( !UE::get( periph ) )
+    if ( !UE::get( periph ) )
     {
       UE::set( periph, CR1_UE );
     }
@@ -71,7 +70,7 @@ namespace Thor::LLD::USART
 
   void prjEnableISRSignal( RegisterMap *const periph, const ISRSignal signal )
   {
-    switch( signal )
+    switch ( signal )
     {
       case ISRSignal::PARITY_ERROR:
         PEIE::set( periph, CR1_PEIE );
@@ -96,13 +95,13 @@ namespace Thor::LLD::USART
       default:
         RT_HARD_ASSERT( false );
         break;
-    };
+    }
   }
 
 
   void prjDisableISRSignal( RegisterMap *const periph, const ISRSignal signal )
   {
-    switch( signal )
+    switch ( signal )
     {
       case ISRSignal::PARITY_ERROR:
         PEIE::clear( periph, CR1_PEIE );
@@ -127,45 +126,39 @@ namespace Thor::LLD::USART
       default:
         RT_HARD_ASSERT( false );
         break;
-    };
+    }
   }
 
 
   bool prjGetISRSignal( RegisterMap *const periph, const ISRSignal signal )
   {
-    switch( signal )
+    switch ( signal )
     {
       case ISRSignal::PARITY_ERROR:
         return PE::get( periph );
-        break;
 
       case ISRSignal::TRANSMIT_DATA_REG_EMPTY:
         return TXE::get( periph );
-        break;
 
       case ISRSignal::TRANSMIT_COMPLETE:
         return TC::get( periph );
-        break;
 
       case ISRSignal::RECEIVED_DATA_READY:
         return RXNE::get( periph );
-        break;
 
       case ISRSignal::LINE_IDLE:
         return IDLE::get( periph );
-        break;
 
       default:
         RT_HARD_ASSERT( false );
         return false;
-        break;
-    };
+    }
   }
 
 
   void prjSetISRSignal( RegisterMap *const periph, const ISRSignal signal )
   {
-    switch( signal )
+    switch ( signal )
     {
       case ISRSignal::PARITY_ERROR:
       case ISRSignal::TRANSMIT_DATA_REG_EMPTY:
@@ -178,25 +171,24 @@ namespace Thor::LLD::USART
       default:
         RT_HARD_ASSERT( false );
         break;
-    };
+    }
   }
 
 
   void prjClrISRSignal( RegisterMap *const periph, const ISRSignal signal )
   {
-    switch( signal )
+    switch ( signal )
     {
       case ISRSignal::PARITY_ERROR:
       case ISRSignal::LINE_IDLE:
+      case ISRSignal::OVERRUN_ERROR:
         // Can only be cleared by reading SR, then read/write access to DR
         return;
-        break;
 
       case ISRSignal::RECEIVED_DATA_READY:
       case ISRSignal::TRANSMIT_DATA_REG_EMPTY:
         // Can only be cleared via read/write to data register
         return;
-        break;
 
       case ISRSignal::TRANSMIT_COMPLETE:
         TC::set( periph, 0 );
@@ -205,9 +197,8 @@ namespace Thor::LLD::USART
       default:
         RT_HARD_ASSERT( false );
         break;
-    };
+    }
   }
 
 }    // namespace Thor::LLD::USART
-
-#endif  /* THOR_LLD_USART */
+#endif /* THOR_LLD_USART */

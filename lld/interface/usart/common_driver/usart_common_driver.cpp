@@ -498,18 +498,10 @@ namespace Thor::LLD::USART
       Turn on the RX hardware to begin listening for data
       -----------------------------------------------------------------------*/
       prjEnableReceiver( mPeriph );
-      #if defined( STM32L432xx )
-      while( IDLE::get( mPeriph ) != ISR_IDLE )
-      #elif defined( STM32F446xx )
-      while( IDLE::get( mPeriph ) != SR_IDLE )
-      #endif
-      {
-        continue;
-      }
 
       /*-----------------------------------------------------------------------
       Use only the RXNE flag at first to detect reception start. Enabling the
-      line-idle monitor now results in an immediate timeout.
+      line-idle monitor now results in an immediate timeout on L4xxx devices.
       -----------------------------------------------------------------------*/
       prjClrISRSignal( mPeriph, ISRSignal::OVERRUN_ERROR );
       prjClrISRSignal( mPeriph, ISRSignal::RECEIVED_DATA_READY );
@@ -1037,7 +1029,7 @@ namespace Thor::LLD::USART
       /*-----------------------------------------------------------------------
       Use the default ISR handler to manage the transfer complete behavior
       -----------------------------------------------------------------------*/
-      
+
       #if defined( STM32L432xx )
       while( TC::get( mPeriph ) != ISR_TC )
       #elif defined( STM32F446xx )
