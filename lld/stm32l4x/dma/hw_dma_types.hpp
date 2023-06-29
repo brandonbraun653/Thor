@@ -226,7 +226,7 @@ namespace Thor::LLD::DMA
   /*---------------------------------------------------------------------------
   Channel Memory Address Register
   ---------------------------------------------------------------------------*/
-  REG_ACCESSOR( StreamMap, CMAR, CMAR_MA, MA, BIT_ACCESS_RW );
+  REG_ACCESSOR( StreamMap, CMAR, CMAR_MA, M0A, BIT_ACCESS_RW );
 
   /*---------------------------------------------------------------------------
   Channel Selection Register

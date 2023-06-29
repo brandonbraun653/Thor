@@ -5,7 +5,7 @@
  *  Description:
  *    STM32 Driver DMA Model
  *
- *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
@@ -59,7 +59,7 @@ namespace Thor::LLD::DMA
   /**
    * @brief Get the Stream object from a resource index
    *
-   * @param index               Resource index of the stream
+   * @param index       Resource index of the stream
    * @return Stream_rPtr
    */
   Stream_rPtr getStream( const RIndex_t index );
@@ -73,6 +73,23 @@ namespace Thor::LLD::DMA
    */
   StreamMap *streamView( RegisterMap *const periph, const Streamer streamNum );
 
+  /**
+   * @brief Enables the DMA stream
+   * @param stream      Stream to enable
+   */
+  void streamEnable( StreamMap *stream );
+
+  /**
+   * @brief Disables the DMA stream
+   * @param stream      Stream to disable
+   */
+  void streamDisable( StreamMap *stream );
+
+  /**
+   * @brief Clears all interrupt enable flags for the given stream
+   * @param stream      Stream to modify
+   */
+  void streamClearInterruptEnableFlags( StreamMap *stream );
 
   /*---------------------------------------------------------------------------
   Public Functions (Implemented at the interface layer)
@@ -315,12 +332,7 @@ namespace Thor::LLD::DMA
     IRQn_Type    mStreamIRQn;          /**< Stream's IRQ number */
     TCB          mStreamTCB;           /**< Control block for current transfer */
 
-    /**
-     * @brief Resets the LISR/HISR registers for the configured stream
-     * Assumes interrupt safe context.
-     */
     void reset_isr_flags();
-
     void configure_memory_settings( const bool incr, const Chimera::DMA::BurstSize bSize, const Chimera::DMA::Alignment align );
     void configure_periph_settings( const bool incr, const Chimera::DMA::BurstSize bSize, const Chimera::DMA::Alignment align );
   };

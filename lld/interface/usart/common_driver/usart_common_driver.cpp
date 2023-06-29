@@ -322,13 +322,6 @@ namespace Thor::LLD::USART
       /* Clear any previous DMA request */
       DMAT::clear( mPeriph, CR3_DMAT );
 
-      /* Clear the transfer complete bit */
-#if defined( STM32F446xx )
-      TC::clear( mPeriph, SR_TC );
-#elif defined( STM32L432xx )
-      TC::clear( mPeriph, ISR_TC );
-#endif
-
       /* Ensure the transmitter is turned on */
       prjEnableTransmitter( mPeriph );
 
@@ -348,6 +341,13 @@ namespace Thor::LLD::USART
       mTXTCB.remaining = buffer.size();
       mTXTCB.state     = StateMachine::TX::TX_ONGOING;
       mTXTCB.mode      = PeripheralMode::DMA;
+
+      /* Clear the transfer complete bit */
+#if defined( STM32F446xx )
+      TC::clear( mPeriph, SR_TC );
+#elif defined( STM32L432xx )
+      TC::clear( mPeriph, ISR_TC );
+#endif
     }
     enableUSARTInterrupts();
 
@@ -500,13 +500,14 @@ namespace Thor::LLD::USART
       prjEnableReceiver( mPeriph );
 
       /*-----------------------------------------------------------------------
-      Use only the RXNE flag at first to detect reception start. Enabling the
-      line-idle monitor now results in an immediate timeout on L4xxx devices.
+      Only use the Received Data Ready flag at first to detect reception start
+      and then later enable Line Idle detection inside the ISRHandler().
+      Enabling the line-idle monitor now results in an immediate timeout.
       -----------------------------------------------------------------------*/
       prjClrISRSignal( mPeriph, ISRSignal::OVERRUN_ERROR );
       prjClrISRSignal( mPeriph, ISRSignal::RECEIVED_DATA_READY );
       prjClrISRSignal( mPeriph, ISRSignal::LINE_IDLE );
-      prjEnableISRSignal( mPeriph, ISRSignal::LINE_IDLE );
+      prjEnableISRSignal( mPeriph, ISRSignal::RECEIVED_DATA_READY );
     }
     enableUSARTInterrupts();
 

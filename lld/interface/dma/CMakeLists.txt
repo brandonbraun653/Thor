@@ -5,6 +5,7 @@ gen_static_lib_variants(
     thor_lld_intf_dma
   SOURCES
     common_driver/dma_common_driver.cpp
+    common_driver/dma_common_stream.cpp
     dma_intf.cpp
   PRV_LIBRARIES
     chimera_intf_inc
