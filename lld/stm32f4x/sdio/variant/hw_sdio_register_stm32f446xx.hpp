@@ -27,7 +27,8 @@ namespace Thor::LLD::SDIO
   /*---------------------------------------------------------------------------
   Constants
   ---------------------------------------------------------------------------*/
-  static constexpr size_t NUM_SDIO_PERIPHS = 1;
+  static constexpr size_t   NUM_SDIO_PERIPHS     = 1;
+  static constexpr uint32_t SDIO1_RESOURCE_INDEX = 0u;
 
 }  // namespace Th
 

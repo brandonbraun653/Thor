@@ -11,7 +11,7 @@
 /*-----------------------------------------------------------------------------
 Includes
 -----------------------------------------------------------------------------*/
-#include <Thor/lld/interface/sdio/sdio_detail.hpp>
+#include <Thor/lld/interface/inc/sdio>
 
 namespace Thor::LLD::SDIO
 {
