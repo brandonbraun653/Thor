@@ -22,7 +22,7 @@ Select the appropriate driver configuration file
 #if defined( THOR_USER_CONFIG )
 #include "thor_user_config.hpp"
 #else /* Default Project Configuration */
-#if !defined( TARGET_LLD_MOCK ) && ( defined( TARGET_LLD_TEST ) || defined( _SIM ) )
+#if !defined( TARGET_LLD_MOCK ) && ( defined( TARGET_LLD_TEST ) || defined( SIM ) )
 #include <Thor/config/simulator/thor_sim_config.hpp>
 #elif defined( TARGET_STM32F4 )
 #include <Thor/config/hardware/thor_stm32f4x_config.hpp>

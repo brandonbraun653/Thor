@@ -1,8 +1,8 @@
 include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
-if(${THOR_CHIP} MATCHES "^F446$")
+if(${THOR_CHIP} MATCHES "^F446$" AND ${THOR_IMPL} MATCHES "HW")
     set(VARIANT_SRC variant/hw_sdio_register_stm32f446xx.cpp)
-elseif(${THOR_CHIP} MATCHES "^SIM$")
+elseif(${THOR_IMPL} MATCHES "^SIM$")
     set(VARIANT_SRC variant/hw_sdio_register_sim.cpp)
 else()
     message(FATAL_ERROR "Unsupported STM32L4 driver variant for: sdio")

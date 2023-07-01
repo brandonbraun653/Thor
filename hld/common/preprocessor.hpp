@@ -6,7 +6,7 @@
  *   Performs some preprocessor goodness to help with automatic configuration of
  *   the Thor library.
  *
- * 2019 | Brandon Braun | brandonbraun653@gmail.com
+ * 2019-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
@@ -21,10 +21,6 @@ https://clang.llvm.org/docs/LanguageExtensions.html
 #error FATAL ERROR: Please use a compiler that supports __has_include(), such as Clang or MSVC 2015 Update 2 or higher
 #endif
 
-#if __cpp_exceptions && ( !defined( _WIN32 ) && !defined( _WIN64 ) )
-#warning Please disable exceptions
-#endif
-
 /*-------------------------------------------------
 Custom STM32F4 Driver
 -------------------------------------------------*/
@@ -34,7 +30,7 @@ Custom STM32F4 Driver
 #define CORTEX_M4
 #endif
 
-#if !defined( STM32F446xx ) && !defined( _SIM ) // || !defined( <some_other_chip> )
+#if !defined( STM32F446xx ) // || !defined( <some_other_chip> )
 #error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)
 #endif
 
@@ -49,13 +45,13 @@ Custom STM32L4 Driver
 #define CORTEX_M4
 #endif
 
-#if !defined( STM32L432xx ) && !defined( _SIM ) // || !defined( <some_other_chip> )
+#if !defined( STM32L432xx ) // || !defined( <some_other_chip> )
 #error Please define a supported STM32F4 series device in the project preprocessor (or add the def for a new one)
 #endif
 
 #endif /* TARGET_STM32F4 */
 
-#if !defined( TARGET_LLD_TEST ) && !defined( TARGET_LLD_MOCK ) && !defined( TARGET_STM32F4 ) && !defined( TARGET_STM32L4 ) && !defined( TARGET_STM32F7 )
+#if !defined( TARGET_STM32F4 ) && !defined( TARGET_STM32L4 ) && !defined( TARGET_STM32F7 )
 #error No detected STM32 device. Please add to your project build system.
 #endif
 

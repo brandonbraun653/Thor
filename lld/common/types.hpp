@@ -5,21 +5,18 @@
  *  Description:
  *    Common types used across the Thor LLD
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_COMMON_TYPES_HPP
 #define THOR_LLD_COMMON_TYPES_HPP
 
-/* STL Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
+#include <cstdint>
 #include <limits>
-
-/* Chimera Includes */
-#include <Chimera/container>
-
-/* Type Safe Includes */
-//#include <type_safe/strong_typedef.hpp>
 
 namespace Thor::LLD
 {
