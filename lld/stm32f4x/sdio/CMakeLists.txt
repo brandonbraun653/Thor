@@ -12,8 +12,8 @@ gen_static_lib_variants(
   TARGET
     thor_lld_stm32f4_sdio
   SOURCES
-    #../../interface/sdio/sdio_common_driver.cpp
-    #hw_sdio_data.cpp
+    ../../interface/sdio/sdio_common_driver.cpp
+    hw_sdio_data.cpp
     ${VARIANT_SRC}
   PRV_LIBRARIES
     aurora_intf_inc

@@ -27,20 +27,20 @@ namespace Thor::LLD::SDIO
   Public Functions (Implemented at the interface layer)
   ---------------------------------------------------------------------------*/
   /**
-   * @brief Looks up a resource index based on a raw peripheral instance
-   *
-   * @param address       The peripheral address
-   * @return RIndex_t
-   */
-  RIndex_t getResourceIndex( const std::uintptr_t address );
-
-  /**
    * @brief Checks if the given channel is supported by the hardware
    *
    * @param channel    The channel to check
    * @return bool
    */
   bool isSupported( const Chimera::SDIO::Channel channel );
+
+  /**
+   * @brief Looks up a resource index based on a raw peripheral instance
+   *
+   * @param address       The peripheral address
+   * @return RIndex_t
+   */
+  RIndex_t getResourceIndex( const std::uintptr_t address );
 
   /**
    * @brief Gets the channel associated with a peripheral address
@@ -53,12 +53,11 @@ namespace Thor::LLD::SDIO
   /**
    * @brief Initializes the drivers by attaching the appropriate peripheral
    *
-   * @param driverList    List of driver objects to be initialized
+   * @param driverList    List of HW driver objects to be initialized
    * @param numDrivers    How many drivers are in driverList
    * @return bool
    */
   bool attachDriverInstances( Driver *const driverList, const size_t numDrivers );
-
 
   /*---------------------------------------------------------------------------
   Classes
