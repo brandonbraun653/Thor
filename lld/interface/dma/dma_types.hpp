@@ -5,29 +5,23 @@
  *  Description:
  *    Common DMA types used in Thor drivers
  *
- *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
 #ifndef THOR_DRIVER_DMA_COMMON_TYPES_HPP
 #define THOR_DRIVER_DMA_COMMON_TYPES_HPP
 
-/* C++ Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
+#include <Aurora/utility>
+#include <Chimera/dma>
+#include <Thor/cfg>
 #include <cstdint>
-
-/* ETL Includes */
 #include <etl/delegate.h>
 #include <etl/memory.h>
 #include <etl/queue_spsc_atomic.h>
-
-/* Aurora Includes */
-#include <Aurora/utility>
-
-/* Chimera Includes */
-#include <Chimera/dma>
-
-/* Thor Includes */
-#include <Thor/cfg>
 
 
 namespace Thor::LLD::DMA
@@ -289,7 +283,7 @@ namespace Thor::LLD::DMA
    */
   struct StreamAttr
   {
-    Source request;     /**< DMA request signal */
+    Source  request;    /**< DMA request signal */
     uint8_t attributes; /**< Signal attributes */
   };
 
@@ -302,22 +296,22 @@ namespace Thor::LLD::DMA
     /*-------------------------------------------------------------------------
     Thor Specific Configuration
     -------------------------------------------------------------------------*/
-    bool dstAddrIncr;
-    bool srcAddrIncr;
-    Channel channel;
+    bool     dstAddrIncr;
+    bool     srcAddrIncr;
+    Channel  channel;
     FifoMode fifoMode;
 
     /*-------------------------------------------------------------------------
     Common Driver Configuration
     -------------------------------------------------------------------------*/
-    Chimera::DMA::Mode dmaMode;
-    Chimera::DMA::Direction direction;
-    Chimera::DMA::Priority priority;
+    Chimera::DMA::Mode          dmaMode;
+    Chimera::DMA::Direction     direction;
+    Chimera::DMA::Priority      priority;
     Chimera::DMA::FifoThreshold fifoThreshold;
-    Chimera::DMA::BurstSize dstBurstSize;
-    Chimera::DMA::Alignment dstAddrAlign;
-    Chimera::DMA::BurstSize srcBurstSize;
-    Chimera::DMA::Alignment srcAddrAlign;
+    Chimera::DMA::BurstSize     dstBurstSize;
+    Chimera::DMA::Alignment     dstAddrAlign;
+    Chimera::DMA::BurstSize     srcBurstSize;
+    Chimera::DMA::Alignment     srcAddrAlign;
   };
 
   /**
@@ -330,21 +324,21 @@ namespace Thor::LLD::DMA
     Control Fields
     -------------------------------------------------------------------------*/
     /* Driver Controlled */
-    Chimera::DMA::Errors errorsToIgnore; /**< Which errors to not care about */
-    StreamState state;                   /**< DMA transfer state machine status */
-    uint32_t elementsTransferred;        /**< How many bytes were actually transferred */
-    uint32_t selectedChannel;            /**< When the ISR fires, will contain hardware channel that was used */
-    RIndex_t resourceIndex;              /**< Resource index of the controlling stream */
-    Chimera::DMA::RequestId requestId;   /**< HLD request ID of the transfer */
-    Chimera::DMA::Alignment elementSize; /**< Size of each element that was transferred */
+    Chimera::DMA::Errors    errorsToIgnore;      /**< Which errors to not care about */
+    StreamState             state;               /**< DMA transfer state machine status */
+    uint32_t                elementsTransferred; /**< How many bytes were actually transferred */
+    uint32_t                selectedChannel;     /**< When the ISR fires, will contain hardware channel that was used */
+    RIndex_t                resourceIndex;       /**< Resource index of the controlling stream */
+    Chimera::DMA::RequestId requestId;           /**< HLD request ID of the transfer */
+    Chimera::DMA::Alignment elementSize;         /**< Size of each element that was transferred */
 
     /* User Configured */
-    uint32_t srcAddress;                        /**< Address where the data will be pulled from */
-    uint32_t dstAddress;                        /**< Address where the data will be transferred into */
-    uint32_t transferSize;                      /**< How many bytes to transfer between source and destination */
-    bool persistent;                            /**< Whether or not to leave the stream enabled after transfer complete */
-    bool wakeUserOnComplete;                    /**< Wake the user thread to handle results? */
-    Chimera::DMA::TransferCallback isrCallback; /**< Callback to execute inside ISR on events */
+    uint32_t                       srcAddress;   /**< Address where the data will be pulled from */
+    uint32_t                       dstAddress;   /**< Address where the data will be transferred into */
+    uint32_t                       transferSize; /**< How many bytes to transfer between source and destination */
+    bool                           persistent;   /**< Whether or not to leave the stream enabled after transfer complete */
+    bool                           wakeUserOnComplete; /**< Wake the user thread to handle results? */
+    Chimera::DMA::TransferCallback isrCallback;        /**< Callback to execute inside ISR on events */
 
     /*-------------------------------------------------------------------------
     Various Error Flags
