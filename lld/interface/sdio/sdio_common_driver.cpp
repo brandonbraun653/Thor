@@ -55,7 +55,7 @@ namespace Thor::LLD::SDIO
     -------------------------------------------------------------------------*/
     INT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
     INT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
-    INT::setPriority( Resource::IRQSignals[ resourceIndex ], INT::SPI_IT_PREEMPT_PRIORITY, 0u );
+    INT::setPriority( Resource::IRQSignals[ resourceIndex ], INT::SDIO_IT_PREEMPT_PRIORITY, 0u );
 
     return Chimera::Status::OK;
   }

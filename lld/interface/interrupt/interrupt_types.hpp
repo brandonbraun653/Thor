@@ -71,6 +71,9 @@ Set the NVIC controller priority group style
   static constexpr uint32_t I2C_IT_PREEMPT_PRIORITY = 5;
   static_assert( I2C_IT_PREEMPT_PRIORITY <= _THOR_LLD_INT_MAX_ISR_PRI );
 
+  static constexpr uint32_t SDIO_IT_PREEMPT_PRIORITY = 5;
+  static_assert( SDIO_IT_PREEMPT_PRIORITY <= _THOR_LLD_INT_MAX_ISR_PRI );
+
   static constexpr uint32_t SPI_IT_PREEMPT_PRIORITY = 5;
   static_assert( SPI_IT_PREEMPT_PRIORITY <= _THOR_LLD_INT_MAX_ISR_PRI );
 

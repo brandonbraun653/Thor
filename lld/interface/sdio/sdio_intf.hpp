@@ -16,10 +16,8 @@
 Includes
 -----------------------------------------------------------------------------*/
 #include <Chimera/sdio>
-#include <Thor/lld/common/interrupts/sdio_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/sdio/sdio_types.hpp>
-#include <Thor/lld/interface/sdio/sdio_detail.hpp>
 
 namespace Thor::LLD::SDIO
 {
@@ -58,32 +56,6 @@ namespace Thor::LLD::SDIO
    * @return bool
    */
   bool attachDriverInstances( Driver *const driverList, const size_t numDrivers );
-
-  /*---------------------------------------------------------------------------
-  Classes
-  ---------------------------------------------------------------------------*/
-  class Driver
-  {
-  public:
-    Driver();
-    ~Driver();
-
-    Chimera::Status_t attach( RegisterMap *const peripheral );
-    Chimera::Status_t reset();
-    void              clockEnable();
-    void              clockDisable();
-
-  protected:
-    void IRQHandler();
-    void enterCriticalSection();
-    void exitCriticalSection();
-
-  private:
-    friend void( ::SDIO_IRQHandler )();
-
-    RegisterMap *mPeriph;       /**< Mapped hardware peripheral */
-    size_t       resourceIndex; /**< Lookup index for mPeriph */
-  };
 
 }    // namespace Thor::LLD::SDIO
 

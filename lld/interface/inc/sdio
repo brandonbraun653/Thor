@@ -13,6 +13,7 @@
 #define THOR_SDIO_INTF_INCLUDES
 
 #include <Thor/lld/interface/sdio/sdio_detail.hpp>
+#include <Thor/lld/interface/sdio/sdio_driver.hpp>
 #include <Thor/lld/interface/sdio/sdio_intf.hpp>
 #include <Thor/lld/interface/sdio/sdio_prv_data.hpp>
 #include <Thor/lld/interface/sdio/sdio_types.hpp>
