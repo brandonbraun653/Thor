@@ -117,19 +117,19 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     switch ( cfg.clockPrescale )
     {
-      case Chimera::ADC::Prescaler::DIV_2:
+      case Chimera::ADC::PreScaler::DIV_2:
         ADCPRE::set( ADC_COMMON, 0 << CCR_ADCPRE_Pos );
         break;
 
-      case Chimera::ADC::Prescaler::DIV_4:
+      case Chimera::ADC::PreScaler::DIV_4:
         ADCPRE::set( ADC_COMMON, 1 << CCR_ADCPRE_Pos );
         break;
 
-      case Chimera::ADC::Prescaler::DIV_6:
+      case Chimera::ADC::PreScaler::DIV_6:
         ADCPRE::set( ADC_COMMON, 2 << CCR_ADCPRE_Pos );
         break;
 
-      case Chimera::ADC::Prescaler::DIV_8:
+      case Chimera::ADC::PreScaler::DIV_8:
       default:
         ADCPRE::set( ADC_COMMON, 3 << CCR_ADCPRE_Pos );
         break;
@@ -677,6 +677,10 @@ namespace Thor::LLD::ADC
   }
 
 
+  void Driver::ISRHandler()
+  {
+  }
+  
   // void Driver::IRQHandler()
   // {
   //   using namespace Chimera::ADC;

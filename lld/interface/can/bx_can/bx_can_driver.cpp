@@ -18,6 +18,7 @@
 Includes
 -----------------------------------------------------------------------------*/
 #include <Aurora/math>
+#include <Aurora/utility>
 #include <Chimera/algorithm>
 #include <Chimera/common>
 #include <Chimera/utility>
