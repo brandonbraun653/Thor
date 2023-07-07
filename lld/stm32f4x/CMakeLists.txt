@@ -15,6 +15,7 @@ add_subdirectory("interrupt")
 add_subdirectory("iwdg")
 add_subdirectory("power")
 add_subdirectory("rcc")
+add_subdirectory("sdio")
 add_subdirectory("spi")
 add_subdirectory("startup")
 add_subdirectory("system")
@@ -40,6 +41,7 @@ gen_intf_lib_variants(
     thor_lld_stm32f4_iwdg
     thor_lld_stm32f4_power
     thor_lld_stm32f4_rcc
+    thor_lld_stm32f4_sdio
     thor_lld_stm32f4_spi
     thor_lld_stm32f4_startup
     thor_lld_stm32f4_system

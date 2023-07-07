@@ -2,6 +2,8 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
 if(${THOR_CHIP} MATCHES "^F446$")
   set(VARIANT_SRC variant/hw_gpio_register_stm32f446xx.cpp)
+elseif(${THOR_CHIP} MATCHES "^SIM$")
+  message(WARNING "Missing STM32F4 simulator driver variant for: gpio")
 else()
   message(FATAL_ERROR "Unsupported STM32L4 driver variant for: gpio")
 endif()

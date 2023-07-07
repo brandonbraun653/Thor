@@ -5,33 +5,30 @@
  *  Description:
  *    Common interrupt functions for Cortex-M4 processors
  *
- *  2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_CORTEX_M4_INTERRUPTS
 #define THOR_LLD_CORTEX_M4_INTERRUPTS
 
-/* STL Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
+#include <Thor/lld/common/cmsis/configuration.hpp>
 #include <cstdint>
 
-/* Thor Includes */
-#include <Thor/lld/common/cmsis/configuration.hpp>
+#if defined( CORTEX_M4 ) && defined( EMBEDDED )
 #include <Thor/lld/common/cmsis/core/include/core_cm4.h>
-
-#if defined( TARGET_STM32F4 )
-#include <Thor/lld/stm32f4x/interrupt/hw_interrupt_prj.hpp>
-#elif defined( TARGET_STM32L4 )
-#include <Thor/lld/stm32l4x/interrupt/hw_interrupt_prj.hpp>
 #endif
 
 namespace Thor::LLD::INT
 {
-  static constexpr uint32_t NVIC_PRIORITYGROUP_0 = 0x00000007u; /*!< 0 bits for pre-emption priority, 4 bits for subpriority */
-  static constexpr uint32_t NVIC_PRIORITYGROUP_1 = 0x00000006u; /*!< 1 bits for pre-emption priority, 3 bits for subpriority */
-  static constexpr uint32_t NVIC_PRIORITYGROUP_2 = 0x00000005u; /*!< 2 bits for pre-emption priority, 2 bits for subpriority */
-  static constexpr uint32_t NVIC_PRIORITYGROUP_3 = 0x00000004u; /*!< 3 bits for pre-emption priority, 1 bits for subpriority */
-  static constexpr uint32_t NVIC_PRIORITYGROUP_4 = 0x00000003u; /*!< 4 bits for pre-emption priority, 0 bits for subpriority */
+  static constexpr uint32_t NVIC_PRIORITYGROUP_0 = 0x00000007u; /**< 0 bits for pre-emption priority, 4 bits for subpriority */
+  static constexpr uint32_t NVIC_PRIORITYGROUP_1 = 0x00000006u; /**< 1 bits for pre-emption priority, 3 bits for subpriority */
+  static constexpr uint32_t NVIC_PRIORITYGROUP_2 = 0x00000005u; /**< 2 bits for pre-emption priority, 2 bits for subpriority */
+  static constexpr uint32_t NVIC_PRIORITYGROUP_3 = 0x00000004u; /**< 3 bits for pre-emption priority, 1 bits for subpriority */
+  static constexpr uint32_t NVIC_PRIORITYGROUP_4 = 0x00000003u; /**< 4 bits for pre-emption priority, 0 bits for subpriority */
 
   /**
    *  Sets the priority grouping field (preemption priority and subpriority)
@@ -127,6 +124,6 @@ namespace Thor::LLD::INT
    *  @return void
    */
   void SystemReset();
-}
+}    // namespace Thor::LLD::INT
 
-#endif  /* !THOR_LLD_CORTEX_M4_INTERRUPTS */
+#endif /* !THOR_LLD_CORTEX_M4_INTERRUPTS */

@@ -1,35 +1,34 @@
 /******************************************************************************
  *  File Name:
- *    types.hpp
+ *    sdio_types.hpp
  *
  *  Description:
- *    Common types used across the Thor LLD
+ *    Types for the SDIO low level driver
  *
- *  2020-2023 | Brandon Braun | brandonbraun653@gmail.com
+ *  2023 | Brandon Braun | brandonbraun653@protonmail.com
  *****************************************************************************/
 
 #pragma once
-#ifndef THOR_LLD_COMMON_TYPES_HPP
-#define THOR_LLD_COMMON_TYPES_HPP
+#ifndef THOR_INTF_SDIO_HPP
+#define THOR_INTF_SDIO_HPP
 
 /*-----------------------------------------------------------------------------
 Includes
 -----------------------------------------------------------------------------*/
-#include <cstdint>
-#include <limits>
 
-namespace Thor::LLD
+namespace Thor::LLD::SDIO
 {
+  /*---------------------------------------------------------------------------
+  Forward Declarations
+  ---------------------------------------------------------------------------*/
+  class Driver;
+  struct RegisterMap;
+
   /*---------------------------------------------------------------------------
   Aliases
   ---------------------------------------------------------------------------*/
-  using RIndex_t = uint8_t;
+  using Driver_rPtr = Driver *;
 
-  /*---------------------------------------------------------------------------
-  Constants
-  ---------------------------------------------------------------------------*/
-  static constexpr uint8_t INVALID_RESOURCE_INDEX = std::numeric_limits<uint8_t>::max();
+}    // namespace Thor::LLD::SDIO
 
-}    // namespace Thor::LLD
-
-#endif /* !THOR_LLD_COMMON_TYPES_HPP */
+#endif /* !THOR_INTF_SDIO_HPP */

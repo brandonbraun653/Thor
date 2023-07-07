@@ -5,7 +5,7 @@
  *  Description:
  *    Implements the required LLD data interface
  *
- *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -20,6 +20,7 @@ Includes
 #include <Thor/lld/interface/inc/i2c>
 #include <Thor/lld/interface/inc/power>
 #include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/sdio>
 #include <Thor/lld/interface/inc/spi>
 #include <Thor/lld/interface/inc/sys>
 #include <Thor/lld/interface/inc/timer>
@@ -264,6 +265,22 @@ namespace Thor::LLD::RCC
   };
   /* clang-format on */
 #endif /* THOR_LLD_PWR */
+
+#if defined( THOR_SDIO )
+  /* clang-format off */
+  static const RegisterConfig SDIO_ClockConfig[ SDIO::NUM_SDIO_PERIPHS ] = {
+    { .mask = APB2ENR_SDIOEN, .reg  = &RCC1_PERIPH->APB2ENR }
+  };
+
+  static const RegisterConfig SDIO_ResetConfig[ SDIO::NUM_SDIO_PERIPHS ] = {
+    { .mask = APB2RSTR_SDIORST, .reg = &RCC1_PERIPH->APB2RSTR }
+  };
+
+  static const Chimera::Clock::Bus SDIO_SourceClock[ SDIO::NUM_SDIO_PERIPHS ] = {
+    Chimera::Clock::Bus::APB2
+  };
+  /* clang-format on */
+#endif /* THOR_LLD_SDIO */
 
 #if defined( THOR_SPI )
   /* clang-format off */
@@ -723,6 +740,20 @@ namespace Thor::LLD::RCC
       .getResourceIndex = PWR::getResourceIndex
     },
     #endif /* THOR_LLD_PWR */
+
+    #if defined( THOR_SDIO )
+    {
+      .pType            = static_cast<uint8_t>( Chimera::Peripheral::Type::PERIPH_SDIO ),
+      .elements         = SDIO::NUM_SDIO_PERIPHS,
+      .bfControl        = 0,
+      .reserved         = 0,
+      .clock            = reinterpret_cast<const RegisterConfig*>( &SDIO_ClockConfig ),
+      .clockLP          = nullptr,
+      .reset            = reinterpret_cast<const RegisterConfig*>( &SDIO_ResetConfig ),
+      .clockSource      = reinterpret_cast<const Chimera::Clock::Bus*>( &SDIO_SourceClock ),
+      .getResourceIndex = SDIO::getResourceIndex
+    },
+    #endif /* THOR_LLD_SDIO */
 
     #if defined( THOR_SPI )
     {
