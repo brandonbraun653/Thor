@@ -21,8 +21,20 @@ Includes
 namespace Thor::LLD::SDIO
 {
   /*---------------------------------------------------------------------------
-  Private Functions
+  Static Functions
   ---------------------------------------------------------------------------*/
+  /**
+   * @brief Calculates the HW clock divider setting for a given target bus frequency
+   *
+   * @param in_freq    Input clock frequency in Hz
+   * @param out_freq   Target bus frequency in Hz
+   * @return uint32_t HW register clock divider setting
+   */
+  static uint32_t calcClockDivider( const uint32_t in_freq, const uint32_t out_freq )
+  {
+    // TODO: Fill me in!
+    return 0;
+  }
 
 
   /*---------------------------------------------------------------------------
@@ -89,6 +101,17 @@ namespace Thor::LLD::SDIO
     INT::enableIRQ( Resource::IRQSignals[ mResourceIdx ] );
   }
 
+
+  Chimera::Status_t Driver::init()
+  {
+    return Chimera::Status::FAIL;
+  }
+
+
+  uint32_t Driver::getBusFrequency()
+  {
+    return 0;
+  }
 
   void Driver::IRQHandler()
   {

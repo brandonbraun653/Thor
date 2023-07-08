@@ -26,26 +26,95 @@ namespace Thor::LLD::SDIO
   /*---------------------------------------------------------------------------
   Classes
   ---------------------------------------------------------------------------*/
+  /**
+   * @brief Register level driver for the SDIO peripheral
+   *
+   * Generally speaking, the driver focuses on SD Memory Card support since
+   * that is the most common use case.
+   */
   class Driver
   {
   public:
     Driver();
     ~Driver();
 
+    /**
+     * @brief Attaches a peripheral for the driver to control
+     *
+     * @param peripheral  Pointer to the peripheral register block
+     * @return Chimera::Status_t
+     */
     Chimera::Status_t attach( RegisterMap *const peripheral );
+
+    /**
+     * @brief Resets the peripheral to a known state
+     * @return Chimera::Status_t
+     */
     Chimera::Status_t reset();
-    Chimera::Status_t init();
-    Chimera::Status_t deinit();
-    void              clockEnable();
-    void              clockDisable();
-    void              enterCriticalSection();
-    void              exitCriticalSection();
+
+    /**
+     * @brief Enable the peripheral clock
+     * @return void
+     */
+    void clockEnable();
+
+    /**
+     * @brief Disable the peripheral clock
+     * @return void
+     */
+    void clockDisable();
+
+    /**
+     * @brief Disables the peripheral core ISR
+     * @return void
+     */
+    void enterCriticalSection();
+
+    /**
+     * @brief Enables the peripheral core ISR
+     * @return void
+     */
+    void exitCriticalSection();
+
+    /**
+     * @brief Gets the current bus frequency for the given channel
+     * @return uint32_t Frequency in Hz
+     */
+    uint32_t getBusFrequency();
 
     /*-----------------------------------------------------------------------------
     Peripheral Control Functions
     -----------------------------------------------------------------------------*/
+    /**
+     * @brief Initializes the peripheral for SD card operation
+     * @return Chimera::Status_t
+     */
+    Chimera::Status_t init();
+
+    /**
+     * @brief Deinitializes the peripheral and returns it to a reset state
+     * @return Chimera::Status_t
+     */
+    Chimera::Status_t deinit();
+
+    /**
+     * @brief Transition the peripheral to the power on state
+     * @return Chimera::Status_t
+     */
     Chimera::Status_t setPowerStateOn();
+
+    /**
+     * @brief Transition the peripheral to the power off state
+     * @return Chimera::Status_t
+     */
     Chimera::Status_t setPowerStateOff();
+
+    /**
+     * @brief Sets the read wait mode for the peripheral
+     *
+     * @param mode
+     * @return Chimera::Status_t
+     */
     Chimera::Status_t setSDMMCReadWaitMode( uint32_t mode );
 
     /**
