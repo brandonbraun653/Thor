@@ -87,6 +87,14 @@ namespace Thor::LLD::INT
   void disableIRQ( const IRQn_Type IRQn );
 
   /**
+   * @brief Checks if the interrupt is enabled
+   *
+   * @param IRQn      The interrupt to check
+   * @return bool     True if enabled, false otherwise
+   */
+  bool isEnabledIRQ( const IRQn_Type IRQn );
+
+  /**
    *  Enables a device specific interrupt in the NVIC interrupt controller
    *
    *  @param[in]  IRQn            External interrupt number

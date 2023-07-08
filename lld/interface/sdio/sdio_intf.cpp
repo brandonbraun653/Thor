@@ -19,8 +19,27 @@ Includes
 namespace Thor::LLD::SDIO
 {
   /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
+  static Driver s_sdio_drivers[ NUM_SDIO_PERIPHS ];
+
+  /*---------------------------------------------------------------------------
   Public Functions
   ---------------------------------------------------------------------------*/
+  Chimera::Status_t initialize()
+  {
+    /*-------------------------------------------------------------------------
+    Attach all the expected peripherals to the drivers
+    -------------------------------------------------------------------------*/
+    if ( !attachDriverInstances( s_sdio_drivers, ARRAY_COUNT( s_sdio_drivers ) ) )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+    return Chimera::Status::OK;
+  }
+
+
   bool isSupported( const Chimera::SDIO::Channel channel )
   {
     switch ( channel )
@@ -37,6 +56,38 @@ namespace Thor::LLD::SDIO
 
       default:
         return false;
+    }
+  }
+
+
+  Driver_rPtr getDriver( const Chimera::SDIO::Channel channel )
+  {
+    if ( auto idx = getResourceIndex( channel ); idx != INVALID_RESOURCE_INDEX )
+    {
+      return &s_sdio_drivers[ idx ];
+    }
+    else
+    {
+      return nullptr;
+    }
+  }
+
+
+  RIndex_t getResourceIndex( const Chimera::SDIO::Channel channel )
+  {
+    switch ( channel )
+    {
+#if defined( STM32_SDIO1_PERIPH_AVAILABLE )
+      case Chimera::SDIO::Channel::SDIO1:
+        return SDIO1_RESOURCE_INDEX;
+#endif
+#if defined( STM32_SDIO2_PERIPH_AVAILABLE )
+      case Chimera::SDIO::Channel::SDIO2:
+        return SDIO2_RESOURCE_INDEX;
+#endif
+
+      default:
+        return INVALID_RESOURCE_INDEX;
     }
   }
 

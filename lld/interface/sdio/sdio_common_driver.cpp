@@ -21,18 +21,14 @@ Includes
 namespace Thor::LLD::SDIO
 {
   /*---------------------------------------------------------------------------
-  Static Data
-  ---------------------------------------------------------------------------*/
-  static Driver s_sdio_drivers[ NUM_SDIO_PERIPHS ];
-
-  /*---------------------------------------------------------------------------
   Private Functions
   ---------------------------------------------------------------------------*/
 
+
   /*---------------------------------------------------------------------------
-  Public Functions
+  Driver Implementation
   ---------------------------------------------------------------------------*/
-  Driver::Driver() : mPeriph( nullptr ), resourceIndex( INVALID_RESOURCE_INDEX )
+  Driver::Driver() : mPeriph( nullptr ), mResourceIdx( INVALID_RESOURCE_INDEX )
   {
   }
 
@@ -47,15 +43,15 @@ namespace Thor::LLD::SDIO
     /*-------------------------------------------------------------------------
     Get peripheral descriptor settings
     -------------------------------------------------------------------------*/
-    mPeriph       = peripheral;
-    resourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
+    mPeriph      = peripheral;
+    mResourceIdx = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
 
     /*-------------------------------------------------------------------------
     Handle the ISR configuration
     -------------------------------------------------------------------------*/
-    INT::disableIRQ( Resource::IRQSignals[ resourceIndex ] );
-    INT::clearPendingIRQ( Resource::IRQSignals[ resourceIndex ] );
-    INT::setPriority( Resource::IRQSignals[ resourceIndex ], INT::SDIO_IT_PREEMPT_PRIORITY, 0u );
+    INT::disableIRQ( Resource::IRQSignals[ mResourceIdx ] );
+    INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIdx ] );
+    INT::setPriority( Resource::IRQSignals[ mResourceIdx ], INT::SDIO_IT_PREEMPT_PRIORITY, 0u );
 
     return Chimera::Status::OK;
   }
@@ -63,33 +59,39 @@ namespace Thor::LLD::SDIO
 
   Chimera::Status_t Driver::reset()
   {
-    return Chimera::Status::NOT_SUPPORTED;
+    auto rcc = RCC::getPeriphClockCtrl();
+    return rcc->reset( Chimera::Peripheral::Type::PERIPH_SDIO, mResourceIdx );
   }
 
 
   void Driver::clockEnable()
   {
+    auto rcc = RCC::getPeriphClockCtrl();
+    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_SDIO, mResourceIdx );
   }
 
 
   void Driver::clockDisable()
   {
+    auto rcc = RCC::getPeriphClockCtrl();
+    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_SDIO, mResourceIdx );
+  }
+
+
+  void Driver::enterCriticalSection()
+  {
+    INT::disableIRQ( Resource::IRQSignals[ mResourceIdx ] );
+  }
+
+
+  void Driver::exitCriticalSection()
+  {
+    INT::enableIRQ( Resource::IRQSignals[ mResourceIdx ] );
   }
 
 
   void Driver::IRQHandler()
   {
   }
-
-
-  void Driver::enterCriticalSection()
-  {
-  }
-
-
-  void Driver::exitCriticalSection()
-  {
-  }
-
 }    // namespace Thor::LLD::SDIO
 #endif /* THOR_SDIO && TARGET_STM32F4 */

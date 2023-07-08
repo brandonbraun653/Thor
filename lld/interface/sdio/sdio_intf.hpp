@@ -25,12 +25,34 @@ namespace Thor::LLD::SDIO
   Public Functions (Implemented at the interface layer)
   ---------------------------------------------------------------------------*/
   /**
+   * @brief Initializes the low level driver
+   * @return Chimera::Status_t
+   */
+  Chimera::Status_t initialize();
+
+  /**
    * @brief Checks if the given channel is supported by the hardware
    *
    * @param channel    The channel to check
    * @return bool
    */
   bool isSupported( const Chimera::SDIO::Channel channel );
+
+  /**
+   * @brief Get's the low level driver for a particular channel
+   *
+   * @param channel   The channel to get the driver for
+   * @return Driver_rPtr
+   */
+  Driver_rPtr getDriver( const Chimera::SDIO::Channel channel );
+
+  /**
+   * @brief Looks up a resource index based on a channel
+   *
+   * @param channel       The channel to look up
+   * @return RIndex_t
+   */
+  RIndex_t getResourceIndex( const Chimera::SDIO::Channel channel );
 
   /**
    * @brief Looks up a resource index based on a raw peripheral instance
