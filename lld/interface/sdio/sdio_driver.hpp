@@ -65,6 +65,18 @@ namespace Thor::LLD::SDIO
     void clockDisable();
 
     /**
+     * @brief Enables the IO bus clock
+     * @return void
+     */
+    void busClockEnable();
+
+    /**
+     * @brief Disables the IO bus clock
+     * @return void
+     */
+    void busClockDisable();
+
+    /**
      * @brief Disables the peripheral core ISR
      * @return void
      */
