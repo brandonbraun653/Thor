@@ -41,6 +41,24 @@ namespace Chimera::SDIO
   ---------------------------------------------------------------------------*/
   static DeviceManager<Driver, Channel, NUM_DRIVERS>   s_raw_drivers;
   static DeviceManager<ThorImpl, Channel, NUM_DRIVERS> s_impl_drivers;
+
+  /*---------------------------------------------------------------------------
+  Driver Implementation
+  ---------------------------------------------------------------------------*/
+  Driver::Driver()
+  {
+  }
+
+
+  Driver::~Driver()
+  {
+  }
+
+
+  Chimera::Status_t Driver::open( const Chimera::SDIO::HWConfig &init )
+  {
+    return Chimera::Status::FAIL;
+  }
 }    // namespace Chimera::SDIO
 
 
