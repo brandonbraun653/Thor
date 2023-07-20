@@ -34,6 +34,8 @@ namespace Chimera::SDIO
   ---------------------------------------------------------------------------*/
   struct ThorImpl
   {
+    LLD::Driver_rPtr           lldriver;
+    Chimera::SDIO::Driver_rPtr hldriver;
   };
 
   /*---------------------------------------------------------------------------
@@ -57,6 +59,75 @@ namespace Chimera::SDIO
 
   Chimera::Status_t Driver::open( const Chimera::SDIO::HWConfig &init )
   {
+    /*-------------------------------------------------------------------------
+    Ensure the AsyncIO driver is ready
+    -------------------------------------------------------------------------*/
+    this->initAIO();
+
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    auto idx = LLD::getResourceIndex( init.channel );
+    if ( idx == ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
+    /*-------------------------------------------------------------------------
+    Bind the driver to the correct LLD instance
+    -------------------------------------------------------------------------*/
+    auto impl = s_impl_drivers.getOrCreate( init.channel );
+    mImpl     = reinterpret_cast<void *>( impl );
+    RT_DBG_ASSERT( impl );
+
+    impl->lldriver = LLD::getDriver( init.channel );
+    impl->hldriver = this;
+    RT_DBG_ASSERT( impl->lldriver );
+
+    /*-------------------------------------------------------------------------
+    Initialize the LLD driver
+    -------------------------------------------------------------------------*/
+    return impl->lldriver->init();
+  }
+
+
+  Chimera::Status_t Driver::connect()
+  {
+    return Chimera::Status::FAIL;
+  }
+
+
+  void Driver::close()
+  {
+  }
+
+
+  Chimera::Status_t Driver::write( const uint32_t address, const void *const buffer, const size_t length )
+  {
+    return Chimera::Status::FAIL;
+  }
+
+
+  Chimera::Status_t Driver::read( const uint32_t address, void *const buffer, const size_t length )
+  {
+    return Chimera::Status::FAIL;
+  }
+
+
+  Chimera::Status_t Driver::getCardStatus( CardStatus &status )
+  {
+    return Chimera::Status::FAIL;
+  }
+
+
+  Chimera::Status_t Driver::getCardIdentity( CardIdentity &identity )
+  {
+    return Chimera::Status::FAIL;
+  }
+
+
+  Chimera::Status_t Driver::getCardSpecificData( CardSpecificData &data )
+  {
     return Chimera::Status::FAIL;
   }
 }    // namespace Chimera::SDIO
@@ -74,13 +145,25 @@ namespace Chimera::SDIO::Backend
   ---------------------------------------------------------------------------*/
   static Chimera::Status_t initialize()
   {
-    return Chimera::Status::FAIL;
+    /*-------------------------------------------------------------------------
+    Prevent multiple initializations
+    -------------------------------------------------------------------------*/
+    if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
+    {
+      return Chimera::Status::OK;
+    }
+
+    /*-------------------------------------------------------------------------
+    Lock the init sequence and exit
+    -------------------------------------------------------------------------*/
+    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    return LLD::initialize();
   }
 
 
   static Chimera::Status_t reset()
   {
-    s_driver_initialized = Chimera::DRIVER_INITIALIZED_KEY;
+    s_driver_initialized = ~Chimera::DRIVER_INITIALIZED_KEY;
     return Chimera::Status::OK;
   }
 
@@ -104,5 +187,5 @@ namespace Chimera::SDIO::Backend
     registry.reset       = ::Chimera::SDIO::Backend::reset;
     return Chimera::Status::OK;
   }
-}
+}    // namespace Chimera::SDIO::Backend
 #endif /* THOR_SDIO */
