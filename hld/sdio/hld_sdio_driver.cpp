@@ -93,6 +93,7 @@ namespace Chimera::SDIO
 
   Chimera::Status_t Driver::connect()
   {
+    // Implement the STM32F4 HAL connection procedure: HAL_SD_InitCard
     return Chimera::Status::FAIL;
   }
 
