@@ -171,6 +171,8 @@ namespace Thor::LLD::SDIO
   static constexpr uint32_t DCOUNT_DATACOUNT     = DCOUNT_DATACOUNT_Msk;
 
   /******************  Bit definition for STA register  ********************/
+  static constexpr uint32_t STA_ALL_Msk = 0x7FFDFF;
+
   static constexpr uint32_t STA_CCRCFAIL_Pos = ( 0U );
   static constexpr uint32_t STA_CCRCFAIL_Msk = ( 0x1UL << STA_CCRCFAIL_Pos );
   static constexpr uint32_t STA_CCRCFAIL     = STA_CCRCFAIL_Msk;
@@ -239,6 +241,8 @@ namespace Thor::LLD::SDIO
   static constexpr uint32_t STA_SDIOIT       = STA_SDIOIT_Msk;
 
   /*******************  Bit definition for ICR register  *******************/
+  static constexpr uint32_t ICR_ALL_Msk = 0x4005FF;
+
   static constexpr uint32_t ICR_CCRCFAILC_Pos = ( 0U );
   static constexpr uint32_t ICR_CCRCFAILC_Msk = ( 0x1UL << ICR_CCRCFAILC_Pos );
   static constexpr uint32_t ICR_CCRCFAILC     = ICR_CCRCFAILC_Msk;

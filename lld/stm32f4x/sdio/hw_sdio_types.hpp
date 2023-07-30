@@ -54,6 +54,8 @@ namespace Thor::LLD::SDIO
   Power Control Register
   -------------------------------------------------------------------*/
   REG_ACCESSOR( RegisterMap, POWER, POWER_PWRCTRL_Msk, PWRCTRL, BIT_ACCESS_RW );
+  static constexpr uint32_t POWER_PWRCTRL_OFF = 0u;
+  static constexpr uint32_t POWER_PWRCTRL_ON  = POWER_PWRCTRL_1 | POWER_PWRCTRL_0;
 
   /*-------------------------------------------------------------------
   Clock Control Register
@@ -74,11 +76,26 @@ namespace Thor::LLD::SDIO
   /*-------------------------------------------------------------------
   Command Register
   -------------------------------------------------------------------*/
-  REG_ACCESSOR( RegisterMap, CMD, CMD_CMDINDEX_Msk, CMDINDEX, BIT_ACCESS_RW );
+  /* WAITRESP */
   REG_ACCESSOR( RegisterMap, CMD, CMD_WAITRESP_Msk, WAITRESP, BIT_ACCESS_RW );
+  static constexpr uint32_t CMD_RESPONSE_NO    = 0u;
+  static constexpr uint32_t CMD_RESPONSE_SHORT = CMD_WAITRESP_0;
+  static constexpr uint32_t CMD_RESPONSE_LONG  = CMD_WAITRESP_1 | CMD_WAITRESP_0;
+
+  REG_ACCESSOR( RegisterMap, CMD, CMD_CMDINDEX_Msk, CMDINDEX, BIT_ACCESS_RW );
+
+  /* WAIT<INT/PEND>*/
   REG_ACCESSOR( RegisterMap, CMD, CMD_WAITINT_Msk, WAITINT, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CMD, CMD_WAITPEND_Msk, WAITPEND, BIT_ACCESS_RW );
+  static constexpr uint32_t CMD_WAIT_NO   = 0u;
+  static constexpr uint32_t CMD_WAIT_IT   = CMD_WAITINT;
+  static constexpr uint32_t CMD_WAIT_PEND = CMD_WAITPEND;
+
+  /* CPSMEN */
   REG_ACCESSOR( RegisterMap, CMD, CMD_CPSMEN_Msk, CPSMEN, BIT_ACCESS_RW );
+  static constexpr uint32_t CMD_CPSM_DISABLE = 0u;
+  static constexpr uint32_t CMD_CPSM_ENABLE  = CMD_CPSMEN;
+
   REG_ACCESSOR( RegisterMap, CMD, CMD_SDIOSUSPEND_Msk, SDIOSUSPEND, BIT_ACCESS_RW );
 
   /*-------------------------------------------------------------------
@@ -137,6 +154,8 @@ namespace Thor::LLD::SDIO
   /*-------------------------------------------------------------------
   Status Register
   -------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, STA, STA_ALL_Msk, STA_ALL, BIT_ACCESS_RO );
+
   REG_ACCESSOR( RegisterMap, STA, STA_CCRCFAIL_Msk, CCRCFAIL, BIT_ACCESS_RO );
   REG_ACCESSOR( RegisterMap, STA, STA_DCRCFAIL_Msk, DCRCFAIL, BIT_ACCESS_RO );
   REG_ACCESSOR( RegisterMap, STA, STA_CTIMEOUT_Msk, CTIMEOUT, BIT_ACCESS_RO );
@@ -162,6 +181,8 @@ namespace Thor::LLD::SDIO
   /*-------------------------------------------------------------------
   Interrupt Clear Register
   -------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, ICR, ICR_ALL_Msk, ICR_ALL, BIT_ACCESS_RW );
+
   REG_ACCESSOR( RegisterMap, ICR, ICR_CCRCFAILC_Msk, CCRCFAILC, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, ICR, ICR_DCRCFAILC_Msk, DCRCFAILC, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, ICR, ICR_CTIMEOUTC_Msk, CTIMEOUTC, BIT_ACCESS_RW );

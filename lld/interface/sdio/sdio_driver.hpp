@@ -133,9 +133,9 @@ namespace Thor::LLD::SDIO
      * @brief Puts a CPSM command on the bus
      *
      * @param cmd    Command to send
-     * @return Chimera::Status_t
+     * @return void
      */
-    Chimera::Status_t cpsmPutCmd( const CPSMCommand &cmd );
+    void cpsmPutCmd( const CPSMCommand &cmd );
 
     /**
      * @brief Gets the command response register
@@ -149,7 +149,7 @@ namespace Thor::LLD::SDIO
      * @param which       Which response register to read
      * @return uint32_t   The response value
      */
-    uint32_t cpsmGetResponse( const uint8_t which );
+    uint32_t cpsmGetResponse( const ResponseMailbox which );
 
     Chimera::Status_t dpsmConfigure( const DPSMConfig &config );
     uint32_t          dpsmGetDataCounter();
@@ -158,42 +158,79 @@ namespace Thor::LLD::SDIO
     /*-------------------------------------------------------------------------
     Command Management
     -------------------------------------------------------------------------*/
-    uint32_t cmdAppCommand( const uint32_t Argument);
-    uint32_t cmdAppOperCommand( const uint32_t Argument);
-    uint32_t cmdBlockLength( const uint32_t BlockSize);
-    uint32_t cmdBusWidth( const uint32_t BusWidth);
-    uint32_t cmdErase();
-    uint32_t cmdEraseEndAdd( const uint32_t EndAdd);
-    uint32_t cmdEraseStartAdd( const uint32_t StartAdd);
-    uint32_t cmdGoIdleState();
-    uint32_t cmdOpCondition( const uint32_t Argument);
-    uint32_t cmdOperCond();
-    uint32_t cmdReadMultiBlock( const uint32_t ReadAdd);
-    uint32_t cmdReadSingleBlock( const uint32_t ReadAdd);
-    uint32_t cmdSDEraseEndAdd( const uint32_t EndAdd);
-    uint32_t cmdSDEraseStartAdd( const uint32_t StartAdd);
-    uint32_t cmdSelDesel( const uint64_t Addr);
-    uint32_t cmdSendCID();
-    uint32_t cmdSendCSD( const uint32_t Argument);
-    uint32_t cmdSendEXTCSD( const uint32_t Argument);
-    uint32_t cmdSendSCR();
-    uint32_t cmdSendStatus( const uint32_t Argument);
-    uint32_t cmdSetRelAdd( uint16_t *pRCA);
-    uint32_t cmdSetRelAddMmc( const uint16_t RCA);
-    uint32_t cmdStatusRegister();
-    uint32_t cmdStopTransfer();
-    uint32_t cmdSwitch( const uint32_t Argument);
-    uint32_t cmdWriteMultiBlock( const uint32_t WriteAdd);
-    uint32_t cmdWriteSingleBlock( const uint32_t WriteAdd);
+    /**
+     * @brief Indicate an application specific command is to be sent
+     *
+     * @param Argument  Command argument
+     * @return ErrorType
+     */
+    ErrorType cmdAppCommand( const uint32_t Argument );
+
+    /**
+     * @brief Send ACMD41 to the SD card
+     * Sends host capacity support information and activates the card's initialization process.
+     *
+     * @param Argument  Host information about supported voltage and capacities
+     * @return ErrorType
+     */
+    ErrorType cmdAppOperCommand( const uint32_t Argument);
+
+    ErrorType cmdBlockLength( const uint32_t BlockSize);
+    ErrorType cmdBusWidth( const uint32_t BusWidth);
+    ErrorType cmdErase();
+    ErrorType cmdEraseEndAdd( const uint32_t EndAdd);
+    ErrorType cmdEraseStartAdd( const uint32_t StartAdd);
+    ErrorType cmdGoIdleState();
+    ErrorType cmdOpCondition( const uint32_t Argument);
+
+    /**
+     * @brief Sends CMD8 to the SD card
+     *
+     * Sends SD Memory Card interface condition, which includes host supply
+     * voltage information and asks whether card supports this voltage.
+     *
+     * @return ErrorType
+     */
+    ErrorType cmdOperCond();
+
+    ErrorType cmdReadMultiBlock( const uint32_t ReadAdd);
+    ErrorType cmdReadSingleBlock( const uint32_t ReadAdd);
+    ErrorType cmdSDEraseEndAdd( const uint32_t EndAdd);
+    ErrorType cmdSDEraseStartAdd( const uint32_t StartAdd);
+    ErrorType cmdSelDesel( const uint64_t Addr);
+    ErrorType cmdSendCID();
+    ErrorType cmdSendCSD( const uint32_t Argument);
+    ErrorType cmdSendEXTCSD( const uint32_t Argument);
+    ErrorType cmdSendSCR();
+    ErrorType cmdSendStatus( const uint32_t Argument);
+    ErrorType cmdSetRelAdd( uint16_t *pRCA);
+    ErrorType cmdSetRelAddMmc( const uint16_t RCA);
+    ErrorType cmdStatusRegister();
+    ErrorType cmdStopTransfer();
+    ErrorType cmdSwitch( const uint32_t Argument);
+    ErrorType cmdWriteMultiBlock( const uint32_t WriteAdd);
+    ErrorType cmdWriteSingleBlock( const uint32_t WriteAdd);
 
     /*-------------------------------------------------------------------------
     Response Management
     -------------------------------------------------------------------------*/
-    uint32_t getCmdResp1(uint8_t SD_CMD, uint32_t Timeout);
-    uint32_t getCmdResp2();
-    uint32_t getCmdResp3();
-    uint32_t getCmdResp6(uint8_t SD_CMD, uint16_t *pRCA);
-    uint32_t getCmdResp7();
+
+    ErrorType getCmdResp1( uint8_t SD_CMD, uint32_t Timeout );
+    ErrorType getCmdResp2();
+
+    /**
+     * @brief Checks for error conditions on the R3 response
+     * @return ErrorType
+     */
+    ErrorType getCmdResp3();
+
+    ErrorType getCmdResp6(uint8_t SD_CMD, uint16_t *pRCA);
+
+    /**
+     * @brief Checks for error conditions on the R7 response
+     * @return ErrorType
+     */
+    ErrorType getCmdResp7();
 
   protected:
     void IRQHandler();
