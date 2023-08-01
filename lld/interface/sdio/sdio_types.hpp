@@ -79,6 +79,7 @@ namespace Thor::LLD::SDIO
     CMD_SET_DSR              = 4U,  /**< Programs the DSR of all cards. */
     CMD_SDMMC_SEN_OP_COND    = 5U,  /**< Sends host capacity support information (HCS) and asks the accessed card to send its operating condition register (OCR) content in the response on the CMD line. */
     CMD_HS_SWITCH            = 6U,  /**< Checks switchable function (mode 0) and switch card function (mode 1). */
+    CMD_SD_APP_SET_BUSWIDTH  = 6U,  /**< Sets the bus width for data transfers */
     CMD_SEL_DESEL_CARD       = 7U,  /**< Selects the card by its own relative address and gets deselected by any other address. */
     CMD_HS_SEND_EXT_CSD      = 8U,  /**< Sends SD Memory Card interface condition, which includes host supply voltage information and asks the card whether card supports voltage. */
     CMD_SEND_CSD             = 9U,  /**< Addressed card sends its card specific data (CSD) on the CMD line. */
@@ -109,6 +110,7 @@ namespace Thor::LLD::SDIO
     CMD_GO_IRQ_STATE         = 40U, /**< SD card doesn't support it (Reserved). */
     CMD_SD_APP_OP_COND       = 41U, /**< (ACMD41) Sends host capacity support information and activates the card's initialization process. */
     CMD_LOCK_UNLOCK          = 42U, /**< Sets/resets the password or lock/unlock the card. The size of the data block is set by the SET_BLOCK_LEN command. */
+    CMD_SD_APP_SEND_SCR      = 51U, /**< Reads the SD Configuration Register (SCR). */
     CMD_APP_CMD              = 55U, /**< Indicates to the card that the next command is an application specific command rather than a standard command. */
     CMD_GEN_CMD              = 56U, /**< Used either to transfer a data block to the card or to get a data block from the card for general purpose/application specific commands. */
     CMD_NO_CMD               = 64U, /**< No command. */

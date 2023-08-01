@@ -16,6 +16,7 @@
 Includes
 -----------------------------------------------------------------------------*/
 #include <Chimera/common>
+#include <Chimera/sdio>
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
@@ -24,6 +25,15 @@ Includes
 #if defined( THOR_SDIO ) && defined( TARGET_STM32F4 )
 namespace Thor::LLD::SDIO
 {
+/*---------------------------------------------------------------------------
+Literals
+---------------------------------------------------------------------------*/
+#define SDMMC_0TO7BITS        ( 0x000000FFU )
+#define SDMMC_8TO15BITS       ( 0x0000FF00U )
+#define SDMMC_16TO23BITS      ( 0x00FF0000U )
+#define SDMMC_24TO31BITS      ( 0xFF000000U )
+#define SDMMC_MAX_DATA_LENGTH ( 0x01FFFFFFU )
+
   /*---------------------------------------------------------------------------
   Constants
   ---------------------------------------------------------------------------*/
@@ -33,6 +43,11 @@ namespace Thor::LLD::SDIO
    * @brief Command timeout in milliseconds
    */
   static constexpr uint32_t SDIO_CMD_TIMEOUT_MS = 5000u;
+
+  /**
+   * @brief Data timeout in milliseconds
+   */
+  static constexpr uint32_t SDIO_DATA_TIMEOUT_MS = 5000u;
 
   /**
    * @brief Max erase timeout in milliseconds
@@ -209,12 +224,12 @@ namespace Thor::LLD::SDIO
     /*-------------------------------------------------------------------------
     Set remainder of the clock control register
     -------------------------------------------------------------------------*/
-    HWFCEN::clear( mPeriph, CLKCR_HWFC_EN );  // Disable HW flow control
-    PWRSAV::set( mPeriph, CLKCR_PWRSAV );     // Enable power saving mode
-    NEGEDGE::set( mPeriph, CLKCR_NEGEDGE );   // Data is changed on the falling edge
-    WIDBUS::set( mPeriph, 0 );                // 1-bit bus width
-    BYPASS::clear( mPeriph, CLKCR_BYPASS );   // Disable clock bypass
-    CLKEN::clear( mPeriph, CLKCR_CLKEN );     // Disable the clock output
+    HWFCEN::clear( mPeriph, CLKCR_HWFC_EN );    // Disable HW flow control
+    PWRSAV::set( mPeriph, CLKCR_PWRSAV );       // Enable power saving mode
+    NEGEDGE::set( mPeriph, CLKCR_NEGEDGE );     // Data is changed on the falling edge
+    WIDBUS::set( mPeriph, 0 );                  // 1-bit bus width
+    BYPASS::clear( mPeriph, CLKCR_BYPASS );     // Disable clock bypass
+    CLKEN::clear( mPeriph, CLKCR_CLKEN );       // Disable the clock output
 
     return Chimera::Status::OK;
   }
@@ -290,6 +305,74 @@ namespace Thor::LLD::SDIO
   }
 
 
+  ErrorType Driver::cmdBlockLength( const uint32_t blockSize )
+  {
+    /*-------------------------------------------------------------------------
+    Build and send the command
+    -------------------------------------------------------------------------*/
+    CPSMCommand cmd;
+
+    cmd.Argument         = blockSize;
+    cmd.CmdIndex         = CMD_SET_BLOCKLEN;
+    cmd.Response         = CMD_RESPONSE_SHORT;
+    cmd.WaitForInterrupt = CMD_WAIT_NO;
+    cmd.CPSM             = CMD_CPSM_ENABLE;
+
+    cpsmPutCmd( cmd );
+
+    /*-------------------------------------------------------------------------
+    Return the command response
+    -------------------------------------------------------------------------*/
+    return getCmdResp1( cmd.CmdIndex, SDIO_CMD_TIMEOUT_MS );
+  }
+
+
+  ErrorType Driver::cmdBusWidth( const Chimera::SDIO::BusWidth width )
+  {
+    using namespace Chimera::SDIO;
+
+    /*-------------------------------------------------------------------------
+    Build and send the command
+    -------------------------------------------------------------------------*/
+    CPSMCommand cmd;
+
+    cmd.CmdIndex         = CMD_SD_APP_SET_BUSWIDTH;
+    cmd.Response         = CMD_RESPONSE_SHORT;
+    cmd.WaitForInterrupt = CMD_WAIT_NO;
+    cmd.CPSM             = CMD_CPSM_ENABLE;
+
+    switch ( width )
+    {
+      case BusWidth::BUS_WIDTH_1BIT:
+        cmd.Argument = 0u;
+        break;
+
+      case BusWidth::BUS_WIDTH_4BIT:
+        cmd.Argument = CLKCR_WIDBUS_0;
+        break;
+
+      default:
+        return ErrorType::ERROR_INVALID_PARAMETER;
+    }
+
+    cpsmPutCmd( cmd );
+
+    /*-------------------------------------------------------------------------
+    Return the command response
+    -------------------------------------------------------------------------*/
+    if ( auto error = getCmdResp1( cmd.CmdIndex, SDIO_CMD_TIMEOUT_MS ); error != ErrorType::ERROR_NONE )
+    {
+      return error;
+    }
+
+    /*-------------------------------------------------------------------------
+    Update the bus width setting in the peripheral
+    -------------------------------------------------------------------------*/
+    WIDBUS::set( mPeriph, cmd.Argument );
+    return ErrorType::ERROR_NONE;
+  }
+
+
   ErrorType Driver::cmdGoIdleState()
   {
     /*-------------------------------------------------------------------------
@@ -354,6 +437,27 @@ namespace Thor::LLD::SDIO
     Return the command response
     -------------------------------------------------------------------------*/
     return getCmdResp7();
+  }
+
+
+  ErrorType Driver::cmdSendSCR()
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD51 to read the SD Configuration Register (SCR)
+    -------------------------------------------------------------------------*/
+    CPSMCommand cmd;
+    cmd.Argument         = 0u;
+    cmd.CmdIndex         = CMD_SD_APP_SEND_SCR;
+    cmd.Response         = CMD_RESPONSE_SHORT;
+    cmd.WaitForInterrupt = CMD_WAIT_NO;
+    cmd.CPSM             = CMD_CPSM_ENABLE;
+
+    cpsmPutCmd( cmd );
+
+    /*-------------------------------------------------------------------------
+    Return the command response
+    -------------------------------------------------------------------------*/
+    return getCmdResp1( cmd.CmdIndex, SDIO_CMD_TIMEOUT_MS );
   }
 
 
@@ -546,6 +650,109 @@ namespace Thor::LLD::SDIO
     -------------------------------------------------------------------------*/
     auto response_register = ( uint32_t )( &( mPeriph->RESP1 ) ) + EnumValue( which );
     return ( *( volatile uint32_t * )response_register );
+  }
+
+
+  void Driver::dpsmConfigure( const DPSMConfig &config )
+  {
+    /*-------------------------------------------------------------------------
+    Configure the DPSM transaction parameters
+    -------------------------------------------------------------------------*/
+    DATATIME::set( mPeriph, config.DataTimeOut );
+    DATALENGTH::set( mPeriph, config.DataLength );
+    DBLOCKSIZE::set( mPeriph, config.DataBlockSize );
+    DTMODE::set( mPeriph, config.TransferMode );
+    DTDIR::set( mPeriph, config.TransferDir );
+
+    /*-------------------------------------------------------------------------
+    Finally, set the DPSM overall state
+    -------------------------------------------------------------------------*/
+    DTEN::set( mPeriph, config.DPSM );
+  }
+
+
+  ErrorType Driver::getStreamControlRegister( uint32_t *const pSCR )
+  {
+    DPSMConfig config;
+    ErrorType  error;
+    uint32_t   tickstart     = Chimera::millis();
+    uint32_t   index         = 0U;
+    uint32_t   tempscr[ 2U ] = { 0U, 0U };
+    uint32_t  *scr           = pSCR;
+
+    /* Set Block Size To 8 Bytes */
+    if ( error = cmdBlockLength( 8U ); error != ERROR_NONE )
+    {
+      return error;
+    }
+
+    /* Send CMD55 APP_CMD with argument as card's RCA */
+    if ( error = cmdAppCommand( 0u ); error != ERROR_NONE )
+    {
+      return error;
+    }
+
+    config.DataTimeOut   = 5000;
+    config.DataLength    = 8U;
+    config.DataBlockSize = DCTRL_DATABLOCK_SIZE_8B;
+    config.TransferDir   = TRANSFER_DIR_TO_SDIO;
+    config.TransferMode  = TRANSFER_MODE_BLOCK;
+    config.DPSM          = DPSM_ENABLE;
+    dpsmConfigure( config );
+
+    /* Send ACMD51 SD_APP_SEND_SCR */
+    if ( error = cmdSendSCR(); error != ERROR_NONE )
+    {
+      return error;
+    }
+
+    while ( STA_ALL::get( mPeriph ) & ( STA_RXOVERR | STA_DCRCFAIL | STA_DTIMEOUT ) == 0 )
+    {
+      if ( RXDAVL::get( mPeriph ) )
+      {
+        *( tempscr + index ) = mPeriph->FIFO;
+        index++;
+      }
+      else if ( RXACT::get( mPeriph ) != STA_RXACT )
+      {
+        /* No reception in-progress anymore */
+        break;
+      }
+
+      if ( ( Chimera::millis() - tickstart ) >= SDIO_DATA_TIMEOUT_MS )
+      {
+        return ErrorType::ERROR_TIMEOUT;
+      }
+    }
+
+    if ( DTIMEOUT::get( mPeriph ) == STA_DTIMEOUT )
+    {
+      DTIMEOUTC::set( mPeriph, STA_DTIMEOUT );
+      return ErrorType::ERROR_DATA_TIMEOUT;
+    }
+    else if ( DCRCFAIL::get( mPeriph ) == STA_DCRCFAIL )
+    {
+      DCRCFAILC::set( mPeriph, STA_DCRCFAIL );
+      return ErrorType::ERROR_DATA_CRC_FAIL;
+    }
+    else if ( RXOVERR::get( mPeriph ) == STA_RXOVERR )
+    {
+      RXOVERRC::set( mPeriph, STA_RXOVERR );
+      return ErrorType::ERROR_RX_OVERRUN;
+    }
+    else
+    {
+      /* Clear all the static flags */
+      ICR_ALL::set( mPeriph, STATIC_CMD_FLAGS );
+
+      *scr = ( ( ( tempscr[ 1 ] & SDMMC_0TO7BITS ) << 24 ) | ( ( tempscr[ 1 ] & SDMMC_8TO15BITS ) << 8 ) |
+               ( ( tempscr[ 1 ] & SDMMC_16TO23BITS ) >> 8 ) | ( ( tempscr[ 1 ] & SDMMC_24TO31BITS ) >> 24 ) );
+      scr++;
+      *scr = ( ( ( tempscr[ 0 ] & SDMMC_0TO7BITS ) << 24 ) | ( ( tempscr[ 0 ] & SDMMC_8TO15BITS ) << 8 ) |
+               ( ( tempscr[ 0 ] & SDMMC_16TO23BITS ) >> 8 ) | ( ( tempscr[ 0 ] & SDMMC_24TO31BITS ) >> 24 ) );
+    }
+
+    return ErrorType::ERROR_NONE;
   }
 
 

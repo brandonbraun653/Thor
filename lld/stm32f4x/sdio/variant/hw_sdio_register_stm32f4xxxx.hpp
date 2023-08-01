@@ -134,12 +134,21 @@ namespace Thor::LLD::SDIO
   static constexpr uint32_t DCTRL_DTEN_Pos   = ( 0U );
   static constexpr uint32_t DCTRL_DTEN_Msk   = ( 0x1UL << DCTRL_DTEN_Pos );
   static constexpr uint32_t DCTRL_DTEN       = DCTRL_DTEN_Msk;
+  static constexpr uint32_t DPSM_DISABLE     = 0x00000000U;
+  static constexpr uint32_t DPSM_ENABLE      = DCTRL_DTEN;
+
   static constexpr uint32_t DCTRL_DTDIR_Pos  = ( 1U );
   static constexpr uint32_t DCTRL_DTDIR_Msk  = ( 0x1UL << DCTRL_DTDIR_Pos );
   static constexpr uint32_t DCTRL_DTDIR      = DCTRL_DTDIR_Msk;
+  static constexpr uint32_t TRANSFER_DIR_TO_CARD = 0x00000000U;
+  static constexpr uint32_t TRANSFER_DIR_TO_SDIO = DCTRL_DTDIR;
+
   static constexpr uint32_t DCTRL_DTMODE_Pos = ( 2U );
   static constexpr uint32_t DCTRL_DTMODE_Msk = ( 0x1UL << DCTRL_DTMODE_Pos );
   static constexpr uint32_t DCTRL_DTMODE     = DCTRL_DTMODE_Msk;
+  static constexpr uint32_t TRANSFER_MODE_BLOCK  = 0x00000000U;
+  static constexpr uint32_t TRANSFER_MODE_STREAM = DCTRL_DTMODE;
+
   static constexpr uint32_t DCTRL_DMAEN_Pos  = ( 3U );
   static constexpr uint32_t DCTRL_DMAEN_Msk  = ( 0x1UL << DCTRL_DMAEN_Pos );
   static constexpr uint32_t DCTRL_DMAEN      = DCTRL_DMAEN_Msk;
@@ -151,6 +160,23 @@ namespace Thor::LLD::SDIO
   static constexpr uint32_t DCTRL_DBLOCKSIZE_1   = ( 0x2UL << DCTRL_DBLOCKSIZE_Pos );
   static constexpr uint32_t DCTRL_DBLOCKSIZE_2   = ( 0x4UL << DCTRL_DBLOCKSIZE_Pos );
   static constexpr uint32_t DCTRL_DBLOCKSIZE_3   = ( 0x8UL << DCTRL_DBLOCKSIZE_Pos );
+
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_1B     = 0x00000000U;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_2B     = DCTRL_DBLOCKSIZE_0;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_4B     = DCTRL_DBLOCKSIZE_1;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_8B     = DCTRL_DBLOCKSIZE_0 | DCTRL_DBLOCKSIZE_1;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_16B    = DCTRL_DBLOCKSIZE_2;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_32B    = DCTRL_DBLOCKSIZE_0 | DCTRL_DBLOCKSIZE_2;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_64B    = DCTRL_DBLOCKSIZE_1 | DCTRL_DBLOCKSIZE_2;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_128B   = DCTRL_DBLOCKSIZE_0 | DCTRL_DBLOCKSIZE_1 | DCTRL_DBLOCKSIZE_2;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_256B   = DCTRL_DBLOCKSIZE_3;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_512B   = DCTRL_DBLOCKSIZE_0 | DCTRL_DBLOCKSIZE_3;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_1024B  = DCTRL_DBLOCKSIZE_1 | DCTRL_DBLOCKSIZE_3;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_2048B  = DCTRL_DBLOCKSIZE_0 | DCTRL_DBLOCKSIZE_1 | DCTRL_DBLOCKSIZE_3;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_4096B  = DCTRL_DBLOCKSIZE_2 | DCTRL_DBLOCKSIZE_3;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_8192B  = DCTRL_DBLOCKSIZE_0 | DCTRL_DBLOCKSIZE_2 | DCTRL_DBLOCKSIZE_3;
+  static constexpr uint32_t DCTRL_DATABLOCK_SIZE_16384B = DCTRL_DBLOCKSIZE_1 | DCTRL_DBLOCKSIZE_2 | DCTRL_DBLOCKSIZE_3;
+
 
   static constexpr uint32_t DCTRL_RWSTART_Pos = ( 8U );
   static constexpr uint32_t DCTRL_RWSTART_Msk = ( 0x1UL << DCTRL_RWSTART_Pos );

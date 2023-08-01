@@ -16,6 +16,7 @@
 Includes
 -----------------------------------------------------------------------------*/
 #include <Chimera/common>
+#include <Chimera/sdio>
 #include <Thor/lld/common/interrupts/sdio_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/sdio/sdio_detail.hpp>
@@ -151,7 +152,14 @@ namespace Thor::LLD::SDIO
      */
     uint32_t cpsmGetResponse( const ResponseMailbox which );
 
-    Chimera::Status_t dpsmConfigure( const DPSMConfig &config );
+    /**
+     * @brief Configures the Data Path State Machine
+     *
+     * @param config  Configuration parameters
+     * @return void
+     */
+    void dpsmConfigure( const DPSMConfig &config );
+
     uint32_t          dpsmGetDataCounter();
     uint32_t          dpsmGetFIFOCount();
 
@@ -173,15 +181,35 @@ namespace Thor::LLD::SDIO
      * @param Argument  Host information about supported voltage and capacities
      * @return ErrorType
      */
-    ErrorType cmdAppOperCommand( const uint32_t Argument);
+    ErrorType cmdAppOperCommand( const uint32_t Argument );
 
-    ErrorType cmdBlockLength( const uint32_t BlockSize);
-    ErrorType cmdBusWidth( const uint32_t BusWidth);
+    /**
+     * @brief Set the data block length for the SD card
+     *
+     * @param blockSize   Block size in bytes
+     * @return ErrorType
+     */
+    ErrorType cmdBlockLength( const uint32_t blockSize );
+
+    /**
+     * @brief Set the bus width for the SD card
+     *
+     * @param width   Bus width to use
+     * @return ErrorType
+     */
+    ErrorType cmdBusWidth( const Chimera::SDIO::BusWidth width );
+
     ErrorType cmdErase();
-    ErrorType cmdEraseEndAdd( const uint32_t EndAdd);
-    ErrorType cmdEraseStartAdd( const uint32_t StartAdd);
+    ErrorType cmdEraseEndAdd( const uint32_t EndAdd );
+    ErrorType cmdEraseStartAdd( const uint32_t StartAdd );
+
+    /**
+     * @brief Sends CMD0 to the SD card to reset it to Idle state
+     * @return ErrorType
+     */
     ErrorType cmdGoIdleState();
-    ErrorType cmdOpCondition( const uint32_t Argument);
+
+    ErrorType cmdOpCondition( const uint32_t Argument );
 
     /**
      * @brief Sends CMD8 to the SD card
@@ -193,23 +221,29 @@ namespace Thor::LLD::SDIO
      */
     ErrorType cmdOperCond();
 
-    ErrorType cmdReadMultiBlock( const uint32_t ReadAdd);
-    ErrorType cmdReadSingleBlock( const uint32_t ReadAdd);
-    ErrorType cmdSDEraseEndAdd( const uint32_t EndAdd);
-    ErrorType cmdSDEraseStartAdd( const uint32_t StartAdd);
-    ErrorType cmdSelDesel( const uint64_t Addr);
+    ErrorType cmdReadMultiBlock( const uint32_t ReadAdd );
+    ErrorType cmdReadSingleBlock( const uint32_t ReadAdd );
+    ErrorType cmdSDEraseEndAdd( const uint32_t EndAdd );
+    ErrorType cmdSDEraseStartAdd( const uint32_t StartAdd );
+    ErrorType cmdSelDesel( const uint64_t Addr );
     ErrorType cmdSendCID();
-    ErrorType cmdSendCSD( const uint32_t Argument);
-    ErrorType cmdSendEXTCSD( const uint32_t Argument);
+    ErrorType cmdSendCSD( const uint32_t Argument );
+    ErrorType cmdSendEXTCSD( const uint32_t Argument );
+
+    /**
+     * @brief Sends CMD51 to the SD card to read the SCR register
+     * @return ErrorType
+     */
     ErrorType cmdSendSCR();
-    ErrorType cmdSendStatus( const uint32_t Argument);
-    ErrorType cmdSetRelAdd( uint16_t *pRCA);
-    ErrorType cmdSetRelAddMmc( const uint16_t RCA);
+
+    ErrorType cmdSendStatus( const uint32_t Argument );
+    ErrorType cmdSetRelAdd( uint16_t *pRCA );
+    ErrorType cmdSetRelAddMmc( const uint16_t RCA );
     ErrorType cmdStatusRegister();
     ErrorType cmdStopTransfer();
-    ErrorType cmdSwitch( const uint32_t Argument);
-    ErrorType cmdWriteMultiBlock( const uint32_t WriteAdd);
-    ErrorType cmdWriteSingleBlock( const uint32_t WriteAdd);
+    ErrorType cmdSwitch( const uint32_t Argument );
+    ErrorType cmdWriteMultiBlock( const uint32_t WriteAdd );
+    ErrorType cmdWriteSingleBlock( const uint32_t WriteAdd );
 
     /*-------------------------------------------------------------------------
     Response Management
@@ -224,13 +258,24 @@ namespace Thor::LLD::SDIO
      */
     ErrorType getCmdResp3();
 
-    ErrorType getCmdResp6(uint8_t SD_CMD, uint16_t *pRCA);
+    ErrorType getCmdResp6( uint8_t SD_CMD, uint16_t *pRCA );
 
     /**
      * @brief Checks for error conditions on the R7 response
      * @return ErrorType
      */
     ErrorType getCmdResp7();
+
+    /*-------------------------------------------------------------------------
+    Data Management
+    -------------------------------------------------------------------------*/
+    /**
+     * @brief Read out the Stream Control Register (SCR) from the card
+     *
+     * @param pSCR  Pointer to the SCR register copy output location
+     * @return LLD::ErrorType
+     */
+    ErrorType getStreamControlRegister( uint32_t *const pSCR );
 
   protected:
     void IRQHandler();

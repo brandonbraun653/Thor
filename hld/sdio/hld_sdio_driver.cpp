@@ -37,15 +37,19 @@ namespace Chimera::SDIO
   {
   public:
     Chimera::Status_t powerOn();
+    LLD::ErrorType    configureBusWidth( const Chimera::SDIO::BusWidth width );
 
     LLD::Driver_rPtr           lldriver;
     Chimera::SDIO::Driver_rPtr hldriver;
     CardInfo                   cardInfo;
     uint32_t                   clockSpeed;
     BusWidth                   busWidth;
+    uint32_t                   blockSize;
 
   private:
     LLD::ErrorType acmd41Init();
+    LLD::ErrorType busWidthEnable();
+    LLD::ErrorType busWidthDisable();
   };
 
   /*---------------------------------------------------------------------------
@@ -123,6 +127,7 @@ namespace Chimera::SDIO
     memset( &impl->cardInfo, 0, sizeof( impl->cardInfo ) );
     impl->busWidth   = init.width;
     impl->clockSpeed = init.clockSpeed;
+    impl->blockSize  = init.blockSize;
 
     /*-------------------------------------------------------------------------
     Initialize the LLD driver
@@ -159,15 +164,23 @@ namespace Chimera::SDIO
     }
 
     /*-------------------------------------------------------------------------
-    Initialize the card
-    -------------------------------------------------------------------------*/
-
-
-    /*-------------------------------------------------------------------------
     Set the card block size
     -------------------------------------------------------------------------*/
+    if ( ( impl->cardInfo.CardType == CardType::CARD_SDSC ) &&
+         ( impl->lldriver->cmdBlockLength( impl->blockSize ) != LLD::ERROR_NONE ) )
+    {
+      return Chimera::Status::FAIL;
+    }
 
-    return Chimera::Status::FAIL;
+    /*-------------------------------------------------------------------------
+    Set the communication bus width
+    -------------------------------------------------------------------------*/
+    if ( impl->configureBusWidth( impl->busWidth ) != LLD::ERROR_NONE )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+    return Chimera::Status::OK;
   }
 
 
@@ -254,12 +267,57 @@ namespace Chimera::SDIO
     -------------------------------------------------------------------------*/
     error = acmd41Init();
 
-    /*-------------------------------------------------------------------------
-    Map into a simple pass/fail
-    -------------------------------------------------------------------------*/
-    exit_power_up:
-      return ( error == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::NOT_SUPPORTED;
+  /*-------------------------------------------------------------------------
+  Map into a simple pass/fail
+  -------------------------------------------------------------------------*/
+  exit_power_up:
+    return ( error == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::NOT_SUPPORTED;
   }
+
+
+  /**
+   * @brief Sets the bus width of the SDIO interface
+   * @note Expected to be performed after the card is powered on and in a ready state
+   *
+   * @param width The bus width to use
+   * @return LLD::ErrorType
+   */
+  LLD::ErrorType ThorImpl::configureBusWidth( const Chimera::SDIO::BusWidth width )
+  {
+    /*-------------------------------------------------------------------------
+    Local Variables
+    -------------------------------------------------------------------------*/
+    LLD::ErrorType error = LLD::ERROR_NONE;
+
+    /*-------------------------------------------------------------------------
+    Ignore locked cards
+    -------------------------------------------------------------------------*/
+    if ( this->cardInfo.CardType == CardType::CARD_SECURED )
+    {
+      return LLD::ErrorType::ERROR_UNSUPPORTED_FEATURE;
+    }
+
+    /*-------------------------------------------------------------------------
+    Issue the command to change the bus width to the SD card
+    -------------------------------------------------------------------------*/
+    switch ( width )
+    {
+      case Chimera::SDIO::BusWidth::BUS_WIDTH_1BIT:
+        error = this->busWidthDisable();
+        break;
+
+      case Chimera::SDIO::BusWidth::BUS_WIDTH_4BIT:
+        error = this->busWidthEnable();
+        break;
+
+      default:
+        error = LLD::ErrorType::ERROR_INVALID_PARAMETER;
+        break;
+    }
+
+    return error;
+  }
+
 
   /**
    * @brief Performs the ACMD41 initialization sequence
@@ -295,7 +353,6 @@ namespace Chimera::SDIO
       Send the ACMD41 command with the broadest possible support. Don't bother
       with 1.8v signaling since the F4 drivers in Thor don't support it.
       -----------------------------------------------------------------------*/
-      //constexpr uint32_t ACMD41_ARG = 0x40FF0000;
       constexpr uint32_t ACMD41_ARG = ACMD41_HIGH_CAPACITY_CARD | ACMD41_2V0_3V6_VOLT_WINDOW;
 
       if ( error = lldriver->cmdAppOperCommand( ACMD41_ARG ); error != LLD::ERROR_NONE )
@@ -316,6 +373,105 @@ namespace Chimera::SDIO
     return error;
   }
 
+
+  /**
+   * @brief Enables hardware support for 4-bit wide bus operation
+   * @return LLD::ErrorType
+   */
+  LLD::ErrorType ThorImpl::busWidthEnable()
+  {
+    /*-------------------------------------------------------------------------
+    Local Variables
+    -------------------------------------------------------------------------*/
+    uint32_t       scr[ 2U ] = { 0U, 0U };
+    LLD::ErrorType error;
+
+    /*-------------------------------------------------------------------------
+    Read the SCR register to determine SDCard capabilities
+    -------------------------------------------------------------------------*/
+    if ( error = lldriver->getStreamControlRegister( scr ); error != LLD::ERROR_NONE )
+    {
+      return error;
+    }
+
+    /*-------------------------------------------------------------------------
+    Check if the card supports wide bus operation
+    -------------------------------------------------------------------------*/
+    if ( ( scr[ 1U ] & ACMD51_WIDE_BUS_SUPPORT ) != 0 )
+    {
+      /*-----------------------------------------------------------------------
+      Indicate to the card the next command is application specific
+      -----------------------------------------------------------------------*/
+      if ( error = lldriver->cmdAppCommand( 0u ); error != LLD::ERROR_NONE )
+      {
+        return error;
+      }
+
+      /*-----------------------------------------------------------------------
+      Enable 4-bit wide bus operation by sending ACMD6.
+      -----------------------------------------------------------------------*/
+      if ( error = lldriver->cmdBusWidth( BusWidth::BUS_WIDTH_4BIT ); error != LLD::ERROR_NONE )
+      {
+        return error;
+      }
+
+      return LLD::ERROR_NONE;
+    }
+    else
+    {
+      return LLD::ERROR_REQUEST_NOT_APPLICABLE;
+    }
+  }
+
+
+  /**
+   * @brief Revert hardware back to single bit data bus operation
+   * @return LLD::ErrorType
+   */
+  LLD::ErrorType ThorImpl::busWidthDisable()
+  {
+    /*-------------------------------------------------------------------------
+    Local Variables
+    -------------------------------------------------------------------------*/
+    uint32_t       scr[ 2U ] = { 0U, 0U };
+    LLD::ErrorType error;
+
+    /*-------------------------------------------------------------------------
+    Read the SCR register to determine SDCard capabilities
+    -------------------------------------------------------------------------*/
+    if ( error = lldriver->getStreamControlRegister( scr ); error != LLD::ERROR_NONE )
+    {
+      return error;
+    }
+
+    /*-------------------------------------------------------------------------
+    Check if the card supports single bit bus operation
+    -------------------------------------------------------------------------*/
+    if ( ( scr[ 1U ] & ACMD51_SINGLE_BUS_SUPPORT ) != 0 )
+    {
+      /*-----------------------------------------------------------------------
+      Indicate to the card the next command is application specific
+      -----------------------------------------------------------------------*/
+      if ( error = lldriver->cmdAppCommand( 0u ); error != LLD::ERROR_NONE )
+      {
+        return error;
+      }
+
+      /*-----------------------------------------------------------------------
+      Enable 1-bit wide bus operation by sending ACMD6.
+      -----------------------------------------------------------------------*/
+      if ( error = lldriver->cmdBusWidth( BusWidth::BUS_WIDTH_1BIT ); error != LLD::ERROR_NONE )
+      {
+        return error;
+      }
+
+      return LLD::ERROR_NONE;
+    }
+    else
+    {
+      return LLD::ERROR_REQUEST_NOT_APPLICABLE;
+    }
+  }
 }    // namespace Chimera::SDIO
 
 
