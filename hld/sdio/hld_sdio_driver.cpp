@@ -174,11 +174,12 @@ namespace Chimera::SDIO
 
     /*-------------------------------------------------------------------------
     Set the communication bus width
+    // TODO: Not currently working right
     -------------------------------------------------------------------------*/
-    if ( impl->configureBusWidth( impl->busWidth ) != LLD::ERROR_NONE )
-    {
-      return Chimera::Status::FAIL;
-    }
+    // if ( impl->configureBusWidth( impl->busWidth ) != LLD::ERROR_NONE )
+    // {
+    //   return Chimera::Status::FAIL;
+    // }
 
     return Chimera::Status::OK;
   }
@@ -189,13 +190,13 @@ namespace Chimera::SDIO
   }
 
 
-  Chimera::Status_t Driver::write( const uint32_t address, const void *const buffer, const size_t length )
+  Chimera::Status_t Driver::writeBlock( const uint32_t blockAddress, const size_t blockCount, const void *const buffer, const size_t size )
   {
     return Chimera::Status::FAIL;
   }
 
 
-  Chimera::Status_t Driver::read( const uint32_t address, void *const buffer, const size_t length )
+  Chimera::Status_t Driver::readBlock( const uint32_t blockAddress, const size_t blockCount, void *const buffer, const size_t size )
   {
     return Chimera::Status::FAIL;
   }

@@ -681,10 +681,10 @@ Literals
     uint32_t  *scr           = pSCR;
 
     /* Set Block Size To 8 Bytes */
-    if ( error = cmdBlockLength( 8U ); error != ERROR_NONE )
-    {
-      return error;
-    }
+    // if ( error = cmdBlockLength( 8U ); error != ERROR_NONE )
+    // {
+    //   return error;
+    // }
 
     /* Send CMD55 APP_CMD with argument as card's RCA */
     if ( error = cmdAppCommand( 0u ); error != ERROR_NONE )
@@ -706,7 +706,7 @@ Literals
       return error;
     }
 
-    while ( STA_ALL::get( mPeriph ) & ( STA_RXOVERR | STA_DCRCFAIL | STA_DTIMEOUT ) == 0 )
+    while ( ( STA_ALL::get( mPeriph ) & ( STA_RXOVERR | STA_DCRCFAIL | STA_DTIMEOUT ) ) == 0 )
     {
       if ( RXDAVL::get( mPeriph ) )
       {
