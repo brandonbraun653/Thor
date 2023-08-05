@@ -156,3 +156,15 @@ namespace Thor::LLD::SDIO
   }
 }    // namespace Thor::LLD::SDIO
 #endif /* THOR_SDIO */
+
+
+/*-----------------------------------------------------------------------------
+IRQ Handlers
+-----------------------------------------------------------------------------*/
+#if defined( STM32_SDIO1_PERIPH_AVAILABLE )
+void SDIO_IRQHandler( void )
+{
+  using namespace Thor::LLD::SDIO;
+  s_sdio_drivers[ SDIO1_RESOURCE_INDEX ].IRQHandler();
+}
+#endif /* STM32_SDIO1_PERIPH_AVAILABLE */

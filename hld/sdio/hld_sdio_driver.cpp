@@ -45,6 +45,9 @@ namespace Chimera::SDIO
     uint32_t                   clockSpeed;
     BusWidth                   busWidth;
     uint32_t                   blockSize;
+    uint16_t                   rca; /**< Relative Card Address */
+    uint32_t                   cid[ 4 ];
+    uint32_t                   csd[ 4 ];
 
   private:
     LLD::ErrorType acmd41Init();
@@ -136,6 +139,12 @@ namespace Chimera::SDIO
   }
 
 
+  /**
+   * @brief Goes through the full initialization sequence for the SDIO card.
+   * @see Figure 4-2 and 4-13 in the Physical Layer Simplified Specification Version 9.00
+   *
+   * @return Chimera::Status_t
+   */
   Chimera::Status_t Driver::connect()
   {
     auto impl = reinterpret_cast<ThorImpl *>( mImpl );
@@ -156,7 +165,7 @@ namespace Chimera::SDIO
     }
 
     /*-------------------------------------------------------------------------
-    Get the operating card voltage
+    Move the card through the identification process
     -------------------------------------------------------------------------*/
     if ( impl->powerOn() != Chimera::Status::OK )
     {
@@ -164,22 +173,48 @@ namespace Chimera::SDIO
     }
 
     /*-------------------------------------------------------------------------
-    Set the card block size
+    Request the CID from the card
     -------------------------------------------------------------------------*/
-    if ( ( impl->cardInfo.CardType == CardType::CARD_SDSC ) &&
-         ( impl->lldriver->cmdBlockLength( impl->blockSize ) != LLD::ERROR_NONE ) )
+    if( impl->lldriver->cmdSendCID() != LLD::ERROR_NONE )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+    impl->cid[ 0 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_1 );
+    impl->cid[ 1 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_2 );
+    impl->cid[ 2 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_3 );
+    impl->cid[ 3 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_4 );
+
+    /*-------------------------------------------------------------------------
+    Request the relative address. Once complete, the card will transition from
+    the identification state to the standby state.
+    -------------------------------------------------------------------------*/
+    if ( impl->lldriver->cmdSetRelAdd( &impl->rca ) != LLD::ERROR_NONE )
     {
       return Chimera::Status::FAIL;
     }
 
     /*-------------------------------------------------------------------------
-    Set the communication bus width
-    // TODO: Not currently working right
+    Request the CSD from the card. This only works after the card has been
+    placed into the standby state and is addressable.
     -------------------------------------------------------------------------*/
-    // if ( impl->configureBusWidth( impl->busWidth ) != LLD::ERROR_NONE )
-    // {
-    //   return Chimera::Status::FAIL;
-    // }
+    if( impl->lldriver->cmdSendCSD( impl->rca ) != LLD::ERROR_NONE )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+    impl->csd[ 0 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_1 );
+    impl->csd[ 1 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_2 );
+    impl->csd[ 2 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_3 );
+    impl->csd[ 3 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_4 );
+
+    /*-------------------------------------------------------------------------
+    Finally select the card, transitioning to the transfer state.
+    -------------------------------------------------------------------------*/
+    if( impl->lldriver->cmdSelDesel( impl->rca ) != LLD::ERROR_NONE )
+    {
+      return Chimera::Status::FAIL;
+    }
 
     return Chimera::Status::OK;
   }
@@ -192,12 +227,39 @@ namespace Chimera::SDIO
 
   Chimera::Status_t Driver::writeBlock( const uint32_t blockAddress, const size_t blockCount, const void *const buffer, const size_t size )
   {
+    /*-------------------------------------------------------------------------
+    Wait for a previous transaction to have completed
+    -------------------------------------------------------------------------*/
+
+    /*-------------------------------------------------------------------------
+    Configure the DMA channel
+    -------------------------------------------------------------------------*/
+
+    /*-------------------------------------------------------------------------
+    Configure the data path state machine for the transfer
+    -------------------------------------------------------------------------*/
+
+
+    /*-------------------------------------------------------------------------
+    Configure the command path state machine for the transfer
+    -------------------------------------------------------------------------*/
+
+
+    /*-------------------------------------------------------------------------
+    Wait for the DMA transfer to complete
+    -------------------------------------------------------------------------*/
+
+
     return Chimera::Status::FAIL;
   }
 
 
   Chimera::Status_t Driver::readBlock( const uint32_t blockAddress, const size_t blockCount, void *const buffer, const size_t size )
   {
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+
+    impl->lldriver->asyncReadBlock( blockAddress, buffer );
+
     return Chimera::Status::FAIL;
   }
 

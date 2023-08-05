@@ -90,6 +90,7 @@ namespace Thor::LLD::SDIO
     CMD_HS_BUSTEST_READ      = 14U, /**< Reserved. */
     CMD_GO_INACTIVE_STATE    = 15U, /**< Sends an addressed card into the inactive state. */
     CMD_SET_BLOCKLEN         = 16U, /**< Sets the block length (in bytes for SDSC) for all following block commands (read, write, lock). Default block length is fixed to 512 Bytes. Not effective for SDHS and SDXC. Fixed 512 bytes in case of SDHC and SDXC. */
+    CMD_READ_SINGLE_BLOCK    = 17U, /**< Reads a single block */
     CMD_READ_MULT_BLOCK      = 18U, /**< Continuously transfers data blocks from card to host until interrupted by STOP_TRANSMISSION command. */
     CMD_HS_BUSTEST_WRITE     = 19U, /**< 64 bytes tuning pattern is sent for SDR50 and SDR104. */
     CMD_WRITE_DAT_UNTIL_STOP = 20U, /**< Speed class control command. */

@@ -76,6 +76,8 @@ namespace Thor::LLD::SDIO
   /*-------------------------------------------------------------------
   Command Register
   -------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, CMD, CMD_ALL_Msk, CMD_ALL, BIT_ACCESS_RW );
+
   /* WAITRESP */
   REG_ACCESSOR( RegisterMap, CMD, CMD_WAITRESP_Msk, WAITRESP, BIT_ACCESS_RW );
   static constexpr uint32_t CMD_RESPONSE_NO    = 0u;
@@ -136,6 +138,7 @@ namespace Thor::LLD::SDIO
   /*-------------------------------------------------------------------
   Data Control Register
   -------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, DCTRL, DCTRL_ALL_Msk, DCTRL_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, DCTRL, DCTRL_DTEN_Msk, DTEN, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, DCTRL, DCTRL_DTDIR_Msk, DTDIR, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, DCTRL, DCTRL_DTMODE_Msk, DTMODE, BIT_ACCESS_RW );

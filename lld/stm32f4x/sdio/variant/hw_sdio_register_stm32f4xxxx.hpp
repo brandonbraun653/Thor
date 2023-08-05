@@ -67,6 +67,8 @@ namespace Thor::LLD::SDIO
   static constexpr uint32_t ARG_CMDARG     = ARG_CMDARG_Msk;
 
   /*******************  Bit definition for CMD register  *******************/
+  static constexpr uint32_t CMD_ALL_Msk      = 0xFFFu;
+
   static constexpr uint32_t CMD_CMDINDEX_Pos = ( 0U );
   static constexpr uint32_t CMD_CMDINDEX_Msk = ( 0x3FUL << CMD_CMDINDEX_Pos );
   static constexpr uint32_t CMD_CMDINDEX     = CMD_CMDINDEX_Msk;
@@ -131,6 +133,8 @@ namespace Thor::LLD::SDIO
   static constexpr uint32_t DLEN_DATALENGTH     = DLEN_DATALENGTH_Msk;
 
   /******************  Bit definition for DCTRL register  ******************/
+  static constexpr uint32_t DCTRL_ALL_Msk = 0xFFFu;
+
   static constexpr uint32_t DCTRL_DTEN_Pos   = ( 0U );
   static constexpr uint32_t DCTRL_DTEN_Msk   = ( 0x1UL << DCTRL_DTEN_Pos );
   static constexpr uint32_t DCTRL_DTEN       = DCTRL_DTEN_Msk;

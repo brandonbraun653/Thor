@@ -16,8 +16,11 @@
 Includes
 -----------------------------------------------------------------------------*/
 #include <Chimera/common>
+#include <Chimera/dma>
 #include <Chimera/sdio>
 #include <Thor/cfg>
+#include <Thor/dma>
+#include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/interrupt>
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/interface/inc/sdio>
@@ -25,9 +28,9 @@ Includes
 #if defined( THOR_SDIO ) && defined( TARGET_STM32F4 )
 namespace Thor::LLD::SDIO
 {
-/*---------------------------------------------------------------------------
-Literals
----------------------------------------------------------------------------*/
+  /*---------------------------------------------------------------------------
+  Literals
+  ---------------------------------------------------------------------------*/
 #define SDMMC_0TO7BITS        ( 0x000000FFU )
 #define SDMMC_8TO15BITS       ( 0x0000FF00U )
 #define SDMMC_16TO23BITS      ( 0x00FF0000U )
@@ -58,6 +61,7 @@ Literals
    * @brief Timeout for STOP TRANSMISSION command in milliseconds
    */
   static constexpr uint32_t SDIO_STOP_TXFR_TIMEOUT = Chimera::Thread::TIMEOUT_BLOCK;
+
 
   /*---------------------------------------------------------------------------
   Static Functions
@@ -120,7 +124,7 @@ Literals
   /*---------------------------------------------------------------------------
   Driver Implementation
   ---------------------------------------------------------------------------*/
-  Driver::Driver() : mPeriph( nullptr ), mResourceIdx( INVALID_RESOURCE_INDEX )
+  Driver::Driver() : mPeriph( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX )
   {
   }
 
@@ -135,15 +139,15 @@ Literals
     /*-------------------------------------------------------------------------
     Get peripheral descriptor settings
     -------------------------------------------------------------------------*/
-    mPeriph      = peripheral;
-    mResourceIdx = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
+    mPeriph        = peripheral;
+    mResourceIndex = getResourceIndex( reinterpret_cast<std::uintptr_t>( peripheral ) );
 
     /*-------------------------------------------------------------------------
     Handle the ISR configuration
     -------------------------------------------------------------------------*/
-    INT::disableIRQ( Resource::IRQSignals[ mResourceIdx ] );
-    INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIdx ] );
-    INT::setPriority( Resource::IRQSignals[ mResourceIdx ], INT::SDIO_IT_PREEMPT_PRIORITY, 0u );
+    INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    INT::setPriority( Resource::IRQSignals[ mResourceIndex ], INT::SDIO_IT_PREEMPT_PRIORITY, 0u );
 
     return Chimera::Status::OK;
   }
@@ -152,21 +156,21 @@ Literals
   Chimera::Status_t Driver::reset()
   {
     auto rcc = RCC::getPeriphClockCtrl();
-    return rcc->reset( Chimera::Peripheral::Type::PERIPH_SDIO, mResourceIdx );
+    return rcc->reset( Chimera::Peripheral::Type::PERIPH_SDIO, mResourceIndex );
   }
 
 
   void Driver::clockEnable()
   {
     auto rcc = RCC::getPeriphClockCtrl();
-    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_SDIO, mResourceIdx );
+    rcc->enableClock( Chimera::Peripheral::Type::PERIPH_SDIO, mResourceIndex );
   }
 
 
   void Driver::clockDisable()
   {
     auto rcc = RCC::getPeriphClockCtrl();
-    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_SDIO, mResourceIdx );
+    rcc->disableClock( Chimera::Peripheral::Type::PERIPH_SDIO, mResourceIndex );
   }
 
 
@@ -184,13 +188,13 @@ Literals
 
   void Driver::enterCriticalSection()
   {
-    INT::disableIRQ( Resource::IRQSignals[ mResourceIdx ] );
+    INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 
   void Driver::exitCriticalSection()
   {
-    INT::enableIRQ( Resource::IRQSignals[ mResourceIdx ] );
+    INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
   }
 
 
@@ -206,6 +210,8 @@ Literals
 
   Chimera::Status_t Driver::init()
   {
+    using namespace Chimera::DMA;
+
     /*-------------------------------------------------------------------------
     Reset the peripheral
     -------------------------------------------------------------------------*/
@@ -230,6 +236,42 @@ Literals
     WIDBUS::set( mPeriph, 0 );                  // 1-bit bus width
     BYPASS::clear( mPeriph, CLKCR_BYPASS );     // Disable clock bypass
     CLKEN::clear( mPeriph, CLKCR_CLKEN );       // Disable the clock output
+
+    /*-------------------------------------------------------------------------
+    Initialize DMA RX Pipe
+    -------------------------------------------------------------------------*/
+    PipeConfig rxCfg;
+    rxCfg.srcAlignment  = Alignment::WORD;
+    rxCfg.dstAlignment  = Alignment::WORD;
+    rxCfg.direction     = Direction::PERIPH_TO_MEMORY;
+    rxCfg.mode          = Mode::DIRECT;
+    rxCfg.priority      = Priority::MEDIUM;
+    rxCfg.resourceIndex = DMA::getResourceIndex( Resource::RXDMASignals[ mResourceIndex ] );
+    rxCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::RXDMASignals[ mResourceIndex ] ) );
+    rxCfg.threshold     = FifoThreshold::NONE;
+    rxCfg.persistent    = true;
+    rxCfg.periphAddr    = reinterpret_cast<uintptr_t>( &mPeriph->FIFO );
+
+    mRXDMARequestId = Chimera::DMA::constructPipe( rxCfg );
+    RT_DBG_ASSERT( mRXDMARequestId != Chimera::DMA::INVALID_REQUEST );
+
+    /*-------------------------------------------------------------------------
+    Initialize DMA TX Pipe
+    -------------------------------------------------------------------------*/
+    PipeConfig txCfg;
+    txCfg.srcAlignment  = Alignment::WORD;
+    txCfg.dstAlignment  = Alignment::WORD;
+    txCfg.direction     = Direction::MEMORY_TO_PERIPH;
+    txCfg.mode          = Mode::DIRECT;
+    txCfg.priority      = Priority::MEDIUM;
+    txCfg.resourceIndex = DMA::getResourceIndex( Resource::TXDMASignals[ mResourceIndex ] );
+    txCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::TXDMASignals[ mResourceIndex ] ) );
+    txCfg.threshold     = FifoThreshold::NONE;
+    txCfg.persistent    = true;
+    txCfg.periphAddr    = reinterpret_cast<uintptr_t>( &mPeriph->FIFO );
+
+    mTXDMARequestId = Chimera::DMA::constructPipe( txCfg );
+    RT_DBG_ASSERT( mTXDMARequestId != Chimera::DMA::INVALID_REQUEST );
 
     return Chimera::Status::OK;
   }
@@ -461,6 +503,90 @@ Literals
   }
 
 
+  ErrorType Driver::cmdSetRelAdd( uint16_t *const pRCA )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD3 to get the SD card RCA
+    -------------------------------------------------------------------------*/
+    CPSMCommand cmd;
+    cmd.Argument         = 0u;
+    cmd.CmdIndex         = CMD_SET_REL_ADDR;
+    cmd.Response         = CMD_RESPONSE_SHORT;
+    cmd.WaitForInterrupt = CMD_WAIT_NO;
+    cmd.CPSM             = CMD_CPSM_ENABLE;
+
+    cpsmPutCmd( cmd );
+
+    /*-------------------------------------------------------------------------
+    Return the command response
+    -------------------------------------------------------------------------*/
+    return getCmdResp6( cmd.CmdIndex, pRCA );
+  }
+
+
+  ErrorType Driver::cmdSelDesel( const uint16_t rca )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD7 to select the card
+    -------------------------------------------------------------------------*/
+    CPSMCommand cmd;
+    cmd.Argument         = static_cast<uint32_t>( rca  ) << 16u;
+    cmd.CmdIndex         = CMD_SEL_DESEL_CARD;
+    cmd.Response         = CMD_RESPONSE_SHORT;
+    cmd.WaitForInterrupt = CMD_WAIT_NO;
+    cmd.CPSM             = CMD_CPSM_ENABLE;
+
+    cpsmPutCmd( cmd );
+
+    /*-------------------------------------------------------------------------
+    Return the command response
+    -------------------------------------------------------------------------*/
+    return getCmdResp1( cmd.CmdIndex, SDIO_CMD_TIMEOUT_MS );
+  }
+
+
+  ErrorType Driver::cmdSendCID()
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD2 to request the CID register
+    -------------------------------------------------------------------------*/
+    CPSMCommand cmd;
+    cmd.Argument         = 0;
+    cmd.CmdIndex         = CMD_ALL_SEND_CID;
+    cmd.Response         = CMD_RESPONSE_LONG;
+    cmd.WaitForInterrupt = CMD_WAIT_NO;
+    cmd.CPSM             = CMD_CPSM_ENABLE;
+
+    cpsmPutCmd( cmd );
+
+    /*-------------------------------------------------------------------------
+    Return the command response
+    -------------------------------------------------------------------------*/
+    return getCmdResp2();
+  }
+
+
+  ErrorType Driver::cmdSendCSD( const uint16_t rca )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD9 to select the card
+    -------------------------------------------------------------------------*/
+    CPSMCommand cmd;
+    cmd.Argument         = static_cast<uint32_t>( rca ) << 16u;
+    cmd.CmdIndex         = CMD_SEND_CSD;
+    cmd.Response         = CMD_RESPONSE_LONG;
+    cmd.WaitForInterrupt = CMD_WAIT_NO;
+    cmd.CPSM             = CMD_CPSM_ENABLE;
+
+    cpsmPutCmd( cmd );
+
+    /*-------------------------------------------------------------------------
+    Return the command response
+    -------------------------------------------------------------------------*/
+    return getCmdResp2();
+  }
+
+
   ErrorType Driver::getCmdResp1( uint8_t SD_CMD, uint32_t Timeout )
   {
     using namespace Chimera::SDIO;
@@ -497,81 +623,81 @@ Literals
     }
 
     /* We have received response, retrieve it for analysis  */
-    auto response_r1 = cpsmGetResponse( ResponseMailbox::RESPONSE_1 );
+    auto r1 = cpsmGetResponse( ResponseMailbox::RESPONSE_1 );
 
-    if ( ( response_r1 & OCR_ERRORBITS ) == 0 )
+    if ( ( r1 & OCR_ERRORBITS ) == 0 )
     {
       return ERROR_NONE;
     }
-    else if ( ( response_r1 & OCR_ADDR_OUT_OF_RANGE ) == OCR_ADDR_OUT_OF_RANGE )
+    else if ( ( r1 & OCR_ADDR_OUT_OF_RANGE ) == OCR_ADDR_OUT_OF_RANGE )
     {
       return ERROR_ADDR_OUT_OF_RANGE;
     }
-    else if ( ( response_r1 & OCR_ADDR_MISALIGNED ) == OCR_ADDR_MISALIGNED )
+    else if ( ( r1 & OCR_ADDR_MISALIGNED ) == OCR_ADDR_MISALIGNED )
     {
       return ERROR_ADDR_MISALIGNED;
     }
-    else if ( ( response_r1 & OCR_BLOCK_LEN_ERR ) == OCR_BLOCK_LEN_ERR )
+    else if ( ( r1 & OCR_BLOCK_LEN_ERR ) == OCR_BLOCK_LEN_ERR )
     {
       return ERROR_BLOCK_LEN_ERR;
     }
-    else if ( ( response_r1 & OCR_ERASE_SEQ_ERR ) == OCR_ERASE_SEQ_ERR )
+    else if ( ( r1 & OCR_ERASE_SEQ_ERR ) == OCR_ERASE_SEQ_ERR )
     {
       return ERROR_ERASE_SEQ_ERR;
     }
-    else if ( ( response_r1 & OCR_BAD_ERASE_PARAM ) == OCR_BAD_ERASE_PARAM )
+    else if ( ( r1 & OCR_BAD_ERASE_PARAM ) == OCR_BAD_ERASE_PARAM )
     {
       return ERROR_BAD_ERASE_PARAM;
     }
-    else if ( ( response_r1 & OCR_WRITE_PROT_VIOLATION ) == OCR_WRITE_PROT_VIOLATION )
+    else if ( ( r1 & OCR_WRITE_PROT_VIOLATION ) == OCR_WRITE_PROT_VIOLATION )
     {
       return ERROR_WRITE_PROT_VIOLATION;
     }
-    else if ( ( response_r1 & OCR_LOCK_UNLOCK_FAILED ) == OCR_LOCK_UNLOCK_FAILED )
+    else if ( ( r1 & OCR_LOCK_UNLOCK_FAILED ) == OCR_LOCK_UNLOCK_FAILED )
     {
       return ERROR_LOCK_UNLOCK_FAILED;
     }
-    else if ( ( response_r1 & OCR_COM_CRC_FAILED ) == OCR_COM_CRC_FAILED )
+    else if ( ( r1 & OCR_COM_CRC_FAILED ) == OCR_COM_CRC_FAILED )
     {
       return ERROR_COM_CRC_FAILED;
     }
-    else if ( ( response_r1 & OCR_ILLEGAL_CMD ) == OCR_ILLEGAL_CMD )
+    else if ( ( r1 & OCR_ILLEGAL_CMD ) == OCR_ILLEGAL_CMD )
     {
       return ERROR_ILLEGAL_CMD;
     }
-    else if ( ( response_r1 & OCR_CARD_ECC_FAILED ) == OCR_CARD_ECC_FAILED )
+    else if ( ( r1 & OCR_CARD_ECC_FAILED ) == OCR_CARD_ECC_FAILED )
     {
       return ERROR_CARD_ECC_FAILED;
     }
-    else if ( ( response_r1 & OCR_CC_ERROR ) == OCR_CC_ERROR )
+    else if ( ( r1 & OCR_CC_ERROR ) == OCR_CC_ERROR )
     {
       return ERROR_CC_ERR;
     }
-    else if ( ( response_r1 & OCR_STREAM_READ_UNDERRUN ) == OCR_STREAM_READ_UNDERRUN )
+    else if ( ( r1 & OCR_STREAM_READ_UNDERRUN ) == OCR_STREAM_READ_UNDERRUN )
     {
       return ERROR_STREAM_READ_UNDERRUN;
     }
-    else if ( ( response_r1 & OCR_STREAM_WRITE_OVERRUN ) == OCR_STREAM_WRITE_OVERRUN )
+    else if ( ( r1 & OCR_STREAM_WRITE_OVERRUN ) == OCR_STREAM_WRITE_OVERRUN )
     {
       return ERROR_STREAM_WRITE_OVERRUN;
     }
-    else if ( ( response_r1 & OCR_CID_CSD_OVERWRITE ) == OCR_CID_CSD_OVERWRITE )
+    else if ( ( r1 & OCR_CID_CSD_OVERWRITE ) == OCR_CID_CSD_OVERWRITE )
     {
       return ERROR_CID_CSD_OVERWRITE;
     }
-    else if ( ( response_r1 & OCR_WP_ERASE_SKIP ) == OCR_WP_ERASE_SKIP )
+    else if ( ( r1 & OCR_WP_ERASE_SKIP ) == OCR_WP_ERASE_SKIP )
     {
       return ERROR_WP_ERASE_SKIP;
     }
-    else if ( ( response_r1 & OCR_CARD_ECC_DISABLED ) == OCR_CARD_ECC_DISABLED )
+    else if ( ( r1 & OCR_CARD_ECC_DISABLED ) == OCR_CARD_ECC_DISABLED )
     {
       return ERROR_CARD_ECC_DISABLED;
     }
-    else if ( ( response_r1 & OCR_ERASE_RESET ) == OCR_ERASE_RESET )
+    else if ( ( r1 & OCR_ERASE_RESET ) == OCR_ERASE_RESET )
     {
       return ERROR_ERASE_RESET;
     }
-    else if ( ( response_r1 & OCR_AKE_SEQ_ERROR ) == OCR_AKE_SEQ_ERROR )
+    else if ( ( r1 & OCR_AKE_SEQ_ERROR ) == OCR_AKE_SEQ_ERROR )
     {
       return ERROR_AKE_SEQ_ERR;
     }
@@ -579,6 +705,36 @@ Literals
     {
       return ERROR_GENERAL_UNKNOWN_ERR;
     }
+  }
+
+
+  ErrorType Driver::getCmdResp2()
+  {
+    /*-------------------------------------------------------------------------
+    Do timeout on flag updates
+    -------------------------------------------------------------------------*/
+    if ( auto error = wait_cpsm_send_finish( mPeriph, SDIO_CMD_TIMEOUT_MS ); error != ERROR_NONE )
+    {
+      return error;
+    }
+
+    /*-------------------------------------------------------------------------
+    Handle error codes
+    -------------------------------------------------------------------------*/
+    if ( CTIMEOUT::get( mPeriph ) == STA_CTIMEOUT )
+    {
+      CTIMEOUTC::set( mPeriph, ICR_CTIMEOUTC );
+      return ERROR_CMD_RSP_TIMEOUT;
+    }
+    else if ( CCRCFAIL::get( mPeriph ) == STA_CCRCFAIL )
+    {
+      CCRCFAILC::set( mPeriph, ICR_CCRCFAILC );
+      return ERROR_CMD_CRC_FAIL;
+    }
+
+    /* Clear all the static flags */
+    ICR_ALL::set( mPeriph, STATIC_CMD_FLAGS );
+    return ERROR_NONE;
   }
 
 
@@ -608,6 +764,67 @@ Literals
     }
 
     return ERROR_NONE;
+  }
+
+
+  ErrorType Driver::getCmdResp6( uint8_t SD_CMD, uint16_t *pRCA )
+  {
+    using namespace Chimera::SDIO;
+
+    /*-------------------------------------------------------------------------
+    Do timeout on flag updates
+    -------------------------------------------------------------------------*/
+    if ( auto error = wait_cpsm_send_finish( mPeriph, SDIO_CMD_TIMEOUT_MS ); error != ERROR_NONE )
+    {
+      return error;
+    }
+
+    /*-------------------------------------------------------------------------
+    Parse the error code
+    -------------------------------------------------------------------------*/
+    if ( CTIMEOUT::get( mPeriph ) == STA_CTIMEOUT )
+    {
+      CTIMEOUTC::set( mPeriph, ICR_CTIMEOUTC );
+      return ERROR_CMD_RSP_TIMEOUT;
+    }
+    else if ( CCRCFAIL::get( mPeriph ) == STA_CCRCFAIL )
+    {
+      CCRCFAILC::set( mPeriph, ICR_CCRCFAILC );
+      return ERROR_CMD_CRC_FAIL;
+    }
+    /* else nothing to do */
+
+    /*-------------------------------------------------------------------------
+    Check response received is of desired command
+    -------------------------------------------------------------------------*/
+    if( mPeriph->RESPCMD != SD_CMD)
+    {
+      return ERROR_CMD_CRC_FAIL;
+    }
+
+    /* Clear all the static flags */
+    ICR_ALL::set( mPeriph, STATIC_CMD_FLAGS );
+
+    /* We have received response, retrieve it.  */
+    const auto r1 = cpsmGetResponse( ResponseMailbox::RESPONSE_1 );
+
+    if ( ( r1 & ( R6_GENERAL_UNKNOWN_ERROR | R6_ILLEGAL_CMD | R6_COM_CRC_FAILED ) ) == 0 )
+    {
+      *pRCA = ( uint16_t )( r1 >> 16 );
+      return ERROR_NONE;
+    }
+    else if ( ( r1 & R6_ILLEGAL_CMD ) == R6_ILLEGAL_CMD )
+    {
+      return ERROR_ILLEGAL_CMD;
+    }
+    else if ( ( r1 & R6_COM_CRC_FAILED ) == R6_COM_CRC_FAILED )
+    {
+      return ERROR_COM_CRC_FAILED;
+    }
+    else
+    {
+      return ERROR_GENERAL_UNKNOWN_ERR;
+    }
   }
 
 
@@ -756,8 +973,72 @@ Literals
   }
 
 
+static volatile bool sDMATransferComplete = false;
+
+  ErrorType Driver::asyncReadBlock( const uint32_t address, void *const buffer )
+  {
+    using namespace Chimera::DMA;
+
+    /*-------------------------------------------------------------------------
+    Configure the DMA transfer
+    -------------------------------------------------------------------------*/
+    PipeTransfer cfg;
+    cfg.isrCallback = TransferCallback::create<Driver, &Driver::onDMARXComplete>( *this );
+    cfg.pipe        = mRXDMARequestId;
+    cfg.size        = 512;
+    cfg.addr        = reinterpret_cast<std::uintptr_t>( buffer );
+
+    auto setup_result = Chimera::DMA::transfer( cfg );
+    RT_DBG_ASSERT( setup_result != Chimera::DMA::INVALID_REQUEST );
+
+    /*-------------------------------------------------------------------------
+    Configure the SDIO peripheral (RM0390: 29.3.2)
+    -------------------------------------------------------------------------*/
+    /* Data Path State Machine */
+    DATATIME::set( mPeriph, 5000 ); // Arbitrary 5000 clock cycles timeout...?
+    DATALENGTH::set( mPeriph, cfg.size );
+
+    const uint32_t ctrl_reg = DCTRL_DTEN | DCTRL_DTDIR | DCTRL_DMAEN | DCTRL_DATABLOCK_SIZE_512B;
+    DCTRL_ALL::set( mPeriph, ctrl_reg );
+
+    /* Command Path State Machine */
+    CMDARG::set( mPeriph, address );
+
+    const uint32_t cmd_reg = CMD_READ_SINGLE_BLOCK | CMD_RESPONSE_SHORT | CMD_CPSM_ENABLE;
+    CMD_ALL::set( mPeriph, cmd_reg );
+
+    /*-------------------------------------------------------------------------
+    Wait for the transfer to complete
+    -------------------------------------------------------------------------*/
+    while( CMDREND::get( mPeriph ) != STA_CMDREND )
+    {
+      // Do real error handling here
+    }
+
+    while( DBCKEND::get( mPeriph ) != STA_DBCKEND )
+    {
+      // Do real error handling here
+    }
+
+    while( !sDMATransferComplete && ( RXFIFOE::get( mPeriph ) != STA_RXFIFOE ) )
+    {
+    }
+
+    sDMATransferComplete = false;
+    return ERROR_DATA_TIMEOUT;
+  }
+
+
   void Driver::IRQHandler()
   {
   }
+
+
+  void Driver::onDMARXComplete( const Chimera::DMA::TransferStats &stats )
+  {
+    sDMATransferComplete = true;
+    DMAEN::clear( mPeriph, DCTRL_DMAEN );
+  }
+
 }    // namespace Thor::LLD::SDIO
 #endif /* THOR_SDIO && TARGET_STM32F4 */

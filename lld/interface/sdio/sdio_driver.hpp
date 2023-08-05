@@ -16,6 +16,7 @@
 Includes
 -----------------------------------------------------------------------------*/
 #include <Chimera/common>
+#include <Chimera/dma>
 #include <Chimera/sdio>
 #include <Thor/lld/common/interrupts/sdio_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
@@ -160,8 +161,8 @@ namespace Thor::LLD::SDIO
      */
     void dpsmConfigure( const DPSMConfig &config );
 
-    uint32_t          dpsmGetDataCounter();
-    uint32_t          dpsmGetFIFOCount();
+    uint32_t dpsmGetDataCounter();
+    uint32_t dpsmGetFIFOCount();
 
     /*-------------------------------------------------------------------------
     Command Management
@@ -225,9 +226,29 @@ namespace Thor::LLD::SDIO
     ErrorType cmdReadSingleBlock( const uint32_t ReadAdd );
     ErrorType cmdSDEraseEndAdd( const uint32_t EndAdd );
     ErrorType cmdSDEraseStartAdd( const uint32_t StartAdd );
-    ErrorType cmdSelDesel( const uint64_t Addr );
+
+    /**
+     * @brief Selects or deselects the card
+     *
+     * @param rca  Address of the card to select or deselect
+     * @return ErrorType
+     */
+    ErrorType cmdSelDesel( const uint16_t rca );
+
+    /**
+     * @brief Request the CID from the SD card
+     * @return ErrorType
+     */
     ErrorType cmdSendCID();
-    ErrorType cmdSendCSD( const uint32_t Argument );
+
+    /**
+     * @brief Sends CMD9 to the SD card to get the card's CSD register
+     *
+     * @param Argumnent  Address of the card to get the CSD from
+     * @return ErrorType
+     */
+    ErrorType cmdSendCSD( const uint16_t rca );
+
     ErrorType cmdSendEXTCSD( const uint32_t Argument );
 
     /**
@@ -237,8 +258,15 @@ namespace Thor::LLD::SDIO
     ErrorType cmdSendSCR();
 
     ErrorType cmdSendStatus( const uint32_t Argument );
-    ErrorType cmdSetRelAdd( uint16_t *pRCA );
-    ErrorType cmdSetRelAddMmc( const uint16_t RCA );
+
+    /**
+     * @brief Sends CMD3 to the SD card to get the card's relative address
+     *
+     * @param pRCA  Output parameter to store the card's relative address
+     * @return ErrorType
+     */
+    ErrorType cmdSetRelAdd( uint16_t *const pRCA );
+
     ErrorType cmdStatusRegister();
     ErrorType cmdStopTransfer();
     ErrorType cmdSwitch( const uint32_t Argument );
@@ -250,6 +278,11 @@ namespace Thor::LLD::SDIO
     -------------------------------------------------------------------------*/
 
     ErrorType getCmdResp1( uint8_t SD_CMD, uint32_t Timeout );
+
+    /**
+     * @brief Gets the response2
+     * @return ErrorType
+     */
     ErrorType getCmdResp2();
 
     /**
@@ -277,14 +310,27 @@ namespace Thor::LLD::SDIO
      */
     ErrorType getStreamControlRegister( uint32_t *const pSCR );
 
+    /**
+     * @brief Reads a single 512 byte block from the SD card
+     * @note Will kick off a DMA transfer and immediately return
+     *
+     * @param address   Starting address to read from (aligned to block size)
+     * @param buffer    Buffer to read the data into
+     * @return ErrorType
+     */
+    ErrorType asyncReadBlock( const uint32_t address, void *const buffer );
+
   protected:
     void IRQHandler();
+    void onDMARXComplete( const Chimera::DMA::TransferStats &stats );
 
   private:
     friend void( ::SDIO_IRQHandler )();
 
-    RegisterMap *mPeriph;      /**< Mapped hardware peripheral */
-    RIndex_t     mResourceIdx; /**< Lookup index for mPeriph */
+    RegisterMap            *mPeriph;         /**< Mapped hardware peripheral */
+    RIndex_t                mResourceIndex;  /**< Lookup index for mPeriph */
+    Chimera::DMA::RequestId mTXDMARequestId; /**< Request id of the TX DMA pipe for the driver */
+    Chimera::DMA::RequestId mRXDMARequestId; /**< Request id of the RX DMA pipe for the driver */
   };
 }    // namespace Thor::LLD::SDIO
 
