@@ -136,18 +136,6 @@ namespace Thor::LLD::DMA
   };
 
   /**
-   * @brief Selects the FIFO operational mode
-   */
-  enum class FifoMode : uint8_t
-  {
-    DIRECT_ENABLE,
-    DIRECT_DISABLE,
-
-    NUM_OPTIONS
-  };
-
-
-  /**
    * @brief Current state of the DMA stream
    *
    */
@@ -299,7 +287,6 @@ namespace Thor::LLD::DMA
     bool     dstAddrIncr;
     bool     srcAddrIncr;
     Channel  channel;
-    FifoMode fifoMode;
 
     /*-------------------------------------------------------------------------
     Common Driver Configuration
@@ -307,6 +294,7 @@ namespace Thor::LLD::DMA
     Chimera::DMA::Mode          dmaMode;
     Chimera::DMA::Direction     direction;
     Chimera::DMA::Priority      priority;
+    Chimera::DMA::FifoMode      fifoMode;
     Chimera::DMA::FifoThreshold fifoThreshold;
     Chimera::DMA::BurstSize     dstBurstSize;
     Chimera::DMA::Alignment     dstAddrAlign;

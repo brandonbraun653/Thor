@@ -115,8 +115,9 @@ namespace Thor::LLD::DMA
       }
 
       /*-----------------------------------------------------------------------
-      Set how many bytes are to be transferred
+      Set how many bytes are to be transferred (RM0390 Section 9.3.16)
       -----------------------------------------------------------------------*/
+      RT_HARD_ASSERT( cb->transferSize <= 65535 );
       NDT::set( mStream, cb->transferSize );
 
       /*-----------------------------------------------------------------------
@@ -167,7 +168,7 @@ namespace Thor::LLD::DMA
       -----------------------------------------------------------------------*/
       /* Direct Mode */
       DMDIS::set( mStream, SxFCR_DMDIS );
-      if ( config->fifoMode == FifoMode::DIRECT_ENABLE )
+      if ( config->fifoMode == Chimera::DMA::FifoMode::DIRECT_ENABLE )
       {
         DMDIS::clear( mStream, SxFCR_DMDIS );
       }
@@ -200,7 +201,7 @@ namespace Thor::LLD::DMA
       /*-----------------------------------------------------------------------
       Interrupt Settings: By default, enable everything
       -----------------------------------------------------------------------*/
-      mStream->CR |= ( SxCR_TCIE | SxCR_HTIE | SxCR_TEIE | SxCR_DMEIE );
+      mStream->CR |= ( SxCR_TCIE | SxCR_TEIE | SxCR_DMEIE );
       FEIE::set( mStream, SxFCR_FEIE ); /* Fifo error */
 
       /*-----------------------------------------------------------------------
@@ -263,9 +264,24 @@ namespace Thor::LLD::DMA
     if ( ( status & TCIF ) && TCIE::get( mStream ) )
     {
       mStreamTCB.selectedChannel     = channel;
-      mStreamTCB.elementsTransferred = mStreamTCB.transferSize - NDT::get( mStream );
       mStreamTCB.state               = StreamState::TRANSFER_IDLE;
       mStreamTCB.transferError       = false;
+
+      /*-----------------------------------------------------------------------
+      Calculate the number of elements transferred. This changes behavior based
+      upon who acts as the flow controller.
+      See RM0390 Section 9.2 and 9.3.16
+      -----------------------------------------------------------------------*/
+      if( PFCTRL::get( mStream ) )
+      {
+        /* Peripheral is the flow controller */
+        mStreamTCB.elementsTransferred = 0xFFFFu - NDT::get( mStream );
+      }
+      else
+      {
+        /* DMA is the flow controller */
+        mStreamTCB.elementsTransferred = mStreamTCB.transferSize - NDT::get( mStream );
+      }
 
       /*-----------------------------------------------------------------------
       Only disable DMA if requested

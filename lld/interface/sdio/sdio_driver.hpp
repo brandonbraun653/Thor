@@ -40,6 +40,9 @@ namespace Thor::LLD::SDIO
     Driver();
     ~Driver();
 
+    /*-----------------------------------------------------------------------------
+    Peripheral Control Functions
+    -----------------------------------------------------------------------------*/
     /**
      * @brief Attaches a peripheral for the driver to control
      *
@@ -96,9 +99,14 @@ namespace Thor::LLD::SDIO
      */
     uint32_t getBusFrequency();
 
-    /*-----------------------------------------------------------------------------
-    Peripheral Control Functions
-    -----------------------------------------------------------------------------*/
+    /**
+     * @brief Sets the bus clock to a desired frequency
+     *
+     * @param freq    Desired frequency in Hz
+     * @return ErrorType
+     */
+    ErrorType setBusFrequency( const uint32_t freq );
+
     /**
      * @brief Initializes the peripheral for SD card operation
      * @return Chimera::Status_t
@@ -132,14 +140,6 @@ namespace Thor::LLD::SDIO
     Chimera::Status_t setSDMMCReadWaitMode( uint32_t mode );
 
     /**
-     * @brief Puts a CPSM command on the bus
-     *
-     * @param cmd    Command to send
-     * @return void
-     */
-    void cpsmPutCmd( const CPSMCommand &cmd );
-
-    /**
      * @brief Gets the command response register
      * @return uint8_t
      */
@@ -151,7 +151,7 @@ namespace Thor::LLD::SDIO
      * @param which       Which response register to read
      * @return uint32_t   The response value
      */
-    uint32_t cpsmGetResponse( const ResponseMailbox which );
+    uint32_t cpsmGetRespX( const ResponseMailbox which ) const;
 
     /**
      * @brief Configures the Data Path State Machine
@@ -170,10 +170,10 @@ namespace Thor::LLD::SDIO
     /**
      * @brief Indicate an application specific command is to be sent
      *
-     * @param Argument  Command argument
+     * @param rca   Address of the card to send the command to
      * @return ErrorType
      */
-    ErrorType cmdAppCommand( const uint32_t Argument );
+    ErrorType cmdAppCommand( const uint16_t rca );
 
     /**
      * @brief Send ACMD41 to the SD card
@@ -223,7 +223,15 @@ namespace Thor::LLD::SDIO
     ErrorType cmdOperCond();
 
     ErrorType cmdReadMultiBlock( const uint32_t ReadAdd );
-    ErrorType cmdReadSingleBlock( const uint32_t ReadAdd );
+
+    /**
+     * @brief Sends CMD17 to the SD card to read a single block
+     *
+     * @param address    Address of the block to read
+     * @return ErrorType
+     */
+    ErrorType cmdReadSingleBlock( const uint32_t address );
+
     ErrorType cmdSDEraseEndAdd( const uint32_t EndAdd );
     ErrorType cmdSDEraseStartAdd( const uint32_t StartAdd );
 
@@ -271,33 +279,53 @@ namespace Thor::LLD::SDIO
     ErrorType cmdStopTransfer();
     ErrorType cmdSwitch( const uint32_t Argument );
     ErrorType cmdWriteMultiBlock( const uint32_t WriteAdd );
-    ErrorType cmdWriteSingleBlock( const uint32_t WriteAdd );
+
+    /**
+     * @brief Sends CMD24 to the SD card to write a single block
+     *
+     * @param address   Address to write to
+     * @return ErrorType
+     */
+    ErrorType cmdWriteSingleBlock( const uint32_t address );
 
     /*-------------------------------------------------------------------------
     Response Management
     -------------------------------------------------------------------------*/
-
-    ErrorType getCmdResp1( uint8_t SD_CMD, uint32_t Timeout );
-
     /**
-     * @brief Gets the response2
+     * @brief Checks for error conditions on the R1 response
+     *
+     * @param command   Expected command index
+     * @param timeout   Timeout in ms
      * @return ErrorType
      */
-    ErrorType getCmdResp2();
+    ErrorType getCmdResp1( const uint8_t command, const uint32_t timeout ) const;
+
+    /**
+     * @brief Checks for error conditions on the R2 response
+     * @return ErrorType
+     */
+    ErrorType getCmdResp2() const;
 
     /**
      * @brief Checks for error conditions on the R3 response
      * @return ErrorType
      */
-    ErrorType getCmdResp3();
+    ErrorType getCmdResp3() const;
 
-    ErrorType getCmdResp6( uint8_t SD_CMD, uint16_t *pRCA );
+    /**
+     * @brief Checks for error conditions on the R6 response
+     *
+     * @param command Expected command index
+     * @param pRCA    Output parameter to store the card's relative address
+     * @return ErrorType
+     */
+    ErrorType getCmdResp6( const uint8_t command, uint16_t *const pRCA ) const;
 
     /**
      * @brief Checks for error conditions on the R7 response
      * @return ErrorType
      */
-    ErrorType getCmdResp7();
+    ErrorType getCmdResp7() const;
 
     /*-------------------------------------------------------------------------
     Data Management
@@ -305,14 +333,14 @@ namespace Thor::LLD::SDIO
     /**
      * @brief Read out the Stream Control Register (SCR) from the card
      *
+     * @param rca   Address of the card to read the SCR from
      * @param pSCR  Pointer to the SCR register copy output location
      * @return LLD::ErrorType
      */
-    ErrorType getStreamControlRegister( uint32_t *const pSCR );
+    ErrorType getStreamControlRegister( const uint16_t rca, uint32_t *const pSCR );
 
     /**
      * @brief Reads a single 512 byte block from the SD card
-     * @note Will kick off a DMA transfer and immediately return
      *
      * @param address   Starting address to read from (aligned to block size)
      * @param buffer    Buffer to read the data into
@@ -320,9 +348,17 @@ namespace Thor::LLD::SDIO
      */
     ErrorType asyncReadBlock( const uint32_t address, void *const buffer );
 
+    /**
+     * @brief Writes a single 512 byte block to the SD card
+     *
+     * @param address   Starting address to write into (aligned to block size)
+     * @param buffer    Buffer to write the data from
+     * @return ErrorType
+     */
+    ErrorType asyncWriteBlock( const uint32_t address, const void *const buffer );
+
   protected:
     void IRQHandler();
-    void onDMARXComplete( const Chimera::DMA::TransferStats &stats );
 
   private:
     friend void( ::SDIO_IRQHandler )();

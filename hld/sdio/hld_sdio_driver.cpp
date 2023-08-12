@@ -180,10 +180,10 @@ namespace Chimera::SDIO
       return Chimera::Status::FAIL;
     }
 
-    impl->cid[ 0 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_1 );
-    impl->cid[ 1 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_2 );
-    impl->cid[ 2 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_3 );
-    impl->cid[ 3 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_4 );
+    impl->cid[ 0 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_1 );
+    impl->cid[ 1 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_2 );
+    impl->cid[ 2 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_3 );
+    impl->cid[ 3 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_4 );
 
     /*-------------------------------------------------------------------------
     Request the relative address. Once complete, the card will transition from
@@ -203,15 +203,31 @@ namespace Chimera::SDIO
       return Chimera::Status::FAIL;
     }
 
-    impl->csd[ 0 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_1 );
-    impl->csd[ 1 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_2 );
-    impl->csd[ 2 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_3 );
-    impl->csd[ 3 ] = impl->lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_4 );
+    impl->csd[ 0 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_1 );
+    impl->csd[ 1 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_2 );
+    impl->csd[ 2 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_3 );
+    impl->csd[ 3 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_4 );
 
     /*-------------------------------------------------------------------------
     Finally select the card, transitioning to the transfer state.
     -------------------------------------------------------------------------*/
     if( impl->lldriver->cmdSelDesel( impl->rca ) != LLD::ERROR_NONE )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+    /*-----------------------------------------------------------------------------
+    Switch to the desired bus width
+    -----------------------------------------------------------------------------*/
+    if( impl->configureBusWidth( impl->busWidth ) != LLD::ERROR_NONE )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+    /*-------------------------------------------------------------------------
+    Go full send with the clock speed
+    -------------------------------------------------------------------------*/
+    if( impl->lldriver->setBusFrequency( impl->clockSpeed ) != LLD::ERROR_NONE )
     {
       return Chimera::Status::FAIL;
     }
@@ -227,40 +243,19 @@ namespace Chimera::SDIO
 
   Chimera::Status_t Driver::writeBlock( const uint32_t blockAddress, const size_t blockCount, const void *const buffer, const size_t size )
   {
-    /*-------------------------------------------------------------------------
-    Wait for a previous transaction to have completed
-    -------------------------------------------------------------------------*/
+    auto impl   = reinterpret_cast<ThorImpl *>( mImpl );
+    auto result = impl->lldriver->asyncWriteBlock( blockAddress, buffer );
 
-    /*-------------------------------------------------------------------------
-    Configure the DMA channel
-    -------------------------------------------------------------------------*/
-
-    /*-------------------------------------------------------------------------
-    Configure the data path state machine for the transfer
-    -------------------------------------------------------------------------*/
-
-
-    /*-------------------------------------------------------------------------
-    Configure the command path state machine for the transfer
-    -------------------------------------------------------------------------*/
-
-
-    /*-------------------------------------------------------------------------
-    Wait for the DMA transfer to complete
-    -------------------------------------------------------------------------*/
-
-
-    return Chimera::Status::FAIL;
+    return ( result == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::FAIL;
   }
 
 
   Chimera::Status_t Driver::readBlock( const uint32_t blockAddress, const size_t blockCount, void *const buffer, const size_t size )
   {
-    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+    auto impl   = reinterpret_cast<ThorImpl *>( mImpl );
+    auto result = impl->lldriver->asyncReadBlock( blockAddress, buffer );
 
-    impl->lldriver->asyncReadBlock( blockAddress, buffer );
-
-    return Chimera::Status::FAIL;
+    return ( result == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::FAIL;
   }
 
 
@@ -423,7 +418,7 @@ namespace Chimera::SDIO
         return error;
       }
 
-      response     = lldriver->cpsmGetResponse( LLD::ResponseMailbox::RESPONSE_1 );
+      response     = lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_1 );
       device_ready = ( response & ACMD41_INIT_COMPLETE ) == ACMD41_INIT_COMPLETE;
       count++;
     }
@@ -452,7 +447,7 @@ namespace Chimera::SDIO
     /*-------------------------------------------------------------------------
     Read the SCR register to determine SDCard capabilities
     -------------------------------------------------------------------------*/
-    if ( error = lldriver->getStreamControlRegister( scr ); error != LLD::ERROR_NONE )
+    if ( error = lldriver->getStreamControlRegister( rca, scr ); error != LLD::ERROR_NONE )
     {
       return error;
     }
@@ -465,7 +460,7 @@ namespace Chimera::SDIO
       /*-----------------------------------------------------------------------
       Indicate to the card the next command is application specific
       -----------------------------------------------------------------------*/
-      if ( error = lldriver->cmdAppCommand( 0u ); error != LLD::ERROR_NONE )
+      if ( error = lldriver->cmdAppCommand( rca ); error != LLD::ERROR_NONE )
       {
         return error;
       }
@@ -502,7 +497,7 @@ namespace Chimera::SDIO
     /*-------------------------------------------------------------------------
     Read the SCR register to determine SDCard capabilities
     -------------------------------------------------------------------------*/
-    if ( error = lldriver->getStreamControlRegister( scr ); error != LLD::ERROR_NONE )
+    if ( error = lldriver->getStreamControlRegister( rca, scr ); error != LLD::ERROR_NONE )
     {
       return error;
     }
@@ -515,7 +510,7 @@ namespace Chimera::SDIO
       /*-----------------------------------------------------------------------
       Indicate to the card the next command is application specific
       -----------------------------------------------------------------------*/
-      if ( error = lldriver->cmdAppCommand( 0u ); error != LLD::ERROR_NONE )
+      if ( error = lldriver->cmdAppCommand( rca ); error != LLD::ERROR_NONE )
       {
         return error;
       }

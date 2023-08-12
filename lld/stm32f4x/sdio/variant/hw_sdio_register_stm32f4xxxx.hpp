@@ -308,6 +308,8 @@ namespace Thor::LLD::SDIO
   static constexpr uint32_t ICR_SDIOITC       = ICR_SDIOITC_Msk;
 
   /******************  Bit definition for MASK register  *******************/
+  static constexpr uint32_t MASK_ALL_Msk = 0x7FFDFF;
+
   static constexpr uint32_t MASK_CCRCFAILIE_Pos = ( 0U );
   static constexpr uint32_t MASK_CCRCFAILIE_Msk = ( 0x1UL << MASK_CCRCFAILIE_Pos );
   static constexpr uint32_t MASK_CCRCFAILIE     = MASK_CCRCFAILIE_Msk;

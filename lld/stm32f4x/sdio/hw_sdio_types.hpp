@@ -200,6 +200,7 @@ namespace Thor::LLD::SDIO
   /*-------------------------------------------------------------------
   Mask Register
   -------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, MASK, MASK_ALL_Msk, MASK_ALL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, MASK, MASK_CCRCFAILIE_Msk, CCRCFAILIE, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, MASK, MASK_DCRCFAILIE_Msk, DCRCFAILIE, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, MASK, MASK_CTIMEOUTIE_Msk, CTIMEOUTIE, BIT_ACCESS_RW );

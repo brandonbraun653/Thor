@@ -260,7 +260,7 @@ namespace Thor::LLD::INT
     return s_interrupt_state;
   }
 
-  void enableInterrupts( Chimera::System::InterruptMask &interruptMask )
+  void enableInterrupts( const Chimera::System::InterruptMask &interruptMask )
   {
     /*-------------------------------------------------------------------------
     Prevent underflow on too many calls

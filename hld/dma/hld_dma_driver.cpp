@@ -48,7 +48,7 @@ Stack size for the interrupt handler thread
 #define THREAD_SIZE ( 256 )
 #elif defined( STM32F446xx )
 #define THREAD_SIZE ( 512 )
-#endif 
+#endif
 
 /*-------------------------------------------------------------------------------
 Aliases
@@ -316,7 +316,7 @@ namespace Chimera::DMA::Backend
     cfg.dstAddrIncr   = true;
     cfg.srcAddrIncr   = true;
     cfg.channel       = ::LLD::Channel::INVALID;
-    cfg.fifoMode      = ::LLD::FifoMode::DIRECT_ENABLE;
+    cfg.fifoMode      = Chimera::DMA::FifoMode::DIRECT_DISABLE;
     cfg.fifoThreshold = Chimera::DMA::FifoThreshold::FULL;
     cfg.dmaMode       = Chimera::DMA::Mode::DIRECT;
     cfg.direction     = Chimera::DMA::Direction::MEMORY_TO_MEMORY;
@@ -388,7 +388,7 @@ namespace Chimera::DMA::Backend
     if ( pipeCfg.direction == Direction::MEMORY_TO_PERIPH )
     {
       cfg.dstAddrIncr  = false;
-      cfg.dstBurstSize = Chimera::DMA::BurstSize::NUM_OPTIONS;
+      cfg.dstBurstSize = pipeCfg.burstSize;
       cfg.dstAddrAlign = pipeCfg.dstAlignment;
       tcb.dstAddress   = pipeCfg.periphAddr;
 
@@ -405,7 +405,7 @@ namespace Chimera::DMA::Backend
       tcb.dstAddress   = transfer.addr;
 
       cfg.srcAddrIncr  = false;
-      cfg.srcBurstSize = Chimera::DMA::BurstSize::NUM_OPTIONS;
+      cfg.srcBurstSize = pipeCfg.burstSize;
       cfg.srcAddrAlign = pipeCfg.srcAlignment;
       tcb.srcAddress   = pipeCfg.periphAddr;
     }
@@ -415,7 +415,7 @@ namespace Chimera::DMA::Backend
     }
 
     cfg.channel            = static_cast<::LLD::Channel>( pipeCfg.channel );
-    cfg.fifoMode           = ::LLD::FifoMode::DIRECT_ENABLE;
+    cfg.fifoMode           = pipeCfg.fifoMode;
     cfg.fifoThreshold      = pipeCfg.threshold;
     cfg.dmaMode            = pipeCfg.mode;
     cfg.direction          = pipeCfg.direction;

@@ -29,18 +29,37 @@ Includes
 namespace Thor::LLD::SDIO
 {
   /*---------------------------------------------------------------------------
-  Literals
+  Local Types
   ---------------------------------------------------------------------------*/
-#define SDMMC_0TO7BITS        ( 0x000000FFU )
-#define SDMMC_8TO15BITS       ( 0x0000FF00U )
-#define SDMMC_16TO23BITS      ( 0x00FF0000U )
-#define SDMMC_24TO31BITS      ( 0xFF000000U )
-#define SDMMC_MAX_DATA_LENGTH ( 0x01FFFFFFU )
+  struct ControlBlock
+  {
+    volatile bool      txfrComplete; /**< Signal flag to determine termination */
+    volatile ErrorType txfrError;    /**< Final determined error */
+    volatile uint32_t  txfrStatus;   /**< Recorded value of status register termination */
+  };
 
   /*---------------------------------------------------------------------------
   Constants
   ---------------------------------------------------------------------------*/
+  /**
+   * @brief Collection of static command flags
+   */
   static constexpr uint32_t STATIC_CMD_FLAGS = STA_CCRCFAIL | STA_CTIMEOUT | STA_CMDREND | STA_CMDSENT;
+
+  /**
+   * @brief Interrupt flags to enable for TX
+   */
+  static constexpr uint32_t TX_ISR_MASK_FLAGS =
+      MASK_TXUNDERRIE | MASK_DCRCFAILIE | MASK_DTIMEOUTIE | MASK_DBCKENDIE | MASK_DATAENDIE;
+  static constexpr uint32_t TX_ISR_CLEAR_FLAGS  = ICR_TXUNDERRC | ICR_DCRCFAILC | ICR_DTIMEOUTC | ICR_DBCKENDC | ICR_DATAENDC;
+  static constexpr uint32_t TX_ISR_STATUS_FLAGS = STA_TXUNDERR | STA_DCRCFAIL | STA_DTIMEOUT | STA_DBCKEND | STA_DATAEND;
+
+  /**
+   * @brief Interrupt flags to enable for RX
+   */
+  static constexpr uint32_t RX_ISR_MASK_FLAGS   = MASK_RXOVERRIE | MASK_DBCKENDIE | MASK_DCRCFAILIE | MASK_DTIMEOUTIE;
+  static constexpr uint32_t RX_ISR_CLEAR_FLAGS  = ICR_RXOVERRC | ICR_DBCKENDC | ICR_DCRCFAILC | ICR_DTIMEOUTC;
+  static constexpr uint32_t RX_ISR_STATUS_FLAGS = STA_RXOVERR | STA_DBCKEND | STA_DCRCFAIL | STA_DTIMEOUT;
 
   /**
    * @brief Command timeout in milliseconds
@@ -62,6 +81,81 @@ namespace Thor::LLD::SDIO
    */
   static constexpr uint32_t SDIO_STOP_TXFR_TIMEOUT = Chimera::Thread::TIMEOUT_BLOCK;
 
+  /**
+   * @brief Command configuration register settings
+   */
+  static constexpr etl::array<uint16_t, CommandType::CMD_TOTAL_COUNT> CmdRegCfg = {
+    ( CMD_GO_IDLE_STATE | CMD_RESPONSE_NO | CMD_WAIT_NO | CMD_CPSM_ENABLE ),          /**< 0 -- CMD_GO_IDLE_STATE */
+    ( 0 ),                                                                            /**< 1 -- CMD_SEND_OP_COND */
+    ( CMD_ALL_SEND_CID | CMD_RESPONSE_LONG | CMD_WAIT_NO | CMD_CPSM_ENABLE ),         /**< 2 -- CMD_ALL_SEND_CID */
+    ( CMD_SET_REL_ADDR | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),        /**< 3 -- CMD_SET_REL_ADDR */
+    ( 0 ),                                                                            /**< 4 -- CMD_SET_DSR */
+    ( 0 ),                                                                            /**< 5 -- CMD_SDMMC_SEN_OP_COND */
+    ( CMD_SD_APP_SET_BUSWIDTH | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ), /**< 6 -- CMD_SD_APP_SET_BUSWIDTH */
+    ( CMD_SEL_DESEL_CARD | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),      /**< 7 -- CMD_SEL_DESEL_CARD */
+    ( CMD_HS_SEND_EXT_CSD | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),     /**< 8 -- CMD_HS_SEND_EXT_CSD */
+    ( CMD_SEND_CSD | CMD_RESPONSE_LONG | CMD_WAIT_NO | CMD_CPSM_ENABLE ),             /**< 9 -- CMD_SEND_CSD */
+    ( 0 ),                                                                            /**< 10 -- CMD_SEND_CID */
+    ( 0 ),                                                                            /**< 11 -- CMD_READ_DAT_UNTIL_STOP */
+    ( 0 ),                                                                            /**< 12 -- CMD_STOP_TRANSMISSION */
+    ( 0 ),                                                                            /**< 13 -- CMD_SEND_STATUS */
+    ( 0 ),                                                                            /**< 14 -- CMD_HS_BUSTEST_READ */
+    ( 0 ),                                                                            /**< 15 -- ??? */
+    ( CMD_SET_BLOCKLEN | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),        /**< 16 -- CMD_SET_BLOCKLEN */
+    ( CMD_READ_SINGLE_BLOCK | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),   /**< 17 -- CMD_READ_SINGLE_BLOCK */
+    ( 0 ),                                                                            /**< 18 -- CMD_READ_MULT_BLOCK */
+    ( 0 ),                                                                            /**< 19 -- CMD_HS_BUSTEST_WRITE */
+    ( 0 ),                                                                            /**< 20 -- CMD_WRITE_DAT_UNTIL_STOP */
+    ( 0 ),                                                                            /**< 21 -- ??? */
+    ( 0 ),                                                                            /**< 22 -- ??? */
+    ( 0 ),                                                                            /**< 23 -- CMD_SET_BLOCK_COUNT */
+    ( CMD_WRITE_SINGLE_BLOCK | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),  /**< 24 -- CMD_WRITE_SINGLE_BLOCK */
+    ( 0 ),                                                                            /**< 25 -- CMD_WRITE_MULT_BLOCK */
+    ( 0 ),                                                                            /**< 26 -- CMD_PROG_CID */
+    ( 0 ),                                                                            /**< 27 -- CMD_PROG_CSD */
+    ( 0 ),                                                                            /**< 28 -- CMD_SET_WRITE_PROT */
+    ( 0 ),                                                                            /**< 29 -- CMD_CLR_WRITE_PROT */
+    ( 0 ),                                                                            /**< 30 -- CMD_SEND_WRITE_PROT */
+    ( 0 ),                                                                            /**< 31 -- ??? */
+    ( 0 ),                                                                            /**< 32 -- CMD_SD_ERASE_GRP_START */
+    ( 0 ),                                                                            /**< 33 -- CMD_SD_ERASE_GRP_END */
+    ( 0 ),                                                                            /**< 34 -- ??? */
+    ( 0 ),                                                                            /**< 35 -- CMD_ERASE_GRP_START */
+    ( 0 ),                                                                            /**< 36 -- CMD_ERASE_GRP_END */
+    ( 0 ),                                                                            /**< 37 -- ??? */
+    ( 0 ),                                                                            /**< 38 -- CMD_ERASE */
+    ( 0 ),                                                                            /**< 39 -- CMD_FAST_IO */
+    ( 0 ),                                                                            /**< 40 -- CMD_GO_IRQ_STATE */
+    ( CMD_SD_APP_OP_COND | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),      /**< 41 -- CMD_SD_APP_OP_COND */
+    ( 0 ),                                                                            /**< 42 -- CMD_LOCK_UNLOCK */
+    ( 0 ),                                                                            /**< 43 -- ??? */
+    ( 0 ),                                                                            /**< 44 -- ??? */
+    ( 0 ),                                                                            /**< 45 -- ??? */
+    ( 0 ),                                                                            /**< 46 -- ??? */
+    ( 0 ),                                                                            /**< 47 -- ??? */
+    ( 0 ),                                                                            /**< 48 -- ??? */
+    ( 0 ),                                                                            /**< 49 -- ??? */
+    ( 0 ),                                                                            /**< 50 -- ??? */
+    ( CMD_SD_APP_SEND_SCR | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),     /**< 51 -- CMD_SD_APP_SEND_SCR */
+    ( 0 ),                                                                            /**< 52 -- ??? */
+    ( 0 ),                                                                            /**< 53 -- ??? */
+    ( 0 ),                                                                            /**< 54 -- ??? */
+    ( CMD_APP_CMD | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),             /**< 55 -- CMD_APP_CMD */
+    ( 0 ),                                                                            /**< 56 -- CMD_GEN_CMD */
+    ( 0 ),                                                                            /**< 57 -- ??? */
+    ( 0 ),                                                                            /**< 58 -- ??? */
+    ( 0 ),                                                                            /**< 59 -- ??? */
+    ( 0 ),                                                                            /**< 60 -- ??? */
+    ( 0 ),                                                                            /**< 61 -- ??? */
+    ( 0 ),                                                                            /**< 62 -- ??? */
+    ( 0 ),                                                                            /**< 63 -- ??? */
+    ( 0 ),                                                                            /**< 64 -- CMD_NO_CMD */
+  };
+
+  /*---------------------------------------------------------------------------
+  Static Data
+  ---------------------------------------------------------------------------*/
+  static ControlBlock s_ctrl_blk[ NUM_SDIO_PERIPHS ];
 
   /*---------------------------------------------------------------------------
   Static Functions
@@ -121,6 +215,7 @@ namespace Thor::LLD::SDIO
     return ERROR_NONE;
   }
 
+
   /*---------------------------------------------------------------------------
   Driver Implementation
   ---------------------------------------------------------------------------*/
@@ -133,7 +228,9 @@ namespace Thor::LLD::SDIO
   {
   }
 
-
+  /*---------------------------------------------------------------------------
+  Peripheral Control Functions
+  ---------------------------------------------------------------------------*/
   Chimera::Status_t Driver::attach( RegisterMap *const peripheral )
   {
     /*-------------------------------------------------------------------------
@@ -208,6 +305,17 @@ namespace Thor::LLD::SDIO
   }
 
 
+  ErrorType Driver::setBusFrequency( const uint32_t freq )
+  {
+    auto           rcc  = RCC::getCoreClockCtrl();
+    const uint32_t pClk = rcc->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SDIO, reinterpret_cast<uintptr_t>( mPeriph ) );
+    const uint32_t clkDiv = calcClockDivider( pClk, freq );
+
+    CLKDIV::set( mPeriph, clkDiv << CLKCR_CLKDIV_Pos );
+    return ERROR_NONE;
+  }
+
+
   Chimera::Status_t Driver::init()
   {
     using namespace Chimera::DMA;
@@ -219,13 +327,9 @@ namespace Thor::LLD::SDIO
     clockEnable();
 
     /*-------------------------------------------------------------------------
-    Configure the clock divider to a default of 300KHz
+    Configure the clock divider to a default of ~300KHz
     -------------------------------------------------------------------------*/
-    auto           rcc  = RCC::getCoreClockCtrl();
-    const uint32_t pClk = rcc->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SDIO, reinterpret_cast<uintptr_t>( mPeriph ) );
-    const uint32_t clkDiv = calcClockDivider( pClk, 400000u );
-
-    CLKDIV::set( mPeriph, clkDiv << CLKCR_CLKDIV_Pos );
+    setBusFrequency( 300000u );
 
     /*-------------------------------------------------------------------------
     Set remainder of the clock control register
@@ -241,16 +345,23 @@ namespace Thor::LLD::SDIO
     Initialize DMA RX Pipe
     -------------------------------------------------------------------------*/
     PipeConfig rxCfg;
+    rxCfg.clear();
+
     rxCfg.srcAlignment  = Alignment::WORD;
     rxCfg.dstAlignment  = Alignment::WORD;
     rxCfg.direction     = Direction::PERIPH_TO_MEMORY;
-    rxCfg.mode          = Mode::DIRECT;
-    rxCfg.priority      = Priority::MEDIUM;
-    rxCfg.resourceIndex = DMA::getResourceIndex( Resource::RXDMASignals[ mResourceIndex ] );
-    rxCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::RXDMASignals[ mResourceIndex ] ) );
-    rxCfg.threshold     = FifoThreshold::NONE;
+    rxCfg.mode          = Mode::PERIPHERAL;
+    rxCfg.priority      = Priority::VERY_HIGH;
+    rxCfg.resourceIndex = Thor::LLD::DMA::DMA2_STREAM3_RESOURCE_INDEX;
+    rxCfg.channel       = static_cast<size_t>( Thor::LLD::DMA::Channel::CHANNEL_4 );
+    rxCfg.fifoMode      = FifoMode::DIRECT_DISABLE;
+    rxCfg.threshold     = FifoThreshold::FULL;
+    rxCfg.burstSize     = BurstSize::BURST_SIZE_4;
     rxCfg.persistent    = true;
     rxCfg.periphAddr    = reinterpret_cast<uintptr_t>( &mPeriph->FIFO );
+
+    /* FIFO errors generated by DMA controller even though it doesn't affect TX */
+    rxCfg.errorsToIgnore = Errors::FIFO;
 
     mRXDMARequestId = Chimera::DMA::constructPipe( rxCfg );
     RT_DBG_ASSERT( mRXDMARequestId != Chimera::DMA::INVALID_REQUEST );
@@ -259,19 +370,32 @@ namespace Thor::LLD::SDIO
     Initialize DMA TX Pipe
     -------------------------------------------------------------------------*/
     PipeConfig txCfg;
+    txCfg.clear();
+
     txCfg.srcAlignment  = Alignment::WORD;
     txCfg.dstAlignment  = Alignment::WORD;
     txCfg.direction     = Direction::MEMORY_TO_PERIPH;
-    txCfg.mode          = Mode::DIRECT;
-    txCfg.priority      = Priority::MEDIUM;
-    txCfg.resourceIndex = DMA::getResourceIndex( Resource::TXDMASignals[ mResourceIndex ] );
-    txCfg.channel       = static_cast<size_t>( DMA::getChannel( Resource::TXDMASignals[ mResourceIndex ] ) );
-    txCfg.threshold     = FifoThreshold::NONE;
+    txCfg.mode          = Mode::PERIPHERAL;
+    txCfg.priority      = Priority::VERY_HIGH;
+    txCfg.resourceIndex = Thor::LLD::DMA::DMA2_STREAM6_RESOURCE_INDEX;
+    txCfg.channel       = static_cast<size_t>( Thor::LLD::DMA::Channel::CHANNEL_4 );
+    txCfg.fifoMode      = FifoMode::DIRECT_DISABLE;
+    txCfg.threshold     = FifoThreshold::FULL;
+    txCfg.burstSize     = BurstSize::BURST_SIZE_4;
     txCfg.persistent    = true;
     txCfg.periphAddr    = reinterpret_cast<uintptr_t>( &mPeriph->FIFO );
 
+    /* FIFO errors generated by DMA controller even though it doesn't affect TX */
+    txCfg.errorsToIgnore = Errors::FIFO;
+
     mTXDMARequestId = Chimera::DMA::constructPipe( txCfg );
     RT_DBG_ASSERT( mTXDMARequestId != Chimera::DMA::INVALID_REQUEST );
+    RT_DBG_ASSERT( mTXDMARequestId != mRXDMARequestId );
+
+    /*-------------------------------------------------------------------------
+    Initialize instance data
+    -------------------------------------------------------------------------*/
+    s_ctrl_blk[ mResourceIndex ].txfrComplete = false;
 
     return Chimera::Status::OK;
   }
@@ -286,63 +410,57 @@ namespace Thor::LLD::SDIO
   }
 
 
-  void Driver::cpsmPutCmd( const CPSMCommand &cmd )
+  uint32_t Driver::cpsmGetRespX( const ResponseMailbox which ) const
   {
     /*-------------------------------------------------------------------------
-    Prepare the command register
+    Find the address of the response register and read it
     -------------------------------------------------------------------------*/
-    CMDARG::set( mPeriph, cmd.Argument );
-    CMDINDEX::set( mPeriph, cmd.CmdIndex );
-    WAITRESP::set( mPeriph, cmd.Response );
-    WAITINT::set( mPeriph, cmd.WaitForInterrupt );
-
-    /*-------------------------------------------------------------------------
-    Start the transfer
-    -------------------------------------------------------------------------*/
-    CPSMEN::set( mPeriph, cmd.CPSM );
+    auto response_register = ( uint32_t )( &( mPeriph->RESP1 ) ) + EnumValue( which );
+    return ( *( volatile uint32_t * )response_register );
   }
 
 
-  ErrorType Driver::cmdAppCommand( const uint32_t Argument )
+  void Driver::dpsmConfigure( const DPSMConfig &config )
   {
     /*-------------------------------------------------------------------------
-    Build and send the command
+    Configure the DPSM transaction parameters
     -------------------------------------------------------------------------*/
-    CPSMCommand cmd;
-
-    cmd.Argument         = Argument;
-    cmd.CmdIndex         = CMD_APP_CMD;
-    cmd.Response         = CMD_RESPONSE_SHORT;
-    cmd.WaitForInterrupt = CMD_WAIT_NO;
-    cmd.CPSM             = CMD_CPSM_ENABLE;
-
-    cpsmPutCmd( cmd );
+    DATATIME::set( mPeriph, config.DataTimeOut );
+    DATALENGTH::set( mPeriph, config.DataLength );
+    DBLOCKSIZE::set( mPeriph, config.DataBlockSize );
+    DTMODE::set( mPeriph, config.TransferMode );
+    DTDIR::set( mPeriph, config.TransferDir );
 
     /*-------------------------------------------------------------------------
-    Return the command response
+    Finally, set the DPSM overall state
     -------------------------------------------------------------------------*/
-    return getCmdResp1( cmd.CmdIndex, SDIO_CMD_TIMEOUT_MS );
+    DTEN::set( mPeriph, config.DPSM );
+  }
+
+
+  /*---------------------------------------------------------------------------
+  Command Management
+  ---------------------------------------------------------------------------*/
+  ErrorType Driver::cmdAppCommand( const uint16_t rca )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD55 to indicate the next command is an application specific command
+    -------------------------------------------------------------------------*/
+    mPeriph->ARG = static_cast<uint32_t>( rca ) << 16u;
+    mPeriph->CMD = CmdRegCfg[ CMD_APP_CMD ];
+
+    return getCmdResp1( CMD_APP_CMD, SDIO_CMD_TIMEOUT_MS );
   }
 
 
   ErrorType Driver::cmdAppOperCommand( const uint32_t Argument )
   {
     /*-------------------------------------------------------------------------
-    Build and send the command
+    Send ACMD41 to initialize the SD card
     -------------------------------------------------------------------------*/
-    CPSMCommand cmd;
+    mPeriph->ARG = Argument;
+    mPeriph->CMD = CmdRegCfg[ CMD_SD_APP_OP_COND ];
 
-    cmd.Argument         = Argument;
-    cmd.CmdIndex         = CMD_SD_APP_OP_COND;
-    cmd.Response         = CMD_RESPONSE_SHORT;
-    cmd.WaitForInterrupt = CMD_WAIT_NO;
-    cmd.CPSM             = CMD_CPSM_ENABLE;
-
-    cpsmPutCmd( cmd );
-
-    /*-------------------------------------------------------------------------
-    Return the command response
-    -------------------------------------------------------------------------*/
     return getCmdResp3();
   }
 
@@ -350,67 +468,45 @@ namespace Thor::LLD::SDIO
   ErrorType Driver::cmdBlockLength( const uint32_t blockSize )
   {
     /*-------------------------------------------------------------------------
-    Build and send the command
+    Send CMD16 to set the block length
     -------------------------------------------------------------------------*/
-    CPSMCommand cmd;
+    mPeriph->ARG = blockSize;
+    mPeriph->CMD = CmdRegCfg[ CMD_SET_BLOCKLEN ];
 
-    cmd.Argument         = blockSize;
-    cmd.CmdIndex         = CMD_SET_BLOCKLEN;
-    cmd.Response         = CMD_RESPONSE_SHORT;
-    cmd.WaitForInterrupt = CMD_WAIT_NO;
-    cmd.CPSM             = CMD_CPSM_ENABLE;
-
-    cpsmPutCmd( cmd );
-
-    /*-------------------------------------------------------------------------
-    Return the command response
-    -------------------------------------------------------------------------*/
-    return getCmdResp1( cmd.CmdIndex, SDIO_CMD_TIMEOUT_MS );
+    return getCmdResp1( CMD_SET_BLOCKLEN, SDIO_CMD_TIMEOUT_MS );
   }
 
 
   ErrorType Driver::cmdBusWidth( const Chimera::SDIO::BusWidth width )
   {
-    using namespace Chimera::SDIO;
-
     /*-------------------------------------------------------------------------
-    Build and send the command
+    Send CMD6 to set the bus width
     -------------------------------------------------------------------------*/
-    CPSMCommand cmd;
-
-    cmd.CmdIndex         = CMD_SD_APP_SET_BUSWIDTH;
-    cmd.Response         = CMD_RESPONSE_SHORT;
-    cmd.WaitForInterrupt = CMD_WAIT_NO;
-    cmd.CPSM             = CMD_CPSM_ENABLE;
-
     switch ( width )
     {
-      case BusWidth::BUS_WIDTH_1BIT:
-        cmd.Argument = 0u;
+      case Chimera::SDIO::BusWidth::BUS_WIDTH_1BIT:
+        mPeriph->ARG = 0u;
         break;
 
-      case BusWidth::BUS_WIDTH_4BIT:
-        cmd.Argument = CLKCR_WIDBUS_0;
+      case Chimera::SDIO::BusWidth::BUS_WIDTH_4BIT:
+        mPeriph->ARG = CLKCR_WIDBUS_0;
         break;
 
       default:
         return ErrorType::ERROR_INVALID_PARAMETER;
     }
 
-    cpsmPutCmd( cmd );
+    mPeriph->CMD = CmdRegCfg[ CMD_SD_APP_SET_BUSWIDTH ];
 
-    /*-------------------------------------------------------------------------
-    Return the command response
-    -------------------------------------------------------------------------*/
-    if ( auto error = getCmdResp1( cmd.CmdIndex, SDIO_CMD_TIMEOUT_MS ); error != ErrorType::ERROR_NONE )
+    if ( auto error = getCmdResp1( CMD_SD_APP_SET_BUSWIDTH, SDIO_CMD_TIMEOUT_MS ); error != ErrorType::ERROR_NONE )
     {
       return error;
     }
 
     /*-------------------------------------------------------------------------
-    Update the bus width setting in the peripheral
+    Update the bus width setting in the peripheral if the command succeeded
     -------------------------------------------------------------------------*/
-    WIDBUS::set( mPeriph, cmd.Argument );
+    WIDBUS::set( mPeriph, mPeriph->ARG );
     return ErrorType::ERROR_NONE;
   }
 
@@ -418,19 +514,14 @@ namespace Thor::LLD::SDIO
   ErrorType Driver::cmdGoIdleState()
   {
     /*-------------------------------------------------------------------------
-    Send the command
+    Send CMD0 to reset the SD card
     -------------------------------------------------------------------------*/
-    CPSMCommand cmd;
-    cmd.Argument         = 0U;
-    cmd.CmdIndex         = CMD_GO_IDLE_STATE;
-    cmd.Response         = CMD_RESPONSE_NO;
-    cmd.WaitForInterrupt = CMD_WAIT_NO;
-    cmd.CPSM             = CMD_CPSM_ENABLE;
-
-    cpsmPutCmd( cmd );
+    mPeriph->ARG = 0;
+    mPeriph->CMD = CmdRegCfg[ CMD_GO_IDLE_STATE ];
 
     /*-------------------------------------------------------------------------
-    Wait for the command to complete
+    Wait for the command to complete. There is no response, so just wait for
+    the command to indicate it has been sent.
     -------------------------------------------------------------------------*/
     const uint32_t start = Chimera::millis();
 
@@ -440,7 +531,6 @@ namespace Thor::LLD::SDIO
       {
         return ERROR_TIMEOUT;
       }
-
     } while ( ( STA_ALL::get( mPeriph ) & STA_CMDSENT ) != STA_CMDSENT );
 
     /*-------------------------------------------------------------------------
@@ -451,33 +541,31 @@ namespace Thor::LLD::SDIO
   }
 
 
+  ErrorType Driver::cmdReadSingleBlock( const uint32_t address )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD17 to read a single block
+    -------------------------------------------------------------------------*/
+    mPeriph->ARG = address;
+    mPeriph->CMD = CmdRegCfg[ CMD_READ_SINGLE_BLOCK ];
+
+    return getCmdResp1( CMD_READ_SINGLE_BLOCK, SDIO_CMD_TIMEOUT_MS );
+  }
+
+
   ErrorType Driver::cmdOperCond()
   {
     /*-------------------------------------------------------------------------
-    Local Constants
-    -------------------------------------------------------------------------*/
-    /* Operating Conditions Argument: Table 6-18
+    Send CMD8 to verify SD card interface operating condition
+
+    Operating Conditions Argument: Table 6-18
       - [31:12]: Reserved (shall be set to '0')
       -  [11:8]: Supply Voltage (VHS) 0x1 (Range: 2.7-3.6 V)
-      -   [7:0]: Check Pattern (recommended 0xAA) */
-    static constexpr uint32_t ARGUMENT = 0x000001AAu;
-
-    /*-------------------------------------------------------------------------
-    Send CMD8 to verify SD card interface operating condition
-    Build and send the command
+      -   [7:0]: Check Pattern (recommended 0xAA)
     -------------------------------------------------------------------------*/
-    CPSMCommand cmd;
-    cmd.Argument         = ARGUMENT;
-    cmd.CmdIndex         = CMD_HS_SEND_EXT_CSD;
-    cmd.Response         = CMD_RESPONSE_SHORT;
-    cmd.WaitForInterrupt = CMD_WAIT_NO;
-    cmd.CPSM             = CMD_CPSM_ENABLE;
+    mPeriph->ARG = 0x000001AAu;
+    mPeriph->CMD = CmdRegCfg[ CMD_HS_SEND_EXT_CSD ];
 
-    cpsmPutCmd( cmd );
-
-    /*-------------------------------------------------------------------------
-    Return the command response
-    -------------------------------------------------------------------------*/
     return getCmdResp7();
   }
 
@@ -487,19 +575,10 @@ namespace Thor::LLD::SDIO
     /*-------------------------------------------------------------------------
     Send CMD51 to read the SD Configuration Register (SCR)
     -------------------------------------------------------------------------*/
-    CPSMCommand cmd;
-    cmd.Argument         = 0u;
-    cmd.CmdIndex         = CMD_SD_APP_SEND_SCR;
-    cmd.Response         = CMD_RESPONSE_SHORT;
-    cmd.WaitForInterrupt = CMD_WAIT_NO;
-    cmd.CPSM             = CMD_CPSM_ENABLE;
+    mPeriph->ARG = 0;
+    mPeriph->CMD = CmdRegCfg[ CMD_SD_APP_SEND_SCR ];
 
-    cpsmPutCmd( cmd );
-
-    /*-------------------------------------------------------------------------
-    Return the command response
-    -------------------------------------------------------------------------*/
-    return getCmdResp1( cmd.CmdIndex, SDIO_CMD_TIMEOUT_MS );
+    return getCmdResp1( CMD_SD_APP_SEND_SCR, SDIO_CMD_TIMEOUT_MS );
   }
 
 
@@ -508,19 +587,10 @@ namespace Thor::LLD::SDIO
     /*-------------------------------------------------------------------------
     Send CMD3 to get the SD card RCA
     -------------------------------------------------------------------------*/
-    CPSMCommand cmd;
-    cmd.Argument         = 0u;
-    cmd.CmdIndex         = CMD_SET_REL_ADDR;
-    cmd.Response         = CMD_RESPONSE_SHORT;
-    cmd.WaitForInterrupt = CMD_WAIT_NO;
-    cmd.CPSM             = CMD_CPSM_ENABLE;
+    mPeriph->ARG = 0;
+    mPeriph->CMD = CmdRegCfg[ CMD_SET_REL_ADDR ];
 
-    cpsmPutCmd( cmd );
-
-    /*-------------------------------------------------------------------------
-    Return the command response
-    -------------------------------------------------------------------------*/
-    return getCmdResp6( cmd.CmdIndex, pRCA );
+    return getCmdResp6( CMD_SET_REL_ADDR, pRCA );
   }
 
 
@@ -529,19 +599,10 @@ namespace Thor::LLD::SDIO
     /*-------------------------------------------------------------------------
     Send CMD7 to select the card
     -------------------------------------------------------------------------*/
-    CPSMCommand cmd;
-    cmd.Argument         = static_cast<uint32_t>( rca  ) << 16u;
-    cmd.CmdIndex         = CMD_SEL_DESEL_CARD;
-    cmd.Response         = CMD_RESPONSE_SHORT;
-    cmd.WaitForInterrupt = CMD_WAIT_NO;
-    cmd.CPSM             = CMD_CPSM_ENABLE;
+    mPeriph->ARG = static_cast<uint32_t>( rca ) << 16u;
+    mPeriph->CMD = CmdRegCfg[ CMD_SEL_DESEL_CARD ];
 
-    cpsmPutCmd( cmd );
-
-    /*-------------------------------------------------------------------------
-    Return the command response
-    -------------------------------------------------------------------------*/
-    return getCmdResp1( cmd.CmdIndex, SDIO_CMD_TIMEOUT_MS );
+    return getCmdResp1( CMD_SEL_DESEL_CARD, SDIO_CMD_TIMEOUT_MS );
   }
 
 
@@ -550,18 +611,9 @@ namespace Thor::LLD::SDIO
     /*-------------------------------------------------------------------------
     Send CMD2 to request the CID register
     -------------------------------------------------------------------------*/
-    CPSMCommand cmd;
-    cmd.Argument         = 0;
-    cmd.CmdIndex         = CMD_ALL_SEND_CID;
-    cmd.Response         = CMD_RESPONSE_LONG;
-    cmd.WaitForInterrupt = CMD_WAIT_NO;
-    cmd.CPSM             = CMD_CPSM_ENABLE;
+    mPeriph->ARG = 0;
+    mPeriph->CMD = CmdRegCfg[ CMD_ALL_SEND_CID ];
 
-    cpsmPutCmd( cmd );
-
-    /*-------------------------------------------------------------------------
-    Return the command response
-    -------------------------------------------------------------------------*/
     return getCmdResp2();
   }
 
@@ -569,32 +621,38 @@ namespace Thor::LLD::SDIO
   ErrorType Driver::cmdSendCSD( const uint16_t rca )
   {
     /*-------------------------------------------------------------------------
-    Send CMD9 to select the card
+    Send CMD9 to select/deselect the card
     -------------------------------------------------------------------------*/
-    CPSMCommand cmd;
-    cmd.Argument         = static_cast<uint32_t>( rca ) << 16u;
-    cmd.CmdIndex         = CMD_SEND_CSD;
-    cmd.Response         = CMD_RESPONSE_LONG;
-    cmd.WaitForInterrupt = CMD_WAIT_NO;
-    cmd.CPSM             = CMD_CPSM_ENABLE;
+    mPeriph->ARG = static_cast<uint32_t>( rca ) << 16u;
+    mPeriph->CMD = CmdRegCfg[ CMD_SEND_CSD ];
 
-    cpsmPutCmd( cmd );
-
-    /*-------------------------------------------------------------------------
-    Return the command response
-    -------------------------------------------------------------------------*/
     return getCmdResp2();
   }
 
 
-  ErrorType Driver::getCmdResp1( uint8_t SD_CMD, uint32_t Timeout )
+  ErrorType Driver::cmdWriteSingleBlock( const uint32_t address )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD24 to write a single block
+    -------------------------------------------------------------------------*/
+    mPeriph->ARG = address;
+    mPeriph->CMD = CmdRegCfg[ CMD_WRITE_SINGLE_BLOCK ];
+
+    return getCmdResp1( CMD_WRITE_SINGLE_BLOCK, SDIO_CMD_TIMEOUT_MS );
+  }
+
+
+  /*---------------------------------------------------------------------------
+  Response Management
+  ---------------------------------------------------------------------------*/
+  ErrorType Driver::getCmdResp1( const uint8_t command, const uint32_t timeout ) const
   {
     using namespace Chimera::SDIO;
 
     /*-------------------------------------------------------------------------
     Do timeout on flag updates
     -------------------------------------------------------------------------*/
-    if ( auto error = wait_cpsm_send_finish( mPeriph, SDIO_CMD_TIMEOUT_MS ); error != ERROR_NONE )
+    if ( auto error = wait_cpsm_send_finish( mPeriph, timeout ); error != ERROR_NONE )
     {
       return error;
     }
@@ -613,17 +671,23 @@ namespace Thor::LLD::SDIO
       return ERROR_CMD_CRC_FAIL;
     }
 
-    /* Clear all the static flags */
+    /*-------------------------------------------------------------------------
+    Exit in a known state by clearing all static flags
+    -------------------------------------------------------------------------*/
     ICR_ALL::set( mPeriph, STATIC_CMD_FLAGS );
 
-    /* Check response received is of desired command */
-    if ( CMDRESP::get( mPeriph ) != SD_CMD )
+    /*-------------------------------------------------------------------------
+    Check response received is of desired command
+    -------------------------------------------------------------------------*/
+    if ( CMDRESP::get( mPeriph ) != command )
     {
       return ERROR_CMD_CRC_FAIL;
     }
 
-    /* We have received response, retrieve it for analysis  */
-    auto r1 = cpsmGetResponse( ResponseMailbox::RESPONSE_1 );
+    /*-------------------------------------------------------------------------
+    Parse the response
+    -------------------------------------------------------------------------*/
+    auto r1 = cpsmGetRespX( ResponseMailbox::RESPONSE_1 );
 
     if ( ( r1 & OCR_ERRORBITS ) == 0 )
     {
@@ -708,7 +772,7 @@ namespace Thor::LLD::SDIO
   }
 
 
-  ErrorType Driver::getCmdResp2()
+  ErrorType Driver::getCmdResp2() const
   {
     /*-------------------------------------------------------------------------
     Do timeout on flag updates
@@ -732,13 +796,15 @@ namespace Thor::LLD::SDIO
       return ERROR_CMD_CRC_FAIL;
     }
 
-    /* Clear all the static flags */
+    /*-------------------------------------------------------------------------
+    Exit in a known state by clearing all static flags
+    -------------------------------------------------------------------------*/
     ICR_ALL::set( mPeriph, STATIC_CMD_FLAGS );
     return ERROR_NONE;
   }
 
 
-  ErrorType Driver::getCmdResp3()
+  ErrorType Driver::getCmdResp3() const
   {
     /*-------------------------------------------------------------------------
     Do timeout on flag updates
@@ -757,17 +823,16 @@ namespace Thor::LLD::SDIO
       CTIMEOUTC::set( mPeriph, ICR_CTIMEOUTC );
       return ERROR_CMD_RSP_TIMEOUT;
     }
-    else
-    {
-      /* Clear all the static flags */
-      ICR_ALL::set( mPeriph, STATIC_CMD_FLAGS );
-    }
 
+    /*-------------------------------------------------------------------------
+    Exit in a known state by clearing all static flags
+    -------------------------------------------------------------------------*/
+    ICR_ALL::set( mPeriph, STATIC_CMD_FLAGS );
     return ERROR_NONE;
   }
 
 
-  ErrorType Driver::getCmdResp6( uint8_t SD_CMD, uint16_t *pRCA )
+  ErrorType Driver::getCmdResp6( const uint8_t command, uint16_t *const pRCA ) const
   {
     using namespace Chimera::SDIO;
 
@@ -797,16 +862,20 @@ namespace Thor::LLD::SDIO
     /*-------------------------------------------------------------------------
     Check response received is of desired command
     -------------------------------------------------------------------------*/
-    if( mPeriph->RESPCMD != SD_CMD)
+    if ( CMDRESP::get( mPeriph ) != command )
     {
       return ERROR_CMD_CRC_FAIL;
     }
 
-    /* Clear all the static flags */
+    /*-------------------------------------------------------------------------
+    Exit in a known state by clearing all static flags
+    -------------------------------------------------------------------------*/
     ICR_ALL::set( mPeriph, STATIC_CMD_FLAGS );
 
-    /* We have received response, retrieve it.  */
-    const auto r1 = cpsmGetResponse( ResponseMailbox::RESPONSE_1 );
+    /*-------------------------------------------------------------------------
+    Get and parse the response
+    -------------------------------------------------------------------------*/
+    const auto r1 = cpsmGetRespX( ResponseMailbox::RESPONSE_1 );
 
     if ( ( r1 & ( R6_GENERAL_UNKNOWN_ERROR | R6_ILLEGAL_CMD | R6_COM_CRC_FAILED ) ) == 0 )
     {
@@ -828,7 +897,7 @@ namespace Thor::LLD::SDIO
   }
 
 
-  ErrorType Driver::getCmdResp7()
+  ErrorType Driver::getCmdResp7() const
   {
     /*-------------------------------------------------------------------------
     Do timeout on flag updates
@@ -860,38 +929,18 @@ namespace Thor::LLD::SDIO
   }
 
 
-  uint32_t Driver::cpsmGetResponse( const ResponseMailbox which )
+  /*---------------------------------------------------------------------------
+  Data Management
+  ---------------------------------------------------------------------------*/
+  ErrorType Driver::getStreamControlRegister( const uint16_t rca, uint32_t *const pSCR )
   {
-    /*-------------------------------------------------------------------------
-    Find the address of the response register and read it
-    -------------------------------------------------------------------------*/
-    auto response_register = ( uint32_t )( &( mPeriph->RESP1 ) ) + EnumValue( which );
-    return ( *( volatile uint32_t * )response_register );
-  }
+    constexpr uint32_t SDMMC_0TO7BITS   = 0x000000FFU;
+    constexpr uint32_t SDMMC_8TO15BITS  = 0x0000FF00U;
+    constexpr uint32_t SDMMC_16TO23BITS = 0x00FF0000U;
+    constexpr uint32_t SDMMC_24TO31BITS = 0xFF000000U;
 
-
-  void Driver::dpsmConfigure( const DPSMConfig &config )
-  {
-    /*-------------------------------------------------------------------------
-    Configure the DPSM transaction parameters
-    -------------------------------------------------------------------------*/
-    DATATIME::set( mPeriph, config.DataTimeOut );
-    DATALENGTH::set( mPeriph, config.DataLength );
-    DBLOCKSIZE::set( mPeriph, config.DataBlockSize );
-    DTMODE::set( mPeriph, config.TransferMode );
-    DTDIR::set( mPeriph, config.TransferDir );
-
-    /*-------------------------------------------------------------------------
-    Finally, set the DPSM overall state
-    -------------------------------------------------------------------------*/
-    DTEN::set( mPeriph, config.DPSM );
-  }
-
-
-  ErrorType Driver::getStreamControlRegister( uint32_t *const pSCR )
-  {
     DPSMConfig config;
-    ErrorType  error;
+    ErrorType  error = ErrorType::ERROR_NONE;
     uint32_t   tickstart     = Chimera::millis();
     uint32_t   index         = 0U;
     uint32_t   tempscr[ 2U ] = { 0U, 0U };
@@ -904,9 +953,9 @@ namespace Thor::LLD::SDIO
     // }
 
     /* Send CMD55 APP_CMD with argument as card's RCA */
-    if ( error = cmdAppCommand( 0u ); error != ERROR_NONE )
+    if ( error = cmdAppCommand( rca ); error != ERROR_NONE )
     {
-      return error;
+      goto exit_func;
     }
 
     config.DataTimeOut   = 5000;
@@ -920,7 +969,7 @@ namespace Thor::LLD::SDIO
     /* Send ACMD51 SD_APP_SEND_SCR */
     if ( error = cmdSendSCR(); error != ERROR_NONE )
     {
-      return error;
+      goto exit_func;
     }
 
     while ( ( STA_ALL::get( mPeriph ) & ( STA_RXOVERR | STA_DCRCFAIL | STA_DTIMEOUT ) ) == 0 )
@@ -938,24 +987,25 @@ namespace Thor::LLD::SDIO
 
       if ( ( Chimera::millis() - tickstart ) >= SDIO_DATA_TIMEOUT_MS )
       {
-        return ErrorType::ERROR_TIMEOUT;
+        error = ErrorType::ERROR_TIMEOUT;
+        goto exit_func;
       }
     }
 
     if ( DTIMEOUT::get( mPeriph ) == STA_DTIMEOUT )
     {
       DTIMEOUTC::set( mPeriph, STA_DTIMEOUT );
-      return ErrorType::ERROR_DATA_TIMEOUT;
+      error = ErrorType::ERROR_DATA_TIMEOUT;
     }
     else if ( DCRCFAIL::get( mPeriph ) == STA_DCRCFAIL )
     {
       DCRCFAILC::set( mPeriph, STA_DCRCFAIL );
-      return ErrorType::ERROR_DATA_CRC_FAIL;
+      error = ErrorType::ERROR_DATA_CRC_FAIL;
     }
     else if ( RXOVERR::get( mPeriph ) == STA_RXOVERR )
     {
       RXOVERRC::set( mPeriph, STA_RXOVERR );
-      return ErrorType::ERROR_RX_OVERRUN;
+      error = ErrorType::ERROR_RX_OVERRUN;
     }
     else
     {
@@ -967,77 +1017,222 @@ namespace Thor::LLD::SDIO
       scr++;
       *scr = ( ( ( tempscr[ 0 ] & SDMMC_0TO7BITS ) << 24 ) | ( ( tempscr[ 0 ] & SDMMC_8TO15BITS ) << 8 ) |
                ( ( tempscr[ 0 ] & SDMMC_16TO23BITS ) >> 8 ) | ( ( tempscr[ 0 ] & SDMMC_24TO31BITS ) >> 24 ) );
+
+      error = ErrorType::ERROR_NONE;
     }
 
-    return ErrorType::ERROR_NONE;
+  exit_func:
+    DCTRL_ALL::set( mPeriph, 0u );
+    return error;
   }
 
-
-static volatile bool sDMATransferComplete = false;
 
   ErrorType Driver::asyncReadBlock( const uint32_t address, void *const buffer )
   {
     using namespace Chimera::DMA;
 
     /*-------------------------------------------------------------------------
+    Make the request to read a single block from the card
+    -------------------------------------------------------------------------*/
+    if ( auto error = cmdReadSingleBlock( address ); error != ERROR_NONE )
+    {
+      return error;
+    }
+
+    /*-------------------------------------------------------------------------
     Configure the DMA transfer
     -------------------------------------------------------------------------*/
     PipeTransfer cfg;
-    cfg.isrCallback = TransferCallback::create<Driver, &Driver::onDMARXComplete>( *this );
-    cfg.pipe        = mRXDMARequestId;
-    cfg.size        = 512;
-    cfg.addr        = reinterpret_cast<std::uintptr_t>( buffer );
+    cfg.pipe = mRXDMARequestId;
+    cfg.size = 512 / sizeof( uint32_t );
+    cfg.addr = reinterpret_cast<std::uintptr_t>( buffer );
 
     auto setup_result = Chimera::DMA::transfer( cfg );
     RT_DBG_ASSERT( setup_result != Chimera::DMA::INVALID_REQUEST );
+    RT_DBG_ASSERT( cfg.addr % sizeof( uint32_t ) == 0 );
 
     /*-------------------------------------------------------------------------
-    Configure the SDIO peripheral (RM0390: 29.3.2)
+    Configure interrupts for error handling
     -------------------------------------------------------------------------*/
-    /* Data Path State Machine */
-    DATATIME::set( mPeriph, 5000 ); // Arbitrary 5000 clock cycles timeout...?
-    DATALENGTH::set( mPeriph, cfg.size );
+    INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    ICR_ALL::set( mPeriph, RX_ISR_CLEAR_FLAGS );
 
-    const uint32_t ctrl_reg = DCTRL_DTEN | DCTRL_DTDIR | DCTRL_DMAEN | DCTRL_DATABLOCK_SIZE_512B;
-    DCTRL_ALL::set( mPeriph, ctrl_reg );
+    INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
 
-    /* Command Path State Machine */
-    CMDARG::set( mPeriph, address );
+    MASK_ALL::set( mPeriph, RX_ISR_MASK_FLAGS );
 
-    const uint32_t cmd_reg = CMD_READ_SINGLE_BLOCK | CMD_RESPONSE_SHORT | CMD_CPSM_ENABLE;
-    CMD_ALL::set( mPeriph, cmd_reg );
+    /*-------------------------------------------------------------------------
+    Reset driver state
+    -------------------------------------------------------------------------*/
+    s_ctrl_blk[ mResourceIndex ].txfrComplete = false;
+
+    /*-------------------------------------------------------------------------
+    Configure the data path state machine. Once this starts, the DMA transfer
+    will either complete or the SDIO peripheral will error out.
+    -------------------------------------------------------------------------*/
+    CLKEN::set( mPeriph, CLKCR_CLKEN );
+    DATATIME::set( mPeriph, 5000 );
+    DATALENGTH::set( mPeriph, 512 );
+    DCTRL_ALL::set( mPeriph, DCTRL_DTEN | DCTRL_DTDIR | DCTRL_DMAEN | DCTRL_DATABLOCK_SIZE_512B );
 
     /*-------------------------------------------------------------------------
     Wait for the transfer to complete
     -------------------------------------------------------------------------*/
-    while( CMDREND::get( mPeriph ) != STA_CMDREND )
+    while ( !s_ctrl_blk[ mResourceIndex ].txfrComplete )
+      ;
+
+    return s_ctrl_blk[ mResourceIndex ].txfrError;
+  }
+
+
+  ErrorType Driver::asyncWriteBlock( const uint32_t address, const void *const buffer )
+  {
+    using namespace Chimera::DMA;
+
+    /*-------------------------------------------------------------------------
+    Request a single block write from the card
+    -------------------------------------------------------------------------*/
+    if ( auto error = cmdWriteSingleBlock( address ); error != ERROR_NONE )
     {
-      // Do real error handling here
+      return error;
     }
 
-    while( DBCKEND::get( mPeriph ) != STA_DBCKEND )
-    {
-      // Do real error handling here
-    }
+    /*-------------------------------------------------------------------------
+    Configure the DMA transfer now that we know the card is ready
+    -------------------------------------------------------------------------*/
+    PipeTransfer cfg;
+    cfg.pipe = mTXDMARequestId;
+    cfg.size = 512 / sizeof( uint32_t );
+    cfg.addr = reinterpret_cast<std::uintptr_t>( buffer );
 
-    while( !sDMATransferComplete && ( RXFIFOE::get( mPeriph ) != STA_RXFIFOE ) )
-    {
-    }
+    auto setup_result = Chimera::DMA::transfer( cfg );
+    RT_DBG_ASSERT( setup_result != Chimera::DMA::INVALID_REQUEST );
+    RT_DBG_ASSERT( cfg.addr % sizeof( uint32_t ) == 0 );
 
-    sDMATransferComplete = false;
-    return ERROR_DATA_TIMEOUT;
+    /*-------------------------------------------------------------------------
+    Configure interrupts for error handling
+    -------------------------------------------------------------------------*/
+    INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    ICR_ALL::set( mPeriph, TX_ISR_CLEAR_FLAGS );
+
+    INT::clearPendingIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    INT::enableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+
+    MASK_ALL::set( mPeriph, TX_ISR_MASK_FLAGS );
+
+    /*-------------------------------------------------------------------------
+    Reset driver state
+    -------------------------------------------------------------------------*/
+    s_ctrl_blk[ mResourceIndex ].txfrComplete = false;
+
+    /*-------------------------------------------------------------------------
+    Configure the data path state machine. Once this starts, the DMA transfer
+    will either complete or the SDIO peripheral will error out.
+    -------------------------------------------------------------------------*/
+    CLKEN::set( mPeriph, CLKCR_CLKEN );
+    DATATIME::set( mPeriph, 5000 );
+    DATALENGTH::set( mPeriph, 512 );
+    DCTRL_ALL::set( mPeriph, DCTRL_DTEN | DCTRL_DMAEN | DCTRL_DATABLOCK_SIZE_512B );
+
+    /*-------------------------------------------------------------------------
+    Wait for the transfer to complete
+    -------------------------------------------------------------------------*/
+    while ( !s_ctrl_blk[ mResourceIndex ].txfrComplete )
+      ;
+
+    return s_ctrl_blk[ mResourceIndex ].txfrError;
   }
 
 
   void Driver::IRQHandler()
   {
-  }
+    const uint32_t status = mPeriph->STA;
+    const uint32_t mask   = mPeriph->MASK;
 
+    /*-------------------------------------------------------------------------
+    Handle TX errors and completion events
+    -------------------------------------------------------------------------*/
+    if ( ( status & TX_ISR_STATUS_FLAGS ) && ( mask & TX_ISR_MASK_FLAGS ) )
+    {
+      s_ctrl_blk[ mResourceIndex ].txfrStatus   = status;
+      s_ctrl_blk[ mResourceIndex ].txfrError    = ErrorType::ERROR_GENERAL_UNKNOWN_ERR;
+      s_ctrl_blk[ mResourceIndex ].txfrComplete = true;
 
-  void Driver::onDMARXComplete( const Chimera::DMA::TransferStats &stats )
-  {
-    sDMATransferComplete = true;
-    DMAEN::clear( mPeriph, DCTRL_DMAEN );
+      /*-----------------------------------------------------------------------
+      Disable and ACK the interrupts. Reset DMA controller.
+      -----------------------------------------------------------------------*/
+      MASK_ALL::clear( mPeriph, TX_ISR_MASK_FLAGS );
+      ICR_ALL::set( mPeriph, TX_ISR_CLEAR_FLAGS );
+      DCTRL_ALL::set( mPeriph, 0 );
+      CLKEN::clear( mPeriph, CLKCR_CLKEN );
+
+      /*-----------------------------------------------------------------------
+      Parse the reason for the interrupt
+      -----------------------------------------------------------------------*/
+      if ( ( status & STA_TXUNDERR ) && ( mask & MASK_TXUNDERRIE ) )
+      {
+        s_ctrl_blk[ mResourceIndex ].txfrError = ErrorType::ERROR_TX_UNDERRUN;
+      }
+
+      if ( ( status & STA_DTIMEOUT ) && ( mask & MASK_DTIMEOUTIE ) )
+      {
+        s_ctrl_blk[ mResourceIndex ].txfrError = ErrorType::ERROR_DATA_TIMEOUT;
+      }
+
+      if ( ( status & STA_DCRCFAIL ) && ( mask & MASK_DCRCFAILIE ) )
+      {
+        s_ctrl_blk[ mResourceIndex ].txfrError = ErrorType::ERROR_DATA_CRC_FAIL;
+      }
+
+      if ( ( ( status & STA_DBCKEND ) && ( mask & MASK_DBCKENDIE ) ) ||
+           ( ( status & STA_DATAEND ) && ( mask & MASK_DATAENDIE ) ) )
+      {
+        s_ctrl_blk[ mResourceIndex ].txfrError = ErrorType::ERROR_NONE;
+      }
+    }
+
+    /*-------------------------------------------------------------------------
+    Handle RX errors and completion events
+    -------------------------------------------------------------------------*/
+    if ( ( status & RX_ISR_STATUS_FLAGS ) && ( mask & RX_ISR_MASK_FLAGS ) )
+    {
+      s_ctrl_blk[ mResourceIndex ].txfrStatus   = status;
+      s_ctrl_blk[ mResourceIndex ].txfrError    = ErrorType::ERROR_GENERAL_UNKNOWN_ERR;
+      s_ctrl_blk[ mResourceIndex ].txfrComplete = true;
+
+      /*-----------------------------------------------------------------------
+      Disable and ACK the interrupts. Reset DMA controller.
+      -----------------------------------------------------------------------*/
+      MASK_ALL::clear( mPeriph, RX_ISR_MASK_FLAGS );
+      ICR_ALL::set( mPeriph, RX_ISR_CLEAR_FLAGS );
+      DCTRL_ALL::set( mPeriph, 0 );
+      CLKEN::clear( mPeriph, CLKCR_CLKEN );
+
+      /*-----------------------------------------------------------------------
+      Parse the reason for the interrupt
+      -----------------------------------------------------------------------*/
+      if ( ( status & STA_RXOVERR ) && ( mask & MASK_RXOVERRIE ) )
+      {
+        s_ctrl_blk[ mResourceIndex ].txfrError = ErrorType::ERROR_RX_OVERRUN;
+      }
+
+      if ( ( status & STA_DTIMEOUT ) && ( mask & MASK_DTIMEOUTIE ) )
+      {
+        s_ctrl_blk[ mResourceIndex ].txfrError = ErrorType::ERROR_DATA_TIMEOUT;
+      }
+
+      if ( ( status & STA_DCRCFAIL ) && ( mask & MASK_DCRCFAILIE ) )
+      {
+        s_ctrl_blk[ mResourceIndex ].txfrError = ErrorType::ERROR_DATA_CRC_FAIL;
+      }
+
+      if ( ( ( status & STA_DBCKEND ) && ( mask & MASK_DBCKENDIE ) ) ||
+           ( ( status & STA_DATAEND ) && ( mask & MASK_DATAENDIE ) ) )
+      {
+        s_ctrl_blk[ mResourceIndex ].txfrError = ErrorType::ERROR_NONE;
+      }
+    }
   }
 
 }    // namespace Thor::LLD::SDIO

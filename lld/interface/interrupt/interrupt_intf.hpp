@@ -96,7 +96,7 @@ namespace Thor::LLD::INT
    *  @param[in]  interruptMask     Mask returned from disableInterrupts()
    *  @return void
    */
-  void enableInterrupts( Chimera::System::InterruptMask &interruptMask );
+  void enableInterrupts( const Chimera::System::InterruptMask &interruptMask );
 
 }    // namespace Thor::LLD::INT
 
