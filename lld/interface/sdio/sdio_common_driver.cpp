@@ -33,9 +33,9 @@ namespace Thor::LLD::SDIO
   ---------------------------------------------------------------------------*/
   struct ControlBlock
   {
-    volatile bool      txfrComplete; /**< Signal flag to determine termination */
-    volatile ErrorType txfrError;    /**< Final determined error */
-    volatile uint32_t  txfrStatus;   /**< Recorded value of status register termination */
+    volatile ErrorType      txfrError;  /**< Final determined error */
+    volatile uint32_t       txfrStatus; /**< Recorded value of status register termination */
+    Chimera::DMA::RequestId txfrId;     /**< DMA transaction request ID */
   };
 
   /*---------------------------------------------------------------------------
@@ -82,35 +82,40 @@ namespace Thor::LLD::SDIO
   static constexpr uint32_t SDIO_STOP_TXFR_TIMEOUT = Chimera::Thread::TIMEOUT_BLOCK;
 
   /**
+   * @brief Block size for data transfers
+   */
+  static constexpr uint32_t SDIO_BLOCK_SIZE = 512u;
+
+  /**
    * @brief Command configuration register settings
    */
   static constexpr etl::array<uint16_t, CommandType::CMD_TOTAL_COUNT> CmdRegCfg = {
-    ( CMD_GO_IDLE_STATE | CMD_RESPONSE_NO | CMD_WAIT_NO | CMD_CPSM_ENABLE ),          /**< 0 -- CMD_GO_IDLE_STATE */
-    ( 0 ),                                                                            /**< 1 -- CMD_SEND_OP_COND */
-    ( CMD_ALL_SEND_CID | CMD_RESPONSE_LONG | CMD_WAIT_NO | CMD_CPSM_ENABLE ),         /**< 2 -- CMD_ALL_SEND_CID */
-    ( CMD_SET_REL_ADDR | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),        /**< 3 -- CMD_SET_REL_ADDR */
-    ( 0 ),                                                                            /**< 4 -- CMD_SET_DSR */
-    ( 0 ),                                                                            /**< 5 -- CMD_SDMMC_SEN_OP_COND */
-    ( CMD_SD_APP_SET_BUSWIDTH | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ), /**< 6 -- CMD_SD_APP_SET_BUSWIDTH */
-    ( CMD_SEL_DESEL_CARD | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),      /**< 7 -- CMD_SEL_DESEL_CARD */
-    ( CMD_HS_SEND_EXT_CSD | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),     /**< 8 -- CMD_HS_SEND_EXT_CSD */
-    ( CMD_SEND_CSD | CMD_RESPONSE_LONG | CMD_WAIT_NO | CMD_CPSM_ENABLE ),             /**< 9 -- CMD_SEND_CSD */
+    ( CMD_GO_IDLE_STATE | CMD_RESPONSE_NO | CMD_WAIT_NO | CMD_CPSM_ENABLE ),          /**<  0 -- CMD_GO_IDLE_STATE */
+    ( 0 ),                                                                            /**<  1 -- CMD_SEND_OP_COND */
+    ( CMD_ALL_SEND_CID | CMD_RESPONSE_LONG | CMD_WAIT_NO | CMD_CPSM_ENABLE ),         /**<  2 -- CMD_ALL_SEND_CID */
+    ( CMD_SET_REL_ADDR | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),        /**<  3 -- CMD_SET_REL_ADDR */
+    ( 0 ),                                                                            /**<  4 -- CMD_SET_DSR */
+    ( 0 ),                                                                            /**<  5 -- CMD_SDMMC_SEN_OP_COND */
+    ( CMD_SD_APP_SET_BUSWIDTH | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ), /**<  6 -- CMD_SD_APP_SET_BUSWIDTH */
+    ( CMD_SEL_DESEL_CARD | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),      /**<  7 -- CMD_SEL_DESEL_CARD */
+    ( CMD_HS_SEND_EXT_CSD | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),     /**<  8 -- CMD_HS_SEND_EXT_CSD */
+    ( CMD_SEND_CSD | CMD_RESPONSE_LONG | CMD_WAIT_NO | CMD_CPSM_ENABLE ),             /**<  9 -- CMD_SEND_CSD */
     ( 0 ),                                                                            /**< 10 -- CMD_SEND_CID */
     ( 0 ),                                                                            /**< 11 -- CMD_READ_DAT_UNTIL_STOP */
-    ( 0 ),                                                                            /**< 12 -- CMD_STOP_TRANSMISSION */
-    ( 0 ),                                                                            /**< 13 -- CMD_SEND_STATUS */
+    ( CMD_STOP_TRANSMISSION | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),   /**< 12 -- CMD_STOP_TRANSMISSION */
+    ( CMD_SEND_STATUS | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),         /**< 13 -- CMD_SEND_STATUS */
     ( 0 ),                                                                            /**< 14 -- CMD_HS_BUSTEST_READ */
     ( 0 ),                                                                            /**< 15 -- ??? */
     ( CMD_SET_BLOCKLEN | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),        /**< 16 -- CMD_SET_BLOCKLEN */
     ( CMD_READ_SINGLE_BLOCK | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),   /**< 17 -- CMD_READ_SINGLE_BLOCK */
-    ( 0 ),                                                                            /**< 18 -- CMD_READ_MULT_BLOCK */
+    ( CMD_READ_MULT_BLOCK | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),     /**< 18 -- CMD_READ_MULT_BLOCK */
     ( 0 ),                                                                            /**< 19 -- CMD_HS_BUSTEST_WRITE */
     ( 0 ),                                                                            /**< 20 -- CMD_WRITE_DAT_UNTIL_STOP */
     ( 0 ),                                                                            /**< 21 -- ??? */
     ( 0 ),                                                                            /**< 22 -- ??? */
     ( 0 ),                                                                            /**< 23 -- CMD_SET_BLOCK_COUNT */
     ( CMD_WRITE_SINGLE_BLOCK | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),  /**< 24 -- CMD_WRITE_SINGLE_BLOCK */
-    ( 0 ),                                                                            /**< 25 -- CMD_WRITE_MULT_BLOCK */
+    ( CMD_WRITE_MULT_BLOCK | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),    /**< 25 -- CMD_WRITE_MULT_BLOCK */
     ( 0 ),                                                                            /**< 26 -- CMD_PROG_CID */
     ( 0 ),                                                                            /**< 27 -- CMD_PROG_CSD */
     ( 0 ),                                                                            /**< 28 -- CMD_SET_WRITE_PROT */
@@ -168,7 +173,7 @@ namespace Thor::LLD::SDIO
    * @param out_freq   Target bus frequency in Hz
    * @return uint32_t HW register clock divider setting
    */
-  static inline uint32_t calcClockDivider( const uint32_t in_freq, const uint32_t out_freq )
+  static inline uint32_t calc_clock_div( const uint32_t in_freq, const uint32_t out_freq )
   {
     // Input constraints
     RT_DBG_ASSERT( in_freq > out_freq );
@@ -252,6 +257,14 @@ namespace Thor::LLD::SDIO
 
   Chimera::Status_t Driver::reset()
   {
+    /*-------------------------------------------------------------------------
+    Reset the AsyncIO driver
+    -------------------------------------------------------------------------*/
+    resetAIO();
+
+    /*-------------------------------------------------------------------------
+    Reset the peripheral HW via clock control
+    -------------------------------------------------------------------------*/
     auto rcc = RCC::getPeriphClockCtrl();
     return rcc->reset( Chimera::Peripheral::Type::PERIPH_SDIO, mResourceIndex );
   }
@@ -309,7 +322,7 @@ namespace Thor::LLD::SDIO
   {
     auto           rcc  = RCC::getCoreClockCtrl();
     const uint32_t pClk = rcc->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SDIO, reinterpret_cast<uintptr_t>( mPeriph ) );
-    const uint32_t clkDiv = calcClockDivider( pClk, freq );
+    const uint32_t clkDiv = calc_clock_div( pClk, freq );
 
     CLKDIV::set( mPeriph, clkDiv << CLKCR_CLKDIV_Pos );
     return ERROR_NONE;
@@ -327,6 +340,11 @@ namespace Thor::LLD::SDIO
     clockEnable();
 
     /*-------------------------------------------------------------------------
+    Ensure the AsyncIO driver is ready
+    -------------------------------------------------------------------------*/
+    initAIO();
+
+    /*-------------------------------------------------------------------------
     Configure the clock divider to a default of ~300KHz
     -------------------------------------------------------------------------*/
     setBusFrequency( 300000u );
@@ -335,7 +353,7 @@ namespace Thor::LLD::SDIO
     Set remainder of the clock control register
     -------------------------------------------------------------------------*/
     HWFCEN::clear( mPeriph, CLKCR_HWFC_EN );    // Disable HW flow control
-    PWRSAV::set( mPeriph, CLKCR_PWRSAV );       // Enable power saving mode
+    PWRSAV::clear( mPeriph, CLKCR_PWRSAV );     // Disable power saving mode
     NEGEDGE::set( mPeriph, CLKCR_NEGEDGE );     // Data is changed on the falling edge
     WIDBUS::set( mPeriph, 0 );                  // 1-bit bus width
     BYPASS::clear( mPeriph, CLKCR_BYPASS );     // Disable clock bypass
@@ -360,11 +378,8 @@ namespace Thor::LLD::SDIO
     rxCfg.persistent    = true;
     rxCfg.periphAddr    = reinterpret_cast<uintptr_t>( &mPeriph->FIFO );
 
-    /* FIFO errors generated by DMA controller even though it doesn't affect TX */
-    rxCfg.errorsToIgnore = Errors::FIFO;
-
-    mRXDMARequestId = Chimera::DMA::constructPipe( rxCfg );
-    RT_DBG_ASSERT( mRXDMARequestId != Chimera::DMA::INVALID_REQUEST );
+    mRXDMAPipeId = Chimera::DMA::constructPipe( rxCfg );
+    RT_DBG_ASSERT( mRXDMAPipeId != Chimera::DMA::INVALID_REQUEST );
 
     /*-------------------------------------------------------------------------
     Initialize DMA TX Pipe
@@ -385,17 +400,9 @@ namespace Thor::LLD::SDIO
     txCfg.persistent    = true;
     txCfg.periphAddr    = reinterpret_cast<uintptr_t>( &mPeriph->FIFO );
 
-    /* FIFO errors generated by DMA controller even though it doesn't affect TX */
-    txCfg.errorsToIgnore = Errors::FIFO;
-
-    mTXDMARequestId = Chimera::DMA::constructPipe( txCfg );
-    RT_DBG_ASSERT( mTXDMARequestId != Chimera::DMA::INVALID_REQUEST );
-    RT_DBG_ASSERT( mTXDMARequestId != mRXDMARequestId );
-
-    /*-------------------------------------------------------------------------
-    Initialize instance data
-    -------------------------------------------------------------------------*/
-    s_ctrl_blk[ mResourceIndex ].txfrComplete = false;
+    mTXDMAPipeId = Chimera::DMA::constructPipe( txCfg );
+    RT_DBG_ASSERT( mTXDMAPipeId != Chimera::DMA::INVALID_REQUEST );
+    RT_DBG_ASSERT( mTXDMAPipeId != mRXDMAPipeId );
 
     return Chimera::Status::OK;
   }
@@ -417,24 +424,6 @@ namespace Thor::LLD::SDIO
     -------------------------------------------------------------------------*/
     auto response_register = ( uint32_t )( &( mPeriph->RESP1 ) ) + EnumValue( which );
     return ( *( volatile uint32_t * )response_register );
-  }
-
-
-  void Driver::dpsmConfigure( const DPSMConfig &config )
-  {
-    /*-------------------------------------------------------------------------
-    Configure the DPSM transaction parameters
-    -------------------------------------------------------------------------*/
-    DATATIME::set( mPeriph, config.DataTimeOut );
-    DATALENGTH::set( mPeriph, config.DataLength );
-    DBLOCKSIZE::set( mPeriph, config.DataBlockSize );
-    DTMODE::set( mPeriph, config.TransferMode );
-    DTDIR::set( mPeriph, config.TransferDir );
-
-    /*-------------------------------------------------------------------------
-    Finally, set the DPSM overall state
-    -------------------------------------------------------------------------*/
-    DTEN::set( mPeriph, config.DPSM );
   }
 
 
@@ -541,6 +530,18 @@ namespace Thor::LLD::SDIO
   }
 
 
+  ErrorType Driver::cmdReadMultiBlock( const uint32_t address )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD17 to read a single block
+    -------------------------------------------------------------------------*/
+    mPeriph->ARG = address;
+    mPeriph->CMD = CmdRegCfg[ CMD_READ_MULT_BLOCK ];
+
+    return getCmdResp1( CMD_READ_MULT_BLOCK, SDIO_CMD_TIMEOUT_MS );
+  }
+
+
   ErrorType Driver::cmdReadSingleBlock( const uint32_t address )
   {
     /*-------------------------------------------------------------------------
@@ -579,6 +580,18 @@ namespace Thor::LLD::SDIO
     mPeriph->CMD = CmdRegCfg[ CMD_SD_APP_SEND_SCR ];
 
     return getCmdResp1( CMD_SD_APP_SEND_SCR, SDIO_CMD_TIMEOUT_MS );
+  }
+
+
+  ErrorType Driver::cmdSendStatus( const uint16_t rca )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD13 to get the SD card status
+    -------------------------------------------------------------------------*/
+    mPeriph->ARG = static_cast<uint32_t>( rca ) << 16u;
+    mPeriph->CMD = CmdRegCfg[ CMD_SEND_STATUS ];
+
+    return getCmdResp1( CMD_SEND_STATUS, SDIO_CMD_TIMEOUT_MS );
   }
 
 
@@ -627,6 +640,30 @@ namespace Thor::LLD::SDIO
     mPeriph->CMD = CmdRegCfg[ CMD_SEND_CSD ];
 
     return getCmdResp2();
+  }
+
+
+  ErrorType Driver::cmdStopTransfer()
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD12 to stop a transmission
+    -------------------------------------------------------------------------*/
+    mPeriph->ARG = 0u;
+    mPeriph->CMD = CmdRegCfg[ CMD_STOP_TRANSMISSION ];
+
+    return getCmdResp1( CMD_STOP_TRANSMISSION, SDIO_CMD_TIMEOUT_MS );
+  }
+
+
+  ErrorType Driver::cmdWriteMultiBlock( const uint32_t address )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD25 to write a single block
+    -------------------------------------------------------------------------*/
+    mPeriph->ARG = address;
+    mPeriph->CMD = CmdRegCfg[ CMD_WRITE_MULT_BLOCK ];
+
+    return getCmdResp1( CMD_WRITE_MULT_BLOCK, SDIO_CMD_TIMEOUT_MS );
   }
 
 
@@ -939,8 +976,7 @@ namespace Thor::LLD::SDIO
     constexpr uint32_t SDMMC_16TO23BITS = 0x00FF0000U;
     constexpr uint32_t SDMMC_24TO31BITS = 0xFF000000U;
 
-    DPSMConfig config;
-    ErrorType  error = ErrorType::ERROR_NONE;
+    ErrorType  error         = ErrorType::ERROR_NONE;
     uint32_t   tickstart     = Chimera::millis();
     uint32_t   index         = 0U;
     uint32_t   tempscr[ 2U ] = { 0U, 0U };
@@ -958,13 +994,10 @@ namespace Thor::LLD::SDIO
       goto exit_func;
     }
 
-    config.DataTimeOut   = 5000;
-    config.DataLength    = 8U;
-    config.DataBlockSize = DCTRL_DATABLOCK_SIZE_8B;
-    config.TransferDir   = TRANSFER_DIR_TO_SDIO;
-    config.TransferMode  = TRANSFER_MODE_BLOCK;
-    config.DPSM          = DPSM_ENABLE;
-    dpsmConfigure( config );
+    /* Configure the SD DPSM (Data Path State Machine) */
+    DATATIME::set( mPeriph, 5000 );
+    DATALENGTH::set( mPeriph, 8u );
+    DCTRL_ALL::set( mPeriph, DCTRL_DATABLOCK_SIZE_8B | DCTRL_DTDIR | DCTRL_DTEN );
 
     /* Send ACMD51 SD_APP_SEND_SCR */
     if ( error = cmdSendSCR(); error != ERROR_NONE )
@@ -1027,28 +1060,46 @@ namespace Thor::LLD::SDIO
   }
 
 
-  ErrorType Driver::asyncReadBlock( const uint32_t address, void *const buffer )
+  ErrorType Driver::asyncReadBlock( const uint32_t address, const uint32_t count, void *const buffer )
   {
     using namespace Chimera::DMA;
+    using namespace Chimera::Event;
+    using namespace Chimera::Thread;
 
     /*-------------------------------------------------------------------------
-    Make the request to read a single block from the card
+    Pre-compute the number of bytes to transfer
     -------------------------------------------------------------------------*/
-    if ( auto error = cmdReadSingleBlock( address ); error != ERROR_NONE )
+    const uint32_t bytes_to_transfer = count * SDIO_BLOCK_SIZE;
+
+    /*-------------------------------------------------------------------------
+    Make the request to read from the card
+    -------------------------------------------------------------------------*/
+    ErrorType error = ErrorType::ERROR_NONE;
+
+    if ( count == 1 )
+    {
+      error = cmdReadSingleBlock( address );
+    }
+    else
+    {
+      error = cmdReadMultiBlock( address );
+    }
+
+    if ( error != ERROR_NONE )
     {
       return error;
     }
 
     /*-------------------------------------------------------------------------
-    Configure the DMA transfer
+    Configure the DMA transfer, which will be started by the DPSM
     -------------------------------------------------------------------------*/
     PipeTransfer cfg;
-    cfg.pipe = mRXDMARequestId;
-    cfg.size = 512 / sizeof( uint32_t );
+    cfg.pipe = mRXDMAPipeId;
+    cfg.size = bytes_to_transfer / sizeof( uint32_t );
     cfg.addr = reinterpret_cast<std::uintptr_t>( buffer );
 
-    auto setup_result = Chimera::DMA::transfer( cfg );
-    RT_DBG_ASSERT( setup_result != Chimera::DMA::INVALID_REQUEST );
+    s_ctrl_blk[ mResourceIndex ].txfrId = Chimera::DMA::transfer( cfg );
+    RT_DBG_ASSERT( s_ctrl_blk[ mResourceIndex ].txfrId != Chimera::DMA::INVALID_REQUEST );
     RT_DBG_ASSERT( cfg.addr % sizeof( uint32_t ) == 0 );
 
     /*-------------------------------------------------------------------------
@@ -1063,37 +1114,70 @@ namespace Thor::LLD::SDIO
     MASK_ALL::set( mPeriph, RX_ISR_MASK_FLAGS );
 
     /*-------------------------------------------------------------------------
-    Reset driver state
-    -------------------------------------------------------------------------*/
-    s_ctrl_blk[ mResourceIndex ].txfrComplete = false;
-
-    /*-------------------------------------------------------------------------
     Configure the data path state machine. Once this starts, the DMA transfer
     will either complete or the SDIO peripheral will error out.
     -------------------------------------------------------------------------*/
     CLKEN::set( mPeriph, CLKCR_CLKEN );
     DATATIME::set( mPeriph, 5000 );
-    DATALENGTH::set( mPeriph, 512 );
+    DATALENGTH::set( mPeriph, bytes_to_transfer );
     DCTRL_ALL::set( mPeriph, DCTRL_DTEN | DCTRL_DTDIR | DCTRL_DMAEN | DCTRL_DATABLOCK_SIZE_512B );
 
     /*-------------------------------------------------------------------------
     Wait for the transfer to complete
     -------------------------------------------------------------------------*/
-    while ( !s_ctrl_blk[ mResourceIndex ].txfrComplete )
-      ;
+    auto wait_error = await( Trigger::TRIGGER_READ_COMPLETE, ( 5u * TIMEOUT_1MS ) );
 
-    return s_ctrl_blk[ mResourceIndex ].txfrError;
+    /*-------------------------------------------------------------------------
+    Finalize the transfer
+    -------------------------------------------------------------------------*/
+    INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Chimera::DMA::abort( s_ctrl_blk[ mResourceIndex ].txfrId );
+
+    if ( count > 1u )
+    {
+      cmdStopTransfer();
+    }
+
+    /*-------------------------------------------------------------------------
+    Hand back an appropriate error code
+    -------------------------------------------------------------------------*/
+    if ( wait_error == Chimera::Status::OK )
+    {
+      return s_ctrl_blk[ mResourceIndex ].txfrError;
+    }
+    else
+    {
+      return ErrorType::ERROR_TIMEOUT;
+    }
   }
 
 
-  ErrorType Driver::asyncWriteBlock( const uint32_t address, const void *const buffer )
+  ErrorType Driver::asyncWriteBlock( const uint32_t address, const uint32_t count, const void *const buffer )
   {
     using namespace Chimera::DMA;
+    using namespace Chimera::Event;
+    using namespace Chimera::Thread;
 
     /*-------------------------------------------------------------------------
-    Request a single block write from the card
+    Pre-compute the number of bytes to transfer
     -------------------------------------------------------------------------*/
-    if ( auto error = cmdWriteSingleBlock( address ); error != ERROR_NONE )
+    const uint32_t bytes_to_transfer = count * SDIO_BLOCK_SIZE;
+
+    /*-------------------------------------------------------------------------
+    Request a write to the card
+    -------------------------------------------------------------------------*/
+    ErrorType error = ErrorType::ERROR_NONE;
+
+    if ( count == 1 )
+    {
+      error = cmdWriteSingleBlock( address );
+    }
+    else
+    {
+      error = cmdWriteMultiBlock( address );
+    }
+
+    if ( error != ERROR_NONE )
     {
       return error;
     }
@@ -1102,12 +1186,12 @@ namespace Thor::LLD::SDIO
     Configure the DMA transfer now that we know the card is ready
     -------------------------------------------------------------------------*/
     PipeTransfer cfg;
-    cfg.pipe = mTXDMARequestId;
-    cfg.size = 512 / sizeof( uint32_t );
+    cfg.pipe = mTXDMAPipeId;
+    cfg.size = bytes_to_transfer / sizeof( uint32_t );
     cfg.addr = reinterpret_cast<std::uintptr_t>( buffer );
 
-    auto setup_result = Chimera::DMA::transfer( cfg );
-    RT_DBG_ASSERT( setup_result != Chimera::DMA::INVALID_REQUEST );
+    s_ctrl_blk[ mResourceIndex ].txfrId = Chimera::DMA::transfer( cfg );
+    RT_DBG_ASSERT( s_ctrl_blk[ mResourceIndex ].txfrId != Chimera::DMA::INVALID_REQUEST );
     RT_DBG_ASSERT( cfg.addr % sizeof( uint32_t ) == 0 );
 
     /*-------------------------------------------------------------------------
@@ -1122,42 +1206,65 @@ namespace Thor::LLD::SDIO
     MASK_ALL::set( mPeriph, TX_ISR_MASK_FLAGS );
 
     /*-------------------------------------------------------------------------
-    Reset driver state
-    -------------------------------------------------------------------------*/
-    s_ctrl_blk[ mResourceIndex ].txfrComplete = false;
-
-    /*-------------------------------------------------------------------------
     Configure the data path state machine. Once this starts, the DMA transfer
     will either complete or the SDIO peripheral will error out.
     -------------------------------------------------------------------------*/
     CLKEN::set( mPeriph, CLKCR_CLKEN );
     DATATIME::set( mPeriph, 5000 );
-    DATALENGTH::set( mPeriph, 512 );
+    DATALENGTH::set( mPeriph, bytes_to_transfer );
     DCTRL_ALL::set( mPeriph, DCTRL_DTEN | DCTRL_DMAEN | DCTRL_DATABLOCK_SIZE_512B );
 
     /*-------------------------------------------------------------------------
     Wait for the transfer to complete
     -------------------------------------------------------------------------*/
-    while ( !s_ctrl_blk[ mResourceIndex ].txfrComplete )
-      ;
+    auto wait_error = await( Trigger::TRIGGER_WRITE_COMPLETE, ( 5u * TIMEOUT_1MS ) );
 
-    return s_ctrl_blk[ mResourceIndex ].txfrError;
+    /*-------------------------------------------------------------------------
+    Finalize the transfer
+    -------------------------------------------------------------------------*/
+    INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
+    Chimera::DMA::abort( s_ctrl_blk[ mResourceIndex ].txfrId );
+
+    if ( count > 1u )
+    {
+      cmdStopTransfer();
+    }
+
+    /*-------------------------------------------------------------------------
+    Hand back an appropriate error code
+    -------------------------------------------------------------------------*/
+    if ( wait_error == Chimera::Status::OK )
+    {
+      return s_ctrl_blk[ mResourceIndex ].txfrError;
+    }
+    else
+    {
+      return ErrorType::ERROR_TIMEOUT;
+    }
   }
 
 
   void Driver::IRQHandler()
   {
+    using namespace Chimera::Event;
+
+    /*-------------------------------------------------------------------------
+    Read the status and mask registers
+    -------------------------------------------------------------------------*/
     const uint32_t status = mPeriph->STA;
     const uint32_t mask   = mPeriph->MASK;
+    const uint32_t ctrl   = mPeriph->DCTRL;
 
     /*-------------------------------------------------------------------------
     Handle TX errors and completion events
     -------------------------------------------------------------------------*/
-    if ( ( status & TX_ISR_STATUS_FLAGS ) && ( mask & TX_ISR_MASK_FLAGS ) )
-    {
-      s_ctrl_blk[ mResourceIndex ].txfrStatus   = status;
-      s_ctrl_blk[ mResourceIndex ].txfrError    = ErrorType::ERROR_GENERAL_UNKNOWN_ERR;
-      s_ctrl_blk[ mResourceIndex ].txfrComplete = true;
+    /* clang-format off */
+    if ( ( ( ctrl & DCTRL_DTDIR ) == TRANSFER_DIR_TO_CARD ) &&
+         ( status & TX_ISR_STATUS_FLAGS                   ) &&
+         (   mask & TX_ISR_MASK_FLAGS                     ) )
+    { /* clang-format on */
+      s_ctrl_blk[ mResourceIndex ].txfrStatus = status;
+      s_ctrl_blk[ mResourceIndex ].txfrError  = ErrorType::ERROR_GENERAL_UNKNOWN_ERR;
 
       /*-----------------------------------------------------------------------
       Disable and ACK the interrupts. Reset DMA controller.
@@ -1165,7 +1272,6 @@ namespace Thor::LLD::SDIO
       MASK_ALL::clear( mPeriph, TX_ISR_MASK_FLAGS );
       ICR_ALL::set( mPeriph, TX_ISR_CLEAR_FLAGS );
       DCTRL_ALL::set( mPeriph, 0 );
-      CLKEN::clear( mPeriph, CLKCR_CLKEN );
 
       /*-----------------------------------------------------------------------
       Parse the reason for the interrupt
@@ -1190,16 +1296,24 @@ namespace Thor::LLD::SDIO
       {
         s_ctrl_blk[ mResourceIndex ].txfrError = ErrorType::ERROR_NONE;
       }
+
+      /*-------------------------------------------------------------------------
+      Signal the transfer is complete
+      -------------------------------------------------------------------------*/
+      signalAIOFromISR( Trigger::TRIGGER_WRITE_COMPLETE );
+      return;
     }
 
     /*-------------------------------------------------------------------------
     Handle RX errors and completion events
     -------------------------------------------------------------------------*/
-    if ( ( status & RX_ISR_STATUS_FLAGS ) && ( mask & RX_ISR_MASK_FLAGS ) )
-    {
-      s_ctrl_blk[ mResourceIndex ].txfrStatus   = status;
-      s_ctrl_blk[ mResourceIndex ].txfrError    = ErrorType::ERROR_GENERAL_UNKNOWN_ERR;
-      s_ctrl_blk[ mResourceIndex ].txfrComplete = true;
+    /* clang-format off */
+    if ( ( ( ctrl & DCTRL_DTDIR ) == TRANSFER_DIR_TO_SDIO ) &&
+         ( status & RX_ISR_STATUS_FLAGS                   ) &&
+         (   mask & RX_ISR_MASK_FLAGS                     ) )
+    { /* clang-format on */
+      s_ctrl_blk[ mResourceIndex ].txfrStatus = status;
+      s_ctrl_blk[ mResourceIndex ].txfrError  = ErrorType::ERROR_GENERAL_UNKNOWN_ERR;
 
       /*-----------------------------------------------------------------------
       Disable and ACK the interrupts. Reset DMA controller.
@@ -1207,7 +1321,6 @@ namespace Thor::LLD::SDIO
       MASK_ALL::clear( mPeriph, RX_ISR_MASK_FLAGS );
       ICR_ALL::set( mPeriph, RX_ISR_CLEAR_FLAGS );
       DCTRL_ALL::set( mPeriph, 0 );
-      CLKEN::clear( mPeriph, CLKCR_CLKEN );
 
       /*-----------------------------------------------------------------------
       Parse the reason for the interrupt
@@ -1232,6 +1345,12 @@ namespace Thor::LLD::SDIO
       {
         s_ctrl_blk[ mResourceIndex ].txfrError = ErrorType::ERROR_NONE;
       }
+
+      /*-------------------------------------------------------------------------
+      Signal the transfer is complete
+      -------------------------------------------------------------------------*/
+      signalAIOFromISR( Trigger::TRIGGER_READ_COMPLETE );
+      return;
     }
   }
 

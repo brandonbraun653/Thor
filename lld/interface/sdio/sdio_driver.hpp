@@ -18,6 +18,7 @@ Includes
 #include <Chimera/common>
 #include <Chimera/dma>
 #include <Chimera/sdio>
+#include <Chimera/thread>
 #include <Thor/lld/common/interrupts/sdio_interrupt_vectors.hpp>
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/sdio/sdio_detail.hpp>
@@ -34,7 +35,7 @@ namespace Thor::LLD::SDIO
    * Generally speaking, the driver focuses on SD Memory Card support since
    * that is the most common use case.
    */
-  class Driver
+  class Driver : public Chimera::Thread::AsyncIO<Driver>
   {
   public:
     Driver();
@@ -153,17 +154,6 @@ namespace Thor::LLD::SDIO
      */
     uint32_t cpsmGetRespX( const ResponseMailbox which ) const;
 
-    /**
-     * @brief Configures the Data Path State Machine
-     *
-     * @param config  Configuration parameters
-     * @return void
-     */
-    void dpsmConfigure( const DPSMConfig &config );
-
-    uint32_t dpsmGetDataCounter();
-    uint32_t dpsmGetFIFOCount();
-
     /*-------------------------------------------------------------------------
     Command Management
     -------------------------------------------------------------------------*/
@@ -210,8 +200,6 @@ namespace Thor::LLD::SDIO
      */
     ErrorType cmdGoIdleState();
 
-    ErrorType cmdOpCondition( const uint32_t Argument );
-
     /**
      * @brief Sends CMD8 to the SD card
      *
@@ -222,12 +210,18 @@ namespace Thor::LLD::SDIO
      */
     ErrorType cmdOperCond();
 
-    ErrorType cmdReadMultiBlock( const uint32_t ReadAdd );
+    /**
+     * @brief Sends CMD18 to the SD card to read multiple blocks
+     *
+     * @param address    Address of the block to start reading from
+     * @return ErrorType
+     */
+    ErrorType cmdReadMultiBlock( const uint32_t address );
 
     /**
      * @brief Sends CMD17 to the SD card to read a single block
      *
-     * @param address    Address of the block to read
+     * @param address    Address of the block to start reading from
      * @return ErrorType
      */
     ErrorType cmdReadSingleBlock( const uint32_t address );
@@ -257,15 +251,19 @@ namespace Thor::LLD::SDIO
      */
     ErrorType cmdSendCSD( const uint16_t rca );
 
-    ErrorType cmdSendEXTCSD( const uint32_t Argument );
-
     /**
      * @brief Sends CMD51 to the SD card to read the SCR register
      * @return ErrorType
      */
     ErrorType cmdSendSCR();
 
-    ErrorType cmdSendStatus( const uint32_t Argument );
+    /**
+     * @brief Sends CMD13 to the card to get the card's status
+     *
+     * @param rca   Address of the card to get the status from
+     * @return ErrorType
+     */
+    ErrorType cmdSendStatus( const uint16_t rca );
 
     /**
      * @brief Sends CMD3 to the SD card to get the card's relative address
@@ -276,9 +274,20 @@ namespace Thor::LLD::SDIO
     ErrorType cmdSetRelAdd( uint16_t *const pRCA );
 
     ErrorType cmdStatusRegister();
+
+    /**
+     * @brief Sends CMD12 to the SD card to stop a transmission
+     * @return ErrorType
+     */
     ErrorType cmdStopTransfer();
-    ErrorType cmdSwitch( const uint32_t Argument );
-    ErrorType cmdWriteMultiBlock( const uint32_t WriteAdd );
+
+    /**
+     * @brief Sends CMD25 to the SD card to write multiple blocks
+     *
+     * @param address   Address to write to
+     * @return ErrorType
+     */
+    ErrorType cmdWriteMultiBlock( const uint32_t address );
 
     /**
      * @brief Sends CMD24 to the SD card to write a single block
@@ -343,30 +352,33 @@ namespace Thor::LLD::SDIO
      * @brief Reads a single 512 byte block from the SD card
      *
      * @param address   Starting address to read from (aligned to block size)
+     * @param count     Number of blocks to read
      * @param buffer    Buffer to read the data into
      * @return ErrorType
      */
-    ErrorType asyncReadBlock( const uint32_t address, void *const buffer );
+    ErrorType asyncReadBlock( const uint32_t address, const uint32_t count, void *const buffer );
 
     /**
      * @brief Writes a single 512 byte block to the SD card
      *
      * @param address   Starting address to write into (aligned to block size)
+     * @param count     Number of blocks to write
      * @param buffer    Buffer to write the data from
      * @return ErrorType
      */
-    ErrorType asyncWriteBlock( const uint32_t address, const void *const buffer );
+    ErrorType asyncWriteBlock( const uint32_t address, const uint32_t count, const void *const buffer );
 
   protected:
     void IRQHandler();
 
   private:
+    friend Chimera::Thread::AsyncIO<Driver>;
     friend void( ::SDIO_IRQHandler )();
 
     RegisterMap            *mPeriph;         /**< Mapped hardware peripheral */
     RIndex_t                mResourceIndex;  /**< Lookup index for mPeriph */
-    Chimera::DMA::RequestId mTXDMARequestId; /**< Request id of the TX DMA pipe for the driver */
-    Chimera::DMA::RequestId mRXDMARequestId; /**< Request id of the RX DMA pipe for the driver */
+    Chimera::DMA::RequestId mTXDMAPipeId; /**< Request id of the TX DMA pipe for the driver */
+    Chimera::DMA::RequestId mRXDMAPipeId; /**< Request id of the RX DMA pipe for the driver */
   };
 }    // namespace Thor::LLD::SDIO
 

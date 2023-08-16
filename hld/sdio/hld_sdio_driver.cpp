@@ -39,15 +39,14 @@ namespace Chimera::SDIO
     Chimera::Status_t powerOn();
     LLD::ErrorType    configureBusWidth( const Chimera::SDIO::BusWidth width );
 
-    LLD::Driver_rPtr           lldriver;
-    Chimera::SDIO::Driver_rPtr hldriver;
-    CardInfo                   cardInfo;
-    uint32_t                   clockSpeed;
-    BusWidth                   busWidth;
-    uint32_t                   blockSize;
-    uint16_t                   rca; /**< Relative Card Address */
-    uint32_t                   cid[ 4 ];
-    uint32_t                   csd[ 4 ];
+    LLD::Driver_rPtr           lldriver;   /**< Low level driver instance */
+    Chimera::SDIO::Driver_rPtr hldriver;   /**< High level driver instance */
+    CardInfo                   cardInfo;   /**< Cached card information */
+    uint32_t                   clockSpeed; /**< User configured data bus speed */
+    BusWidth                   busWidth;   /**< User configured data bus width */
+    uint16_t                   rca;        /**< Relative Card Address */
+    uint32_t                   cid[ 4 ];   /**< Card reported CID register */
+    uint32_t                   csd[ 4 ];   /**< Card reported CSD register */
 
   private:
     LLD::ErrorType acmd41Init();
@@ -130,7 +129,6 @@ namespace Chimera::SDIO
     memset( &impl->cardInfo, 0, sizeof( impl->cardInfo ) );
     impl->busWidth   = init.width;
     impl->clockSpeed = init.clockSpeed;
-    impl->blockSize  = init.blockSize;
 
     /*-------------------------------------------------------------------------
     Initialize the LLD driver
@@ -139,14 +137,12 @@ namespace Chimera::SDIO
   }
 
 
-  /**
-   * @brief Goes through the full initialization sequence for the SDIO card.
-   * @see Figure 4-2 and 4-13 in the Physical Layer Simplified Specification Version 9.00
-   *
-   * @return Chimera::Status_t
-   */
   Chimera::Status_t Driver::connect()
   {
+    /*-------------------------------------------------------------------------
+    Goes through the full initialization sequence for the SDIO card. See Figure
+    4-2 and 4-13 in the Physical Layer Simplified Specification Version 9.00.
+    -------------------------------------------------------------------------*/
     auto impl = reinterpret_cast<ThorImpl *>( mImpl );
     RT_DBG_ASSERT( impl );
     RT_DBG_ASSERT( impl->lldriver );
@@ -209,7 +205,7 @@ namespace Chimera::SDIO
     impl->csd[ 3 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_4 );
 
     /*-------------------------------------------------------------------------
-    Finally select the card, transitioning to the transfer state.
+    Select the card, transitioning to the transfer state.
     -------------------------------------------------------------------------*/
     if( impl->lldriver->cmdSelDesel( impl->rca ) != LLD::ERROR_NONE )
     {
@@ -243,8 +239,11 @@ namespace Chimera::SDIO
 
   Chimera::Status_t Driver::writeBlock( const uint32_t blockAddress, const size_t blockCount, const void *const buffer, const size_t size )
   {
+
+    // handle something about address division for SDXC cards?
+
     auto impl   = reinterpret_cast<ThorImpl *>( mImpl );
-    auto result = impl->lldriver->asyncWriteBlock( blockAddress, buffer );
+    auto result = impl->lldriver->asyncWriteBlock( blockAddress, blockCount, buffer );
 
     return ( result == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::FAIL;
   }
@@ -253,9 +252,39 @@ namespace Chimera::SDIO
   Chimera::Status_t Driver::readBlock( const uint32_t blockAddress, const size_t blockCount, void *const buffer, const size_t size )
   {
     auto impl   = reinterpret_cast<ThorImpl *>( mImpl );
-    auto result = impl->lldriver->asyncReadBlock( blockAddress, buffer );
+    auto result = impl->lldriver->asyncReadBlock( blockAddress, blockCount, buffer );
 
     return ( result == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::FAIL;
+  }
+
+
+  Chimera::Status_t Driver::eraseBlock( const uint32_t blockAddress, const size_t blockCount )
+  {
+    return Chimera::Status::FAIL;
+  }
+
+
+  CardState Driver::getCardState()
+  {
+    auto           impl  = reinterpret_cast<ThorImpl *>( mImpl );
+    CardState      state = CardState::CARD_ERROR;
+    LLD::ErrorType error = LLD::ErrorType::ERROR_GENERAL_UNKNOWN_ERR;
+
+    /*-------------------------------------------------------------------------
+    Send CMD13 to get the card status
+    -------------------------------------------------------------------------*/
+    if ( error = impl->lldriver->cmdSendStatus( impl->rca ); error != LLD::ErrorType::ERROR_NONE )
+    {
+      return CardState::CARD_ERROR;
+    }
+
+    /*-------------------------------------------------------------------------
+    Parse the response to get the card state
+    -------------------------------------------------------------------------*/
+    const uint32_t resp1 = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_1 );
+    state                = static_cast<CardState>( ( resp1 >> 9U ) & 0x0FU );
+
+    return state;
   }
 
 
@@ -286,6 +315,10 @@ namespace Chimera::SDIO
   /*---------------------------------------------------------------------------
   Thor Driver Implementation
   ---------------------------------------------------------------------------*/
+  /**
+   * @brief Powers on the SDIO card and initializes it
+   * @return Chimera::Status_t
+   */
   Chimera::Status_t ThorImpl::powerOn()
   {
     /*-------------------------------------------------------------------------
