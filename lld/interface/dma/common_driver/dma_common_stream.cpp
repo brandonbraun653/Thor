@@ -107,9 +107,24 @@ namespace Thor::LLD::DMA
     streamClearInterruptEnableFlags( mStream );
     streamDisable( mStream );
     reset_isr_flags();
-    mStreamTCB.state               = StreamState::TRANSFER_IDLE;
-    mStreamTCB.transferError       = false;
-    mStreamTCB.elementsTransferred = mStreamTCB.transferSize - NDT::get( mStream );
+    mStreamTCB.state         = StreamState::TRANSFER_IDLE;
+    mStreamTCB.transferError = false;
+
+    /*-----------------------------------------------------------------------
+    Calculate the number of elements transferred. This changes behavior based
+    upon who acts as the flow controller.
+    See RM0390 Section 9.2 and 9.3.16
+    -----------------------------------------------------------------------*/
+    if( PFCTRL::get( mStream ) )
+    {
+      /* Peripheral is the flow controller */
+      mStreamTCB.elementsTransferred = 0xFFFFu - NDT::get( mStream );
+    }
+    else
+    {
+      /* DMA is the flow controller */
+      mStreamTCB.elementsTransferred = mStreamTCB.transferSize - NDT::get( mStream );
+    }
 
     /*-------------------------------------------------------------------------
     If an ISR callback was registered, invoke it now

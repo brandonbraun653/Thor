@@ -48,7 +48,7 @@ Stack size for the interrupt handler thread
 #define THREAD_SIZE ( 256 )
 #elif defined( STM32F446xx )
 #define THREAD_SIZE ( 512 )
-#endif 
+#endif
 
 /*-------------------------------------------------------------------------------
 Aliases
@@ -63,7 +63,9 @@ Structures
 struct StreamStatus
 {
   ::LLD::StreamState             state;    /**< Is this stream busy? */
+  ::LLD::Stream_rPtr             stream;   /**< Stream controller associated with the transaction */
   Chimera::DMA::TransferCallback callback; /**< Optional callback to be invoked on completion or error */
+  Chimera::DMA::RequestId        request;  /**< Request ID of the current transfer */
 };
 
 /*-------------------------------------------------------------------------------
@@ -213,9 +215,13 @@ namespace Chimera::DMA::Backend
     Reset DMA and the driver module
     -------------------------------------------------------------------------*/
     reset();
+
     for ( auto &stream : s_stream_status )
     {
-      stream.state = ::LLD::StreamState::TRANSFER_IDLE;
+      stream.stream   = nullptr;
+      stream.state    = ::LLD::StreamState::TRANSFER_IDLE;
+      stream.request  = Chimera::DMA::INVALID_REQUEST;
+      stream.callback = {};
     }
 
     /*-------------------------------------------------------------------------
@@ -316,7 +322,7 @@ namespace Chimera::DMA::Backend
     cfg.dstAddrIncr   = true;
     cfg.srcAddrIncr   = true;
     cfg.channel       = ::LLD::Channel::INVALID;
-    cfg.fifoMode      = ::LLD::FifoMode::DIRECT_ENABLE;
+    cfg.fifoMode      = Chimera::DMA::FifoMode::DIRECT_DISABLE;
     cfg.fifoThreshold = Chimera::DMA::FifoThreshold::FULL;
     cfg.dmaMode       = Chimera::DMA::Mode::DIRECT;
     cfg.direction     = Chimera::DMA::Direction::MEMORY_TO_MEMORY;
@@ -335,6 +341,11 @@ namespace Chimera::DMA::Backend
     tcb.persistent         = false;
     tcb.wakeUserOnComplete = true;
 
+    if( s_dma_request_uuid == Chimera::DMA::INVALID_REQUEST )
+    {
+      s_dma_request_uuid = 0;
+    }
+
     /*-------------------------------------------------------------------------
     Set the configuration on the stream
     -------------------------------------------------------------------------*/
@@ -342,6 +353,7 @@ namespace Chimera::DMA::Backend
     {
       s_stream_status[ idx ].state    = ::LLD::StreamState::TRANSFER_IN_PROGRESS;
       s_stream_status[ idx ].callback = transfer.callback;
+      s_stream_status[ idx ].request  = tcb.requestId;
 
       stream->start();
       return tcb.requestId;
@@ -388,7 +400,7 @@ namespace Chimera::DMA::Backend
     if ( pipeCfg.direction == Direction::MEMORY_TO_PERIPH )
     {
       cfg.dstAddrIncr  = false;
-      cfg.dstBurstSize = Chimera::DMA::BurstSize::NUM_OPTIONS;
+      cfg.dstBurstSize = pipeCfg.burstSize;
       cfg.dstAddrAlign = pipeCfg.dstAlignment;
       tcb.dstAddress   = pipeCfg.periphAddr;
 
@@ -405,7 +417,7 @@ namespace Chimera::DMA::Backend
       tcb.dstAddress   = transfer.addr;
 
       cfg.srcAddrIncr  = false;
-      cfg.srcBurstSize = Chimera::DMA::BurstSize::NUM_OPTIONS;
+      cfg.srcBurstSize = pipeCfg.burstSize;
       cfg.srcAddrAlign = pipeCfg.srcAlignment;
       tcb.srcAddress   = pipeCfg.periphAddr;
     }
@@ -415,7 +427,7 @@ namespace Chimera::DMA::Backend
     }
 
     cfg.channel            = static_cast<::LLD::Channel>( pipeCfg.channel );
-    cfg.fifoMode           = ::LLD::FifoMode::DIRECT_ENABLE;
+    cfg.fifoMode           = pipeCfg.fifoMode;
     cfg.fifoThreshold      = pipeCfg.threshold;
     cfg.dmaMode            = pipeCfg.mode;
     cfg.direction          = pipeCfg.direction;
@@ -428,6 +440,11 @@ namespace Chimera::DMA::Backend
     tcb.wakeUserOnComplete = pipeCfg.wakeUserOnComplete;
     tcb.isrCallback        = transfer.isrCallback;
 
+    if( s_dma_request_uuid == Chimera::DMA::INVALID_REQUEST )
+    {
+      s_dma_request_uuid = 0;
+    }
+
     /*-------------------------------------------------------------------------
     Set the configuration on the stream
     -------------------------------------------------------------------------*/
@@ -435,6 +452,8 @@ namespace Chimera::DMA::Backend
     {
       s_stream_status[ pipeCfg.resourceIndex ].state    = ::LLD::StreamState::TRANSFER_IN_PROGRESS;
       s_stream_status[ pipeCfg.resourceIndex ].callback = transfer.userCallback;
+      s_stream_status[ pipeCfg.resourceIndex ].request  = tcb.requestId;
+      s_stream_status[ pipeCfg.resourceIndex ].stream   = stream;
 
       stream->start();
       return tcb.requestId;
@@ -442,6 +461,19 @@ namespace Chimera::DMA::Backend
     else
     {
       return Chimera::DMA::INVALID_REQUEST;
+    }
+  }
+
+
+  static void abort( const Chimera::DMA::RequestId id )
+  {
+    for ( auto &stream : s_stream_status )
+    {
+      if ( ( stream.request == id ) && ( stream.state != ::LLD::StreamState::TRANSFER_IDLE ) && ( stream.stream ) )
+      {
+        stream.stream->abort();
+        break;
+      }
     }
   }
 
@@ -454,6 +486,7 @@ namespace Chimera::DMA::Backend
     registry.constructPipe = constructPipe;
     registry.memTransfer   = transfer;
     registry.pipeTransfer  = transfer;
+    registry.abortTransfer = abort;
 
     return Chimera::Status::OK;
   }

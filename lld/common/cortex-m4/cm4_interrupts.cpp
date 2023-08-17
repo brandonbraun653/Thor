@@ -52,6 +52,11 @@ namespace Thor::LLD::INT
     NVIC_DisableIRQ( IRQn );
   }
 
+  bool isEnabledIRQ( const IRQn_Type IRQn )
+  {
+    return( NVIC_GetEnableIRQ( IRQn ) == 1UL );
+  }
+
   void setPendingIRQ( const IRQn_Type IRQn )
   {
     NVIC_SetPendingIRQ( IRQn );

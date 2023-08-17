@@ -5,17 +5,17 @@
  *  Description:
  *    System level memory map definitions for the STM32F446xx series chips
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
 #ifndef THOR_SYSTEM_MEMORY_MAP_HPP
 #define THOR_SYSTEM_MEMORY_MAP_HPP
 
-/* C++ Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <cstdint>
-
-/* Thor Includes */
 #include <Thor/lld/stm32f4x/system/variant/sys_memory_map_stm32f4xxxx.hpp>
 
 namespace Thor::System::MemoryMap

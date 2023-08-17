@@ -11,6 +11,7 @@
 /*-----------------------------------------------------------------------------
 Includes
 -----------------------------------------------------------------------------*/
+#include <Aurora/utility>
 #include <Chimera/peripheral>
 #include <Chimera/serial>
 #include <Chimera/thread>

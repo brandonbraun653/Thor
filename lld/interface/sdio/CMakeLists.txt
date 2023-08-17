@@ -2,9 +2,9 @@ include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
 
 gen_static_lib_variants(
   TARGET
-    thor_lld_intf_gpio
+    thor_lld_intf_sdio
   SOURCES
-    gpio_intf.cpp
+    sdio_intf.cpp
   PRV_LIBRARIES
     chimera_intf_inc
     thor_intf_inc
