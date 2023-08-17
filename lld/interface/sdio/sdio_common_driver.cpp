@@ -122,13 +122,13 @@ namespace Thor::LLD::SDIO
     ( 0 ),                                                                            /**< 29 -- CMD_CLR_WRITE_PROT */
     ( 0 ),                                                                            /**< 30 -- CMD_SEND_WRITE_PROT */
     ( 0 ),                                                                            /**< 31 -- ??? */
-    ( 0 ),                                                                            /**< 32 -- CMD_SD_ERASE_GRP_START */
-    ( 0 ),                                                                            /**< 33 -- CMD_SD_ERASE_GRP_END */
+    ( CMD_SD_ERASE_GRP_START | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),  /**< 32 -- CMD_SD_ERASE_GRP_START */
+    ( CMD_SD_ERASE_GRP_END | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),    /**< 33 -- CMD_SD_ERASE_GRP_END */
     ( 0 ),                                                                            /**< 34 -- ??? */
     ( 0 ),                                                                            /**< 35 -- CMD_ERASE_GRP_START */
     ( 0 ),                                                                            /**< 36 -- CMD_ERASE_GRP_END */
     ( 0 ),                                                                            /**< 37 -- ??? */
-    ( 0 ),                                                                            /**< 38 -- CMD_ERASE */
+    ( CMD_ERASE | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),               /**< 38 -- CMD_ERASE */
     ( 0 ),                                                                            /**< 39 -- CMD_FAST_IO */
     ( 0 ),                                                                            /**< 40 -- CMD_GO_IRQ_STATE */
     ( CMD_SD_APP_OP_COND | CMD_RESPONSE_SHORT | CMD_WAIT_NO | CMD_CPSM_ENABLE ),      /**< 41 -- CMD_SD_APP_OP_COND */
@@ -500,6 +500,42 @@ namespace Thor::LLD::SDIO
   }
 
 
+  ErrorType Driver::cmdErase()
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD38 to set start erasing
+    -------------------------------------------------------------------------*/
+    mPeriph->ARG = 0u;
+    mPeriph->CMD = CmdRegCfg[ CMD_ERASE ];
+
+    return getCmdResp1( CMD_ERASE, SDIO_MAX_ERASE_TIMEOUT_MS );
+  }
+
+
+  ErrorType Driver::cmdEraseEndAdd( const uint32_t address )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD33 to set the end address
+    -------------------------------------------------------------------------*/
+    mPeriph->ARG = address;
+    mPeriph->CMD = CmdRegCfg[ CMD_SD_ERASE_GRP_END ];
+
+    return getCmdResp1( CMD_SD_ERASE_GRP_END, SDIO_CMD_TIMEOUT_MS );
+  }
+
+
+  ErrorType Driver::cmdEraseStartAdd( const uint32_t address )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD32 to set the start address
+    -------------------------------------------------------------------------*/
+    mPeriph->ARG = address;
+    mPeriph->CMD = CmdRegCfg[ CMD_SD_ERASE_GRP_START ];
+
+    return getCmdResp1( CMD_SD_ERASE_GRP_START, SDIO_CMD_TIMEOUT_MS );
+  }
+
+
   ErrorType Driver::cmdGoIdleState()
   {
     /*-------------------------------------------------------------------------
@@ -604,6 +640,19 @@ namespace Thor::LLD::SDIO
     mPeriph->CMD = CmdRegCfg[ CMD_SET_REL_ADDR ];
 
     return getCmdResp6( CMD_SET_REL_ADDR, pRCA );
+  }
+
+
+  ErrorType Driver::cmdStatusRegister()
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD13 to get the SD card status. Assumes CMD55 has already been sent
+    with the card addressed.
+    -------------------------------------------------------------------------*/
+    mPeriph->ARG = 0u;
+    mPeriph->CMD = CmdRegCfg[ CMD_SEND_STATUS ];
+
+    return getCmdResp1( CMD_SEND_STATUS, SDIO_CMD_TIMEOUT_MS );
   }
 
 
@@ -983,10 +1032,10 @@ namespace Thor::LLD::SDIO
     uint32_t  *scr           = pSCR;
 
     /* Set Block Size To 8 Bytes */
-    // if ( error = cmdBlockLength( 8U ); error != ERROR_NONE )
-    // {
-    //   return error;
-    // }
+    if ( error = cmdBlockLength( 8U ); error != ERROR_NONE )
+    {
+      return error;
+    }
 
     /* Send CMD55 APP_CMD with argument as card's RCA */
     if ( error = cmdAppCommand( rca ); error != ERROR_NONE )
@@ -1060,6 +1109,107 @@ namespace Thor::LLD::SDIO
   }
 
 
+  ErrorType Driver::getSDStatus( const uint16_t rca, uint32_t *const pSDstatus )
+  {
+    ErrorType error;
+    uint32_t tickstart = Chimera::millis();
+    uint32_t count;
+    uint32_t *pData = pSDstatus;
+
+    /*-------------------------------------------------------------------------
+    Set the block size of the transfer
+    -------------------------------------------------------------------------*/
+    if ( error = cmdBlockLength( 64U ); error != ERROR_NONE )
+    {
+      return error;
+    }
+
+    /*-------------------------------------------------------------------------
+    Send CMD55 to indicate the next command is an application specific command
+    -------------------------------------------------------------------------*/
+    if ( error = cmdAppCommand( rca ); error != ERROR_NONE )
+    {
+      return error;
+    }
+
+    /*-------------------------------------------------------------------------
+    Set the DPSM configuration register
+    -------------------------------------------------------------------------*/
+    DATATIME::set( mPeriph, 5000 );
+    DATALENGTH::set( mPeriph, 64u );
+    DCTRL_ALL::set( mPeriph, DCTRL_DATABLOCK_SIZE_64B | DCTRL_DTDIR | DCTRL_DTEN );
+
+    /*-------------------------------------------------------------------------
+    Send ACMD13 to get the SD card status
+    -------------------------------------------------------------------------*/
+    if( error = cmdStatusRegister(); error != ERROR_NONE )
+    {
+      return error;
+    }
+
+    /*-------------------------------------------------------------------------
+    Retrieve data from the FIFO in 8-byte chunks
+    -------------------------------------------------------------------------*/
+    uint32_t status = mPeriph->STA;
+    while ( 0 == ( status & ( STA_RXOVERR | STA_DCRCFAIL | STA_DTIMEOUT | STA_DBCKEND ) ) )
+    {
+      if ( RXFIFOHF::get( mPeriph ) )
+      {
+          for ( count = 0U; count < 8U; count++ )
+          {
+            *pData = mPeriph->FIFO;
+            pData++;
+          }
+      }
+
+      if ( ( Chimera::millis() - tickstart ) >= SDIO_DATA_TIMEOUT_MS )
+      {
+          return ERROR_TIMEOUT;
+      }
+    }
+
+    /*-------------------------------------------------------------------------
+    Handle error codes
+    -------------------------------------------------------------------------*/
+    if ( DTIMEOUT::get( mPeriph ) == STA_DTIMEOUT )
+    {
+      DTIMEOUTC::set( mPeriph, ICR_DTIMEOUTC );
+      return ERROR_DATA_TIMEOUT;
+    }
+    else if ( DCRCFAIL::get( mPeriph ) == STA_DCRCFAIL )
+    {
+      DCRCFAILC::set( mPeriph, ICR_DCRCFAILC );
+      return ERROR_DATA_CRC_FAIL;
+    }
+    else if ( RXOVERR::get( mPeriph ) == STA_RXOVERR )
+    {
+      RXOVERRC::set( mPeriph, ICR_RXOVERRC );
+      return ERROR_RX_OVERRUN;
+    }
+
+    /*-------------------------------------------------------------------------
+    Pull all remaining data out of the FIFO
+    -------------------------------------------------------------------------*/
+    while ( RXDAVL::get( mPeriph ) )
+    {
+      *pData = mPeriph->FIFO;
+      pData++;
+
+      if ( ( Chimera::millis() - tickstart ) >= SDIO_DATA_TIMEOUT_MS )
+      {
+      return ERROR_TIMEOUT;
+      }
+    }
+
+    /*-------------------------------------------------------------------------
+    Exit in a known state by clearing all static flags
+    -------------------------------------------------------------------------*/
+    ICR_ALL::set( mPeriph, STATIC_CMD_FLAGS );
+
+    return ERROR_NONE;
+  }
+
+
   ErrorType Driver::asyncReadBlock( const uint32_t address, const uint32_t count, void *const buffer )
   {
     using namespace Chimera::DMA;
@@ -1072,10 +1222,17 @@ namespace Thor::LLD::SDIO
     const uint32_t bytes_to_transfer = count * SDIO_BLOCK_SIZE;
 
     /*-------------------------------------------------------------------------
-    Make the request to read from the card
+    Set the block size of the transfer
     -------------------------------------------------------------------------*/
     ErrorType error = ErrorType::ERROR_NONE;
+    if ( error = cmdBlockLength( 512u ); error != ERROR_NONE )
+    {
+      return error;
+    }
 
+    /*-------------------------------------------------------------------------
+    Make the request to read from the card
+    -------------------------------------------------------------------------*/
     if ( count == 1 )
     {
       error = cmdReadSingleBlock( address );
@@ -1164,10 +1321,17 @@ namespace Thor::LLD::SDIO
     const uint32_t bytes_to_transfer = count * SDIO_BLOCK_SIZE;
 
     /*-------------------------------------------------------------------------
-    Request a write to the card
+    Set the block size of the transfer
     -------------------------------------------------------------------------*/
     ErrorType error = ErrorType::ERROR_NONE;
+    if ( error = cmdBlockLength( 512u ); error != ERROR_NONE )
+    {
+      return error;
+    }
 
+    /*-------------------------------------------------------------------------
+    Request a write to the card
+    -------------------------------------------------------------------------*/
     if ( count == 1 )
     {
       error = cmdWriteSingleBlock( address );

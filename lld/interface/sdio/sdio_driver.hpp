@@ -190,9 +190,27 @@ namespace Thor::LLD::SDIO
      */
     ErrorType cmdBusWidth( const Chimera::SDIO::BusWidth width );
 
+    /**
+     * @brief Starts erase procedure set up by cmdEraseStartAdd() and cmdEraseEndAdd()
+     * @return ErrorType
+     */
     ErrorType cmdErase();
-    ErrorType cmdEraseEndAdd( const uint32_t EndAdd );
-    ErrorType cmdEraseStartAdd( const uint32_t StartAdd );
+
+    /**
+     * @brief Sets the end address for the erase procedure
+     *
+     * @param address  Address to end erasing at
+     * @return ErrorType
+     */
+    ErrorType cmdEraseEndAdd( const uint32_t address );
+
+    /**
+     * @brief Sets the start address for the erase procedure
+     *
+     * @param address  Address to start erasing at
+     * @return ErrorType
+     */
+    ErrorType cmdEraseStartAdd( const uint32_t address );
 
     /**
      * @brief Sends CMD0 to the SD card to reset it to Idle state
@@ -226,9 +244,6 @@ namespace Thor::LLD::SDIO
      */
     ErrorType cmdReadSingleBlock( const uint32_t address );
 
-    ErrorType cmdSDEraseEndAdd( const uint32_t EndAdd );
-    ErrorType cmdSDEraseStartAdd( const uint32_t StartAdd );
-
     /**
      * @brief Selects or deselects the card
      *
@@ -258,7 +273,7 @@ namespace Thor::LLD::SDIO
     ErrorType cmdSendSCR();
 
     /**
-     * @brief Sends CMD13 to the card to get the card's status
+     * @brief Sends CMD13 to the card to get the card's status register
      *
      * @param rca   Address of the card to get the status from
      * @return ErrorType
@@ -273,6 +288,10 @@ namespace Thor::LLD::SDIO
      */
     ErrorType cmdSetRelAdd( uint16_t *const pRCA );
 
+    /**
+     * @brief Requests the SD card status register
+     * @return ErrorType
+     */
     ErrorType cmdStatusRegister();
 
     /**
@@ -347,6 +366,15 @@ namespace Thor::LLD::SDIO
      * @return LLD::ErrorType
      */
     ErrorType getStreamControlRegister( const uint16_t rca, uint32_t *const pSCR );
+
+    /**
+     * @brief Sends ACMD13 to get the SD card status
+     *
+     * @param rca       Address of the card to get the status from
+     * @param pSDstatus Output parameter to store the card's status
+     * @return ErrorType
+     */
+    ErrorType getSDStatus( const uint16_t rca, uint32_t *const pSDstatus );
 
     /**
      * @brief Reads a single 512 byte block from the SD card

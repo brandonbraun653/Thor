@@ -171,7 +171,7 @@ namespace Chimera::SDIO
     /*-------------------------------------------------------------------------
     Request the CID from the card
     -------------------------------------------------------------------------*/
-    if( impl->lldriver->cmdSendCID() != LLD::ERROR_NONE )
+    if ( impl->lldriver->cmdSendCID() != LLD::ERROR_NONE )
     {
       return Chimera::Status::FAIL;
     }
@@ -180,6 +180,9 @@ namespace Chimera::SDIO
     impl->cid[ 1 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_2 );
     impl->cid[ 2 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_3 );
     impl->cid[ 3 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_4 );
+
+    CardIdentity tmpId;
+    getCardIdentity( tmpId );
 
     /*-------------------------------------------------------------------------
     Request the relative address. Once complete, the card will transition from
@@ -194,7 +197,7 @@ namespace Chimera::SDIO
     Request the CSD from the card. This only works after the card has been
     placed into the standby state and is addressable.
     -------------------------------------------------------------------------*/
-    if( impl->lldriver->cmdSendCSD( impl->rca ) != LLD::ERROR_NONE )
+    if ( impl->lldriver->cmdSendCSD( impl->rca ) != LLD::ERROR_NONE )
     {
       return Chimera::Status::FAIL;
     }
@@ -204,10 +207,13 @@ namespace Chimera::SDIO
     impl->csd[ 2 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_3 );
     impl->csd[ 3 ] = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_4 );
 
+    CardSpecificData tmpCSD;
+    getCardSpecificData( tmpCSD );
+
     /*-------------------------------------------------------------------------
     Select the card, transitioning to the transfer state.
     -------------------------------------------------------------------------*/
-    if( impl->lldriver->cmdSelDesel( impl->rca ) != LLD::ERROR_NONE )
+    if ( impl->lldriver->cmdSelDesel( impl->rca ) != LLD::ERROR_NONE )
     {
       return Chimera::Status::FAIL;
     }
@@ -215,7 +221,7 @@ namespace Chimera::SDIO
     /*-----------------------------------------------------------------------------
     Switch to the desired bus width
     -----------------------------------------------------------------------------*/
-    if( impl->configureBusWidth( impl->busWidth ) != LLD::ERROR_NONE )
+    if ( impl->configureBusWidth( impl->busWidth ) != LLD::ERROR_NONE )
     {
       return Chimera::Status::FAIL;
     }
@@ -223,7 +229,7 @@ namespace Chimera::SDIO
     /*-------------------------------------------------------------------------
     Go full send with the clock speed
     -------------------------------------------------------------------------*/
-    if( impl->lldriver->setBusFrequency( impl->clockSpeed ) != LLD::ERROR_NONE )
+    if ( impl->lldriver->setBusFrequency( impl->clockSpeed ) != LLD::ERROR_NONE )
     {
       return Chimera::Status::FAIL;
     }
@@ -237,9 +243,9 @@ namespace Chimera::SDIO
   }
 
 
-  Chimera::Status_t Driver::writeBlock( const uint32_t blockAddress, const size_t blockCount, const void *const buffer, const size_t size )
+  Chimera::Status_t Driver::writeBlock( const uint32_t blockAddress, const size_t blockCount, const void *const buffer,
+                                        const size_t size )
   {
-
     // handle something about address division for SDXC cards?
 
     auto impl   = reinterpret_cast<ThorImpl *>( mImpl );
@@ -249,7 +255,8 @@ namespace Chimera::SDIO
   }
 
 
-  Chimera::Status_t Driver::readBlock( const uint32_t blockAddress, const size_t blockCount, void *const buffer, const size_t size )
+  Chimera::Status_t Driver::readBlock( const uint32_t blockAddress, const size_t blockCount, void *const buffer,
+                                       const size_t size )
   {
     auto impl   = reinterpret_cast<ThorImpl *>( mImpl );
     auto result = impl->lldriver->asyncReadBlock( blockAddress, blockCount, buffer );
@@ -260,7 +267,26 @@ namespace Chimera::SDIO
 
   Chimera::Status_t Driver::eraseBlock( const uint32_t blockAddress, const size_t blockCount )
   {
-    return Chimera::Status::FAIL;
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+
+    if ( auto error = impl->lldriver->cmdEraseStartAdd( blockAddress ); error != LLD::ErrorType::ERROR_NONE )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+    if ( auto error = impl->lldriver->cmdEraseEndAdd( blockAddress + ( 512 * blockCount ) );
+         error != LLD::ErrorType::ERROR_NONE )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+
+    if ( auto error = impl->lldriver->cmdErase(); error != LLD::ErrorType::ERROR_NONE )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+    return Chimera::Status::OK;
   }
 
 
@@ -290,25 +316,117 @@ namespace Chimera::SDIO
 
   Chimera::Status_t Driver::getCardStatus( CardStatus &status )
   {
-    return Chimera::Status::FAIL;
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+
+    uint32_t       sd_status[ 16 ];
+    LLD::ErrorType errorstate;
+
+    errorstate = impl->lldriver->getSDStatus( impl->rca, &sd_status[ 0 ] );
+
+    status.DataBusWidth = ( uint8_t )( ( sd_status[ 0 ] & 0xC0U ) >> 6U );
+    status.SecuredMode  = ( uint8_t )( ( sd_status[ 0 ] & 0x20U ) >> 5U );
+    status.CardType = ( uint16_t )( ( ( sd_status[ 0 ] & 0x00FF0000U ) >> 8U ) | ( ( sd_status[ 0 ] & 0xFF000000U ) >> 24U ) );
+
+    status.ProtectedAreaSize  = ( ( ( sd_status[ 1 ] & 0xFFU ) << 24U ) | ( ( sd_status[ 1 ] & 0xFF00U ) << 8U ) |
+                                 ( ( sd_status[ 1 ] & 0xFF0000U ) >> 8U ) | ( ( sd_status[ 1 ] & 0xFF000000U ) >> 24U ) );
+    status.SpeedClass         = ( uint8_t )( sd_status[ 2 ] & 0xFFU );
+    status.PerformanceMove    = ( uint8_t )( ( sd_status[ 2 ] & 0xFF00U ) >> 8U );
+    status.AllocationUnitSize = ( uint8_t )( ( sd_status[ 2 ] & 0xF00000U ) >> 20U );
+    status.EraseSize          = ( uint16_t )( ( ( sd_status[ 2 ] & 0xFF000000U ) >> 16U ) | ( sd_status[ 3 ] & 0xFFU ) );
+    status.EraseTimeout       = ( uint8_t )( ( sd_status[ 3 ] & 0xFC00U ) >> 10U );
+    status.EraseOffset        = ( uint8_t )( ( sd_status[ 3 ] & 0x0300U ) >> 8U );
+
+    return ( errorstate == LLD::ErrorType::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::FAIL;
   }
 
 
   Chimera::Status_t Driver::getCardIdentity( CardIdentity &identity )
   {
-    return Chimera::Status::FAIL;
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+
+    identity.ManufacturerID = ( uint8_t )( ( impl->cid[ 0 ] & 0xFF000000U ) >> 24U );
+    identity.OEM_AppliID    = ( uint16_t )( ( impl->cid[ 0 ] & 0x00FFFF00U ) >> 8U );
+    identity.ProdName1      = ( ( ( impl->cid[ 0 ] & 0x000000FFU ) << 24U ) | ( ( impl->cid[ 1 ] & 0xFFFFFF00U ) >> 8U ) );
+    identity.ProdName2      = ( uint8_t )( impl->cid[ 1 ] & 0x000000FFU );
+    identity.ProdRev        = ( uint8_t )( ( impl->cid[ 2 ] & 0xFF000000U ) >> 24U );
+    identity.ProdSN         = ( ( ( impl->cid[ 2 ] & 0x00FFFFFFU ) << 8U ) | ( ( impl->cid[ 3 ] & 0xFF000000U ) >> 24U ) );
+    identity.ManufactDate   = ( uint16_t )( ( impl->cid[ 3 ] & 0x000FFF00U ) >> 8U );
+
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::getCardSpecificData( CardSpecificData &data )
   {
-    return Chimera::Status::FAIL;
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+
+    if ( ( impl->cardInfo.CardType != CARD_SDSC ) && ( impl->cardInfo.CardType != CARD_SDHC_SDXC ) )
+    {
+      return Chimera::Status::FAIL;
+    }
+
+    data.CSDStruct       = ( uint8_t )( ( impl->csd[ 0 ] & 0xC0000000U ) >> 30U );
+    data.SysSpecVersion  = ( uint8_t )( ( impl->csd[ 0 ] & 0x3C000000U ) >> 26U );
+    data.TAAC            = ( uint8_t )( ( impl->csd[ 0 ] & 0x00FF0000U ) >> 16U );
+    data.NSAC            = ( uint8_t )( ( impl->csd[ 0 ] & 0x0000FF00U ) >> 8U );
+    data.MaxBusClkFrec   = ( uint8_t )( impl->csd[ 0 ] & 0x000000FFU );
+    data.CardComdClasses = ( uint16_t )( ( impl->csd[ 1 ] & 0xFFF00000U ) >> 20U );
+    data.RdBlockLen      = ( uint8_t )( ( impl->csd[ 1 ] & 0x000F0000U ) >> 16U );
+    data.PartBlockRead   = ( uint8_t )( ( impl->csd[ 1 ] & 0x00008000U ) >> 15U );
+    data.WrBlockMisalign = ( uint8_t )( ( impl->csd[ 1 ] & 0x00004000U ) >> 14U );
+    data.RdBlockMisalign = ( uint8_t )( ( impl->csd[ 1 ] & 0x00002000U ) >> 13U );
+    data.DSRImpl         = ( uint8_t )( ( impl->csd[ 1 ] & 0x00001000U ) >> 12U );
+
+    if ( impl->cardInfo.CardType == CARD_SDSC )
+    {
+      data.DeviceSize         = ( ( ( impl->csd[ 1 ] & 0x000003FFU ) << 2U ) | ( ( impl->csd[ 2 ] & 0xC0000000U ) >> 30U ) );
+      data.MaxRdCurrentVDDMin = ( uint8_t )( ( impl->csd[ 2 ] & 0x38000000U ) >> 27U );
+      data.MaxRdCurrentVDDMax = ( uint8_t )( ( impl->csd[ 2 ] & 0x07000000U ) >> 24U );
+      data.MaxWrCurrentVDDMin = ( uint8_t )( ( impl->csd[ 2 ] & 0x00E00000U ) >> 21U );
+      data.MaxWrCurrentVDDMax = ( uint8_t )( ( impl->csd[ 2 ] & 0x001C0000U ) >> 18U );
+      data.DeviceSizeMul      = ( uint8_t )( ( impl->csd[ 2 ] & 0x00038000U ) >> 15U );
+
+      impl->cardInfo.BlockNbr = ( data.DeviceSize + 1U );
+      impl->cardInfo.BlockNbr *= ( 1UL << ( ( data.DeviceSizeMul & 0x07U ) + 2U ) );
+      impl->cardInfo.BlockSize    = ( 1UL << ( data.RdBlockLen & 0x0FU ) );
+      impl->cardInfo.LogBlockNbr  = ( impl->cardInfo.BlockNbr ) * ( ( impl->cardInfo.BlockSize ) / 512U );
+      impl->cardInfo.LogBlockSize = 512U;
+    }
+    else if ( impl->cardInfo.CardType == CARD_SDHC_SDXC )
+    {
+      /* Byte 7 */
+      data.DeviceSize         = ( ( ( impl->csd[ 1 ] & 0x0000003FU ) << 16U ) | ( ( impl->csd[ 2 ] & 0xFFFF0000U ) >> 16U ) );
+      impl->cardInfo.BlockNbr = ( ( data.DeviceSize + 1U ) * 1024U );
+      impl->cardInfo.LogBlockNbr  = impl->cardInfo.BlockNbr;
+      impl->cardInfo.BlockSize    = 512U;
+      impl->cardInfo.LogBlockSize = impl->cardInfo.BlockSize;
+    }
+
+    data.EraseGrSize         = ( uint8_t )( ( impl->csd[ 2 ] & 0x00004000U ) >> 14U );
+    data.EraseGrMul          = ( uint8_t )( ( impl->csd[ 2 ] & 0x00003F80U ) >> 7U );
+    data.WrProtectGrSize     = ( uint8_t )( impl->csd[ 2 ] & 0x0000007FU );
+    data.WrProtectGrEnable   = ( uint8_t )( ( impl->csd[ 3 ] & 0x80000000U ) >> 31U );
+    data.ManDeflECC          = ( uint8_t )( ( impl->csd[ 3 ] & 0x60000000U ) >> 29U );
+    data.WrSpeedFact         = ( uint8_t )( ( impl->csd[ 3 ] & 0x1C000000U ) >> 26U );
+    data.MaxWrBlockLen       = ( uint8_t )( ( impl->csd[ 3 ] & 0x03C00000U ) >> 22U );
+    data.WriteBlockPaPartial = ( uint8_t )( ( impl->csd[ 3 ] & 0x00200000U ) >> 21U );
+    data.ContentProtectAppli = ( uint8_t )( ( impl->csd[ 3 ] & 0x00010000U ) >> 16U );
+    data.FileFormatGroup     = ( uint8_t )( ( impl->csd[ 3 ] & 0x00008000U ) >> 15U );
+    data.CopyFlag            = ( uint8_t )( ( impl->csd[ 3 ] & 0x00004000U ) >> 14U );
+    data.PermWrProtect       = ( uint8_t )( ( impl->csd[ 3 ] & 0x00002000U ) >> 13U );
+    data.TempWrProtect       = ( uint8_t )( ( impl->csd[ 3 ] & 0x00001000U ) >> 12U );
+    data.FileFormat          = ( uint8_t )( ( impl->csd[ 3 ] & 0x00000C00U ) >> 10U );
+    data.ECC                 = ( uint8_t )( ( impl->csd[ 3 ] & 0x00000300U ) >> 8U );
+
+    return Chimera::Status::OK;
   }
 
 
   Chimera::Status_t Driver::getCardInfo( CardInfo &info )
   {
-    return Chimera::Status::FAIL;
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
+    info      = impl->cardInfo;
+    return Chimera::Status::OK;
   }
 
 
