@@ -246,22 +246,62 @@ namespace Chimera::SDIO
   Chimera::Status_t Driver::writeBlock( const uint32_t blockAddress, const size_t blockCount, const void *const buffer,
                                         const size_t size )
   {
-    // handle something about address division for SDXC cards?
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
-    auto impl   = reinterpret_cast<ThorImpl *>( mImpl );
-    auto result = impl->lldriver->asyncWriteBlock( blockAddress, blockCount, buffer );
+    /*-------------------------------------------------------------------------
+    Guard against logical block overrun
+    -------------------------------------------------------------------------*/
+    if ( ( blockAddress + blockCount ) > impl->cardInfo.LogBlockNbr )
+    {
+      return Chimera::Status::FAILED_WRITE;
+    }
 
-    return ( result == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::FAIL;
+    /*-------------------------------------------------------------------------
+    Translate the address range to an absolute mapping if we're not using SDHC.
+    -------------------------------------------------------------------------*/
+    uint32_t startAddress = blockAddress;
+
+    if( impl->cardInfo.CardType == CardType::CARD_SDSC )
+    {
+      startAddress *= 512;
+    }
+
+    /*-------------------------------------------------------------------------
+    Perform the write
+    -------------------------------------------------------------------------*/
+    auto result = impl->lldriver->asyncWriteBlock( startAddress, blockCount, buffer );
+    return ( result == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::FAILED_WRITE;
   }
 
 
   Chimera::Status_t Driver::readBlock( const uint32_t blockAddress, const size_t blockCount, void *const buffer,
                                        const size_t size )
   {
-    auto impl   = reinterpret_cast<ThorImpl *>( mImpl );
-    auto result = impl->lldriver->asyncReadBlock( blockAddress, blockCount, buffer );
+    auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
-    return ( result == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::FAIL;
+    /*-------------------------------------------------------------------------
+    Guard against logical block overrun
+    -------------------------------------------------------------------------*/
+    if ( ( blockAddress + blockCount ) > impl->cardInfo.LogBlockNbr )
+    {
+      return Chimera::Status::FAILED_READ;
+    }
+
+    /*-------------------------------------------------------------------------
+    Translate the address range to an absolute mapping if we're not using SDHC.
+    -------------------------------------------------------------------------*/
+    uint32_t startAddress = blockAddress;
+
+    if( impl->cardInfo.CardType == CardType::CARD_SDSC )
+    {
+      startAddress *= 512;
+    }
+
+    /*-------------------------------------------------------------------------
+    Perform the read
+    -------------------------------------------------------------------------*/
+    auto result = impl->lldriver->asyncReadBlock( startAddress, blockCount, buffer );
+    return ( result == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::FAILED_READ;
   }
 
 
@@ -269,24 +309,39 @@ namespace Chimera::SDIO
   {
     auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
-    if ( auto error = impl->lldriver->cmdEraseStartAdd( blockAddress ); error != LLD::ErrorType::ERROR_NONE )
+    /*-------------------------------------------------------------------------
+    Guard against logical block overrun
+    -------------------------------------------------------------------------*/
+    if( ( blockAddress + blockCount ) > impl->cardInfo.LogBlockNbr )
     {
-      return Chimera::Status::FAIL;
+      return Chimera::Status::FAILED_ERASE;
     }
 
-    if ( auto error = impl->lldriver->cmdEraseEndAdd( blockAddress + ( 512 * blockCount ) );
-         error != LLD::ErrorType::ERROR_NONE )
+    /*-------------------------------------------------------------------------
+    Translate the address ranges
+    -------------------------------------------------------------------------*/
+    uint32_t startAddress = blockAddress;
+    uint32_t endAddress   = blockAddress + blockCount;
+
+    if( impl->cardInfo.CardType == CardType::CARD_SDSC )
     {
-      return Chimera::Status::FAIL;
+      startAddress *= 512;
+      endAddress   *= 512;
     }
 
-
-    if ( auto error = impl->lldriver->cmdErase(); error != LLD::ErrorType::ERROR_NONE )
+    /*-------------------------------------------------------------------------
+    Perform the erase
+    -------------------------------------------------------------------------*/
+    if ( ( impl->lldriver->cmdEraseStartAdd( startAddress ) == LLD::ERROR_NONE ) &&
+         ( impl->lldriver->cmdEraseEndAdd( endAddress ) == LLD::ERROR_NONE ) &&
+         ( impl->lldriver->cmdErase() == LLD::ERROR_NONE ) )
     {
-      return Chimera::Status::FAIL;
+      return Chimera::Status::OK;
     }
-
-    return Chimera::Status::OK;
+    else
+    {
+      return Chimera::Status::FAILED_ERASE;
+    }
   }
 
 
