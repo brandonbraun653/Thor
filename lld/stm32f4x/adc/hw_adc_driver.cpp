@@ -104,10 +104,10 @@ namespace Thor::LLD::ADC
     using namespace Thor::LLD::RCC;
 
     /*-------------------------------------------------------------------------
-    Reset the device back to default register values
+    Only enable the clock because the reset signals will totally destroy other
+    peripheral settings.
     -------------------------------------------------------------------------*/
     this->clockEnable();
-    this->reset();
 
     /*-------------------------------------------------------------------------
     Select the clock prescaler. On the F4, the ADC is

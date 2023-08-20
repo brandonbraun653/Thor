@@ -252,6 +252,7 @@ namespace Thor::LLD::TIMER
     switch( instance )
     {
       case Chimera::Timer::Instance::TIMER1:
+      case Chimera::Timer::Instance::TIMER3:
       case Chimera::Timer::Instance::TIMER15:
       case Chimera::Timer::Instance::TIMER16:
         return std::numeric_limits<uint16_t>::max();

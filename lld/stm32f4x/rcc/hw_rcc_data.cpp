@@ -39,14 +39,20 @@ namespace Thor::LLD::RCC
 #if defined( THOR_ADC )
   /* clang-format off */
   static const RegisterConfig ADC_ClockConfig[ ADC::NUM_ADC_PERIPHS ]      = {
-    { .mask = APB2ENR_ADC1EN, .reg  = &RCC1_PERIPH->APB2ENR }
+    { .mask = APB2ENR_ADC1EN, .reg  = &RCC1_PERIPH->APB2ENR },
+    { .mask = APB2ENR_ADC2EN, .reg  = &RCC1_PERIPH->APB2ENR },
+    { .mask = APB2ENR_ADC3EN, .reg  = &RCC1_PERIPH->APB2ENR }
   };
 
   static const RegisterConfig ADC_ResetConfig[ ADC::NUM_ADC_PERIPHS ]      = {
+    { .mask = APB2RSTR_ADCRST, .reg = &RCC1_PERIPH->APB2RSTR },
+    { .mask = APB2RSTR_ADCRST, .reg = &RCC1_PERIPH->APB2RSTR },
     { .mask = APB2RSTR_ADCRST, .reg = &RCC1_PERIPH->APB2RSTR }
   };
 
   static const Chimera::Clock::Bus ADC_SourceClock[ ADC::NUM_ADC_PERIPHS ] = {
+    Chimera::Clock::Bus::PCLK2,
+    Chimera::Clock::Bus::PCLK2,
     Chimera::Clock::Bus::PCLK2
   };
   /* clang-format on */

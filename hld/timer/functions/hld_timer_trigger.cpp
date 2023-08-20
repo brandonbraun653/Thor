@@ -125,7 +125,7 @@ namespace Chimera::Timer::Trigger
     /* Trigger event rate set by overflow rate */
     result |= setEventRate( cb->timer, ( 1.0f / cfg.trigFreq ) * 1e9f );
 
-    /* Set TRGO to fire on Output Compare match */
+    /* Set TRGO to fire on Output Compare 1 match */
     setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
 
     /* Configure capture/compare behavior */

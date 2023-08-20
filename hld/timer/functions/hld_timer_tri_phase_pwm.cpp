@@ -151,9 +151,6 @@ namespace Chimera::Timer::Inverter
     setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_2, OCMode::OC_MODE_PWM_MODE_1 );
     setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_3, OCMode::OC_MODE_PWM_MODE_1 );
 
-    // Use PWM mode 2 here to set the rising edge once CNT > CCR5
-    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_5, OCMode::OC_MODE_PWM_MODE_2 );
-
     /* Set output idle (safe) states. Assumes positive logic for the power stage drive signals. */
     setRunModeOffState( cb->timer, OffStateMode::TIMER_CONTROL );
     setIdleModeOffState( cb->timer, OffStateMode::TIMER_CONTROL );
@@ -178,16 +175,21 @@ namespace Chimera::Timer::Inverter
 
     /*-------------------------------------------------------------------------
     ADC trigger configuration
+    // TODO BMB: This is currently hard-coded for the F4 family. Not great.
     -------------------------------------------------------------------------*/
-    /* Use this channel's OC to drive ADC sample. Requires external ADC configuration. */
-    Thor::LLD::TIMER::useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_5, true );
+    // // Use PWM mode 2 here to set the rising edge once CNT > CCR4
+    // setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_4, OCMode::OC_MODE_PWM_MODE_2 );
 
-    /* Configure the TRGO2 signal to match the OC channel */
-    setMasterMode2( cb->timer, MasterMode2::COMPARE_OC5REF );
+    // /* Use this channel's OC to drive ADC sample. Requires external ADC configuration. */
+    // Thor::LLD::TIMER::useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_4, true );
 
-    /* Set the trigger timing to be in the center of the low-side (complementary output) ON sequence */
-    const uint32_t arr_val = Thor::LLD::TIMER::getAutoReload( cb->timer );
-    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_5, 25 );
+    /* Configure the TRGO signal to match the OC channel */
+    setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
+
+    // /* Set the trigger timing to be in the center of the low-side (complementary output) ON sequence */
+    // // TODO BMB: Still messing with this
+    // const uint32_t arr_val = Thor::LLD::TIMER::getAutoReload( cb->timer );
+    // setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_4, 25 );
 
     /*-------------------------------------------------------------------------
     Lock out the core timer configuration settings to prevent dangerous changes

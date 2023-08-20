@@ -67,7 +67,7 @@ namespace Thor::LLD::TIMER
 
   void disableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch )
   {
-    RT_DBG_ASSERT( ch >= Chimera::Timer::Output::NUM_OPTIONS );
+    RT_DBG_ASSERT( ch < Chimera::Timer::Output::NUM_OPTIONS );
     CCER::clear( timer->registers, EnableFlags[ EnumValue( ch ) ] );
   }
 
@@ -95,7 +95,7 @@ namespace Thor::LLD::TIMER
 
   void enableCCOutput( Handle_rPtr timer, const Chimera::Timer::Output ch )
   {
-    RT_DBG_ASSERT( ch >= Chimera::Timer::Output::NUM_OPTIONS );
+    RT_DBG_ASSERT( ch < Chimera::Timer::Output::NUM_OPTIONS );
     CCER::setbit( timer->registers, EnableFlags[ EnumValue( ch ) ] );
   }
 
@@ -126,7 +126,7 @@ namespace Thor::LLD::TIMER
     /*-------------------------------------------------------------------------
     Input Protection
     -------------------------------------------------------------------------*/
-    RT_DBG_ASSERT( ( ch >= Chimera::Timer::Output::NUM_OPTIONS ) || ( ( pol != CCP_OUT_ACTIVE_HIGH ) && ( pol != CCP_OUT_ACTIVE_LOW ) ) );
+    RT_DBG_ASSERT( ( ch < Chimera::Timer::Output::NUM_OPTIONS ) || ( ( pol != CCP_OUT_ACTIVE_HIGH ) && ( pol != CCP_OUT_ACTIVE_LOW ) ) );
 
     /*-------------------------------------------------------------------------
     Set the appropriate enable flag bit
