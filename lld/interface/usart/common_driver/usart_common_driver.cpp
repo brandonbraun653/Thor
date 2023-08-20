@@ -577,6 +577,8 @@ namespace Thor::LLD::USART
     Configure the TX pipe
     -------------------------------------------------------------------------*/
     PipeConfig txCfg;
+    txCfg.clear();
+
     txCfg.srcAlignment       = Alignment::BYTE;
     txCfg.dstAlignment       = Alignment::BYTE;
     txCfg.direction          = Direction::MEMORY_TO_PERIPH;
@@ -599,6 +601,8 @@ namespace Thor::LLD::USART
     Configure the RX pipe
     -------------------------------------------------------------------------*/
     PipeConfig rxCfg;
+    rxCfg.clear();
+
     rxCfg.srcAlignment  = Alignment::BYTE;
     rxCfg.dstAlignment  = Alignment::BYTE;
     rxCfg.direction     = Direction::PERIPH_TO_MEMORY;

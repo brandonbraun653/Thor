@@ -310,6 +310,7 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     PipeConfig dmaCfg;
     dmaCfg.clear();
+
     dmaCfg.dstAlignment       = Alignment::HALF_WORD;
     dmaCfg.srcAlignment       = Alignment::WORD;
     dmaCfg.direction          = Direction::PERIPH_TO_MEMORY;

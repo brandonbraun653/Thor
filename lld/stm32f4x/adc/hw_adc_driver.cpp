@@ -189,10 +189,12 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------------------------------
     Configure the ADC DMA pipe
     -------------------------------------------------------------------------*/
+    static_assert( sizeof( mDMASampleBuffer.rawSamples[ 0 ] ) == sizeof( uint16_t ) );
+
     PipeConfig dmaCfg;
     dmaCfg.clear();
     dmaCfg.dstAlignment       = Alignment::HALF_WORD;
-    dmaCfg.srcAlignment       = Alignment::WORD;
+    dmaCfg.srcAlignment       = Alignment::HALF_WORD;
     dmaCfg.direction          = Direction::PERIPH_TO_MEMORY;
     dmaCfg.mode               = Mode::CIRCULAR;
     dmaCfg.periphAddr         = reinterpret_cast<std::uintptr_t>( &mPeriph->DR );
@@ -529,7 +531,7 @@ namespace Thor::LLD::ADC
       /*-----------------------------------------------------------------------
       Set the number of conversions to perform
       -----------------------------------------------------------------------*/
-      L::set( mPeriph, totalSize << SQR1_L_Pos );
+      L::set( mPeriph, ( totalSize - 1u ) << SQR1_L_Pos );
       SCAN::set( mPeriph, CR1_SCAN );
     }
     enableInterrupts();

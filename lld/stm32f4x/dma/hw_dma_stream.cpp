@@ -405,50 +405,23 @@ namespace Thor::LLD::DMA
     /*-------------------------------------------------------------------------
     Memory Burst Size
     -------------------------------------------------------------------------*/
-    switch ( bSize )
-    {
-      case Chimera::DMA::BurstSize::BURST_SIZE_1:
-        MBURST::set( mStream, 0x00 );
-        break;
+    static_assert( EnumValue( Chimera::DMA::BurstSize::BURST_SIZE_1 ) == 0 );
+    static_assert( EnumValue( Chimera::DMA::BurstSize::BURST_SIZE_4 ) == 1 );
+    static_assert( EnumValue( Chimera::DMA::BurstSize::BURST_SIZE_8 ) == 2 );
+    static_assert( EnumValue( Chimera::DMA::BurstSize::BURST_SIZE_16 ) == 3 );
+    RT_DBG_ASSERT( EnumValue( bSize ) <= 3 );
 
-      case Chimera::DMA::BurstSize::BURST_SIZE_4:
-        MBURST::set( mStream, 0x1 << SxCR_MBURST_Pos );
-        break;
-
-      case Chimera::DMA::BurstSize::BURST_SIZE_8:
-        MBURST::set( mStream, 0x2 << SxCR_MBURST_Pos );
-        break;
-
-      case Chimera::DMA::BurstSize::BURST_SIZE_16:
-        MBURST::set( mStream, 0x3 << SxCR_MBURST_Pos );
-        break;
-
-      default:
-        // Not necessarily needs configuration
-        break;
-    }
+    MBURST::set( mStream, EnumValue( bSize ) << SxCR_MBURST_Pos );
 
     /*-------------------------------------------------------------------------
     Memory Alignment
     -------------------------------------------------------------------------*/
-    switch ( align )
-    {
-      case Chimera::DMA::Alignment::BYTE:
-        MSIZE::set( mStream, 0x00 << SxCR_MSIZE_Pos );
-        break;
+    static_assert( EnumValue( Chimera::DMA::Alignment::BYTE ) == 0 );
+    static_assert( EnumValue( Chimera::DMA::Alignment::HALF_WORD ) == 1 );
+    static_assert( EnumValue( Chimera::DMA::Alignment::WORD ) == 2 );
+    RT_DBG_ASSERT( EnumValue( align ) <= 2 );
 
-      case Chimera::DMA::Alignment::HALF_WORD:
-        MSIZE::set( mStream, 0x01 << SxCR_MSIZE_Pos );
-        break;
-
-      case Chimera::DMA::Alignment::WORD:
-        MSIZE::set( mStream, 0x02 << SxCR_MSIZE_Pos );
-        break;
-
-      default:
-        // Not necessarily needs configuration
-        break;
-    }
+    MSIZE::set( mStream, EnumValue( align ) << SxCR_MSIZE_Pos );
   }
 
 
@@ -468,49 +441,13 @@ namespace Thor::LLD::DMA
     /*-------------------------------------------------------------------------
     Peripheral Burst Size
     -------------------------------------------------------------------------*/
-    switch ( bSize )
-    {
-      case Chimera::DMA::BurstSize::BURST_SIZE_1:
-        PBURST::set( mStream, 0x00 );
-        break;
-
-      case Chimera::DMA::BurstSize::BURST_SIZE_4:
-        PBURST::set( mStream, 0x1 << SxCR_PBURST_Pos );
-        break;
-
-      case Chimera::DMA::BurstSize::BURST_SIZE_8:
-        PBURST::set( mStream, 0x2 << SxCR_PBURST_Pos );
-        break;
-
-      case Chimera::DMA::BurstSize::BURST_SIZE_16:
-        PBURST::set( mStream, 0x3 << SxCR_PBURST_Pos );
-        break;
-
-      default:
-        // Not necessarily needs configuration
-        break;
-    }
+    RT_DBG_ASSERT( EnumValue( bSize ) <= 3 );
+    PBURST::set( mStream, EnumValue( bSize ) << SxCR_PBURST_Pos );
 
     /*-------------------------------------------------------------------------
     Peripheral Alignment
     -------------------------------------------------------------------------*/
-    switch ( align )
-    {
-      case Chimera::DMA::Alignment::BYTE:
-        PSIZE::set( mStream, 0x00 << SxCR_PSIZE_Pos );
-        break;
-
-      case Chimera::DMA::Alignment::HALF_WORD:
-        PSIZE::set( mStream, 0x01 << SxCR_PSIZE_Pos );
-        break;
-
-      case Chimera::DMA::Alignment::WORD:
-        PSIZE::set( mStream, 0x02 << SxCR_PSIZE_Pos );
-        break;
-
-      default:
-        // Not necessarily needs configuration
-        break;
-    }
+    RT_DBG_ASSERT( EnumValue( align ) <= 2 );
+    PSIZE::set( mStream, EnumValue( align ) << SxCR_PSIZE_Pos );
   }
 }    // namespace Thor::LLD::DMA

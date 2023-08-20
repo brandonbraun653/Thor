@@ -5,23 +5,21 @@
  *  Description:
  *    Common LLD ADC Types
  *
- *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_ADC_COMMON_TYPES_HPP
 #define THOR_LLD_ADC_COMMON_TYPES_HPP
 
-/* C++ Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
+#include <Chimera/adc>
+#include <Chimera/common>
 #include <array>
 #include <cstdint>
-
-/* ETL Includes */
 #include <etl/queue_spsc_locked.h>
-
-/* Chimera Includes */
-#include <Chimera/common>
-#include <Chimera/adc>
 
 namespace Thor::LLD::ADC
 {
@@ -86,7 +84,7 @@ namespace Thor::LLD::ADC
   template<size_t CH_SIZE>
   struct DMASample
   {
-    std::array<uint16_t, CH_SIZE> rawSamples;                   /**< Raw buffer for DMA to fill */
+    std::array<uint16_t, CH_SIZE>              rawSamples;      /**< Raw buffer for DMA to fill */
     std::array<Chimera::ADC::Channel, CH_SIZE> channelSequence; /**< ADC channel sampling order */
   };
 

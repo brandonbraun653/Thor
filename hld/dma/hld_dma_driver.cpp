@@ -397,6 +397,9 @@ namespace Chimera::DMA::Backend
     ::LLD::StreamConfig cfg;
     ::LLD::TCB          tcb;
 
+    cfg.clear();
+    tcb.clear();
+
     if ( pipeCfg.direction == Direction::MEMORY_TO_PERIPH )
     {
       cfg.dstAddrIncr  = false;

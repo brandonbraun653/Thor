@@ -300,6 +300,22 @@ namespace Thor::LLD::DMA
     Chimera::DMA::Alignment     dstAddrAlign;
     Chimera::DMA::BurstSize     srcBurstSize;
     Chimera::DMA::Alignment     srcAddrAlign;
+
+    void clear()
+    {
+      dstAddrIncr   = false;
+      srcAddrIncr   = false;
+      channel       = Channel::INVALID;
+      dmaMode       = Chimera::DMA::Mode::NUM_OPTIONS;
+      direction     = Chimera::DMA::Direction::NUM_OPTIONS;
+      priority      = Chimera::DMA::Priority::NUM_OPTIONS;
+      fifoMode      = Chimera::DMA::FifoMode::NUM_OPTIONS;
+      fifoThreshold = Chimera::DMA::FifoThreshold::NUM_OPTIONS;
+      dstBurstSize  = Chimera::DMA::BurstSize::NUM_OPTIONS;
+      dstAddrAlign  = Chimera::DMA::Alignment::NUM_OPTIONS;
+      srcBurstSize  = Chimera::DMA::BurstSize::NUM_OPTIONS;
+      srcAddrAlign  = Chimera::DMA::Alignment::NUM_OPTIONS;
+    }
   };
 
   /**
@@ -334,6 +350,26 @@ namespace Thor::LLD::DMA
     bool fifoError;
     bool directModeError;
     bool transferError;
+
+    void clear()
+    {
+      errorsToIgnore      = Chimera::DMA::Errors::NONE;
+      state               = StreamState::TRANSFER_IDLE;
+      elementsTransferred = 0;
+      selectedChannel     = 0;
+      resourceIndex       = INVALID_RESOURCE_INDEX;
+      requestId           = Chimera::DMA::INVALID_REQUEST;
+      elementSize         = Chimera::DMA::Alignment::NUM_OPTIONS;
+      srcAddress          = 0;
+      dstAddress          = 0;
+      transferSize        = 0;
+      persistent          = false;
+      wakeUserOnComplete  = false;
+      isrCallback         = {};
+      fifoError           = false;
+      directModeError     = false;
+      transferError       = false;
+    }
   };
 }    // namespace Thor::LLD::DMA
 
