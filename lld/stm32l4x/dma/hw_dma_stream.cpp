@@ -242,9 +242,31 @@ namespace Thor::LLD::DMA
     if ( ( status & TCIF ) && TCIE::get( mStream ) )
     {
       mStreamTCB.selectedChannel     = channel;
-      mStreamTCB.elementsTransferred = mStreamTCB.transferSize - NDT::get( mStream );
       mStreamTCB.state               = StreamState::TRANSFER_IDLE;
       mStreamTCB.transferError       = false;
+
+      /*-----------------------------------------------------------------------
+      Calculate the number of elements transferred. This changes behavior based
+      upon who acts as the flow controller.
+      -----------------------------------------------------------------------*/
+      if( PFCTRL::get( mStream ) )  /* Peripheral is the flow controller */
+      {
+        mStreamTCB.elementsTransferred = 0xFFFFu - NDT::get( mStream );
+      }
+      else  /* DMA is the flow controller */
+      {
+        mStreamTCB.elementsTransferred = mStreamTCB.transferSize - NDT::get( mStream );
+
+        /*---------------------------------------------------------------------
+        When using circular transfer mode, the number of elements transferred
+        is automatically reloaded. We can trust we fully transferred the data
+        though since we've got the transfer complete interrupt.
+        ---------------------------------------------------------------------*/
+        if ( CIRC::get( mStream ) )
+        {
+          mStreamTCB.elementsTransferred = mStreamTCB.transferSize;
+        }
+      }
 
       /*-----------------------------------------------------------------------
       Only disable DMA if requested

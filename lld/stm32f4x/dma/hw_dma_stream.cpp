@@ -272,15 +272,23 @@ namespace Thor::LLD::DMA
       upon who acts as the flow controller.
       See RM0390 Section 9.2 and 9.3.16
       -----------------------------------------------------------------------*/
-      if( PFCTRL::get( mStream ) )
+      if( PFCTRL::get( mStream ) )  /* Peripheral is the flow controller */
       {
-        /* Peripheral is the flow controller */
         mStreamTCB.elementsTransferred = 0xFFFFu - NDT::get( mStream );
       }
-      else
+      else  /* DMA is the flow controller */
       {
-        /* DMA is the flow controller */
         mStreamTCB.elementsTransferred = mStreamTCB.transferSize - NDT::get( mStream );
+
+        /*---------------------------------------------------------------------
+        When using circular transfer mode, the number of elements transferred
+        is automatically reloaded. We can trust we fully transferred the data
+        though since we've got the transfer complete interrupt.
+        ---------------------------------------------------------------------*/
+        if ( CIRC::get( mStream ) )
+        {
+          mStreamTCB.elementsTransferred = mStreamTCB.transferSize;
+        }
       }
 
       /*-----------------------------------------------------------------------
