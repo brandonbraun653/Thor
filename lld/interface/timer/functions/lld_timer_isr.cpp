@@ -106,6 +106,12 @@ namespace Thor::LLD::TIMER
         break;
 #endif    // STM32_TIMER7_PERIPH_AVAILABLE
 
+#if defined( STM32_TIMER8_PERIPH_AVAILABLE )
+      case Chimera::Timer::Instance::TIMER8:
+        isrIndex = TIM8_CC_IRQn;
+        break;
+#endif    // STM32_TIMER8_PERIPH_AVAILABLE
+
       default:
         // Do nothing
         break;

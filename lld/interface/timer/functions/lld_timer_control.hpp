@@ -143,6 +143,60 @@ namespace Thor::LLD::TIMER
     MMS2::set( timer->registers, EnumValue( mode ) << CR2_MMS2_Pos );
   }
 
+  /*---------------------------------------------------------------------------
+  Master/Slave Synchronization: SMCR_MSM
+  ---------------------------------------------------------------------------*/
+  enum class MasterSlaveSync
+  {
+    DISABLED,
+    ENABLED
+  };
+
+  inline void setMasterSlaveSync( Handle_rPtr timer, const MasterSlaveSync &mode )
+  {
+    MSM::set( timer->registers, EnumValue( mode ) << SMCR_MSM_Pos );
+  }
+
+  /*---------------------------------------------------------------------------
+  Trigger Selection: SMCR_TS
+  ---------------------------------------------------------------------------*/
+  enum class Trigger
+  {
+    INTERNAL_0,
+    INTERNAL_1,
+    INTERNAL_2,
+    INTERNAL_3,
+    TI1_EDGE_DETECT,
+    FILTERED_TI1,
+    FILTERED_TI2,
+    EXTERNAL_TI1
+  };
+
+  inline void setSlaveTriggerSource( Handle_rPtr timer, const Trigger &trigger )
+  {
+    TS::set( timer->registers, EnumValue( trigger ) << SMCR_TS_Pos );
+  }
+
+  /*---------------------------------------------------------------------------
+  Slave Mode Selection: SMCR_SMS
+  ---------------------------------------------------------------------------*/
+  enum class SlaveMode
+  {
+    DISABLED,
+    ENCODER_1,
+    ENCODER_2,
+    ENCODER_3,
+    RESET,
+    GATED,
+    TRIGGER,
+    EXTERNAL_CLOCK_MODE_1
+  };
+
+  inline void setSlaveMode( Handle_rPtr timer, const SlaveMode &mode )
+  {
+    SMS::set( timer->registers, EnumValue( mode ) << SMCR_SMS_Pos );
+  }
+
 
   /*---------------------------------------------------------------------------
   Main Output Enable: BDTR

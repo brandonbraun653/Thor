@@ -28,18 +28,13 @@ static constexpr size_t REQ_HW_TIMER_TYPES =
 /*-----------------------------------------------------------------------------
 Structures
 -----------------------------------------------------------------------------*/
-union TriggerConfig
-{
-  Chimera::Timer::Trigger::MasterConfig master;
-  Chimera::Timer::Trigger::SlaveConfig  slave;
-};
-
 
 struct ControlBlock
 {
-  Thor::LLD::TIMER::Handle_rPtr timer;    /**< Handle to the timer */
-  Chimera::Timer::Instance      instance; /**< The instance of the timer */
-  TriggerConfig                 config;   /**< Configuration data */
+  Thor::LLD::TIMER::Handle_rPtr         timer;     /**< Handle to the timer */
+  Chimera::Timer::Instance              instance;  /**< The instance of the timer */
+  Chimera::Timer::Trigger::MasterConfig masterCfg; /**< Configuration data */
+  Chimera::Timer::Trigger::SlaveConfig  slaveCfg;  /**< Configuration data */
 };
 
 /*-----------------------------------------------------------------------------
@@ -51,7 +46,7 @@ static Chimera::DeviceManager<ControlBlock, Chimera::Timer::Instance, EnumValue(
 /*-----------------------------------------------------------------------------
 Static Functions
 -----------------------------------------------------------------------------*/
-static inline ControlBlock *getControlBlock( void * ptr )
+static inline ControlBlock *getControlBlock( void *ptr )
 {
   RT_DBG_ASSERT( ptr != nullptr );
   return reinterpret_cast<ControlBlock *>( ptr );
@@ -68,7 +63,7 @@ namespace Chimera::Timer::Trigger
   }
 
 
-  ~ITimerTrigger()
+  ITimerTrigger::~ITimerTrigger()
   {
   }
 
@@ -144,7 +139,7 @@ namespace Chimera::Timer::Trigger
     /*-------------------------------------------------------------------------
     Grab the driver for this instance and register it with the class
     -------------------------------------------------------------------------*/
-    auto                 result = Chimera::Status::OK;
+    auto          result = Chimera::Status::OK;
     ControlBlock *cb     = s_timer_data.getOrCreate( cfg.coreConfig.instance );
     RT_HARD_ASSERT( cb );
 
@@ -159,7 +154,7 @@ namespace Chimera::Timer::Trigger
     RT_HARD_ASSERT( Chimera::Status::OK == allocate( cfg.coreConfig.instance ) );
     cb->timer         = Thor::LLD::TIMER::getHandle( cfg.coreConfig.instance );
     cb->instance      = cfg.coreConfig.instance;
-    cb->config.master = cfg;
+    cb->masterCfg = cfg;
 
     RT_DBG_ASSERT( cb->timer );
 
@@ -262,7 +257,7 @@ namespace Chimera::Timer::Trigger
     /*-------------------------------------------------------------------------
     Grab the driver for this instance and register it with the class
     -------------------------------------------------------------------------*/
-    auto                 result = Chimera::Status::OK;
+    auto          result = Chimera::Status::OK;
     ControlBlock *cb     = s_timer_data.getOrCreate( cfg.coreConfig.instance );
     RT_HARD_ASSERT( cb );
 
@@ -277,7 +272,7 @@ namespace Chimera::Timer::Trigger
     RT_HARD_ASSERT( Chimera::Status::OK == allocate( cfg.coreConfig.instance ) );
     cb->timer        = Thor::LLD::TIMER::getHandle( cfg.coreConfig.instance );
     cb->instance     = cfg.coreConfig.instance;
-    cb->config.slave = cfg;
+    cb->slaveCfg = cfg;
 
     RT_DBG_ASSERT( cb->timer );
 
@@ -296,24 +291,94 @@ namespace Chimera::Timer::Trigger
     auto channel = Chimera::Timer::Channel::CHANNEL_1;
     auto output  = Chimera::Timer::Output::OUTPUT_1P;
 
-    /* Base timer setup */
+    /*-------------------------------------------------------------------------
+    Base timer clocking setup
+    -------------------------------------------------------------------------*/
     result |= Thor::LLD::TIMER::Master::initCore( cb->timer, cfg.coreConfig );
     setAlignment( cb->timer, AlignMode::EDGE_ALIGNED );
     setCountDirection( cb->timer, CountDir::COUNT_UP );
 
-    /* Trigger event rate set by overflow rate */
-    result |= setEventRate( cb->timer, ( 1.0f / cfg.trigFreq ) * 1e9f );
+    /*-------------------------------------------------------------------------
+    Set the overflow rate to the desired frequency
+    -------------------------------------------------------------------------*/
+    result |= setEventRate( cb->timer, ( 1.0f / cfg.frequency ) * 1e9f );
 
-    /* Set TRGO to fire on Output Compare 1 match */
-    setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
-
-    /* Configure capture/compare behavior */
+    /*-------------------------------------------------------------------------
+    Set the output compare behavior to drive the TRGO signal with positive
+    polarity and toggling on match.
+    -------------------------------------------------------------------------*/
     disableCCOutput( cb->timer, output );
     setCCMode( cb->timer, channel, CCMode::CCM_OUTPUT );
     setCCOutputPolarity( cb->timer, output, CCPolarity::CCP_OUT_ACTIVE_HIGH );
     setOCMode( cb->timer, channel, OCMode::OC_MODE_TOGGLE_MATCH );
     setOCReference( cb->timer, channel, 0 );
     enableCCOutput( cb->timer, output );
+    setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
+
+    /*-------------------------------------------------------------------------
+    Enable the master/slave synchronization, which might not be used.
+    -------------------------------------------------------------------------*/
+    setMasterSlaveSync( cb->timer, MasterSlaveSync::ENABLED );
+
+    /*-------------------------------------------------------------------------
+    Map the synchronization action to a slave behavior mode
+    -------------------------------------------------------------------------*/
+    switch( cfg.trigSyncAction )
+    {
+      case Chimera::Timer::Trigger::SyncAction::SYNC_RESET:
+        setSlaveMode( cb->timer, SlaveMode::RESET );
+        break;
+
+      case Chimera::Timer::Trigger::SyncAction::SYNC_GATE:
+        setSlaveMode( cb->timer, SlaveMode::GATED );
+        break;
+
+      case Chimera::Timer::Trigger::SyncAction::SYNC_TRIGGER:
+        setSlaveMode( cb->timer, SlaveMode::TRIGGER );
+        break;
+
+      default:
+        RT_HARD_ASSERT( false );
+        break;
+    }
+
+    /*-------------------------------------------------------------------------
+    Map the synchronization signal to a slave trigger source
+    -------------------------------------------------------------------------*/
+    switch( cfg.trigSyncSignal )
+    {
+      case Chimera::Timer::Trigger::Signal::TRIG_SIG_0:
+        setSlaveTriggerSource( cb->timer, Thor::LLD::TIMER::Trigger::INTERNAL_0 );
+        break;
+
+      case Chimera::Timer::Trigger::Signal::TRIG_SIG_1:
+        setSlaveTriggerSource( cb->timer, Thor::LLD::TIMER::Trigger::INTERNAL_1 );
+        break;
+
+      case Chimera::Timer::Trigger::Signal::TRIG_SIG_2:
+        setSlaveTriggerSource( cb->timer, Thor::LLD::TIMER::Trigger::INTERNAL_2 );
+        break;
+
+      case Chimera::Timer::Trigger::Signal::TRIG_SIG_3:
+        setSlaveTriggerSource( cb->timer, Thor::LLD::TIMER::Trigger::INTERNAL_3 );
+        break;
+
+      case Chimera::Timer::Trigger::Signal::TRIG_SIG_4:
+        setSlaveTriggerSource( cb->timer, Thor::LLD::TIMER::Trigger::FILTERED_TI1 );
+        break;
+
+      case Chimera::Timer::Trigger::Signal::TRIG_SIG_5:
+        setSlaveTriggerSource( cb->timer, Thor::LLD::TIMER::Trigger::FILTERED_TI2 );
+        break;
+
+      case Chimera::Timer::Trigger::Signal::TRIG_SIG_6:
+        setSlaveTriggerSource( cb->timer, Thor::LLD::TIMER::Trigger::EXTERNAL_TI1 );
+        break;
+
+      default:
+        RT_HARD_ASSERT( false );
+        break;
+    }
 
     /*-------------------------------------------------------------------------
     Attach the interrupt handler
@@ -324,6 +389,19 @@ namespace Chimera::Timer::Trigger
     }
 
     return result;
+  }
+
+
+  uint32_t Slave::getTickPeriod() const
+  {
+    return getControlBlock( mTimerImpl )->timer->registers->ARR;
+  }
+
+
+  void Slave::setEventOffset( const uint32_t tickOffset )
+  {
+    using namespace Thor::LLD::TIMER;
+    setOCReference( getControlBlock( mTimerImpl )->timer, Chimera::Timer::Channel::CHANNEL_1, tickOffset );
   }
 
 

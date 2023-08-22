@@ -185,6 +185,7 @@ namespace Chimera::Timer::Inverter
 
     /* Configure the TRGO signal to match the OC channel */
     setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
+    setMasterSlaveSync( cb->timer, MasterSlaveSync::ENABLED );
 
     // /* Set the trigger timing to be in the center of the low-side (complementary output) ON sequence */
     // // TODO BMB: Still messing with this
