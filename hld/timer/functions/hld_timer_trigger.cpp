@@ -152,8 +152,9 @@ namespace Chimera::Timer::Trigger
     Initialize the control block data
     -------------------------------------------------------------------------*/
     RT_HARD_ASSERT( Chimera::Status::OK == allocate( cfg.coreConfig.instance ) );
-    cb->timer         = Thor::LLD::TIMER::getHandle( cfg.coreConfig.instance );
-    cb->instance      = cfg.coreConfig.instance;
+
+    cb->timer     = Thor::LLD::TIMER::getHandle( cfg.coreConfig.instance );
+    cb->instance  = cfg.coreConfig.instance;
     cb->masterCfg = cfg;
 
     RT_DBG_ASSERT( cb->timer );
@@ -168,29 +169,30 @@ namespace Chimera::Timer::Trigger
     setPriority( irqSignal, TIMER_IT_PREEMPT_PRIORITY, 0u );
 
     /*-------------------------------------------------------------------------
-    Reset and configure the timer for desired operation
+    Base timer clocking setup
     -------------------------------------------------------------------------*/
-    auto channel = Chimera::Timer::Channel::CHANNEL_1;
-    auto output  = Chimera::Timer::Output::OUTPUT_1P;
-
-    /* Base timer setup */
     result |= Thor::LLD::TIMER::Master::initCore( cb->timer, cfg.coreConfig );
     setAlignment( cb->timer, AlignMode::EDGE_ALIGNED );
     setCountDirection( cb->timer, CountDir::COUNT_UP );
 
-    /* Trigger event rate set by overflow rate */
+    /*-------------------------------------------------------------------------
+    Set the overflow rate to the desired frequency
+    -------------------------------------------------------------------------*/
     result |= setEventRate( cb->timer, ( 1.0f / cfg.trigFreq ) * 1e9f );
 
-    /* Set TRGO to fire on Output Compare 1 match */
-    setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
+    /*-------------------------------------------------------------------------
+    Set the output compare behavior to drive the TRGO signal
+    -------------------------------------------------------------------------*/
+    auto channel = Chimera::Timer::Channel::CHANNEL_1;
+    auto output  = Chimera::Timer::Output::OUTPUT_1P;
 
-    /* Configure capture/compare behavior */
     disableCCOutput( cb->timer, output );
     setCCMode( cb->timer, channel, CCMode::CCM_OUTPUT );
     setCCOutputPolarity( cb->timer, output, CCPolarity::CCP_OUT_ACTIVE_HIGH );
     setOCMode( cb->timer, channel, OCMode::OC_MODE_TOGGLE_MATCH );
     setOCReference( cb->timer, channel, 0 );
     enableCCOutput( cb->timer, output );
+    setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
 
     /*-------------------------------------------------------------------------
     Attach the interrupt handler
@@ -270,8 +272,9 @@ namespace Chimera::Timer::Trigger
     Initialize the control block data
     -------------------------------------------------------------------------*/
     RT_HARD_ASSERT( Chimera::Status::OK == allocate( cfg.coreConfig.instance ) );
-    cb->timer        = Thor::LLD::TIMER::getHandle( cfg.coreConfig.instance );
-    cb->instance     = cfg.coreConfig.instance;
+
+    cb->timer    = Thor::LLD::TIMER::getHandle( cfg.coreConfig.instance );
+    cb->instance = cfg.coreConfig.instance;
     cb->slaveCfg = cfg;
 
     RT_DBG_ASSERT( cb->timer );
@@ -286,12 +289,6 @@ namespace Chimera::Timer::Trigger
     setPriority( irqSignal, TIMER_IT_PREEMPT_PRIORITY, 0u );
 
     /*-------------------------------------------------------------------------
-    Reset and configure the timer for desired operation
-    -------------------------------------------------------------------------*/
-    auto channel = Chimera::Timer::Channel::CHANNEL_1;
-    auto output  = Chimera::Timer::Output::OUTPUT_1P;
-
-    /*-------------------------------------------------------------------------
     Base timer clocking setup
     -------------------------------------------------------------------------*/
     result |= Thor::LLD::TIMER::Master::initCore( cb->timer, cfg.coreConfig );
@@ -304,13 +301,15 @@ namespace Chimera::Timer::Trigger
     result |= setEventRate( cb->timer, ( 1.0f / cfg.frequency ) * 1e9f );
 
     /*-------------------------------------------------------------------------
-    Set the output compare behavior to drive the TRGO signal with positive
-    polarity and toggling on match.
+    Set the output compare behavior to drive the TRGO signal
     -------------------------------------------------------------------------*/
+    auto channel = Chimera::Timer::Channel::CHANNEL_1;
+    auto output  = Chimera::Timer::Output::OUTPUT_1P;
+
     disableCCOutput( cb->timer, output );
     setCCMode( cb->timer, channel, CCMode::CCM_OUTPUT );
     setCCOutputPolarity( cb->timer, output, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    setOCMode( cb->timer, channel, OCMode::OC_MODE_TOGGLE_MATCH );
+    setOCMode( cb->timer, channel, OCMode::OC_MODE_PWM_MODE_2 );
     setOCReference( cb->timer, channel, 0 );
     enableCCOutput( cb->timer, output );
     setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
@@ -323,7 +322,7 @@ namespace Chimera::Timer::Trigger
     /*-------------------------------------------------------------------------
     Map the synchronization action to a slave behavior mode
     -------------------------------------------------------------------------*/
-    switch( cfg.trigSyncAction )
+    switch ( cfg.trigSyncAction )
     {
       case Chimera::Timer::Trigger::SyncAction::SYNC_RESET:
         setSlaveMode( cb->timer, SlaveMode::RESET );
@@ -345,7 +344,7 @@ namespace Chimera::Timer::Trigger
     /*-------------------------------------------------------------------------
     Map the synchronization signal to a slave trigger source
     -------------------------------------------------------------------------*/
-    switch( cfg.trigSyncSignal )
+    switch ( cfg.trigSyncSignal )
     {
       case Chimera::Timer::Trigger::Signal::TRIG_SIG_0:
         setSlaveTriggerSource( cb->timer, Thor::LLD::TIMER::Trigger::INTERNAL_0 );

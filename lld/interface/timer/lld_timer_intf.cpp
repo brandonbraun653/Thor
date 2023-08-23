@@ -5,7 +5,7 @@
  *  Description:
  *    Interface implementation details for the timer module
  *
- *  2022 | Brandon Braun | brandonbraun653@protonmail.com
+ *  2022-2023 | Brandon Braun | brandonbraun653@protonmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -132,6 +132,12 @@ namespace Thor::LLD::TIMER
       return TIMER7_GLOBAL_RESOURCE_INDEX;
     }
 #endif
+#if defined( STM32_TIMER8_PERIPH_AVAILABLE )
+    if ( address == reinterpret_cast<std::uintptr_t>( TIMER8_PERIPH ) )
+    {
+      return TIMER8_GLOBAL_RESOURCE_INDEX;
+    }
+#endif
 #if defined( STM32_TIMER15_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( TIMER15_PERIPH ) )
     {
@@ -179,6 +185,12 @@ namespace Thor::LLD::TIMER
     if ( address == reinterpret_cast<std::uintptr_t>( TIMER7_PERIPH ) )
     {
       return TIMER7_TYPE_RESOURCE_INDEX;
+    }
+#endif
+#if defined( STM32_TIMER8_PERIPH_AVAILABLE )
+    if ( address == reinterpret_cast<std::uintptr_t>( TIMER8_PERIPH ) )
+    {
+      return TIMER8_TYPE_RESOURCE_INDEX;
     }
 #endif
 #if defined( STM32_TIMER15_PERIPH_AVAILABLE )
@@ -230,6 +242,12 @@ namespace Thor::LLD::TIMER
       return HardwareType::TIMER_HW_BASIC;
     }
 #endif
+#if defined( STM32_TIMER8_PERIPH_AVAILABLE )
+    if ( address == reinterpret_cast<std::uintptr_t>( TIMER8_PERIPH ) )
+    {
+      return HardwareType::TIMER_HW_ADVANCED;
+    }
+#endif
 #if defined( STM32_TIMER15_PERIPH_AVAILABLE )
     if ( address == reinterpret_cast<std::uintptr_t>( TIMER15_PERIPH ) )
     {
@@ -249,10 +267,11 @@ namespace Thor::LLD::TIMER
 
   uint32_t getMaxReload( const Chimera::Timer::Instance &instance )
   {
-    switch( instance )
+    switch ( instance )
     {
       case Chimera::Timer::Instance::TIMER1:
       case Chimera::Timer::Instance::TIMER3:
+      case Chimera::Timer::Instance::TIMER8:
       case Chimera::Timer::Instance::TIMER15:
       case Chimera::Timer::Instance::TIMER16:
         return std::numeric_limits<uint16_t>::max();
@@ -261,7 +280,7 @@ namespace Thor::LLD::TIMER
         return std::numeric_limits<uint32_t>::max();
 
       default:
-        RT_HARD_ASSERT( false ); // Missing a timer definition!
+        RT_HARD_ASSERT( false );    // Missing a timer definition!
         return 0;
     };
   }
@@ -275,7 +294,7 @@ namespace Thor::LLD::TIMER
         return 2;
 
       default:
-        RT_HARD_ASSERT( false ); // Missing a timer definition!
+        RT_HARD_ASSERT( false );    // Missing a timer definition!
         return 0;
     };
   }
@@ -305,6 +324,10 @@ namespace Thor::LLD::TIMER
       case Chimera::Timer::Instance::TIMER7:
         return HardwareType::TIMER_HW_BASIC;
 #endif
+#if defined( STM32_TIMER8_PERIPH_AVAILABLE )
+      case Chimera::Timer::Instance::TIMER8:
+        return HardwareType::TIMER_HW_ADVANCED;
+#endif
 #if defined( STM32_TIMER15_PERIPH_AVAILABLE )
       case Chimera::Timer::Instance::TIMER15:
         return HardwareType::TIMER_HW_GENERAL;
@@ -320,9 +343,9 @@ namespace Thor::LLD::TIMER
   }
 
 
-  RegisterMap* getPeriphRegister( const Chimera::Timer::Instance &instance )
+  RegisterMap *getPeriphRegister( const Chimera::Timer::Instance &instance )
   {
-    if( instance >= Chimera::Timer::Instance::NUM_OPTIONS )
+    if ( instance >= Chimera::Timer::Instance::NUM_OPTIONS )
     {
       return nullptr;
     }

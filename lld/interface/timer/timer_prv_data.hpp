@@ -6,7 +6,7 @@
  *    Declaration of data that must be defined by the LLD implementation or is
  *    shared among all possible drivers.
  *
- *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
@@ -35,11 +35,38 @@ namespace Thor::LLD::TIMER
 #if defined( STM32_TIMER3_PERIPH_AVAILABLE )
   extern RegisterMap *TIMER3_PERIPH;
 #endif
+#if defined( STM32_TIMER4_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER4_PERIPH;
+#endif
+#if defined( STM32_TIMER5_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER5_PERIPH;
+#endif
 #if defined( STM32_TIMER6_PERIPH_AVAILABLE )
   extern RegisterMap *TIMER6_PERIPH;
 #endif
 #if defined( STM32_TIMER7_PERIPH_AVAILABLE )
   extern RegisterMap *TIMER7_PERIPH;
+#endif
+#if defined( STM32_TIMER8_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER8_PERIPH;
+#endif
+#if defined( STM32_TIMER9_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER9_PERIPH;
+#endif
+#if defined( STM32_TIMER10_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER10_PERIPH;
+#endif
+#if defined( STM32_TIMER11_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER11_PERIPH;
+#endif
+#if defined( STM32_TIMER12_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER12_PERIPH;
+#endif
+#if defined( STM32_TIMER13_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER13_PERIPH;
+#endif
+#if defined( STM32_TIMER14_PERIPH_AVAILABLE )
+  extern RegisterMap *TIMER14_PERIPH;
 #endif
 #if defined( STM32_TIMER15_PERIPH_AVAILABLE )
   extern RegisterMap *TIMER15_PERIPH;

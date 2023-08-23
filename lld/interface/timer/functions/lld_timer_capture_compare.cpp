@@ -144,7 +144,13 @@ namespace Thor::LLD::TIMER
 
   void setCCOutputPolarityBulk( Handle_rPtr timer, const uint32_t bf, const CCPolarity pol )
   {
-    RT_DBG_ASSERT( ( pol != CCP_OUT_ACTIVE_HIGH ) && ( pol != CCP_OUT_ACTIVE_LOW ) );
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if( pol != CCP_OUT_ACTIVE_HIGH && pol != CCP_OUT_ACTIVE_LOW )
+    {
+      return;
+    }
 
     /*-------------------------------------------------------------------------
     Build up the bit mask
