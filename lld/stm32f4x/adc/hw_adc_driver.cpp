@@ -28,14 +28,6 @@ Includes
 #include <limits>
 
 #if defined( THOR_ADC ) && defined( TARGET_STM32F4 )
-/*-----------------------------------------------------------------------------
-This driver expects some project side constants to be defined for helping with
-a few calculations.
-
-#define PRJ_ADC_VREF  (x.yzf)
------------------------------------------------------------------------------*/
-#include "thor_adc_prj_config.hpp"
-
 namespace Thor::LLD::ADC
 {
   /*---------------------------------------------------------------------------
@@ -52,7 +44,7 @@ namespace Thor::LLD::ADC
   /**
    * @brief Internal analog voltage reference (Vref+)
    *
-   * Value with which temperature sensor has been calibrated in production
+   * Value with which the internal reference was calibrated in production
    * (tolerance: +-10 mV) (unit: mV).
    */
   static constexpr float VREFINT_CAL_VREF_MV = 3300.0f;
@@ -60,14 +52,14 @@ namespace Thor::LLD::ADC
   /*---------------------------------------------------------------------------
   Static Data
   ---------------------------------------------------------------------------*/
-  static float s_adc_vdda = 0.0f; /**< */
+  static float s_adc_vdda = 0.0f; /**< Computed VDDA+ voltage */
 
   /*---------------------------------------------------------------------------
   Driver Implementation
   ---------------------------------------------------------------------------*/
   Driver::Driver() :
-      mPeriph( nullptr ), mCommon( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX ), mCfg( {} ),
-      mSeqCfg( {} ), mDMAPipeID( 0 )
+      mPeriph( nullptr ), mCommon( nullptr ), mResourceIndex( INVALID_RESOURCE_INDEX ), mCfg( {} ), mSeqCfg( {} ),
+      mDMAPipeID( 0 )
   {
   }
 
@@ -103,6 +95,8 @@ namespace Thor::LLD::ADC
     using namespace Chimera::Peripheral;
     using namespace Thor::LLD::RCC;
 
+    mCfg = cfg;
+
     /*-------------------------------------------------------------------------
     Only enable the clock because the reset signals will totally destroy other
     peripheral settings.
@@ -134,11 +128,6 @@ namespace Thor::LLD::ADC
     };
 
     /*-------------------------------------------------------------------------
-    Enable the temperature sensor and internal VRef
-    -------------------------------------------------------------------------*/
-    TSVREFE::set( ADC_COMMON, CCR_TSVREFE );
-
-    /*-------------------------------------------------------------------------
     Assign the ADC resolution
     -------------------------------------------------------------------------*/
     switch ( cfg.resolution )
@@ -166,7 +155,7 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     for ( size_t idx = 0; idx < NUM_ADC_CHANNELS_PER_PERIPH; idx++ )
     {
-      setSampleTime( static_cast<Chimera::ADC::Channel>( idx ), SampleTime::SMP_480 );
+      setSampleTime( static_cast<Chimera::ADC::Channel>( idx ), SampleTime::SMP_28 );
     }
 
     /*-------------------------------------------------------------------------
@@ -209,34 +198,42 @@ namespace Thor::LLD::ADC
     RT_HARD_ASSERT( mDMAPipeID != Chimera::DMA::INVALID_REQUEST );
 
     /*-------------------------------------------------------------------------
-    Bring the ADC out of power down mode
+    Bring the ADC out of power down mode. Enable the internal voltage reference
+    for measuring external VDDA+ reference voltage.
     -------------------------------------------------------------------------*/
     ADON::set( mPeriph, CR2_ADON );
-    Chimera::blockDelayMilliseconds( 5 );
+    TSVREFE::set( ADC_COMMON, CCR_TSVREFE );
+    Chimera::blockDelayMicroseconds( 15 );
 
     /*-------------------------------------------------------------------------
     Sample the internal voltage reference to calculate the real VDDA+ present
     on the MCU pin. This will always be present on Channel 0.
     -------------------------------------------------------------------------*/
-    if( mPeriph == ADC1_PERIPH )
+    if ( mPeriph == ADC1_PERIPH )
     {
       size_t startTime  = Chimera::millis();
       float  numSamples = 0.0f;
       s_adc_vdda        = 0.0f;
 
-      while ( Chimera::millis() - startTime < Chimera::Thread::TIMEOUT_100MS )
+      while ( Chimera::millis() - startTime < Chimera::Thread::TIMEOUT_5MS )
       {
         Chimera::ADC::Sample vref_sample  = sampleChannel( Chimera::ADC::Channel::ADC_CH_17 );
         const float          vrefint_data = static_cast<float>( vref_sample.counts );
         const float          vrefint_cal  = static_cast<float>( *VREFINT_CAL_ADDR );
 
-        s_adc_vdda += ( VREFINT_CAL_VREF_MV * ( vrefint_cal / vrefint_data ) ) / 1000.0f;
+        s_adc_vdda += ( VREFINT_CAL_VREF_MV * ( vrefint_cal / vrefint_data ) );
         numSamples++;
+        Chimera::blockDelayMicroseconds( 100 );
       }
 
       s_adc_vdda /= numSamples;
+      s_adc_vdda /= 1000.0f;
     }
 
+    /*-------------------------------------------------------------------------
+    Disable the internal voltage reference
+    -------------------------------------------------------------------------*/
+    TSVREFE::clear( ADC_COMMON, CCR_TSVREFE );
     return Chimera::Status::OK;
   }
 
@@ -319,7 +316,20 @@ namespace Thor::LLD::ADC
 
   float Driver::analogReference() const
   {
-    return s_adc_vdda;
+    if( TSVREFE::get( ADC_COMMON ) )
+    {
+      return ( VREFINT_CAL_VREF_MV * ( static_cast<float>( *VREFINT_CAL_ADDR ) / 4096.0f ) );
+    }
+    else if( mCfg.analogVRef == 0.0f )
+    {
+      return s_adc_vdda;
+    }
+    else
+    {
+      return mCfg.analogVRef;
+    }
+
+    return -1.0f;
   }
 
 
@@ -331,7 +341,7 @@ namespace Thor::LLD::ADC
     float fRes = resolution();
     RT_DBG_ASSERT( fRes != 0.0f );
 
-    return ( s_adc_vdda * static_cast<float>( sample.counts ) ) / fRes;
+    return ( analogReference() * static_cast<float>( sample.counts ) ) / fRes;
   }
 
 
@@ -484,10 +494,10 @@ namespace Thor::LLD::ADC
         /*---------------------------------------------------------------------
         Configure the appropriate register
         ---------------------------------------------------------------------*/
-        Reg32_t chNum  = EnumValue( next );
-        size_t  chPos  = 0;
-        Reg32_t regVal = 0;
-        Reg32_t curVal = 0;
+        Reg32_t chNum    = EnumValue( next );
+        size_t  chPos    = 0;
+        Reg32_t regVal   = 0;
+        Reg32_t curVal   = 0;
         Reg32_t chOffset = 0;
 
         if ( idx <= 5 )
