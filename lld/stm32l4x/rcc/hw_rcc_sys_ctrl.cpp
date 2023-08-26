@@ -31,7 +31,7 @@ namespace Thor::LLD::RCC
   /*---------------------------------------------------------------------------
   Public Data
   ---------------------------------------------------------------------------*/
-  OscillatorSettings sOscillatorSettings;
+  OscillatorSettings   sOscillatorSettings;
   DerivedClockSettings sDerivedClockSettings;
 
   /*---------------------------------------------------------------------------
@@ -407,13 +407,43 @@ namespace Thor::LLD::RCC
     Perform the lookup
     -------------------------------------------------------------------------*/
     size_t idx = registry->getResourceIndex( address );
-    if( idx == INVALID_RESOURCE_INDEX )
+    if ( idx == INVALID_RESOURCE_INDEX )
     {
       return INVALID_CLOCK;
     }
 
-    return getClockFrequency( registry->clockSource[ idx ] );
+    const size_t base_freq = getClockFrequency( registry->clockSource[ idx ] );
+    if ( periph != Chimera::Peripheral::Type::PERIPH_TIMER )
+    {
+      return base_freq;
+    }
+
+    /*-------------------------------------------------------------------------
+    Timer clocks can be either a 1x or 2x multiple of the APB clock. See
+    section 6.2.14 of RM0394 for details.
+    -------------------------------------------------------------------------*/
+    uint32_t prescaler = 0;
+    if ( *registry->clockSource == Chimera::Clock::Bus::APB1 )
+    {
+      prescaler = PPRE1::get( RCC1_PERIPH );
+    }
+    else if ( *registry->clockSource == Chimera::Clock::Bus::APB2 )
+    {
+      prescaler = PPRE2::get( RCC1_PERIPH );
+    }
+    else
+    {
+      RT_HARD_ASSERT( false );
+    }
+
+    if ( prescaler >= CFGR_PPRE1_DIV2 )
+    {
+      return base_freq * 2;
+    }
+    else
+    {
+      return base_freq;
+    }
   }
 
-
-}  // namespace
+}    // namespace Thor::LLD::RCC

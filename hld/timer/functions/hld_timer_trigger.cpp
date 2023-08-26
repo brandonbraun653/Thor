@@ -189,8 +189,8 @@ namespace Chimera::Timer::Trigger
     disableCCOutput( cb->timer, output );
     setCCMode( cb->timer, channel, CCMode::CCM_OUTPUT );
     setCCOutputPolarity( cb->timer, output, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-    setOCMode( cb->timer, channel, OCMode::OC_MODE_TOGGLE_MATCH );
-    setOCReference( cb->timer, channel, 0 );
+    setOCMode( cb->timer, channel, OCMode::OC_MODE_PWM_MODE_2 );
+    setOCReference( cb->timer, channel, cb->timer->registers->ARR / 2 );
     enableCCOutput( cb->timer, output );
     setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
 

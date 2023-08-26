@@ -185,7 +185,52 @@ namespace Thor::LLD::RCC
       return INVALID_CLOCK;
     }
 
-    return getClockFrequency( registry->clockSource[ idx ] );
+    const size_t base_freq = getClockFrequency( registry->clockSource[ idx ] );
+    if ( periph != Chimera::Peripheral::Type::PERIPH_TIMER )
+    {
+      return base_freq;
+    }
+
+    /*-----------------------------------------------------------------------
+    Timer clocks have a special prescaler configuration that is dependent
+    upon the bus they are attached to and the TIMPRE bit in the RCC_CFGR.
+    -----------------------------------------------------------------------*/
+    uint32_t prescaler = 0;
+    if ( *registry->clockSource == Chimera::Clock::Bus::APB1 )
+    {
+      prescaler = PPRE1::get( RCC1_PERIPH );
+    }
+    else if ( *registry->clockSource == Chimera::Clock::Bus::APB2 )
+    {
+      prescaler = PPRE2::get( RCC1_PERIPH );
+    }
+    else
+    {
+      RT_HARD_ASSERT( false );
+    }
+
+    if ( TIMPRE::get( RCC1_PERIPH ) )
+    {
+      if ( prescaler <= CFGR_PPRE1_DIV4 )
+      {
+        return getClockFrequency( Chimera::Clock::Bus::HCLK );
+      }
+      else
+      {
+        return base_freq * 4;
+      }
+    }
+    else
+    {
+      if ( prescaler >= CFGR_PPRE1_DIV2 )
+      {
+        return base_freq * 2;
+      }
+      else
+      {
+        return base_freq;
+      }
+    }
   }
 
 }    // namespace Thor::LLD::RCC
