@@ -516,28 +516,28 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     size_t chNum = static_cast<size_t>( ch );
 
-    if ( ch < Channel::ADC_CH_10 )
+    if ( ch <= Channel::ADC_CH_9 )
     {
       auto    chPos  = static_cast<size_t>( chNum ) * SMPRx_BIT_Wid;
       Reg32_t regVal = static_cast<size_t>( time ) << chPos;
-      Reg32_t curVal = SMPR1_ALL::get( mPeriph );
+      Reg32_t curVal = SMPR2_ALL::get( mPeriph );
 
       curVal &= ~( SMPRx_BIT_Msk << chPos );
       curVal |= regVal;
 
-      SMPR1_ALL::set( mPeriph, curVal );
+      SMPR2_ALL::set( mPeriph, curVal );
     }
     else
     {
       auto    chOffset = static_cast<size_t>( Channel::ADC_CH_10 );
       auto    chPos    = static_cast<size_t>( chNum ) - chOffset;
       Reg32_t regVal   = static_cast<size_t>( time ) << chPos;
-      Reg32_t curVal   = SMPR2_ALL::get( mPeriph );
+      Reg32_t curVal   = SMPR1_ALL::get( mPeriph );
 
       curVal &= ~( SMPRx_BIT_Msk << chPos );
       curVal |= regVal;
 
-      SMPR2_ALL::set( mPeriph, curVal );
+      SMPR1_ALL::set( mPeriph, curVal );
     }
 
     return Chimera::Status::OK;
@@ -744,9 +744,12 @@ namespace Thor::LLD::ADC
     }
 
     /*-------------------------------------------------------------------------
-    Finally, start the transfer
+    Finally, start the transfer if software has control
     -------------------------------------------------------------------------*/
-    ADSTART::set( mPeriph, CR_ADSTART );
+    if( mSeqCfg.seqMode != SamplingMode::TRIGGER )
+    {
+      ADSTART::set( mPeriph, CR_ADSTART );
+    }
   }
 
 

@@ -151,6 +151,22 @@ namespace Thor::LLD::ADC
     Chimera::Status_t setSampleTime( const Chimera::ADC::Channel ch, const SampleTime time );
 
     /**
+     * @brief Gets the sample time cycles assigned to a channel
+     *
+     * @param ch  Which channel to query
+     * @return size_t
+     */
+    size_t getSampleCycle( const Chimera::ADC::Channel ch );
+
+    /**
+     * @brief Computes the total sample time + conversion, in nanoseconds.
+     *
+     * @param cycles  Number of cycles used for sampling
+     * @return size_t
+     */
+    size_t totalMeasureTime( const size_t cycles );
+
+    /**
      *  Sets up the ADC to run a sequence of conversions
      *
      * @param[in] sequence      Sample sequence config

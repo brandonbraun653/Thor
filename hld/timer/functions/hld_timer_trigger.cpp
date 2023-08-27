@@ -312,12 +312,12 @@ namespace Chimera::Timer::Trigger
     setOCMode( cb->timer, channel, OCMode::OC_MODE_PWM_MODE_2 );
     setOCReference( cb->timer, channel, 0 );
     enableCCOutput( cb->timer, output );
-    setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
+    setMasterMode( cb->timer, MasterMode::COMPARE_PULSE );
 
     /*-------------------------------------------------------------------------
     Enable the master/slave synchronization, which might not be used.
     -------------------------------------------------------------------------*/
-    setMasterSlaveSync( cb->timer, MasterSlaveSync::ENABLED );
+    // setMasterSlaveSync( cb->timer, MasterSlaveSync::ENABLED );
 
     /*-------------------------------------------------------------------------
     Map the synchronization action to a slave behavior mode

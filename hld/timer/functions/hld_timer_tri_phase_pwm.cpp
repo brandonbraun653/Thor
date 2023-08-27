@@ -5,7 +5,7 @@
  *  Description:
  *    Thor implementation of the 3-phase PWM driver
  *
- *  2022 | Brandon Braun | brandonbraun653@protonmail.com
+ *  2022-2023 | Brandon Braun | brandonbraun653@protonmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -29,8 +29,7 @@ namespace Chimera::Timer::Inverter
   /*---------------------------------------------------------------------------
   Constants
   ---------------------------------------------------------------------------*/
-  static constexpr uint32_t
-      s_all_output_channel_bf =    //::Thor::LLD::TIMER::EnableFlagGenerator<Chimera::Timer::Output::OUTPUT_1P>;
+  static constexpr uint32_t s_all_output_channel_bf =
       /* clang-format off */
     ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_1P ) ) |
     ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_1N ) ) |
@@ -38,7 +37,7 @@ namespace Chimera::Timer::Inverter
     ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_2N ) ) |
     ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_3P ) ) |
     ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_3N ) ) |
-    ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_5P ) );
+    ( 1u << EnumValue( Chimera::Timer::Output::OUTPUT_4P ) );
   /* clang-format on */
 
   /*---------------------------------------------------------------------------
@@ -48,6 +47,7 @@ namespace Chimera::Timer::Inverter
   {
     Thor::LLD::TIMER::Handle_rPtr timer;                  /**< Handle to the timer */
     Chimera::Timer::Output        pinMap[ NUM_SWITCHES ]; /**< Which channel each pin maps to */
+    uint32_t                      maxCCRef;               /**< Max capture compare reference to meet min PWM requirements */
   };
 
   /*---------------------------------------------------------------------------
@@ -174,23 +174,21 @@ namespace Chimera::Timer::Inverter
     result |= setPhaseDutyCycle( 0.0f, 0.0f, 0.0f );
 
     /*-------------------------------------------------------------------------
-    ADC trigger configuration
-    // TODO BMB: This is currently hard-coded for the F4 family. Not great.
+    Output trigger configuration (TRGO). Can be used to drive ADC sampling or
+    other peripherals.
     -------------------------------------------------------------------------*/
-    // // Use PWM mode 2 here to set the rising edge once CNT > CCR4
-    // setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_4, OCMode::OC_MODE_PWM_MODE_2 );
+    /* Use PWM mode 2 here to set the rising edge once CNT > CCR4 */
+    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_4, OCMode::OC_MODE_PWM_MODE_2 );
 
-    // /* Use this channel's OC to drive ADC sample. Requires external ADC configuration. */
-    // Thor::LLD::TIMER::useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_4, true );
+    /* Buffer trigger timing updates so they synchronize correctly */
+    useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_4, true );
 
-    /* Configure the TRGO signal to match the OC channel */
-    setMasterMode( cb->timer, MasterMode::COMPARE_OC1REF );
-    setMasterSlaveSync( cb->timer, MasterSlaveSync::ENABLED );
+    /* Configure the TRGO signal to track the output compare channel */
+    setMasterMode( cb->timer, MasterMode::COMPARE_OC4REF );
 
-    // /* Set the trigger timing to be in the center of the low-side (complementary output) ON sequence */
-    // // TODO BMB: Still messing with this
-    // const uint32_t arr_val = Thor::LLD::TIMER::getAutoReload( cb->timer );
-    // setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_4, 25 );
+    /* Naive initial OC ref. Use updateTriggerTiming() for exact setting. */
+    cb->maxCCRef = getAutoReload( cb->timer );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_4, cb->maxCCRef );
 
     /*-------------------------------------------------------------------------
     Lock out the core timer configuration settings to prevent dangerous changes
@@ -335,6 +333,43 @@ namespace Chimera::Timer::Inverter
   uint32_t Driver::getAutoReloadValue() const
   {
     return reinterpret_cast<ControlBlock *>( mTimerImpl )->timer->registers->ARR;
+  }
+
+
+  Chimera::Status_t Driver::updateTriggerTiming( const uint32_t adc_sample_time_ns, const uint32_t trigger_offset_ns )
+  {
+    using namespace Thor::LLD::TIMER;
+
+    ControlBlock *const cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
+
+    /*-------------------------------------------------------------------------
+    Calculate the reference value for the TRGO signal
+    -------------------------------------------------------------------------*/
+    const uint32_t timer_clock_period_ns = static_cast<uint32_t>( getBaseTickPeriod( cb->timer ) );
+
+    /* Core sample time plus a boundary layer on either side */
+    const uint32_t min_pwm_period_ns = ( 2u * trigger_offset_ns ) + adc_sample_time_ns;
+
+    /* Compute the timer ticks required to reach at least the minimum width, possibly a little larger */
+    const uint32_t min_timer_ticks = ( min_pwm_period_ns / timer_clock_period_ns ) + 1u;
+
+    /* Timer runs as centered up/down counter, so the compare match is half of the total width required */
+    const uint32_t new_cc4_ref_val = getAutoReload( cb->timer ) - ( min_timer_ticks / 2 );
+
+    /*-------------------------------------------------------------------------
+    Compute the new maximum capture compare reference for output channels 1-3.
+    Because we are counting center-aligned, setting the max CC value results in
+    specifying the minimum PWM period we can command without violating the ADC
+    timing constraints. Back off the CC4 value by the trigger offset to ensure
+    there is enough setting time between power stage turning on and the ADC
+    starting it's sampling.
+    -------------------------------------------------------------------------*/
+    cb->maxCCRef = new_cc4_ref_val - ( trigger_offset_ns / timer_clock_period_ns );
+
+    /*-------------------------------------------------------------------------
+    Update the TRGO capture compare reference
+    -------------------------------------------------------------------------*/
+    return setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_4, new_cc4_ref_val );
   }
 
 }    // namespace Chimera::Timer::Inverter

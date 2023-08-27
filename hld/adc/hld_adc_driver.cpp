@@ -314,6 +314,18 @@ namespace Chimera::ADC
   }
 
 
+  size_t Driver::getSampleCycle( const Chimera::ADC::Channel ch )
+  {
+    return reinterpret_cast<ThorImpl *>( mImpl )->lldriver->getSampleCycle( ch );
+  }
+
+
+  size_t Driver::totalMeasureTime( const size_t cycles )
+  {
+    return reinterpret_cast<ThorImpl *>( mImpl )->lldriver->totalMeasureTime( cycles );
+  }
+
+
   Chimera::ADC::Sample Driver::sampleChannel( const Chimera::ADC::Channel ch )
   {
     if ( !( ch < Chimera::ADC::Channel::NUM_OPTIONS ) )

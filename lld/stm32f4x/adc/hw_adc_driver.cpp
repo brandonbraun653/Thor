@@ -104,8 +104,8 @@ namespace Thor::LLD::ADC
     this->clockEnable();
 
     /*-------------------------------------------------------------------------
-    Select the clock prescaler. On the F4, the ADC is
-    driven directly from the APB2 clock. (RM Fig.13)
+    Select the clock prescaler. On the F4, the ADC is driven directly from the
+    APB2 clock. (RM Fig.13)
     -------------------------------------------------------------------------*/
     switch ( cfg.clockPrescale )
     {
@@ -402,31 +402,151 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     size_t chNum = static_cast<size_t>( ch );
 
-    if ( ch < Channel::ADC_CH_10 )
+    if ( ch <= Channel::ADC_CH_9 )
     {
       auto    chPos  = static_cast<size_t>( chNum ) * SMPRx_BIT_Wid;
       Reg32_t regVal = static_cast<size_t>( time ) << chPos;
-      Reg32_t curVal = SMPR1_ALL::get( mPeriph );
-
-      curVal &= ~( SMPRx_BIT_Msk << chPos );
-      curVal |= regVal;
-
-      SMPR1_ALL::set( mPeriph, curVal );
-    }
-    else
-    {
-      auto    chOffset = static_cast<size_t>( Channel::ADC_CH_10 );
-      auto    chPos    = static_cast<size_t>( chNum ) - chOffset;
-      Reg32_t regVal   = static_cast<size_t>( time ) << chPos;
-      Reg32_t curVal   = SMPR2_ALL::get( mPeriph );
+      Reg32_t curVal = SMPR2_ALL::get( mPeriph );
 
       curVal &= ~( SMPRx_BIT_Msk << chPos );
       curVal |= regVal;
 
       SMPR2_ALL::set( mPeriph, curVal );
     }
+    else
+    {
+      auto    chOffset = static_cast<size_t>( Channel::ADC_CH_10 );
+      auto    chPos    = static_cast<size_t>( chNum ) - chOffset;
+      Reg32_t regVal   = static_cast<size_t>( time ) << chPos;
+      Reg32_t curVal   = SMPR1_ALL::get( mPeriph );
+
+      curVal &= ~( SMPRx_BIT_Msk << chPos );
+      curVal |= regVal;
+
+      SMPR1_ALL::set( mPeriph, curVal );
+    }
 
     return Chimera::Status::OK;
+  }
+
+
+  size_t Driver::getSampleCycle( const Chimera::ADC::Channel ch )
+  {
+    using namespace Chimera::ADC;
+
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if ( !( EnumValue( ch ) < NUM_ADC_CHANNELS_PER_PERIPH ) )
+    {
+      return 0;
+    }
+
+    /*-------------------------------------------------------------------------
+    Look up the sample time from the registers
+    -------------------------------------------------------------------------*/
+    size_t chNum = static_cast<size_t>( ch );
+    size_t sampleSetting = 0;
+
+    if ( ch <= Channel::ADC_CH_9 )
+    {
+      auto    chPos  = static_cast<size_t>( chNum ) * SMPRx_BIT_Wid;
+      Reg32_t regMsk = SMPRx_BIT_Msk << chPos;
+      Reg32_t curVal = SMPR2_ALL::get( mPeriph );
+
+      sampleSetting = ( curVal & regMsk ) >> chPos;
+    }
+    else
+    {
+      auto    chOffset = static_cast<size_t>( Channel::ADC_CH_10 );
+      auto    chPos    = static_cast<size_t>( chNum ) - chOffset;
+      Reg32_t regMsk   = SMPRx_BIT_Msk << chPos;
+      Reg32_t curVal   = SMPR1_ALL::get( mPeriph );
+
+      sampleSetting = ( curVal & regMsk ) >> chPos;
+    }
+
+    /*-------------------------------------------------------------------------
+    Convert the register setting into a number of cycles
+    -------------------------------------------------------------------------*/
+    switch( sampleSetting )
+    {
+      case EnumValue(SampleTime::SMP_3):
+        return 3u;
+
+      case EnumValue(SampleTime::SMP_15):
+        return 15u;
+
+      case EnumValue(SampleTime::SMP_28):
+        return 28u;
+
+      case EnumValue(SampleTime::SMP_56):
+        return 56u;
+
+      case EnumValue(SampleTime::SMP_84):
+        return 84u;
+
+      case EnumValue(SampleTime::SMP_112):
+        return 112u;
+
+      case EnumValue(SampleTime::SMP_144):
+        return 144u;
+
+      case EnumValue(SampleTime::SMP_480):
+        return 480u;
+
+      default:
+        return 0;
+    }
+  }
+
+
+  size_t Driver::totalMeasureTime( const size_t cycles )
+  {
+    /*-------------------------------------------------------------------------
+    Compute the effective ADC clock
+    -------------------------------------------------------------------------*/
+    auto rcc = Thor::LLD::RCC::getCoreClockCtrl();
+    auto adc_clk = rcc->getPeriphClock( Chimera::Peripheral::Type::PERIPH_ADC, reinterpret_cast<std::uintptr_t>( mPeriph ) );
+
+    if( adc_clk == RCC::INVALID_CLOCK )
+    {
+      return 0;
+    }
+
+    switch( ADCPRE::get( ADC_COMMON ) )
+    {
+      case 0:
+        adc_clk /= 2;
+        break;
+
+      case CCR_ADCPRE_0:
+        adc_clk /= 4;
+        break;
+
+      case CCR_ADCPRE_1:
+        adc_clk /= 6;
+        break;
+
+      case CCR_ADCPRE_0 | CCR_ADCPRE_1:
+        adc_clk /= 8;
+        break;
+
+      default:
+        return 0;
+    }
+
+    /*-------------------------------------------------------------------------
+    Convert the clock into nanoseconds per cycle
+    -------------------------------------------------------------------------*/
+    const float ns_per_cycle = 1.0f / ( static_cast<float>( adc_clk ) / 1e9f );
+
+    /*-------------------------------------------------------------------------
+    Get the number of cycles used in the conversion. From RM0390 13.5, there
+    are 12 cycles needed for conversion, regardless of sample time.
+    -------------------------------------------------------------------------*/
+    size_t total_cycles = 12 + cycles;
+    return static_cast<size_t>( static_cast<float>( total_cycles ) * ns_per_cycle );
   }
 
 
@@ -615,12 +735,15 @@ namespace Thor::LLD::ADC
 
     /*-------------------------------------------------------------------------
     Set the start bit, then wait for HW to clear it. If stuck here, the ADC
-    probably isn't enabled.
+    probably isn't enabled. Only do this if we're not using external triggers.
     -------------------------------------------------------------------------*/
-    SWSTART::set( mPeriph, CR2_SWSTART );
-    while ( SWSTART::get( mPeriph ) )
+    if ( mSeqCfg.seqMode != SamplingMode::TRIGGER )
     {
-      continue;
+      SWSTART::set( mPeriph, CR2_SWSTART );
+      while ( SWSTART::get( mPeriph ) )
+      {
+        continue;
+      }
     }
   }
 
