@@ -16,6 +16,7 @@ Includes
 #include <Chimera/utility>
 #include <Thor/cfg>
 #include <Thor/dma>
+#include <Thor/lld/common/cortex-m4/system_time.hpp>
 #include <Thor/lld/interface/inc/adc>
 #include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/interrupt>
@@ -341,11 +342,11 @@ namespace Thor::LLD::ADC
     Sample the internal voltage reference to calculate the real VDDA+ present
     on the MCU pin. This will always be present on Channel 0.
     -------------------------------------------------------------------------*/
-    size_t startTime  = Chimera::millis();
+    size_t startTime  = CortexM4::SYSTick::getMilliseconds();
     float  numSamples = 0.0f;
     mCalcVdda = 0.0f;
 
-    while ( Chimera::millis() - startTime < Chimera::Thread::TIMEOUT_100MS )
+    while ( CortexM4::SYSTick::getMilliseconds() - startTime < Chimera::Thread::TIMEOUT_100MS )
     {
       Chimera::ADC::Sample vref_sample  = sampleChannel( Chimera::ADC::Channel::ADC_CH_0 );
       const float          vrefint_data = static_cast<float>( vref_sample.counts );
@@ -413,7 +414,7 @@ namespace Thor::LLD::ADC
     Consume the measurement
     -----------------------------------------------------------------------*/
     measurement.counts = JDATA1::get( mPeriph );
-    measurement.us     = Chimera::micros();
+    measurement.us     = CortexM4::SYSTick::getMilliseconds();
 
     return measurement;
   }
@@ -820,7 +821,7 @@ namespace Thor::LLD::ADC
       if ( !( ( *queue )[ EnumValue( channel ) ]->full() ) )
       {
         Chimera::ADC::Sample sample;
-        sample.us     = Chimera::micros();
+        sample.us     = CortexM4::SYSTick::getMilliseconds();
         sample.counts = mDMASampleBuffer.rawSamples[ idx ];
 
         ( *queue )[ EnumValue( channel ) ]->push( sample );

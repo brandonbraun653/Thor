@@ -19,6 +19,7 @@ Includes
 #include <Chimera/utility>
 #include <Thor/cfg>
 #include <Thor/dma>
+#include <Thor/lld/common/cortex-m4/system_time.hpp>
 #include <Thor/lld/interface/inc/adc>
 #include <Thor/lld/interface/inc/dma>
 #include <Thor/lld/interface/inc/interrupt>
@@ -211,11 +212,11 @@ namespace Thor::LLD::ADC
     -------------------------------------------------------------------------*/
     if ( mPeriph == ADC1_PERIPH )
     {
-      size_t startTime  = Chimera::millis();
+      size_t startTime  = CortexM4::SYSTick::getMilliseconds();
       float  numSamples = 0.0f;
       s_adc_vdda        = 0.0f;
 
-      while ( Chimera::millis() - startTime < Chimera::Thread::TIMEOUT_5MS )
+      while ( CortexM4::SYSTick::getMilliseconds() - startTime < Chimera::Thread::TIMEOUT_5MS )
       {
         Chimera::ADC::Sample vref_sample  = sampleChannel( Chimera::ADC::Channel::ADC_CH_17 );
         const float          vrefint_data = static_cast<float>( vref_sample.counts );
@@ -257,10 +258,11 @@ namespace Thor::LLD::ADC
     JDISCEN::clear( mPeriph, CR1_JDISCEN );    // Force sequentially ordered sampling
 
     /*-------------------------------------------------------------------------
-    Configure the channel to be measured
+    Configure a single channel to be measured. From RM0390 13.13.12, when the
+    sequence length is 1, only the channel listed in JSQ4 is converted.
     -------------------------------------------------------------------------*/
-    JSQR_ALL::set( mPeriph, 0u );    // Sequence length of 1, no external triggers.
-    SQ1::set( mPeriph, EnumValue( channel ) << SQR3_SQ1_Pos );
+    JSQR_ALL::set( mPeriph, 0u );
+    JSQ4::set( mPeriph, EnumValue( channel ) << JSQR_JSQ4_Pos );
 
     /*-------------------------------------------------------------------------
     Perform the conversion. Debuggers beware! Stepping through this section may
@@ -279,7 +281,7 @@ namespace Thor::LLD::ADC
     Read the data register and store the result
     -------------------------------------------------------------------------*/
     measurement.counts = JDATA1::get( mPeriph );
-    measurement.us     = Chimera::micros();
+    measurement.us     = CortexM4::SYSTick::getMicroseconds();
 
     /*-------------------------------------------------------------------------
     Clear the EOC flags
@@ -826,7 +828,7 @@ namespace Thor::LLD::ADC
       if ( !( ( *queue )[ EnumValue( channel ) ]->full() ) )
       {
         Chimera::ADC::Sample sample;
-        sample.us     = Chimera::micros();
+        sample.us     = CortexM4::SYSTick::getMilliseconds();
         sample.counts = mDMASampleBuffer.rawSamples[ idx ];
 
         ( *queue )[ EnumValue( channel ) ]->push( sample );
