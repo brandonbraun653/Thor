@@ -129,29 +129,34 @@ namespace Chimera::Timer::Inverter
     /*-------------------------------------------------------------------------
     Break signal(s) configuration to control emergency shutdowns
     -------------------------------------------------------------------------*/
-    setBreakPolarity( cb->timer, BreakSource::BREAK_SOURCE_INTERNAL, BreakChannel::BREAK_INPUT_1,
-                      BreakPolarity::BREAK_ACTIVE_HIGH );
-    setBreakPolarity( cb->timer, BreakSource::BREAK_SOURCE_INTERNAL, BreakChannel::BREAK_INPUT_2,
-                      BreakPolarity::BREAK_ACTIVE_HIGH );
-    breakEnable( cb->timer, BreakSource::BREAK_SOURCE_INTERNAL, BreakChannel::BREAK_INPUT_1 );
-    breakEnable( cb->timer, BreakSource::BREAK_SOURCE_INTERNAL, BreakChannel::BREAK_INPUT_2 );
+    setBreakPolarity( cb->timer, BREAK_SOURCE_INTERNAL, BREAK_INPUT_1, BREAK_ACTIVE_HIGH );
+    setBreakPolarity( cb->timer, BREAK_SOURCE_INTERNAL, BREAK_INPUT_2, BREAK_ACTIVE_HIGH );
+    breakEnable( cb->timer, BREAK_SOURCE_INTERNAL, BREAK_INPUT_1 );
+    breakEnable( cb->timer, BREAK_SOURCE_INTERNAL, BREAK_INPUT_2 );
 
     /*-------------------------------------------------------------------------
     3-Phase configuration
     -------------------------------------------------------------------------*/
-    /* Buffer the phase PWM set-point updates for seamless transitions */
+    /*-------------------------------------------------------------------
+    Buffer the phase PWM set-point updates for seamless transitions
+    -------------------------------------------------------------------*/
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_1, true );
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_2, true );
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_3, true );
 
-    // Use PWM mode 1 to logically line up duty cycle programming, which assumes high side
-    // on-time is equal to some percentage of the ARR. Mode 1 has the channel set to "active"
-    // while CNT < CCRx.
-    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_1, OCMode::OC_MODE_PWM_MODE_1 );
-    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_2, OCMode::OC_MODE_PWM_MODE_1 );
-    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_3, OCMode::OC_MODE_PWM_MODE_1 );
+    /*-------------------------------------------------------------------
+    Set the PWM mode for each output channel. Use pwm mode 2 to enforce
+    the view that specification of PWM widths are done in terms of the
+    low-side on-time. This is to make it easier for aligning ADC samples
+    with the power stage switching, which measure low side current.
+    -------------------------------------------------------------------*/
+    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_1, OCMode::OC_MODE_PWM_MODE_2 );
+    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_2, OCMode::OC_MODE_PWM_MODE_2 );
+    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_3, OCMode::OC_MODE_PWM_MODE_2 );
 
-    /* Set output idle (safe) states. Assumes positive logic for the power stage drive signals. */
+    /*-------------------------------------------------------------------
+    Set the output idle (safe) states. Assumes positive IO logic.
+    -------------------------------------------------------------------*/
     setRunModeOffState( cb->timer, OffStateMode::TIMER_CONTROL );
     setIdleModeOffState( cb->timer, OffStateMode::TIMER_CONTROL );
     setOutputIdleStateBulk( cb->timer, s_all_output_channel_bf, Chimera::GPIO::State::LOW );
@@ -159,6 +164,9 @@ namespace Chimera::Timer::Inverter
     /* Assign dead-time during complementary output transitions */
     RT_HARD_ASSERT( setDeadTime( cb->timer, cfg.deadTimeNs ) );
 
+    /*-------------------------------------------------------------------
+    Set capture compare behavior
+    -------------------------------------------------------------------*/
     /* Set capture/compare mode */
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_1, CCMode::CCM_OUTPUT );
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_2, CCMode::CCM_OUTPUT );
@@ -169,9 +177,6 @@ namespace Chimera::Timer::Inverter
 
     /* Enable the outputs */
     enableCCOutputBulk( cb->timer, s_all_output_channel_bf );
-
-    /* Set the initial duty-cycles for each phase */
-    result |= setPhaseDutyCycle( 0.0f, 0.0f, 0.0f );
 
     /*-------------------------------------------------------------------------
     Output trigger configuration (TRGO). Can be used to drive ADC sampling or
@@ -197,6 +202,10 @@ namespace Chimera::Timer::Inverter
     // lockoutTimer( cb->timer, LockoutLevel::LOCK_LEVEL_3 );
     // RT_HARD_ASSERT( isLockedOut( cb->timer ) );
 
+    /*-------------------------------------------------------------------------
+    Ensure we exit in a safe state
+    -------------------------------------------------------------------------*/
+    result |= setPhaseDutyCycle( 0.0f, 0.0f, 0.0f );
     return result;
   }
 
