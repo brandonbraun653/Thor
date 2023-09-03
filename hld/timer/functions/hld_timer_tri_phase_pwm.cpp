@@ -276,38 +276,50 @@ namespace Chimera::Timer::Inverter
   }
 
 
-  Chimera::Status_t Driver::svmUpdate( const float drive, const float theta)
+  Chimera::Status_t Driver::svmUpdate( const float alpha, const float beta, const float theta )
   {
     /*-------------------------------------------------------------------------
     Local Constants
     -------------------------------------------------------------------------*/
-    constexpr float PI_OVER_3 = static_cast<float>( M_PI ) / 3.0f;
+    constexpr float PI_OVER_3      = static_cast<float>( M_PI / 3.0 );
+    constexpr float SQRT_3_OVER_2  = static_cast<float>( M_SQRT3 / 2.0 );
+    constexpr float ONE_DEG_IN_RAD = 0.0174533f;
 
     /*-------------------------------------------------------------------------
     Input Protection
     -------------------------------------------------------------------------*/
-    RT_DBG_ASSERT( drive >= 0.0f && drive <= 0.866f );
     RT_DBG_ASSERT( theta >= 0.0f && theta <= 2.0f * static_cast<float>( M_PI ) );
+
+    /*-------------------------------------------------------------------------
+    Compute the drive strength from the magnitude of the inverse park transform
+    output, saturating at max theoretical value.
+    -------------------------------------------------------------------------*/
+    float drive = hypotf( alpha, beta );
+    if( drive > SQRT_3_OVER_2 )
+    {
+      drive = SQRT_3_OVER_2;
+    }
 
     /*-------------------------------------------------------------------------
     Compute the current sector and angular offset inside that sector
     -------------------------------------------------------------------------*/
     const uint32_t sector = static_cast<uint32_t>( theta / PI_OVER_3 );
-    float          alpha  = theta - ( sector * PI_OVER_3 );
+    float          sector_angle  = theta - ( sector * PI_OVER_3 );
 
     RT_DBG_ASSERT( sector <= 6 );
-    RT_DBG_ASSERT( alpha <= PI_OVER_3 && alpha >= 0.0f );
+    RT_DBG_ASSERT( sector_angle <= PI_OVER_3 && sector_angle >= 0.0f );
 
     /*-------------------------------------------------------------------------
-    Massage alpha a bit to prevent getting into weird edge cases
+    Massage sector_angle a bit to prevent getting into weird edge cases with
+    the trig functions. This is a bit of a hack, but it works alright.
     -------------------------------------------------------------------------*/
-    if( alpha < 0.0174533 ) // 1 deg
+    if( sector_angle < ONE_DEG_IN_RAD )
     {
-      alpha = 0.0174533;
+      sector_angle = ONE_DEG_IN_RAD;
     }
-    else if( alpha > ( PI_OVER_3 - 0.0174533 ) )
+    else if( sector_angle > ( PI_OVER_3 - ONE_DEG_IN_RAD ) )
     {
-      alpha = PI_OVER_3 - 0.0174533;
+      sector_angle = PI_OVER_3 - ONE_DEG_IN_RAD;
     }
 
     /*-------------------------------------------------------------------------
@@ -315,8 +327,8 @@ namespace Chimera::Timer::Inverter
     -------------------------------------------------------------------------*/
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
 
-    const float ta = cb->T_half * drive * fast_sin( PI_OVER_3 - alpha );
-    const float tb = cb->T_half * drive * fast_sin( alpha );
+    const float ta = cb->T_half * drive * fast_sin( PI_OVER_3 - sector_angle );
+    const float tb = cb->T_half * drive * fast_sin( sector_angle );
     const float tn = cb->T_half - ta - tb;
     const float tn_half = 0.5f * tn;
 
@@ -385,6 +397,22 @@ namespace Chimera::Timer::Inverter
     setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, c );
 
     return Chimera::Status::OK;
+  }
+
+
+  void Driver::getSVMOnTicks( uint32_t &tOnA, uint32_t &tOnB, uint32_t &tOnC )
+  {
+    /*-------------------------------------------------------------------------
+    The timer is an up/down counter and the PWM is center aligned with the high
+    side active once CNT > CCRx. This yields total ON ticks for the high side
+    as 2 * ( ARR - CCRx ).
+    -------------------------------------------------------------------------*/
+    const ControlBlock *const cb  = reinterpret_cast<ControlBlock *>( mTimerImpl );
+    const uint32_t            arr = cb->timer->registers->ARR;
+
+    tOnA = 2u * ( arr - getOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1 ) );
+    tOnB = 2u * ( arr - getOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2 ) );
+    tOnC = 2u * ( arr - getOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3 ) );
   }
 
 
