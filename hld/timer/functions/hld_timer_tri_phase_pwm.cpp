@@ -3,7 +3,7 @@
  *    hld_timer_tri_phase_pwm.cpp
  *
  *  Description:
- *    Thor implementation of the 3-phase PWM driver
+ *    Thor implementation of the 3-phase PWM driver for BLDC motors using SVM.
  *
  *  2022-2023 | Brandon Braun | brandonbraun653@protonmail.com
  *****************************************************************************/
@@ -48,6 +48,8 @@ namespace Chimera::Timer::Inverter
     Thor::LLD::TIMER::Handle_rPtr timer;                  /**< Handle to the timer */
     Chimera::Timer::Output        pinMap[ NUM_SWITCHES ]; /**< Which channel each pin maps to */
     uint32_t                      maxCCRef;               /**< Max capture compare reference to meet min PWM requirements */
+    float                         T_half;                 /**< Half of the PWM period */
+    float                         T_freq;                 /**< Core timer frequency */
   };
 
   /*---------------------------------------------------------------------------
@@ -56,17 +58,38 @@ namespace Chimera::Timer::Inverter
   static Chimera::DeviceManager<ControlBlock, Chimera::Timer::Instance, EnumValue( Chimera::Timer::Instance::NUM_OPTIONS )>
       s_timer_data;
 
+  /*---------------------------------------------------------------------------
+  Static Functions
+  ---------------------------------------------------------------------------*/
+  static float fast_sin( float angle )
+  {
+    constexpr float M_PI_F = static_cast<float>( M_PI );
 
-  static uint32_t s_ccer_fwd_comm_table[ 7 ] = {
-    /* clang-format off */
-    ( Thor::LLD::TIMER::CCER_CC1E  | Thor::LLD::TIMER::CCER_CC2NE ),  /* STATE_0 */
-    ( Thor::LLD::TIMER::CCER_CC1E  | Thor::LLD::TIMER::CCER_CC3NE ),  /* STATE_1 */
-    ( Thor::LLD::TIMER::CCER_CC2E  | Thor::LLD::TIMER::CCER_CC3NE ),  /* STATE_2 */
-    ( Thor::LLD::TIMER::CCER_CC1NE | Thor::LLD::TIMER::CCER_CC2E  ),  /* STATE_3 */
-    ( Thor::LLD::TIMER::CCER_CC1NE | Thor::LLD::TIMER::CCER_CC3E  ),  /* STATE_4 */
-    ( Thor::LLD::TIMER::CCER_CC2NE | Thor::LLD::TIMER::CCER_CC3E  ),  /* STATE_5 */
-    ( 0 ), // All off
-  };/* clang-format on */
+    /*-------------------------------------------------------------------------
+    Wrap the angle from -PI to PI
+    -------------------------------------------------------------------------*/
+    while ( angle < -M_PI_F )
+    {
+      angle += 2.0f * M_PI_F;
+    }
+
+    while ( angle > M_PI_F )
+    {
+      angle -= 2.0f * M_PI_F;
+    }
+
+    /*-------------------------------------------------------------------------
+    Compute Sine
+    -------------------------------------------------------------------------*/
+    if ( angle < 0.0f )
+    {
+      return 1.27323954f * angle + 0.405284735f * angle * angle;
+    }
+    else
+    {
+      return 1.27323954f * angle - 0.405284735f * angle * angle;
+    }
+  }
 
   /*---------------------------------------------------------------------------
   Class Implementation
@@ -118,6 +141,7 @@ namespace Chimera::Timer::Inverter
 
     /* Power on the timer core */
     result |= Thor::LLD::TIMER::Master::initCore( cb->timer, cfg.coreCfg );
+    cb->T_freq = 1.0f / ( getBaseTickPeriod( cb->timer ) / 1e9f );
 
     /* Center-aligned up/down counting with output compare flags set on both count directions */
     setAlignment( cb->timer, AlignMode::CENTER_ALIGNED_3 );
@@ -125,6 +149,7 @@ namespace Chimera::Timer::Inverter
     /* Set the pwm output frequency that drives the IO pins. Multiply by two b/c of the
        center aligned counting mode, whose period is defined by BOTH up/down cycles. */
     result |= setCarrierFrequency( cfg.pwmFrequency * 2.0f );
+    cb->T_half = 0.5f / cfg.pwmFrequency;
 
     /*-------------------------------------------------------------------------
     Break signal(s) configuration to control emergency shutdowns
@@ -202,10 +227,6 @@ namespace Chimera::Timer::Inverter
     // lockoutTimer( cb->timer, LockoutLevel::LOCK_LEVEL_3 );
     // RT_HARD_ASSERT( isLockedOut( cb->timer ) );
 
-    /*-------------------------------------------------------------------------
-    Ensure we exit in a safe state
-    -------------------------------------------------------------------------*/
-    result |= setPhaseDutyCycle( 0.0f, 0.0f, 0.0f );
     return result;
   }
 
@@ -225,7 +246,9 @@ namespace Chimera::Timer::Inverter
     Reset the timer to a known state
     -------------------------------------------------------------------------*/
     assignCounter( cb->timer, 0 );
-    setForwardCommState( STATE_OFF );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, 0 );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2, 0 );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, 0 );
 
     /*-------------------------------------------------------------------------
     Enable the outputs
@@ -253,73 +276,113 @@ namespace Chimera::Timer::Inverter
   }
 
 
-  Chimera::Status_t Driver::setPhaseDutyCycle( const float a, const float b, const float c )
+  Chimera::Status_t Driver::svmUpdate( const float drive, const float theta)
   {
     /*-------------------------------------------------------------------------
-    Set the output compare reference for each phase
+    Local Constants
     -------------------------------------------------------------------------*/
-    Chimera::Status_t         result    = Chimera::Status::OK;
-    const ControlBlock *const cb        = reinterpret_cast<ControlBlock *>( mTimerImpl );
-    const uint32_t            arr_val   = Thor::LLD::TIMER::getAutoReload( cb->timer );
-    const float               arr_val_f = static_cast<float>( arr_val );
+    constexpr float PI_OVER_3 = static_cast<float>( M_PI ) / 3.0f;
 
     /*-------------------------------------------------------------------------
-    Phase A
+    Input Protection
     -------------------------------------------------------------------------*/
-    auto phase_a_ref = static_cast<uint32_t>( arr_val_f * a );
-    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, phase_a_ref );
+    RT_DBG_ASSERT( drive >= 0.0f && drive <= 0.866f );
+    RT_DBG_ASSERT( theta >= 0.0f && theta <= 2.0f * static_cast<float>( M_PI ) );
 
     /*-------------------------------------------------------------------------
-    Phase B
+    Compute the current sector and angular offset inside that sector
     -------------------------------------------------------------------------*/
-    auto phase_b_ref = static_cast<uint32_t>( arr_val_f * b );
-    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2, phase_b_ref );
+    const uint32_t sector = static_cast<uint32_t>( theta / PI_OVER_3 );
+    float          alpha  = theta - ( sector * PI_OVER_3 );
+
+    RT_DBG_ASSERT( sector <= 6 );
+    RT_DBG_ASSERT( alpha <= PI_OVER_3 && alpha >= 0.0f );
 
     /*-------------------------------------------------------------------------
-    Phase C
+    Massage alpha a bit to prevent getting into weird edge cases
     -------------------------------------------------------------------------*/
-    auto phase_c_ref = static_cast<uint32_t>( arr_val_f * c );
-    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, phase_c_ref );
+    if( alpha < 0.0174533 ) // 1 deg
+    {
+      alpha = 0.0174533;
+    }
+    else if( alpha > ( PI_OVER_3 - 0.0174533 ) )
+    {
+      alpha = PI_OVER_3 - 0.0174533;
+    }
 
-    return result;
-  }
-
-
-  Chimera::Status_t Driver::setPhaseDutyCycle( const uint32_t a, const uint32_t b, const uint32_t c )
-  {
     /*-------------------------------------------------------------------------
-    Set the output compare reference for each phase
+    Calculate the timing windows used to generate the PWM signals
     -------------------------------------------------------------------------*/
-    Chimera::Status_t         result  = Chimera::Status::OK;
-    const ControlBlock *const cb      = reinterpret_cast<ControlBlock *>( mTimerImpl );
-    const uint32_t            arr_val = Thor::LLD::TIMER::getAutoReload( cb->timer );
-
-    RT_DBG_ASSERT( a <= arr_val );
-    RT_DBG_ASSERT( b <= arr_val );
-    RT_DBG_ASSERT( c <= arr_val );
-
-    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, a );
-    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2, b );
-    result |= Thor::LLD::TIMER::setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, c );
-
-    return result;
-  }
-
-
-  Chimera::Status_t Driver::setForwardCommState( const int state )
-  {
-    using namespace Thor::LLD::TIMER;
-    RT_DBG_ASSERT( state < CommutationState::NUM_STATES );
-    RT_DBG_ASSERT( state < ARRAY_COUNT( s_ccer_fwd_comm_table ) );
-
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
 
-    uint32_t tmp = cb->timer->registers->CCER;
+    const float ta = cb->T_half * drive * fast_sin( PI_OVER_3 - alpha );
+    const float tb = cb->T_half * drive * fast_sin( alpha );
+    const float tn = cb->T_half - ta - tb;
+    const float tn_half = 0.5f * tn;
 
-    tmp &= ~( CCER_CC1E | CCER_CC1NE | CCER_CC2E | CCER_CC2NE | CCER_CC3E | CCER_CC3NE );
-    tmp |= s_ccer_fwd_comm_table[ state ];
+    /*-------------------------------------------------------------------------
+    Compute the PWM compare values for each channel
+    -------------------------------------------------------------------------*/
+    const uint32_t ton_tn_half = static_cast<uint32_t>( tn_half * cb->T_freq );
+    const uint32_t ton_1       = static_cast<uint32_t>( ( tn_half + ta ) * cb->T_freq );
+    const uint32_t ton_2       = static_cast<uint32_t>( ( tn_half + tb ) * cb->T_freq );
+    const uint32_t ton_3       = static_cast<uint32_t>( ( tn_half + ta + tb) * cb->T_freq );
 
-    cb->timer->registers->CCER = tmp;
+    RT_DBG_ASSERT( ton_tn_half <= cb->timer->registers->ARR );
+    RT_DBG_ASSERT( ton_1 <= cb->timer->registers->ARR );
+    RT_DBG_ASSERT( ton_2 <= cb->timer->registers->ARR );
+    RT_DBG_ASSERT( ton_3 <= cb->timer->registers->ARR );
+
+    /*-------------------------------------------------------------------------
+    Set the PWM compare values for each channel depending on the sector
+    -------------------------------------------------------------------------*/
+    uint32_t a, b, c;
+    switch ( sector )
+    {
+      case 0:
+        a = ton_tn_half;
+        b = ton_1;
+        c = ton_3;
+        break;
+
+      case 1:
+        a = ton_2;
+        b = ton_tn_half;
+        c = ton_3;
+        break;
+
+      case 2:
+        a = ton_3;
+        b = ton_tn_half;
+        c = ton_1;
+        break;
+
+      case 3:
+        a = ton_3;
+        b = ton_2;
+        c = ton_tn_half;
+        break;
+
+      case 4:
+        a = ton_1;
+        b = ton_3;
+        c = ton_tn_half;
+        break;
+
+      case 5:
+        a = ton_tn_half;
+        b = ton_3;
+        c = ton_2;
+        break;
+
+      default:
+        RT_HARD_ASSERT( false );
+        break;
+    }
+
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, a );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2, b );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, c );
 
     return Chimera::Status::OK;
   }
@@ -336,12 +399,6 @@ namespace Chimera::Timer::Inverter
     generateBreakEvent( cb->timer, BreakChannel::BREAK_INPUT_1 );
 
     return Chimera::Status::OK;
-  }
-
-
-  uint32_t Driver::getAutoReloadValue() const
-  {
-    return reinterpret_cast<ControlBlock *>( mTimerImpl )->timer->registers->ARR;
   }
 
 
