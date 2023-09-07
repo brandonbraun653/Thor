@@ -507,7 +507,25 @@ namespace Thor::LLD::USART
       prjClrISRSignal( mPeriph, ISRSignal::OVERRUN_ERROR );
       prjClrISRSignal( mPeriph, ISRSignal::RECEIVED_DATA_READY );
       prjClrISRSignal( mPeriph, ISRSignal::LINE_IDLE );
+
+      #if defined( STM32L432xx )
+      /*-----------------------------------------------------------------------
+      Only use the Received Data Ready flag at first to detect reception start
+      and then later enable Line Idle detection inside the ISRHandler().
+      Enabling the line-idle monitor now results in an immediate timeout for an
+      unknown reason.
+      -----------------------------------------------------------------------*/
       prjEnableISRSignal( mPeriph, ISRSignal::RECEIVED_DATA_READY );
+      #elif defined( STM32F446xx )
+      /*-----------------------------------------------------------------------
+      On the F4, the DMA completes so quickly that the RXNE flag is never set
+      long enough to trigger the ISR and use the methodology above for the L4.
+      Instead, the Line Idle flag is used directly.
+      -----------------------------------------------------------------------*/
+      prjEnableISRSignal( mPeriph, ISRSignal::LINE_IDLE );
+      #else
+      #error "Need to specify desired USART signal"
+      #endif
     }
     enableUSARTInterrupts();
 

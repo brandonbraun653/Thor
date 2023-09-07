@@ -176,17 +176,37 @@ namespace Thor::LLD::USART
 
   void prjClrISRSignal( RegisterMap *const periph, const ISRSignal signal )
   {
+    volatile uint32_t tmp = 0;
+    ( void )tmp;
+
     switch ( signal )
     {
+      /*-----------------------------------------------------------------------
+      These signals are cleared by reading the status register, then reading
+      the data register.
+      -----------------------------------------------------------------------*/
       case ISRSignal::PARITY_ERROR:
-      case ISRSignal::LINE_IDLE:
       case ISRSignal::OVERRUN_ERROR:
-        // Can only be cleared by reading SR, then read/write access to DR
+      case ISRSignal::LINE_IDLE:
+        tmp = periph->SR;
+        tmp = periph->DR;
         return;
 
+      /*-----------------------------------------------------------------------
+      These signals are cleared by reading/writing to the data register
+      -----------------------------------------------------------------------*/
       case ISRSignal::RECEIVED_DATA_READY:
+        while( RXNE::get( periph ) )
+        {
+          tmp = periph->DR;
+        }
+        break;
+
       case ISRSignal::TRANSMIT_DATA_REG_EMPTY:
-        // Can only be cleared via read/write to data register
+        while( TXE::get( periph ) )
+        {
+          periph->DR = tmp;
+        }
         return;
 
       case ISRSignal::TRANSMIT_COMPLETE:
