@@ -3,29 +3,28 @@
  *    hw_rcc_driver.cpp
  *
  *  Description:
- *    Implements the low level driver for the Reset and Clock Control peripheral
+ *    Implements the Reset and Clock Control low level driver
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
-/* C++ Includes */
-#include <array>
-#include <cstring>
-#include <cstdlib>
-#include <cstddef>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/assert>
-#include <Chimera/common>
 #include <Chimera/clock>
+#include <Chimera/common>
 #include <Chimera/utility>
-
-/* Driver Includes */
 #include <Thor/cfg>
 #include <Thor/lld/common/cortex-m4/system_time.hpp>
-#include <Thor/lld/interface/inc/rcc>
+#include <Thor/lld/interface/inc/flash>
 #include <Thor/lld/interface/inc/power>
+#include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prv.hpp>
+#include <array>
+#include <cstddef>
+#include <cstdlib>
+#include <cstring>
 
 namespace Thor::LLD::RCC
 {
@@ -163,8 +162,8 @@ namespace Thor::LLD::RCC
     /*-------------------------------------------------------------------------
     Configure the oscillator sources
     -------------------------------------------------------------------------*/
-    result |= configureHSE( config );
     result |= configureHSI( config );
+    result |= configureHSE( config );
     result |= configureLSE( config );
     result |= configureLSI( config );
 
@@ -173,14 +172,13 @@ namespace Thor::LLD::RCC
       result |= configureCorePLL( config );
     }
 
-    // if( config.enabled.pll_sai_p || config.enabled.pll_sai_q )
-    // {
-    //   result |= configureSAIPLL( config );
-    // }
+    if( config.enabled.pll_sai_p || config.enabled.pll_sai_q )
+    {
+      result |= configureSAIPLL( config );
+    }
 
     /*-------------------------------------------------------------------------
-    Configure the source mux's that aren't tied to
-    oscillator inputs.
+    Configure the source mux's that aren't tied to oscillator inputs.
     -------------------------------------------------------------------------*/
     result |= setSourceSYS( config );
     result |= setSourceSDIO( config );
@@ -238,4 +236,73 @@ namespace Thor::LLD::RCC
     };
   }
 
+
+  void __attribute__( ( weak ) ) configureProjectClocks()
+  {
+    /*-------------------------------------------------------------------------
+    Set flash latency to a safe value for all possible clocks. This will slow
+    down the configuration, but this is only performed once at startup.
+    -------------------------------------------------------------------------*/
+    FLASH::setLatency( 15 );
+
+    /*-------------------------------------------------------------------------
+    Not strictly necessary, but done because this config function uses the max
+    system clock.
+    -------------------------------------------------------------------------*/
+    PWR::setOverdriveMode( true );
+
+    /*-------------------------------------------------------------------------
+    Configure the system clocks to max performance
+    -------------------------------------------------------------------------*/
+    constexpr size_t hsiClkIn     = 16000000;            // 16 MHz
+    constexpr size_t targetSysClk = 120000000;           // 120 MHz
+    constexpr size_t targetUSBClk = 48000000;            // 48 MHz
+    constexpr size_t targetVcoClk = 2 * targetSysClk;    // 240 MHz
+
+    Chimera::Status_t cfgResult = Chimera::Status::OK;
+
+    ClockTreeInit clkCfg;
+    clkCfg.clear();
+
+    /* Select which clocks to turn on  */
+    clkCfg.enabled.hsi          = true;    // Needed for transfer of clock source
+    clkCfg.enabled.lsi          = true;    // Allows IWDG use
+    clkCfg.enabled.pll_core_clk = true;    // Will drive sys off PLL
+    clkCfg.enabled.pll_core_q   = true;    // USB 48 MHz clock
+
+    /* Select clock mux routing */
+    clkCfg.mux.pll   = Chimera::Clock::Bus::HSI16;
+    clkCfg.mux.sys   = Chimera::Clock::Bus::PLLP;
+    clkCfg.mux.usb48 = Chimera::Clock::Bus::PLLQ;
+
+    /* Divisors from the system clock */
+    clkCfg.prescaler.ahb  = 1;
+    clkCfg.prescaler.apb1 = 4;
+    clkCfg.prescaler.apb2 = 2;
+
+    /* Figure out PLL configuration settings */
+    cfgResult |= calculatePLLBaseOscillator( PLLType::CORE, hsiClkIn, targetVcoClk, clkCfg );
+    cfgResult |= calculatePLLOuputOscillator( PLLType::CORE, PLLOut::P, targetVcoClk, targetSysClk, clkCfg );
+    cfgResult |= calculatePLLOuputOscillator( PLLType::CORE, PLLOut::Q, targetVcoClk, targetUSBClk, clkCfg );
+
+    RT_HARD_ASSERT( cfgResult == Chimera::Status::OK );
+    RT_HARD_ASSERT( configureClockTree( clkCfg ) );
+
+    /*-------------------------------------------------------------------------
+    Verify the user's target clocks have been achieved
+    -------------------------------------------------------------------------*/
+    size_t sys_clk = getSystemClock();
+    RT_HARD_ASSERT( sys_clk == targetSysClk );
+
+    /*-------------------------------------------------------------------------
+    Trim the flash latency back to a performant range now that the high speed
+    clock has been configured.
+    -------------------------------------------------------------------------*/
+    FLASH::setLatency( FLASH::LATENCY_AUTO_DETECT );
+
+    /*-------------------------------------------------------------------------
+    Make sure the rest of the system knows about the new clock frequency.
+    -------------------------------------------------------------------------*/
+    CortexM4::Clock::updateCoreClockCache( sys_clk );
+  }
 }    // namespace Thor::LLD::RCC

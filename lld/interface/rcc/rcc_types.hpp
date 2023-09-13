@@ -5,18 +5,18 @@
  *  Description:
  *    Common LLD RCC types
  *
- *  2019-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
 #ifndef THOR_RCC_TYPES_HPP
 #define THOR_RCC_TYPES_HPP
 
-/* Chimera Includes */
-#include <Chimera/common>
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/clock>
-
-/* Thor Includes */
+#include <Chimera/common>
 #include <Thor/lld/common/types.hpp>
 
 namespace Thor::LLD::RCC
@@ -70,15 +70,15 @@ namespace Thor::LLD::RCC
    */
   struct RegisterConfig
   {
-    Reg32_t mask;          /**< Bit mask that will enable/disable the peripheral's clock */
-    volatile Reg32_t *reg; /**< Clock enable register */
+    Reg32_t           mask; /**< Bit mask that will enable/disable the peripheral's clock */
+    volatile Reg32_t *reg;  /**< Clock enable register */
   };
 
 
   struct ExternalOscillator
   {
-    size_t HSEFrequency;  /**< High speed external clock */
-    size_t LSEFrequency;  /**< Low speed external clock */
+    size_t HSEFrequency; /**< High speed external clock */
+    size_t LSEFrequency; /**< Low speed external clock */
   };
 
 
@@ -90,13 +90,13 @@ namespace Thor::LLD::RCC
    */
   struct PCC
   {
-    const uint8_t pType;                    /**< Peripheral type */
-    const uint8_t elements;                 /**< Number of elements in the tables */
-    const uint8_t bfControl;                /**< Control flags if needed */
-    const uint8_t reserved;                 /**< Reserved data for alignment */
-    const RegisterConfig *clock;            /**< Lookup Table Pointer: Standard clock configuration registers */
-    const RegisterConfig *clockLP;          /**< Lookup Table Pointer: Low power clock configuration registers */
-    const RegisterConfig *reset;            /**< Lookup Table Pointer: Peripheral reset registers */
+    const uint8_t              pType;       /**< Peripheral type */
+    const uint8_t              elements;    /**< Number of elements in the tables */
+    const uint8_t              bfControl;   /**< Control flags if needed */
+    const uint8_t              reserved;    /**< Reserved data for alignment */
+    const RegisterConfig      *clock;       /**< Lookup Table Pointer: Standard clock configuration registers */
+    const RegisterConfig      *clockLP;     /**< Lookup Table Pointer: Low power clock configuration registers */
+    const RegisterConfig      *reset;       /**< Lookup Table Pointer: Peripheral reset registers */
     const Chimera::Clock::Bus *clockSource; /**< Lookup Table Pointer: Which system clock is used on the peripheral */
 
     /**

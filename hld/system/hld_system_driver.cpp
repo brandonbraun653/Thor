@@ -54,7 +54,7 @@ namespace Chimera::System::Backend
     Initialize the system clocks
     -------------------------------------------------------------------------*/
     Thor::LLD::RCC::initialize();
-    Thor::LLD::RCC::getCoreClockCtrl()->configureProjectClocks();
+    Thor::LLD::RCC::configureProjectClocks();
 
     /*-------------------------------------------------------------------------
     LLD Specific Initialization
@@ -166,4 +166,4 @@ namespace Chimera::System::Backend
     return Chimera::Status::OK;
   }
 
-}    // namespace Thor::System
+}    // namespace Chimera::System::Backend

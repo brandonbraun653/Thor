@@ -5,13 +5,13 @@
  *  Description:
  *    Implementation of low level RCC functionality at the interface layer.
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
-/* Thor Includes */
-#include <Thor/lld/interface/rcc/rcc_detail.hpp>
-#include <Thor/lld/interface/rcc/rcc_types.hpp>
-#include <Thor/lld/interface/rcc/rcc_prv_data.hpp>
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
+#include <Thor/lld/interface/inc/rcc>
 
 namespace Thor::LLD::RCC
 {
@@ -28,7 +28,7 @@ namespace Thor::LLD::RCC
     /*-------------------------------------------------------------------------
     Input protection
     -------------------------------------------------------------------------*/
-    if( periph >= Chimera::Peripheral::Type::NUM_OPTIONS )
+    if ( periph >= Chimera::Peripheral::Type::NUM_OPTIONS )
     {
       return nullptr;
     }
@@ -42,7 +42,7 @@ namespace Thor::LLD::RCC
 
   void cacheExtOscFreq( const Chimera::Clock::Bus bus, const size_t freq )
   {
-    switch( bus )
+    switch ( bus )
     {
       case Chimera::Clock::Bus::LSE:
         s_ext_osc.LSEFrequency = freq;
@@ -53,7 +53,7 @@ namespace Thor::LLD::RCC
         break;
 
       default:
-        // Do nothing
+        RT_DBG_ASSERT( false );
         break;
     }
   }
@@ -61,20 +61,18 @@ namespace Thor::LLD::RCC
 
   size_t getExtOscFreq( const Chimera::Clock::Bus bus )
   {
-    switch( bus )
+    switch ( bus )
     {
       case Chimera::Clock::Bus::LSE:
         return s_ext_osc.LSEFrequency;
-        break;
 
       case Chimera::Clock::Bus::HSE:
         return s_ext_osc.HSEFrequency;
-        break;
 
       default:
+        RT_DBG_ASSERT( false );
         return INVALID_CLOCK;
-        break;
     }
   }
 
-}  // namespace Thor::LLD::RCC
+}    // namespace Thor::LLD::RCC

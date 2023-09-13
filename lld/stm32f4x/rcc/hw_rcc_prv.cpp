@@ -5,15 +5,15 @@
  *  Description:
  *    Private function implementation
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/assert>
 #include <Chimera/clock>
 #include <Chimera/system>
-
-/* Thor Includes */
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prv.hpp>
 
@@ -289,8 +289,8 @@ namespace Thor::LLD::RCC
 
   size_t getHCLKFreq()
   {
-    size_t hclkDiv                 = 1;
-    size_t systemClock             = getSystemClock();
+    size_t  hclkDiv                = 1;
+    size_t  systemClock            = getSystemClock();
     Reg32_t ahbPrescalerConfigBits = HPRE::get( RCC1_PERIPH );
 
     switch ( ahbPrescalerConfigBits )
@@ -462,7 +462,7 @@ namespace Thor::LLD::RCC
     if ( which == PLLOut::P )
     {
       uint32_t p = PLLP::get( RCC1_PERIPH ) >> PLLCFGR_PLLP_Pos;
-      switch( p )
+      switch ( p )
       {
         case 0:
           p = 2;
@@ -499,6 +499,8 @@ namespace Thor::LLD::RCC
       return INVALID_CLOCK;
     }
   }
+
+
 
   /*---------------------------------------------------------------------------
   Oscillator Configuration
@@ -596,9 +598,20 @@ namespace Thor::LLD::RCC
 
   bool setSourceSDIO( ClockTreeInit &cfg )
   {
-    /*-------------------------------------------------------------------------
-    Currently not implemented cause no use for SDIO clk
-    -------------------------------------------------------------------------*/
+    switch( cfg.mux.sdio )
+    {
+      case Chimera::Clock::Bus::SYSCLK:
+        SDIOSEL::set( RCC1_PERIPH, DCKCFGR2_SDIOSEL );
+        break;
+
+      case Chimera::Clock::Bus::CK48:
+        SDIOSEL::clear( RCC1_PERIPH, DCKCFGR2_SDIOSEL );
+        break;
+
+      default:
+        return false;
+    }
+
     return true;
   }
 
@@ -616,23 +629,23 @@ namespace Thor::LLD::RCC
   {
     switch ( cfg.mux.usb48 )
     {
-    /*-------------------------------------------------------------------------
-    SAI PLL-P
-    -------------------------------------------------------------------------*/
-    case Chimera::Clock::Bus::PLLP:
-      CK48MSEL::set( RCC1_PERIPH, DCKCFGR2_CK48MSEL );
-      break;
+      /*-------------------------------------------------------------------------
+      SAI PLL-P
+      -------------------------------------------------------------------------*/
+      case Chimera::Clock::Bus::PLLSAI_P:
+        CK48MSEL::set( RCC1_PERIPH, DCKCFGR2_CK48MSEL );
+        break;
 
-    /*-------------------------------------------------------------------------
-    CORE PLL-Q
-    -------------------------------------------------------------------------*/
-    case Chimera::Clock::Bus::PLLQ:
-      CK48MSEL::clear( RCC1_PERIPH, DCKCFGR2_CK48MSEL );
-      break;
+      /*-------------------------------------------------------------------------
+      CORE PLL-Q
+      -------------------------------------------------------------------------*/
+      case Chimera::Clock::Bus::PLLQ:
+        CK48MSEL::clear( RCC1_PERIPH, DCKCFGR2_CK48MSEL );
+        break;
 
-    default:
-      return false;
-      break;
+      default:
+        return false;
+        break;
     }
 
     return true;
@@ -658,11 +671,6 @@ namespace Thor::LLD::RCC
     /*-------------------------------------------------------------------------
     Currently not implemented cause no use for SAI clk
     -------------------------------------------------------------------------*/
-    if ( cfg.enabled.pll_sai_p || cfg.enabled.pll_sai_q )
-    {
-      Chimera::insert_debug_breakpoint();
-    }
-
     return true;
   }
 

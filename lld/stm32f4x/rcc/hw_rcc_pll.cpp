@@ -5,42 +5,37 @@
  *  Description:
  *    Functions for configuring the device PLLs
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
-/* STL Includes */
-#include <cmath>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/assert>
-
-/* Thor Includes */
 #include <Thor/cfg>
 #include <Thor/lld/interface/inc/rcc>
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_prv.hpp>
+#include <cmath>
 
 namespace Thor::LLD::RCC
 {
   /*---------------------------------------------------------------------------
   Constants
   ---------------------------------------------------------------------------*/
-  /*-------------------------------------------------
-  CORE PLL operating ranges from register spec
-  -------------------------------------------------*/
-  static constexpr size_t PLL_CORE_M_MIN        = 2;
-  static constexpr size_t PLL_CORE_M_MAX        = 63;
-  static constexpr size_t PLL_CORE_N_MIN        = 50;
-  static constexpr size_t PLL_CORE_N_MAX        = 432;
-  static constexpr size_t PLL_CORE_P_MIN        = 2;
-  static constexpr size_t PLL_CORE_P_MAX        = 8;
-  static constexpr size_t PLL_CORE_Q_MIN        = 2;
-  static constexpr size_t PLL_CORE_Q_MAX        = 15;
-  static constexpr size_t PLL_CORE_R_MIN        = 2;
-  static constexpr size_t PLL_CORE_R_MAX        = 7;
-  static constexpr size_t PLL_CORE_VCO_IN_FMIN  = 1000000;      // 1 MHz
-  static constexpr size_t PLL_CORE_VCO_IN_FMAX  = 2000000;      // 2 MHz
-  static constexpr size_t PLL_CORE_VCO_OUT_FMIN = 100000000;    // 100 MHz
-  static constexpr size_t PLL_CORE_VCO_OUT_FMAX = 432000000;    // 432 MHz
+  constexpr size_t PLL_CORE_M_MIN        = 2;
+  constexpr size_t PLL_CORE_M_MAX        = 63;
+  constexpr size_t PLL_CORE_N_MIN        = 50;
+  constexpr size_t PLL_CORE_N_MAX        = 432;
+  constexpr size_t PLL_CORE_P_MIN        = 2;
+  constexpr size_t PLL_CORE_P_MAX        = 8;
+  constexpr size_t PLL_CORE_Q_MIN        = 2;
+  constexpr size_t PLL_CORE_Q_MAX        = 15;
+  constexpr size_t PLL_CORE_R_MIN        = 2;
+  constexpr size_t PLL_CORE_R_MAX        = 7;
+  constexpr size_t PLL_CORE_VCO_IN_FMIN  = 1'000'000;
+  constexpr size_t PLL_CORE_VCO_IN_FMAX  = 2'000'000;
+  constexpr size_t PLL_CORE_VCO_OUT_FMIN = 100'000'000;
+  constexpr size_t PLL_CORE_VCO_OUT_FMAX = 432'000'000;
 
 
   /*---------------------------------------------------------------------------
@@ -51,9 +46,8 @@ namespace Thor::LLD::RCC
     using namespace Chimera::Clock;
 
     /*-------------------------------------------------------------------------
-    Double check input parameters. If the VCO control
-    params are out of bounds, reject the config. Else
-    if the divisors are out of bounds, simply set them
+    Double check input parameters. If the VCO control params are out of bounds,
+    reject the config. Else if the divisors are out of bounds, simply set them
     to the max division possible to reduce clock rate.
     -------------------------------------------------------------------------*/
     if ( ( cfg.PLLCore.M < PLL_CORE_M_MIN ) || ( cfg.PLLCore.M > PLL_CORE_M_MAX ) || ( cfg.PLLCore.N < PLL_CORE_N_MIN ) ||
@@ -131,7 +125,7 @@ namespace Thor::LLD::RCC
     };
 
     /*-------------------------------------------------------------------------
-    Configure the desired settings
+    Directly map the remainder of the PLL settings to the registers
     -------------------------------------------------------------------------*/
     PLLM::set( RCC1_PERIPH, cfg.PLLCore.M << PLLCFGR_PLLM_Pos );
     PLLN::set( RCC1_PERIPH, cfg.PLLCore.N << PLLCFGR_PLLN_Pos );
@@ -183,7 +177,90 @@ namespace Thor::LLD::RCC
 
   bool configureSAIPLL( ClockTreeInit &cfg )
   {
-    return false;
+    using namespace Chimera::Clock;
+
+    constexpr size_t PLL_SAI_M_MIN = 2;
+    constexpr size_t PLL_SAI_M_MAX = 63;
+    constexpr size_t PLL_SAI_N_MIN = 50;
+    constexpr size_t PLL_SAI_N_MAX = 432;
+    constexpr size_t PLL_SAI_P_MIN = 2;
+    constexpr size_t PLL_SAI_P_MAX = 8;
+    constexpr size_t PLL_SAI_Q_MIN = 2;
+    constexpr size_t PLL_SAI_Q_MAX = 15;
+
+    /*-------------------------------------------------------------------------
+    Validate input parameters
+    -------------------------------------------------------------------------*/
+    if( ( cfg.PLLSAI.M < PLL_SAI_M_MIN ) || ( cfg.PLLSAI.M > PLL_SAI_M_MAX ) || ( cfg.PLLSAI.N < PLL_SAI_N_MIN ) ||
+        ( cfg.PLLSAI.N > PLL_SAI_N_MAX ) || ( cfg.PLLSAI.P < PLL_SAI_P_MIN ) || ( cfg.PLLSAI.P > PLL_SAI_P_MAX ) ||
+        ( cfg.PLLSAI.Q < PLL_SAI_Q_MIN ) || ( cfg.PLLSAI.Q > PLL_SAI_Q_MAX ) )
+    {
+      RT_DBG_ASSERT( false );
+      return false;
+    }
+
+    /*-------------------------------------------------------------------------
+    Block all other code from execution
+    -------------------------------------------------------------------------*/
+    auto isrMask = Chimera::System::disableInterrupts();
+
+    /*-------------------------------------------------------------------------
+    Disable the PLL
+    -------------------------------------------------------------------------*/
+    PLLSAION::clear( RCC1_PERIPH, CR_PLLSAION );
+    while ( PLLSAIRDY::get( RCC1_PERIPH ) )
+    {
+      continue;
+    }
+
+    /*-------------------------------------------------------------------------
+    Configure P setting
+    -------------------------------------------------------------------------*/
+    switch( cfg.PLLSAI.P )
+    {
+      case 2:
+        cfg.PLLSAI.P = 0;
+        break;
+
+      case 4:
+        cfg.PLLSAI.P = 1;
+        break;
+
+      case 6:
+        cfg.PLLSAI.P = 2;
+        break;
+
+      case 8:
+        cfg.PLLSAI.P = 3;
+        break;
+
+      default:
+        RT_HARD_ASSERT( false );
+        break;
+    };
+
+    /*-------------------------------------------------------------------------
+    Directly map the remainder of the PLL settings to the registers
+    -------------------------------------------------------------------------*/
+    PLLSAIM::set( RCC1_PERIPH, cfg.PLLSAI.M << PLLSAICFGR_PLLSAIM_Pos );
+    PLLSAIN::set( RCC1_PERIPH, cfg.PLLSAI.N << PLLSAICFGR_PLLSAIN_Pos );
+    PLLSAIP::set( RCC1_PERIPH, cfg.PLLSAI.P << PLLSAICFGR_PLLSAIP_Pos );
+    PLLSAIQ::set( RCC1_PERIPH, cfg.PLLSAI.Q << PLLSAICFGR_PLLSAIQ_Pos );
+
+    /*-------------------------------------------------------------------------
+    Re-enable the PLL
+    -------------------------------------------------------------------------*/
+    PLLSAION::set( RCC1_PERIPH, CR_PLLSAION );
+    while ( !PLLSAIRDY::get( RCC1_PERIPH ) )
+    {
+      continue;
+    }
+
+    /*-------------------------------------------------------------------------
+    Re-enable interrupts
+    -------------------------------------------------------------------------*/
+    Chimera::System::enableInterrupts( isrMask );
+    return true;
   }
 
   Chimera::Status_t calcPLLCoreSettings( const size_t inFreq, const size_t outFreq, ClockTreeInit &config )

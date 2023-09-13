@@ -153,6 +153,15 @@ namespace Thor::LLD::RCC
    */
   Chimera::Status_t calculatePLLOuputOscillator( const PLLType pll, const PLLOut channel, const size_t inFreq, const size_t outFreq, ClockTreeInit &config );
 
+  /**
+   * @brief Configures the clock tree for the project. May be overriden by the application.
+   *
+   * The default implementation uses the internal HSI clock as the system clock source and
+   * generates the best configuration for all peripheral clocks.
+   *
+   * @return void
+   */
+  void configureProjectClocks();
 
   /*---------------------------------------------------------------------------
   Interface Classes
@@ -186,14 +195,6 @@ namespace Thor::LLD::RCC
      *  @return void
      */
     virtual void disableClock( const Chimera::Clock::Bus clock ) = 0;
-
-    /**
-     *  Configures the clock tree according to a user defined method, overriding
-     *  other set**() methods in this class.
-     *
-     *  @return Chimera::Status_t
-     */
-    virtual Chimera::Status_t configureProjectClocks() = 0;
 
     /**
      *  Sets the input clock source used as the system clock
@@ -251,7 +252,6 @@ namespace Thor::LLD::RCC
     ~SystemClock();
     void enableClock( const Chimera::Clock::Bus clock );
     void disableClock( const Chimera::Clock::Bus clock );
-    Chimera::Status_t configureProjectClocks();
     Chimera::Status_t setCoreClockSource( const Chimera::Clock::Bus src );
     Chimera::Clock::Bus getCoreClockSource();
     Chimera::Status_t setClockFrequency( const Chimera::Clock::Bus clock, const size_t freq, const bool enable );

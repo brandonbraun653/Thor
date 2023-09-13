@@ -169,6 +169,10 @@ namespace Thor::LLD::RCC
   REG_ACCESSOR( RegisterMap, CR, CR_HSIRDY_Msk, HSIRDY, BIT_ACCESS_R );
   REG_ACCESSOR( RegisterMap, CR, CR_PLLON_Msk, PLLON, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, CR, CR_PLLRDY_Msk, PLLRDY, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CR, CR_PLLSAION_Msk, PLLSAION, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR, CR_PLLSAIRDY_Msk, PLLSAIRDY, BIT_ACCESS_R );
+  REG_ACCESSOR( RegisterMap, CR, CR_PLLI2SON_Msk, PLLI2SON, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, CR, CR_PLLI2SRDY_Msk, PLLI2SRDY, BIT_ACCESS_R );
 
   /*------------------------------------------------
   PLL Configuration Register
@@ -212,12 +216,28 @@ namespace Thor::LLD::RCC
   /*-------------------------------------------------
   Dedicated Clock Config Register
   -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, DCKCFGR, DCKCFGR_I2S2SRC_Msk, I2S2SRC, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, DCKCFGR, DCKCFGR_I2S1SRC_Msk, I2S1SRC, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, DCKCFGR, DCKCFGR_TIMPRE_Msk, TIMPRE, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, DCKCFGR, DCKCFGR_SAI2SRC_Msk, SAI2SRC, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, DCKCFGR, DCKCFGR_SAI1SRC_Msk, SAI1SRC, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, DCKCFGR, DCKCFGR_PLLI2SDIVQ_Msk, PLLI2SDIVQ, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, DCKCFGR, DCKCFGR_PLLSAIDIVQ_Msk, PLLSAIDIVQ, BIT_ACCESS_RW );
+
+  /*---------------------------------------------------------------------------
+  PLL SAI Config Register
+  ---------------------------------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, PLLSAICFGR, PLLSAICFGR_PLLSAIM_Msk, PLLSAIM, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLSAICFGR, PLLSAICFGR_PLLSAIN_Msk, PLLSAIN, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLSAICFGR, PLLSAICFGR_PLLSAIP_Msk, PLLSAIP, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, PLLSAICFGR, PLLSAICFGR_PLLSAIQ_Msk, PLLSAIQ, BIT_ACCESS_RW );
 
   /*-------------------------------------------------
   Dedicated Clock Config Register 2
   -------------------------------------------------*/
+  REG_ACCESSOR( RegisterMap, DCKCFGR2, DCKCFGR2_SPDIFRXSEL_Msk, SPDIFRXSEL, BIT_ACCESS_RW );
   REG_ACCESSOR( RegisterMap, DCKCFGR2, DCKCFGR2_CK48MSEL_Msk, CK48MSEL, BIT_ACCESS_RW );
+  REG_ACCESSOR( RegisterMap, DCKCFGR2, DCKCFGR2_SDIOSEL_Msk, SDIOSEL, BIT_ACCESS_RW );
 
 }    // namespace Thor::LLD::RCC
 
