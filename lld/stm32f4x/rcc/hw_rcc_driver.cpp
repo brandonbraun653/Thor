@@ -115,37 +115,35 @@ namespace Thor::LLD::RCC
     {
       case Chimera::Clock::Bus::HSI16:
         return 16000000u;
-        break;
 
       case Chimera::Clock::Bus::LSI:
         return 32000u;
-        break;
 
       case Chimera::Clock::Bus::SYSCLK:
         return getSystemClock();
-        break;
 
       case Chimera::Clock::Bus::HCLK:
         return getHCLKFreq();
-        break;
 
       case Chimera::Clock::Bus::PCLK1:
         return getPCLK1Freq();
-        break;
 
       case Chimera::Clock::Bus::PCLK2:
         return getPCLK2Freq();
-        break;
 
       case Chimera::Clock::Bus::HSE:
       case Chimera::Clock::Bus::LSE:
         return getExtOscFreq( bus );
-        break;
+
+      case Chimera::Clock::Bus::PLLQ:
+        return getPLLClock( PLLOut::Q );
+
+      case Chimera::Clock::Bus::PLLSAI_P:
+        return getPLLSAIClock( PLLOut::P );
 
       default:
         RT_HARD_ASSERT( false );
         return INVALID_CLOCK;
-        break;
     }
   }
 

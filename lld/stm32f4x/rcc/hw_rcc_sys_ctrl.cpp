@@ -30,8 +30,108 @@ namespace Thor::LLD::RCC
   static SystemClock s_system_clock;
 
   /*---------------------------------------------------------------------------
+  Static Functions
+  ---------------------------------------------------------------------------*/
+
+  /**
+   * @brief Special computations to get the timer peripheral clock.
+   *
+   * Timer clocks have a special prescaler configuration that is dependent
+   * upon the bus they are attached to and the TIMPRE bit in the RCC_CFGR.
+   *
+   * @param registry    The peripheral registry to use
+   * @param base_clock  The base clock frequency of the bus the timer is attached to
+   * @return size_t     The actual timer peripheral clock frequency
+   */
+  static size_t get_timer_periph_clock( const Thor::LLD::RCC::PCC *registry, const size_t base_clock )
+  {
+    /*-------------------------------------------------------------------------
+    Get the prescaler for the bus the timer is attached to
+    -------------------------------------------------------------------------*/
+    uint32_t prescaler = 0;
+    if ( *registry->clockSource == Chimera::Clock::Bus::APB1 )
+    {
+      prescaler = PPRE1::get( RCC1_PERIPH );
+    }
+    else if ( *registry->clockSource == Chimera::Clock::Bus::APB2 )
+    {
+      prescaler = PPRE2::get( RCC1_PERIPH );
+    }
+    else
+    {
+      RT_HARD_ASSERT( false );
+    }
+
+    /*-------------------------------------------------------------------------
+    Compute the actual timer clock frequency
+    -------------------------------------------------------------------------*/
+    if ( TIMPRE::get( RCC1_PERIPH ) )
+    {
+      if ( prescaler <= CFGR_PPRE1_DIV4 )
+      {
+        return s_system_clock.getClockFrequency( Chimera::Clock::Bus::HCLK );
+      }
+      else
+      {
+        return base_clock * 4;
+      }
+    }
+    else
+    {
+      if ( prescaler >= CFGR_PPRE1_DIV2 )
+      {
+        return base_clock * 2;
+      }
+      else
+      {
+        return base_clock;
+      }
+    }
+  }
+
+
+  /**
+   * @brief Gets the frequency of the SDIO peripheral clock.
+   *
+   * In the F4 series, the SDIO peripheral clock can be sourced from either the
+   * system clock or the PLL48CLK, which is in turn driven by either the PLLQ or
+   * PLLSAI_P clocks. This function will determine which clock is actually driving
+   * the SDIO peripheral and return its current frequency.
+   *
+   * @return size_t
+   */
+  static size_t get_sdio_periph_clock()
+  {
+    /*-------------------------------------------------------------------------
+    Connected to the system clock?
+    -------------------------------------------------------------------------*/
+    if( SDIOSEL::get( RCC1_PERIPH ) & DCKCFGR2_SDIOSEL )
+    {
+      return s_system_clock.getClockFrequency( Chimera::Clock::Bus::SYSCLK );
+    }
+
+    /*-------------------------------------------------------------------------
+    Connected to the PLL48CLK. Double check the configuration.
+    -------------------------------------------------------------------------*/
+    size_t actual_clock = 0;
+
+    if( CK48MSEL::get( RCC1_PERIPH ) & DCKCFGR2_CK48MSEL )
+    {
+      actual_clock = s_system_clock.getClockFrequency( Chimera::Clock::Bus::PLLSAI_P );
+    }
+    else
+    {
+      actual_clock = s_system_clock.getClockFrequency( Chimera::Clock::Bus::PLLQ );
+    }
+
+    RT_HARD_ASSERT( actual_clock == 48000000 );
+    return actual_clock;
+  }
+
+  /*---------------------------------------------------------------------------
   SystemClock Class Implementation
   ---------------------------------------------------------------------------*/
+
   SystemClock *getCoreClockCtrl()
   {
     return &s_system_clock;
@@ -47,6 +147,7 @@ namespace Thor::LLD::RCC
   SystemClock::~SystemClock()
   {
   }
+
 
   void SystemClock::enableClock( const Chimera::Clock::Bus clock )
   {
@@ -111,51 +212,16 @@ namespace Thor::LLD::RCC
       return INVALID_CLOCK;
     }
 
-    const size_t base_freq = getClockFrequency( registry->clockSource[ idx ] );
-    if ( periph != Chimera::Peripheral::Type::PERIPH_TIMER )
+    switch( periph )
     {
-      return base_freq;
-    }
+      case Chimera::Peripheral::Type::PERIPH_TIMER:
+        return get_timer_periph_clock( registry, getClockFrequency( registry->clockSource[ idx ] ) );
 
-    /*-----------------------------------------------------------------------
-    Timer clocks have a special prescaler configuration that is dependent
-    upon the bus they are attached to and the TIMPRE bit in the RCC_CFGR.
-    -----------------------------------------------------------------------*/
-    uint32_t prescaler = 0;
-    if ( *registry->clockSource == Chimera::Clock::Bus::APB1 )
-    {
-      prescaler = PPRE1::get( RCC1_PERIPH );
-    }
-    else if ( *registry->clockSource == Chimera::Clock::Bus::APB2 )
-    {
-      prescaler = PPRE2::get( RCC1_PERIPH );
-    }
-    else
-    {
-      RT_HARD_ASSERT( false );
-    }
+      case Chimera::Peripheral::Type::PERIPH_SDIO:
+        return get_sdio_periph_clock();
 
-    if ( TIMPRE::get( RCC1_PERIPH ) )
-    {
-      if ( prescaler <= CFGR_PPRE1_DIV4 )
-      {
-        return getClockFrequency( Chimera::Clock::Bus::HCLK );
-      }
-      else
-      {
-        return base_freq * 4;
-      }
-    }
-    else
-    {
-      if ( prescaler >= CFGR_PPRE1_DIV2 )
-      {
-        return base_freq * 2;
-      }
-      else
-      {
-        return base_freq;
-      }
+      default:
+        return getClockFrequency( registry->clockSource[ idx ] );
     }
   }
 

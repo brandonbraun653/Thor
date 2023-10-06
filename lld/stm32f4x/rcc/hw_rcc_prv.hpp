@@ -5,18 +5,18 @@
  *  Description:
  *    Private methods and declarations
  *
- *  2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_RCC_PRIVATE_HPP
 #define THOR_LLD_RCC_PRIVATE_HPP
 
-/* STL Includes */
-#include <cstddef>
-
-/* Thor Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Thor/lld/stm32f4x/rcc/hw_rcc_types.hpp>
+#include <cstddef>
 
 namespace Thor::LLD::RCC
 {
@@ -56,6 +56,7 @@ namespace Thor::LLD::RCC
   size_t getPCLK1Freq();
   size_t getPCLK2Freq();
   size_t getPLLClock( const PLLOut which );
+  size_t getPLLSAIClock( const PLLOut which );
 
   /*-------------------------------------------------
   Oscillator Configuration

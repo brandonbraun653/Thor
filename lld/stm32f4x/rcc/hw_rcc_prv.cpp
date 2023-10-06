@@ -501,6 +501,84 @@ namespace Thor::LLD::RCC
   }
 
 
+  size_t getPLLSAIClock( const PLLOut which )
+  {
+    using namespace Chimera::Clock;
+
+    /*-------------------------------------------------------------------------
+    Determine the PLL input base frequency
+    -------------------------------------------------------------------------*/
+    size_t input_freq;
+    switch ( getPLLClockSource() )
+    {
+      case Bus::HSE:
+        input_freq = getBusFrequency( Bus::HSE );
+        break;
+
+      case Bus::HSI16:
+        input_freq = getBusFrequency( Bus::HSI16 );
+        break;
+
+      default:
+        return INVALID_CLOCK;
+        break;
+    };
+
+    /*-------------------------------------------------------------------------
+    Calculate the VCO frequency
+    -------------------------------------------------------------------------*/
+    const uint32_t m = PLLSAIM::get( RCC1_PERIPH ) >> PLLSAICFGR_PLLSAIM_Pos;
+    RT_HARD_ASSERT( m );
+
+    const uint32_t n = PLLSAIN::get( RCC1_PERIPH ) >> PLLSAICFGR_PLLSAIN_Pos;
+    RT_HARD_ASSERT( n );
+
+    const uint32_t vco_freq = ( input_freq / m ) * n;
+
+    /*-------------------------------------------------------------------------
+    Calculate the PLL output frequency
+    -------------------------------------------------------------------------*/
+    if ( which == PLLOut::P )
+    {
+      uint32_t p = PLLSAIP::get( RCC1_PERIPH ) >> PLLSAICFGR_PLLSAIP_Pos;
+      switch ( p )
+      {
+        case 0:
+          p = 2;
+          break;
+
+        case 1:
+          p = 4;
+          break;
+
+        case 2:
+          p = 6;
+          break;
+
+        case 3:
+          p = 8;
+          break;
+
+        default:
+          RT_HARD_ASSERT( false );
+          break;
+      };
+
+      RT_HARD_ASSERT( p );
+      return vco_freq / p;
+    }
+    else if ( which == PLLOut::Q )
+    {
+      const uint32_t q = PLLSAIQ::get( RCC1_PERIPH ) >> PLLSAICFGR_PLLSAIQ_Pos;
+      RT_HARD_ASSERT( q );
+      return vco_freq / q;
+    }
+    else
+    {
+      return INVALID_CLOCK;
+    }
+  }
+
 
   /*---------------------------------------------------------------------------
   Oscillator Configuration
