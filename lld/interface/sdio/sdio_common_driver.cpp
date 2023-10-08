@@ -639,7 +639,13 @@ namespace Thor::LLD::SDIO
     mPeriph->ARG = 0;
     mPeriph->CMD = CmdRegCfg[ CMD_SET_REL_ADDR ];
 
-    return getCmdResp6( CMD_SET_REL_ADDR, pRCA );
+    const ErrorType err = getCmdResp6( CMD_SET_REL_ADDR, pRCA );
+    if( err == ERROR_NONE )
+    {
+      mRCA = *pRCA;
+    }
+
+    return err;
   }
 
 
@@ -1210,6 +1216,25 @@ namespace Thor::LLD::SDIO
   }
 
 
+  ErrorType Driver::getCardStatus( const uint16_t rca, uint32_t *const pCardStatus )
+  {
+    /*-------------------------------------------------------------------------
+    Send CMD13 to get the card status
+    -------------------------------------------------------------------------*/
+    if ( auto error = cmdSendStatus( rca ); error != ERROR_NONE )
+    {
+      return error;
+    }
+
+    /*-------------------------------------------------------------------------
+    Get the card status response
+    -------------------------------------------------------------------------*/
+    RT_DBG_ASSERT( pCardStatus );
+    *pCardStatus = cpsmGetRespX( ResponseMailbox::RESPONSE_1 );
+    return ERROR_NONE;
+  }
+
+
   ErrorType Driver::asyncReadBlock( const uint32_t address, const uint32_t count, void *const buffer )
   {
     using namespace Chimera::DMA;
@@ -1220,6 +1245,24 @@ namespace Thor::LLD::SDIO
     Pre-compute the number of bytes to transfer
     -------------------------------------------------------------------------*/
     const uint32_t bytes_to_transfer = count * SDIO_BLOCK_SIZE;
+
+    /*-------------------------------------------------------------------------
+    Wait for the card to indicate it's ready for a data transaction. Any old
+    write transactions should have already been completed, so this is mainly a
+    safeguard to ensure we don't accidentally clobber the card internal state.
+    -------------------------------------------------------------------------*/
+    const size_t start_time = Chimera::millis();
+    const size_t timeout    = start_time + ( 250u * TIMEOUT_1MS );
+
+    while ( !readyForNextTransfer() )
+    {
+      if ( Chimera::millis() >= timeout )
+      {
+        return ErrorType::ERROR_BUSY;
+      }
+
+      Chimera::delayMilliseconds( 5 );
+    }
 
     /*-------------------------------------------------------------------------
     Set the block size of the transfer
@@ -1289,11 +1332,7 @@ namespace Thor::LLD::SDIO
     -------------------------------------------------------------------------*/
     INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
     Chimera::DMA::abort( s_ctrl_blk[ mResourceIndex ].txfrId );
-
-    if ( count > 1u )
-    {
-      cmdStopTransfer();
-    }
+    cmdStopTransfer();
 
     /*-------------------------------------------------------------------------
     Hand back an appropriate error code
@@ -1388,17 +1427,29 @@ namespace Thor::LLD::SDIO
     -------------------------------------------------------------------------*/
     INT::disableIRQ( Resource::IRQSignals[ mResourceIndex ] );
     Chimera::DMA::abort( s_ctrl_blk[ mResourceIndex ].txfrId );
-
-    if ( count > 1u )
-    {
-      cmdStopTransfer();
-    }
+    cmdStopTransfer();
 
     /*-------------------------------------------------------------------------
     Hand back an appropriate error code
     -------------------------------------------------------------------------*/
     if ( wait_error == Chimera::Status::OK )
     {
+      /*-----------------------------------------------------------------------
+      Don't return until the card is ready for the next transfer
+      -----------------------------------------------------------------------*/
+      const size_t start_time = Chimera::millis();
+      const size_t timeout    = start_time + ( count * ( 250u * TIMEOUT_1MS ) );
+
+      while ( !readyForNextTransfer() )
+      {
+        if ( Chimera::millis() >= timeout )
+        {
+          return ErrorType::ERROR_BUSY;
+        }
+
+        Chimera::delayMilliseconds( 5 );
+      }
+
       return s_ctrl_blk[ mResourceIndex ].txfrError;
     }
     else
@@ -1518,5 +1569,18 @@ namespace Thor::LLD::SDIO
     }
   }
 
+
+  bool Driver::readyForNextTransfer()
+  {
+    using namespace Chimera::SDIO;
+
+    /*-------------------------------------------------------------------------
+    Look at the status register of the card for the "ready for data" bit
+    -------------------------------------------------------------------------*/
+    uint32_t cardStatus = 0;
+    getCardStatus( mRCA, &cardStatus );
+
+    return ( cardStatus & CMD13_READY_FOR_DATA ) == CMD13_READY_FOR_DATA;
+  }
 }    // namespace Thor::LLD::SDIO
 #endif /* THOR_SDIO && TARGET_STM32F4 */

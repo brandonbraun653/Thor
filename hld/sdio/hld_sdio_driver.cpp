@@ -243,8 +243,7 @@ namespace Chimera::SDIO
   }
 
 
-  Chimera::Status_t Driver::writeBlock( const uint32_t blockAddress, const size_t blockCount, const void *const buffer,
-                                        const size_t size )
+  Chimera::Status_t Driver::writeBlock( const uint32_t blockAddress, const size_t blockCount, const void *const buffer )
   {
     auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
@@ -269,13 +268,19 @@ namespace Chimera::SDIO
     /*-------------------------------------------------------------------------
     Perform the write
     -------------------------------------------------------------------------*/
-    auto result = impl->lldriver->asyncWriteBlock( startAddress, blockCount, buffer );
+    size_t         attempts = 0;
+    LLD::ErrorType result   = LLD::ERROR_NONE;
+    do
+    {
+      result = impl->lldriver->asyncWriteBlock( startAddress, blockCount, buffer );
+      attempts++;
+    } while ( attempts < 2 && ( result != LLD::ERROR_NONE ) );
+
     return ( result == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::FAILED_WRITE;
   }
 
 
-  Chimera::Status_t Driver::readBlock( const uint32_t blockAddress, const size_t blockCount, void *const buffer,
-                                       const size_t size )
+  Chimera::Status_t Driver::readBlock( const uint32_t blockAddress, const size_t blockCount, void *const buffer )
   {
     auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
@@ -300,7 +305,14 @@ namespace Chimera::SDIO
     /*-------------------------------------------------------------------------
     Perform the read
     -------------------------------------------------------------------------*/
-    auto result = impl->lldriver->asyncReadBlock( startAddress, blockCount, buffer );
+    size_t         attempts = 0;
+    LLD::ErrorType result   = LLD::ERROR_NONE;
+    do
+    {
+      result = impl->lldriver->asyncReadBlock( startAddress, blockCount, buffer );
+      attempts++;
+    } while ( attempts < 2 && ( result != LLD::ERROR_NONE ) );
+
     return ( result == LLD::ERROR_NONE ) ? Chimera::Status::OK : Chimera::Status::FAILED_READ;
   }
 
@@ -347,14 +359,13 @@ namespace Chimera::SDIO
 
   CardState Driver::getCardState()
   {
-    auto           impl  = reinterpret_cast<ThorImpl *>( mImpl );
-    CardState      state = CardState::CARD_ERROR;
-    LLD::ErrorType error = LLD::ErrorType::ERROR_GENERAL_UNKNOWN_ERR;
+    auto     impl   = reinterpret_cast<ThorImpl *>( mImpl );
+    uint32_t status = 0;
 
     /*-------------------------------------------------------------------------
     Send CMD13 to get the card status
     -------------------------------------------------------------------------*/
-    if ( error = impl->lldriver->cmdSendStatus( impl->rca ); error != LLD::ErrorType::ERROR_NONE )
+    if ( auto error = impl->lldriver->getCardStatus( impl->rca, &status ); error != LLD::ErrorType::ERROR_NONE )
     {
       return CardState::CARD_ERROR;
     }
@@ -362,10 +373,7 @@ namespace Chimera::SDIO
     /*-------------------------------------------------------------------------
     Parse the response to get the card state
     -------------------------------------------------------------------------*/
-    const uint32_t resp1 = impl->lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_1 );
-    state                = static_cast<CardState>( ( resp1 >> 9U ) & 0x0FU );
-
-    return state;
+    return static_cast<CardState>( ( status >> 9U ) & 0x0FU );
   }
 
 
@@ -595,14 +603,24 @@ namespace Chimera::SDIO
     Local Variables
     -------------------------------------------------------------------------*/
     LLD::ErrorType error        = LLD::ERROR_NONE;
-    uint32_t       count        = 0;
     uint32_t       response     = 0;
     bool           device_ready = false;
+
+
+    // TODO: Add max timeout, maybe like a second. Add some polling delays too.
+
+    // Re-look at the initialization sequence. What am I doing there? It seems like
+    // if I debug the code it works ok, but running at full speed causes issues.
+    // That could potentially be a timing issue?
 
     /*-------------------------------------------------------------------------
     Send CMD55 and CMD41 until the card indicates it is ready
     -------------------------------------------------------------------------*/
-    while ( ( count < 0xFFFFu ) && !device_ready )
+    const size_t start_time = Chimera::millis();
+    const size_t max_time   = start_time + ( 3 * Chimera::Thread::TIMEOUT_1S );
+
+
+    while ( ( Chimera::millis() < max_time ) && !device_ready )
     {
       /*-----------------------------------------------------------------------
       Prepare for ACMD41 by sending CMD55, indicating the next command is an
@@ -626,7 +644,7 @@ namespace Chimera::SDIO
 
       response     = lldriver->cpsmGetRespX( LLD::ResponseMailbox::RESPONSE_1 );
       device_ready = ( response & ACMD41_INIT_COMPLETE ) == ACMD41_INIT_COMPLETE;
-      count++;
+      Chimera::delayMilliseconds( 50 );
     }
 
     /*-------------------------------------------------------------------------

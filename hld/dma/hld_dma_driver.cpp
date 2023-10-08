@@ -6,7 +6,7 @@
  *   Implements DMA high level drivers, which focuses on managing configurations
  *   for the wide variety of streams that may be possible.
  *
- *  2019-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2023 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -38,7 +38,7 @@ static constexpr size_t NUM_DRIVERS = Thor::LLD::DMA::DMA_MAX_RESOURCE_IDX;
 Number of pipe configurations to remember
 -------------------------------------------------*/
 #ifndef THOR_HLD_DMA_MAX_PIPE_CONFIGURATIONS
-#define THOR_HLD_DMA_MAX_PIPE_CONFIGURATIONS ( 5 )
+#define THOR_HLD_DMA_MAX_PIPE_CONFIGURATIONS ( 7 )
 #endif
 
 /*-------------------------------------------------------------------

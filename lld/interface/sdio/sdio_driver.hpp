@@ -377,6 +377,15 @@ namespace Thor::LLD::SDIO
     ErrorType getSDStatus( const uint16_t rca, uint32_t *const pSDstatus );
 
     /**
+     * @brief Sends CMD13 to get the card's status register
+     *
+     * @param rca         Address of the card to get the status from
+     * @param pCardStatus Output parameter to store the card's status
+     * @return ErrorType
+     */
+    ErrorType getCardStatus( const uint16_t rca, uint32_t *const pCardStatus );
+
+    /**
      * @brief Reads a single 512 byte block from the SD card
      *
      * @param address   Starting address to read from (aligned to block size)
@@ -398,15 +407,17 @@ namespace Thor::LLD::SDIO
 
   protected:
     void IRQHandler();
+    bool readyForNextTransfer();
 
   private:
     friend Chimera::Thread::AsyncIO<Driver>;
     friend void( ::SDIO_IRQHandler )();
 
-    RegisterMap            *mPeriph;         /**< Mapped hardware peripheral */
-    RIndex_t                mResourceIndex;  /**< Lookup index for mPeriph */
-    Chimera::DMA::RequestId mTXDMAPipeId; /**< Request id of the TX DMA pipe for the driver */
-    Chimera::DMA::RequestId mRXDMAPipeId; /**< Request id of the RX DMA pipe for the driver */
+    RegisterMap            *mPeriph;        /**< Mapped hardware peripheral */
+    RIndex_t                mResourceIndex; /**< Lookup index for mPeriph */
+    uint16_t                mRCA;           /**< Relative card address */
+    Chimera::DMA::RequestId mTXDMAPipeId;   /**< Request id of the TX DMA pipe for the driver */
+    Chimera::DMA::RequestId mRXDMAPipeId;   /**< Request id of the RX DMA pipe for the driver */
   };
 }    // namespace Thor::LLD::SDIO
 
