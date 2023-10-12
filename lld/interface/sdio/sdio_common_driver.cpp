@@ -1247,21 +1247,11 @@ namespace Thor::LLD::SDIO
     const uint32_t bytes_to_transfer = count * SDIO_BLOCK_SIZE;
 
     /*-------------------------------------------------------------------------
-    Wait for the card to indicate it's ready for a data transaction. Any old
-    write transactions should have already been completed, so this is mainly a
-    safeguard to ensure we don't accidentally clobber the card internal state.
+    Fail early if the card is not ready
     -------------------------------------------------------------------------*/
-    const size_t start_time = Chimera::millis();
-    const size_t timeout    = start_time + ( 250u * TIMEOUT_1MS );
-
-    while ( !readyForNextTransfer() )
+    if( !waitUntilReady( 250u ) )
     {
-      if ( Chimera::millis() >= timeout )
-      {
-        return ErrorType::ERROR_BUSY;
-      }
-
-      Chimera::delayMilliseconds( 5 );
+      return ErrorType::ERROR_BUSY;
     }
 
     /*-------------------------------------------------------------------------
@@ -1360,6 +1350,14 @@ namespace Thor::LLD::SDIO
     const uint32_t bytes_to_transfer = count * SDIO_BLOCK_SIZE;
 
     /*-------------------------------------------------------------------------
+    Fail early if the card is not ready
+    -------------------------------------------------------------------------*/
+    if( !waitUntilReady( 250u ) )
+    {
+      return ErrorType::ERROR_BUSY;
+    }
+
+    /*-------------------------------------------------------------------------
     Set the block size of the transfer
     -------------------------------------------------------------------------*/
     ErrorType error = ErrorType::ERROR_NONE;
@@ -1437,17 +1435,9 @@ namespace Thor::LLD::SDIO
       /*-----------------------------------------------------------------------
       Don't return until the card is ready for the next transfer
       -----------------------------------------------------------------------*/
-      const size_t start_time = Chimera::millis();
-      const size_t timeout    = start_time + ( count * ( 250u * TIMEOUT_1MS ) );
-
-      while ( !readyForNextTransfer() )
+      if( !waitUntilReady( 250u ) )
       {
-        if ( Chimera::millis() >= timeout )
-        {
-          return ErrorType::ERROR_BUSY;
-        }
-
-        Chimera::delayMilliseconds( 5 );
+        return ErrorType::ERROR_BUSY;
       }
 
       return s_ctrl_blk[ mResourceIndex ].txfrError;
@@ -1581,6 +1571,27 @@ namespace Thor::LLD::SDIO
     getCardStatus( mRCA, &cardStatus );
 
     return ( cardStatus & CMD13_READY_FOR_DATA ) == CMD13_READY_FOR_DATA;
+  }
+
+
+  bool Driver::waitUntilReady( const uint32_t timeout )
+  {
+    using namespace Chimera::Thread;
+
+    const size_t start_time = Chimera::millis();
+    const size_t end_time   = start_time + ( timeout * TIMEOUT_1MS );
+
+    while ( !readyForNextTransfer() )
+    {
+      if ( Chimera::millis() >= end_time )
+      {
+        return false;
+      }
+
+      Chimera::delayMilliseconds( 5 );
+    }
+
+    return true;
   }
 }    // namespace Thor::LLD::SDIO
 #endif /* THOR_SDIO && TARGET_STM32F4 */

@@ -408,6 +408,7 @@ namespace Thor::LLD::SDIO
   protected:
     void IRQHandler();
     bool readyForNextTransfer();
+    bool waitUntilReady( const uint32_t timeout );
 
   private:
     friend Chimera::Thread::AsyncIO<Driver>;
