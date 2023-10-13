@@ -176,7 +176,7 @@ namespace Thor::LLD::SDIO
   static inline uint32_t calc_clock_div( const uint32_t in_freq, const uint32_t out_freq )
   {
     // Input constraints
-    RT_DBG_ASSERT( in_freq > out_freq );
+    RT_DBG_ASSERT( in_freq >= out_freq );
     RT_DBG_ASSERT( out_freq > 0 );
 
     // Calculate the divider and ensure it fits in the register field
