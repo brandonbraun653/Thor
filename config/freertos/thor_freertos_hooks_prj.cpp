@@ -64,12 +64,16 @@ namespace Chimera::Thread::FreeRTOS
   void ApplicationIdleHook()
   {
     /*-------------------------------------------------------------------------
-    Put the processor into a low power state until something happens
+    Put the processor into a low power state until something happens.
+
+    // TODO: This is currently disabled because of some discoveries with USB
+    // TODO: and the STM32F4. It seems that the USB peripheral is not waking
+    // TODO: up the CPU from the WFI instruction, causing failed enumerations.
     -------------------------------------------------------------------------*/
 #if defined( CORTEX_M4 )
-    __asm volatile( "dsb" );  /* Ensure memory transactions complete */
-    __asm volatile( "wfi" );  /* Sleep */
-    __asm volatile( "isb" );  /* Force the wfi execution before anything else */
+    // __asm volatile( "dsb" );  /* Ensure memory transactions complete */
+    // __asm volatile( "wfi" );  /* Sleep */
+    // __asm volatile( "isb" );  /* Force the wfi execution before anything else */
 #endif
 
   }
