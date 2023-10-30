@@ -165,27 +165,6 @@ namespace Thor::LLD::SDIO
   /*---------------------------------------------------------------------------
   Static Functions
   ---------------------------------------------------------------------------*/
-  /**
-   * @brief Calculates the HW clock divider setting for a given target bus frequency
-   * @note Written using the formula from the STM32F4xx reference manual
-   *
-   * @param in_freq    Input clock frequency in Hz
-   * @param out_freq   Target bus frequency in Hz
-   * @return uint32_t HW register clock divider setting
-   */
-  static inline uint32_t calc_clock_div( const uint32_t in_freq, const uint32_t out_freq )
-  {
-    // Input constraints
-    RT_DBG_ASSERT( in_freq >= out_freq );
-    RT_DBG_ASSERT( out_freq > 0 );
-
-    // Calculate the divider and ensure it fits in the register field
-    const uint32_t div = ( in_freq / out_freq ) - 2u;
-    RT_DBG_ASSERT( ( div & CLKCR_CLKDIV_Msk ) == div );
-
-    return div;
-  }
-
 
   /**
    * @brief Waits for the CPSM to finish sending a command
@@ -320,11 +299,43 @@ namespace Thor::LLD::SDIO
 
   ErrorType Driver::setBusFrequency( const uint32_t freq )
   {
+    constexpr uint32_t MAX_CLKDIV = CLKCR_CLKDIV_Msk >> CLKCR_CLKDIV_Pos;
+
+    /*-------------------------------------------------------------------------
+    Find the SDIO peripheral clock
+    -------------------------------------------------------------------------*/
     auto           rcc  = RCC::getCoreClockCtrl();
     const uint32_t pClk = rcc->getPeriphClock( Chimera::Peripheral::Type::PERIPH_SDIO, reinterpret_cast<uintptr_t>( mPeriph ) );
-    const uint32_t clkDiv = calc_clock_div( pClk, freq );
 
-    CLKDIV::set( mPeriph, clkDiv << CLKCR_CLKDIV_Pos );
+    /*-------------------------------------------------------------------------
+    Compute the ratio between SDIO clock and bus frequency
+    -------------------------------------------------------------------------*/
+    RT_DBG_ASSERT( pClk >= freq );
+    RT_DBG_ASSERT( freq > 0 );
+    uint32_t clkDiv = ( pClk / freq );
+
+    /*-------------------------------------------------------------------------
+    Ensure the divider is within the valid range of CLKDIV (29.8.2). If we can
+    cleanly divide the clock, use the HW supported divider. Otherwise there is
+    very little control and we have to by pass the clock divider to use the
+    full clock speed.
+    -------------------------------------------------------------------------*/
+    if( clkDiv >= 2u )
+    {
+      clkDiv -= 2u;
+
+      if( clkDiv > MAX_CLKDIV )
+      {
+        clkDiv = MAX_CLKDIV;
+      }
+
+      CLKDIV::set( mPeriph, clkDiv << CLKCR_CLKDIV_Pos );
+    }
+    else
+    {
+      BYPASS::set( mPeriph, CLKCR_BYPASS );
+    }
+
     return ERROR_NONE;
   }
 
@@ -471,31 +482,30 @@ namespace Thor::LLD::SDIO
     /*-------------------------------------------------------------------------
     Send CMD6 to set the bus width
     -------------------------------------------------------------------------*/
+    mPeriph->CMD = CmdRegCfg[ CMD_SD_APP_SET_BUSWIDTH ];
+
     switch ( width )
     {
       case Chimera::SDIO::BusWidth::BUS_WIDTH_1BIT:
         mPeriph->ARG = 0u;
+        WIDBUS::set( mPeriph, 0 );
         break;
 
       case Chimera::SDIO::BusWidth::BUS_WIDTH_4BIT:
-        mPeriph->ARG = CLKCR_WIDBUS_0;
+        mPeriph->ARG = 2u;
+        WIDBUS::set( mPeriph, CLKCR_WIDBUS_0 );
         break;
 
       default:
         return ErrorType::ERROR_INVALID_PARAMETER;
     }
 
-    mPeriph->CMD = CmdRegCfg[ CMD_SD_APP_SET_BUSWIDTH ];
-
     if ( auto error = getCmdResp1( CMD_SD_APP_SET_BUSWIDTH, SDIO_CMD_TIMEOUT_MS ); error != ErrorType::ERROR_NONE )
     {
+      WIDBUS::set( mPeriph, 0 );
       return error;
     }
 
-    /*-------------------------------------------------------------------------
-    Update the bus width setting in the peripheral if the command succeeded
-    -------------------------------------------------------------------------*/
-    WIDBUS::set( mPeriph, mPeriph->ARG );
     return ErrorType::ERROR_NONE;
   }
 
