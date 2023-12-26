@@ -12,6 +12,7 @@
 Includes
 -----------------------------------------------------------------------------*/
 #include <memory>
+#include <Chimera/assert>
 #include <Chimera/common>
 #include <Chimera/peripheral>
 #include <Chimera/timer>
@@ -61,7 +62,50 @@ namespace Chimera::Timer::Inverter
   /*---------------------------------------------------------------------------
   Static Functions
   ---------------------------------------------------------------------------*/
-  static float fast_sin( float angle )
+
+  /**
+   * @brief Checks if the given SwitchIO is for the high-side switch.
+   *
+   * @param io The SwitchIO to check.
+   * @return True if the SwitchIO is for the high-side switch, false otherwise.
+   */
+  static constexpr bool isHiSideSwitch( const SwitchIO io )
+  {
+    return ( io == SWITCH_A_HI ) || ( io == SWITCH_B_HI ) || ( io == SWITCH_C_HI );
+  }
+
+
+  /**
+   * @brief Checks if the given SwitchIO is a low side switch.
+   *
+   * @param io The SwitchIO to check.
+   * @return true if the SwitchIO is for the low side switch, false otherwise.
+   */
+  static constexpr bool isLoSideSwitch( const SwitchIO io )
+  {
+    return ( io == SWITCH_A_LO ) || ( io == SWITCH_B_LO ) || ( io == SWITCH_C_LO );
+  }
+
+
+  /**
+   * @brief Checks if the given duty cycle is within the valid range.
+   *
+   * @param dutyCycle The duty cycle to be checked.
+   * @return True if the duty cycle is within the valid range, false otherwise.
+   */
+  static constexpr bool isDutyCycleInRange( const float dutyCycle )
+  {
+    return ( dutyCycle >= 0.0f ) && ( dutyCycle <= 1.0f );
+  }
+
+
+  /**
+   * @brief Calculates the sine of the given angle using a fast approximation algorithm.
+   *
+   * @param angle The angle in radians.
+   * @return The sine of the angle.
+   */
+  static float fastSine( float angle )
   {
     constexpr float M_PI_F = static_cast<float>( M_PI );
 
@@ -94,9 +138,11 @@ namespace Chimera::Timer::Inverter
   /*---------------------------------------------------------------------------
   Class Implementation
   ---------------------------------------------------------------------------*/
+
   Driver::Driver() : mTimerImpl( nullptr )
   {
   }
+
 
   Driver::~Driver()
   {
@@ -262,7 +308,11 @@ namespace Chimera::Timer::Inverter
 
   Chimera::Status_t Driver::disableOutput()
   {
-    return this->emergencyBreak();
+    using namespace Thor::LLD::TIMER;
+
+    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
+    disableAllOutput( cb->timer );
+    return Chimera::Status::OK;
   }
 
 
@@ -273,6 +323,68 @@ namespace Chimera::Timer::Inverter
     -------------------------------------------------------------------------*/
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
     return setEventRate( cb->timer, ( 1.0f / freq ) * 1e9f );
+  }
+
+
+  Chimera::Status_t Driver::energizeWinding( const SwitchIO hiSide, const SwitchIO loSide, const float dutyCycle )
+  {
+    using namespace Thor::LLD::TIMER;
+
+    constexpr Chimera::Timer::Channel switch_ch_lut[] = {
+      Chimera::Timer::Channel::CHANNEL_1,    // SWITCH_A_HI
+      Chimera::Timer::Channel::CHANNEL_2,    // SWITCH_B_HI
+      Chimera::Timer::Channel::CHANNEL_3,    // SWITCH_C_HI
+      Chimera::Timer::Channel::CHANNEL_1,    // SWITCH_A_LO
+      Chimera::Timer::Channel::CHANNEL_2,    // SWITCH_B_LO
+      Chimera::Timer::Channel::CHANNEL_3,    // SWITCH_C_LO
+    };
+
+    constexpr Chimera::Timer::Output switch_out_lut[] = {
+      Chimera::Timer::Output::OUTPUT_1P,    // SWITCH_A_HI
+      Chimera::Timer::Output::OUTPUT_2P,    // SWITCH_B_HI
+      Chimera::Timer::Output::OUTPUT_3P,    // SWITCH_C_HI
+      Chimera::Timer::Output::OUTPUT_1N,    // SWITCH_A_LO
+      Chimera::Timer::Output::OUTPUT_2N,    // SWITCH_B_LO
+      Chimera::Timer::Output::OUTPUT_3N,    // SWITCH_C_LO
+    };
+
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if( !isHiSideSwitch( hiSide ) || !isLoSideSwitch( loSide ) || !isDutyCycleInRange( dutyCycle ) )
+    {
+      return Chimera::Status::INVAL_FUNC_PARAM;
+    }
+
+    /*-------------------------------------------------------------------------
+    Reset the timer to a known state: No outputs enabled and all OC references
+    set to an effectively 0% duty cycle.
+    -------------------------------------------------------------------------*/
+    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
+    uint32_t arr_val = getAutoReload( cb->timer );
+    auto result = Chimera::Status::OK;
+
+    disableCCOutputBulk( cb->timer, s_all_output_channel_bf );
+    result |= setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, arr_val );
+    result |= setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2, arr_val );
+    result |= setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, arr_val );
+
+    /*-------------------------------------------------------------------------
+    Drive the requested switches with the expected duty cycle. This possibly
+    could drive an undesired switch, but output channel masking will take care
+    of this before it reaches the power stage.
+    -------------------------------------------------------------------------*/
+    uint32_t ocref = static_cast<uint32_t>( arr_val * dutyCycle );
+    result |= setOCReference( cb->timer, switch_ch_lut[ EnumValue( hiSide ) ], ocref );
+    result |= setOCReference( cb->timer, switch_ch_lut[ EnumValue( loSide ) ], ocref );
+
+    /*-------------------------------------------------------------------------
+    Enable only the outputs requested.
+    -------------------------------------------------------------------------*/
+    enableCCOutput( cb->timer, switch_out_lut[ EnumValue( hiSide ) ] );
+    enableCCOutput( cb->timer, switch_out_lut[ EnumValue( loSide ) ] );
+
+    return result;
   }
 
 
@@ -327,8 +439,8 @@ namespace Chimera::Timer::Inverter
     -------------------------------------------------------------------------*/
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
 
-    const float ta = cb->T_half * drive * fast_sin( PI_OVER_3 - sector_angle );
-    const float tb = cb->T_half * drive * fast_sin( sector_angle );
+    const float ta = cb->T_half * drive * fastSine( PI_OVER_3 - sector_angle );
+    const float tb = cb->T_half * drive * fastSine( sector_angle );
     const float tn = cb->T_half - ta - tb;
     const float tn_half = 0.5f * tn;
 
