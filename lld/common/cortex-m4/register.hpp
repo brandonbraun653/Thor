@@ -5,14 +5,17 @@
  *  Description:
  *    Cortex-M4 specific register definitions
  *
- *  2019-2020 | Brandon Braun | brandonbraun653@gmail.com
+ *  2019-2024 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
 #ifndef CORTEX_M4_REGISTERS_HPP
 #define CORTEX_M4_REGISTERS_HPP
 
-/* Thor Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
+#include <cstdint>
 #include <Thor/cfg>
 
 #if defined( CORTEX_M4 )

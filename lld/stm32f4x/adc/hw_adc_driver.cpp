@@ -5,7 +5,7 @@
  *  Description:
  *    Implements the LLD interface to the ADC hardware
  *
- *  2021-2023 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2024 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -367,7 +367,7 @@ namespace Thor::LLD::ADC
     /*-------------------------------------------------------------------------
     Enable the desired channel for monitoring
     -------------------------------------------------------------------------*/
-    uint32_t hi_lo_data = ( ( cfg.highThreshold & 0xFF ) << 16u ) | ( cfg.lowThreshold & 0xFF );
+    // uint32_t hi_lo_data = ( ( cfg.highThreshold & 0xFF ) << 16u ) | ( cfg.lowThreshold & 0xFF );
 
     // TODO: Finish the watchdog implementation
     // if ( cfg.wdgChannel == Chimera::ADC::Watchdog::ANALOG_1 )

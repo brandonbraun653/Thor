@@ -5,7 +5,7 @@
  *  Description:
  *    I2C driver for STM32F4
  *
- *  2021-2022 | Brandon Braun | brandonbraun653@gmail.com
+ *  2021-2024 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -316,7 +316,6 @@ namespace Thor::LLD::I2C
     Local Variables
     -------------------------------------------------------------------------*/
     const uint32_t sr1 = SR1::get( mPeriph );
-    const uint32_t sr2 = SR2::get( mPeriph );
 
     /*-------------------------------------------------------------------------
     NACK? This is the most common issue.
@@ -344,7 +343,6 @@ namespace Thor::LLD::I2C
     Local Variables
     -------------------------------------------------------------------------*/
     const uint32_t sr1         = SR1::get( mPeriph );
-    const uint32_t sr2         = SR2::get( mPeriph );
     uint32_t       data_reg    = 0;
     uint8_t       *rx_data_ptr = nullptr;
     const uint8_t *tx_data_ptr = nullptr;
