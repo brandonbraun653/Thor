@@ -316,6 +316,21 @@ namespace Chimera::Timer::Inverter
   }
 
 
+  Chimera::Status_t Driver::shortLowSideWindings()
+  {
+    using namespace Thor::LLD::TIMER;
+
+    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
+
+    // reset_to_idle();
+    // TODO BMB: Can the timer do this without full reconfiguration? Might need a new LLD interface.
+    // TODO BMB: Could also drive a very lopsided PWM to achieve nearly the same effect? I think it
+    // TODO BMB: would end up swapping between states 0 and 6, but I'm not sure. Need to test it out.
+
+    return Chimera::Status::OK;
+  }
+
+
   Chimera::Status_t Driver::setCarrierFrequency( const float freq )
   {
     /*-------------------------------------------------------------------------
@@ -362,12 +377,7 @@ namespace Chimera::Timer::Inverter
     -------------------------------------------------------------------------*/
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
     uint32_t arr_val = getAutoReload( cb->timer );
-    auto result = Chimera::Status::OK;
-
-    disableCCOutputBulk( cb->timer, s_all_output_channel_bf );
-    result |= setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, arr_val );
-    result |= setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2, arr_val );
-    result |= setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, arr_val );
+    auto result = reset_to_idle();
 
     /*-------------------------------------------------------------------------
     Drive the requested switches with the expected duty cycle. This possibly
@@ -576,6 +586,27 @@ namespace Chimera::Timer::Inverter
     Update the TRGO capture compare reference
     -------------------------------------------------------------------------*/
     return setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_4, new_cc4_ref_val );
+  }
+
+
+  /**
+   * @brief Resets the timer to an inert state.
+   *
+   * No outputs are enabled and all OC references are set to an effectively 0% duty cycle.
+   *
+   */
+  Chimera::Status_t Driver::reset_to_idle()
+  {
+    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
+    uint32_t arr_val = getAutoReload( cb->timer );
+    auto result = Chimera::Status::OK;
+
+    disableCCOutputBulk( cb->timer, s_all_output_channel_bf );
+    result |= setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, arr_val );
+    result |= setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2, arr_val );
+    result |= setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, arr_val );
+
+    return result;
   }
 
 }    // namespace Chimera::Timer::Inverter
