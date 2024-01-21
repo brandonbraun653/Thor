@@ -345,21 +345,23 @@ namespace Chimera::Timer::Inverter
   {
     using namespace Thor::LLD::TIMER;
 
+
+    // TODO BMB: These switch tables are specific to OrbitESC. Need to specify another way.
     constexpr Chimera::Timer::Channel switch_ch_lut[] = {
-      Chimera::Timer::Channel::CHANNEL_1,    // SWITCH_A_HI
       Chimera::Timer::Channel::CHANNEL_2,    // SWITCH_B_HI
-      Chimera::Timer::Channel::CHANNEL_3,    // SWITCH_C_HI
-      Chimera::Timer::Channel::CHANNEL_1,    // SWITCH_A_LO
       Chimera::Timer::Channel::CHANNEL_2,    // SWITCH_B_LO
+      Chimera::Timer::Channel::CHANNEL_1,    // SWITCH_A_HI
+      Chimera::Timer::Channel::CHANNEL_1,    // SWITCH_A_LO
+      Chimera::Timer::Channel::CHANNEL_3,    // SWITCH_C_HI
       Chimera::Timer::Channel::CHANNEL_3,    // SWITCH_C_LO
     };
 
     constexpr Chimera::Timer::Output switch_out_lut[] = {
-      Chimera::Timer::Output::OUTPUT_1P,    // SWITCH_A_HI
       Chimera::Timer::Output::OUTPUT_2P,    // SWITCH_B_HI
-      Chimera::Timer::Output::OUTPUT_3P,    // SWITCH_C_HI
-      Chimera::Timer::Output::OUTPUT_1N,    // SWITCH_A_LO
       Chimera::Timer::Output::OUTPUT_2N,    // SWITCH_B_LO
+      Chimera::Timer::Output::OUTPUT_1P,    // SWITCH_A_HI
+      Chimera::Timer::Output::OUTPUT_1N,    // SWITCH_A_LO
+      Chimera::Timer::Output::OUTPUT_3P,    // SWITCH_C_HI
       Chimera::Timer::Output::OUTPUT_3N,    // SWITCH_C_LO
     };
 
@@ -384,7 +386,7 @@ namespace Chimera::Timer::Inverter
     could drive an undesired switch, but output channel masking will take care
     of this before it reaches the power stage.
     -------------------------------------------------------------------------*/
-    uint32_t ocref = static_cast<uint32_t>( arr_val * dutyCycle );
+    uint32_t ocref = arr_val - static_cast<uint32_t>( arr_val * dutyCycle );
     result |= setOCReference( cb->timer, switch_ch_lut[ EnumValue( hiSide ) ], ocref );
     result |= setOCReference( cb->timer, switch_ch_lut[ EnumValue( loSide ) ], ocref );
 
