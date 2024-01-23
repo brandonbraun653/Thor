@@ -216,10 +216,8 @@ namespace Chimera::Timer::Inverter
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_3, true );
 
     /*-------------------------------------------------------------------
-    Set the PWM mode for each output channel. Use pwm mode 2 to enforce
-    the view that specification of PWM widths are done in terms of the
-    low-side on-time. This is to make it easier for aligning ADC samples
-    with the power stage switching, which measure low side current.
+    Set PWM mode 2 for each channel, which sets the non-complementary
+    output active when the counter is above the compare value.
     -------------------------------------------------------------------*/
     setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_1, OCMode::OC_MODE_PWM_MODE_2 );
     setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_2, OCMode::OC_MODE_PWM_MODE_2 );
@@ -236,35 +234,22 @@ namespace Chimera::Timer::Inverter
     RT_HARD_ASSERT( setDeadTime( cb->timer, cfg.deadTimeNs ) );
 
     /*-------------------------------------------------------------------
-    Set capture compare behavior
+    Set capture compare behavior to outputs with positive logic.
     -------------------------------------------------------------------*/
-    /* Set capture/compare mode */
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_1, CCMode::CCM_OUTPUT );
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_2, CCMode::CCM_OUTPUT );
     setCCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_3, CCMode::CCM_OUTPUT );
-
-    /* Set output polarity */
     setCCOutputPolarityBulk( cb->timer, s_all_output_channel_bf, CCPolarity::CCP_OUT_ACTIVE_HIGH );
-
-    /* Enable the outputs */
     enableCCOutputBulk( cb->timer, s_all_output_channel_bf );
 
     /*-------------------------------------------------------------------------
-    Output trigger configuration (TRGO). Can be used to drive ADC sampling or
-    other peripherals.
+    Output trigger configuration (TRGO) for synchronization. This will toggle
+    TRGO 180 degrees out of phase with center of the complementary PWM output.
     -------------------------------------------------------------------------*/
-    /* Use PWM mode 2 here to set the rising edge once CNT > CCR4 */
-    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_4, OCMode::OC_MODE_PWM_MODE_2 );
-
-    /* Buffer trigger timing updates so they synchronize correctly */
+    setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_4, OCMode::OC_MODE_TOGGLE_MATCH );
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_4, true );
-
-    /* Configure the TRGO signal to track the output compare channel */
     setMasterMode( cb->timer, MasterMode::COMPARE_OC4REF );
-
-    /* Naive initial OC ref. Use updateTriggerTiming() for exact setting. */
-    cb->maxCCRef = getAutoReload( cb->timer );
-    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_4, cb->maxCCRef );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_4, cb->timer->registers->ARR );
 
     /*-------------------------------------------------------------------------
     Lock out the core timer configuration settings to prevent dangerous changes
