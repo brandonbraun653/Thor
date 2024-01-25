@@ -71,7 +71,7 @@ namespace Chimera::Timer::Inverter
    */
   static constexpr bool isHiSideSwitch( const SwitchIO io )
   {
-    return ( io == SWITCH_A_HI ) || ( io == SWITCH_B_HI ) || ( io == SWITCH_C_HI );
+    return ( io == SWITCH_1_HI ) || ( io == SWITCH_2_HI ) || ( io == SWITCH_3_HI );
   }
 
 
@@ -83,7 +83,7 @@ namespace Chimera::Timer::Inverter
    */
   static constexpr bool isLoSideSwitch( const SwitchIO io )
   {
-    return ( io == SWITCH_A_LO ) || ( io == SWITCH_B_LO ) || ( io == SWITCH_C_LO );
+    return ( io == SWITCH_1_LO ) || ( io == SWITCH_2_LO ) || ( io == SWITCH_3_LO );
   }
 
 
@@ -330,24 +330,22 @@ namespace Chimera::Timer::Inverter
   {
     using namespace Thor::LLD::TIMER;
 
-
-    // TODO BMB: These switch tables are specific to OrbitESC. Need to specify another way.
     constexpr Chimera::Timer::Channel switch_ch_lut[] = {
-      Chimera::Timer::Channel::CHANNEL_2,    // SWITCH_B_HI
-      Chimera::Timer::Channel::CHANNEL_2,    // SWITCH_B_LO
-      Chimera::Timer::Channel::CHANNEL_1,    // SWITCH_A_HI
-      Chimera::Timer::Channel::CHANNEL_1,    // SWITCH_A_LO
-      Chimera::Timer::Channel::CHANNEL_3,    // SWITCH_C_HI
-      Chimera::Timer::Channel::CHANNEL_3,    // SWITCH_C_LO
+      Chimera::Timer::Channel::CHANNEL_1,
+      Chimera::Timer::Channel::CHANNEL_1,
+      Chimera::Timer::Channel::CHANNEL_2,
+      Chimera::Timer::Channel::CHANNEL_2,
+      Chimera::Timer::Channel::CHANNEL_3,
+      Chimera::Timer::Channel::CHANNEL_3,
     };
 
     constexpr Chimera::Timer::Output switch_out_lut[] = {
-      Chimera::Timer::Output::OUTPUT_2P,    // SWITCH_B_HI
-      Chimera::Timer::Output::OUTPUT_2N,    // SWITCH_B_LO
-      Chimera::Timer::Output::OUTPUT_1P,    // SWITCH_A_HI
-      Chimera::Timer::Output::OUTPUT_1N,    // SWITCH_A_LO
-      Chimera::Timer::Output::OUTPUT_3P,    // SWITCH_C_HI
-      Chimera::Timer::Output::OUTPUT_3N,    // SWITCH_C_LO
+      Chimera::Timer::Output::OUTPUT_1P,
+      Chimera::Timer::Output::OUTPUT_1N,
+      Chimera::Timer::Output::OUTPUT_2P,
+      Chimera::Timer::Output::OUTPUT_2N,
+      Chimera::Timer::Output::OUTPUT_3P,
+      Chimera::Timer::Output::OUTPUT_3N,
     };
 
     /*-------------------------------------------------------------------------
