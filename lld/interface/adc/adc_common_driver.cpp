@@ -167,6 +167,12 @@ namespace Thor::LLD::ADC
   }
 
 
+  void Driver::clockReset()
+  {
+    // Unused
+  }
+
+
   void Driver::clockEnable()
   {
     auto rcc = Thor::LLD::RCC::getPeriphClockCtrl();

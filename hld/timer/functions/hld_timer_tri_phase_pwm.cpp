@@ -262,6 +262,29 @@ namespace Chimera::Timer::Inverter
   }
 
 
+  void Driver::reset()
+  {
+    using namespace Thor::LLD::RCC;
+    using namespace Chimera::Peripheral;
+
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if( !mTimerImpl )
+    {
+      return;
+    }
+
+    /*-------------------------------------------------------------------------
+    Inject the hardware reset signal
+    -------------------------------------------------------------------------*/
+    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
+
+    auto result = getPeriphClockCtrl()->reset( Type::PERIPH_TIMER, cb->timer->globalIndex );
+    RT_DBG_ASSERT( result == Chimera::Status::OK );
+  }
+
+
   Chimera::Status_t Driver::enableOutput()
   {
     using namespace Thor::LLD::TIMER;
@@ -295,6 +318,14 @@ namespace Chimera::Timer::Inverter
   {
     using namespace Thor::LLD::TIMER;
 
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if( !mTimerImpl )
+    {
+      return Chimera::Status::NOT_INITIALIZED;
+    }
+
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
     disableAllOutput( cb->timer );
     return Chimera::Status::OK;
@@ -304,6 +335,14 @@ namespace Chimera::Timer::Inverter
   Chimera::Status_t Driver::shortLowSideWindings()
   {
     using namespace Thor::LLD::TIMER;
+
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if( !mTimerImpl )
+    {
+      return Chimera::Status::NOT_INITIALIZED;
+    }
 
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
 
@@ -318,6 +357,14 @@ namespace Chimera::Timer::Inverter
 
   Chimera::Status_t Driver::setCarrierFrequency( const float freq )
   {
+    /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if( !mTimerImpl )
+    {
+      return Chimera::Status::NOT_INITIALIZED;
+    }
+
     /*-------------------------------------------------------------------------
     Set the PWM frequency by controlling the timer overflow rate
     -------------------------------------------------------------------------*/

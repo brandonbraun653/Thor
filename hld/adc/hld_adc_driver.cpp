@@ -5,7 +5,7 @@
  *  Description:
  *    ADC driver for Thor
  *
- *  2020-2023 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2024 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 /*-----------------------------------------------------------------------------
@@ -38,14 +38,14 @@ namespace Chimera::ADC
   static constexpr size_t NUM_DRIVERS = LLD::NUM_ADC_PERIPHS;
   static constexpr size_t NUM_ISR_SIG = LLD::NUM_ADC_IRQ_HANDLERS;
 
-  /*-------------------------------------------------------------------
-  Stack size for the interrupt handler thread
-  -------------------------------------------------------------------*/
-  #if defined( STM32L432xx )
-  #define THREAD_SIZE ( 256 )
-  #elif defined( STM32F446xx )
-  #define THREAD_SIZE ( 512 )
-  #endif
+/*-------------------------------------------------------------------
+Stack size for the interrupt handler thread
+-------------------------------------------------------------------*/
+#if defined( STM32L432xx )
+#define THREAD_SIZE ( 256 )
+#elif defined( STM32F446xx )
+#define THREAD_SIZE ( 512 )
+#endif
 
   /*---------------------------------------------------------------------------
   Structures
@@ -71,7 +71,7 @@ namespace Chimera::ADC
   static size_t               s_driver_initialized;        /**< Tracks the module level initialization state */
   static Chimera::ADC::Driver s_raw_driver[ NUM_DRIVERS ]; /**< Driver objects */
   static ThorImpl             s_impl_driver[ NUM_DRIVERS ];
-  static uint32_t             s_adcX_thread_stack[ STACK_BYTES( THREAD_SIZE ) ] __attribute__((section(".app_stack")));
+  static uint32_t             s_adcX_thread_stack[ STACK_BYTES( THREAD_SIZE ) ] __attribute__( ( section( ".app_stack" ) ) );
 
 
   /*---------------------------------------------------------------------------
@@ -90,12 +90,12 @@ namespace Chimera::ADC
 
     TaskMsg msg;
 
-    while ( 1 )
+    while( 1 )
     {
       /*-----------------------------------------------------------------------
       Wait for something to wake this thread
       -----------------------------------------------------------------------*/
-      if ( !this_thread::receiveTaskMsg( msg, TIMEOUT_BLOCK ) )
+      if( !this_thread::receiveTaskMsg( msg, TIMEOUT_BLOCK ) )
       {
         continue;
       }
@@ -103,9 +103,9 @@ namespace Chimera::ADC
       /*-----------------------------------------------------------------------
       Handle every ISR. Don't know which triggered this
       -----------------------------------------------------------------------*/
-      if ( msg & ITCMsg::TSK_MSG_ISR_DATA_READY )
+      if( msg & ITCMsg::TSK_MSG_ISR_DATA_READY )
       {
-        for ( size_t index = 0; index < ARRAY_COUNT( s_impl_driver ); index++ )
+        for( size_t index = 0; index < ARRAY_COUNT( s_impl_driver ); index++ )
         {
           s_impl_driver[ index ].postISRProcessing();
         }
@@ -124,7 +124,7 @@ namespace Chimera::ADC
     Prevent re-initialization from occurring
     -------------------------------------------------------------------------*/
     auto result = Chimera::Status::OK;
-    if ( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
+    if( s_driver_initialized == Chimera::DRIVER_INITIALIZED_KEY )
     {
       return result;
     }
@@ -166,7 +166,7 @@ namespace Chimera::ADC
 
   static Driver_rPtr impl_getDriver( const Chimera::ADC::Peripheral periph )
   {
-    if ( auto idx = LLD::getResourceIndex( periph ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    if( auto idx = LLD::getResourceIndex( periph ); idx != ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return &s_raw_driver[ idx ];
     }
@@ -196,7 +196,7 @@ namespace Chimera::ADC
     Ensure the peripheral is valid
     -------------------------------------------------------------------------*/
     auto idx = LLD::getResourceIndex( cfg.periph );
-    if ( idx == ::Thor::LLD::INVALID_RESOURCE_INDEX )
+    if( idx == ::Thor::LLD::INVALID_RESOURCE_INDEX )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -219,6 +219,14 @@ namespace Chimera::ADC
   void Driver::close()
   {
     /*-------------------------------------------------------------------------
+    Input Protection
+    -------------------------------------------------------------------------*/
+    if( !mImpl )
+    {
+      return;
+    }
+
+    /*-------------------------------------------------------------------------
     Reset hardware resources
     -------------------------------------------------------------------------*/
     auto lld = reinterpret_cast<ThorImpl *>( mImpl )->lldriver;
@@ -233,7 +241,7 @@ namespace Chimera::ADC
     /*-------------------------------------------------------------------------
     Input Protection
     -------------------------------------------------------------------------*/
-    if ( !( ch < Chimera::ADC::Channel::NUM_OPTIONS ) )
+    if( !( ch < Chimera::ADC::Channel::NUM_OPTIONS ) )
     {
       return Chimera::Status::INVAL_FUNC_PARAM;
     }
@@ -244,31 +252,31 @@ namespace Chimera::ADC
     auto lld = reinterpret_cast<ThorImpl *>( mImpl )->lldriver;
 
 #if defined( STM32L432xx )
-    if ( cycles < 3 )
+    if( cycles < 3 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_2P5 );
     }
-    else if ( cycles < 7 )
+    else if( cycles < 7 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_6P5 );
     }
-    else if ( cycles < 13 )
+    else if( cycles < 13 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_12P5 );
     }
-    else if ( cycles < 25 )
+    else if( cycles < 25 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_24P5 );
     }
-    else if ( cycles < 48 )
+    else if( cycles < 48 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_47P5 );
     }
-    else if ( cycles < 93 )
+    else if( cycles < 93 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_92P5 );
     }
-    else if ( cycles < 248 )
+    else if( cycles < 248 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_247P5 );
     }
@@ -278,31 +286,31 @@ namespace Chimera::ADC
     }
 
 #elif defined( STM32F446xx )
-    if ( cycles < 4 )
+    if( cycles < 4 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_3 );
     }
-    else if ( cycles < 16 )
+    else if( cycles < 16 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_15 );
     }
-    else if ( cycles < 29 )
+    else if( cycles < 29 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_28 );
     }
-    else if ( cycles < 57 )
+    else if( cycles < 57 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_56 );
     }
-    else if ( cycles < 85 )
+    else if( cycles < 85 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_84 );
     }
-    else if ( cycles < 113 )
+    else if( cycles < 113 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_112 );
     }
-    else if ( cycles < 145 )
+    else if( cycles < 145 )
     {
       return lld->setSampleTime( ch, LLD::SampleTime::SMP_144 );
     }
@@ -328,7 +336,7 @@ namespace Chimera::ADC
 
   Chimera::ADC::Sample Driver::sampleChannel( const Chimera::ADC::Channel ch )
   {
-    if ( !( ch < Chimera::ADC::Channel::NUM_OPTIONS ) )
+    if( !( ch < Chimera::ADC::Channel::NUM_OPTIONS ) )
     {
       return Chimera::ADC::Sample();
     }
@@ -370,7 +378,7 @@ namespace Chimera::ADC
     /*-------------------------------------------------------------------------
     Input Protection
     -------------------------------------------------------------------------*/
-    if ( !ch_arr || !sample_arr || !size )
+    if( !ch_arr || !sample_arr || !size )
     {
       return 0;
     }
@@ -380,7 +388,7 @@ namespace Chimera::ADC
     -------------------------------------------------------------------------*/
     auto impl = reinterpret_cast<ThorImpl *>( mImpl );
 
-    if ( ( impl->mSeqMode == SamplingMode::CONTINUOUS ) || ( impl->mSeqMode == SamplingMode::TRIGGER ) )
+    if( ( impl->mSeqMode == SamplingMode::CONTINUOUS ) || ( impl->mSeqMode == SamplingMode::TRIGGER ) )
     {
       impl->lldriver->stopSequence();
       impl->lldriver->syncSequence();
@@ -395,7 +403,7 @@ namespace Chimera::ADC
     Select the queue associated with this instance
     -------------------------------------------------------------------------*/
     Thor::LLD::ADC::PeriphQueue *queue = nullptr;
-    switch ( impl->mConfig.periph )
+    switch( impl->mConfig.periph )
     {
       case Peripheral::ADC_0:
         queue = &Thor::LLD::ADC::ADC1_Queue;
@@ -411,7 +419,7 @@ namespace Chimera::ADC
     -------------------------------------------------------------------------*/
     size_t num_good_retrievals = 0;
 
-    for ( size_t idx = 0; idx < size; idx++ )
+    for( size_t idx = 0; idx < size; idx++ )
     { /* clang-format off */
       const size_t req_channel = static_cast<size_t>( ch_arr[ idx ] );
 
