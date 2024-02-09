@@ -48,9 +48,15 @@ namespace Chimera::Timer::Inverter
   {
     Thor::LLD::TIMER::Handle_rPtr timer;                  /**< Handle to the timer */
     Chimera::Timer::Output        pinMap[ NUM_SWITCHES ]; /**< Which channel each pin maps to */
-    uint32_t                      maxCCRef;               /**< Max capture compare reference to meet min PWM requirements */
-    float                         T_half;                 /**< Half of the PWM period */
-    float                         T_freq;                 /**< Core timer frequency */
+    float                         pwm_half_period_hz;     /**< Half of the PWM period in seconds*/
+    float                         frequency_hz;           /**< Core timer frequency */
+    float                         period_ns;              /**< Timer period in ns */
+    int32_t                       dt_ticks;               /**< Dead-time in timer ticks */
+    int32_t                       tn_ticks;               /**< Duration of the shunt resistor noise due to switching */
+    int32_t                       tr_ticks;               /**< Rise time of the input signal to the ADC */
+    int32_t                       ts_ticks;               /**< Sample time of the ADC */
+    int32_t                       tstable_ticks;          /**< Offset from switching when current should be less noisy */
+    volatile SVMState             svmState;               /**< Current SVM state */
   };
 
   /*---------------------------------------------------------------------------
@@ -112,12 +118,12 @@ namespace Chimera::Timer::Inverter
     /*-------------------------------------------------------------------------
     Wrap the angle from -PI to PI
     -------------------------------------------------------------------------*/
-    while ( angle < -M_PI_F )
+    while( angle < -M_PI_F )
     {
       angle += 2.0f * M_PI_F;
     }
 
-    while ( angle > M_PI_F )
+    while( angle > M_PI_F )
     {
       angle -= 2.0f * M_PI_F;
     }
@@ -125,7 +131,7 @@ namespace Chimera::Timer::Inverter
     /*-------------------------------------------------------------------------
     Compute Sine
     -------------------------------------------------------------------------*/
-    if ( angle < 0.0f )
+    if( angle < 0.0f )
     {
       return 1.27323954f * angle + 0.405284735f * angle * angle;
     }
@@ -156,7 +162,7 @@ namespace Chimera::Timer::Inverter
     /*-------------------------------------------------------------------------
     Input Protection
     -------------------------------------------------------------------------*/
-    if ( !( getHardwareType( cfg.coreCfg.instance ) & REQ_HW_TIMER_TYPES ) )
+    if( !( getHardwareType( cfg.coreCfg.instance ) & REQ_HW_TIMER_TYPES ) )
     {
       return Chimera::Status::NOT_SUPPORTED;
     }
@@ -167,7 +173,7 @@ namespace Chimera::Timer::Inverter
     ControlBlock *cb = s_timer_data.getOrCreate( cfg.coreCfg.instance );
     RT_HARD_ASSERT( cb );
 
-    if ( !mTimerImpl )
+    if( !mTimerImpl )
     {
       mTimerImpl = reinterpret_cast<void *>( cb );
     }
@@ -177,7 +183,17 @@ namespace Chimera::Timer::Inverter
     -------------------------------------------------------------------------*/
     RT_HARD_ASSERT( Chimera::Status::OK == allocate( cfg.coreCfg.instance ) );
 
-    cb->timer = Thor::LLD::TIMER::getHandle( cfg.coreCfg.instance );
+    cb->timer                 = Thor::LLD::TIMER::getHandle( cfg.coreCfg.instance );
+    cb->frequency_hz          = 0.0f;
+    cb->pwm_half_period_hz    = 0.0f;
+    cb->dt_ticks              = 0;
+    cb->tn_ticks              = 0;
+    cb->tr_ticks              = 0;
+    cb->ts_ticks              = 0;
+    cb->tstable_ticks         = 0;
+    cb->svmState.phase1       = Chimera::Timer::Channel::CHANNEL_1;
+    cb->svmState.phase2       = Chimera::Timer::Channel::CHANNEL_2;
+    cb->svmState.adc_polarity = true;
     memcpy( cb->pinMap, cfg.pinMap, sizeof( cb->pinMap ) );
 
     /*-------------------------------------------------------------------------
@@ -187,7 +203,6 @@ namespace Chimera::Timer::Inverter
 
     /* Power on the timer core */
     result |= Thor::LLD::TIMER::Master::initCore( cb->timer, cfg.coreCfg );
-    cb->T_freq = 1.0f / ( getBaseTickPeriod( cb->timer ) / 1e9f );
 
     /* Center-aligned up/down counting with output compare flags set on both count directions */
     setAlignment( cb->timer, AlignMode::CENTER_ALIGNED_3 );
@@ -195,7 +210,17 @@ namespace Chimera::Timer::Inverter
     /* Set the pwm output frequency that drives the IO pins. Multiply by two b/c of the
        center aligned counting mode, whose period is defined by BOTH up/down cycles. */
     result |= setCarrierFrequency( cfg.pwmFrequency * 2.0f );
-    cb->T_half = 0.5f / cfg.pwmFrequency;
+
+    /*-------------------------------------------------------------------------
+    Compute some timing parameters for the SVM update step
+    -------------------------------------------------------------------------*/
+    cb->period_ns          = getBaseTickPeriod( cb->timer );
+    cb->frequency_hz       = 1.0f / ( cb->period_ns / 1e9f );
+    cb->pwm_half_period_hz = 0.5f / cfg.pwmFrequency;
+    cb->dt_ticks           = static_cast<uint32_t>( cfg.deadTimeNs / cb->period_ns );
+    cb->tn_ticks           = static_cast<uint32_t>( cfg.settleTimeNs / cb->period_ns );
+    cb->ts_ticks           = static_cast<uint32_t>( cfg.adcSampleTimeNs / cb->period_ns );
+    cb->tstable_ticks      = cb->dt_ticks + cb->tn_ticks;
 
     /*-------------------------------------------------------------------------
     Break signal(s) configuration to control emergency shutdowns
@@ -243,13 +268,13 @@ namespace Chimera::Timer::Inverter
     enableCCOutputBulk( cb->timer, s_all_output_channel_bf );
 
     /*-------------------------------------------------------------------------
-    Output trigger configuration (TRGO) for synchronization. This will toggle
-    TRGO 180 degrees out of phase with center of the complementary PWM output.
+    Output trigger configuration (TRGO) for synchronization. This is just a
+    preliminary setting and will be updated each interrupt period.
     -------------------------------------------------------------------------*/
     setOCMode( cb->timer, Chimera::Timer::Channel::CHANNEL_4, OCMode::OC_MODE_TOGGLE_MATCH );
     useOCPreload( cb->timer, Chimera::Timer::Channel::CHANNEL_4, true );
     setMasterMode( cb->timer, MasterMode::COMPARE_OC4REF );
-    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_4, cb->timer->registers->ARR );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_4, 0 );
 
     /*-------------------------------------------------------------------------
     Lock out the core timer configuration settings to prevent dangerous changes
@@ -332,29 +357,6 @@ namespace Chimera::Timer::Inverter
   }
 
 
-  Chimera::Status_t Driver::shortLowSideWindings()
-  {
-    using namespace Thor::LLD::TIMER;
-
-    /*-------------------------------------------------------------------------
-    Input Protection
-    -------------------------------------------------------------------------*/
-    if( !mTimerImpl )
-    {
-      return Chimera::Status::NOT_INITIALIZED;
-    }
-
-    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
-
-    // reset_to_idle();
-    // TODO BMB: Can the timer do this without full reconfiguration? Might need a new LLD interface.
-    // TODO BMB: Could also drive a very lopsided PWM to achieve nearly the same effect? I think it
-    // TODO BMB: would end up swapping between states 0 and 6, but I'm not sure. Need to test it out.
-
-    return Chimera::Status::OK;
-  }
-
-
   Chimera::Status_t Driver::setCarrierFrequency( const float freq )
   {
     /*-------------------------------------------------------------------------
@@ -378,21 +380,13 @@ namespace Chimera::Timer::Inverter
     using namespace Thor::LLD::TIMER;
 
     constexpr Chimera::Timer::Channel switch_ch_lut[] = {
-      Chimera::Timer::Channel::CHANNEL_1,
-      Chimera::Timer::Channel::CHANNEL_1,
-      Chimera::Timer::Channel::CHANNEL_2,
-      Chimera::Timer::Channel::CHANNEL_2,
-      Chimera::Timer::Channel::CHANNEL_3,
-      Chimera::Timer::Channel::CHANNEL_3,
+      Chimera::Timer::Channel::CHANNEL_1, Chimera::Timer::Channel::CHANNEL_1, Chimera::Timer::Channel::CHANNEL_2,
+      Chimera::Timer::Channel::CHANNEL_2, Chimera::Timer::Channel::CHANNEL_3, Chimera::Timer::Channel::CHANNEL_3,
     };
 
     constexpr Chimera::Timer::Output switch_out_lut[] = {
-      Chimera::Timer::Output::OUTPUT_1P,
-      Chimera::Timer::Output::OUTPUT_1N,
-      Chimera::Timer::Output::OUTPUT_2P,
-      Chimera::Timer::Output::OUTPUT_2N,
-      Chimera::Timer::Output::OUTPUT_3P,
-      Chimera::Timer::Output::OUTPUT_3N,
+      Chimera::Timer::Output::OUTPUT_1P, Chimera::Timer::Output::OUTPUT_1N, Chimera::Timer::Output::OUTPUT_2P,
+      Chimera::Timer::Output::OUTPUT_2N, Chimera::Timer::Output::OUTPUT_3P, Chimera::Timer::Output::OUTPUT_3N,
     };
 
     /*-------------------------------------------------------------------------
@@ -407,9 +401,9 @@ namespace Chimera::Timer::Inverter
     Reset the timer to a known state: No outputs enabled and all OC references
     set to an effectively 0% duty cycle.
     -------------------------------------------------------------------------*/
-    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
-    uint32_t arr_val = getAutoReload( cb->timer );
-    auto result = reset_to_idle();
+    ControlBlock *cb      = reinterpret_cast<ControlBlock *>( mTimerImpl );
+    uint32_t      arr_val = getAutoReload( cb->timer );
+    auto          result  = reset_to_idle();
 
     /*-------------------------------------------------------------------------
     Drive the requested switches with the expected duty cycle. This possibly
@@ -457,8 +451,8 @@ namespace Chimera::Timer::Inverter
     /*-------------------------------------------------------------------------
     Compute the current sector and angular offset inside that sector
     -------------------------------------------------------------------------*/
-    const uint32_t sector = static_cast<uint32_t>( theta / PI_OVER_3 );
-    float          sector_angle  = theta - ( sector * PI_OVER_3 );
+    const uint32_t sector       = static_cast<uint32_t>( theta / PI_OVER_3 );
+    float          sector_angle = theta - ( sector * PI_OVER_3 );
 
     RT_DBG_ASSERT( sector <= 6 );
     RT_DBG_ASSERT( sector_angle <= PI_OVER_3 && sector_angle >= 0.0f );
@@ -481,18 +475,18 @@ namespace Chimera::Timer::Inverter
     -------------------------------------------------------------------------*/
     ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
 
-    const float ta = cb->T_half * drive * fastSine( PI_OVER_3 - sector_angle );
-    const float tb = cb->T_half * drive * fastSine( sector_angle );
-    const float tn = cb->T_half - ta - tb;
+    const float ta      = cb->pwm_half_period_hz * drive * fastSine( PI_OVER_3 - sector_angle );
+    const float tb      = cb->pwm_half_period_hz * drive * fastSine( sector_angle );
+    const float tn      = cb->pwm_half_period_hz - ta - tb;
     const float tn_half = 0.5f * tn;
 
     /*-------------------------------------------------------------------------
     Compute the PWM compare values for each channel
     -------------------------------------------------------------------------*/
-    const uint32_t ton_tn_half = static_cast<uint32_t>( tn_half * cb->T_freq );
-    const uint32_t ton_1       = static_cast<uint32_t>( ( tn_half + ta ) * cb->T_freq );
-    const uint32_t ton_2       = static_cast<uint32_t>( ( tn_half + tb ) * cb->T_freq );
-    const uint32_t ton_3       = static_cast<uint32_t>( ( tn_half + ta + tb) * cb->T_freq );
+    const uint32_t ton_tn_half = static_cast<uint32_t>( tn_half * cb->frequency_hz );
+    const uint32_t ton_1       = static_cast<uint32_t>( ( tn_half + ta ) * cb->frequency_hz );
+    const uint32_t ton_2       = static_cast<uint32_t>( ( tn_half + tb ) * cb->frequency_hz );
+    const uint32_t ton_3       = static_cast<uint32_t>( ( tn_half + ta + tb ) * cb->frequency_hz );
 
     RT_DBG_ASSERT( ton_tn_half <= cb->timer->registers->ARR );
     RT_DBG_ASSERT( ton_1 <= cb->timer->registers->ARR );
@@ -500,45 +494,74 @@ namespace Chimera::Timer::Inverter
     RT_DBG_ASSERT( ton_3 <= cb->timer->registers->ARR );
 
     /*-------------------------------------------------------------------------
-    Set the PWM compare values for each channel depending on the sector
+    Set the PWM compare values for each channel depending on the sector.
+    Additionally, decide references for computing the ADC sample time update.
+
+    See the SpaceVectorModulation.ipynb notebook for how this came about.
     -------------------------------------------------------------------------*/
-    uint32_t a, b, c;
-    switch ( sector )
+    uint32_t ref_phase_x_cc = 0; /**< Phase with the high side ON the longest time */
+    uint32_t ref_phase_y_cc = 0; /**< Phase with the high side ON the 2nd longest time */
+
+    switch( sector )
     {
       case 0:
-        a = ton_tn_half;
-        b = ton_1;
-        c = ton_3;
+        cb->svmState.t1_cc  = ton_tn_half;
+        cb->svmState.t2_cc  = ton_1;
+        cb->svmState.t3_cc  = ton_3;
+        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_1;
+        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_2;
+        ref_phase_x_cc      = cb->svmState.t1_cc;
+        ref_phase_y_cc      = cb->svmState.t2_cc;
         break;
 
       case 1:
-        a = ton_2;
-        b = ton_tn_half;
-        c = ton_3;
+        cb->svmState.t1_cc  = ton_2;
+        cb->svmState.t2_cc  = ton_tn_half;
+        cb->svmState.t3_cc  = ton_3;
+        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_1;
+        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_2;
+        ref_phase_x_cc      = cb->svmState.t2_cc;
+        ref_phase_y_cc      = cb->svmState.t1_cc;
         break;
 
       case 2:
-        a = ton_3;
-        b = ton_tn_half;
-        c = ton_1;
+        cb->svmState.t1_cc  = ton_3;
+        cb->svmState.t2_cc  = ton_tn_half;
+        cb->svmState.t3_cc  = ton_1;
+        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_2;
+        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_3;
+        ref_phase_x_cc      = cb->svmState.t2_cc;
+        ref_phase_y_cc      = cb->svmState.t3_cc;
         break;
 
       case 3:
-        a = ton_3;
-        b = ton_2;
-        c = ton_tn_half;
+        cb->svmState.t1_cc  = ton_3;
+        cb->svmState.t2_cc  = ton_2;
+        cb->svmState.t3_cc  = ton_tn_half;
+        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_2;
+        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_3;
+        ref_phase_x_cc      = cb->svmState.t3_cc;
+        ref_phase_y_cc      = cb->svmState.t2_cc;
         break;
 
       case 4:
-        a = ton_1;
-        b = ton_3;
-        c = ton_tn_half;
+        cb->svmState.t1_cc  = ton_1;
+        cb->svmState.t2_cc  = ton_3;
+        cb->svmState.t3_cc  = ton_tn_half;
+        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_1;
+        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_3;
+        ref_phase_x_cc      = cb->svmState.t3_cc;
+        ref_phase_y_cc      = cb->svmState.t1_cc;
         break;
 
       case 5:
-        a = ton_tn_half;
-        b = ton_3;
-        c = ton_2;
+        cb->svmState.t1_cc  = ton_tn_half;
+        cb->svmState.t2_cc  = ton_3;
+        cb->svmState.t3_cc  = ton_2;
+        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_1;
+        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_3;
+        ref_phase_x_cc      = cb->svmState.t1_cc;
+        ref_phase_y_cc      = cb->svmState.t3_cc;
         break;
 
       default:
@@ -546,27 +569,98 @@ namespace Chimera::Timer::Inverter
         break;
     }
 
-    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, a );
-    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2, b );
-    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, c );
+    /*-------------------------------------------------------------------------
+    Compute the ADC sample time reference. This is an extension of UM1052 5.2
+    to all sectors. This assumes that the low side switches are driven while
+    the timer is counting down from tmax, then back up.
+    -------------------------------------------------------------------------*/
+    RT_DBG_ASSERT( ref_phase_x_cc <= ref_phase_y_cc );
+    const int32_t duty_a  = ref_phase_x_cc;
+    const int32_t duty_a2 = 2 * duty_a;
+    const int32_t duty_ab = ref_phase_y_cc - ref_phase_x_cc;
+
+    if( duty_a >= cb->tstable_ticks ) /* Case 1 */
+    {
+      /*-----------------------------------------------------------------------
+      ADC is sampled just after the phase with the longest high side ON time
+      -----------------------------------------------------------------------*/
+      cb->svmState.t4_cc        = duty_a - cb->tstable_ticks;
+      cb->svmState.adc_polarity = true;
+    }
+    else
+    {
+      if( duty_ab >= duty_a2 ) /* Case 2 */
+      {
+        /*---------------------------------------------------------------------
+        Since we're counting down to zero, we can use the negative value to
+        detect if the ADC should be triggered on the rising or falling edge.
+        ---------------------------------------------------------------------*/
+        const int raw_offset = ref_phase_y_cc - duty_ab - cb->dt_ticks - cb->tn_ticks;
+        if( raw_offset < 0 )
+        {
+          cb->svmState.t4_cc        = -1 * raw_offset;
+          cb->svmState.adc_polarity = false;
+        }
+        else
+        {
+          cb->svmState.t4_cc        = raw_offset;
+          cb->svmState.adc_polarity = true;
+        }
+      }
+      else if( duty_ab < duty_a2 ) /* Case 3 */
+      {
+        cb->svmState.t4_cc        = ref_phase_y_cc - cb->tstable_ticks;
+        cb->svmState.adc_polarity = true;
+      }
+      else /* Case 4: Panic */
+      {
+        /*-----------------------------------------------------------------------
+        Impossible to sample! You need to lower the PWM frequency, decrease the
+        modulation index, or decrease the ADC sample time.
+        -----------------------------------------------------------------------*/
+        emergencyBreak();
+        RT_DBG_ASSERT( false );
+        return Chimera::Status::FAIL;
+      }
+    }
+
+    /*-------------------------------------------------------------------------
+    Assign the computed compare values to the timer
+    -------------------------------------------------------------------------*/
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, cb->svmState.t1_cc );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2, cb->svmState.t2_cc );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3, cb->svmState.t3_cc );
+    setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_4, cb->svmState.t4_cc );
 
     return Chimera::Status::OK;
   }
 
 
-  void Driver::getSVMOnTicks( uint32_t &tOnA, uint32_t &tOnB, uint32_t &tOnC )
+  SVMState Driver::svmState()
   {
     /*-------------------------------------------------------------------------
-    The timer is an up/down counter and the PWM is center aligned with the high
-    side active once CNT > CCRx. This yields total ON ticks for the high side
-    as 2 * ( ARR - CCRx ).
+    Input Protection
     -------------------------------------------------------------------------*/
-    const ControlBlock *const cb  = reinterpret_cast<ControlBlock *>( mTimerImpl );
-    const uint32_t            arr = cb->timer->registers->ARR;
+    if( !mTimerImpl )
+    {
+      return {};
+    }
 
-    tOnA = 2u * ( arr - getOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1 ) );
-    tOnB = 2u * ( arr - getOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_2 ) );
-    tOnC = 2u * ( arr - getOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_3 ) );
+    /*-------------------------------------------------------------------------
+    Get the phase channels that are being sampled
+    -------------------------------------------------------------------------*/
+    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
+
+    SVMState copy;
+    copy.adc_polarity = cb->svmState.adc_polarity;
+    copy.phase1       = cb->svmState.phase1;
+    copy.phase2       = cb->svmState.phase2;
+    copy.t1_cc        = cb->svmState.t1_cc;
+    copy.t2_cc        = cb->svmState.t2_cc;
+    copy.t3_cc        = cb->svmState.t3_cc;
+    copy.t4_cc        = cb->svmState.t4_cc;
+
+    return copy;
   }
 
 
@@ -584,43 +678,6 @@ namespace Chimera::Timer::Inverter
   }
 
 
-  Chimera::Status_t Driver::updateTriggerTiming( const uint32_t adc_sample_time_ns, const uint32_t trigger_offset_ns )
-  {
-    using namespace Thor::LLD::TIMER;
-
-    ControlBlock *const cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
-
-    /*-------------------------------------------------------------------------
-    Calculate the reference value for the TRGO signal
-    -------------------------------------------------------------------------*/
-    const uint32_t timer_clock_period_ns = static_cast<uint32_t>( getBaseTickPeriod( cb->timer ) );
-
-    /* Core sample time plus a boundary layer on either side */
-    const uint32_t min_pwm_period_ns = ( 2u * trigger_offset_ns ) + adc_sample_time_ns;
-
-    /* Compute the timer ticks required to reach at least the minimum width, possibly a little larger */
-    const uint32_t min_timer_ticks = ( min_pwm_period_ns / timer_clock_period_ns ) + 1u;
-
-    /* Timer runs as centered up/down counter, so the compare match is half of the total width required */
-    const uint32_t new_cc4_ref_val = getAutoReload( cb->timer ) - ( min_timer_ticks / 2 );
-
-    /*-------------------------------------------------------------------------
-    Compute the new maximum capture compare reference for output channels 1-3.
-    Because we are counting center-aligned, setting the max CC value results in
-    specifying the minimum PWM period we can command without violating the ADC
-    timing constraints. Back off the CC4 value by the trigger offset to ensure
-    there is enough setting time between power stage turning on and the ADC
-    starting it's sampling.
-    -------------------------------------------------------------------------*/
-    cb->maxCCRef = new_cc4_ref_val - ( trigger_offset_ns / timer_clock_period_ns );
-
-    /*-------------------------------------------------------------------------
-    Update the TRGO capture compare reference
-    -------------------------------------------------------------------------*/
-    return setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_4, new_cc4_ref_val );
-  }
-
-
   /**
    * @brief Resets the timer to an inert state.
    *
@@ -629,9 +686,9 @@ namespace Chimera::Timer::Inverter
    */
   Chimera::Status_t Driver::reset_to_idle()
   {
-    ControlBlock *cb = reinterpret_cast<ControlBlock *>( mTimerImpl );
-    uint32_t arr_val = getAutoReload( cb->timer );
-    auto result = Chimera::Status::OK;
+    ControlBlock *cb      = reinterpret_cast<ControlBlock *>( mTimerImpl );
+    uint32_t      arr_val = getAutoReload( cb->timer );
+    auto          result  = Chimera::Status::OK;
 
     disableCCOutputBulk( cb->timer, s_all_output_channel_bf );
     result |= setOCReference( cb->timer, Chimera::Timer::Channel::CHANNEL_1, arr_val );
