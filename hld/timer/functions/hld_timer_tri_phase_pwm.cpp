@@ -424,29 +424,19 @@ namespace Chimera::Timer::Inverter
   }
 
 
-  Chimera::Status_t Driver::svmUpdate( const float alpha, const float beta, const float theta )
+  Chimera::Status_t Driver::svmUpdate( const float alpha, const float beta, const float theta, const float drive )
   {
     /*-------------------------------------------------------------------------
     Local Constants
     -------------------------------------------------------------------------*/
     constexpr float PI_OVER_3      = static_cast<float>( M_PI / 3.0 );
-    constexpr float SQRT_3_OVER_2  = static_cast<float>( M_SQRT3 / 2.0 );
     constexpr float ONE_DEG_IN_RAD = 0.0174533f;
 
     /*-------------------------------------------------------------------------
     Input Protection
     -------------------------------------------------------------------------*/
     RT_DBG_ASSERT( theta >= 0.0f && theta <= 2.0f * static_cast<float>( M_PI ) );
-
-    /*-------------------------------------------------------------------------
-    Compute the drive strength from the magnitude of the inverse park transform
-    output, saturating at max theoretical value.
-    -------------------------------------------------------------------------*/
-    float drive = hypotf( alpha, beta );
-    if( drive > SQRT_3_OVER_2 )
-    {
-      drive = SQRT_3_OVER_2;
-    }
+    RT_DBG_ASSERT( drive >= 0.0f && drive <= PI_OVER_3 );
 
     /*-------------------------------------------------------------------------
     Compute the current sector and angular offset inside that sector
@@ -508,8 +498,8 @@ namespace Chimera::Timer::Inverter
         cb->svmState.t1_cc  = ton_tn_half;
         cb->svmState.t2_cc  = ton_1;
         cb->svmState.t3_cc  = ton_3;
-        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_1;
-        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_2;
+        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_2;
+        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_3;
         ref_phase_x_cc      = cb->svmState.t1_cc;
         ref_phase_y_cc      = cb->svmState.t2_cc;
         break;
@@ -519,7 +509,7 @@ namespace Chimera::Timer::Inverter
         cb->svmState.t2_cc  = ton_tn_half;
         cb->svmState.t3_cc  = ton_3;
         cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_1;
-        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_2;
+        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_3;
         ref_phase_x_cc      = cb->svmState.t2_cc;
         ref_phase_y_cc      = cb->svmState.t1_cc;
         break;
@@ -528,7 +518,7 @@ namespace Chimera::Timer::Inverter
         cb->svmState.t1_cc  = ton_3;
         cb->svmState.t2_cc  = ton_tn_half;
         cb->svmState.t3_cc  = ton_1;
-        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_2;
+        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_1;
         cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_3;
         ref_phase_x_cc      = cb->svmState.t2_cc;
         ref_phase_y_cc      = cb->svmState.t3_cc;
@@ -538,8 +528,8 @@ namespace Chimera::Timer::Inverter
         cb->svmState.t1_cc  = ton_3;
         cb->svmState.t2_cc  = ton_2;
         cb->svmState.t3_cc  = ton_tn_half;
-        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_2;
-        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_3;
+        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_1;
+        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_2;
         ref_phase_x_cc      = cb->svmState.t3_cc;
         ref_phase_y_cc      = cb->svmState.t2_cc;
         break;
@@ -549,7 +539,7 @@ namespace Chimera::Timer::Inverter
         cb->svmState.t2_cc  = ton_3;
         cb->svmState.t3_cc  = ton_tn_half;
         cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_1;
-        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_3;
+        cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_2;
         ref_phase_x_cc      = cb->svmState.t3_cc;
         ref_phase_y_cc      = cb->svmState.t1_cc;
         break;
@@ -558,7 +548,7 @@ namespace Chimera::Timer::Inverter
         cb->svmState.t1_cc  = ton_tn_half;
         cb->svmState.t2_cc  = ton_3;
         cb->svmState.t3_cc  = ton_2;
-        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_1;
+        cb->svmState.phase1 = Chimera::Timer::Channel::CHANNEL_2;
         cb->svmState.phase2 = Chimera::Timer::Channel::CHANNEL_3;
         ref_phase_x_cc      = cb->svmState.t1_cc;
         ref_phase_y_cc      = cb->svmState.t3_cc;
