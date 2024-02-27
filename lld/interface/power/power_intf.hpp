@@ -5,25 +5,37 @@
  *  Description:
  *    LLD interface description for the power driver
  *
- *  2020-2021 | Brandon Braun | brandonbraun653@gmail.com
+ *  2020-2024 | Brandon Braun | brandonbraun653@gmail.com
  *****************************************************************************/
 
 #pragma once
 #ifndef THOR_LLD_POWER_INTERFACE_HPP
 #define THOR_LLD_POWER_INTERFACE_HPP
 
-/* STL Includes */
-#include <cstddef>
-
-/* Chimera Includes */
+/*-----------------------------------------------------------------------------
+Includes
+-----------------------------------------------------------------------------*/
 #include <Chimera/common>
-
-/* Thor Includes */
 #include <Thor/lld/common/types.hpp>
 #include <Thor/lld/interface/power/power_detail.hpp>
+#include <cstddef>
 
 namespace Thor::LLD::PWR
 {
+  /*---------------------------------------------------------------------------
+  Enumerations
+  ---------------------------------------------------------------------------*/
+  enum class VoltageScale : uint8_t
+  {
+    SCALE_1,  /**< High power/freq */
+    SCALE_2,  /**< Med power/freq */
+    SCALE_3,  /**< Low power/freq */
+
+    NUM_OPTIONS,
+    INVALID
+  };
+
+
   /*---------------------------------------------------------------------------
   Public Functions
   ---------------------------------------------------------------------------*/
