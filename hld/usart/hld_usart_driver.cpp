@@ -231,13 +231,13 @@ namespace Chimera::USART
   }
 
 
-  int Driver::write( const void *const buffer, const size_t length )
+  int Driver::write( const void *const buffer, const size_t length, const size_t timeout )
   {
     return 0;
   }
 
 
-  int Driver::read( void *const buffer, const size_t length )
+  int Driver::read( void *const buffer, const size_t length, const size_t timeout )
   {
     return 0;
   }
