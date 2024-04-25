@@ -49,16 +49,32 @@ namespace CortexM4::SYSTick
   /*---------------------------------------------------------------------------
   Static Data
   ---------------------------------------------------------------------------*/
-  static size_t sMillisTick = 0u;
-  static size_t sMicrosTick = 0u;
+  static volatile size_t sMillisTick = 0u;
+  static volatile size_t sMicrosTick = 0u;
+  static volatile size_t sLastMicros = 0u;
+  static volatile size_t sLastMillis = 0u;
+  static volatile size_t sPeriod = 0u;
 
   /*---------------------------------------------------------------------------
   Public Functions
   ---------------------------------------------------------------------------*/
   void onTickIncrement( const size_t period )
   {
-    sMillisTick += period;
-    sMicrosTick += period * 1000;
+    sPeriod = period;
+
+    /*-------------------------------------------------------------------------
+    Only update if the current tick hasn't already been modified. It's quite
+    possible that the `getMicroseconds` function has already updated the tick.
+    This "clock" is only as accurate as the ISR gets serviced. Since it's a
+    low priority ISR...it's not super accurate.
+    -------------------------------------------------------------------------*/
+    if( sLastMillis == sMillisTick )
+    {
+      sMillisTick += period;
+      sMicrosTick += period * 1000;
+    }
+
+    sLastMillis = sMillisTick;
   }
 
 
@@ -71,14 +87,29 @@ namespace CortexM4::SYSTick
   size_t getMicroseconds()
   {
     /*-------------------------------------------------------------------------
-    Use the delta between the reload value and the
-    current value to figure out #clocks since last IRQ.
+    The SYSTICK used for system time is a down-counter, so the delta between
+    the reload value and the current tick should be elapsed time.
 
     This timer is driven by the system core clock.
     -------------------------------------------------------------------------*/
-    float elapsedTicks  = static_cast<float>( *NVIC_REG_SYSTICK_LOAD - *NVIC_REG_SYSTICK_VAL );
-    size_t microsOffset = static_cast<size_t>( elapsedTicks * Clock::SCCPeriod_us );
+    size_t load = *NVIC_REG_SYSTICK_LOAD;
+    size_t val  = *NVIC_REG_SYSTICK_VAL;
+    size_t microsOffset = static_cast<size_t>( static_cast<float>( load - val ) * Clock::SCCPeriod_us );
 
-    return sMicrosTick + microsOffset;
+    /*-------------------------------------------------------------------------
+    Account for the timer rollover that hasn't been captured yet in the SYSTICK
+    ISR handler onTickIncrement().
+    -------------------------------------------------------------------------*/
+    if( sMicrosTick + microsOffset < sLastMicros )
+    {
+      sMillisTick += sPeriod;
+      sMicrosTick += sPeriod * 1000;
+    }
+
+    /*-------------------------------------------------------------------------
+    Use the most recent notion of time to calculate the current microsecond
+    -------------------------------------------------------------------------*/
+    sLastMicros = sMicrosTick + microsOffset;
+    return sLastMicros;
   }
 }  // namespace CortexM4
