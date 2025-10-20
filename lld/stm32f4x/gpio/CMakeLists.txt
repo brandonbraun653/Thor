@@ -1,4 +1,4 @@
-include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
+include(CTEmbedded)
 
 if(${THOR_CHIP} MATCHES "^F446$")
   set(VARIANT_SRC variant/hw_gpio_register_stm32f446xx.cpp)

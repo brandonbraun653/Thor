@@ -1,4 +1,4 @@
-include("${COMMON_TOOL_ROOT}/cmake/utility/embedded.cmake")
+include(CTEmbedded)
 
 if(${THOR_CHIP} MATCHES "^F446$" AND ${THOR_IMPL} MATCHES "HW")
     set(VARIANT_SRC variant/hw_sdio_register_stm32f446xx.cpp)
